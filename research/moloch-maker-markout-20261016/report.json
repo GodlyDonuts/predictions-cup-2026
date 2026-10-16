@@ -1,0 +1,5317 @@
+{
+  "aggregate": {
+    "actualFillObservations": 50,
+    "actualShares": 20584,
+    "causalPrefillCoverage": {
+      "full_depth": 9,
+      "no_causal_prefill_book": 41
+    },
+    "horizonsMs": {
+      "1000": {
+        "actualEntryFees": "0.000000",
+        "actualEntryPrincipal": "1379.460000",
+        "causalPrefillMatchedFills": 9,
+        "causalPrefillMatchedShares": 6416,
+        "coverage": {
+          "full_depth": 9,
+          "no_original_book_in_horizon_window": 41
+        },
+        "displayedCoveredSharesIncludingPartial": 6416,
+        "exitFeesKnown": false,
+        "fullDepthIntentCohorts": 5,
+        "fullDepthMarkSigns": {
+          "negative": 4,
+          "positive": 0,
+          "zero": 5
+        },
+        "fullDepthMarketScopes": 5,
+        "fullDepthShares": 6416,
+        "futureMinusCausalPrefillLiquidationValue": "-28.240000",
+        "hypotheticalLiquidationMinusEntryAndEntryFees": "-28.240000",
+        "labelsBeforeNativeFillDiscovery": 9,
+        "nonOverlappingMarketTimeClusters": 8,
+        "quantityWeightedMarkoutPerShare": "-0.004401",
+        "quantityWeightedSubsequentBidMovement": "-0.004401"
+      },
+      "120000": {
+        "actualEntryFees": "0.000000",
+        "actualEntryPrincipal": "1354.500000",
+        "causalPrefillMatchedFills": 8,
+        "causalPrefillMatchedShares": 6260,
+        "coverage": {
+          "full_depth": 8,
+          "late_observation": 1,
+          "no_original_book_in_horizon_window": 41
+        },
+        "displayedCoveredSharesIncludingPartial": 6260,
+        "exitFeesKnown": false,
+        "fullDepthIntentCohorts": 4,
+        "fullDepthMarkSigns": {
+          "negative": 7,
+          "positive": 0,
+          "zero": 1
+        },
+        "fullDepthMarketScopes": 4,
+        "fullDepthShares": 6260,
+        "futureMinusCausalPrefillLiquidationValue": "-31.050000",
+        "hypotheticalLiquidationMinusEntryAndEntryFees": "-31.050000",
+        "labelsBeforeNativeFillDiscovery": 0,
+        "nonOverlappingMarketTimeClusters": 4,
+        "quantityWeightedMarkoutPerShare": "-0.004960",
+        "quantityWeightedSubsequentBidMovement": "-0.004960"
+      },
+      "30000": {
+        "actualEntryFees": "0.000000",
+        "actualEntryPrincipal": "1354.500000",
+        "causalPrefillMatchedFills": 8,
+        "causalPrefillMatchedShares": 6260,
+        "coverage": {
+          "full_depth": 8,
+          "no_original_book_in_horizon_window": 42
+        },
+        "displayedCoveredSharesIncludingPartial": 6260,
+        "exitFeesKnown": false,
+        "fullDepthIntentCohorts": 4,
+        "fullDepthMarkSigns": {
+          "negative": 4,
+          "positive": 0,
+          "zero": 4
+        },
+        "fullDepthMarketScopes": 4,
+        "fullDepthShares": 6260,
+        "futureMinusCausalPrefillLiquidationValue": "-29.690000",
+        "hypotheticalLiquidationMinusEntryAndEntryFees": "-29.690000",
+        "labelsBeforeNativeFillDiscovery": 0,
+        "nonOverlappingMarketTimeClusters": 5,
+        "quantityWeightedMarkoutPerShare": "-0.004743",
+        "quantityWeightedSubsequentBidMovement": "-0.004743"
+      },
+      "5000": {
+        "actualEntryFees": "0.000000",
+        "actualEntryPrincipal": "1360.960000",
+        "causalPrefillMatchedFills": 8,
+        "causalPrefillMatchedShares": 6316,
+        "coverage": {
+          "full_depth": 8,
+          "late_observation": 1,
+          "no_original_book_in_horizon_window": 41
+        },
+        "displayedCoveredSharesIncludingPartial": 6316,
+        "exitFeesKnown": false,
+        "fullDepthIntentCohorts": 5,
+        "fullDepthMarkSigns": {
+          "negative": 4,
+          "positive": 0,
+          "zero": 4
+        },
+        "fullDepthMarketScopes": 5,
+        "fullDepthShares": 6316,
+        "futureMinusCausalPrefillLiquidationValue": "-28.190000",
+        "hypotheticalLiquidationMinusEntryAndEntryFees": "-28.190000",
+        "labelsBeforeNativeFillDiscovery": 7,
+        "nonOverlappingMarketTimeClusters": 7,
+        "quantityWeightedMarkoutPerShare": "-0.004463",
+        "quantityWeightedSubsequentBidMovement": "-0.004463"
+      }
+    },
+    "intentCohorts": 24
+  },
+  "allOriginalDecodedHashesMatchCaptureManifest": true,
+  "analysis": "actual_ordinary_rested_buy_postfill_markouts",
+  "attribution": {
+    "not_buy": 112,
+    "ordinary_rested_after_ack": 50,
+    "package_or_reviewed": 1
+  },
+  "breadthDiagnostics": {
+    "stream_reset": 2,
+    "valid_books": 7830
+  },
+  "duplicateActualFillObservations": 0,
+  "financialReplayPerformed": false,
+  "horizonsMs": [
+    1000,
+    5000,
+    30000,
+    120000
+  ],
+  "inputCaptureManifestSha256": "dff429da9ae6154679842e1c0458fa30ff053162c35ffb7687a805049322a97a",
+  "intentCohorts": [
+    {
+      "actualFillObservations": 1,
+      "actualShares": 22,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "863",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 0,
+      "intentCohorts": 1,
+      "marketId": "174",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 3,
+      "actualShares": 12,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 3
+      },
+      "exchangeId": "953",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 1,
+      "intentCohorts": 1,
+      "marketId": "264",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 12,
+      "actualShares": 351,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 12
+      },
+      "exchangeId": "942",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 2,
+      "intentCohorts": 1,
+      "marketId": "253",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 525,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1012",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 3,
+      "intentCohorts": 1,
+      "marketId": "323",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 2,
+      "actualShares": 3643,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 2
+      },
+      "exchangeId": "953",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 4,
+      "intentCohorts": 1,
+      "marketId": "264",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 3,
+      "actualShares": 607,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 3
+      },
+      "exchangeId": "1045",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 5,
+      "intentCohorts": 1,
+      "marketId": "356",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 3522,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "885",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 6,
+      "intentCohorts": 1,
+      "marketId": "196",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 30,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "953",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 7,
+      "intentCohorts": 1,
+      "marketId": "264",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 716,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "949",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 8,
+      "intentCohorts": 1,
+      "marketId": "260",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 2,
+      "actualShares": 123,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 2
+      },
+      "exchangeId": "1011",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 9,
+      "intentCohorts": 1,
+      "marketId": "322",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 588,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1034",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 10,
+      "intentCohorts": 1,
+      "marketId": "345",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 229,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1011",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 11,
+      "intentCohorts": 1,
+      "marketId": "322",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 133,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1003",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 12,
+      "intentCohorts": 1,
+      "marketId": "314",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 6,
+      "actualShares": 67,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 6
+      },
+      "exchangeId": "1019",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 13,
+      "intentCohorts": 1,
+      "marketId": "330",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 431,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "843",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 14,
+      "intentCohorts": 1,
+      "marketId": "154",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 490,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "843",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 15,
+      "intentCohorts": 1,
+      "marketId": "154",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 173,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1033",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 16,
+      "intentCohorts": 1,
+      "marketId": "344",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 966,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "934",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 17,
+      "intentCohorts": 1,
+      "marketId": "245",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 1540,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "843",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohortIndex": 18,
+      "intentCohorts": 1,
+      "marketId": "154",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 5,
+      "actualShares": 1362,
+      "causalPrefillCoverage": {
+        "full_depth": 5
+      },
+      "exchangeId": "1043",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "251.970000",
+          "causalPrefillMatchedFills": 5,
+          "causalPrefillMatchedShares": 1362,
+          "coverage": {
+            "full_depth": 5
+          },
+          "displayedCoveredSharesIncludingPartial": 1362,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 4
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1362,
+          "futureMinusCausalPrefillLiquidationValue": "-3.735000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-3.735000",
+          "labelsBeforeNativeFillDiscovery": 5,
+          "nonOverlappingMarketTimeClusters": 4,
+          "quantityWeightedMarkoutPerShare": "-0.002742",
+          "quantityWeightedSubsequentBidMovement": "-0.002742"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "251.970000",
+          "causalPrefillMatchedFills": 5,
+          "causalPrefillMatchedShares": 1362,
+          "coverage": {
+            "full_depth": 5
+          },
+          "displayedCoveredSharesIncludingPartial": 1362,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 4,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1362,
+          "futureMinusCausalPrefillLiquidationValue": "-6.560000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-6.560000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.004816",
+          "quantityWeightedSubsequentBidMovement": "-0.004816"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "251.970000",
+          "causalPrefillMatchedFills": 5,
+          "causalPrefillMatchedShares": 1362,
+          "coverage": {
+            "full_depth": 5
+          },
+          "displayedCoveredSharesIncludingPartial": 1362,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 2,
+            "positive": 0,
+            "zero": 3
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1362,
+          "futureMinusCausalPrefillLiquidationValue": "-5.350000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-5.350000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 2,
+          "quantityWeightedMarkoutPerShare": "-0.003928",
+          "quantityWeightedSubsequentBidMovement": "-0.003928"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "233.470000",
+          "causalPrefillMatchedFills": 4,
+          "causalPrefillMatchedShares": 1262,
+          "coverage": {
+            "full_depth": 4,
+            "late_observation": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1262,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 3
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1262,
+          "futureMinusCausalPrefillLiquidationValue": "-3.685000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-3.685000",
+          "labelsBeforeNativeFillDiscovery": 4,
+          "nonOverlappingMarketTimeClusters": 3,
+          "quantityWeightedMarkoutPerShare": "-0.002920",
+          "quantityWeightedSubsequentBidMovement": "-0.002920"
+        }
+      },
+      "intentCohortIndex": 19,
+      "intentCohorts": 1,
+      "marketId": "354",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 3435,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "1044",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        }
+      },
+      "intentCohortIndex": 20,
+      "intentCohorts": 1,
+      "marketId": "355",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 1433,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "1019",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        }
+      },
+      "intentCohortIndex": 21,
+      "intentCohorts": 1,
+      "marketId": "330",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 30,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "874",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "0.000000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "0.000000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quantityWeightedSubsequentBidMovement": "0.000000"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "-0.150000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-0.150000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "0.000000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "0.000000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quantityWeightedSubsequentBidMovement": "0.000000"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "0.000000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "0.000000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quantityWeightedSubsequentBidMovement": "0.000000"
+        }
+      },
+      "intentCohortIndex": 22,
+      "intentCohorts": 1,
+      "marketId": "185",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 156,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "1014",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "24.960000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 156,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 156,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 156,
+          "futureMinusCausalPrefillLiquidationValue": "-0.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-0.165000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.001058",
+          "quantityWeightedSubsequentBidMovement": "-0.001058"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "late_observation": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "24.960000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 156,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 156,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 156,
+          "futureMinusCausalPrefillLiquidationValue": "-0.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-0.165000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.001058",
+          "quantityWeightedSubsequentBidMovement": "-0.001058"
+        }
+      },
+      "intentCohortIndex": 23,
+      "intentCohorts": 1,
+      "marketId": "325",
+      "side": "NO"
+    }
+  ],
+  "labelSlackMs": 5000,
+  "limitations": [
+    "Only genuine attributed fills are used; no public print/touch is an own fill or queue-position label.",
+    "Rested-after-original-ACK is not proof of venue maker classification or unconditional entry alpha.",
+    "Breadth receipt is an optimistic source-level availability clock, not native processing or physical preflight.",
+    "Missing/stale/gap/depth-limited horizons are unavailable, not zero returns; no favorable replacement of a selected shallow/invalid book.",
+    "Displayed full-quantity hypothetical exits can share liquidity across fills/cohorts and are not additive feasible portfolio profit.",
+    "Entry fees are actual; hypothetical future exit fees are unknown and not fabricated. No realized exit or remaining inventory mark is changed.",
+    "The causal pre-fill book can contain our own resting quote; its depletion can cause a later bid decline without new information or informed flow.",
+    "Displayed depth can contain own resting orders at either clock; self-trade prevention can make part of it inaccessible. Values are optimistic displayed-depth diagnostics, not guaranteed own executable proceeds.",
+    "Actual BUY quantities may already have netted or sold before a horizon; liquidation is a diagnostic, not a claim those lots remained held."
+  ],
+  "maximumSourceAgeMs": 10000,
+  "ownRestingLiquidityRemoved": false,
+  "perMarketSide": [
+    {
+      "actualFillObservations": 2,
+      "actualShares": 2030,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 2
+      },
+      "exchangeId": "843",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 2,
+      "marketId": "154",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 431,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "843",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "154",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 22,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "863",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "174",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 30,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "874",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "0.000000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "0.000000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quantityWeightedSubsequentBidMovement": "0.000000"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "-0.150000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-0.150000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "0.000000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "0.000000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quantityWeightedSubsequentBidMovement": "0.000000"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "2.700000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 30,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 30,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 30,
+          "futureMinusCausalPrefillLiquidationValue": "0.000000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "0.000000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "0.000000",
+          "quantityWeightedSubsequentBidMovement": "0.000000"
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "185",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 3522,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "885",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "196",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 966,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "934",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "245",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 12,
+      "actualShares": 351,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 12
+      },
+      "exchangeId": "942",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 12
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "253",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 716,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "949",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "260",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 6,
+      "actualShares": 3685,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 6
+      },
+      "exchangeId": "953",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 3,
+      "marketId": "264",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 133,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1003",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "314",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 2,
+      "actualShares": 123,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 2
+      },
+      "exchangeId": "1011",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 2
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "322",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 229,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1011",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "322",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 525,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1012",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "323",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 156,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "1014",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "24.960000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 156,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 156,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 156,
+          "futureMinusCausalPrefillLiquidationValue": "-0.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-0.165000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.001058",
+          "quantityWeightedSubsequentBidMovement": "-0.001058"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "late_observation": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "24.960000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 156,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 156,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 156,
+          "futureMinusCausalPrefillLiquidationValue": "-0.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-0.165000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.001058",
+          "quantityWeightedSubsequentBidMovement": "-0.001058"
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "325",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 1433,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "1019",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "515.880000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 1433,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1433,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1433,
+          "futureMinusCausalPrefillLiquidationValue": "-7.165000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-7.165000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "330",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 6,
+      "actualShares": 67,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 6
+      },
+      "exchangeId": "1019",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 6
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "330",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 173,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1033",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "344",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 588,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 1
+      },
+      "exchangeId": "1034",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "345",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 5,
+      "actualShares": 1362,
+      "causalPrefillCoverage": {
+        "full_depth": 5
+      },
+      "exchangeId": "1043",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "251.970000",
+          "causalPrefillMatchedFills": 5,
+          "causalPrefillMatchedShares": 1362,
+          "coverage": {
+            "full_depth": 5
+          },
+          "displayedCoveredSharesIncludingPartial": 1362,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 4
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1362,
+          "futureMinusCausalPrefillLiquidationValue": "-3.735000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-3.735000",
+          "labelsBeforeNativeFillDiscovery": 5,
+          "nonOverlappingMarketTimeClusters": 4,
+          "quantityWeightedMarkoutPerShare": "-0.002742",
+          "quantityWeightedSubsequentBidMovement": "-0.002742"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "251.970000",
+          "causalPrefillMatchedFills": 5,
+          "causalPrefillMatchedShares": 1362,
+          "coverage": {
+            "full_depth": 5
+          },
+          "displayedCoveredSharesIncludingPartial": 1362,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 4,
+            "positive": 0,
+            "zero": 1
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1362,
+          "futureMinusCausalPrefillLiquidationValue": "-6.560000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-6.560000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.004816",
+          "quantityWeightedSubsequentBidMovement": "-0.004816"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "251.970000",
+          "causalPrefillMatchedFills": 5,
+          "causalPrefillMatchedShares": 1362,
+          "coverage": {
+            "full_depth": 5
+          },
+          "displayedCoveredSharesIncludingPartial": 1362,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 2,
+            "positive": 0,
+            "zero": 3
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1362,
+          "futureMinusCausalPrefillLiquidationValue": "-5.350000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-5.350000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 2,
+          "quantityWeightedMarkoutPerShare": "-0.003928",
+          "quantityWeightedSubsequentBidMovement": "-0.003928"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "233.470000",
+          "causalPrefillMatchedFills": 4,
+          "causalPrefillMatchedShares": 1262,
+          "coverage": {
+            "full_depth": 4,
+            "late_observation": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 1262,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 3
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 1262,
+          "futureMinusCausalPrefillLiquidationValue": "-3.685000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-3.685000",
+          "labelsBeforeNativeFillDiscovery": 4,
+          "nonOverlappingMarketTimeClusters": 3,
+          "quantityWeightedMarkoutPerShare": "-0.002920",
+          "quantityWeightedSubsequentBidMovement": "-0.002920"
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "354",
+      "side": "YES"
+    },
+    {
+      "actualFillObservations": 1,
+      "actualShares": 3435,
+      "causalPrefillCoverage": {
+        "full_depth": 1
+      },
+      "exchangeId": "1044",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "583.950000",
+          "causalPrefillMatchedFills": 1,
+          "causalPrefillMatchedShares": 3435,
+          "coverage": {
+            "full_depth": 1
+          },
+          "displayedCoveredSharesIncludingPartial": 3435,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 1,
+          "fullDepthMarkSigns": {
+            "negative": 1,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 1,
+          "fullDepthShares": 3435,
+          "futureMinusCausalPrefillLiquidationValue": "-17.175000",
+          "hypotheticalLiquidationMinusEntryAndEntryFees": "-17.175000",
+          "labelsBeforeNativeFillDiscovery": 1,
+          "nonOverlappingMarketTimeClusters": 1,
+          "quantityWeightedMarkoutPerShare": "-0.005000",
+          "quantityWeightedSubsequentBidMovement": "-0.005000"
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "355",
+      "side": "NO"
+    },
+    {
+      "actualFillObservations": 3,
+      "actualShares": 607,
+      "causalPrefillCoverage": {
+        "no_causal_prefill_book": 3
+      },
+      "exchangeId": "1045",
+      "horizonsMs": {
+        "1000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "120000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "30000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        },
+        "5000": {
+          "actualEntryFees": "0.000000",
+          "actualEntryPrincipal": "0.000000",
+          "causalPrefillMatchedFills": 0,
+          "causalPrefillMatchedShares": 0,
+          "coverage": {
+            "no_original_book_in_horizon_window": 3
+          },
+          "displayedCoveredSharesIncludingPartial": 0,
+          "exitFeesKnown": false,
+          "fullDepthIntentCohorts": 0,
+          "fullDepthMarkSigns": {
+            "negative": 0,
+            "positive": 0,
+            "zero": 0
+          },
+          "fullDepthMarketScopes": 0,
+          "fullDepthShares": 0,
+          "futureMinusCausalPrefillLiquidationValue": null,
+          "hypotheticalLiquidationMinusEntryAndEntryFees": null,
+          "labelsBeforeNativeFillDiscovery": 0,
+          "nonOverlappingMarketTimeClusters": 0,
+          "quantityWeightedMarkoutPerShare": null,
+          "quantityWeightedSubsequentBidMovement": null
+        }
+      },
+      "intentCohorts": 1,
+      "marketId": "356",
+      "side": "NO"
+    }
+  ],
+  "privateFullResultSha256": "d576eafdbc67b215c0160a590c3a70c3ef694ab94a0ab9b188ea71dee13f8e38",
+  "privateLabelEvidenceOmitted": true,
+  "profitabilityEstablished": false,
+  "rawSealParserSha256": "d30c246ff5f4206f40354cf14b01a0880b78ec9b41df8ed5d8176d18b78bb7dd",
+  "reportCutoff": "2026-10-16T13:35:02.604Z",
+  "schemaVersion": 1,
+  "selfTradePreventionCanReduceExecutableDepth": true,
+  "source": {
+    "breadth": [
+      {
+        "bytes": 23857028,
+        "decodedBytes": 134085001,
+        "decodedSha256": "1c0ad75b6fe713a6dd153efd633e9e2d2d08bd22958931ccc2159227d0bd6b7c",
+        "finalRowHash": "38206ce425da9922eaa546dca8c3239be2ceb7343600dac2f57085d65353d0c1",
+        "sha256": "19bf42d57cc515a7c1884fa522118d87223a6b53cfe126a3ee332088fe317e9a",
+        "verifiedRows": 972
+      },
+      {
+        "bytes": 23849061,
+        "decodedBytes": 134126260,
+        "decodedSha256": "d9e3439638434259155295f07916dbde38e21f3db3130635c148230ef38405a6",
+        "finalRowHash": "a53ff04e503bf35ab33e746208dbf5e46ad22307bd6f7ffd372fccc05a9b794b",
+        "sha256": "d6b8dda9e96d20207d43f1aa96ca1de9f26ddcc265c11e985cec25e2999165d1",
+        "verifiedRows": 970
+      },
+      {
+        "bytes": 4713266,
+        "decodedBytes": 26427466,
+        "decodedSha256": "deb4a80e6861fb5211bc19f2b4c5c50b70534569a32ca48c5c2374339f881614",
+        "finalRowHash": "6b85494b247bf7e1c1233d91ec52c1b9abd1991a31db6c9265f8c359c7e47da1",
+        "sha256": "b7fe5dfc83bf607e13700773b25248ef0e2e8f2f5092c8321c2651d82273453b",
+        "verifiedRows": 170
+      }
+    ],
+    "dispatch": {
+      "bytes": 5554528,
+      "decodedBytes": 5554528,
+      "decodedSha256": "07052ce42f7ebfaf6b5b288614fc3fd65d5da72cd756519fc56991df11ba774d",
+      "finalRowHash": "37aeb83b165e078d09bdd51dc2718b8021dd25f5e99bb7b940adaf95f02006a4",
+      "sha256": "07052ce42f7ebfaf6b5b288614fc3fd65d5da72cd756519fc56991df11ba774d",
+      "verifiedRows": 10837
+    },
+    "report": {
+      "bytes": 2069727,
+      "sha256": "93ec8735e455e26bc2d6144eae67cc805d84ac40ebd9820c70605f53adda0f5f"
+    }
+  },
+  "sourceCodeSha256": "c8d693b45c24543122500d0ca4cedf699d9ac3efaafec5b37d02b6dd9ec30cb2",
+  "venueMakerRoleVerified": false
+}
