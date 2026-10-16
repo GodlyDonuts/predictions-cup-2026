@@ -913,13 +913,13 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         }
         #[test]fn opaque_generation_revokes_old_preparation_but_preserves_known_cancel_path(){
             use moloch_live_runtime::authority::{ProductionAuthority,Activation};use baal_transport_service::Authority;
-            let mut f=F::new();let id=f.fill_entry(false);let original=f.bank.engine().order_records().into_iter().find(|q|q["id"]==id).unwrap();
+            let mut f=F::new();let id=f.fill_entry(true);let original=f.bank.engine().order_records().into_iter().find(|q|q["id"]==id).unwrap();
             let binary=f.root.join("fixture-binary");std::fs::write(&binary,b"offline fixture executable bytes").unwrap();let control=f.root.join("base-control.json");std::fs::write(&control,base()).unwrap();
             let authority=ProductionAuthority::new(Activation{run_id:"fundamental-fixture".into(),entry_until_ms:NOW+3600000,maximum_committed:"1000.000000".into(),maximum_market_cost:"100.000000".into(),maximum_quantity:2,tournament_id:f.scope.tournament_id.clone(),tournament_slug:f.scope.tournament_slug.clone(),binary_sha256:sha(b"offline fixture executable bytes")},f.scope.clone(),vec![],control,binary,f.owner.clone()).unwrap();
             authority.require_fundamental_exchanges(&f.store.as_ref().unwrap().managed_exchanges()).unwrap();authority.bind_owned("201".into());
-            let spec=RequestSpec{method:"DELETE".into(),endpoint:"/orders/201".into(),body:None,body_json:None};let permit=f.permit(&original,NOW+10);let packet=facts(&f,NOW+10);
+            let spec=RequestSpec{method:"DELETE".into(),endpoint:"/orders/201".into(),body:None,body_json:None};let mut permit=f.permit(&original,NOW+10);permit.intent_id=format!("{id}-cancel");let mut packet=facts(&f,NOW+10);packet.open_orders.data["data"]=json!([{"id":"201","exchangeId":"101"}]);
             authority.prepare_cancel(&f.bank,id,spec.clone(),permit.clone(),packet.clone()).unwrap();authority.authorize(&f.scope,&spec,&permit,true,NOW+10).unwrap();
-            let r=revised(&f);let(_,proof)=commit(&mut f,&r,NOW+10);let loaded=proof.load(&base()).unwrap();let active=reload::Active::installed(f.store.as_ref().unwrap(),proof,&loaded).unwrap();
+            let r=f.review.clone();let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);let loaded=proof.load(&base()).unwrap();f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&packet,&base(),NOW+10,||Ok(())).unwrap();let active=reload::Active::installed(f.store.as_ref().unwrap(),proof,&loaded).unwrap();
             authority.begin_fundamental_generation();assert!(authority.authorize(&f.scope,&spec,&permit,true,NOW+10).is_err());authority.install_fundamental_generation(active).unwrap();assert!(authority.authorize(&f.scope,&spec,&permit,true,NOW+10).is_err(),"old prepared capability stays cleared");
             authority.prepare_cancel(&f.bank,id,spec.clone(),permit.clone(),packet).unwrap();authority.authorize(&f.scope,&spec,&permit,true,NOW+10).unwrap();
         }

@@ -11,7 +11,7 @@ pub const ZERO:&str="00000000000000000000000000000000000000000000000000000000000
 const MAX_CONTROL:u64=2*1024*1024;
 fn need(ok:bool,why:&'static str)->Result<()>{if ok{Ok(())}else{Err(why.into())}}
 pub fn sha(bytes:&[u8])->String{format!("{:x}",Sha256::digest(bytes))}
-fn digest(v:&Value)->Result<String>{Ok(sha(&serde_json::to_vec(v)?))}
+fn digest<T:Serialize+?Sized>(v:&T)->Result<String>{Ok(sha(&serde_json::to_vec(v)?))}
 fn hex(s:&str)->bool{s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))}
 /// Comparisons use the ORIGINAL parsed JSON, including unknown fields. The
 /// worker additionally deserializes its strict Control before admitting it.
@@ -62,7 +62,7 @@ impl Approved{
     pub fn load(&self,base:&[u8])->Result<LoadedSettings>{only_fundamental_changed(base,&self.control_bytes()?)?.load()}
     pub(crate) fn validate_loaded(&self,loaded:&LoadedSettings,base:&[u8])->Result<()>{
         let settings=only_fundamental_changed(base,&self.control_bytes()?)?;
-        need(loaded.settings_sha()==digest(&serde_json::to_value(settings)?)?,"RELOAD_SETTINGS_NOT_APPROVED")?;loaded.validate_files()
+        need(loaded.settings_sha()==digest(&settings)?,"RELOAD_SETTINGS_NOT_APPROVED")?;loaded.validate_files()
     }
     pub fn validate(&self,bank:&Session,log:&DispatchLog,owner:&ExclusiveLock,base:&[u8],previous:&str,now:u64)->Result<()>{
         self.pin.validate()?;let r=&self.request;
