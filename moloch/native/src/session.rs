@@ -107,6 +107,7 @@ pub fn engine_identity() -> String {
         include_bytes!("reviewed_inventory_exit.rs").as_slice(),
         include_bytes!("reviewed_fundamental_entry.rs").as_slice(),
         include_bytes!("ordinary_entry_exclusions.rs").as_slice(),
+        include_bytes!("live_market_capacity.rs").as_slice(),
         include_bytes!("engine_packages.rs").as_slice(),
         include_bytes!("engine_collateral.rs").as_slice(),
         include_bytes!("lib.rs").as_slice(),
@@ -407,6 +408,13 @@ impl Session {
     /// Actual sealed current head, not a path-selected or cached projection.
     pub fn durable_head(&self)->Value {sealed(json!({"manifestHash":self.manifest["hash"],"sequence":self.chain.sequence,"previous":self.chain.previous}))}
     fn collateral_scope(&self,event:&Value,sequence:u64,previous:&str,engine:&Engine)->Result<()> {
+        if event["type"]=="live_market_capacity_v1"{
+            let seed=self.live_account_seed().ok_or("LIVE_CAPACITY_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportSha256"]!=hash(&engine.report()?)
+                ||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid){return Err("LIVE_CAPACITY_SESSION_PREFIX".into())}
+        }
         if event["type"]=="ordinary_entry_exclusions_v1"{
             let seed=self.live_account_seed().ok_or("ORDINARY_EXCLUSION_SESSION_NOT_LIVE")?;
             if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
