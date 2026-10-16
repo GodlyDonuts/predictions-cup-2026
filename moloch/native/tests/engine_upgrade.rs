@@ -26,3 +26,25 @@ fn old_fixture_existing(root:&std::path::Path){let mut manifest=read(&root.join(
  {let mut bank=Session::open_live(&root,&json!({}),&seed()).unwrap();assert!(bank.accept("inherited",1,&event).unwrap());expected=bank.engine().report().unwrap();assert_eq!(bank.engine().policy()["maximumMarkets"],5);assert_eq!(expected["fills"],0);}
  let mut bank=Session::open_live(&root,&json!({}),&seed()).unwrap();assert_eq!(bank.engine().report().unwrap(),expected);assert!(!bank.accept("inherited",1,&event).unwrap());assert_eq!(fs::read(root.join("manifest.json")).unwrap(),original_manifest);assert_eq!(bank.engine().opening_inventory_cost(),3_450_000);
 }
+
+
+#[test]fn original_sealed_upgrade_above_eight_mib_replays_without_mutating_history(){
+ let t=Temp::new();let root=t.0.join("large-bank");old_fixture(&root,true);
+ let manifest=fs::read(root.join("manifest.json")).unwrap();let journal=fs::read(root.join("events.jsonl")).unwrap();let original_report=read(&root.join("report.json"));
+ let mut proof=approve(&root);proof["retainedAuditPadding"]=json!("x".repeat(8*1024*1024));proof=seal(proof);atomic_json(&root.join("engine-upgrade-v1.json"),&proof).unwrap();
+ let proof_bytes=fs::read(root.join("engine-upgrade-v1.json")).unwrap();assert!(proof_bytes.len()>8*1024*1024&&proof_bytes.len()<32*1024*1024);
+ let bank=Session::open_live(&root,&json!({}),&seed()).unwrap();assert_eq!(bank.engine().report().unwrap(),original_report["report"]);drop(bank);
+ assert_eq!(fs::read(root.join("manifest.json")).unwrap(),manifest);assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),journal);assert_eq!(fs::read(root.join("engine-upgrade-v1.json")).unwrap(),proof_bytes);
+ proof["retainedAuditPadding"]=json!("y".repeat(8*1024*1024));atomic_json(&root.join("engine-upgrade-v1.json"),&proof).unwrap();assert_eq!(Session::open_live(&root,&json!({}),&seed()).err().unwrap().to_string(),"UPGRADE_HASH_MISMATCH");
+}
+#[test]fn upgrade_document_above_thirty_two_mib_is_rejected_before_parsing(){
+ let t=Temp::new();let root=t.0.join("oversized-bank");old_fixture(&root,true);approve(&root);let manifest=fs::read(root.join("manifest.json")).unwrap();let head=fs::read(root.join("head.json")).unwrap();
+ fs::File::create(root.join("engine-upgrade-v1.json")).unwrap().set_len(32*1024*1024+1).unwrap();assert_eq!(Session::open_live(&root,&json!({}),&seed()).err().unwrap().to_string(),"UPGRADE_FILE_BOUND");assert_eq!(fs::read(root.join("manifest.json")).unwrap(),manifest);assert_eq!(fs::read(root.join("head.json")).unwrap(),head);
+}
+#[cfg(unix)]#[test]fn upgrade_document_symlink_is_rejected_even_with_valid_sealed_target(){
+ let t=Temp::new();let root=t.0.join("linked-bank");old_fixture(&root,true);approve(&root);let original=fs::read(root.join("engine-upgrade-v1.json")).unwrap();let target=t.0.join("retained-proof.json");fs::rename(root.join("engine-upgrade-v1.json"),&target).unwrap();std::os::unix::fs::symlink(&target,root.join("engine-upgrade-v1.json")).unwrap();
+ assert_eq!(Session::open_live(&root,&json!({}),&seed()).err().unwrap().to_string(),"UPGRADE_FILE_BOUND");assert_eq!(fs::read(target).unwrap(),original);
+}
+#[test]fn larger_byte_bound_does_not_relax_sixteen_entry_chain_cap(){
+ let t=Temp::new();let root=t.0.join("too-many-upgrades");old_fixture(&root,true);let mut proof=approve(&root);let original=proof["upgrades"][0].clone();proof["upgrades"]=json!(vec![original;17]);proof=seal(proof);atomic_json(&root.join("engine-upgrade-v1.json"),&proof).unwrap();assert_eq!(Session::open_live(&root,&json!({}),&seed()).err().unwrap().to_string(),"UPGRADE_CHAIN_BOUND");
+}

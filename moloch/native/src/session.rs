@@ -135,7 +135,7 @@ fn verify_value(mut value:Value)->Result<Value>{
 }
 fn upgrade_document(root:&Path)->Result<Value>{
     let path=root.join("engine-upgrade-v1.json");let metadata=fs::symlink_metadata(&path)?;
-    if !metadata.is_file()||metadata.len()>8*1024*1024{return Err("UPGRADE_FILE_BOUND".into())}
+    if !metadata.is_file()||metadata.len()>32*1024*1024{return Err("UPGRADE_FILE_BOUND".into())}
     verify_value(serde_json::from_slice(&fs::read(path)?)?)
 }
 impl UpgradeChain {
