@@ -13,10 +13,10 @@ pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_comm
 /// Cancellation never consumes a contract/book observation. Keep its actual
 /// four official account receipts distinct rather than inventing unused facts.
 #[derive(Clone)]pub struct CancelSnapshotSet {pub account:Receipt,pub cash_balance:Receipt,pub positions:Receipt,pub open_orders:Receipt}
-#[derive(Clone)]struct OrderReady {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64}
+#[derive(Clone)]struct OrderReady {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>}
 #[derive(Clone)]struct CancelReady {spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet}
 #[derive(Clone)]enum Ready {Order(OrderReady),Cancel(CancelReady)}
-pub struct ProductionAuthority {package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
+pub struct ProductionAuthority {maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
 /// Actual attributed cash only. Borrowed principal remains outside unlevered
 /// Wallet sizing; until original fill economics reconcile it cannot authorize
 /// a replacement physical order. Cancellation keeps its separate authority.
@@ -35,7 +35,11 @@ fn fresh(r:&Receipt,now:u64,max_age:u64)->bool{r.status==200&&clock(&r.request_s
 impl ProductionAuthority {
  pub fn new(activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,binary:PathBuf,lease:Arc<ExclusiveLock>)->Result<Self>{
   if activation.run_id.is_empty()||activation.maximum_quantity==0||activation.maximum_quantity>10000||decimal_units(&activation.maximum_committed)?<=0||decimal_units(&activation.maximum_market_cost)?<=0||scope.tournament_id!=activation.tournament_id||scope.tournament_slug!=activation.tournament_slug||hash_bytes(&fs::read(&binary)?)!=activation.binary_sha256{return Err("LIVE_ACTIVATION_BINDING".into())}
-  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{maker_review:Mutex::new(None),package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+ }
+ pub fn require_maker_review(&self,sha:&str)->Result<()>{
+  if sha.len()!=64||!sha.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("LIVE_MAKER_REVIEW_HASH".into())}
+  let mut required=self.maker_review.lock().unwrap();if required.as_ref().is_some_and(|old|old!=sha){return Err("LIVE_MAKER_REVIEW_CHANGED".into())}*required=Some(sha.into());drop(required);self.clear_ready();Ok(())
  }
  pub fn entry_until_ms(&self)->u64{self.daily.lock().unwrap().as_ref().map_or(self.activation.entry_until_ms,|(_,end)|*end)}
  pub fn bind_entry_window(&self,bank:&Session,cfg:&DailyEntryWindows,at:u64)->Result<()>{
@@ -52,18 +56,22 @@ impl ProductionAuthority {
  pub fn clear_ready(&self){*self.ready.lock().unwrap()=None;*self.package_ready.lock().unwrap()=None;}
  pub fn bind_stream(&self,failed:Arc<std::sync::atomic::AtomicBool>,deadline:u64){*self.stream.lock().unwrap()=Some((failed,deadline));}
  pub fn prepare(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet)->Result<()> {
+  self.prepare_with_maker(bank,qid,spec,permit,snapshots,None)
+ }
+ pub fn prepare_with_maker(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,maker:Option<Arc<crate::maker_policy::Decision>>)->Result<()> {
   self.clear_ready();
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
   if !bank.engine().is_live(){return Err("PAPER_BANK_CANNOT_AUTHORIZE_WRITES".into())}
   if bank.engine().is_package_order(qid){return Err("PACKAGE_REQUIRES_BASKET_AUTHORITY".into())}
   if spec.method=="POST"&&bank.engine().package_blocks_submissions(){return Err("PACKAGE_UNRESOLVED".into())}
   let quote=bank.engine().order_records().into_iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).ok_or("LIVE_INTENT_NOT_FUNDED")?;
+  if quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   let owned=bank.engine().wallet.quantity(quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?,if quote["side"]=="YES"{moloch_replay::Side::Yes}else{moloch_replay::Side::No});
   let ex=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+bank.engine().order_records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
   let expected_cash=reconciled_expected_cash(bank)?;
-  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms()}));Ok(())
+  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker}));Ok(())
  }
  pub fn prepare_cancel(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet)->Result<()> {
   self.clear_ready();
@@ -109,6 +117,8 @@ impl ProductionAuthority {
    if spec.method!="DELETE"||!self.owns_order(id){return Err("LIVE_CANCEL_UNOWNED".into())}return Ok(())
   }};
   if serde_json::to_value(spec)?!=serde_json::to_value(&f.spec)?||serde_json::to_value(p)?!=serde_json::to_value(&f.permit)?{return Err("LIVE_REQUEST_CHANGED".into())}
+  if f.quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if f.maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
+  if let Some(maker)=&f.maker{maker.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;maker.authorize(scope,spec,p,now)?;}
   for r in [&f.snapshots.account,&f.snapshots.cash_balance,&f.snapshots.positions,&f.snapshots.open_orders]{if !fresh(r,now,20000){return Err("LIVE_ACCOUNT_STALE".into())}}
   if f.snapshots.account.data["id"]!=scope.tournament_id||f.snapshots.account.data["slug"]!=scope.tournament_slug||f.snapshots.account.data["status"]!="active"||f.snapshots.open_orders.data["pagination"]["hasMore"]!=false{return Err("LIVE_ACCOUNT_SCOPE".into())}
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
@@ -238,6 +248,12 @@ impl Authority for SharedAuthority {
   let spec=RequestSpec{method:"DELETE".into(),endpoint:"/orders/201".into(),body:None,body_json:None};(root,a,bank,scope,spec,permit,facts,n)
  }
  fn qid(p:&Permit)->u64{p.intent_id.strip_suffix("-cancel").unwrap().parse().unwrap()}
+ #[test]fn requiring_maker_evidence_never_blocks_original_owned_cancel_authority(){
+  let(root,a,b,s,r,p,f,n)=fixture();a.require_maker_review(&"a".repeat(64)).unwrap();a.prepare_cancel(&b,qid(&p),r.clone(),p.clone(),f).unwrap();a.authorize(&s,&r,&p,true,n).unwrap();drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+ }
+ #[test]fn configured_maker_review_cannot_be_skipped_with_legacy_buy_prepare(){
+  let(root,a,b,_,r,p,f,_)=super::tests::fixture();a.require_maker_review(&"a".repeat(64)).unwrap();assert_eq!(a.prepare(&b,p.intent_id.parse().unwrap(),r,p,f).unwrap_err().to_string(),"LIVE_MAKER_DECISION_REQUIRED");assert!(a.ready.lock().unwrap().is_none());assert!(a.require_maker_review(&"b".repeat(64)).is_err());drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+ }
  #[test]fn owned_cancel_authorizes_with_only_four_facts_without_stream_or_entry_window(){let(root,mut a,b,s,r,p,f,n)=fixture();a.activation.entry_until_ms=n-1;a.prepare_cancel(&b,qid(&p),r.clone(),p.clone(),f).unwrap();a.authorize(&s,&r,&p,false,n).unwrap();a.authorize(&s,&r,&p,true,n).unwrap();drop(b);drop(a);fs::remove_dir_all(root).unwrap();}
  #[test]fn all_cancel_receipts_require_fresh_causal_clocks_and_complete_account_scope(){for case in ["account","cash","positions","orders","unordered","tournament","cash_scope","positions_scope","orders_scope","coverage","pagination","inactive"]{let(root,a,b,s,r,p,mut f,n)=fixture();match case{"account"=>f.account.request_started_at=crate::daily_windows::iso(n-20001).unwrap(),"cash"=>f.cash_balance.request_started_at=crate::daily_windows::iso(n-20001).unwrap(),"positions"=>f.positions.request_started_at=crate::daily_windows::iso(n-20001).unwrap(),"orders"=>f.open_orders.request_started_at=crate::daily_windows::iso(n-20001).unwrap(),"unordered"=>f.cash_balance.request_started_at=crate::daily_windows::iso(n).unwrap(),"tournament"=>f.account.data["id"]=json!("other"),"cash_scope"=>f.cash_balance.endpoint="/account?tournamentId=other".into(),"positions_scope"=>f.positions.endpoint="/tournaments/other/portfolio/positions".into(),"orders_scope"=>f.open_orders.endpoint="/orders?status=open&tournamentId=cup".into(),"coverage"=>f.open_orders.data["coverage"]["complete"]=json!(false),"pagination"=>f.open_orders.data["pagination"]["hasMore"]=json!(true),_=>f.account.data["status"]=json!("ended")};if case=="unordered"{f.cash_balance.received_at=crate::daily_windows::iso(n-1).unwrap();}a.prepare_cancel(&b,qid(&p),r.clone(),p.clone(),f).unwrap();assert!(a.authorize(&s,&r,&p,true,n).is_err(),"{case}");drop(b);drop(a);fs::remove_dir_all(root).unwrap();}}
  #[test]fn cancel_still_checks_control_binary_stop_run_owner_and_exact_request(){for case in ["control","binary","stop","run","owner","request","permit","unowned"]{let(root,a,b,s,mut r,mut p,f,n)=fixture();a.prepare_cancel(&b,qid(&p),r.clone(),p.clone(),f).unwrap();match case{"control"=>fs::write(root.join("control"),b"changed").unwrap(),"binary"=>fs::write(root.join("binary"),b"changed").unwrap(),"stop"=>fs::write(root.join("STOP"),b"stop").unwrap(),"run"=>p.run_id="other".into(),"owner"=>p.owner="other".into(),"request"=>r.endpoint="/orders/202".into(),"permit"=>p.maximum_quantity+=1,_=>{a.owned.lock().unwrap().clear();}}assert!(a.authorize(&s,&r,&p,true,n).is_err(),"{case}");drop(b);drop(a);fs::remove_dir_all(root).unwrap();}}

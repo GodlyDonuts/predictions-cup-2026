@@ -60,6 +60,7 @@ pub enum Class{OwnedExit,CoveredHedge,Qualified,Exploration,Deferred}
 pub struct Decision{class:Class,reason:String,proof:Value,quote:Value,ledger_sha:String,head:Value,dispatch:Value,settings_sha:String,run:String,tournament:String,expires:u64,model:Option<edge::RuntimeMakerEvaluation>}
 impl Decision{
  pub fn class(&self)->Class{self.class}pub fn reason(&self)->&str{&self.reason}pub fn proof(&self)->&Value{&self.proof}
+ pub fn review_sha256(&self)->&str{&self.settings_sha}
  pub fn allowed(&self)->bool{self.class!=Class::Deferred}
  pub fn candidate(&self)->Option<&edge::Candidate>{if self.class==Class::Qualified{self.model.as_ref().and_then(|m|m.evaluation().candidate.as_ref())}else{None}}
  pub fn priority(&self)->u8{match self.class{Class::OwnedExit|Class::CoveredHedge=>0,Class::Qualified=>1,Class::Exploration=>2,Class::Deferred=>3}}
