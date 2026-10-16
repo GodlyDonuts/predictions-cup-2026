@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-16T06:37:22.822057+00:00",
+  "oldPid": 401147,
+  "newPid": 415286,
+  "sourceCommit": "52116911781177eddacf85662de1a6dd9a6069c4",
+  "binarySha256": "0ba0f6c16a1e88fc7f73b361948b676769fb144c77adc4a6afc37562241e6b75",
+  "engineIdentity": "c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82",
+  "financialBridgeEntries": 10,
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "prefixParity": {
+    "bookState": 19,
+    "contestOrders": 0,
+    "elapsedMs": 201537,
+    "engineIdentity": "c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82",
+    "financialReportEnvelopeByteIdentical": true,
+    "headEnvelopeByteIdentical": true,
+    "nativeHead": {
+      "hash": "00b7a69727b240857de625efa0322d56ecc6e3d13cf7cc457878708dc290c6be",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "9281dad1c656a20cba544b00b7ed459ab1cc8c614f66fc4f2ae8332682908ec2",
+      "sequence": 174561
+    },
+    "networkRequests": 0,
+    "offlineOnly": true,
+    "originalFillCount": 122,
+    "originalSourceCursorsAndOrdersAndFillsIncluded": true,
+    "profitabilityEstablished": false,
+    "upgrades": 10
+  },
+  "boundary": {
+    "at": "2026-10-16T06:28:32.573976+00:00",
+    "bankHead": {
+      "hash": "00b7a69727b240857de625efa0322d56ecc6e3d13cf7cc457878708dc290c6be",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "9281dad1c656a20cba544b00b7ed459ab1cc8c614f66fc4f2ae8332682908ec2",
+      "sequence": 174561
+    },
+    "prefixBytes": 514757129,
+    "prefixSha256": "a800a202e7f9a7e2f21ce64d870cb098272a6e46da30410cffea7a5f8ab02489",
+    "priorBridgeSha256": "6f4b5ef4460ccd80c33a210d2e18e8dcd4600e0a4aa3893a45e24e2f67c1512b",
+    "bridgeEntries": 9,
+    "actualFills": 122,
+    "realized": "-74.375000",
+    "dispatch": {
+      "acknowledged": 726,
+      "unknownOrdinaryAttempts": 0
+    },
+    "globalUnknownCount": 0,
+    "activeAccountOperation": null
+  }
+}

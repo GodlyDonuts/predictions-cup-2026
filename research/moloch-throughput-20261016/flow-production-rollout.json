@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-16T07:14:45.281159+00:00",
+  "oldPid": 415286,
+  "newPid": 419050,
+  "sourceCommit": "ea733f6fe1cfc414b0a6fcc2d702733e49d58273",
+  "binarySha256": "2e3f76a2483755fed12224e96632c7a8e9af5a9aa8c9c1d5b25aa3280ba52f12",
+  "engineIdentity": "c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82",
+  "nativeSourcesByteIdentical": true,
+  "financialBridgeEntries": 10,
+  "existingFinancialBridgeByteIdentical": true,
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "runtimeChanges": [
+    "native-authorized12 discovery reads",
+    "urgent obligations then interleaved fresh/owned scopes",
+    "original observed-print read nomination independent of strict Study eligibility"
+  ],
+  "checks": {
+    "observedFlow": 16,
+    "nativeDiscovery": 11,
+    "universe": 26,
+    "worker": 56,
+    "bulkNegativeScreen": 9
+  },
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "boundary": {
+    "at": "2026-10-16T07:14:21.663860+00:00",
+    "bankHead": {
+      "hash": "cc4b80daffeeae3c64b600a77f704a7eecc2deead84d9af0cd2bb6858368cb9e",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "ae06af0104a15f40dc41480e48f18e4ba5ca1270bf2c7725281d6de0a3c8f2f3",
+      "sequence": 180607
+    },
+    "prefixBytes": 533758195,
+    "prefixSha256": "707b452d4e219dafb718c32f5fef02b53decf6f92c8b0772c7d3addf5cc839b6",
+    "bridgeSha256": "e53f1e33be67a51f78c26f3ba2aed9c05d11a2caa7c51042e0df4cef8824f1ca",
+    "bridgeEntries": 10,
+    "actualFills": 125,
+    "realized": "-73.970000",
+    "queueQuiet": {
+      "globalUnknownCount": 0,
+      "active": null,
+      "manualReview": false
+    },
+    "acknowledgedOrders": 754,
+    "unknownOrdinaryAttempts": 0
+  }
+}

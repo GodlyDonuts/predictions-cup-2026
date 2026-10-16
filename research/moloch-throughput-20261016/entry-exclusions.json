@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-16T06:41:15.169Z",
+  "doesNotSubmit": true,
+  "record": {
+    "approvedReviewSetSha256": "0af59cf161679371f6461f47273c7d796cbcc34a88291f7f03b27881f8d97173",
+    "bankScope": {
+      "bankManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "runId": "moloch-live-20261015-v1",
+      "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+    },
+    "controlSha256": "be5c2c142914a44d1f031785fa253634ec15d0b96648d903de70d0058b525d5a",
+    "installedAtMs": 1792132872220,
+    "managedExchangeIds": [
+      "1042",
+      "1068",
+      "966"
+    ],
+    "previousSha256": null,
+    "revision": 1,
+    "sha256": "59a9ca71f34eff0dfa0905b7c8b35d8b6fc6c2f6b207e33f663b1632b6334073",
+    "version": 1
+  },
+  "retiredProvedNeverSentDrafts": 3
+}

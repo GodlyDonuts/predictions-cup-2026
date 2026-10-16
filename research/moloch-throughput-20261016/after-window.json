@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-10-16T06:47:11.639Z",
+  "pid": 415286,
+  "derivedOwnerSnapshot": true,
+  "windowMs": 60000,
+  "sdkReadAdmissionsLast60s": 34,
+  "sdkWriteAdmissionsLast60s": 1,
+  "globalUnknownCount": 0,
+  "manualReview": false,
+  "activeAccountOperation": null,
+  "cycles": 1,
+  "universe": {
+    "eligibleExchanges": 237,
+    "foreignHeldExcluded": 0,
+    "frames": 245,
+    "lastDiagnosticError": null,
+    "maximumConcurrentMarkets": 40,
+    "maximumDiscoveryReads": 3,
+    "observedExchanges": 237,
+    "readActivityMaximumAgeMs": 60000,
+    "recoveryActivityHints": 237,
+    "selection": "owned obligations, then fresh Study-eligible markets, then rotated current recovery activity; READ scheduling only",
+    "settledMarketsSuppressed": 0,
+    "venueExchanges": 237
+  },
+  "actualOrders": 729,
+  "achieved100ReadsPerMinute": false
+}

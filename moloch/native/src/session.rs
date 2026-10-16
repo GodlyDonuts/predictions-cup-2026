@@ -106,6 +106,8 @@ pub fn engine_identity() -> String {
         include_bytes!("engine_live.rs").as_slice(),
         include_bytes!("reviewed_inventory_exit.rs").as_slice(),
         include_bytes!("reviewed_fundamental_entry.rs").as_slice(),
+        include_bytes!("ordinary_entry_exclusions.rs").as_slice(),
+        include_bytes!("live_market_capacity.rs").as_slice(),
         include_bytes!("engine_packages.rs").as_slice(),
         include_bytes!("probabilistic_packages.rs").as_slice(),
         include_bytes!("engine_collateral.rs").as_slice(),
@@ -412,6 +414,19 @@ impl Session {
             if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
                 ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
                 ||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("PROBABILISTIC_SESSION_PREFIX".into())}
+        }
+        if event["type"]=="live_market_capacity_v1"{
+            let seed=self.live_account_seed().ok_or("LIVE_CAPACITY_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportSha256"]!=hash(&engine.report()?)
+                ||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid){return Err("LIVE_CAPACITY_SESSION_PREFIX".into())}
+        }
+        if event["type"]=="ordinary_entry_exclusions_v1"{
+            let seed=self.live_account_seed().ok_or("ORDINARY_EXCLUSION_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("ORDINARY_EXCLUSION_SESSION_PREFIX".into())}
         }
         if event["type"]=="reviewed_fundamental_entry_reserved_v1"{
             let seed=self.live_account_seed().ok_or("REVIEWED_ENTRY_SESSION_NOT_LIVE")?;

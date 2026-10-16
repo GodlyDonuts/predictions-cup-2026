@@ -2,6 +2,16 @@
 
 Received October16. Original human attachment SHA256 `33c814784629925f2385d8cc8c506c80e2415a0d1d009726144bfb70c62f1440`,43,431 bytes, retained privately. Embedded research citations are source leads, not independently verified evidence or additional human instructions. Parent task [#149](https://github.com/GodlyDonuts/predictions-cup-2026/issues/149).
 
+## Current runtime — October16, 07:53UTC
+
+Source5577e984/PID421878 started07:43:57UTC with owned-age refresh scheduling, fresh trading/realtime at07:53:10 with five new ACKs/zero new fills; binary verified, STOP absent. Native financial sources/identity and ten bridges are unchanged. Prior67YES1019 position closed at.600 versus.605 entry, realized-.335. Ordinary realized-119.435/inherited gross+45.13/combined-74.305. This runtime-only change does not activate additional Paper5 models or packages. [Current standing](CURRENT_STATE.md), [actual promotion](../research/moloch-throughput-20261016/owned-refresh-production-rollout.json).
+
+## Runtime update — October16, 07:26UTC
+
+Sourceea733f6f/PID419050 is fresh trading/realtime, binary verified, STOP absent. It has nine new ACKs and six fill rows representing ONE new BUY67YES1019 at.605, principal40.535000, still open. Original request68 was limited by best-level depth; partial executions were36/19/7/3/1/1. Discovery selects12 fresh candidates/31 total scopes; the first pass remains underway. Newly owned book-refresh latency is the next concrete repair. [Current state and sizing](CURRENT_STATE.md), [dated proof](../research/moloch-throughput-20261016/flow-live-verification.json).
+
+Native identityc3731d88…, ten financial bridges, original bank/reviews and40k/10k limits remain preserved. No additional Atlas/curve/nowcast, probabilistic package or collateral activation is implied. Ordinary realized-119.100000/inherited gross+45.130000/combined-73.970000 are separate from dashboard daily marks. Paper5, ordinary batching, bulk-screen activation and final-settlement ownership integration remain incomplete. Older sections retain their observation times.
+
 ## Implementation update — October16, 05:40UTC
 
 Production source58a578bb/PID390439 started05:16UTC with V2 terminal/deadline objectives, delayed-settlement management and the reviewed NC terminal cohort. The stopped162313-row financial boundary, nine native bridges, original DE/MA reviews and risk limits are preserved. At05:39:40UTC it is fresh/healthy with713 ACKs/119 fills, **zero new ACKs or fills since launch**. Repeated unqualified forecast preflights were starving ordinary physical candidates; the shared eligible-key rotation fix is being checked for immediate promotion. Healthy collection alone does not prove working execution. [Actual rollout](../research/moloch-paper5-20261016/terminal-production-rollout.json), [fresh observation](../research/moloch-paper5-20261016/terminal-live-verification.json).

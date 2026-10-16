@@ -1,0 +1,14 @@
+{
+  "observedAt": "2026-10-16T06:22:33.494Z",
+  "pid": 401147,
+  "derivedOwnerSnapshot": true,
+  "windowMs": 60000,
+  "sdkReadAdmissionsLast60s": 37,
+  "sdkWriteAdmissionsLast60s": 0,
+  "actualOrders": 725,
+  "actualFillRows": 122,
+  "hardReadCeiling": 100,
+  "hardWriteCeiling": 24,
+  "readCompletionGapMs": 600,
+  "writeGapMs": 2500
+}

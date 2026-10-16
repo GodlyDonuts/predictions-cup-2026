@@ -1,12 +1,12 @@
 //! Whole-venue READ discovery; financial book/tape freshness is unchanged.
-use crate::{breadth::Study,feedback::Result};
+use crate::{breadth::Study,discovery_flow::Flow,feedback::Result};
 use serde_json::{Value,json};
 use std::collections::{BTreeMap,BTreeSet};
 /// Dirty/revision/print activity schedules only bounded REST recovery reads.
 /// It never asserts a current book, complete tape, trading flow or execution edge.
 pub const DISCOVERY_ACTIVITY_AGE_MS:u64=60_000;
 #[derive(Clone)]struct Activity{received:i64,source:i64}
-pub struct Universe{study:Study,allowed:BTreeSet<String>,mapping:BTreeMap<String,String>,excluded:BTreeSet<String>,maximum:usize,discovery_maximum:usize,last_error:Option<String>,owned_cursor:usize,discovery_cursor:usize,activity:BTreeMap<String,Activity>,revisions:BTreeMap<String,u64>,settled:BTreeSet<String>,last_received:Option<i64>,last_selected:Option<u64>,tournament:Option<String>}
+pub struct Universe{study:Study,flow:Flow,allowed:BTreeSet<String>,mapping:BTreeMap<String,String>,excluded:BTreeSet<String>,maximum:usize,discovery_maximum:usize,last_error:Option<String>,owned_cursor:usize,discovery_cursor:usize,activity:BTreeMap<String,Activity>,revisions:BTreeMap<String,u64>,settled:BTreeSet<String>,last_received:Option<i64>,last_selected:Option<u64>,tournament:Option<String>}
 fn stamp(s:&str)->Result<i64>{let n=chrono::DateTime::parse_from_rfc3339(s)?.timestamp_nanos_opt().ok_or("UNIVERSE_CLOCK")?;if n<0{return Err("UNIVERSE_CLOCK".into())}Ok(n)}
 fn numeric(v:&Value)->Result<String>{let s=v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string())).ok_or("UNIVERSE_ID")?;if s.is_empty()||s.starts_with('0')||!s.bytes().all(|b|b.is_ascii_digit()){return Err("UNIVERSE_ID".into())}Ok(s)}
 impl Universe{
@@ -14,11 +14,12 @@ impl Universe{
   if maximum==0||maximum>exchanges.len(){return Err("UNIVERSE_CAPACITY".into())}
   let mut excluded=BTreeSet::new();for row in positions["positions"].as_array().ok_or("UNIVERSE_POSITIONS")?{let quantity=row["quantity"].as_i64().ok_or("UNIVERSE_POSITION_QUANTITY")?;let id=row["exchangeId"].as_str().ok_or("UNIVERSE_POSITION_ID")?;if quantity!=0{excluded.insert(id.to_owned());}}
   let mapping:BTreeMap<_,_>=exchanges.iter().filter(|(e,_)|!excluded.contains(*e)).map(|(e,m)|(e.clone(),m.clone())).collect();let allowed=mapping.keys().cloned().collect();
-  Ok(Self{study:Study::default(),allowed,mapping,excluded,maximum,discovery_maximum:maximum,last_error:None,owned_cursor:0,discovery_cursor:0,activity:BTreeMap::new(),revisions:BTreeMap::new(),settled:BTreeSet::new(),last_received:None,last_selected:None,tournament:None})
+  let flow=Flow::new(&mapping)?;
+  Ok(Self{study:Study::default(),flow,allowed,mapping,excluded,maximum,discovery_maximum:maximum,last_error:None,owned_cursor:0,discovery_cursor:0,activity:BTreeMap::new(),revisions:BTreeMap::new(),settled:BTreeSet::new(),last_received:None,last_selected:None,tournament:None})
  }
- pub fn with_tournament(mut self,id:&str)->Result<Self>{if id.is_empty(){return Err("UNIVERSE_TOURNAMENT".into())}self.tournament=Some(id.to_owned());Ok(self)}
+ pub fn with_tournament(mut self,id:&str)->Result<Self>{if id.is_empty(){return Err("UNIVERSE_TOURNAMENT".into())}self.flow=self.flow.with_tournament(id)?;self.tournament=Some(id.to_owned());Ok(self)}
  pub fn with_discovery_limit(mut self,maximum:usize)->Result<Self>{if maximum==0||maximum>self.maximum{return Err("UNIVERSE_DISCOVERY_CAPACITY".into())}self.discovery_maximum=maximum;Ok(self)}
- fn clear_discovery(&mut self){self.activity.clear();self.revisions.clear();self.study=Study::default();}
+ fn clear_discovery(&mut self){self.activity.clear();self.revisions.clear();self.study=Study::default();self.flow.clear_observations();}
  fn tournament(&self,v:&Value)->Result<()>{if self.tournament.as_ref().is_some_and(|t|v.get("tournamentId").is_some_and(|actual|actual!=t.as_str())){return Err("UNIVERSE_TOURNAMENT_SCOPE".into())}Ok(())}
  fn mark(&mut self,exchange:&str,source:i64,received:i64){if source<=received&&!self.settled.contains(&self.mapping[exchange]){let a=self.activity.entry(exchange.into()).or_insert(Activity{source,received});a.received=a.received.max(received);a.source=a.source.max(source);}}
  fn event_time(v:&Value,received:i64)->Result<i64>{let at=stamp(v.as_str().ok_or("UNIVERSE_EVENT_CLOCK")?)?;if at>received{return Err("UNIVERSE_FUTURE_ACTIVITY".into())}Ok(at)}
@@ -41,7 +42,7 @@ impl Universe{
   }let mut out=payload.clone();out["markets"]=json!(filtered);Ok(out)
  }
  pub fn observe(&mut self,event:&str,payload:&Value,received:&str)->Result<()>{
-  let result=(||->Result<()>{let at=stamp(received)?;if self.last_received.is_some_and(|last|at<last){return Err("BREADTH_RECEIPT_ORDER".into())}self.last_received=Some(at);let filtered=self.activity_observation(event,payload,at)?;self.study.accept(&json!({"source":"official_sig_realtime","event":event,"payload":filtered,"receivedAt":received}))?;Ok(())})();
+  let result=(||->Result<()>{let at=stamp(received)?;if self.last_received.is_some_and(|last|at<last){return Err("BREADTH_RECEIPT_ORDER".into())}self.last_received=Some(at);let filtered=self.activity_observation(event,payload,at)?;self.study.accept(&json!({"source":"official_sig_realtime","event":event,"payload":filtered,"receivedAt":received}))?;if matches!(event,"stream_reset"|"markets_batch")||numeric(&filtered["marketId"]).is_ok_and(|market|self.mapping.values().any(|m|*m==market)){self.flow.observe(event,&filtered,received)?;}Ok(())})();
   if let Err(e)=result{self.last_error=Some(e.to_string());self.clear_discovery();}Ok(())
  }
  // Settlement tombstones are permanent for this discovery instance. No WS
@@ -55,13 +56,18 @@ impl Universe{
   candidates.retain(|c|{let ex=c["exchangeId"].as_str().unwrap_or("");self.allowed.contains(ex)&&!self.settled.contains(&self.mapping[ex])&&c["eligibleForRestReconciliation"]==true&&c["bookSourceAgeMs"].as_u64().is_some_and(|age|now.checked_sub(frame_at).and_then(|elapsed|elapsed.checked_add(age)).is_some_and(|age|age<=10000))});
   candidates.sort_by(|a,b|b["recentTrades"].as_u64().cmp(&a["recentTrades"].as_u64()).then_with(||b["balancedTurnover"].as_f64().unwrap_or(0.0).total_cmp(&a["balancedTurnover"].as_f64().unwrap_or(0.0))).then_with(||a["exchangeId"].as_str().cmp(&b["exchangeId"].as_str())));
   let mut ranked:Vec<String>=candidates.iter().map(|c|c["exchangeId"].as_str().unwrap().to_owned()).filter(|e|!required.contains(e)).collect();
-  let fallback:Vec<_>=self.activity.iter().filter(|(ex,a)|!required.contains(*ex)&&!self.settled.contains(&self.mapping[*ex])&&fresh(a)&&!ranked.contains(*ex)).map(|(ex,_)|ex.clone()).collect();
+  let mut fallback:Vec<_>=self.activity.iter().filter(|(ex,a)|!required.contains(*ex)&&!self.settled.contains(&self.mapping[*ex])&&fresh(a)&&!ranked.contains(*ex)).map(|(ex,_)|ex.clone()).collect();
+  // A genuine observed print nominates a READ even when a delivery gap or an
+  // unavailable book prevents strict Study eligibility. It grants no source
+  // completeness, fill attribution, current price or positive execution edge.
+  let flow=match self.flow.ranked(now){Ok(rows)=>rows,Err(error)=>{self.last_error=Some(error.to_string());Vec::new()}};
+  for(ex,_)in flow{if fallback.contains(&ex){fallback.retain(|id|id!=&ex);ranked.push(ex);}}
   if !fallback.is_empty(){let start=self.discovery_cursor%fallback.len();for offset in 0..fallback.len(){ranked.push(fallback[(start+offset)%fallback.len()].clone());}}
   let owned:Vec<_>=required.iter().cloned().collect();let mut out=vec![];if !owned.is_empty(){let start=self.owned_cursor%owned.len();let budget=self.maximum-if !ranked.is_empty()&&owned.len()>=self.maximum&&self.maximum>1{1}else{0};let take=owned.len().min(budget);for offset in 0..take{out.push(owned[(start+offset)%owned.len()].clone());}self.owned_cursor=(start+take)%owned.len();}
   let mut discovered=0;let mut fallback_taken=0;for e in ranked{if out.len()>=self.maximum||discovered>=self.discovery_maximum{break}if fallback.contains(&e){fallback_taken+=1;}out.push(e);discovered+=1;}
   if !fallback.is_empty(){self.discovery_cursor=(self.discovery_cursor+fallback_taken)%fallback.len();}Ok(out)
  }
- pub fn status(&self)->Value{let report=self.study.report();json!({"venueExchanges":self.allowed.len()+self.excluded.len(),"eligibleExchanges":self.allowed.len(),"foreignHeldExcluded":self.excluded.len(),"observedExchanges":report["marketsObserved"],"frames":report["frames"],"lastDiagnosticError":self.last_error,"maximumConcurrentMarkets":self.maximum,"maximumDiscoveryReads":self.discovery_maximum,"recoveryActivityHints":self.activity.len(),"settledMarketsSuppressed":self.settled.len(),"readActivityMaximumAgeMs":DISCOVERY_ACTIVITY_AGE_MS,"selection":"owned obligations, then fresh Study-eligible markets, then rotated current recovery activity; READ scheduling only"})}
+ pub fn status(&self)->Value{let report=self.study.report();json!({"venueExchanges":self.allowed.len()+self.excluded.len(),"eligibleExchanges":self.allowed.len(),"foreignHeldExcluded":self.excluded.len(),"observedExchanges":report["marketsObserved"],"frames":report["frames"],"lastDiagnosticError":self.last_error,"maximumConcurrentMarkets":self.maximum,"maximumDiscoveryReads":self.discovery_maximum,"recoveryActivityHints":self.activity.len(),"settledMarketsSuppressed":self.settled.len(),"readActivityMaximumAgeMs":DISCOVERY_ACTIVITY_AGE_MS,"selection":"owned obligations, then fresh Study-eligible markets, then observed original prints, then rotated current recovery activity; READ scheduling only"})}
 }
 #[cfg(test)]mod tests{
  use super::*;
@@ -111,4 +117,29 @@ impl Universe{
  use super::*;
  #[test]fn genuine_fresh_two_sided_study_flow_precedes_dirty_fallback(){let scopes=[("101".into(),"1".into()),("108".into(),"8".into())].into();let mut u=Universe::new(&scopes,&json!({"positions":[]}),1).unwrap();let first="2026-10-15T00:00:00Z";let later="2026-10-15T00:00:05Z";let frame=|revision,previous,at:&str,trades:Value|json!({"markets":[{"marketId":"8","batch":{"delivery":{"model":"best-effort-authoritative-resync","revision":revision,"previousRevision":previous},"books":[{"exchangeId":"108","asOf":{"sequence":revision*10,"at":at},"bids":[{"price":0.4,"quantity":100}],"asks":[{"price":0.6,"quantity":100}]}],"trades":trades}}]});u.observe("markets_batch",&frame(1,0,first,json!([])),first).unwrap();u.observe("markets_batch",&frame(2,1,later,json!([{"marketId":"8","exchangeId":"108","id":"a","sequence":11,"executedAt":"2026-10-15T00:00:04Z","price":0.4,"quantity":5},{"marketId":"8","exchangeId":"108","id":"b","sequence":12,"executedAt":"2026-10-15T00:00:04Z","price":0.6,"quantity":5}])),later).unwrap();u.observe("book_dirty",&json!({"marketId":"1"}),later).unwrap();assert_eq!(u.select(&BTreeSet::new()).unwrap(),vec!["108"]);}
  #[test]fn dirty_batch_without_exchange_clock_recovers_and_optional_source_clock_is_not_ignored(){let scopes=[("101".into(),"1".into())].into();let mut u=Universe::new(&scopes,&json!({"positions":[]}),1).unwrap();let at="2026-10-15T00:01:01Z";u.observe("markets_batch",&json!({"markets":[{"marketId":"1","batch":{"delivery":{"model":"best-effort-authoritative-resync","revision":1,"previousRevision":0},"bookDirty":[{"marketId":"1","sourceAt":"2026-10-15T00:00:00Z"}]}}]}),at).unwrap();assert!(u.select(&BTreeSet::new()).unwrap().is_empty());}
+}
+
+#[cfg(test)]mod observed_flow_nomination_tests{
+ use super::*;
+ const BASE:i64=1_792_054_800_000;
+ fn iso(ms:i64)->String{chrono::DateTime::from_timestamp_millis(BASE+ms).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
+ fn batch(received:i64)->Value{json!({"markets":[{"marketId":"8","batch":{"delivery":{"model":"best-effort-authoritative-resync","revision":1,"previousRevision":0},"resyncRequired":true,"books":[],"trades":[{"marketId":"8","exchangeId":"108","id":"original-print","sequence":3,"executedAt":iso(0),"price":0.4,"quantity":10}]}}],"at":iso(received)})}
+ fn universe()->Universe{Universe::new(&[("101".into(),"1".into()),("108".into(),"8".into())].into(),&json!({"positions":[]}),1).unwrap().with_tournament("cup").unwrap()}
+ #[test]fn genuine_observed_print_nominates_a_read_despite_gap_and_missing_book(){
+  let mut u=universe();u.observe("book_dirty",&json!({"marketId":"1","at":iso(1)}),&iso(1)).unwrap();u.observe("markets_batch",&batch(1),&iso(1)).unwrap();
+  assert_eq!(u.study.report()["candidates"],json!([]));
+  assert_eq!(u.select_at(&BTreeSet::new(),(BASE+1)as u64).unwrap(),vec!["108"]);
+  assert_eq!(u.status()["lastDiagnosticError"],Value::Null);
+ }
+ #[test]fn ignored_foreign_single_market_metadata_cannot_erase_scoped_observed_flow(){
+  let mut u=universe();u.observe("markets_batch",&batch(1),&iso(1)).unwrap();
+  u.observe("book_dirty",&json!({"marketId":"999"}),&iso(2)).unwrap();
+  assert_eq!(u.select_at(&BTreeSet::new(),(BASE+2)as u64).unwrap(),vec!["108"]);
+  assert_eq!(u.status()["lastDiagnosticError"],Value::Null);
+ }
+ #[test]fn replayed_old_print_cannot_refresh_observed_flow_read_priority(){
+  let mut u=universe();u.observe("markets_batch",&batch(1),&iso(1)).unwrap();assert_eq!(u.select_at(&BTreeSet::new(),(BASE+1)as u64).unwrap(),vec!["108"]);
+  u.observe("book_dirty",&json!({"marketId":"1","at":iso(180001)}),&iso(180001)).unwrap();u.observe("markets_batch",&batch(180002),&iso(180002)).unwrap();
+  assert_eq!(u.select_at(&BTreeSet::new(),(BASE+180002)as u64).unwrap(),vec!["101"]);
+ }
 }
