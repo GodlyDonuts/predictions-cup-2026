@@ -1,11 +1,16 @@
 // Offline discovery only. A catalog identity is not a settlement-equivalence proof.
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+/** Exact metadata identity; this excludes live price/volume so ordinary trading
+ * updates do not change the reviewed contract text. Missing fields hash null. */
+export function metadataIdentitySha256(market) {
+  return sha(JSON.stringify(['ticker','event_ticker','title','subtitle','rules_primary','rules_secondary'].map(key=>market?.[key]??null)));
+}
 const sorted = values => [...new Set(values)].sort((a,b)=>a.localeCompare(b,'en',{numeric:true}));
 const party = value => ({Democratic:'DEM',Republican:'REP',Independent:'IND'}[value] ?? null);
 const district = value => value == null ? null : String(value).replace(/^0+(?=\d)/,'');
@@ -76,6 +81,32 @@ export function buildUniverse({catalog,leads,joins,inventory,sources=[],maximumT
   return {schemaVersion:1,scope:'retained_237_SIG_catalog_not_entire_Kalshi_platform',conditional_resolution_unverified:true,settlementEquivalenceVerified:false,sources,sourceInventoryObservedAt:inventory.captured_at??null,referenceCatalogObservedAt:catalog.metadata?.created_utc??null,sigMarketIds:ids,unmappedSigMarketIds:ids.filter(id=>!mapped.has(id)),markets:rows,alternates,summary:{sigMarkets:ids.length,mappedSigMarkets:mapped.size,unmappedSigMarkets:ids.length-mapped.size,uniqueTickers:rows.length,idealSweepSecondsAt20ReadsPerSecond:rows.length/20,recordedLeadRows:leads.length,rejectedReferenceRows:rejected.length},rejected};
 }
 
+/** Add only previously unmapped identities backed by original public receipts.
+ * The special2026 whitelist is exact metadata, never a ticker suffix override. */
+export function extendUniverse(base,supplement,readReceipt) {
+  if (supplement?.schemaVersion!==1||supplement.conditional_resolution_unverified!==true||!Array.isArray(supplement.mappings)||supplement.mappings.length>32) throw Error('UNIVERSE_SUPPLEMENT_SCHEMA');
+  const out=structuredClone(base),eligible=new Set(base.unmappedSigMarketIds),seen=new Set();
+  const pointer=(v,p)=>p.split('/').slice(1).reduce((a,k)=>a?.[k],v);
+  for(const mapping of supplement.mappings){
+    if (!eligible.has(mapping.sigMarketId)||seen.has(mapping.sigMarketId)||mapping.electionYear!==2026||!party(mapping.party)) throw Error('UNIVERSE_SUPPLEMENT_IDENTITY');
+    if(!/^research\/moloch-kalshi-mapping-20261016\/receipts\/[A-Za-z0-9_-]+\.receipt\.json\.gz$/.test(mapping.receiptPath)||!/^\/body\/events\/\d+\/markets\/\d+$/.test(mapping.marketPointer)||mapping.eventPointer!==mapping.marketPointer.replace(/\/markets\/\d+$/,''))throw Error('UNIVERSE_SUPPLEMENT_SOURCE_PATH');
+    const {receipt,raw,compressed}=readReceipt(mapping.receiptPath);
+    if(sha(raw)!==mapping.receiptSha256||sha(compressed)!==mapping.compressedSha256||receipt.status!==200||sha(receipt.bodyText)!==receipt.bodySha256||receipt.bodySha256!==mapping.bodySha256||JSON.stringify(JSON.parse(receipt.bodyText))!==JSON.stringify(receipt.body))throw Error('UNIVERSE_SUPPLEMENT_SOURCE_HASH');
+    if(receipt.receivedAt!==mapping.receivedAt||receipt.requestStartedAt!==mapping.requestStartedAt||!Number.isFinite(Date.parse(receipt.receivedAt))||!Number.isFinite(Date.parse(receipt.requestStartedAt))||Date.parse(receipt.requestStartedAt)>Date.parse(receipt.receivedAt)||!receipt.path.startsWith('/trade-api/v2/events?'))throw Error('UNIVERSE_SUPPLEMENT_SOURCE_CLOCK');
+    const m=pointer(receipt,mapping.marketPointer),e=pointer(receipt,mapping.eventPointer);
+    if(!m||m.ticker!==mapping.ticker||e?.event_ticker!==mapping.eventTicker||m.event_ticker!==mapping.eventTicker||m.rules_primary!==mapping.rulesPrimary||!/\b2026\b/.test(m.rules_primary)||/\b2028\b/.test(m.rules_primary)||!new RegExp(mapping.party+' (?:party|Party)','i').test(m.rules_primary))throw Error('UNIVERSE_SUPPLEMENT_RULE');
+    const identity=metadataIdentitySha256(m);
+    if(mapping.metadataIdentitySha256!==identity||mapping.verifiedElectionYear!==2026)throw Error('UNIVERSE_SUPPLEMENT_METADATA');
+    let row=out.markets.find(v=>v.ticker===m.ticker);
+    if(row&&row.metadataIdentitySha256&&row.metadataIdentitySha256!==identity)throw Error('UNIVERSE_SUPPLEMENT_CONFLICT');
+    const sigMapping={sigMarketId:mapping.sigMarketId,sigParty:mapping.party,sigOffice:mapping.office,sigState:mapping.state,sigDistrict:mapping.district,sigElectionYear:2026,side:'YES',origin:'original_current_metadata_supplement',sigObservedAt:receipt.receivedAt,sigIdentityProvenance:[{receiptPath:mapping.receiptPath,receiptSha256:mapping.receiptSha256,marketPointer:mapping.marketPointer}],semanticFlags:['conditional_resolution_unverified']};
+    if(!row){row={ticker:m.ticker,eventTicker:m.event_ticker,electionYear:2026,verifiedElectionYear:2026,metadataIdentitySha256:identity,office:mapping.office,state:mapping.state,district:mapping.district,party:mapping.party,historicalStatus:m.status??null,currentStatus:'unverified_after_retained_receipt',referenceObservedAt:receipt.receivedAt,referenceSourceUrl:receipt.path,referenceRulesPrimary:m.rules_primary,conditional_resolution_unverified:true,sigMappings:[],sigMarketIds:[]};out.markets.push(row);}
+    row.sigMappings.push(sigMapping);row.sigMarketIds=sorted([...row.sigMarketIds,mapping.sigMarketId]);seen.add(mapping.sigMarketId);
+  }
+  out.markets.sort((a,b)=>a.ticker.localeCompare(b.ticker));out.unmappedSigMarketIds=base.unmappedSigMarketIds.filter(id=>!seen.has(id));out.supplementCloseMatches=supplement.closeMatches??[];
+  out.summary={...out.summary,mappedSigMarkets:base.summary.mappedSigMarkets+seen.size,unmappedSigMarkets:out.unmappedSigMarketIds.length,uniqueTickers:out.markets.length,idealSweepSecondsAt20ReadsPerSecond:out.markets.length/20};return out;
+}
+
 /** Load original repository gzip bytes, preserving their hashes and clocks. */
 export function loadUniverse({repositoryRoot=resolve(dirname(fileURLToPath(import.meta.url)),'../..'),maximumTickers=1024}={}) {
   const sources=[];
@@ -91,7 +122,11 @@ export function loadUniverse({repositoryRoot=resolve(dirname(fileURLToPath(impor
   const leads=read(base+'conditional_crossvenue_leads.json.gz');
   const joins=read(base+'join_records.json.gz');
   const inventory=read(base+'public_market_inventory_2026-10-01_184851.json.gz');
-  return buildUniverse({catalog,leads,joins,inventory,sources,maximumTickers});
+  const baseUniverse=buildUniverse({catalog,leads,joins,inventory,sources,maximumTickers});
+  const supplementPath=resolve(repositoryRoot,'research/moloch-kalshi-mapping-20261016/supplement.json');
+  if(!existsSync(supplementPath))return baseUniverse;
+  const result=extendUniverse(baseUniverse,JSON.parse(readFileSync(supplementPath,'utf8')),relative=>{const compressed=readFileSync(resolve(repositoryRoot,relative));if(compressed.length>4*1024*1024)throw Error('UNIVERSE_SUPPLEMENT_BOUND');const raw=gunzipSync(compressed,{maxOutputLength:16*1024*1024});return{compressed,raw,receipt:JSON.parse(raw.toString('utf8'))};});
+  if(result.markets.length>maximumTickers)throw Error('UNIVERSE_TICKER_BOUND');return result;
 }
 
 if (process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) {

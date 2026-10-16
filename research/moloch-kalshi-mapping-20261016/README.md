@@ -29,8 +29,48 @@ quotes. The collector's primary loop should poll each unique selected ticker
 once; a binary book supplies both YES and NO sides. Opposite-party contracts
 must not substitute for a same-contract NO outcome when other parties can win.
 
-Current canonical discovery will use only the existing centralized Kalshi
-collector's local discovery endpoint once its owner confirms availability.
-No independent authenticated client, credential access or fabricated current
-catalog receipt has been created by this task. Close matches and unavailable
-markets will remain explicit rather than forcing13successful mappings.
+## Current returned metadata
+
+After the owner confirmed availability,16public metadata requests used only the
+existing centralized collector at localhost17841. Original full receipts are
+losslessly gzip-retained in `receipts/`; `source-inventory.json` records exact
+request/receive clocks, official paths and compressed/original/bodySHA256.
+The original bodyText hash is checked independently by the universe loader.
+No independent authenticated client or credential access was used.
+
+| SIG | Actual returned ticker | Scope of result |
+| --- | --- | --- |
+|151,152|CONTROLH-2026-D / CONTROLH-2026-R|2026House control party rules|
+|153,154|CONTROLS-2026-D / CONTROLS-2026-R|2026U.S.Senate control party rules|
+|303,304|GOVPARTYKS-27-D / GOVPARTYKS-27-R|Rules explicitly2026election; event subtitle says2027|
+|372,373|GOVPARTYNH-28-D / GOVPARTYNH-28-R|Rules and subtitle explicitly2026 despite28ticker suffix|
+|191|GOVPARTYRI-26-KBLO|KenBlock-specific, not all Independent-party winners; not poll-eligible|
+|276|SENATEMT-26-IND|SethBodnar-specific, not all Independent-party winners; not poll-eligible|
+|280|SENATENE-26-DOSB|DanOsborn-specific, not all Independent-party winners; not poll-eligible|
+
+`SENATE` and `KXSENATE` series/events/markets returned200empty; the actual
+returned series catalog identified `CONTROLS`, whose event response supplied
+the2026control markets. All requested event pages closed with empty cursors;
+this is bounded observed coverage, not proof of every Kalshi market's absence.
+
+The dedicated `supplement.json` adds8same-party conditional discovery mappings.
+It preserves all226existing primary ticker identities. Total234unique primary
+tickers map234of237SIGmarkets, leaving191/276/280 explicitly unmapped. At20read
+starts/second,234reads imply an ideal11.7second sweep, excluding network/pacing
+overhead and metadata refreshes. Public metadata discovery consumed the same
+collector budget as its normal polling.
+
+For the misleading27/28suffixes the loader uses an exact source-backed whitelist,
+not a broader ticker-year guess. Exported `metadataIdentitySha256(market)` hashes
+the JSONarray of original `[ticker,event_ticker,title,subtitle,rules_primary,
+rules_secondary]`, using null for missing fields. Each supplement mapping pins
+this hash and `verifiedElectionYear:2026`. A collector may accept such a ticker
+only when its freshly returned metadata matches that exact identity. Actual2028
+rules remain rejected. Price/volume updates alone do not alter the identity hash.
+
+Special-election status is null when not explicitly supplied; this source does
+not certify special/regular equivalence. Full cross-venue settlement treatment
+(certification versus inauguration/seating, replacement, cancellation/refund,
+independent affiliation and accelerated determination) remains unverified for
+every mapping. Candidate analogs are retained separately and never silently
+substitute for the generic Independent-party contracts.

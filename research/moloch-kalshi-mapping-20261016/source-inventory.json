@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "collector": "existing localhost17841 centralized20starts/sec",
+  "requests": 16,
+  "receipts": [
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-CONTROLH.receipt.json.gz",
+      "compressedSha256": "047976c125ad095499b28b81ff780bbf13bde4c13c9e2873d8084480b296776f",
+      "receiptSha256": "6aea7e12a77a5b5c0f7f70c284ea96be05dc7d56e679cf3220d34ed48b4fb8f0",
+      "officialPath": "/trade-api/v2/events?series_ticker=CONTROLH&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:37.419Z",
+      "receivedAt": "2026-10-16T09:28:37.477Z",
+      "bodySha256": "c37d30ce2d912fc44cd63e07ffefc799248a0994e352749a799c41328d2f3fb7"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-CONTROLS.receipt.json.gz",
+      "compressedSha256": "3a57295281336a2a99b14e07495dae760b2e7cab41d0c24b273e906479e35d48",
+      "receiptSha256": "48d16387cb0e97730ca0da934d822a92b3ed3daecd058adf0cb04becf19c3e1b",
+      "officialPath": "/trade-api/v2/events?series_ticker=CONTROLS&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:29:16.197Z",
+      "receivedAt": "2026-10-16T09:29:16.265Z",
+      "bodySha256": "ff8779d190816ddf86e18e26c0f37a790e448098c38ab75c35e63413010dcdd9"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-GOVPARTY-NH.receipt.json.gz",
+      "compressedSha256": "a72eebf2ed9747f325873ab811185b9ea4e79d39774292032ef227eeb874841d",
+      "receiptSha256": "c5e91bcb531f547ba5bc18d9f25518d1e3509ee18a86f77cce9321bf745db418",
+      "officialPath": "/trade-api/v2/events?series_ticker=GOVPARTY-NH&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:39.206Z",
+      "receivedAt": "2026-10-16T09:28:39.254Z",
+      "bodySha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-GOVPARTYKS.receipt.json.gz",
+      "compressedSha256": "1609cb53ead5ca8004890a0c12f087997ea1c4baf377e0a4289af6d006cd1a5c",
+      "receiptSha256": "0e3276c6efa00ee7500a2ba4b98ba9905c652e5dfad7783b0630006f14fbb67f",
+      "officialPath": "/trade-api/v2/events?series_ticker=GOVPARTYKS&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:38.320Z",
+      "receivedAt": "2026-10-16T09:28:38.385Z",
+      "bodySha256": "69e4dd2ce46d69c81edd5fac13da4b3b33b208a8a73779b93272ee2dbb57cc83"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-GOVPARTYNH.receipt.json.gz",
+      "compressedSha256": "033abf329e532d8ffe93b252192b85ea46697bc1938f896bd266330fb463e547",
+      "receiptSha256": "455f36e8bf6b7226a2854b98f46aaa3837171c59fb158c3740b0b02c988481e1",
+      "officialPath": "/trade-api/v2/events?series_ticker=GOVPARTYNH&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:38.709Z",
+      "receivedAt": "2026-10-16T09:28:38.765Z",
+      "bodySha256": "626adc1c1a8ce1d363e5f8f5ae89a80be8fd0df1e6348719c346d5096642e3ba"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-GOVPARTYRI.receipt.json.gz",
+      "compressedSha256": "74097852a10ad1f27ce24c3c88d8870831737a28a598ca3bad3fcad122759512",
+      "receiptSha256": "0f34945b10f4d3fa0389ad215b0da88005c1118181f959504999ee5ccb405ef7",
+      "officialPath": "/trade-api/v2/events?series_ticker=GOVPARTYRI&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:39.718Z",
+      "receivedAt": "2026-10-16T09:28:39.777Z",
+      "bodySha256": "4644b1f8babd975f4668a4d52e24a7516848a5a36f27cdb52b988b680c954ab8"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-KXSENATE.receipt.json.gz",
+      "compressedSha256": "90a50978e7a621dabb126f4e1602b7abd0b65b89885a72ef8d933455169d0528",
+      "receiptSha256": "2076653d221cf5ec4c6b64e5b23e236a75b660392b08a50c8d0963d71aeee1af",
+      "officialPath": "/trade-api/v2/events?series_ticker=KXSENATE&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:37.947Z",
+      "receivedAt": "2026-10-16T09:28:38.002Z",
+      "bodySha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATE.receipt.json.gz",
+      "compressedSha256": "0e52d066ea2bcaeb92a8ac27976ec6c15d99b167dac38905ca62905799e9acf9",
+      "receiptSha256": "6928c25b6a8cedd3b5f3c151d4fb181845ad6c8888c444239891c0e50084b1f3",
+      "officialPath": "/trade-api/v2/events?series_ticker=SENATE&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:37.651Z",
+      "receivedAt": "2026-10-16T09:28:37.707Z",
+      "bodySha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATEMT.receipt.json.gz",
+      "compressedSha256": "ab824567e70e788f1c9ac62fc633335a59614a4c18fd48f096bf1c859238237a",
+      "receiptSha256": "19e0df09548f9b0d440b7694f1c225bef6ae79ca491c53feae74136f8c53515c",
+      "officialPath": "/trade-api/v2/events?series_ticker=SENATEMT&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:40.267Z",
+      "receivedAt": "2026-10-16T09:28:40.321Z",
+      "bodySha256": "1dac7872bcdf9b6c7d7eaa03d021af3f3bbde3cf8e4105db10ce4ea76fae1f1d"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATENE.receipt.json.gz",
+      "compressedSha256": "2afed14bb5a47e96a95e0849a3a1dac259d183adc840119fa884d9a576c45370",
+      "receiptSha256": "c77e59821a154e74811003e5294815b69ec4ffd9e6cf6d51e8fb4ae7c6ca02ca",
+      "officialPath": "/trade-api/v2/events?series_ticker=SENATENE&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:41.528Z",
+      "receivedAt": "2026-10-16T09:28:41.597Z",
+      "bodySha256": "54244623b483a8c6c34abfb06fbf497504a1b470eea7dc8be49856ee7ccfd210"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATEPARTY-MT.receipt.json.gz",
+      "compressedSha256": "2d16276803dd70aded9c1980ba05e3002686c95a58bd9428c37d30bba64bbc0b",
+      "receiptSha256": "32c596be42493a6bd6f69522749b0a3c1243976ab021bfc1d00a09d1ee570db4",
+      "officialPath": "/trade-api/v2/events?series_ticker=SENATEPARTY-MT&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:40.874Z",
+      "receivedAt": "2026-10-16T09:28:40.923Z",
+      "bodySha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATEPARTY-NE.receipt.json.gz",
+      "compressedSha256": "43f2a06886c02bd976b6d741542a36148a9b9e862167ebe19c99ccbe50ee5829",
+      "receiptSha256": "550f187a4350869900a4aa110fcf3cd5f036bb4b87a9464e6747296555b074ca",
+      "officialPath": "/trade-api/v2/events?series_ticker=SENATEPARTY-NE&with_nested_markets=true&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:42.232Z",
+      "receivedAt": "2026-10-16T09:28:42.283Z",
+      "bodySha256": "911bfc23385421a80349ad4759bd64904153e23f752cc59140f20eb07c201e90"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/markets-KXSENATE.receipt.json.gz",
+      "compressedSha256": "e0af9d5798e3e39f76d74f67823a1aa216835c403011133305cde282d54daa8f",
+      "receiptSha256": "10237b28b858c964a1646aa9c6a537aec560095dea6628f46dab0861983b061e",
+      "officialPath": "/trade-api/v2/markets?series_ticker=KXSENATE&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:29:02.864Z",
+      "receivedAt": "2026-10-16T09:29:02.930Z",
+      "bodySha256": "50699ea1db13415ea46ec367dcfa58decd9660083271c5dc061561f38337fbac"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/markets-SENATE.receipt.json.gz",
+      "compressedSha256": "8bc637b26fe8783e968be9617c7c600762a5927524fa9fd5a7d23c9ab7ddf3d7",
+      "receiptSha256": "4d571d7a0b57501cb684d33aee4de22e9f3d0ba5c5e7ffaeb4f0245c4b9cae06",
+      "officialPath": "/trade-api/v2/markets?series_ticker=SENATE&limit=200",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:29:02.675Z",
+      "receivedAt": "2026-10-16T09:29:02.735Z",
+      "bodySha256": "50699ea1db13415ea46ec367dcfa58decd9660083271c5dc061561f38337fbac"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/series-elections.receipt.json.gz",
+      "compressedSha256": "3b4558a518e9cf7bf5885c759bcdb1b38e349c9b1cc645daf735499fe28830b6",
+      "receiptSha256": "6d84405317ef8733d2f145108e004d03ba71d62b67cf22c4429688cd9d030ea6",
+      "officialPath": "/trade-api/v2/series?category=Elections",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:28:08.530Z",
+      "receivedAt": "2026-10-16T09:28:08.812Z",
+      "bodySha256": "769541a3ed84c885a290b24aaaec477b90d25674b49dc1ed2144f30b459696f1"
+    },
+    {
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/series-politics.receipt.json.gz",
+      "compressedSha256": "5c2f663250777dd6018864bf374b48208771429ee89b4f465c7fa5247b768657",
+      "receiptSha256": "0a30d947206043c8fbe06d2dd91374a490d73acb8856a8c6cdb44f5263586187",
+      "officialPath": "/trade-api/v2/series?category=Politics",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T09:27:58.044Z",
+      "receivedAt": "2026-10-16T09:27:58.289Z",
+      "bodySha256": "b5e229137830cb3ca15ae740e250da94852e5dff43a7220380bc7d1051e79c86"
+    }
+  ]
+}
