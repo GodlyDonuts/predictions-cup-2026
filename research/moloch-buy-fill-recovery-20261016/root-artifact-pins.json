@@ -1,0 +1,72 @@
+{
+  "sourceCommit": "774f94fe6938f55ed447d078965cc583810cb3e7",
+  "binarySha256": "1180882d0a47f1af948258c37b333fb51552c31ef9823a51e1c058cf8558e95f",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "sourceFiles": 251,
+  "unchangedInputs": 250,
+  "nativeSourcesChanged": false,
+  "sdkSourcesChanged": false,
+  "sdkTestsRerun": false,
+  "artifacts": {
+    "build/checkpoint-validation.json": {
+      "sha256": "20da44d03f22a62656ee59662c8156c8a3eac01720882bce45ca5782dc1b7813",
+      "bytes": 1635
+    },
+    "build/engine-identity-probe.rs": {
+      "sha256": "98469879001615af607b29aadbf343c6db57ce65af7251f2345594b8d471da1e",
+      "bytes": 69
+    },
+    "build/engine-probe-build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "build/engine-probe-run.log": {
+      "sha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc",
+      "bytes": 65
+    },
+    "build/library.log": {
+      "sha256": "b89118ae499359bc44732d73ac85a7e2800902c918145f3340fdabaa7b57e01e",
+      "bytes": 30591
+    },
+    "build/release.log": {
+      "sha256": "03e227871d6f86d814343d81859c65e59b7954e0688b2c11c5fda43daad1cef3",
+      "bytes": 181978
+    },
+    "build/source-manifest.json": {
+      "sha256": "ed55c5f60fbacf54dfc9049bafd02dd9ce0ebc2157b3fa4683a45340eeeef921",
+      "bytes": 30629
+    },
+    "build/validation.json": {
+      "sha256": "446fc9a150388be86a9e6298c5fe2e841729a87963afe56a36bc3817b1b87885",
+      "bytes": 2011
+    },
+    "build/worker.log": {
+      "sha256": "47b35523537c9640402455d3e43dd63e88b2e202403f89c2b0112c82b92c7717",
+      "bytes": 20326
+    },
+    "deployment/moloch-buy-fill-recovery-owner-review-20261016.json": {
+      "sha256": "7423ba060adbc94fc17f16130a1b91f94252f61e33c11bc0be1b230170f9800d",
+      "bytes": 2329
+    },
+    "deployment/paper6-buy-recovery-approved-manifest-20261016.json": {
+      "sha256": "e3b39d3f7dc465d0e244a448b01359bfc858c90945afaea29e503ef63a5e2712",
+      "bytes": 35041
+    },
+    "deployment/paper6_buy_fill_recovery_rollout.py": {
+      "sha256": "7da3d2460ccd2fe1f3803b8c8356176d78a19bccfa4cd9fd43c2fb8ab4ad1a10",
+      "bytes": 24324
+    },
+    "deployment/paper6_buy_fill_recovery_rollout_frozen_20261016.py": {
+      "sha256": "4284e01f4eae3210d7647d205339daa4f059ab1d0df38e81a997c4f17c350f0a",
+      "bytes": 25357
+    },
+    "deployment/production-summary.json": {
+      "sha256": "9e5d9ff0241f4bfdeabff3b6c12b38c226ee6abeb78d984f3ef0a0efb8739bc2",
+      "bytes": 3391
+    },
+    "deployment/test_paper6_buy_fill_recovery_rollout.py": {
+      "sha256": "fc0b45b417153843d61adf4d790d2de026a68d47bb000cb6a56fefc00e6f3949",
+      "bytes": 7822
+    }
+  }
+}

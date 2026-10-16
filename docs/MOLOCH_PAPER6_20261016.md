@@ -9,24 +9,26 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation at19:28UTC
+## Latest operation at19:38UTC
 
-The ec8b0fef recovery genuinely restored production and reconciled the earlier
-SELL loss. Its new Oregon terminal policy bought2,094NO shares for1,949.320000
-in official order43530180. Five same-timestamp BUY fills then exposed a second
-accounting-order guard and stopped534982 at19:17:27 before those rows were booked.
-The original complete tape/ACK/closed order and previously flat inventory are
-verified. Root and graph have a minimal canonical tied-BUY bookkeeping repair;
-actual ARM64 library212 and worker97 checks pass, optimized release is pending.
-The original financial engine, whole bank, twelve bridges and full capital remain.
-[Current evidence](CURRENT_STATE.md) records the stopped state and expected versus
-actually booked values. No current uptime or profitable outcome is inferred.
+Sole worker **540259**, source774f94fe/binary1180882d, started19:35UTC after
+checked recovery of legitimate simultaneous BUY fills. At19:38 it is restoring
+the complete original ledger; fresh trading remains pending. Only feedback.rs
+changed: exact original purchase rows use a declared canonical FIFO convention
+for indistinguishable timestamps, retaining all IDs/prices/quantities and native
+dedup/conflict guards. Actual ARM64212 library/97 worker checks, optimized build
+and native8acc probe pass. Same bank, twelve bridges, full95,579.915000 capital,
+NC/Oregon reviews and daily windows remain; no manual financial repair occurred.
+[Build, accounting convention and actual rollout](../research/moloch-buy-fill-recovery-20261016/README.md).
 
-V5 original-input replay reproduces23 rows/15 labels; the frozen metadata audit
-is running. Missing source witnesses and sample size still prevent model
-qualification. Alaska Republican Senate and Iowa Democratic Governor NO are
-new conditional high-upside research candidates; no current executable price
-or new model activation is claimed. Paper6 remains in progress.
+The Oregon reviewed strategy actually bought2,094NO for1,949.320000 in official
+order43530180. Its complete five-row tape awaits genuine new-worker booking.
+Expected cash70,765.455000/owned cost24,680.835000 are explicitly prospective;
+booked realized remains−133.625000, including the earlier actual−2.160000 SELL
+reconciliation. Source expiry blocks new entries rather than forcing terminal
+positions out. Maine, Alaska and Iowa proposals remain inactive research. The
+original-input V5 replay reproduces23rows/15labels; metadata audit is running,
+with no model qualification. Paper6 and overall profitability remain open.
 
 ## Historical operation and qualification at17:39UTC
 

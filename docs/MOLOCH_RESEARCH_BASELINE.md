@@ -1,3 +1,24 @@
+# Current research baseline: October16,19:38UTC
+
+Sole worker **540259**, source774f94fe/binary1180882d, started19:35UTC after
+checked recovery of legitimate simultaneous BUY fills. At19:38 it is restoring
+the complete original ledger; fresh trading remains pending. Only feedback.rs
+changed: exact original purchase rows use a declared canonical FIFO convention
+for indistinguishable timestamps, retaining all IDs/prices/quantities and native
+dedup/conflict guards. Actual ARM64212 library/97 worker checks, optimized build
+and native8acc probe pass. Same bank, twelve bridges, full95,579.915000 capital,
+NC/Oregon reviews and daily windows remain; no manual financial repair occurred.
+[Build, accounting convention and actual rollout](../research/moloch-buy-fill-recovery-20261016/README.md).
+
+The Oregon reviewed strategy actually bought2,094NO for1,949.320000 in official
+order43530180. Its complete five-row tape awaits genuine new-worker booking.
+Expected cash70,765.455000/owned cost24,680.835000 are explicitly prospective;
+booked realized remains−133.625000, including the earlier actual−2.160000 SELL
+reconciliation. Source expiry blocks new entries rather than forcing terminal
+positions out. Maine, Alaska and Iowa proposals remain inactive research. The
+original-input V5 replay reproduces23rows/15labels; metadata audit is running,
+with no model qualification. Paper6 and overall profitability remain open.
+
 # Current research baseline: October16,19:28UTC
 
 The recovery worker534982/sourceec8b0fef genuinely reached fresh trading at

@@ -1,0 +1,53 @@
+{
+  "sourceCommit": "774f94fe6938f55ed447d078965cc583810cb3e7",
+  "sourceManifestSha256": "ed55c5f60fbacf54dfc9049bafd02dd9ce0ebc2157b3fa4683a45340eeeef921",
+  "archiveSha256": "109e264431285118961b977d04b79213c018d41833da1709a5d4610d627e2d3b",
+  "sourceFiles": 251,
+  "changedPaths": [
+    "moloch/live-runtime/src/feedback.rs"
+  ],
+  "nativeSourcesChanged": false,
+  "sdkSourcesChanged": false,
+  "bankMigration": false,
+  "startedAt": "2026-10-16T19:24:42.182362+00:00",
+  "checks": {
+    "library": {
+      "exitCode": 0,
+      "seconds": 66.98593674402218,
+      "logSha256": "b89118ae499359bc44732d73ac85a7e2800902c918145f3340fdabaa7b57e01e",
+      "logBytes": 30591,
+      "passedTests": 212
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 75.86916284900508,
+      "logSha256": "47b35523537c9640402455d3e43dd63e88b2e202403f89c2b0112c82b92c7717",
+      "logBytes": 20326,
+      "passedTests": 97
+    },
+    "release": {
+      "exitCode": 0,
+      "seconds": 239.43600212500314,
+      "logSha256": "03e227871d6f86d814343d81859c65e59b7954e0688b2c11c5fda43daad1cef3",
+      "logBytes": 181978
+    },
+    "engine-probe-build": {
+      "exitCode": 0,
+      "seconds": 1.5563560579903424,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "engine-probe-run": {
+      "exitCode": 0,
+      "seconds": 0.007887281011790037,
+      "logSha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc",
+      "logBytes": 65
+    }
+  },
+  "binarySha256": "1180882d0a47f1af948258c37b333fb51552c31ef9823a51e1c058cf8558e95f",
+  "binaryBytes": 13096720,
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "nativeRlibSha256": "828e9f9371571f6e6e2700cc3a1c7cd75b9e9ea7d57d3f6d71e412484db19f29",
+  "nativeRlibPath": "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/live-runtime/target/release/deps/libmoloch_replay-1e049d55bba63d75.rlib",
+  "finishedAt": "2026-10-16T19:31:06.114243+00:00"
+}
