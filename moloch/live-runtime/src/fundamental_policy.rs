@@ -206,6 +206,10 @@ impl ExistingSnapshot{
 }
 pub struct ExistingExit{event:Value}
 impl ExistingExit{pub fn event(&self)->&Value{&self.event}}
+/// Read/preflight hint only. It grants no native reservation or HTTP authority.
+#[derive(Clone,Debug,Serialize)]
+#[serde(rename_all="camelCase")]
+pub struct ExistingExitHint{pub exchange_id:String,pub market_id:String,pub contract_id:String,pub side:String,pub reason:String}
 #[derive(Clone,Debug,Serialize,PartialEq,Eq)]
 #[serde(tag="kind",rename_all="snake_case")]
 pub enum Decision{
@@ -362,6 +366,20 @@ impl PhysicalDecision{
     }
 }
 impl Cohorts{
+    pub fn existing_exit_hint(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExitHint>>{
+        self.check(bank,log)?;log.require_resolved_attempts()?;
+        let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some())else{return Ok(None)};
+        if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(None)}
+        let r=&self.policies[exchange];need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
+        let reason=if now>=c.hold_until_ms.min(r.hold_until_ms){"reviewed_holding_deadline"}
+            else if !trusted.contains(&digest(r)?)||!current(r,now){return Ok(None)}
+            else if r.revoke_existing{"reviewed_source_revocation"}
+            else{let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
+                if let Some(book)=books.get(exchange){let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let payout=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
+                    if levels.first().is_none_or(|l|l.price<payout){return Ok(None)}"refreshed_value_exit"
+                }else{"reviewed_inventory_book_refresh"}};
+        Ok(Some(ExistingExitHint{exchange_id:exchange.into(),market_id:r.market_id.clone(),contract_id:r.contract_id.clone(),side:r.side.clone(),reason:reason.into()}))
+    }
     pub fn install_existing(&mut self,r:Reviewed,mut snapshot:ExistingSnapshot,bank:&Session,log:&DispatchLog,transport:&Transport,now:u64)->Result<()>{
         self.check(bank,log)?;let ex=&r.input.exchange_id;no_existing_liability(bank,log,ex)?;
         need(!self.policies.contains_key(ex)&&!self.cohorts.contains_key(ex)&&r.input.existing_origin.as_ref()==Some(&snapshot.origin.approval)

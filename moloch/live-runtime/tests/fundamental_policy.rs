@@ -330,4 +330,13 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
         r.reviewed_at_ms=at+2;r.revoke_existing=false;r.ordinary_probability="0.990000".into();f.install(r,at+2);
         assert_eq!(f.store.as_ref().unwrap().existing_exit_cancellations(&f.bank,&f.log,&f.trust,at+2).unwrap(),vec![id]);
     }
+    #[test]fn existing_exit_hint_precedes_preflight_and_blocking_draft_retirement_without_creating_an_order(){
+        let(mut f,transport,adoption)=inherited_fixture();install_inherited(&mut f,&transport,&adoption,"0.600000");f.book(NOW+4000,"0.300000","0.320000");let head=f.bank.durable_head();let orders=f.bank.engine().order_records();
+        let hint=f.store.as_ref().unwrap().existing_exit_hint(&f.bank,&f.log,&f.scope,"101",&f.trust,NOW+4000).unwrap().unwrap();assert_eq!(hint.exchange_id,"101");assert_eq!(hint.market_id,"201");assert_eq!(hint.contract_id,"301");assert_eq!(hint.reason,"refreshed_value_exit");assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().order_records(),orders);
+        assert!(f.store.as_ref().unwrap().prepare_existing_exit(&f.bank,&f.log,&transport,&f.scope,"101",&f.trust,NOW+4000).is_err(),"the advisory hint does not bypass the existing never-sent ordinary draft");
+        f.retire_drafts(NOW+7001);assert!(f.store.as_ref().unwrap().prepare_existing_exit(&f.bank,&f.log,&transport,&f.scope,"101",&f.trust,NOW+7001).unwrap().is_some());
+        let(mut f,transport,adoption)=inherited_fixture();install_inherited(&mut f,&transport,&adoption,"0.950000");assert!(f.store.as_ref().unwrap().existing_exit_hint(&f.bank,&f.log,&f.scope,"101",&f.trust,NOW+3001).unwrap().is_none());
+        assert_eq!(f.store.as_ref().unwrap().existing_exit_hint(&f.bank,&f.log,&f.scope,"101",&f.trust,NOW+20000).unwrap().unwrap().reason,"reviewed_inventory_book_refresh");
+        assert_eq!(f.store.as_ref().unwrap().existing_exit_hint(&f.bank,&f.log,&f.scope,"101",&f.trust,NOW+600001).unwrap().unwrap().reason,"reviewed_holding_deadline");
+    }
 }
