@@ -1,4 +1,28 @@
-# Current research baseline: October16,10:08UTC
+# Current research baseline: October16,10:43UTC
+
+Production is still sole SIG441490/`fec81a5e`, verified fresh10:39:26UTC with
+matching binary and no STOP.79ACKs/four fill rows since08:55restart;
+136 cumulative fill rows. Attributed realized−74.305000 remains unchanged.
+The40k deployed allocation has not yet received the human-authorized additional
+55,579.915000; full funding and daily migration are implemented in a separate
+successor awaiting its final timing fix/build and controlled promotion.
+
+The237-book Kalshi REST/WebSocket shadow feed is live; dated10:29 evidence
+shows one connection and zero sequence gaps. Conditional references are not
+certified settlement equivalents. The prospective observer is supervised on
+the VPS, reading existing data without another SIG account client. Its first
+200 decisions/291 labels/35-market economic evaluation selected **zero trades**
+and abstained at every horizon. [Report](../research/moloch-crossvenue-economics-20261016/README.md).
+Kalshi-based physical pricing, calibrated maker toxicity and prize utility
+remain unfinished; neither a working feed nor source modules establish alpha.
+
+The successor includes advanced probabilistic lifecycle source, bulk negative
+screening, native clone optimization, full-account funding and bounded rotating
+capture. The exhaustive semantic floor verifier is checked but has no genuine
+venue completeness certificate. Start new research with [the current Paper6
+ledger](MOLOCH_PAPER6_20261016.md); older dated baselines below are historical.
+
+# Historical research baseline: October16,10:08UTC
 
 Production remains SIG441490/fec81a5e: last verified09:55fresh trading/realtime,44newACKs/two actual fill rows since08:55restart,134cumulativefills, attributed realized−74.305. Native identityc3731d88… and ten bridges remain deployed;40k/10k risk limits are still actual controls. The human's new full-account capital authority has not yet been applied to the ledger.
 

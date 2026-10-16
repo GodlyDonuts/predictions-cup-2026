@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-16T09:07:43.718Z",
+  "pid": 441490,
+  "reason": "stale_unsubmitted_ordinary_buy",
+  "retired": [
+    {
+      "qid": 5072,
+      "releasedLocalReservationUnits": "1664000000"
+    },
+    {
+      "qid": 5071,
+      "releasedLocalReservationUnits": "883200000"
+    }
+  ],
+  "networkRequests": 0,
+  "physicalOrdersCanceled": 0,
+  "pricesChanged": false,
+  "releasedLocalReservationTotal": "2547.2",
+  "originalNativeRetirementEvents": [
+    {
+      "type": "unsubmitted_intent_retired",
+      "orderId": 5072,
+      "confirmedNetworkAttempts": 0,
+      "receiptHash": "4e59ed1b41815ee39d094c941e673648020ed7771f5f91a55442df330ab8846c",
+      "deferPlanningForPackage": true,
+      "receivedAt": "2026-10-16T09:07:42.004Z"
+    },
+    {
+      "type": "unsubmitted_intent_retired",
+      "orderId": 5071,
+      "confirmedNetworkAttempts": 0,
+      "receiptHash": "36881fec18c5c1665f35f58de860918e91769104cae8c19466746faed60bffda",
+      "deferPlanningForPackage": true,
+      "receivedAt": "2026-10-16T09:07:42.885Z"
+    }
+  ]
+}
