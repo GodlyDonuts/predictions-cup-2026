@@ -4,11 +4,13 @@
 //! sidecar before any dispatch; install reviewed policies; call
 //! `exit_refresh_needed` before expired-exit hints, and `assess` before ordinary
 //! priority/preflight and after fresh preflight.
-//! Call `bind` before appending the ordinary physical-attempt event, and call
-//! `check_bound` in physical authority with the exact request. Exclude `manages`
-//! Add `durable_tag(qid)` as `fundamental` on that ORIGINAL ordinary intent row;
-//! replay requires it and detects a lost/truncated sidecar binding.
-//! exchanges from package acquisition/netting. Do not gate cancels or official
+//! Sequence: `bind` -> `physical_decision` -> prepare frozen authority and its
+//! preliminary authorization -> ORIGINAL tagged intent+attempt -> `check_bound`
+//! against the actual Session/log -> SDK, whose physical callback validates the
+//! token's frozen data, original files and time. Compare `native_head()` with the
+//! actual Session head while preparing authority. Add `durable_tag(qid)` as
+//! `fundamental` on that original intent; replay detects a lost sidecar binding.
+//! Exclude `manages` exchanges from package acquisition/netting. Do not gate cancels or official
 //! owned-order/fill reconciliation. Missing/corrupt sidecars must block fresh
 //! writes, not restore ordinary age exits for previously managed inventory.
 //! Service `entry_cancellations` through the existing cancellation authority
@@ -22,7 +24,7 @@
 //! deadline, while explicit reviewed revocation/adverse value permits a covered
 //! native exit. There is no settlement-floor/arbitrage certificate here.
 use crate::{daily_windows, dispatch::DispatchLog, feedback::Result, package_admission};
-use baal_transport_service::{RequestSpec, Scope, decimal_units};
+use baal_transport_service::{RequestSpec, Scope, Permit, decimal_units};
 use moloch_replay::{Side, money, session::{ExclusiveLock, Session}};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -94,18 +96,22 @@ fn current(r:&ReviewInput,now:u64)->bool{
         now>=s.observed_at_ms&&now-s.observed_at_ms<=s.maximum_age_ms)
 }
 pub struct Reviewed{input:ReviewInput,sha:String}
+fn verify_snapshot(input:ReviewInput,originals:&[SourceBytes<'_>],trusted:&BTreeSet<String>)->Result<Reviewed>{
+    structure(&input)?;let sha=review_sha256(&input)?;
+    need(trusted.contains(&sha),"FUNDAMENTAL_REVIEW_NOT_CURRENTLY_APPROVED")?;
+    need(originals.len()==input.sources.len(),"FUNDAMENTAL_ORIGINAL_SOURCES")?;
+    for s in &input.sources{
+        let found=originals.iter().filter(|v|v.sha256==s.sha256).collect::<Vec<_>>();
+        need(found.len()==1&&!found[0].bytes.is_empty()&&found[0].bytes.len()<=8*1024*1024
+            &&bytes_sha(found[0].bytes)==s.sha256,"FUNDAMENTAL_ORIGINAL_SOURCE_HASH")?;
+    }Ok(Reviewed{input,sha})
+}
 impl Reviewed{
     /// The allowlist is from the separately pinned execution-owner control.
     /// Supplying an input/hash does not approve itself or authenticate a publisher.
     pub fn verify(input:ReviewInput,originals:&[SourceBytes<'_>],trusted:&BTreeSet<String>,now:u64)->Result<Self>{
-        structure(&input)?;let sha=review_sha256(&input)?;
-        need(trusted.contains(&sha)&&current(&input,now),"FUNDAMENTAL_REVIEW_NOT_CURRENTLY_APPROVED")?;
-        need(originals.len()==input.sources.len(),"FUNDAMENTAL_ORIGINAL_SOURCES")?;
-        for s in &input.sources{
-            let found=originals.iter().filter(|v|v.sha256==s.sha256).collect::<Vec<_>>();
-            need(found.len()==1&&!found[0].bytes.is_empty()&&found[0].bytes.len()<=8*1024*1024
-                &&bytes_sha(found[0].bytes)==s.sha256,"FUNDAMENTAL_ORIGINAL_SOURCE_HASH")?;
-        }Ok(Self{input,sha})
+        need(current(&input,now),"FUNDAMENTAL_REVIEW_NOT_CURRENTLY_APPROVED")?;
+        verify_snapshot(input,originals,trusted)
     }
     pub fn sha256(&self)->&str{&self.sha}
     pub fn entry_ceiling(&self)->Result<String>{Ok(money(structure(&self.input)?))}
@@ -130,6 +136,7 @@ fn hold(reason:&str)->Decision{Decision::Hold{reason:reason.into()}}
 /// trust boundary. Hash chaining detects corruption, not malicious fabrication.
 pub struct Cohorts{
     file:File,path:PathBuf,ordinary_path:PathBuf,ordinary_identity:Value,
+    marker:FilePin,
     _owner:Arc<ExclusiveLock>,manifest:String,run:String,
     sequence:u64,previous:String,clock:u64,poisoned:bool,
     policies:BTreeMap<String,ReviewInput>,cohorts:BTreeMap<String,Cohort>,
@@ -140,16 +147,160 @@ fn path_pin(path:&Path,want:&Value)->Result<()>{
     need(!fs::symlink_metadata(path)?.file_type().is_symlink(),"FUNDAMENTAL_SYMLINK")?;
     need(identity(&File::open(path)?)?==*want,"FUNDAMENTAL_PATH_REPLACED")
 }
+fn read_file(file:&File,maximum:u64)->Result<Vec<u8>>{
+    let n=file.metadata()?.len();need(n<=maximum,"FUNDAMENTAL_FILE_BOUND")?;
+    let mut bytes=vec![0;usize::try_from(n)?];
+    #[cfg(unix)]{use std::os::unix::fs::FileExt;file.read_exact_at(&mut bytes,0)?;}
+    #[cfg(not(unix))]{return Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
+    need(file.metadata()?.len()==n,"FUNDAMENTAL_FILE_CHANGED")?;Ok(bytes)
+}
+struct FilePin{file:File,path:PathBuf,identity:Value,bytes:u64,sha:String,maximum:u64}
+impl FilePin{
+    fn from_held(file:File,path:PathBuf,maximum:u64,expected:Option<&str>)->Result<Self>{
+        let identity=identity(&file)?;path_pin(&path,&identity)?;let bytes=read_file(&file,maximum)?;let sha=bytes_sha(&bytes);
+        need(expected.is_none_or(|e|hex(e)&&e==sha),"FUNDAMENTAL_PINNED_FILE_HASH")?;
+        Ok(Self{file,path,identity,bytes:bytes.len() as u64,sha,maximum})
+    }
+    fn open(path:&Path,expected:&str,maximum:u64)->Result<Self>{
+        need(path.is_absolute(),"FUNDAMENTAL_ABSOLUTE_SOURCE_PATH_REQUIRED")?;
+        Self::from_held(File::open(path)?,path.into(),maximum,Some(expected))
+    }
+    fn validate(&self)->Result<()>{path_pin(&self.path,&self.identity)?;
+        need(self.file.metadata()?.len()==self.bytes&&bytes_sha(&read_file(&self.file,self.maximum)?)==self.sha,"FUNDAMENTAL_PINNED_FILE_CHANGED")
+    }
+    fn duplicate(&self)->Result<Self>{Self::from_held(self.file.try_clone()?,self.path.clone(),self.maximum,Some(&self.sha))}
+}
+#[derive(Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+struct AuthorityInput{version:u32,trusted_review_sha256:BTreeSet<String>}
+/// Expected absolute path+SHA come from the separately pinned production Control.
+/// This small immutable file approves canonical review hashes, not itself.
+pub struct ReviewAuthority{pin:FilePin,trusted:BTreeSet<String>}
+impl ReviewAuthority{
+    pub fn load(path:&Path,expected_sha256:&str)->Result<Self>{
+        let pin=FilePin::open(path,expected_sha256,64*1024)?;
+        let config:AuthorityInput=serde_json::from_slice(&read_file(&pin.file,pin.maximum)?)?;
+        need(config.version==1&&config.trusted_review_sha256.len()<=256&&config.trusted_review_sha256.iter().all(|s|hex(s)),"FUNDAMENTAL_TRUST_FILE")?;
+        pin.validate()?;Ok(Self{pin,trusted:config.trusted_review_sha256})
+    }
+    pub fn trusted(&self)->&BTreeSet<String>{&self.trusted}
+    pub fn validate(&self)->Result<()>{self.pin.validate()}
+}
+#[derive(Clone,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct SourceFile{pub path:PathBuf,pub sha256:String}
+#[derive(Clone,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct ReviewFile{pub path:PathBuf,pub file_sha256:String,pub source_files:Vec<SourceFile>}
+/// Optional field in the separately pinned Control. All paths absolute; file
+/// hashes pin immutable versioned files. Initialization is consumed by a durable
+/// marker; leaving the flag true cannot recreate a lost deployed sidecar.
+#[derive(Clone,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct Settings{pub version:u32,pub authority_path:PathBuf,pub authority_sha256:String,pub reviews:Vec<ReviewFile>,pub allow_initialization:bool}
+pub struct LoadedSettings{authority:ReviewAuthority,reviews:Vec<Reviewed>,initialize:bool}
+impl Settings{
+    pub fn load(&self)->Result<LoadedSettings>{
+        need(self.version==1&&(1..=32).contains(&self.reviews.len()),"FUNDAMENTAL_SETTINGS")?;
+        let authority=ReviewAuthority::load(&self.authority_path,&self.authority_sha256)?;
+        let mut reviews=Vec::new();let mut exchanges=BTreeSet::new();
+        for r in &self.reviews{
+            let pin=FilePin::open(&r.path,&r.file_sha256,64*1024)?;
+            let input:ReviewInput=serde_json::from_slice(&read_file(&pin.file,pin.maximum)?)?;
+            need(exchanges.insert(input.exchange_id.clone())&&r.source_files.len()==input.sources.len(),"FUNDAMENTAL_DUPLICATE_SETTING_OR_SOURCES")?;
+            let mut data=Vec::new();let mut total=0usize;
+            for s in &r.source_files{let p=FilePin::open(&s.path,&s.sha256,8*1024*1024)?;let bytes=read_file(&p.file,p.maximum)?;
+                total=total.checked_add(bytes.len()).ok_or("FUNDAMENTAL_SOURCE_BOUND")?;need(total<=16*1024*1024,"FUNDAMENTAL_SOURCE_BOUND")?;p.validate()?;data.push(bytes);}
+            let sources=r.source_files.iter().zip(&data).map(|(s,b)|SourceBytes{sha256:&s.sha256,bytes:b}).collect::<Vec<_>>();
+            reviews.push(verify_snapshot(input,&sources,authority.trusted())?);pin.validate()?;
+        }authority.validate()?;Ok(LoadedSettings{authority,reviews,initialize:self.allow_initialization})
+    }
+}
+impl LoadedSettings{
+    /// An expired snapshot may recover an already managed cohort; it cannot
+    /// initialize a new policy or silently extend an old cohort's horizon.
+    pub fn open(self,root:&Path,bank:&Session,log:&DispatchLog,owner:Arc<ExclusiveLock>,now:u64)->Result<(Cohorts,ReviewAuthority,Vec<String>)>{
+        let mut store=if root.join("fundamental.ndjson").exists(){Cohorts::open(root,bank,log,owner)?}
+            else{need(self.initialize&&!root.join("fundamental.initialized.json").exists(),"FUNDAMENTAL_INITIALIZATION_NOT_APPROVED_OR_PREVIOUSLY_USED")?;Cohorts::initialize(root,bank,log,owner)?};
+        for r in &self.reviews{need(current(&r.input,now)||store.manages(&r.input.exchange_id),"FUNDAMENTAL_FIRST_POLICY_STALE")?;}
+        let mut stale=Vec::new();for r in self.reviews{if current(&r.input,now){store.install(r,bank,log,now)?;}else{stale.push(r.sha);}}
+        self.authority.validate()?;Ok((store,self.authority,stale))
+    }
+}
+/// Opaque supplemental policy capability. It is neither an intent, physical
+/// attempt nor retry authority. No public constructor, Clone or Deserialize.
+/// ProductionAuthority must call BOTH methods on its own frozen prepared data.
+pub struct PhysicalDecision{
+    qid:u64,native_head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,
+    spec_sha:String,permit_sha:String,review_sha:String,trust_sha:String,
+    minted:u64,expires:u64,sidecar:FilePin,marker:FilePin,sidecar_sequence:u64,sidecar_tail:String,
+    authority:FilePin,ordinary_file:File,ordinary_path:PathBuf,ordinary_identity:Value,
+    _owner:Arc<ExclusiveLock>,
+}
+impl PhysicalDecision{
+    pub fn native_head(&self)->&Value{&self.native_head}
+    pub fn expires_at_ms(&self)->u64{self.expires}
+    pub fn review_sha256(&self)->&str{&self.review_sha}
+    fn time(&self,now:u64)->Result<()>{need(now>=self.minted&&now<self.expires,"FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED")}
+    pub fn validate_frozen(&self,quote:&Value,ledger:&Value,qid:u64,now:u64)->Result<()>{
+        self.time(now)?;need(qid==self.qid&&quote["id"]==qid&&digest(quote)?==self.quote_sha&&digest(ledger)?==self.ledger_sha,"FUNDAMENTAL_PHYSICAL_FROZEN_STATE_CHANGED")
+    }
+    pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,now:u64)->Result<()>{
+        self.time(now)?;need(digest(scope)?==self.scope_sha&&digest(spec)?==self.spec_sha&&digest(permit)?==self.permit_sha,"FUNDAMENTAL_PHYSICAL_FROZEN_REQUEST_CHANGED")?;
+        self.sidecar.validate()?;self.marker.validate()?;self.authority.validate()?;
+        // The same original dispatch inode may append OUR intent/attempt after
+        // mint. Its growing head is checked by actual Cohorts.check_bound after
+        // those appends, not falsely frozen here before they exist.
+        need(identity(&self.ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
+        path_pin(&self.ordinary_path,&self.ordinary_identity)?;
+        let data:AuthorityInput=serde_json::from_slice(&read_file(&self.authority.file,self.authority.maximum)?)?;
+        need(digest(&data.trusted_review_sha256)?==self.trust_sha,"FUNDAMENTAL_TRUST_CHANGED")?;
+        let bytes=read_file(&self.sidecar.file,self.sidecar.maximum)?;let line=bytes.strip_suffix(b"\n").ok_or("FUNDAMENTAL_TORN_TAIL")?.rsplit(|b|*b==b'\n').next().ok_or("FUNDAMENTAL_TAIL")?;
+        let mut row:Value=serde_json::from_slice(line)?;let claimed=row.as_object_mut().ok_or("FUNDAMENTAL_ROW")?.remove("hash").ok_or("FUNDAMENTAL_HASH")?;
+        need(row["sequence"]==self.sidecar_sequence&&claimed==self.sidecar_tail&&claimed==digest(&row)?,"FUNDAMENTAL_PHYSICAL_TAIL_CHANGED")
+    }
+}
 impl Cohorts{
+    /// Mint after durable bind and before the original intent/attempt. After
+    /// those original appends the worker MUST re-run check_bound, then the SDK
+    /// performs its existing account/unknown/rate/physical authorization gates.
+    pub fn physical_decision(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,permit:&Permit,authority:&ReviewAuthority,now:u64)->Result<PhysicalDecision>{
+        authority.validate()?;self.check_bound(bank,log,scope,qid,spec,authority.trusted(),now)?;
+        let (ex,c)=self.cohorts.iter().find(|(_,c)|c.entry.qid==qid||c.exits.contains_key(&qid)).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
+        let r=&self.policies[ex];let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
+        let n=q["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?;let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
+        need(q["retired"]==false&&q["activationAt"].as_u64().is_some_and(|t|t<=now)&&!q["cancelEffectiveAt"].is_u64()
+            &&permit.owner=="Codex"&&permit.run_id==self.run&&permit.intent_id==qid.to_string()
+            &&u64::from(permit.maximum_quantity)>=n&&amount(&permit.maximum_cost)?>=mul(price,n as i128)?,"FUNDAMENTAL_PHYSICAL_PERMIT_OR_NATIVE_WINDOW")?;
+        let age=bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?;
+        let(books,_)=package_admission::native_books(bank,scope,now,age)?;let book=books.get(ex).ok_or("FUNDAMENTAL_PHYSICAL_BOOK_STALE")?;
+        let mut expires=q["expiresAt"].as_u64().ok_or("FUNDAMENTAL_EXPIRATION")?.min(permit.expires_at_ms)
+            .min(book.observed_ms.checked_add(age).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?)
+            .min(book.source.received_ms.checked_add(age).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);
+        let deadline_exit=if c.entry.qid==qid{false}else{
+            matches!(self.assess(bank,log,scope,qid,authority.trusted(),now)?,Decision::Exit{reason,..}if reason=="reviewed_holding_deadline")
+        };
+        if !deadline_exit{
+            expires=expires.min(r.expires_at_ms).min(r.hold_until_ms);
+            for s in &r.sources{expires=expires.min(s.observed_at_ms.checked_add(s.maximum_age_ms).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
+        }else{need(now>=c.hold_until_ms.min(r.hold_until_ms),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
+        need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
+        let ordinary_file=File::open(&self.ordinary_path)?;need(identity(&ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
+        Ok(PhysicalDecision{qid,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
+            sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,sidecar_sequence:self.sequence,sidecar_tail:self.previous.clone(),authority:authority.pin.duplicate()?,ordinary_file,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
+    }
     /// Explicit one-time owner operation; never invoked as missing-file recovery.
     pub fn initialize(root:&Path,bank:&Session,ordinary:&DispatchLog,owner:Arc<ExclusiveLock>)->Result<Self>{
         need(root.is_absolute()&&!fs::symlink_metadata(root)?.file_type().is_symlink(),"FUNDAMENTAL_ROOT")?;
         owner.descriptor_identity()?;let d=ordinary.descriptor_identity()?;
         path_pin(&root.join("dispatch.ndjson"),&json!({"device":d["device"],"inode":d["inode"]}))?;
+        let marker_path=root.join("fundamental.initialized.json");need(!marker_path.exists(),"FUNDAMENTAL_INITIALIZATION_PREVIOUSLY_USED")?;
         let path=root.join("fundamental.ndjson");
         let mut options=OpenOptions::new();options.write(true).create_new(true);
         #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
-        let f=options.open(path)?;f.sync_all()?;File::open(root)?.sync_all()?;
+        let f=options.open(path)?;f.sync_all()?;
+        let mut body=json!({"version":1,"bankManifestHash":bank.manifest_hash(),"runId":bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"],"sidecarIdentity":identity(&f)?});body["hash"]=json!(digest(&body)?);
+        let mut marker=options.open(marker_path)?;marker.write_all(&serde_json::to_vec(&body)?)?;marker.write_all(b"\n")?;marker.sync_all()?;File::open(root)?.sync_all()?;
         Self::open(root,bank,ordinary,owner)
     }
     /// `root` MUST be the sole worker's configured namespace, never an evidence
@@ -165,7 +316,13 @@ impl Cohorts{
         #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
         let file=options.open(&path)?;file.try_lock().map_err(|_|"FUNDAMENTAL_WRITER_LOCKED")?;file.sync_all()?;File::open(root)?.sync_all()?;
         need(file.metadata()?.len()<=MAX_LOG,"FUNDAMENTAL_LOG_BOUND")?;
+        let marker_path=root.join("fundamental.initialized.json");let marker_file=File::open(&marker_path)?;
+        let marker=FilePin::from_held(marker_file,marker_path,4096,None)?;let mut mark:Value=serde_json::from_slice(&read_file(&marker.file,4096)?)?;
+        let mark_sha=mark.as_object_mut().ok_or("FUNDAMENTAL_INITIALIZATION_MARKER")?.remove("hash").ok_or("FUNDAMENTAL_INITIALIZATION_MARKER")?;
+        need(mark["version"]==1&&mark_sha==digest(&mark)?&&mark["bankManifestHash"]==*bank.manifest_hash()
+            &&mark["runId"]==bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"]&&mark["sidecarIdentity"]==identity(&file)?,"FUNDAMENTAL_INITIALIZATION_MARKER")?;
         let mut out=Self{file,path,ordinary_path,ordinary_identity,_owner:owner,
+            marker,
             manifest:bank.manifest_hash().as_str().ok_or("FUNDAMENTAL_MANIFEST")?.into(),
             run:bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"].as_str().ok_or("FUNDAMENTAL_RUN")?.into(),
             sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,policies:BTreeMap::new(),cohorts:BTreeMap::new()};
@@ -211,6 +368,7 @@ impl Cohorts{
     }
     fn check(&self,bank:&Session,log:&DispatchLog)->Result<()>{
         need(!self.poisoned&&bank.manifest_hash().as_str()==Some(self.manifest.as_str())&&bank.live_account_seed().is_some_and(|s|s["runId"]==self.run),"FUNDAMENTAL_BANK_OR_POISON")?;
+        self.marker.validate()?;
         path_pin(&self.path,&identity(&self.file)?)?;path_pin(&self.ordinary_path,&self.ordinary_identity)?;
         let d=log.descriptor_identity()?;need(d["device"]==self.ordinary_identity["device"]&&d["inode"]==self.ordinary_identity["inode"],"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
         for(id,row)in &log.intents{if row.get("fundamental").is_some_and(|v|!v.is_null()){
@@ -336,6 +494,7 @@ impl Cohorts{
         self.check(bank,log)?;let mut out=Vec::new();
         for(ex,c)in &self.cohorts{let r=&self.policies[ex];
             if !log.closed.contains(&c.entry.qid)&&log.acknowledgments.contains_key(&c.entry.qid)
+                &&bank.engine().order_records().iter().any(|q|q["id"]==c.entry.qid&&q["retired"]==false)
                 &&(!current(r,now)||r.revoke_existing||!trusted.contains(&digest(r)?)||digest(r)?!=c.entry.review_sha256||now>=c.hold_until_ms.min(r.hold_until_ms)){
                 out.push(c.entry.qid);
             }
