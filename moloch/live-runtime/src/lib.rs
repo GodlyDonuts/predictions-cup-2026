@@ -42,3 +42,4 @@ pub mod maker_policy;
 pub mod fundamental_policy;
 
 pub mod graph_discovery;
+pub mod alpha_proposal;

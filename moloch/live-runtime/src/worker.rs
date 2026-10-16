@@ -669,6 +669,51 @@ fn expected_fundamental_entry_denial(reason:&str)->bool{
  matches!(reason,"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE"|"FUNDAMENTAL_ENTRY_RECEIPT_ORDER"|"FUNDAMENTAL_ENTRY_NOT_FLAT"|"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY"|"FUNDAMENTAL_ENTRY_CASH_RECONCILIATION"|"FUNDAMENTAL_ENTRY_MARKET"|"FUNDAMENTAL_REVIEWED_CONTRACT_CHANGED"|"FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED"|"FUNDAMENTAL_ENTRY_NATIVE_BOOK"|"FUNDAMENTAL_ENTRY_PLAN_CHANGED"|"REVIEWED_ENTRY_DEADLINE"|"REVIEWED_ENTRY_EXISTING_EXPOSURE"|"REVIEWED_ENTRY_REVIEW_EXPIRED"|"REVIEWED_ENTRY_CLOCK"|"REVIEWED_ENTRY_BOOK"|"REVIEWED_ENTRY_PASSIVE_PRICE"|"REVIEWED_ENTRY_FUNDING"|"REVIEWED_ENTRY_DEPTH"|"REVIEWED_ENTRY_MARKET_CAP"|"REVIEWED_ENTRY_FRESH_MARKET_CAP"|"REVIEWED_ENTRY_WRITE_BUDGET")
 }
 fn fundamental_entry_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->Result<()>{atomic_json(&c.root.join("fundamental-entry.json"),&json!({"at":iso(now()),"exchangeId":exchange,"stage":stage,"reason":reason,"physicalAttempted":false,"nativeRiskCapsChanged":false}))}
+/// Locate original prepared bytes in the already validated Session journal.
+/// Source membership, rather than a reconstructed event or elapsed timeout,
+/// is the authority for the later sidecar-only lifecycle transition.
+fn committed_cohort_event(bank:&Session,path:&Path,qid:u64,kind:&str)->Result<(String,u64,Value)>{
+ use std::io::{Read,BufRead,BufReader};
+ let metadata=fs::symlink_metadata(path)?;if !metadata.is_file()||metadata.file_type().is_symlink(){return Err("LIVE_COHORT_ORIGINAL_JOURNAL_REQUIRED".into())}
+ let mut reader=BufReader::new(fs::File::open(path)?);let mut line=Vec::new();
+ loop{line.clear();let n=reader.by_ref().take(8*1024*1024+1).read_until(b'\n',&mut line)?;if n==0{break}
+  if line.len()>8*1024*1024||line.last()!=Some(&b'\n'){return Err("LIVE_COHORT_JOURNAL_ROW_BOUND_OR_TORN".into())}
+  let row:Value=serde_json::from_slice(&line)?;let e=&row["event"];if e["type"]!=kind||e["orderId"]!=qid{continue}
+  let r=&e["sourceRef"];let source=r["id"].as_str().ok_or("LIVE_COHORT_SOURCE_REF")?;let seq=r["sequence"].as_u64().filter(|n|*n>0).ok_or("LIVE_COHORT_SOURCE_REF")?;
+  let mut original=e.clone();original.as_object_mut().ok_or("LIVE_COHORT_EVENT")?.remove("sourceRef");let digest=hash(&original);
+  if r["hash"]!=digest||bank.committed_source_hash(source,seq)!=Some(digest.as_str()){return Err("LIVE_COHORT_COMMITTED_SOURCE_MISMATCH".into())}
+  return Ok((source.into(),seq,e.clone()))
+ }Err("LIVE_COHORT_ORIGINAL_EVENT_MISSING".into())
+}
+fn retained_cohort_receipt(root:&Path,digest:&str)->Result<Receipt>{
+ use std::io::Read;
+ if digest.len()!=64||!digest.bytes().all(|b|b.is_ascii_hexdigit()){return Err("LIVE_COHORT_RECEIPT_DIGEST".into())}
+ let path=root.join("receipts").join(format!("{digest}.json"));let meta=fs::symlink_metadata(&path)?;
+ if !meta.is_file()||meta.file_type().is_symlink()||meta.len()>8*1024*1024{return Err("LIVE_COHORT_ORIGINAL_RECEIPT_REQUIRED".into())}
+ let mut bytes=Vec::new();fs::File::open(path)?.take(8*1024*1024+1).read_to_end(&mut bytes)?;
+ if bytes.len()>8*1024*1024{return Err("LIVE_COHORT_RECEIPT_BOUND".into())}let r:Receipt=serde_json::from_slice(&bytes)?;
+ if feedback::digest(&r)?!=digest{return Err("LIVE_COHORT_RECEIPT_CHANGED".into())}Ok(r)
+}
+fn expected_cohort_refresh_denial(e:&str)->bool{
+ matches!(e,"FUNDAMENTAL_REARM_ACCOUNT_CLOCK"|"FUNDAMENTAL_REARM_CASH"|"FUNDAMENTAL_REARM_NOT_FLAT"|"FUNDAMENTAL_REARM_OPEN_ORDER"|"FUNDAMENTAL_ABANDON_RECEIPT_ORDER"|"FUNDAMENTAL_ABANDON_CASH"|"FUNDAMENTAL_ABANDON_NOT_FLAT"|"FUNDAMENTAL_ABANDON_OPEN_ORDER"|"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE")
+}
+/// At most one fresh account packet per pass, on the sole shared Transport.
+/// Archival grants no order: a later pass must originate a NEW native qid.
+fn refresh_fundamental_cohort(t:&mut Transport,c:&Control,bank:&Session,log:&DispatchLog,authority:&Arc<ProductionAuthority>,stream:&Realtime,f:&mut FundamentalRuntime)->Result<bool>{
+ f.authority.validate()?;log.require_resolved_attempts()?;
+ let rearm=f.cohorts.rearm_hints(bank,log,&c.scope,now())?;
+ let abandon=f.cohorts.abandonment_hints(bank,log,&c.scope,now())?.into_iter().find(|h|bank.engine().order_records().iter().any(|q|q["id"]==h.qid&&q["retired"]==true));
+ let Some((ex,qid,kind))=rearm.first().map(|h|(h.exchange_id.clone(),h.qid,"actual_order_terminal")).or_else(||abandon.as_ref().map(|h|(h.exchange_id.clone(),h.qid,"unsubmitted_intent_retired")))else{return Ok(false)};
+ refresh_controls(c,authority,stream)?;if queue_has_unknown(t)?{return Ok(false)}
+ let(source,seq,event)=committed_cohort_event(bank,&c.root.join(&c.bank_name).join("events.jsonl"),qid,kind)?;
+ let retained=if kind=="actual_order_terminal"{Some((retained_cohort_receipt(&c.root,event["orderReceiptHash"].as_str().ok_or("LIVE_COHORT_ORDER_RECEIPT")?)?,retained_cohort_receipt(&c.root,event["receiptHash"].as_str().ok_or("LIVE_COHORT_FILL_RECEIPT")?)?))}else{None};
+ let facts=cancel_snapshots(t,c)?;refresh_controls(c,authority,stream)?;f.authority.validate()?;
+ let result=if let Some(hint)=rearm.first(){let(order,fills)=retained.as_ref().ok_or("LIVE_COHORT_TERMINAL_RECEIPTS")?;
+  f.cohorts.prepare_rearm(bank,log,t,&c.scope,hint,&facts,order,fills,&source,seq,&event,now()).and_then(|plan|f.cohorts.apply_rearm(plan,bank,log,t,now()))
+ }else{let hint=abandon.as_ref().ok_or("LIVE_COHORT_ABANDON_HINT")?;f.cohorts.prepare_abandon(bank,log,t,&c.scope,hint,&facts,&source,seq,&event,now()).and_then(|plan|f.cohorts.apply_abandon(plan,bank,log,t,now()))};
+ match result{Ok(())=>atomic_json(&c.root.join("fundamental-cohort.json"),&json!({"at":iso(now()),"exchangeId":ex,"originalQid":qid,"stage":"archived_for_new_logical_entry","originalEvidenceType":kind,"physicalAttempted":false,"financialStateChanged":false}))?,Err(e)if expected_cohort_refresh_denial(&e.to_string())=>fundamental_entry_deferred(c,&ex,"cohort_refresh",&e.to_string())?,Err(e)=>return Err(e)}
+ Ok(true)
+}
 /// Only evidenced exits preempt new entry. A stale-book-only holding refresh
 /// competes fairly with entry reads using the SAME persistent preflight cursor.
 fn fundamental_read_rotation(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],cursor:Option<&str>)->Option<(bool,usize,String)>{
@@ -750,6 +795,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   }};record_receipt(&c.root,&ack)?;log.append(json!({"kind":"cancel_ack","qid":qid,"receipt":ack}))?;authority.clear_ready();return Ok(())
  }
  if !allow_new_submissions||bank.engine().package_blocks_submissions(){return Ok(())}
+ if let Some(f)=fundamental.as_deref_mut(){if refresh_fundamental_cohort(t,c,bank,log,authority,stream,f)?{return Ok(())}}
  let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
  let mut stale_existing_hints=Vec::new();
  if let Some(f)=fundamental.as_deref_mut(){
@@ -948,7 +994,7 @@ pub fn main()->Result<()>{
    if c.root.join("fundamental.initialized.json").exists()||c.root.join("fundamental.ndjson").exists(){return Err("LIVE_FUNDAMENTAL_SETTINGS_REQUIRED_FOR_EXISTING_COHORT".into())}None
   };
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
-  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !closed_legacy_ack(&bank,&log,qid,&e){f.cohorts.validate_acknowledgment(qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());restore_ack(&mut bank,&e)?;}
+  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !closed_legacy_ack(&bank,&log,qid,&e){f.cohorts.validate_restored_acknowledgment(&bank,&log,qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());restore_ack(&mut bank,&e)?;}
   // Always recover original liabilities even when new package scanning is off.
   // Recovery never recreates a Staged capability or retries a physical send.
   let mut packages=moloch_live_runtime::package_dispatch::PackageDispatchLog::open(&c.root.join("package-dispatch"))?;
@@ -1120,6 +1166,19 @@ pub fn main()->Result<()>{
  }
  fn control(root:&Path)->Control{serde_json::from_value(json!({"activation":{"runId":"existing-worker-fixture","entryUntilMs":now()+3600000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":TID,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":scope(),"policy":{},"root":root,"credentials":"/unused","ownerLock":root.join("owner.lock"),"accountScope":"synthetic-existing-worker"})).unwrap()}
  fn receipt(data:Value,at:u64)->Receipt{Receipt{endpoint:"synthetic original receipt".into(),request_started_at:iso(at-1),received_at:iso(at),status:200,data}}
+ #[test]fn cohort_retirement_lookup_requires_exact_original_session_membership_after_restart(){
+  let(root,mut bank,mut log,_,policy,seed)=fixture();let q=bank.engine().order_records().into_iter().find(|q|q["retired"]==false).unwrap();let qid=q["id"].as_u64().unwrap();
+  retire_never_sent(&mut bank,&mut log,&q).unwrap();let path=root.0.join("bank/events.jsonl");let(source,seq,event)=committed_cohort_event(&bank,&path,qid,"unsubmitted_intent_retired").unwrap();
+  assert_eq!(source,"moloch-live");assert_eq!(event["confirmedNetworkAttempts"],0);assert_eq!(bank.committed_source_hash(&source,seq),event["sourceRef"]["hash"].as_str());
+  drop(bank);let bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();assert_eq!(committed_cohort_event(&bank,&path,qid,"unsubmitted_intent_retired").unwrap().2,event);
+  let bad=root.0.join("edited-journal");let mut edited=event.clone();edited["receiptHash"]=json!("e".repeat(64));fs::write(&bad,format!("{}\n",json!({"event":edited}))).unwrap();assert!(committed_cohort_event(&bank,&bad,qid,"unsubmitted_intent_retired").is_err());
+  assert!(committed_cohort_event(&bank,&path,qid,"actual_order_terminal").is_err());fs::write(&bad,b"{\"event\":").unwrap();assert!(committed_cohort_event(&bank,&bad,qid,"actual_order_terminal").is_err());
+ }
+ #[test]fn retained_terminal_receipts_reject_changed_bytes_wrong_hash_and_symlink(){
+  let(root,_,_,_,_,_)=fixture();private_dir(&root.0.join("receipts")).unwrap();let r=receipt(json!({"open":false,"quantityFilled":0}),now());let digest=feedback::digest(&r).unwrap();record_receipt(&root.0,&r).unwrap();
+  assert_eq!(feedback::digest(&retained_cohort_receipt(&root.0,&digest).unwrap()).unwrap(),digest);assert!(retained_cohort_receipt(&root.0,"../escape").is_err());let path=root.0.join("receipts").join(format!("{digest}.json"));let mut bad=r.clone();bad.data["quantityFilled"]=json!(1);atomic_json(&path,&serde_json::to_value(bad).unwrap()).unwrap();assert!(retained_cohort_receipt(&root.0,&digest).is_err());
+  fs::remove_file(&path).unwrap();std::os::unix::fs::symlink(root.0.join("dispatch.ndjson"),&path).unwrap();assert!(retained_cohort_receipt(&root.0,&digest).is_err());
+ }
  fn packet(c:&Control,at:u64)->SnapshotSet{snapshots_for_market(c,"201",|ep|Ok(receipt(match ep{Endpoint::Tournament=>json!({"status":"active"}),Endpoint::Orders{..}=>json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false}}),_=>json!({})},at))).unwrap()}
  fn reserve_event(bank:&Session,adoption:&Value)->Value{
   let at=now();let(_,hashes)=moloch_live_runtime::package_admission::native_books(bank,&scope(),at,10_000).unwrap();
