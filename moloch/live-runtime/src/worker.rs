@@ -380,6 +380,14 @@ fn physical_order(c:&Control,q:&Value)->Result<(Order,RequestSpec,Permit)>{
  let request_spec=spec(&order)?;let p=Permit{run_id:c.activation.run_id.clone(),intent_id:qid.to_string(),owner:"Codex".into(),expires_at_ms:now()+15000,maximum_quantity:order.quantity,maximum_cost:money(decimal_units(&order.price)?.checked_mul(order.quantity as i128).ok_or("LIVE_COST_OVERFLOW")?)};
  Ok((order,request_spec,p))
 }
+fn record_original_attempt(bank:&Session,log:&mut DispatchLog,qid:u64,config:Option<&moloch_live_runtime::execution_edge::Config>,at:u64)->Result<()>{
+ let q=quote(bank,qid)?;
+ if !log.never_attempted(qid)||log.intents.get(&qid).is_none_or(|intent|intent["quote"]!=q){return Err("LIVE_ATTEMPT_ORIGINAL_QUOTE_REQUIRED".into())}
+ let sources:[(&str,u64);2]=[("moloch-live",bank.last_source_sequence("moloch-live")),("moloch-package",bank.last_source_sequence("moloch-package"))];
+ let frontier:Value=sources.into_iter().map(|(source,sequence)|(source.to_owned(),json!({"sequence":sequence,"originalPreparedEventSha256":bank.committed_source_hash(source,sequence)}))).collect::<serde_json::Map<String,Value>>().into();
+ let event=json!({"kind":"attempt","qid":qid,"at":iso(at),"captureAtMs":at,"evidenceVersion":1,"nativeHead":bank.durable_head(),"sourceFrontier":frontier,"originalQuoteSha256":hash(&q),"dispatchBefore":log.proof(qid),"modelConfigSha256":config.map(feedback::digest).transpose()?,"modelAlgorithmSha256":format!("{:x}",Sha256::digest(include_bytes!("execution_edge.rs")))});
+ log.append(event)?;moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);Ok(())
+}
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>)->Result<()>{
  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let(order,request_spec,p)=physical_order(c,q)?;
  if let Some((decision,review))=&maker{if let Err(error)=decision.validate_current(bank,review,log,now()){
@@ -389,7 +397,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof())}))?;
- log.append(json!({"kind":"attempt","qid":qid,"at":iso(now())}))?; moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,now());
+ record_original_attempt(bank,log,qid,c.execution_model.as_ref(),now())?;
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
  record_receipt(&c.root,&ack)?;log.append(json!({"kind":"ack","qid":qid,"receipt":ack}))?;
  let event=feedback::acknowledgment(q,&ack,&iso(now()))?;authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();Ok(())
