@@ -9,7 +9,17 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at13:43UTC
+## Latest operation and qualification at13:54UTC
+
+Initial successor506740 stopped13:47:15 with CONNECTION_UNCONFIRMED at token
+HTTP after restoring original history. No stream/financial submissions began.
+Root retained failure evidence, verified actual SDK quiet/zero unknown and
+unchanged financial journals/bridges, then manually started the same binary
+once as510591 at13:51:29. At13:54:14 it was restoring; fresh trading is pending.
+Daily authorization/token budget and financial history were not reset.
+[Actual repair evidence](../research/moloch-inter-read-20261016/README.md).
+
+## Historical operation and qualification at13:43UTC
 
 Inter-read runtime4ee16356/executable011ffde0 passed81 worker checks and an
 optimized ARM64 build, then started as sole SIG506740 at13:36:03UTC. At13:43:24
