@@ -110,6 +110,11 @@ impl BoundSurface{
    let receipt=r.current_receipt;let start=daily_windows::clock(&receipt.request_started_at)?;let received=daily_windows::clock(&receipt.received_at)?;
    need(receipt.status==200&&receipt.endpoint==format!("/markets/{}/nodes?tournamentId={}",input.market_id,scope.tournament_id)&&start<=received&&received<=now&&now-start<=age,"SURFACE_CURRENT_CONTRACT")?;
    need(receipt.data["market_id"]==input.market_id&&receipt.data["root"]["node_type"]=="contract"&&receipt.data["root"]["node_id"]==input.contract_id&&receipt.data["root"]["contract_id"]==input.contract_id&&fundamental_policy::official_contract_root_sha256(&receipt.data)?==input.official_contract_root_sha256,"SURFACE_CURRENT_CONTRACT_CHANGED")?;
+   // An operator mapping cannot override contradictory structured primary
+   // party metadata. Opaque/other resolver semantics remain labeled assumptions
+   // and need the separate semantic-state review; titles are never parsed.
+   let details=&receipt.data["root"]["contract_details"];
+   if details["resolutionType"]=="Party Winner"{if let Some(party)=match details["winnerName"].as_str(){Some("Democratic Party")=>Some(RaceOutcome::Dem),Some("Republican Party")=>Some(RaceOutcome::Rep),_=>None}{need(party==r.mapping.party,"SURFACE_PRIMARY_PARTY_CONTRADICTION")?;}}
    let race=surface.races.iter().position(|x|x.race_id==r.mapping.race_id).ok_or("SURFACE_RACE_MAPPING")?;
    let side=match input.side.as_str(){"YES"=>Side::Yes,"NO"=>Side::No,_=>return Err("SURFACE_SIDE".into())};
    let mean=surface.scenarios.iter().filter(|s|(s.race_outcomes[race]==r.mapping.party)==(side==Side::Yes)).try_fold(0i128,|n,s|plus(n,s.weight_ppm as i128))?;
