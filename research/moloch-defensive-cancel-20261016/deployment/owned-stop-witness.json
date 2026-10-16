@@ -1,0 +1,10 @@
+{
+  "executionOwnerReviewed": true,
+  "manifestSha256": "50210837c0b876966ce07b8d74a0d9034448a42ba47c62c194d3b086837aef57",
+  "oldPid": 518852,
+  "operator": "paper6_defensive_cancel_rollout_v1",
+  "reason": "controlled-worker-stop-only-not-human-stop",
+  "requestSha256": "bfa136d3489024afbf662af8ce4c75c9556ac5c795a6490623805c90b713b01b",
+  "stopSha256": "ae920f75be94b47be65135d722b406f1e7e26152f69b1609722d710959227526",
+  "workerStatusSha256": "a3be3142a9c2cc07fded02a47a1b2de6d146be894a526471ae328df1e8fadf7a"
+}

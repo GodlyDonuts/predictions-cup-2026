@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-16T17:07:11.274542+00:00",
+  "oldPidAbsent": true,
+  "servicePid": 0,
+  "stopAfterOwnRequestSeconds": 0.64578,
+  "stopReason": "STOPPED_OR_OWNER_LOST",
+  "workerReason": "STOPPED_OR_OWNER_LOST",
+  "priorControlUnchanged": true,
+  "globalStopAbsent": true,
+  "globalUnknownCount": 0,
+  "activeRequest": null,
+  "manualReview": false,
+  "exclusiveCaptureLeaseVerified": true,
+  "originalBankPrefixManifestReportAnd12BridgesUnchanged": true,
+  "manifestSha256": "50210837c0b876966ce07b8d74a0d9034448a42ba47c62c194d3b086837aef57"
+}

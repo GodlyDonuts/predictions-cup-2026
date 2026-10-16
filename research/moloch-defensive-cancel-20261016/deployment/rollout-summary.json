@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-16T17:07:56.937582+00:00",
+  "newPid": 525450,
+  "sourceCommit": "b112c6c1b941bcc3282c754c1883a55b2b9b6cc2",
+  "binarySha256": "3ab6ef7c49c089f19ff90220cd3431ff5ce1c84a5858d6d9fdde060f1b9d6883",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper6-defensive-cancel-20261016.json",
+  "release": "/home/archon/apps/moloch/releases/paper6-defensive-cancel-3ab6ef7c49c0/moloch-live-runtime",
+  "unchangedBridgeSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+  "originalPrivateReceiptSha256": "993626d8fe902579f31b9e17bb1851889cd7151c4d3784e79405e316850b815c",
+  "originalPrivateReceiptBytes": 41736223,
+  "originalBridgeCount": 12,
+  "freshTradingVerificationPending": true,
+  "financialEngineChanged": false,
+  "bankMigration": false,
+  "operatorSha256": "3601e4471150684bad34c4c41de7b325cd77db8636febafd53d776ead9787c9b",
+  "approvedManifestSha256": "50210837c0b876966ce07b8d74a0d9034448a42ba47c62c194d3b086837aef57"
+}
