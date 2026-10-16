@@ -18,7 +18,7 @@ Original attachment SHA256 values: brief `7004e8c4803b63d6d04042dab460b400af7cfa
 | Exact order keys fragment inference | Exact keys remain useful provenance | Pool normalized features while retaining exact original evidence |
 | Worst markout is called uncertainty | Minimum stress does not estimate uncertainty of the mean | Block-level mean uncertainty and separate tails/stress |
 | Reservation/holding duration is understated | Fixed markout horizons cannot establish actual capital turnover | Integrate reserved and owned capital across actual lifecycle; unresolved remains censored |
-| Forecast entries only join bid | Still true in native planning and physical authority | Explicit join/improve/bounded-limit capability with full funding/depth checks |
+| Forecast entries only join bid | Superseded: explicit reviewed native/physical bounded-limit capability; actual430YES@.920 filled04:02UTC | Measure actual repricing, exits and capital turnover |
 | A completed zero-fill entry blocks future opportunity | Actual DE order41655759 closed with0fills | Genuine receipt-bound archival and new logical cohort; never retry the closed key |
 
 ## Work split and acceptance
@@ -52,3 +52,13 @@ Source b514eede was promoted as immutable binary2bba9365a3a342b1185492b231bb89cb
 External-source catch-up and SIG-only dislocation require separate prospective experiments, exact semantic matching, first-available clocks, full-depth/capacity outcomes and negative controls. Joint election baskets are probabilistic scenarios unless an actual reviewed guarantee certificate exists; current relationship registries are empty. Public-results nowcasting requires genuine partial-return vintages rather than hindsight final totals, plus verified open-market and resolution rules. The example .045 minus exception probability sensitivity does not estimate that probability.
 
 Success is attributable net portfolio outcome with capacity and capital-time measured. Positive provisional daily dashboard marks, code volume, acknowledgments and passing tests cannot establish scalable profitability or a precise chance of winning. Paper2 remains open; Paper3 is in progress.
+
+## First actual bounded forecast fill, October16 04:02UTC
+
+After the permit-delay incident repair, PID381131 runs source4148fe5d with fresh realtime/trading verified04:07:24UTC. Original official order41846939/q3420 filled430 Delaware YES1042 at.920,395.600000 principal, zero fees, execution04:02:17.490UTC, officialfill174569344. Original fill receipt hash68dcd1e19180da724368c2acf759a40c97101b07a3762d4a3b18a2e710f52787 is committed in the native actual-fill ledger. The logical reservation was separately created, funded and bound before the real ordinary bounded-limit send. Earlierq3085 closed withzero fills and q3410 never sent; neither was retried.
+
+This completes one genuine proposal→funding→physical bounded execution→fill→managed holding path. It does not complete the exit/outcome path or establish realized profitability. The unchanged95% ordinary forecast/1% exceptional allowance imply.9405 model payout under those assumptions, while the fixed October19 holding deadline can require an earlier exit. Settlement-value surplus cannot be described as a guaranteed gain or an executable three-day return. Actual owned cash/cost and eventual sale/payout remain decisive.
+
+Production now has optional execution-distribution and execution-model diagnostics disabled after the synchronous scan delayed a permit and automatically stopped the previous release. The scan is fixed and original no-network evidence resolved the incident; the diagnostics have no production execution authority. Their shadow implementation is not proof of prospective calibration or an active maker strategy. [Incident and actual replacement](MOLOCH_PERMIT_RECOVERY_20261016.md).
+
+The official Rhode Island September primary source is now retained: [official summary PDF](https://elections.ri.gov/sites/g/files/xkgbur756/files/2026-09/Prim26_Summary.pdf), observed04:04:15UTC,251793bytes,SHA35af3130ea9c7a681008272cea77c89c39b86c0171c57bd5c9a9a17724709ab2. It records Reed98473 vs17192/12529 in the Democratic Senate primary. It labels358/402precincts despite an official-results heading; this is nomination evidence, not current ballot/resolver assurance. The stale July declaration finding is preserved. No RI review or new runtime activation follows from this document.

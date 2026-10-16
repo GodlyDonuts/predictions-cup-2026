@@ -1,5 +1,7 @@
 # Research papers: implementation and live evidence
 
+Before drafting another paper, read [MOLOCH_RESEARCH_BASELINE](MOLOCH_RESEARCH_BASELINE.md) and pin the current Git commit plus the separately recorded deployed commit/binary and observation UTC. A code change on main is not automatically deployed. [CURRENT_STATE](CURRENT_STATE.md) is reverse chronological; older entries are history. Avoid treating an older supplied paper or dated candidate paragraph as a current capability list.
+
 Papers are research inputs. They do not grant execution authority, establish current venue behavior or replace the dated production record in [CURRENT_STATE](CURRENT_STATE.md). Preserve a working sole production service while testing changes in isolated checkouts; deploy only checked changes through the existing account queue and ownership lock.
 
 ## Supplied October 15 papers
@@ -8,8 +10,9 @@ Papers are research inputs. They do not grant execution authority, establish cur
 | --- | --- | --- | --- |
 | Paper 1: quantitative audit and latency roadmap | [Paper 1](../research/papers/20261015-paper-1.md) | `c23b1633b85a16afcddd3c1a74a3eebd0aa0d1aff91e482552376a985d43173c` | Rust production runtime; official own-fill accounting; [read planner](MOLOCH_RECONCILIATION_PLAN_20261015.md); actual fill proofs and separate inherited/new-trading results |
 | Paper 2: relationship-aware portfolio edge | [Paper 2](../research/papers/20261015-paper-2.md) | `0124957712552edc8e3565e8c57f512a729679f7d3fc596f29e66a256723ace5` | [official feeds](MOLOCH_RELATIONSHIP_FEED_20261015.md), [payoff compiler/scanner/adapter](MOLOCH_RELATIONSHIP_ARBITRAGE_20261015.md), [atomic basket transport](MOLOCH_ATOMIC_BASKET_TRANSPORT_20261015.md), [live census](../data/moloch-relationship-census-20261015.json), [independent contract audit](../research/moloch-political-contract-proof-20261015/README.md) |
+| Paper 3 and implementation brief | Original human attachments retained privately; [current implementation map](MOLOCH_PAPER3_20261016.md) | Paper `2bc7e8b055b3a8d1c7f33dfec719bad6a9ff573ad84d94f808a8c2ea3fae9d66`; brief `7004e8c4803b63d6d04042dab460b400af7cfaa7642d8e4afd52e099f968efe3` | Independent reviewed join/improve/bounded entries and original-proof cohort rearm deployed; first430YES forecast fill reconciled. Joint execution-distribution implementation exists but is disabled. [Actual economics](../research/moloch-actual-economics-20261016/README.md). Broader Paper2/3 research remains incomplete. |
 
-Hashes identify the original attachment bytes before Git newline normalization. Original sizes were56,136 and36,045 bytes. Both were screened for concrete API-token/private-key patterns before archival; credentials and private runtime account receipts remain outside Git.
+Hashes identify original attachment bytes before Git newline normalization. Paper1/2 original sizes were56,136 and36,045 bytes; both were screened for concrete API-token/private-key patterns before archival. Credentials and private runtime account receipts remain outside Git.
 
 ## What changed because of the papers
 

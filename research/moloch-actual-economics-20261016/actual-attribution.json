@@ -1,0 +1,602 @@
+{
+  "accounting": {
+    "cash": "17046.770000",
+    "fees": "0.000000",
+    "feesNotAssignedToAcquisitionCohort": "0.000000",
+    "inheritedRealizedGross": "43.395000",
+    "initialCash": "40000.000000",
+    "newTradingRealized": "-119.100000",
+    "openingInventoryCost": "24729.485000",
+    "ownedCost": "22877.525000",
+    "realized": "-75.705000"
+  },
+  "adjacentExecutionClockReversals": 12,
+  "analysis": "original_actual_event_fifo_attribution",
+  "chainVerification": "extractor_attestation_only_full_original_chain_not_recomputed_from_filtered_events",
+  "duplicateOriginalFillEvents": 38,
+  "inputSha256": "2ee8c7f2e0a78b9ce7689e5bc7eda9ccd80c87127cea4bf17aece1247b49ef0e",
+  "inventoryAgeThresholdMs": 60000,
+  "limitations": [
+    "No remaining position receives a market mark, liquidation value, or future fill.",
+    "Inherited realized is opening-lot gross attribution, not official account P&L; all fees remain new/forecast expense.",
+    "Forecast origin uses only the extraction's explicit original forecast qids; it is not inferred from market title.",
+    "FIFO fee fragments use integer-millionth rounding with the remainder on the last fragment.",
+    "Cohort fees are expensed immediately, including entry fees on still-open inventory.",
+    "Fees closing inherited lots remain new/forecast execution expense, outside acquisition-cohort fees.",
+    "Open quantities are attributed native inventory; no fresh official account audit is claimed."
+  ],
+  "observedAt": "2026-10-16T04:07:21.525899+00:00",
+  "omittedPrivateDetail": "individual opening-lot cohorts and current position rows omitted",
+  "origins": {
+    "forecast": {
+      "closed": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 0,
+        "grossRealized": "0.000000",
+        "maximumHoldingMs": null,
+        "minimumHoldingMs": null,
+        "quantityWeightedHoldingMs": null,
+        "shares": 0
+      },
+      "feesExpensed": "0.000000",
+      "fullyClosedAcquisitionPrincipal": "0.000000",
+      "fullyClosedCohorts": 0,
+      "fullyClosedExitTurnover": "0.000000",
+      "fullyClosedNetFlat": 0,
+      "fullyClosedNetLosses": 0,
+      "fullyClosedNetWins": 0,
+      "grossRealized": "0.000000",
+      "lotCohorts": 1,
+      "maximumAgeExits": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 0,
+        "grossRealized": "0.000000",
+        "maximumHoldingMs": null,
+        "minimumHoldingMs": null,
+        "quantityWeightedHoldingMs": null,
+        "shares": 0
+      },
+      "maximumAgeGrossLoss": "0.000000",
+      "netRealizedAttribution": "0.000000",
+      "remainingUnmarkedCost": "395.600000"
+    },
+    "inherited": {
+      "closed": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 20,
+        "grossRealized": "43.395000",
+        "maximumHoldingMs": "1097147629.724700",
+        "minimumHoldingMs": "542194520.809200",
+        "quantityWeightedHoldingMs": "964837663.2966297752808988764",
+        "shares": 2848
+      },
+      "feesExpensed": "0.000000",
+      "fullyClosedAcquisitionPrincipal": "592.705000",
+      "fullyClosedCohorts": 14,
+      "fullyClosedExitTurnover": "617.910000",
+      "fullyClosedNetFlat": 0,
+      "fullyClosedNetLosses": 0,
+      "fullyClosedNetWins": 14,
+      "grossRealized": "43.395000",
+      "lotCohorts": 43,
+      "maximumAgeExits": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 0,
+        "grossRealized": "0.000000",
+        "maximumHoldingMs": null,
+        "minimumHoldingMs": null,
+        "quantityWeightedHoldingMs": null,
+        "shares": 0
+      },
+      "maximumAgeGrossLoss": "0.000000",
+      "netRealizedAttribution": "43.395000",
+      "remainingUnmarkedCost": "22481.925000"
+    },
+    "new": {
+      "closed": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 88,
+        "grossRealized": "-119.100000",
+        "maximumHoldingMs": "11591930.000000",
+        "minimumHoldingMs": "78061.000000",
+        "quantityWeightedHoldingMs": "1879435.512808303971050376155",
+        "shares": 10501
+      },
+      "feesExpensed": "0.000000",
+      "fullyClosedAcquisitionPrincipal": "6794.060000",
+      "fullyClosedCohorts": 30,
+      "fullyClosedExitTurnover": "6674.960000",
+      "fullyClosedNetFlat": 6,
+      "fullyClosedNetLosses": 21,
+      "fullyClosedNetWins": 3,
+      "grossRealized": "-119.100000",
+      "lotCohorts": 30,
+      "maximumAgeExits": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 88,
+        "grossRealized": "-119.100000",
+        "maximumHoldingMs": "11591930.000000",
+        "minimumHoldingMs": "78061.000000",
+        "quantityWeightedHoldingMs": "1879435.512808303971050376155",
+        "shares": 10501
+      },
+      "maximumAgeGrossLoss": "-119.400000",
+      "netRealizedAttribution": "-119.100000",
+      "remainingUnmarkedCost": "0.000000"
+    }
+  },
+  "parity": "exact_native_fills_fifo_positions_cash_cost_fees_realized_attribution",
+  "perExchangeSide": [
+    {
+      "buyNotional": "20.900000",
+      "buyShares": 22,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "-0.110000"
+      },
+      "exchangeId": "863",
+      "executionRealized": "-0.110000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "-0.110000",
+      "fills": 2,
+      "marketId": "174",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "20.790000",
+      "sellShares": 22,
+      "side": "YES"
+    },
+    {
+      "buyNotional": "1056.600000",
+      "buyShares": 3522,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "-41.805000"
+      },
+      "exchangeId": "885",
+      "executionRealized": "-41.805000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "-41.805000",
+      "fills": 25,
+      "marketId": "196",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "1014.795000",
+      "sellShares": 3522,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "336.960000",
+      "buyShares": 351,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "-3.510000"
+      },
+      "exchangeId": "942",
+      "executionRealized": "-3.510000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "-3.510000",
+      "fills": 13,
+      "marketId": "253",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "333.450000",
+      "sellShares": 351,
+      "side": "YES"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "27.130000",
+        "new": "0.000000"
+      },
+      "exchangeId": "948",
+      "executionRealized": "27.130000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "27.130000",
+      "fills": 3,
+      "marketId": "259",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "6931.775000",
+      "sellNotional": "2040.775000",
+      "sellShares": 2255,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "386.640000",
+      "buyShares": 716,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.205000",
+        "new": "-2.425000"
+      },
+      "exchangeId": "949",
+      "executionRealized": "-2.220000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "-2.220000",
+      "fills": 5,
+      "marketId": "260",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "406.560000",
+      "sellShares": 757,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "3573.850000",
+      "buyShares": 3685,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "-67.555000"
+      },
+      "exchangeId": "953",
+      "executionRealized": "-67.555000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "-67.555000",
+      "fills": 21,
+      "marketId": "264",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "3506.295000",
+      "sellShares": 3685,
+      "side": "YES"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "2.400000",
+        "new": "0.000000"
+      },
+      "exchangeId": "966",
+      "executionRealized": "2.400000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "2.400000",
+      "fills": 1,
+      "marketId": "277",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "4.800000",
+      "sellShares": 48,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.055000",
+        "new": "0.000000"
+      },
+      "exchangeId": "977",
+      "executionRealized": "0.055000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.055000",
+      "fills": 1,
+      "marketId": "288",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "10.065000",
+      "sellShares": 11,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.235000",
+        "new": "0.000000"
+      },
+      "exchangeId": "978",
+      "executionRealized": "0.235000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.235000",
+      "fills": 1,
+      "marketId": "289",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "38.070000",
+      "sellShares": 47,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "2.340000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1001",
+      "executionRealized": "2.340000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "2.340000",
+      "fills": 2,
+      "marketId": "312",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "57.330000",
+      "sellShares": 78,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "101.080000",
+      "buyShares": 133,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1003",
+      "executionRealized": "0.000000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.000000",
+      "fills": 3,
+      "marketId": "314",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "101.080000",
+      "sellShares": 133,
+      "side": "YES"
+    },
+    {
+      "buyNotional": "43.050000",
+      "buyShares": 123,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.325000",
+        "new": "-0.615000"
+      },
+      "exchangeId": "1011",
+      "executionRealized": "-0.290000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "-0.290000",
+      "fills": 5,
+      "marketId": "322",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "44.235000",
+      "sellShares": 128,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "148.850000",
+      "buyShares": 229,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1011",
+      "executionRealized": "0.000000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.000000",
+      "fills": 2,
+      "marketId": "322",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "148.850000",
+      "sellShares": 229,
+      "side": "YES"
+    },
+    {
+      "buyNotional": "359.625000",
+      "buyShares": 525,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1012",
+      "executionRealized": "0.000000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.000000",
+      "fills": 4,
+      "marketId": "323",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "359.625000",
+      "sellShares": 525,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.140000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1031",
+      "executionRealized": "0.140000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.140000",
+      "fills": 1,
+      "marketId": "342",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "3.290000",
+      "sellShares": 7,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "417.480000",
+      "buyShares": 588,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "-3.080000"
+      },
+      "exchangeId": "1034",
+      "executionRealized": "-3.080000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "-3.080000",
+      "fills": 19,
+      "marketId": "345",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "414.400000",
+      "sellShares": 588,
+      "side": "YES"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "1.550000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1042",
+      "executionRealized": "1.550000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "1.550000",
+      "fills": 1,
+      "marketId": "353",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "6.510000",
+      "sellShares": 62,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "395.600000",
+      "buyShares": 430,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1042",
+      "executionRealized": "0.000000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.000000",
+      "fills": 1,
+      "marketId": "353",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "395.600000",
+      "sellNotional": "0.000000",
+      "sellShares": 0,
+      "side": "YES"
+    },
+    {
+      "buyNotional": "349.025000",
+      "buyShares": 607,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.000000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1045",
+      "executionRealized": "0.000000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.000000",
+      "fills": 4,
+      "marketId": "356",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "349.025000",
+      "sellShares": 607,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "6.510000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1047",
+      "executionRealized": "6.510000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "6.510000",
+      "fills": 1,
+      "marketId": "358",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "34.410000",
+      "sellShares": 93,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.205000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1070",
+      "executionRealized": "0.205000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.205000",
+      "fills": 1,
+      "marketId": "381",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "6.560000",
+      "sellShares": 41,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "2.000000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1073",
+      "executionRealized": "2.000000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "2.000000",
+      "fills": 1,
+      "marketId": "384",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "0.000000",
+      "sellNotional": "11.000000",
+      "sellShares": 100,
+      "side": "NO"
+    },
+    {
+      "buyNotional": "0.000000",
+      "buyShares": 0,
+      "closingOriginGross": {
+        "forecast": "0.000000",
+        "inherited": "0.300000",
+        "new": "0.000000"
+      },
+      "exchangeId": "1075",
+      "executionRealized": "0.300000",
+      "fees": "0.000000",
+      "fifoOriginRealized": "0.300000",
+      "fills": 2,
+      "marketId": "386",
+      "pairedShares": 0,
+      "remainingUnmarkedCost": "1.790000",
+      "sellNotional": "54.000000",
+      "sellShares": 60,
+      "side": "NO"
+    }
+  ],
+  "profitabilityEstablished": false,
+  "schemaVersion": 1,
+  "sourceBoundary": {
+    "bankPrevious": "c3ada539f7cc87c7a62f33b6dda1c02f9d1663f461d4121c6b327357f9f5cbf2",
+    "bankSequence": 150533,
+    "everyOriginalRowChainVerified": true,
+    "journalPrefixBytes": 432656173,
+    "journalPrefixSha256": "7fb73a2ab693b5f1a7016f594cbcfc3031b10a2a5b849094823b8a5713e7cddb",
+    "reportEnvelopeHash": "f7009a46aa68382609bf0b4ff337a5407464f094822c6aa467db0990862c4112"
+  },
+  "uniqueActualFills": 119
+}

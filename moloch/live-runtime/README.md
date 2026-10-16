@@ -1,7 +1,9 @@
 # Moloch actual contest runtime
 
 This Rust executable joins the native strategy and ledger to the official SIG
-API. It is separate from the read-only collector and from every paper wallet.
+API. It is the sole production account collector/writer; historical paper
+wallets do not authorize another account client. For the deployed version,
+active settings and actual results, use the [research baseline](../../docs/MOLOCH_RESEARCH_BASELINE.md).
 Public trades and order books never credit actual fills.
 
 Typed GET observations have at most three attempts for temporary connection,
@@ -55,13 +57,16 @@ expiry, cancellation request or public trade cannot release an actual liability.
 The historical zero-fee policy is checked against exact account cash before
 new placements. Actual global cash must equal the initial account snapshot plus
 the attributed wallet's cash change. Selected physical holdings must match
-attributed inventory. Inherited holdings are observed without adoption; initial
-scope overlap and foreign resting orders block new entries. Owned cancellation
+attributed inventory. Human-authorized inherited holdings are managed only after
+the original receipt-bound adoption and exact opening-lot attribution. Unadopted
+holdings and foreign resting orders remain separate. Owned cancellation
 remains possible without a healthy market stream or matching cash.
 
-Native inventoryAON is a planning label. The official API has no corresponding
+Native inventoryAON is a planning label. The ordinary order endpoint has no
 atomic-order guarantee: production submits a covered limit order and accounts
 actual partial execution. It does not report simulated all-or-nothing fills.
+The separate official multi-leg endpoint has its own all-or-none transport and
+durable lifecycle; ordinary orders cannot borrow that guarantee.
 
 The status.json file combines actual execution mode, stream health, scope
 recovery, physical order counts and account queue state. The engine's own
@@ -77,11 +82,23 @@ The moloch-breadth executable verifies an immutable journal prefix and ranks
 fresh spreads and recent two-sided relative flow using original nanosecond
 clocks, prior received books and stable price regimes. Its output is discovery
 evidence, not executable profit, queue priority or authorization to trade a
-new market. A proposed scope still needs fresh official reconciliation and a
-separately frozen forward comparison.
+new market. The existing all-market mandate still requires fresh official
+reconciliation, native funding and physical authorization for each order.
 
 The service runs an immutable versioned binary. Future work is built separately.
 Do not hot-replace an executable, mutate the funded policy, reuse a paper bank,
 reset an active bank, or extend the entry deadline through an ordinary restart.
 After the entry window ends, a valid existing live bank can restart to manage
 its attributed orders and inventory.
+The human also authorized daily entry windows through the fixed competition
+campaign end. Only the explicit durable daily-window transition implements that
+mandate; an arbitrary restart does not renew it.
+
+Reviewed forecasts can originate independently of ordinary maker proposals.
+Omitted execution policy defaults to joining bid; explicit reviewed policies
+can allow one-tick improvement or a bounded marketable limit with a resting
+remainder. Only the matching opaque native/physical capability permits that
+BUY. Current reviewed holdings, exits and cohort rearm are described in
+[fundamental execution](../../docs/MOLOCH_FUNDAMENTAL_EXECUTION_20261016.md).
+Optional execution diagnostics and the empirical maker gate are currently off;
+their presence in source does not imply production activation.

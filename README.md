@@ -1,5 +1,7 @@
 # Moloch — official production bot
 
+For new research, start with the [current Moloch research baseline](docs/MOLOCH_RESEARCH_BASELINE.md), then the latest dated [production evidence](docs/CURRENT_STATE.md). The baseline separates deployed code, checked source, disabled features and unfinished work. Historical sections below are not the current deployment specification.
+
 Moloch is the human-selected production system for the 2026 Susquehanna Predictions Cup. Its Rust runtime is in [moloch/live-runtime](moloch/live-runtime/README.md), with the exact financial ledger and replay engine in [moloch/native](moloch/native/RUST_MIGRATION.md). The existing VPS service is `moloch-live.service`; deployment and actual fill/profit observations are recorded in [CURRENT_STATE](docs/CURRENT_STATE.md) and [execution task #120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120).
 
 The human directed Moloch to take over `main` and the primary checkout. Useful Baal transport, account reconciliation, risk utilities and research remain in the repository; there is one production account worker. All-market observation does not imply simultaneous exposure in every market. Actual fills and realized profit must come from official receipts and the attributed ledger, not public prints or simulations.
