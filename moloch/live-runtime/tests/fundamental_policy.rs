@@ -163,6 +163,55 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
             match case{0=>assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,plan.valid_until_ms()).is_err()),1=>{f.log.append(json!({"kind":"source","qid":999,"diagnostic":"actual local journal advance"})).unwrap();assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+26).is_err());},_=>{std::fs::write(f.root.join("review-authority.json"),b"changed").unwrap();assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+26).is_err());}}
         }
     }
+    fn abandonment_fixture(positive:Option<bool>)->(F,baal_transport_service::Transport,moloch_live_runtime::authority::CancelSnapshotSet,Value,Value){
+        let(mut f,t,facts)=entry_fixture();let authority=f.authority();let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);
+        let plan=f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).unwrap().unwrap();f.bank.accept("reviewed-entry",1,plan.event()).unwrap();
+        let q=f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some()).unwrap();let id=q["id"].as_u64().unwrap();let spec=f.spec(&q);
+        f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW+26).unwrap();
+        f.log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":spec,"fundamental":f.store.as_ref().unwrap().durable_tag(id).unwrap()})).unwrap();
+        let mut proof=f.log.proof(id);if positive==Some(false){proof["networkAttempts"]=json!(1);}if positive.is_some(){f.log.append(json!({"kind":"not_sent","qid":id,"proof":proof})).unwrap();}
+        let retirement=json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":sha(&serde_json::to_vec(&proof).unwrap()),"receivedAt":iso(NOW+30),"processedAt":iso(NOW+30),"deferPlanningForPackage":true});
+        f.bank.accept("never-sent-retirement",1,&retirement).unwrap();
+        let mut facts=moloch_live_runtime::authority::CancelSnapshotSet{account:facts.account,positions:facts.positions,open_orders:facts.open_orders,cash_balance:facts.cash_balance};
+        for(i,r)in [&mut facts.account,&mut facts.positions,&mut facts.open_orders,&mut facts.cash_balance].into_iter().enumerate(){r.request_started_at=iso(NOW+31+i as u64*2);r.received_at=iso(NOW+32+i as u64*2);}
+        (f,t,facts,retirement,q)
+    }
+    #[test]fn never_sent_abandonment_archives_original_tag_and_reopens_without_financial_mutation(){
+        let(mut f,t,facts,retirement,q)=abandonment_fixture(Some(true));let id=q["id"].as_u64().unwrap();let original=f.store.as_ref().unwrap().durable_tag(id).unwrap();let head=f.bank.durable_head();let report=f.bank.engine().report().unwrap();
+        let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);
+        let prepare=|f:&F|f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).unwrap();let plan=prepare(&f);let duplicate=prepare(&f);
+        f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+40).unwrap();assert!(f.store.as_mut().unwrap().apply_abandon(duplicate,&f.bank,&f.log,&t,NOW+41).is_err());
+        assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),report);assert_eq!(f.store.as_ref().unwrap().durable_tag(id),Some(original.clone()));
+        f.reopen();assert_eq!(f.store.as_ref().unwrap().durable_tag(id),Some(original));assert_eq!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+41).unwrap().len(),1);
+        let mut ack=F::base(&q,"actual_order_ack",NOW+42,"901");ack["quantity"]=q["quantity"].clone();assert!(f.store.as_ref().unwrap().validate_acknowledgment(id,&ack).is_err());
+    }
+    #[test]fn archived_original_intent_tag_survives_a_new_live_cohort_on_restart(){
+        let(mut f,t,facts,retirement,q)=abandonment_fixture(Some(true));let old=q["id"].as_u64().unwrap();let old_tag=f.store.as_ref().unwrap().durable_tag(old).unwrap();
+        let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).unwrap();f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+40).unwrap();
+        f.book(NOW+4000,"0.100000","0.120000");let mut r=input(f.bank.manifest_hash().as_str().unwrap(),NOW+4051);r.tournament_id=f.scope.tournament_id.clone();f.install(r,NOW+4051);
+        let new=f.entry();let spec=f.spec(&new);let new_id=new["id"].as_u64().unwrap();assert_ne!(new_id,old);f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,new_id,&spec,&f.trust,NOW+4051).unwrap();
+        f.log.append(json!({"kind":"intent","qid":new_id,"quote":new,"spec":spec,"fundamental":f.store.as_ref().unwrap().durable_tag(new_id).unwrap()})).unwrap();f.reopen();assert_eq!(f.store.as_ref().unwrap().durable_tag(old),Some(old_tag));assert!(f.store.as_ref().unwrap().durable_tag(new_id).is_some());
+    }
+    #[test]fn timeout_or_absence_or_forged_not_sent_never_proves_abandonment(){
+        for proof in [None,Some(false)]{let(f,t,facts,retirement,_)=abandonment_fixture(proof);let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);
+            assert!(f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).is_err());}
+    }
+    #[test]fn abandonment_requires_exact_committed_retirement_and_fresh_complete_flat_account(){
+        for case in 0..7{let(f,t,mut facts,mut retirement,_)=abandonment_fixture(Some(true));let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);
+            match case{0=>retirement["receiptHash"]=json!("f".repeat(64)),1=>retirement["processedAt"]=json!(iso(NOW+29)),2=>facts.positions.data["positions"]=json!([{"exchangeId":"101","quantity":-1}]),3=>facts.open_orders.data["data"]=json!([{"exchangeId":"101","id":"901"}]),4=>facts.open_orders.data["coverage"]["complete"]=json!(false),5=>facts.account.request_started_at=iso(NOW-20000),_=>facts.positions.data["pagination"]=json!({"hasMore":false})}
+            assert!(f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).is_err(),"case {case}");}
+    }
+    #[test]fn abandonment_plan_rejects_prefix_or_original_journal_drift(){
+        for case in 0..2{let(mut f,t,facts,retirement,_)=abandonment_fixture(Some(true));let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).unwrap();
+            if case==0{f.event(json!({"type":"tick","receivedAt":iso(NOW+41)}));}else{f.log.append(json!({"kind":"source","qid":hint.qid})).unwrap();}
+            assert!(f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+41).is_err());}
+    }
+    #[test]fn attempted_partial_filled_and_late_archived_attempt_cannot_reset_eligibility(){
+        let mut f=F::new();let(q,spec)=f.bind_entry();f.log_intent(&q,&spec);assert!(f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+1).is_err());
+        let mut f=F::new();f.fill_entry(true);assert!(f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+4).unwrap().is_empty());
+        let(mut f,t,facts,retirement,q)=abandonment_fixture(Some(true));let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).unwrap();f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+40).unwrap();
+        f.log.append(json!({"kind":"attempt","qid":q["id"]})).unwrap();assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+41).is_err());f.store.take();assert!(Cohorts::open(&f.root,&f.bank,&f.log,f.owner.clone()).is_err());
+    }
     fn inherited_fixture()->(F,baal_transport_service::Transport,Value){
         use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport};
         let mut f=F::setup(false,"11111111-1111-1111-1111-111111111111");f.retire_drafts(NOW-1);
