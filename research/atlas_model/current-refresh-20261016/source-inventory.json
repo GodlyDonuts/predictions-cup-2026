@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-16T08:09:14.092406+00:00",
+  "sources": [
+    {
+      "privateOriginal": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\yougov-survey-index.html",
+      "privateReceipt": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\yougov-survey-index.html.receipt.json",
+      "receiptSha256": "630cb23d905011c49bde76ee9fde828a7bf87e3de3eabc52de18c9ceaf4f819b",
+      "url": "https://yougov.com/en-us/survey-results",
+      "finalUrl": "https://yougov.com/en-us/survey-results",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T08:03:30.481305+00:00",
+      "receivedAt": "2026-10-16T08:03:31.550119+00:00",
+      "sha256": "b1b7bf3b554a2d3745597f5c9677472d5691d6b84945ef315b313c767312b0a8",
+      "bytes": 537289,
+      "lastModified": null,
+      "role": "publisher_index_or_ballot_reverification_only"
+    },
+    {
+      "privateOriginal": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\emerson-index.html",
+      "privateReceipt": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\emerson-index.html.receipt.json",
+      "receiptSha256": "88d06524882e5830d4a1b6e52b4cd7f8cc8bc1acbf613e9580ccd3bc32f4d412",
+      "url": "https://emersoncollegepolling.com/",
+      "finalUrl": "https://emersoncollegepolling.com/",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T08:03:31.554388+00:00",
+      "receivedAt": "2026-10-16T08:03:32.208925+00:00",
+      "sha256": "87cc78ca20f8dd4a8915ea11a21d6d14a6cde4abbf8dbdb2200d8f1b1ce7fd69",
+      "bytes": 184577,
+      "lastModified": null,
+      "role": "publisher_index_or_ballot_reverification_only"
+    },
+    {
+      "privateOriginal": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\yougov-iowa-oct14.pdf",
+      "privateReceipt": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\yougov-iowa-oct14.pdf.receipt.json",
+      "receiptSha256": "ab11b8f4e098f6eb8b24d6e4467b14303cf3cf6817dad441f8e2d9bc5864008d",
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ia_20261006_lv.pdf",
+      "finalUrl": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ia_20261006_lv.pdf",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T08:03:57.285210+00:00",
+      "receivedAt": "2026-10-16T08:04:01.531898+00:00",
+      "sha256": "86968315dabd82f898119fa650f277257dce2e37915cdea0772a3d4c4d4090d9",
+      "bytes": 164392,
+      "lastModified": "Wed, 14 Oct 2026 17:24:52 GMT",
+      "role": "novel_to_Atlas_poll_data"
+    },
+    {
+      "privateOriginal": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\yougov-kansas-october.pdf",
+      "privateReceipt": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\yougov-kansas-october.pdf.receipt.json",
+      "receiptSha256": "3a5ef2a2703518a5ff66637f25f1a01444af62a82eb1dd8cfe39a322a96a9495",
+      "url": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ks_20260921_lv.pdf",
+      "finalUrl": "https://d3nkl3psvxxpe9.cloudfront.net/documents/ttw_ks_20260921_lv.pdf",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T08:04:01.532908+00:00",
+      "receivedAt": "2026-10-16T08:04:01.616724+00:00",
+      "sha256": "2f9f21d7b589b6dbeefe80a7370a7aecb7b0fb4085a704d2dc37b99c04cf7062",
+      "bytes": 165082,
+      "lastModified": "Tue, 06 Oct 2026 19:11:16 GMT",
+      "role": "novel_to_Atlas_poll_data"
+    },
+    {
+      "privateOriginal": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\iowa-official-general-candidates.pdf",
+      "privateReceipt": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\iowa-official-general-candidates.pdf.receipt.json",
+      "receiptSha256": "69af04a11eabbed77ddc761af7dfbe61f05f6f0635cdc8a1823aac82c6b14e47",
+      "url": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+      "finalUrl": "https://sos.iowa.gov/sites/default/files/2026-08/2026%20General%20-%20Candidate%20List%20Database%20-%20All%20Elections_1.pdf",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T08:07:28.751782+00:00",
+      "receivedAt": "2026-10-16T08:07:33.338597+00:00",
+      "sha256": "df70d066973b16c7b51e5c2a2bbf9f7fdb166bba9404311a945404c83813af38",
+      "bytes": 222898,
+      "lastModified": "Wed, 19 Aug 2026 18:37:51 GMT",
+      "role": "publisher_index_or_ballot_reverification_only"
+    },
+    {
+      "privateOriginal": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\kansas-official-current-candidates.html",
+      "privateReceipt": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-atlas-primary-refresh-20261016\\kansas-official-current-candidates.html.receipt.json",
+      "receiptSha256": "98dcff48482ea4efa3118aa5be847f628c69291eceb5570981769ce0868dc437",
+      "url": "https://www.sedgwickcounty.org/elections/current-candidates/?page=1",
+      "finalUrl": "https://www.sedgwickcounty.org/elections/current-candidates/?page=1",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T08:07:33.339595+00:00",
+      "receivedAt": "2026-10-16T08:07:36.535792+00:00",
+      "sha256": "207a97e4d915b505be3e8cce46bdcf7c38866977b8b5a7a5a96c86c5013e01e2",
+      "bytes": 70708,
+      "lastModified": null,
+      "role": "publisher_index_or_ballot_reverification_only"
+    }
+  ],
+  "novelPublicationAfterOldArtifactExpiredVerified": false,
+  "marist": {
+    "url": "https://maristpoll.marist.edu/polls/2026-midterm-elections-in-iowa-october-2026/",
+    "originalDownloadAvailable": false,
+    "observedFailures": [
+      "HTTP403 on first attempt",
+      "DNS resolution failed on subsequent attempt"
+    ],
+    "excludedFromModel": true,
+    "reason": "No original bytes;1100RV not substituted for unpublishedLVsample"
+  },
+  "reviewsChanged": false,
+  "accountRequests": 0,
+  "executionAuthority": false
+}
