@@ -30,13 +30,13 @@ pub fn endpoint(scope:&Scope,ids:&[String])->Result<Endpoint>{requested(scope,id
 pub struct Batch{scope_sha:String,receipt_sha:String,started:u64,received:u64,until:u64,quotes:BTreeMap<String,Option<Quote>>}
 #[derive(Debug,Serialize)]
 #[serde(rename_all="camelCase")]
-pub struct Deferral{reason:&'static str,distance_ticks:u64,quote_sha256:String,receipt_sha256:String,request_started_at_ms:u64,received_at_ms:u64,valid_until_ms:u64}
+pub struct Deferral{reason:&'static str,distance_ticks:u64,scope_sha256:String,quote_sha256:String,receipt_sha256:String,request_started_at_ms:u64,received_at_ms:u64,valid_until_ms:u64}
 impl Deferral{
  pub fn reason(&self)->&'static str{self.reason}
  pub fn valid_until_ms(&self)->u64{self.valid_until_ms}
  /// Recheck immediately before honoring a cached veto; never carry it across a
  /// changed quote/price/quantity/TTL or past the ORIGINAL snapshot's lifetime.
- pub fn matches_quote(&self,q:&Value,now:u64)->Result<bool>{Ok(now>=self.received_at_ms&&now<self.valid_until_ms&&hash(q)?==self.quote_sha256)}
+ pub fn matches_quote(&self,scope:&Scope,q:&Value,now:u64)->Result<bool>{Ok(now>=self.received_at_ms&&now<self.valid_until_ms&&hash(scope)?==self.scope_sha256&&hash(q)?==self.quote_sha256)}
 }
 impl Batch{
  pub fn from_original(scope:&Scope,ids:&[String],r:&Receipt,now:u64)->Result<Self>{
@@ -85,6 +85,6 @@ impl Batch{
   let(reason,distance)=if action=="sell"&&limit>ask{("sell_floor_above_current_ask",limit-ask)}
    else if action=="buy"&&limit<bid{("buy_behind_current_best_bid",bid-limit)}
    else if action=="buy"&&limit>=ask{("new_buy_would_cross_current_ask",limit-ask)}else{return Ok(None)};
-  Ok(Some(Deferral{reason,distance_ticks:u64::try_from((distance+TICK-1)/TICK)?,quote_sha256:hash(q)?,receipt_sha256:self.receipt_sha.clone(),request_started_at_ms:self.started,received_at_ms:self.received,valid_until_ms:self.until}))
+  Ok(Some(Deferral{reason,distance_ticks:u64::try_from((distance+TICK-1)/TICK)?,scope_sha256:self.scope_sha.clone(),quote_sha256:hash(q)?,receipt_sha256:self.receipt_sha.clone(),request_started_at_ms:self.started,received_at_ms:self.received,valid_until_ms:self.until}))
  }
 }
