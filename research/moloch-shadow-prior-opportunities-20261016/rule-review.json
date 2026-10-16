@@ -1,4 +1,35 @@
 {
+  "classification": "Predictive conditional same-party reference; not Equivalent, certified arbitrage, calibrated probability or execution approval",
+  "concreteConditionalCounterexamples": [
+    {
+      "KalshiRepublicanNoIfReplacementClauseControls": 1,
+      "SIGPartyWinnerIfElectionWinnerControls": 0,
+      "appliesTo": [
+        "278:NO",
+        "288:NO"
+      ],
+      "inference": "A Kalshi NO prior can overstate SIG NO payoff in this exceptional state. SIG full resolver is missing, so this is a conditional mismatch, not an asserted actual adjudication.",
+      "scenario": "Republican election winner vacates before seating; first replacement seated is not Republican."
+    },
+    {
+      "KalshiDemocraticYesIfReplacementClauseControls": 1,
+      "SIGPartyWinnerIfElectionWinnerControls": 0,
+      "appliesTo": [
+        "176:YES"
+      ],
+      "inference": "Same state can overstate SIG Democratic YES payoff under the stated conditional SIG interpretation.",
+      "scenario": "Republican Maine election winner vacates; first replacement seated is Democratic."
+    },
+    {
+      "appliesTo": [
+        "278:NO",
+        "288:NO",
+        "176:YES"
+      ],
+      "inference": "Refund basis and capital lock differ from fixed 0/1 payout. The node null settled_with is not evidence that N/A is impossible; no exception probabilities are identified.",
+      "scenario": "SIG administrative cancellation/N-A returns refundable principal, while the Kalshi binary predicate remains live."
+    }
+  ],
   "executionAuthority": false,
   "kalshiCommonSemantics": {
     "acceleration": "Four of eight designated media calls and no contrary designated call can accelerate determination.",
@@ -7,6 +38,8 @@
     "refundFusionTieRunoff": "No blanket harmonized refund or fusion/independent/runoff rule established by these family PDFs; do not infer matching SIG exceptions.",
     "winnerPredicate": "Person sworn into the specified office/term; vacancy before seating explicitly permits first temporary or permanent replacement."
   },
+  "originalSigRuleCaptureManifestSha256": "dab070e31d01182c8f6d8f4fbac30d86be98952b752fc13ae6cc8347dbe6d76b",
+  "originalSigRuleCaptureZipSha256": "b2346b1fda43197cda9302efc955cf4d493e81d1951f894d561cfd8f39957614",
   "proxyPriorAssessment": "Potentially useful bounded subjective electoral-party proxy, conditional on exact SIG predicate review and explicit replacement/refund/timing assumptions; neither equivalent payout nor calibrated expected value.",
   "publicPrimaryPdfOriginals": [
     {
@@ -85,6 +118,147 @@
     }
   ],
   "ruleReviewObservedAtUtc": "2026-10-16T18:15:16.913692+00:00",
-  "sigExactOriginalRulesStatus": "Awaiting retained exact278/176/288 official node receipts from execution owner; UI identity and current scoped book are not a resolver.",
+  "sigExactOriginalRulesStatus": "All six retained market/node receipts verified; structured party-winner predicates and exact contract/exchange scope confirmed, full resolver/exception language absent.",
+  "sigSources": [
+    {
+      "canonicalRootSha256": "b8f2dca61f926f11901eedd87805dace5d32756cdb6367e46312672ff4daa348",
+      "contractId": "279",
+      "exceptionalPayoutEquivalenceVerified": false,
+      "exchangeId": "967",
+      "freshAtComparison": false,
+      "fullResolverAvailable": false,
+      "mappingClassification": "PredictiveSamePartyElectionReference",
+      "marketId": "278",
+      "ordinaryPredicateCorrespondence": "Structured same-office, same-state, same-general-election party-winner target; not inferred from title.",
+      "originalContractDetails": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "Federal",
+        "raceId": "62975",
+        "raceName": "U.S. Senate North Carolina",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "98105",
+        "usState": "NC",
+        "winnerName": "Republican Party"
+      },
+      "originalMarketReceipt": {
+        "artifact": "278-market.json",
+        "bytes": 1077,
+        "endpoint": "/markets/278?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/77ceaffe5606829795b292f458c5ddff48c22c28e0a7bb5d117b91baacf052d7.json",
+        "receivedAt": "2026-10-16T06:19:24.553Z",
+        "requestStartedAt": "2026-10-16T06:19:24.373Z",
+        "sha256": "8826c69c054ccf793bb250c77be34bcddedc1262f741a80feae2762605dcefed"
+      },
+      "originalNodeReceipt": {
+        "artifact": "278-nodes.json",
+        "bytes": 923,
+        "endpoint": "/markets/278/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/566535f2d4e6a0c0166fe97d7ccea0f6b65b45937a10c1cdde2eac5c84ae45ba.json",
+        "receivedAt": "2026-10-16T06:19:25.442Z",
+        "requestStartedAt": "2026-10-16T06:19:25.173Z",
+        "sha256": "714c564c1fb5dc6e271ea90288ed9ed516c70798c3b2a75d6ac2f0c06075ea45"
+      },
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "settledWithAtObservation": null,
+      "sourceUse": "Historical exact predicate review only; current physical preflight must verify unchanged rules/scope."
+    },
+    {
+      "canonicalRootSha256": "ebe719c4fc2796abfc66e2669db45e84abf9c1c7310e00dc298f05f5c2c60d15",
+      "contractId": "289",
+      "exceptionalPayoutEquivalenceVerified": false,
+      "exchangeId": "977",
+      "freshAtComparison": false,
+      "fullResolverAvailable": false,
+      "mappingClassification": "PredictiveSamePartyElectionReference",
+      "marketId": "288",
+      "ordinaryPredicateCorrespondence": "Structured same-office, same-state, same-general-election party-winner target; not inferred from title.",
+      "originalContractDetails": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "Federal",
+        "raceId": "62977",
+        "raceName": "U.S. Senate Oregon",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "98107",
+        "usState": "OR",
+        "winnerName": "Republican Party"
+      },
+      "originalMarketReceipt": {
+        "artifact": "288-market.json",
+        "bytes": 1069,
+        "endpoint": "/markets/288?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/4ccebd3e13429ca6739622d0abe803ca1cbd54aad515ef2442d1d77f292e0697.json",
+        "receivedAt": "2026-10-15T12:37:02.621Z",
+        "requestStartedAt": "2026-10-15T12:37:02.462Z",
+        "sha256": "e707c2d94e59ad4b19236b695a088e14e9eba2cac0c27472fda831641eb144b2"
+      },
+      "originalNodeReceipt": {
+        "artifact": "288-nodes.json",
+        "bytes": 907,
+        "endpoint": "/markets/288/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/d24cce3e6a0671e71070397331e084be463aa1156adf4da63c8c44fc24c289a0.json",
+        "receivedAt": "2026-10-15T12:37:03.505Z",
+        "requestStartedAt": "2026-10-15T12:37:03.227Z",
+        "sha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1"
+      },
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "settledWithAtObservation": null,
+      "sourceUse": "Historical exact predicate review only; current physical preflight must verify unchanged rules/scope."
+    },
+    {
+      "canonicalRootSha256": "5e768c0f5224b76620be03b0d08a9eb433c300d329491b1cd058ea47b42801e5",
+      "contractId": "177",
+      "exceptionalPayoutEquivalenceVerified": false,
+      "exchangeId": "865",
+      "freshAtComparison": false,
+      "fullResolverAvailable": false,
+      "mappingClassification": "PredictiveSamePartyElectionReference",
+      "marketId": "176",
+      "ordinaryPredicateCorrespondence": "Structured same-office, same-state, same-general-election party-winner target; not inferred from title.",
+      "originalContractDetails": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "State",
+        "raceId": "76716",
+        "raceName": "Governor of Maine",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "118919",
+        "usState": "ME",
+        "winnerName": "Democratic Party"
+      },
+      "originalMarketReceipt": {
+        "artifact": "176-market.json",
+        "bytes": 1068,
+        "endpoint": "/markets/176?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/5f8fdca45d53048a408daf137c60b57391d870d74e88ce693d64be384f3a66f8.json",
+        "receivedAt": "2026-10-16T15:04:00.501Z",
+        "requestStartedAt": "2026-10-16T15:04:00.315Z",
+        "sha256": "3cee31ab13b23776a5eb07116704e1cc82dc5e31137c82d74c7281cd78e78f60"
+      },
+      "originalNodeReceipt": {
+        "artifact": "176-nodes.json",
+        "bytes": 906,
+        "endpoint": "/markets/176/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/99799a3a9312f0ce1883883e8cac1d09cd9feed336fdab0a53b826b7e570bff3.json",
+        "receivedAt": "2026-10-16T15:04:01.431Z",
+        "requestStartedAt": "2026-10-16T15:04:01.127Z",
+        "sha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499"
+      },
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "settledWithAtObservation": null,
+      "sourceUse": "Historical exact predicate review only; current physical preflight must verify unchanged rules/scope."
+    }
+  ],
+  "sourceChecksPassed": 63,
+  "valuationBoundary": {
+    "ordinaryOnly": "Under explicit same-party ordinary-election correspondence, use Kalshi side bid as an uncalibrated subjective payoff prior, then apply every unchanged .005/.02/.05/.10 sensitivity.",
+    "riskBudget": "Finite upfront principal caps bound loss exposure; they do not calibrate the prior or prove positive EV.",
+    "timing": "SIG scheduled Nov4 settlement versus Kalshi expected Jan2027/possible later resolution means event probability is not a pre-settlement liquidation value. Terminal-vs-deadline objective must be explicit.",
+    "worstCase": "Without a separately justified bound on exceptional-state probability and model error, a positive scalar margin is not a lower bound on expected profit."
+  },
   "version": 1
 }

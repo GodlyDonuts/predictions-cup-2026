@@ -1,0 +1,63 @@
+{
+  "scanStartedAt": "2026-10-16T18:17:49.162023+00:00",
+  "scanFinishedAt": "2026-10-16T18:17:59.824624+00:00",
+  "existingReceiptFilesExamined": 53321,
+  "files": [
+    {
+      "artifact": "278-nodes.json",
+      "receivedAt": "2026-10-16T06:19:25.442Z",
+      "requestStartedAt": "2026-10-16T06:19:25.173Z",
+      "endpoint": "/markets/278/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/566535f2d4e6a0c0166fe97d7ccea0f6b65b45937a10c1cdde2eac5c84ae45ba.json",
+      "sha256": "714c564c1fb5dc6e271ea90288ed9ed516c70798c3b2a75d6ac2f0c06075ea45",
+      "bytes": 923
+    },
+    {
+      "artifact": "278-market.json",
+      "receivedAt": "2026-10-16T06:19:24.553Z",
+      "requestStartedAt": "2026-10-16T06:19:24.373Z",
+      "endpoint": "/markets/278?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/77ceaffe5606829795b292f458c5ddff48c22c28e0a7bb5d117b91baacf052d7.json",
+      "sha256": "8826c69c054ccf793bb250c77be34bcddedc1262f741a80feae2762605dcefed",
+      "bytes": 1077
+    },
+    {
+      "artifact": "288-market.json",
+      "receivedAt": "2026-10-15T12:37:02.621Z",
+      "requestStartedAt": "2026-10-15T12:37:02.462Z",
+      "endpoint": "/markets/288?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/4ccebd3e13429ca6739622d0abe803ca1cbd54aad515ef2442d1d77f292e0697.json",
+      "sha256": "e707c2d94e59ad4b19236b695a088e14e9eba2cac0c27472fda831641eb144b2",
+      "bytes": 1069
+    },
+    {
+      "artifact": "176-market.json",
+      "receivedAt": "2026-10-16T15:04:00.501Z",
+      "requestStartedAt": "2026-10-16T15:04:00.315Z",
+      "endpoint": "/markets/176?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/5f8fdca45d53048a408daf137c60b57391d870d74e88ce693d64be384f3a66f8.json",
+      "sha256": "3cee31ab13b23776a5eb07116704e1cc82dc5e31137c82d74c7281cd78e78f60",
+      "bytes": 1068
+    },
+    {
+      "artifact": "288-nodes.json",
+      "receivedAt": "2026-10-15T12:37:03.505Z",
+      "requestStartedAt": "2026-10-15T12:37:03.227Z",
+      "endpoint": "/markets/288/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/d24cce3e6a0671e71070397331e084be463aa1156adf4da63c8c44fc24c289a0.json",
+      "sha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1",
+      "bytes": 907
+    },
+    {
+      "artifact": "176-nodes.json",
+      "receivedAt": "2026-10-16T15:04:01.431Z",
+      "requestStartedAt": "2026-10-16T15:04:01.127Z",
+      "endpoint": "/markets/176/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/receipts/99799a3a9312f0ce1883883e8cac1d09cd9feed336fdab0a53b826b7e570bff3.json",
+      "sha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499",
+      "bytes": 906
+    }
+  ],
+  "noNewAccountRequests": true,
+  "missingKinds": []
+}
