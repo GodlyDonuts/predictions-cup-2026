@@ -1161,6 +1161,32 @@ pub fn main()->Result<()>{
   let(_root,mut bank,mut log,_,_,_)=fixture();let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();let ack=json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":id,"actualOrderId":"901","exchangeId":"101","marketId":"201","side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(now())});
   for row in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id}),json!({"kind":"ack","qid":id,"receipt":{"data":{"orderId":"901"}}})]{log.append(row).unwrap();}accept(&mut bank,&ack).unwrap();assert!(existing_target_busy(&bank,&log,"101").unwrap());retire_existing_drafts(&mut bank,&mut log,"101").unwrap();assert_eq!(quote(&bank,id).unwrap()["retired"],false);assert_eq!(bank.engine().live_order_bindings().get(&id).map(String::as_str),Some("901"));assert!(!log.closed.contains(&id));
  }
+ fn add_flat_competitor(bank:&mut Session){let at=now()-3500;bank.accept("other-flat-book",1,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"202","exchangeId":"102","tournamentId":TID,"sequence":"1","sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();assert!(bank.engine().order_records().iter().any(|q|q["exchangeId"]=="102"&&q["retired"]==false));}
+ #[test]fn fresh_cap_fallback_releases_only_a_whole_proven_flat_ordinary_draft_market(){
+  let(_root,mut bank,mut log,_,_,_)=fixture();add_flat_competitor(&mut bank);let positions=bank.engine().wallet.positions();let cash=bank.engine().wallet.cash;let n=bank.engine().order_records().len();
+  assert_eq!(retire_flat_draft_competitor(&mut bank,&mut log,&["101".into()].into()).unwrap(),Some("102".into()));let orders=bank.engine().order_records();assert!(orders.iter().filter(|q|q["exchangeId"]=="102").all(|q|q["retired"]==true));assert!(orders.iter().any(|q|q["exchangeId"]=="101"&&q["retired"]==false));assert_eq!(orders.len(),n);assert_eq!(bank.engine().wallet.positions(),positions);assert_eq!(bank.engine().wallet.cash,cash);assert!(log.intents.is_empty());assert!(log.attempted.is_empty());assert!(log.acknowledgments.is_empty());assert!(bank.engine().fills().is_empty());
+ }
+ #[test]fn competitor_with_a_review_intent_or_actual_execution_is_never_discarded_for_capacity(){
+  for case in ["managed","intent","actual","unknown"]{let(root,mut bank,mut log,_,_,_)=fixture();add_flat_competitor(&mut bank);let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="102"&&q["retired"]==false).unwrap();let id=q["id"].as_u64().unwrap();let mut managed=std::collections::BTreeSet::new();
+   match case{"managed"=>{managed.insert("102".into());},"intent"=>log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap(),"actual"=>{
+    for row in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id}),json!({"kind":"ack","qid":id,"receipt":{"data":{"orderId":"902"}}})]{log.append(row).unwrap();}
+    accept(&mut bank,&json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":id,"actualOrderId":"902","exchangeId":"102","marketId":"202","side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(now())})).unwrap();
+   },_=>{log.append(json!({"kind":"intent","qid":999})).unwrap();log.append(json!({"kind":"attempt","qid":999})).unwrap();}}
+   let head=bank.durable_head();let bytes=fs::read(root.0.join("dispatch.ndjson")).unwrap();let result=retire_flat_draft_competitor(&mut bank,&mut log,&managed);if case=="unknown"{assert!(result.is_err());}else{assert_eq!(result.unwrap(),None,"{case}");}assert_eq!(bank.durable_head(),head,"{case}");assert_eq!(fs::read(root.0.join("dispatch.ndjson")).unwrap(),bytes,"{case}");
+  }
+ }
+ #[test]fn stale_holding_refresh_and_reviewed_entry_share_one_cursor_without_ttl_starvation(){
+  let existing=vec![fundamental::ExistingExitHint{exchange_id:"1068".into(),market_id:"379".into(),contract_id:"380".into(),side:"YES".into(),reason:"reviewed_inventory_book_refresh".into()}];
+  let entries=vec![fundamental::EntryHint{exchange_id:"1042".into(),market_id:"353".into(),contract_id:"354".into(),side:"YES".into(),review_sha256:"a".repeat(64)}];let mut cursor=None;let mut selected=Vec::new();
+  // Selection is independent of a ten-second TTL: even if every pass occurs
+  // sixty seconds later, a stale held book cannot retake all entry packets.
+  for _ in 0..6{let(is_existing,index,key)=fundamental_read_rotation(&existing,&entries,cursor.as_deref()).unwrap();assert_eq!(index,0);selected.push(is_existing);cursor=Some(key);}
+  assert_eq!(selected,vec![false,true,false,true,false,true]);assert!(fundamental_read_rotation(&[],&[],None).is_none());
+ }
+ #[test]fn pure_entry_denials_defer_but_durability_source_and_unknown_failures_are_fatal(){
+  for code in ["FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED","FUNDAMENTAL_ENTRY_CASH_RECONCILIATION","REVIEWED_ENTRY_FRESH_MARKET_CAP"]{assert!(expected_fundamental_entry_denial(code));}
+  for code in ["PAPER_SESSION_POISONED","FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED","FUNDAMENTAL_COMMITTED_ADOPTION_REQUIRED","DISPATCH_UNKNOWN_ACCEPTANCE_MANUAL_RECONCILIATION","QUEUE_DURABLE_FAILURE","FUNDAMENTAL_ENTRY_TRANSPORT_SCOPE"]{assert!(!expected_fundamental_entry_denial(code));}
+ }
 }
 
 #[cfg(test)]mod package_hook_tests{
