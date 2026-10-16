@@ -1,0 +1,542 @@
+{
+  "schemaVersion": 1,
+  "launchAt": "2026-10-16T17:07:56Z",
+  "auditBoundaryAt": "2026-10-16T17:35:03.863Z",
+  "captureClocks": [
+    {
+      "indexArtifact": "capture-index.json",
+      "capturedAtMs": 1792171872275,
+      "indexSha256": "7b1ee943c535482cacfb064627c1a0de0b9b0443264263b6f8c0d08e593d7f1b"
+    },
+    {
+      "indexArtifact": "second-capture-index.json",
+      "capturedAtMs": 1792172000229,
+      "indexSha256": "3eb45f1abe9eb6857cf4a1b92c0c2238c83847f717bd50328d06ccda3c854c32"
+    },
+    {
+      "indexArtifact": "final-capture-index.json",
+      "capturedAtMs": 1792172109320,
+      "indexSha256": "459ca99db09e0999955765d7acf55fba6c09bc251919a37b3a78c0c4824f276d"
+    }
+  ],
+  "sourcePins": [
+    {
+      "artifact": "moloch-paper6-defensive-cancel-live-verification.json",
+      "bytes": 1443,
+      "sha256": "9c1b83cc7256836e3dcf3e89b4d50d3af2c6573f30f74c68ca26ae21175c5c11",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 1443
+    },
+    {
+      "artifact": "status.json",
+      "bytes": 130,
+      "sha256": "a3be3142a9c2cc07fded02a47a1b2de6d146be894a526471ae328df1e8fadf7a",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 130
+    },
+    {
+      "artifact": "progress.json",
+      "bytes": 265,
+      "sha256": "362870acd2ae3b32da2badc9451f8aeabd2a1ae7f9736a3fd7c2de5957d8f222",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 265
+    },
+    {
+      "artifact": "dispatch.ndjson",
+      "bytes": 6733142,
+      "sha256": "55ea761cb89b2697464f031f8d4e125cd229d7b2a9d570eda9d34adef4e60398",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 6733142
+    },
+    {
+      "artifact": "bank-head.json",
+      "bytes": 254,
+      "sha256": "52975d93476bfa1e1001f5dbb3727a492cc8870665c648cd5aac14fa1f227835",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 254
+    },
+    {
+      "artifact": "bank-report.json",
+      "bytes": 2532599,
+      "sha256": "a82044a946cd9f1e8e6a715c38e2430a58a0704dd3ae8f05e56d00c6dce9af23",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 2532599
+    },
+    {
+      "artifact": "bank-manifest.json",
+      "bytes": 16090,
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 16090
+    },
+    {
+      "artifact": "second-progress.json",
+      "bytes": 265,
+      "sha256": "fc07bacc1a45f9d9373afd53f94943ccad6894d124bbcac9cab80ffb730917f5",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 265
+    },
+    {
+      "artifact": "second-preflight.json",
+      "bytes": 101376,
+      "sha256": "850efede608e8ca706c979f5a3712f459f13893be75420ccf9ac41f9568c6331",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 101376
+    },
+    {
+      "artifact": "second-deferred.json",
+      "bytes": 96,
+      "sha256": "c3e44b3ad36cdaf27fd910b804b6e0dc5b68b83da870cb82b4cb2d193d898279",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 96
+    },
+    {
+      "artifact": "second-decision-trace-latest.json",
+      "bytes": 1522,
+      "sha256": "11c8c177d96a7e7d652df962bd02b41f4bccffa90d9eba72893e7a1e0fd9b84a",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 1522
+    },
+    {
+      "artifact": "second-quote-priority.json",
+      "bytes": 5212,
+      "sha256": "2a35e41e9807abfe02b4c094d8813be90d4164e8d587677ed1f8c67528202247",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 5212
+    },
+    {
+      "artifact": "second-quote-priority-deferred.json",
+      "bytes": 358,
+      "sha256": "9f8410d7f1aea7f92877a3cc4a801056ccda6eb84017f65868213a96999f62a5",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 358
+    },
+    {
+      "artifact": "second-quote-book-prefilter.json",
+      "bytes": 403,
+      "sha256": "fbd4e87ed9ad73e7a2c7fad909bd3ec3098ca60866f0bf3e4c23ca75b9734be3",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 403
+    },
+    {
+      "artifact": "second-ordinary-side-edge.json",
+      "bytes": 1191,
+      "sha256": "3cc566696e60c36920d348e196768ca5eaccb3935b13884c6cece542938d660d",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 1191
+    },
+    {
+      "artifact": "second-owned-age-refresh.json",
+      "bytes": 554,
+      "sha256": "f64f130093c889c625f83f7c2dae1b19e76081d2c7fad6fba4eedbfa2362b56f",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 554
+    },
+    {
+      "artifact": "second-stale-entry-drafts.json",
+      "bytes": 1247,
+      "sha256": "aba668d79e150e8613669bd9f5fb0ab083d300032cd53b7b8e47b2b9c6a8f4e4",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 1247
+    },
+    {
+      "artifact": "second-execution-model.json",
+      "bytes": 922,
+      "sha256": "fbbdaea04bf42b1986cb1833dde6bfcbce17b8394a32feecfb1dc90159472d13",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 922
+    },
+    {
+      "artifact": "second-discovery-schedule.json",
+      "bytes": 744,
+      "sha256": "28ceea6900b03b6ba3824bab70b2d5ab8e05a88a0094a635cd7599c598eca875",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 744
+    },
+    {
+      "artifact": "second-exit-refresh.json",
+      "bytes": 152,
+      "sha256": "43710ab0db02cd24d2a965a93422bb4f4d1ce13cd9060cd152c42b7438956d30",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 152
+    },
+    {
+      "artifact": "bank-events.suffix.jsonl",
+      "bytes": 33554432,
+      "sha256": "86f1c16f09212476ad458023145760a3f4cf7332ac2b2b9bcac6bfdb2ca2a83a",
+      "originalStartOffset": 882709768,
+      "originalBytesAtOpen": 916264200
+    },
+    {
+      "artifact": "breadth.suffix.jsonl",
+      "bytes": 4194304,
+      "sha256": "3cef838b6b75f5a4b1de2c7aad086b184cc9e0797d7d65a83a4f863a0c2d8f65",
+      "originalStartOffset": 66585228,
+      "originalBytesAtOpen": 70779532
+    },
+    {
+      "artifact": "second-c3a3d14113521a540ab59d6c7ca38ea1a1b07d58aafc24e9c20c0e78edb8230a.json",
+      "bytes": 623,
+      "sha256": "07fc661076cc5586f4104e90ccf6a2dc98e7c7f9d41a76222390abdc4fa5ff2e",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 623
+    },
+    {
+      "artifact": "second-e99d7e3c9738fb23955250b7904f1496c83d86e690aabfd543588f7aad4fa117.json",
+      "bytes": 434,
+      "sha256": "4ad2e3067f7749bce4a8f901188c310761807ce784561cc3884dd57982560469",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 434
+    },
+    {
+      "artifact": "second-b5cc46518f39924c6cf086e3d2abd1b569daa23a2169d41a42e00f3e0da3407b.json",
+      "bytes": 528,
+      "sha256": "6098b71e6f7446c87aa526f3be9c6a61511249f335cbac4c92b3ed25b2dd1ceb",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 528
+    },
+    {
+      "artifact": "second-2cbc1e3067d5e98d6edeb51a508ec678121f82cc0a92334dbd3cc29458a88bba.json",
+      "bytes": 529,
+      "sha256": "2726c36db9de1e223ad3a8606359a13c09c93cf1ae0469b0e4b8bd784ece03d5",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 529
+    },
+    {
+      "artifact": "second-aacfad83c143ef89a8a5434fe7293b9de94e4f7d3a6d0244b65547ca4cfb28f1.json",
+      "bytes": 627,
+      "sha256": "6e6686ce4f2afcccc894683aec5ca4d8c085c0bb204cd1f29529eefa5b6e23ae",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 627
+    },
+    {
+      "artifact": "second-a532e844481d76e733247fbf1d9b9c82c684d6edeaee27172f02e8ac5dcb14b4.json",
+      "bytes": 724,
+      "sha256": "58ca3983df70066d1f11c712a0c22de46ea61474961ce2119d9e6b8752c6e181",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 724
+    },
+    {
+      "artifact": "final-dispatch.ndjson",
+      "bytes": 6763718,
+      "sha256": "b279669b0a2aa609322682d3aa20e72fe7afe8d12396bf381004cd68cc3c3ea6",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 6763718
+    },
+    {
+      "artifact": "final-progress.json",
+      "bytes": 265,
+      "sha256": "8bd08bd3363725faa6877528a26ada3efa5698f1a3e5fde902668ac0137d943b",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 265
+    },
+    {
+      "artifact": "final-ordinary-side-edge.json",
+      "bytes": 1189,
+      "sha256": "5593cdb95f023607b0587c2b677590d3370dc59cf94a89222060fd77c2b16dea",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 1189
+    },
+    {
+      "artifact": "final-decision-trace-latest.json",
+      "bytes": 1522,
+      "sha256": "7c7b30baa7b93712e15c7fab5c76e989db7d7f3c417a1ee0e11653f187c99cad",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 1522
+    },
+    {
+      "artifact": "final-bank-head.json",
+      "bytes": 254,
+      "sha256": "530eee8735e05b362157cea7c014baff7186841ce1867dfb9e27479b000ac84c",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 254
+    },
+    {
+      "artifact": "final-bank-report.json",
+      "bytes": 2545345,
+      "sha256": "c487d180fc544179e1818351dfda058be61996294cc7192ecd9d8a67f9fcc39b",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 2545345
+    },
+    {
+      "artifact": "final-e99d7e3c9738fb23955250b7904f1496c83d86e690aabfd543588f7aad4fa117.json",
+      "bytes": 434,
+      "sha256": "4ad2e3067f7749bce4a8f901188c310761807ce784561cc3884dd57982560469",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 434
+    },
+    {
+      "artifact": "final-c3a3d14113521a540ab59d6c7ca38ea1a1b07d58aafc24e9c20c0e78edb8230a.json",
+      "bytes": 623,
+      "sha256": "07fc661076cc5586f4104e90ccf6a2dc98e7c7f9d41a76222390abdc4fa5ff2e",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 623
+    },
+    {
+      "artifact": "final-833072bd45dc34fcf4cf794ceacd73f377e85f9714711e670c7904e1eb0f5719.json",
+      "bytes": 439,
+      "sha256": "cca3a5a66d7ed984e432604583928bbbe7efd5077c1f38a850961bd6cd3ac131",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 439
+    },
+    {
+      "artifact": "final-f821dec3cabecf36b1fe66140c70402ad940bcb2cf96ee9112148084cb85d3d9.json",
+      "bytes": 430,
+      "sha256": "5c73e743ca793b19c050ba9d8f535c854191aca235124ba37f5452a374be5064",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 430
+    },
+    {
+      "artifact": "final-5717ab01ef8056baf8cba015cf696aab29a9e8c23fe92a31281a51751ec9c640.json",
+      "bytes": 441,
+      "sha256": "4f53ac4bee2d6bd95a738491bb4898c1f3835b650ea858f27f46bb83e23d9b7c",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 441
+    },
+    {
+      "artifact": "final-97db01114a3599caeb62c77f0128ab790bcef67df1b53cd1012c82206f3beab4.json",
+      "bytes": 430,
+      "sha256": "8ee35aaa3f2df35498ff88087bd117b2118649ee0cb2bfaa9dcae51fc85c5152",
+      "originalStartOffset": 0,
+      "originalBytesAtOpen": 430
+    }
+  ],
+  "sourceChecks": {
+    "dispatchRows": 13140,
+    "dispatchLastSequence": 13140,
+    "dispatchLastHash": "c4a360c2f368da20ec597a542ff96cfad424203b5cc1d1643ab58e62d15abe85",
+    "bankSuffixRows": 11418,
+    "bankSuffixSequence": [
+      284332,
+      295749
+    ],
+    "breadthSuffixRows": 29,
+    "initialBankReportSequence": 295127,
+    "initialReportMembershipVerified": true,
+    "finalBankReportSequence": 296346,
+    "finalReportBeyondFrozenSuffix": true,
+    "fullBankReplayPerformed": false,
+    "crossFileAtomicSnapshotClaimed": false
+  },
+  "economics": {
+    "priorOwnerBuyFillRows": 4,
+    "priorOwnerUniqueBuyOrders": 2,
+    "pairedUnits": 1291,
+    "pairedGainExact": "6.455",
+    "carriedYesUnits": 1188,
+    "carriedBasisExact": "397.980",
+    "newOwnerSellFillRows": 2,
+    "newOwnerUniqueSellOrders": 1,
+    "exitProceedsExact": "403.920000",
+    "exitFeesExact": "0.000000",
+    "exitGainExact": "5.940000",
+    "completeLifecycleGainExact": "12.395000",
+    "newBuyActualFillRows": 0,
+    "finalOrdinaryRealized": "-176.595000",
+    "finalInheritedGross": "45.130000",
+    "finalCombinedRealized": "-131.465000"
+  },
+  "newVersionAcknowledgments": [
+    {
+      "qid": 8087,
+      "exchangeId": "894",
+      "side": "YES",
+      "action": "sell",
+      "quantity": 1188,
+      "limit": "0.340000",
+      "ackAt": "2026-10-16T17:25:48.611Z",
+      "draftToAckMs": 8611,
+      "originalFreshBookReceivedAt": "2026-10-16T17:25:46.595Z",
+      "sameSideDisplayedTopQuantity": 2854,
+      "oppositeSideDisplayedTopQuantity": 4116,
+      "publicObservedPrintsAfterAck": 3,
+      "publicPriceCompatiblePrintsAfterAck": 2,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    },
+    {
+      "qid": 8079,
+      "exchangeId": "1003",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 2968,
+      "limit": "0.240000",
+      "ackAt": "2026-10-16T17:26:09.816Z",
+      "draftToAckMs": 56096,
+      "originalFreshBookReceivedAt": "2026-10-16T17:26:08.514Z",
+      "sameSideDisplayedTopQuantity": 9958,
+      "oppositeSideDisplayedTopQuantity": 2968,
+      "publicObservedPrintsAfterAck": 0,
+      "publicPriceCompatiblePrintsAfterAck": 0,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    },
+    {
+      "qid": 8086,
+      "exchangeId": "1005",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 487,
+      "limit": "0.040000",
+      "ackAt": "2026-10-16T17:27:00.961Z",
+      "draftToAckMs": 84151,
+      "originalFreshBookReceivedAt": "2026-10-16T17:26:59.235Z",
+      "sameSideDisplayedTopQuantity": 33171,
+      "oppositeSideDisplayedTopQuantity": 487,
+      "publicObservedPrintsAfterAck": 0,
+      "publicPriceCompatiblePrintsAfterAck": 0,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    },
+    {
+      "qid": 8093,
+      "exchangeId": "1007",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 50,
+      "limit": "0.690000",
+      "ackAt": "2026-10-16T17:27:20.352Z",
+      "draftToAckMs": 66529,
+      "originalFreshBookReceivedAt": "2026-10-16T17:27:19.038Z",
+      "sameSideDisplayedTopQuantity": 11949,
+      "oppositeSideDisplayedTopQuantity": 50,
+      "publicObservedPrintsAfterAck": 1,
+      "publicPriceCompatiblePrintsAfterAck": 0,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    },
+    {
+      "qid": 8126,
+      "exchangeId": "1008",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 38,
+      "limit": "0.695000",
+      "ackAt": "2026-10-16T17:30:11.217Z",
+      "draftToAckMs": 99919,
+      "originalFreshBookReceivedAt": "2026-10-16T17:30:09.801Z",
+      "sameSideDisplayedTopQuantity": 4451,
+      "oppositeSideDisplayedTopQuantity": 38,
+      "publicObservedPrintsAfterAck": 0,
+      "publicPriceCompatiblePrintsAfterAck": 0,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    },
+    {
+      "qid": 8171,
+      "exchangeId": "1007",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 398,
+      "limit": "0.695000",
+      "ackAt": "2026-10-16T17:32:12.750Z",
+      "draftToAckMs": 51914,
+      "originalFreshBookReceivedAt": "2026-10-16T17:32:11.336Z",
+      "sameSideDisplayedTopQuantity": 3118,
+      "oppositeSideDisplayedTopQuantity": 120,
+      "publicObservedPrintsAfterAck": 0,
+      "publicPriceCompatiblePrintsAfterAck": 0,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    },
+    {
+      "qid": 8162,
+      "exchangeId": "1014",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 2574,
+      "limit": "0.175000",
+      "ackAt": "2026-10-16T17:33:21.036Z",
+      "draftToAckMs": 163197,
+      "originalFreshBookReceivedAt": "2026-10-16T17:33:19.564Z",
+      "sameSideDisplayedTopQuantity": 7871,
+      "oppositeSideDisplayedTopQuantity": 2544,
+      "publicObservedPrintsAfterAck": null,
+      "publicPriceCompatiblePrintsAfterAck": null,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    },
+    {
+      "qid": 8178,
+      "exchangeId": "1015",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 4,
+      "limit": "0.075000",
+      "ackAt": "2026-10-16T17:34:06.060Z",
+      "draftToAckMs": 122448,
+      "originalFreshPlacementBook": "not_in_frozen_suffix",
+      "publicObservedPrintsAfterAck": null,
+      "publicPriceCompatiblePrintsAfterAck": null,
+      "publicTapeComplete": false,
+      "publicObservationWindowEndMs": 1792171999612
+    }
+  ],
+  "cancellations": [
+    {
+      "qid": 8093,
+      "issuedAt": "2026-10-16T17:31:26.864Z",
+      "optionalDefensive": false,
+      "ackAt": "2026-10-16T17:31:28.169Z",
+      "terminalConfirmed": true,
+      "terminalOrderObservedAt": "2026-10-16T17:31:38.024Z",
+      "completeTapeObservedAt": "2026-10-16T17:31:38.888Z",
+      "filledQuantity": 0,
+      "reason": "UserRequested",
+      "nativeTerminalAppliedAt": "2026-10-16T17:31:38.987Z",
+      "nativeReportRetired": true,
+      "nativeReportFilled": 0
+    },
+    {
+      "qid": 8171,
+      "issuedAt": "2026-10-16T17:34:24.658Z",
+      "optionalDefensive": false,
+      "ackAt": "2026-10-16T17:34:26.538Z",
+      "terminalConfirmed": true,
+      "terminalOrderObservedAt": "2026-10-16T17:34:39.564Z",
+      "completeTapeObservedAt": "2026-10-16T17:34:40.515Z",
+      "filledQuantity": 0,
+      "reason": "UserRequested",
+      "nativeTerminalAppliedAt": null,
+      "nativeReportRetired": true,
+      "nativeReportFilled": 0
+    },
+    {
+      "qid": 8079,
+      "issuedAt": "2026-10-16T17:35:08.214Z",
+      "optionalDefensive": false,
+      "ackAt": null,
+      "terminalConfirmed": false
+    }
+  ],
+  "optionalDefensiveAttemptObserved": false,
+  "latestProgress": {
+    "actualFills": 200,
+    "actualOrders": 1220,
+    "at": "2026-10-16T17:34:53.008Z",
+    "completedReadScopes": 32,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 525450,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 35,
+    "terminalOrders": 1215
+  },
+  "latestDecisionTrace": {
+    "qid": 8178,
+    "draftToAckMs": 122448,
+    "bookAgeAtAckMs": 1465,
+    "earliestRecordedMs": 1792172038398,
+    "fillObservationDelayMs": null,
+    "latestRecordedMs": 1792172046305,
+    "outsideRecordedSpansMs": 4104,
+    "recordedSpanUnionMs": 3803
+  },
+  "interpretation": {
+    "actualProfitabilityEstablished": false,
+    "publicTradeCompletenessProved": false,
+    "queuePriorityProved": false,
+    "financialAuthority": false
+  }
+}
