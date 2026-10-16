@@ -841,7 +841,7 @@ pub fn main()->Result<()>{
 
 #[cfg(test)]mod package_hook_tests{
  use super::*;
- struct Temp(PathBuf);impl Temp{fn new()->Self{Self(std::env::temp_dir().join(format!("moloch-package-hook-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())))}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ struct Temp(PathBuf);impl Temp{fn new()->Self{static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);let serial=NEXT.fetch_add(1,std::sync::atomic::Ordering::Relaxed);Self(std::env::temp_dir().join(format!("moloch-package-hook-{}-{}-{serial}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())))}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  fn setup(path:&Path,n:usize)->(Session,DispatchLog,Value,Value){
   private_dir(path).unwrap();let at=now().saturating_sub(7500);let policy=json!({"initialCash":"1000.000000","maximumCommitted":"100.000000","maximumMarketCost":"50.000000","quantity":12,"maximumMarkets":3,"entryStopAt":iso(at+60_000)});let seed=json!({"runId":"package-hook-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at)});
   let mut bank=Session::open_live(&path.join("bank"),&policy,&seed).unwrap();
@@ -857,6 +857,15 @@ pub fn main()->Result<()>{
   let before=execution_edge::observer_diagnostic().unwrap();assert_eq!(before["disabled"],Value::Null);assert!(before["lastObservedAtMs"].as_u64().unwrap()>0);
   assert!(accept(&mut bank,&json!({"type":"not_a_native_event","receivedAt":at})).is_err());assert_eq!(bank.last_source_sequence("moloch-live"),seq);
   assert_eq!(execution_edge::observer_diagnostic().unwrap(),before);execution_edge::clear_observer();
+ }
+ #[test]fn original_attempt_persists_one_clock_exact_native_head_and_dispatch_frontier_without_financial_write(){
+  let temp=Temp::new();let(bank,mut log,_,_)=setup(&temp.0,1);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();moloch_live_runtime::execution_edge::clear_observer();
+  log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap();let prior=log.proof(id);let head=bank.durable_head();let financial=fs::read(temp.0.join("bank/events.jsonl")).unwrap();let capture=now();record_original_attempt(&bank,&mut log,id,None,capture).unwrap();
+  let raw=fs::read_to_string(temp.0.join("dispatch.ndjson")).unwrap();let row:Value=serde_json::from_str(raw.lines().last().unwrap()).unwrap();let e=&row["event"];assert_eq!(e["captureAtMs"],capture);assert_eq!(e["at"],iso(capture));assert_eq!(e["nativeHead"],head);assert_eq!(e["dispatchBefore"],prior);assert_eq!(e["originalQuoteSha256"],hash(&q));assert_eq!(e["evidenceVersion"],1);assert_eq!(e["modelAlgorithmSha256"].as_str().unwrap().len(),64);assert_eq!(e["sourceFrontier"]["moloch-live"]["sequence"],bank.last_source_sequence("moloch-live"));assert_eq!(bank.durable_head(),head);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),financial);
+  assert!(record_original_attempt(&bank,&mut log,id,None,capture+1).is_err());assert_eq!(fs::read_to_string(temp.0.join("dispatch.ndjson")).unwrap(),raw);
+ }
+ #[test]fn attempt_anchor_cannot_reinterpret_a_changed_original_intent_as_the_native_quote(){
+  let temp=Temp::new();let(bank,mut log,_,_)=setup(&temp.0,1);let mut q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();q["price"]=json!("0.005000");log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap();let original=fs::read(temp.0.join("dispatch.ndjson")).unwrap();assert!(record_original_attempt(&bank,&mut log,id,None,now()).is_err());assert!(log.never_attempted(id));assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),original);
  }
  #[test]fn original_dispatch_proved_retirement_does_not_recreate_component_quotes_and_replays(){
   for n in [2,3]{let temp=Temp::new();let(mut bank,mut log,policy,seed)=setup(&temp.0,n);let original=bank.engine().order_records();assert_eq!(original.len(),n*2);assert!(!ordinary_liability_due(&bank,&log,now()).unwrap());
