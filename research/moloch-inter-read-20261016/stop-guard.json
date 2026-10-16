@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-16T14:00:23.100226+00:00",
+  "pidBefore": 510591,
+  "pidAfter": 510591,
+  "productionWorkerRestarted": false,
+  "oldDropinSha256": "ddbe320f3fcd657d719a2ec28f67282ce2eb0c90ff8bf03eff9308871121936e",
+  "newDropinSha256": "ff4237fb5e0b5f2a68159e4fa43d737eefc68ebdd422f56eea068c4ffba0e795",
+  "mainUnitSha256": "edc4bd56a7d307f46db642e869e4c119359740072fce92a118a59bf00270fdfb",
+  "preservedRestartSec": 60,
+  "preservedStartLimitBurst": 3,
+  "execConditions": [
+    "/home/archon/apps/moloch/shared/live-production-v1/EXECUTION_STOP",
+    "/home/archon/apps/moloch/shared/EXECUTION_STOP"
+  ],
+  "probeStopPresent": {
+    "startMarkerCreated": false,
+    "commandReturnCode": 1,
+    "systemdResult": "exec-condition",
+    "originalOutputSha256": "2d1cd6d5a7adaeadf8355494e362a039620002f9cf2c31f09dd968d2e2053dde"
+  },
+  "probeStopAbsent": {
+    "startMarkerCreated": true,
+    "commandReturnCode": 0,
+    "systemdResult": "success",
+    "originalOutputSha256": "9622b809c81eaa6f7cc0b855a73fa8366981835eb9469dbdc1b4f4b1ea347647"
+  },
+  "initialHarnessExpectationAndTransientGcAssumptionsCorrected": true,
+  "accountRequests": 0,
+  "source": "https://github.com/systemd/systemd/blob/v255/man/systemd.service.xml#L401-L415"
+}

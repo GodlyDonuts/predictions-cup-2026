@@ -1,4 +1,19 @@
-# Current research baseline: October16,13:54UTC
+# Current research baseline: October16,14:04UTC
+
+Sole510591/source4ee16356/binary011ffde0 verified fresh14:03:28 with healthy
+realtime/no STOP and one new official ACK; five ACKs/zero new fill rows by
+14:04:45. Cash/owned/realized remain72,741.915000/22,731.515000/−106.485000.
+Observer510713/source67426474 records new v9; original v8 remains sealed.
+[Actual deployment and ongoing measurement](../research/moloch-inter-read-20261016/README.md).
+Actual markouts cover9/8/8/8 of50 ordinary BUY observations at1/5/30/120s,
+all covered aggregate marks negative. Existing0.001 microprice admission proxy
+flags two submission contexts with−24.34 displayed marks, but retained contexts
+remain negative. No counterfactual profit, liquidity-role proof or calibrated
+toxicity defense. [Source-bound study](../research/moloch-maker-markout-20261016/README.md).
+Separately typed token HTTP recovery and optional side-specific assessment are
+source candidates; neither is yet part of this running executable.
+
+# Historical research baseline: October16,13:54UTC
 
 First successor506740 stopped after history restoration at13:47:15 with a
 realtime-token HTTP CONNECTION_UNCONFIRMED, before stream connection or any new

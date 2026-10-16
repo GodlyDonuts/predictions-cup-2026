@@ -9,7 +9,21 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at13:54UTC
+## Latest operation and qualification at14:04UTC
+
+Recovered510591/source4ee/executable011ffde0 is genuinely fresh trading at
+14:03:28UTC with healthy realtime/no STOP, one official new ACK; five by14:04:45,
+zero new fill rows. Original163fills/−106.485000 realized/full95579.915000 capital
+remain. Read-only674 observer510713 starts new v9; old v8 stays sealed.
+[Actual recovery/readiness](../research/moloch-inter-read-20261016/README.md).
+The fixed actual-fill study exposes weak one-sided entries: two covered original
+submission contexts fail the existing0.001 microprice criterion and account for
+−24.34 displayed marks, yet retained fills also lose. This supports a prospective
+entry-selection experiment, not a profit claim. Optional runtime wiring and
+separate bounded token HTTP recovery are being checked while production runs.
+[Actual study and limitations](../research/moloch-maker-markout-20261016/README.md).
+
+## Historical operation and qualification at13:54UTC
 
 Initial successor506740 stopped13:47:15 with CONNECTION_UNCONFIRMED at token
 HTTP after restoring original history. No stream/financial submissions began.
