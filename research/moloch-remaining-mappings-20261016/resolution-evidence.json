@@ -1,0 +1,417 @@
+{
+  "schemaVersion": 1,
+  "reviewedAtUtc": "2026-10-16T17:13:51.620061+00:00",
+  "sourceBaseCommit": "128f4ddb",
+  "purpose": "bounded_retained_source_resolution_mapping_audit",
+  "status": "zero_new_equivalent_mappings_three_unqualified_named_candidate_predictors",
+  "scope": {
+    "sigMarketIds": [
+      "191",
+      "276",
+      "280"
+    ],
+    "liveUniverseRawSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+    "existingDirectMappingCount": 234,
+    "existingCandidateAnalogCount": 3,
+    "liveUniverseModified": false,
+    "accountRequestsMade": 0,
+    "authenticatedRequestsMade": 0,
+    "KalshiApiRequestsMade": 0,
+    "productionChanges": false
+  },
+  "sourceHashPolicy": "SHA256 of actual original bytes; gzip wrapper and decoded receipt digests distinct. Review-extraction SHA is explicitly not original HTTP-body SHA. No private raw files or contact details are copied into Git.",
+  "retainedKalshiSources": [
+    {
+      "id": "kalshi-191",
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-GOVPARTYRI.receipt.json.gz",
+      "url": "https://api.elections.kalshi.com/trade-api/v2/events?series_ticker=GOVPARTYRI&with_nested_markets=true&limit=200",
+      "requestStartedAt": "2026-10-16T09:28:39.718Z",
+      "receivedAt": "2026-10-16T09:28:39.777Z",
+      "compressedSha256": "74097852a10ad1f27ce24c3c88d8870831737a28a598ca3bad3fcad122759512",
+      "receiptSha256": "0f34945b10f4d3fa0389ad215b0da88005c1118181f959504999ee5ccb405ef7",
+      "bodySha256": "4644b1f8babd975f4668a4d52e24a7516848a5a36f27cdb52b988b680c954ab8",
+      "bodyTextMatchesParsedBody": true,
+      "pointer": "/body/events/0/markets/2",
+      "originalPublicCaptureNotRefetched": true
+    },
+    {
+      "id": "kalshi-276",
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATEMT.receipt.json.gz",
+      "url": "https://api.elections.kalshi.com/trade-api/v2/events?series_ticker=SENATEMT&with_nested_markets=true&limit=200",
+      "requestStartedAt": "2026-10-16T09:28:40.267Z",
+      "receivedAt": "2026-10-16T09:28:40.321Z",
+      "compressedSha256": "ab824567e70e788f1c9ac62fc633335a59614a4c18fd48f096bf1c859238237a",
+      "receiptSha256": "19e0df09548f9b0d440b7694f1c225bef6ae79ca491c53feae74136f8c53515c",
+      "bodySha256": "1dac7872bcdf9b6c7d7eaa03d021af3f3bbde3cf8e4105db10ce4ea76fae1f1d",
+      "bodyTextMatchesParsedBody": true,
+      "pointer": "/body/events/0/markets/2",
+      "originalPublicCaptureNotRefetched": true
+    },
+    {
+      "id": "kalshi-280",
+      "path": "research/moloch-kalshi-mapping-20261016/receipts/events-SENATENE.receipt.json.gz",
+      "url": "https://api.elections.kalshi.com/trade-api/v2/events?series_ticker=SENATENE&with_nested_markets=true&limit=200",
+      "requestStartedAt": "2026-10-16T09:28:41.528Z",
+      "receivedAt": "2026-10-16T09:28:41.597Z",
+      "compressedSha256": "2afed14bb5a47e96a95e0849a3a1dac259d183adc840119fa884d9a576c45370",
+      "receiptSha256": "c77e59821a154e74811003e5294815b69ec4ffd9e6cf6d51e8fb4ae7c6ca02ca",
+      "bodySha256": "54244623b483a8c6c34abfb06fbf497504a1b470eea7dc8be49856ee7ccfd210",
+      "bodyTextMatchesParsedBody": true,
+      "pointer": "/body/events/0/markets/2",
+      "originalPublicCaptureNotRefetched": true
+    }
+  ],
+  "primaryCandidateSources": [
+    {
+      "id": "ri-candidates",
+      "url": "https://vote.sos.ri.gov/Candidates/CandidateSearchSummary?Election=18144&OfficeType=549",
+      "requestStartedAt": "2026-10-16T17:11:04.362312+00:00",
+      "status": 403,
+      "error": "HTTP_ERROR",
+      "receivedAt": "2026-10-16T17:11:04.457336+00:00",
+      "bytes": 5699,
+      "sha256": "8c538a90045c331dba894cc631423de6a8486165ece18a55626d1a9203f8c5e7",
+      "originalBytesRetainedPrivately": true,
+      "scope": "official_candidate_identity_only_not_SIG_resolver"
+    },
+    {
+      "id": "mt-candidates",
+      "url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
+      "requestStartedAt": "2026-10-16T17:11:04.458331+00:00",
+      "status": 200,
+      "finalUrl": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987",
+      "contentType": "text/html; charset=utf-8",
+      "receivedAt": "2026-10-16T17:11:07.033821+00:00",
+      "bytes": 170237,
+      "sha256": "64aaa451ed036eb6f3cac97db6493592e2a4e0291ee12be650fb9bfbeb3ac7c2",
+      "originalBytesRetainedPrivately": true,
+      "scope": "official_candidate_identity_only_not_SIG_resolver"
+    },
+    {
+      "id": "ne-elections",
+      "url": "https://sos.nebraska.gov/elections",
+      "requestStartedAt": "2026-10-16T17:11:07.034821+00:00",
+      "status": 200,
+      "finalUrl": "https://sos.nebraska.gov/elections",
+      "contentType": "text/html; charset=utf-8",
+      "receivedAt": "2026-10-16T17:11:07.195824+00:00",
+      "bytes": 73226,
+      "sha256": "88f8c75e56820917a7d242ffda898ddc16aa7bdaa2c6edee07ff15ac6273a544",
+      "originalBytesRetainedPrivately": true,
+      "scope": "official_candidate_identity_only_not_SIG_resolver"
+    },
+    {
+      "id": "ne-certified-general-candidates",
+      "url": "https://sos.nebraska.gov/sites/default/files/doc/elections/2026/Final_Statewide_General_Candidate_Filing_List_9.11.26.pdf",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T17:11:36.685772+00:00",
+      "receivedAt": "2026-10-16T17:11:36.952664+00:00",
+      "bytes": 120495,
+      "sha256": "d27a071715896b8c82b8cce8d48200b4207ba10c44f1778f56f92c4efcd7cf96",
+      "originalBytesRetainedPrivately": true,
+      "scope": "official_candidate_identity_only_not_SIG_resolver"
+    },
+    {
+      "id": "ri-web-reader-assertions",
+      "url": "https://vote.sos.ri.gov/Candidates/CandidateSearchSummary?Election=18144&OfficeType=549",
+      "inspectedAtUtc": "2026-10-16T17:13:51.620061+00:00",
+      "evidenceKind": "official_page_web_reader_assertions_not_original_HTTP_body",
+      "reviewExtractionSha256": "6c933b6b40a8cfeb2cbf65c6bfa3ac876274e0356d90ff2e2af9853c15e959a1",
+      "originalHttpBodySha256": null,
+      "originalHttpRetrievalStatus": 403,
+      "claims": {
+        "threeIndependentBallotCandidates": true,
+        "names": [
+          "KENNETH J BLOCK",
+          "JASJIT S GOTRA",
+          "C D REYNOLDS"
+        ]
+      },
+      "limitation": "The extraction digest is NOT a hash of the official HTTP response. Direct original retrieval is blocked; the 403 body is not candidate evidence."
+    }
+  ],
+  "genericSigSettlementGuide": {
+    "url": "https://sig.thesuper.market/docs/settlement-and-payouts",
+    "originalHtmlSha256": "24da48d573e203a62de3e9916334af8ca7f78d864fae9004e46cf38a97725874",
+    "scope": "Generic guide only; not a missing target-specific resolver substitute",
+    "finding": "Cancellation/N-A refunds remaining refundable principal rather than selecting an ordinary winner. Do not assume cross-venue matched binary/refund cashflows.",
+    "observedAtUtc": "2026-10-16T12:56:57.2712554Z"
+  },
+  "markets": [
+    {
+      "sigMarketId": "191",
+      "state": "RI",
+      "office": "Governor",
+      "sig": {
+        "url": "https://sig.thesuper.market/markets/191",
+        "historicalTitle": "Will the Independent Party win the Rhode Island Governor?",
+        "titleOnlyPartyLabel": "Independent",
+        "catalogObservedAt": "2026-10-01T18:48:51.435Z",
+        "historicalTournamentYear": 2026,
+        "sourcePath": "research/crossvenue_screen_2026-10-02/join_records.json.gz",
+        "sourceCompressedSha256": "09dc1f23977c14a9c444630837dda764b08ceb84d44f98e49572d56c800ec47a",
+        "exactNodeReceiptAvailable": false,
+        "contractId": null,
+        "exchangeId": null,
+        "canonicalRootSha256": null,
+        "resolverPredicate": null,
+        "settlementClock": null,
+        "unknownFields": [
+          "regular_or_special",
+          "stage",
+          "affiliation_mapping",
+          "winner_vs_seated",
+          "resolution_finality",
+          "runoff",
+          "fusion",
+          "replacement",
+          "tie",
+          "cancel_or_NA_refund_coupling"
+        ],
+        "retainedReceiptSearch": "Execution owner reported finite scan of 51,164 existing original receipts found no nodes/detail for 191/276/280; no new account requests were made. This is a search report, not an original target-rule receipt."
+      },
+      "kalshi": {
+        "sourceId": "kalshi-191",
+        "ticker": "GOVPARTYRI-26-KBLO",
+        "eventTicker": "GOVPARTYRI-26",
+        "candidate": "Ken Block",
+        "rulePrimary": "If Ken Block is inaugurated as the governor of Rhode Island pursuant to the 2026 election, then the market resolves to Yes.",
+        "ruleSecondary": "This market is eligible for accelerated determination after a consensus of media organizations project the winner. See full rules for details.",
+        "earlyCloseCondition": "This market will close early following the first person to be sworn in as governor pursuant to the 2026 gubernatorial election.",
+        "expectedExpirationTime": "2027-01-06T15:00:00Z",
+        "latestExpirationTime": "2027-11-03T15:00:00Z",
+        "notionalValueDollars": "1.0000",
+        "statusAtCapture": "active",
+        "resultAtCapture": "",
+        "mutuallyExclusiveMetadata": true,
+        "exhaustiveGuarantee": false,
+        "customStrike": {
+          "politician": "7084d83b-397d-42db-a1c6-4c62a5cce99c"
+        },
+        "settlementSources": [
+          {
+            "name": "Rhode Island Board of Elections",
+            "url": "https://elections.ri.gov"
+          }
+        ],
+        "fullExceptionRulebookAvailable": false
+      },
+      "classification": "Predictive_candidate_specific_unqualified",
+      "equivalent": false,
+      "guaranteedArbitrage": false,
+      "pricingAuthority": false,
+      "currentPriceObserved": false,
+      "primaryCandidateEvidenceId": "ri-web-reader-assertions",
+      "bestUse": "Separate named-candidate race predictor with explicit basis-risk features; not a unit-for-unit SIG payout proxy or approval. Cross-race/control markets are Factor only, with no coefficient or hedge ratio established.",
+      "blockingPredicate": "SIG exact Independent-party/winner resolver is missing; Kalshi requires this named person to be inaugurated/sworn in. A current ballot listing does not prove those terminal predicates equal.",
+      "counterexamples": [
+        {
+          "state": "another_independent_or_eligible_write_in_wins_and_takes_office",
+          "sigPayout": "unresolved; conditional 1 only IF actual SIG resolver accepts that winner as Independent",
+          "kalshiNamedCandidatePayout": 0,
+          "kind": "logical_counterexample_to_generic_party_equals_named_candidate_not_asserted_SIG_rule"
+        },
+        {
+          "state": "named_candidate_wins_election_but_is_not_sworn_in",
+          "sigPayout": "unresolved winner/finality/cancellation policy",
+          "kalshiNamedCandidatePayout": "not established by short primary+secondary excerpt; named swearing-in predicate not met absent other full-rule determination",
+          "kind": "unresolved_finality_basis_risk"
+        },
+        {
+          "state": "SIG_cancelled_or_NA",
+          "sigPayout": "generic official guide refunds remaining refundable principal; applicability/amount needs actual position and target resolver",
+          "kalshiNamedCandidatePayout": "not established by retained excerpt; do not presume matching refund",
+          "kind": "refund_cashflows_not_binary_payout_equivalence"
+        }
+      ],
+      "primaryCandidateFinding": "Official reader lists Block, Gotra and Reynolds as Independent and On Election Ballot Y. Thus even present listed Independent candidates are not exhausted by the Ken Block-only contract. Original direct HTML remains 403."
+    },
+    {
+      "sigMarketId": "276",
+      "state": "MT",
+      "office": "Senate",
+      "sig": {
+        "url": "https://sig.thesuper.market/markets/276",
+        "historicalTitle": "Will the Independent Party win the Montana Senate?",
+        "titleOnlyPartyLabel": "Independent",
+        "catalogObservedAt": "2026-10-01T18:48:51.435Z",
+        "historicalTournamentYear": 2026,
+        "sourcePath": "research/crossvenue_screen_2026-10-02/join_records.json.gz",
+        "sourceCompressedSha256": "09dc1f23977c14a9c444630837dda764b08ceb84d44f98e49572d56c800ec47a",
+        "exactNodeReceiptAvailable": false,
+        "contractId": null,
+        "exchangeId": null,
+        "canonicalRootSha256": null,
+        "resolverPredicate": null,
+        "settlementClock": null,
+        "unknownFields": [
+          "regular_or_special",
+          "stage",
+          "affiliation_mapping",
+          "winner_vs_seated",
+          "resolution_finality",
+          "runoff",
+          "fusion",
+          "replacement",
+          "tie",
+          "cancel_or_NA_refund_coupling"
+        ],
+        "retainedReceiptSearch": "Execution owner reported finite scan of 51,164 existing original receipts found no nodes/detail for 191/276/280; no new account requests were made. This is a search report, not an original target-rule receipt."
+      },
+      "kalshi": {
+        "sourceId": "kalshi-276",
+        "ticker": "SENATEMT-26-IND",
+        "eventTicker": "SENATEMT-26",
+        "candidate": "Seth Bodnar",
+        "rulePrimary": "If Seth Bodnar (as an Independent) is sworn in as a Senator of Montana for the term beginning in 2027, then the market resolves to Yes.",
+        "ruleSecondary": "This market is eligible for accelerated determination after a consensus of media organizations project the winner. See full rules for details.",
+        "earlyCloseCondition": "This market will close early following the swearing in of the Senator for the seat in question.",
+        "expectedExpirationTime": "2027-01-04T15:00:00Z",
+        "latestExpirationTime": "2027-11-03T15:00:00Z",
+        "notionalValueDollars": "1.0000",
+        "statusAtCapture": "active",
+        "resultAtCapture": "",
+        "mutuallyExclusiveMetadata": true,
+        "exhaustiveGuarantee": false,
+        "customStrike": {
+          "politician": "9aeb608f-26b6-4f28-ad03-c90d754bece6"
+        },
+        "settlementSources": [
+          {
+            "name": "United States Congress",
+            "url": "https://www.congress.gov/"
+          }
+        ],
+        "fullExceptionRulebookAvailable": false
+      },
+      "classification": "Predictive_candidate_specific_unqualified",
+      "equivalent": false,
+      "guaranteedArbitrage": false,
+      "pricingAuthority": false,
+      "currentPriceObserved": false,
+      "primaryCandidateEvidenceId": "mt-candidates",
+      "bestUse": "Separate named-candidate race predictor with explicit basis-risk features; not a unit-for-unit SIG payout proxy or approval. Cross-race/control markets are Factor only, with no coefficient or hedge ratio established.",
+      "blockingPredicate": "SIG exact Independent-party/winner resolver is missing; Kalshi requires this named person to be inaugurated/sworn in. A current ballot listing does not prove those terminal predicates equal.",
+      "counterexamples": [
+        {
+          "state": "another_independent_or_eligible_write_in_wins_and_takes_office",
+          "sigPayout": "unresolved; conditional 1 only IF actual SIG resolver accepts that winner as Independent",
+          "kalshiNamedCandidatePayout": 0,
+          "kind": "logical_counterexample_to_generic_party_equals_named_candidate_not_asserted_SIG_rule"
+        },
+        {
+          "state": "named_candidate_wins_election_but_is_not_sworn_in",
+          "sigPayout": "unresolved winner/finality/cancellation policy",
+          "kalshiNamedCandidatePayout": "not established by short primary+secondary excerpt; named swearing-in predicate not met absent other full-rule determination",
+          "kind": "unresolved_finality_basis_risk"
+        },
+        {
+          "state": "SIG_cancelled_or_NA",
+          "sigPayout": "generic official guide refunds remaining refundable principal; applicability/amount needs actual position and target resolver",
+          "kalshiNamedCandidatePayout": "not established by retained excerpt; do not presume matching refund",
+          "kind": "refund_cashflows_not_binary_payout_equivalence"
+        }
+      ],
+      "primaryCandidateFinding": "Original official FEDERAL GENERAL 2026 HTML lists Seth Bodnar IND and Jami Dee Woodman NON/write-in for the same US Senate office. NON is not silently relabeled Independent. Bodnar listing is corroborated; exact SIG handling of other/nonparty winners remains unknown."
+    },
+    {
+      "sigMarketId": "280",
+      "state": "NE",
+      "office": "Senate",
+      "sig": {
+        "url": "https://sig.thesuper.market/markets/280",
+        "historicalTitle": "Will the Independent Party win the Nebraska Senate?",
+        "titleOnlyPartyLabel": "Independent",
+        "catalogObservedAt": "2026-10-01T18:48:51.435Z",
+        "historicalTournamentYear": 2026,
+        "sourcePath": "research/crossvenue_screen_2026-10-02/join_records.json.gz",
+        "sourceCompressedSha256": "09dc1f23977c14a9c444630837dda764b08ceb84d44f98e49572d56c800ec47a",
+        "exactNodeReceiptAvailable": false,
+        "contractId": null,
+        "exchangeId": null,
+        "canonicalRootSha256": null,
+        "resolverPredicate": null,
+        "settlementClock": null,
+        "unknownFields": [
+          "regular_or_special",
+          "stage",
+          "affiliation_mapping",
+          "winner_vs_seated",
+          "resolution_finality",
+          "runoff",
+          "fusion",
+          "replacement",
+          "tie",
+          "cancel_or_NA_refund_coupling"
+        ],
+        "retainedReceiptSearch": "Execution owner reported finite scan of 51,164 existing original receipts found no nodes/detail for 191/276/280; no new account requests were made. This is a search report, not an original target-rule receipt."
+      },
+      "kalshi": {
+        "sourceId": "kalshi-280",
+        "ticker": "SENATENE-26-DOSB",
+        "eventTicker": "SENATENE-26",
+        "candidate": "Dan Osborn",
+        "rulePrimary": "If Dan Osborn (as an independent) is sworn in as a Senator of Nebraska for the term beginning in 2027, then the market resolves to Yes.",
+        "ruleSecondary": "This market is eligible for accelerated determination after a consensus of media organizations project the winner. See full rules for details.",
+        "earlyCloseCondition": "This market will close early following the swearing in of the Senator for the seat in question.",
+        "expectedExpirationTime": "2027-01-04T15:00:00Z",
+        "latestExpirationTime": "2027-11-03T15:00:00Z",
+        "notionalValueDollars": "1.0000",
+        "statusAtCapture": "active",
+        "resultAtCapture": "",
+        "mutuallyExclusiveMetadata": true,
+        "exhaustiveGuarantee": false,
+        "customStrike": {
+          "politician": "b2692465-6c0f-4106-8300-62660e250567"
+        },
+        "settlementSources": [
+          {
+            "name": "United States Congress",
+            "url": "https://www.congress.gov/"
+          }
+        ],
+        "fullExceptionRulebookAvailable": false
+      },
+      "classification": "Predictive_candidate_specific_unqualified",
+      "equivalent": false,
+      "guaranteedArbitrage": false,
+      "pricingAuthority": false,
+      "currentPriceObserved": false,
+      "primaryCandidateEvidenceId": "ne-certified-general-candidates",
+      "bestUse": "Separate named-candidate race predictor with explicit basis-risk features; not a unit-for-unit SIG payout proxy or approval. Cross-race/control markets are Factor only, with no coefficient or hedge ratio established.",
+      "blockingPredicate": "SIG exact Independent-party/winner resolver is missing; Kalshi requires this named person to be inaugurated/sworn in. A current ballot listing does not prove those terminal predicates equal.",
+      "counterexamples": [
+        {
+          "state": "another_independent_or_eligible_write_in_wins_and_takes_office",
+          "sigPayout": "unresolved; conditional 1 only IF actual SIG resolver accepts that winner as Independent",
+          "kalshiNamedCandidatePayout": 0,
+          "kind": "logical_counterexample_to_generic_party_equals_named_candidate_not_asserted_SIG_rule"
+        },
+        {
+          "state": "named_candidate_wins_election_but_is_not_sworn_in",
+          "sigPayout": "unresolved winner/finality/cancellation policy",
+          "kalshiNamedCandidatePayout": "not established by short primary+secondary excerpt; named swearing-in predicate not met absent other full-rule determination",
+          "kind": "unresolved_finality_basis_risk"
+        },
+        {
+          "state": "SIG_cancelled_or_NA",
+          "sigPayout": "generic official guide refunds remaining refundable principal; applicability/amount needs actual position and target resolver",
+          "kalshiNamedCandidatePayout": "not established by retained excerpt; do not presume matching refund",
+          "kind": "refund_cashflows_not_binary_payout_equivalence"
+        }
+      ],
+      "primaryCandidateFinding": "Original certified November 3 general list dated September 11 identifies Dan Osborn By Petition. By Petition is not silently equated to an Independent Party resolver. The current list has other named-party candidates; no exhaustive future/written-in/refund equivalence follows."
+    }
+  ],
+  "exceptionChecklist": {
+    "independent": "Party label vs named candidate and ballot By Petition/NON distinctions unresolved in SIG resolver.",
+    "fusion": "No retained target-specific affiliation/nomination aggregation definition; do not sum candidates or assign formal party by website display.",
+    "replacement": "Candidate-specific predicate may diverge from party successor; no target continuation proof retained.",
+    "runoff": "Do not infer inclusion/exclusion or legal impossibility from race title; missing target resolver and full Kalshi rulebook.",
+    "tie": "No paired original finality/tie-resolution proof.",
+    "winnerVsSeated": "Kalshi excerpts bind inauguration/2027 swearing-in; exact SIG target finality unavailable.",
+    "cancelRefund": "Generic SIG principal refund is not a guaranteed matching Kalshi refund.",
+    "mutualExclusionVsExhaustive": "Kalshi mutually_exclusive true does not certify displayed outcomes exhaustive or imply Independent=1-D-R."
+  },
+  "nextAction": "Keep all three non-equivalent. Any prospective shadow predictor must retain Predictive class, candidate identity/source vintages, missing source continuity and basis-risk flags. Upgrade to Equivalent only after original exact target SIG rules plus full Kalshi exception/finality evidence establish a reviewed cashflow-state mapping. No model/ratio or profitable execution has been qualified."
+}
