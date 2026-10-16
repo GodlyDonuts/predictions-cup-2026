@@ -1,0 +1,78 @@
+{
+  "observedBeforeSource": "2225b1efba5a16078cea875f5162f96742514d3a",
+  "observedAfterSource": "b112c6c1b941bcc3282c754c1883a55b2b9b6cc2",
+  "observerModuleUnchanged": true,
+  "protocolSeconds": 30,
+  "before": {
+    "bookObservations": 779,
+    "distinctFrames": 17,
+    "distinctExchanges": 214,
+    "receiptAgeMsQuantiles": {
+      "0": 173,
+      "0.1": 173,
+      "0.25": 652,
+      "0.5": 2069,
+      "0.75": 4232,
+      "0.9": 7923,
+      "1": 11147
+    },
+    "sourceAgeMsQuantiles": {
+      "0": 1201,
+      "0.1": 1718,
+      "0.25": 2307,
+      "0.5": 4157,
+      "0.75": 5947,
+      "0.9": 10353,
+      "1": 12404
+    },
+    "sourceToReceiptMsQuantiles": {
+      "0": 394,
+      "0.1": 808,
+      "0.25": 908,
+      "0.5": 1715,
+      "0.75": 2134,
+      "0.9": 2511,
+      "1": 2511
+    }
+  },
+  "after": {
+    "bookObservations": 869,
+    "distinctFrames": 26,
+    "distinctExchanges": 219,
+    "receiptAgeMsQuantiles": {
+      "0": 82,
+      "0.1": 302,
+      "0.25": 621,
+      "0.5": 838,
+      "0.75": 2038,
+      "0.9": 6064,
+      "1": 6095
+    },
+    "sourceAgeMsQuantiles": {
+      "0": 675,
+      "0.1": 975,
+      "0.25": 1144,
+      "0.5": 1747,
+      "0.75": 2627,
+      "0.9": 7244,
+      "1": 7244
+    },
+    "sourceToReceiptMsQuantiles": {
+      "0": 162,
+      "0.1": 285,
+      "0.25": 377,
+      "0.5": 673,
+      "0.75": 1126,
+      "0.9": 1180,
+      "1": 1180
+    }
+  },
+  "causalSpeedupEstablished": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Fresh suffix only; absent target book is not account-wide or full-history absence.",
+    "Book-weighted lag summaries share frames and are not independent statistical samples.",
+    "Receipt-to-probe lag combines producer queue/append, filesystem/tail scheduling, cache HTTP and probe work; no append clock isolates components.",
+    "No continuous no-change witness, repaired clock, measured future model gain or actual fill inference."
+  ]
+}

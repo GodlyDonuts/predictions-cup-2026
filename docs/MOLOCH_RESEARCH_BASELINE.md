@@ -1,15 +1,21 @@
-# Current research baseline: October 16, 17:14 UTC
+# Current research baseline: October16,17:30UTC
 
-PID **525450** started the checked defensive-cancel release at17:07 UTC, sourceb112c6c1 / binary3ab6ef7c. The17:12:46 check verifies the correct running executable, no STOP and defensiveCancel:true. **Original journal restoration is still in progress; fresh trading by this PID is not yet verified.** The prior518852 stopped cleanly after the owner request, with zero unknown orders and unchanged bank, financial engine8acc and twelve bridges. The earlier statement that518852 was trading is now historical.
-[Actual rollout and pending-health proof](../research/moloch-defensive-cancel-20261016/deployment/live-verification.json).
+Sole PID **525450**, source `b112c6c1` / binary `3ab6ef7c`, is verified **fresh trading** at17:30:20UTC: healthy realtime, matching executable, no STOP, five post-launch official order acknowledgments and two reconciled fill rows. `defensiveCancel:true` is active. Incremental progress is bound to525450; the full-cycle status still belongs to its predecessor and is not presented as current.
+[Actual fresh verification](../research/moloch-defensive-cancel-20261016/deployment/fresh-live-verification-1730.json).
 
-The last four pre-switch fills raised ordinary realized P&L by6.455 to **-182.535000**, inherited gross remains+45.130000 and combined realized is **-137.405000 SUSQies**. There are198 cumulative fill rows. Cash72,313.015000 and owned cost23,129.495000 are the preserved bank state. These are prior-owner results, not profit credited to the newly starting version. Contributions55,579.915000 remain separately attributed within the95,579.915000 full-capital bound.
+The two fill rows sell1188 residual YES shares at0.340 against0.335 original basis, adding **5.940000 SUSQies** realized after zero fees. These are exits of inventory acquired before this restart, not proof of new-entry alpha. Cumulative fills are200; ordinary realized **−176.595000**, inherited gross **+45.130000**, combined **−131.465000**. Cash72,716.935000 and owned cost22,731.515000 are the attributed bank view. Contributions55,579.915000 remain separate from profit within the full95,579.915000 capital bound. Overall profitability remains unestablished.
 
-Actual ARM64 SDK231, runtime-library197 and worker95 checks plus optimized release pass. The new worker cancels source-bound resting ordinary BUY quotes that fall below the unchanged entry criterion and services the original stream during preflight GET waits. It retains nonretryable cancel attempts, typed no-HTTP evidence, exact fill/terminal sequencing and the original shared account budget. No native financial source, capital policy or bank migration was introduced.
+The same original30s metadata-only probe observed869 books/26 frames/219 exchanges. Median receipt-to-probe lag is **838ms**, versus2069ms in the prior window; p90 is6064ms versus7923ms. Median original source age is1747ms versus4157ms. The windows differ, share frames and lack an append clock: this does not establish a causal whole-cycle speedup or profitable strategy.
+[Original probe and fixed reproduction](../research/moloch-defensive-cancel-20261016/measurement/README.md).
+
+Actual ARM64 SDK231/runtime-library197/worker95 checks and optimized release passed. Production services the existing stream during ordinary/reviewed preflight reads and can cancel source-bound resting ordinary BUYs that fail the unchanged entry criterion. Native financial engine8acc, the original bank, twelve bridges, existing account budget and daily windows remain. No additional account client was launched.
 [Checked build](../research/moloch-defensive-cancel-20261016/build/README.md) | [Design](../research/moloch-defensive-cancel-20261016/worker-design.md).
 
-Read-only trace V3 was normally sealed before the controlled switch; its economic outcomes have not been opened. A fresh cohort will target525450's genuine new breadth journal once available. Sealed V2 input replay reproduced488 cache polls,386 SIG callbacks and both original emitted rows after19 checks, but has only one horizon label; no profitable cross-venue model is qualified. Kalshi remains on its existing collector with237 cached tickers,20 reads/sec target and live WebSocket reception. Three candidate-specific direct mappings remain under review; analogs do not certify party-payout equivalence.
-[Original V2 replay](../research/moloch-trade-trigger-20261016/witness/actual-v2/README.md).
+Read-only trace V4 PID525623 started17:25:52 with reviewed producer200ab and525450's genuine journal; it is finite3600s with original sampling policy. Sealed V3 inputs are pinned before outcomes and exact-input replay is underway. V2 replay reproduced both emitted rows but has only one horizon label; no fitted cross-venue model is qualified. The observer's genuine `(sequence, original read timestamp)` repair passes103 checks and is published for prospective deployment; old cohorts require their exact historical sampler. Both prior probes and the new869-book probe observed zero same-sequence/newer-time cases, so no recovered-sample gain is claimed.
+[Book-version semantics](../research/moloch-book-freshness-semantics-20261016/README.md).
+
+Kalshi's existing collector retains237 tickers,20 reads/sec target and WebSocket reception. The remaining3 candidate-specific analogs were audited: **zero new payout-equivalent mappings**. Candidate-win and party-win contracts remain distinct; live mapping did not change.
+[Resolution evidence](../research/moloch-remaining-mappings-20261016/README.md).
 
 # Historical research baseline: October 16, 14:57 UTC
 

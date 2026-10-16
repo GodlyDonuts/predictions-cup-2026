@@ -1,0 +1,30 @@
+{
+  "deployment/fresh-live-verification.json": {
+    "bytes": 1442,
+    "sha256": "39fb9c5df3f2976dafa6f1d8fc6068eaba856209f48358c6eb5681705fe4ead3"
+  },
+  "deployment/fresh-live-verification-1730.json": {
+    "bytes": 1443,
+    "sha256": "9c1b83cc7256836e3dcf3e89b4d50d3af2c6573f30f74c68ca26ae21175c5c11"
+  },
+  "deployment/trace-v4-start.json": {
+    "bytes": 741,
+    "sha256": "85eb945c73cf286fcd05aac6d1bd7a950254e967c484b5deaf0565bfdb3c8af6"
+  },
+  "measurement/actual-age-probe.jsonl.gz": {
+    "bytes": 12824,
+    "sha256": "74fcffafc3d6c56eb8be1143953c7365849a423e7bde9bd1056455d79c467ec6"
+  },
+  "measurement/summarize-age.py": {
+    "bytes": 4825,
+    "sha256": "c63cd4863a8c94a264ea19278c69625210ce064f2554c9031ce678c78e645e40"
+  },
+  "measurement/age-report.json": {
+    "bytes": 11587,
+    "sha256": "b8d8e2740ee8d231fd77abd48014cc4e8a84c5095e2b0f82f38a03a727c64cd5"
+  },
+  "measurement/age-comparison.json": {
+    "bytes": 1950,
+    "sha256": "dbed5e4adb476115a494d63373433e165f893b2aaaccb21d1ea97744a265578f"
+  }
+}
