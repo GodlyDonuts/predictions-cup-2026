@@ -166,6 +166,36 @@ fn retire_never_sent(bank:&mut Session,log:&mut DispatchLog,q:&Value)->Result<()
  let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
  accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"receivedAt":iso(now())}))
 }
+fn proof_config(c:&Control)->Config{Config{queue_dir:c.root.join("account-queue"),account_scope:c.account_scope.clone(),scope:c.scope.clone(),maximum_pages:20,writes_enabled:false}}
+fn reverify_aborted_records(c:&Control,log:&mut DispatchLog)->Result<()>{
+ let records:Vec<_>=log.aborted_records().iter().map(|(qid,row)|(*qid,row["proof"].clone())).collect();
+ for(qid,evidence)in records{let(spec,permit,at,error)=log.pre_admission_originals(qid)?;
+  let proof=api::verify_retained_ordinary_pre_admission(&proof_config(c),&spec,&permit,at,&error,&evidence)?;
+  log.verify_aborted_before_admission(qid,&proof)?;
+ }Ok(())
+}
+fn retire_proved_unadmitted(bank:&mut Session,log:&DispatchLog,qid:u64)->Result<()>{
+ if !log.proved_no_network(qid)||log.acknowledgments.contains_key(&qid)||bank.engine().live_order_bindings().contains_key(&qid)||bank.engine().fills().iter().any(|f|f["orderId"]==qid){return Err("LIVE_UNADMITTED_RETIREMENT_PROOF_REQUIRED".into())}
+ let q=quote(bank,qid)?;if q["retired"]==true{return Ok(())}
+ let original=&log.intents.get(&qid).ok_or("LIVE_UNADMITTED_ORIGINAL_INTENT")?["quote"];
+ for field in ["id","marketId","exchangeId","side","action","quantity","price"]{if q[field]!=original[field]{return Err("LIVE_UNADMITTED_NATIVE_QUOTE_CHANGED".into())}}
+ if q["filled"]!=0{return Err("LIVE_UNADMITTED_NATIVE_FILL".into())}
+ let proof=&log.aborted_records().get(&qid).ok_or("LIVE_UNADMITTED_DURABLE_PROOF")?["proof"];
+ accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":qid,"confirmedNetworkAttempts":0,"receiptHash":hash(proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))
+}
+/// Explicit local incident repair: no Transport, credentials or HTTP. The STOP
+/// remains armed. Original SDK generations must verify before an abort append.
+fn recover_unadmitted(c:&Control)->Result<()>{
+ let stop=c.root.join("EXECUTION_STOP");if load(&stop)?["reason"]!="LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"{return Err("LIVE_UNADMITTED_INCIDENT_STOP_REQUIRED".into())}
+ let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(c,&mut log)?;
+ let pending:Vec<_>=log.attempted.iter().filter(|qid|!log.acknowledgments.contains_key(qid)&&!log.proved_no_network(**qid)).copied().collect();let mut recovered=Vec::new();
+ for qid in pending{let(spec,permit,at,error)=log.pre_admission_originals(qid)?;
+  if permit.run_id!=c.activation.run_id||spec.body.as_ref().is_none_or(|b|b["tournamentId"]!=c.scope.tournament_id){return Err("LIVE_UNADMITTED_ORIGINAL_SCOPE".into())}
+  let proof=api::verify_frozen_ordinary_pre_admission(&proof_config(c),&spec,&permit,at,&error)?;
+  log.append_aborted_before_admission(qid,&proof,&iso(now()))?;recovered.push(qid);
+ }log.require_resolved_attempts()?;
+ atomic_json(&c.root.join("pre-admission-recovery.json"),&json!({"at":iso(now()),"recoveredOriginalQids":recovered,"sdkArchiveReverified":true,"dispatchHead":log.descriptor_identity()?,"networkRequests":0,"stopPreserved":stop.exists(),"sameIntentRetryAuthorized":false,"financialStateChanged":false}))?;Ok(())
+}
 fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,cache:&mut Reconciler)->Result<reconciliation::Cycle>{
  log.require_resolved_attempts()?;
  let pending:Vec<_>=log.acknowledgments.iter().filter(|(q,_)|!log.closed.contains(q)).map(|(q,_)|*q).collect();
@@ -502,7 +532,11 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid))}))?;
  record_original_attempt(bank,log,qid,if fundamental.is_some(){None}else{c.execution_model.as_ref()},now())?;
  if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}
- let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
+ let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
+  if let Ok((spec,permit,at,error))=log.pre_admission_originals(qid){
+   if let Ok(proof)=t.verify_current_ordinary_pre_admission(&spec,&permit,at,&error){log.append_aborted_before_admission(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
+  }
+  return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
  record_receipt(&c.root,&ack)?;log.append(json!({"kind":"ack","qid":qid,"receipt":ack}))?;
  let event=feedback::acknowledgment(q,&ack,&iso(now()))?;if let Some(f)=fundamental.as_ref(){f.cohorts.validate_acknowledgment(qid,&event)?;}authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();Ok(())
 }
@@ -959,7 +993,7 @@ fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog
  require_stream(&connected)?;*stream=Some(connected);let connected=stream.as_ref().unwrap();authority.bind_stream(connected.failure_signal(),connected.deadline_ms);Ok(())
 }
 pub fn main()->Result<()>{
- let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run /absolute/control.json".into())}
+ let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run","recover-unadmitted"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run|recover-unadmitted /absolute/control.json".into())}
  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
  validate_collateral_accounting(&c)?;
  validate_maker_configuration(&c)?;
@@ -970,6 +1004,7 @@ pub fn main()->Result<()>{
  if let Some(settings)=&c.packages{settings.load(&c.scope)?;} if let Some(cfg)=&c.execution_model{cfg.validate()?;}
  private_dir(&c.root)?;private_dir(&c.root.join("receipts"))?;private_dir(&c.root.join("package-receipts"))?;
  let lease=Arc::new(ExclusiveLock::acquire(&c.owner_lock)?);
+ if args[1]=="recover-unadmitted"{recover_unadmitted(&c)?;println!("Original SDK no-send evidence verified; STOP preserved; no network");return Ok(())}
  let mut read=transport(&c,Box::new(ReadOnlyAuthority),false)?;
  let marker=c.root.join("quiet-boundary.json");if !marker.exists(){read.reserve_legacy_migration_boundary(0,false)?;atomic_json(&marker,&json!({"at":iso(now()),"reason":"single-owner account budget migration"}))?;}
  let (a,p,o)=account(&mut read,&c.root)?;
@@ -997,7 +1032,8 @@ pub fn main()->Result<()>{
   let authority=Arc::new(ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![stop.clone(),global_stop.clone()],path.clone(),std::env::current_exe()?,lease.clone())?);
   let maker_review=c.maker_policy.as_ref().map(|settings|moloch_live_runtime::maker_policy::Reviewed::load(settings.clone(),&bank)).transpose()?;
   if let Some(review)=&maker_review{review.validate_model(c.execution_model.as_ref().ok_or("LIVE_MAKER_MODEL_REQUIRED")?)?;authority.require_maker_review(review.sha256())?;}
-  let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;log.require_resolved_attempts()?;
+  let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(&c,&mut log)?;log.require_resolved_attempts()?;
+  for qid in log.aborted_records().keys().copied().collect::<Vec<_>>(){retire_proved_unadmitted(&mut bank,&log,qid)?;}
   // End the startup reader before constructing the ONE continuing worker. The
   // existing-origin baseline borrows this same transport's real quiet queue;
   // it cannot create an independent account client or infer unknown absence.
