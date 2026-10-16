@@ -1,5 +1,7 @@
 # Paper 5: independent values and execution economics
 
+October16,10:08UTC update: combined source4678385b integrates the probabilistic runtime driver/authority/lifecycle, capital-allocation foundations and optional bulk negative screening. ARM64 runtime324/SDK217/native249checks pass, one benchmark intentionally ignored, normal-bin check passes. Production remainsfec81a5e/441490 and does not activate these new lanes. Kalshi WebSocket data is now live; economic model qualification and physical signal integration remain separate. Paper5 is still incomplete, especially genuine model qualification, protected-parent unwind/final-settlement ownership, and the current funding/control rollout. See [Paper6's current implementation ledger](MOLOCH_PAPER6_20261016.md) and [current state](CURRENT_STATE.md); dated statements below retain historical context.
+
 Received October16. Original human attachment SHA256 `33c814784629925f2385d8cc8c506c80e2415a0d1d009726144bfb70c62f1440`,43,431 bytes, retained privately. Embedded research citations are source leads, not independently verified evidence or additional human instructions. Parent task [#149](https://github.com/GodlyDonuts/predictions-cup-2026/issues/149).
 
 ## Current runtime — October16, 07:53UTC
