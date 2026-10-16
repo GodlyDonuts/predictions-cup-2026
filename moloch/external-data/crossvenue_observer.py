@@ -134,6 +134,8 @@ class Study:
         self.external_cache = collections.defaultdict(dict)
         self.external_invalid, self.external_quarantine = set(), set()
         self.external_tickers = set()
+        self.external_market_scopes = set()
+        self.source_histories = {}  # <=237 markets x2 source histories; old epochs discarded.
         self.pending = collections.defaultdict(collections.deque)
         self.last_sample, self.last_source, self.revisions = {}, {}, {}
         self.counts = collections.Counter()
@@ -153,6 +155,11 @@ class Study:
         for row in envelope["markets"]:
             for market in row["sigMarketIds"]:
                 market = str(market)
+                if market not in self.external_market_scopes:
+                    if len(self.external_market_scopes) >= 237:
+                        self.counts["externalScopeLimit"] += 1
+                        continue
+                    self.external_market_scopes.add(market)
                 if market not in self.external_cache[source] and len(self.external_cache[source]) >= 237:
                     self.counts["externalScopeLimit"] += 1
                     continue
@@ -165,6 +172,8 @@ class Study:
                     self.external_tickers.add(ticker)
                 if ws and row.get("valid") is not True:
                     self.external_invalid.add(key)
+                    if row.get("invalidReason") not in ("stale", "source_clock_ahead"):
+                        self._invalidate_external_history(market, source)
                     self.counts["externalWsWithdrawn"] += 1
                     self._select_external(market, now)
                     continue
@@ -197,6 +206,7 @@ class Study:
                 except (ValueError, InvalidOperation, KeyError, TypeError):
                     self.counts["externalInvalidOrOneSided"] += 1
                     self.external_invalid.add(key)
+                    self._invalidate_external_history(market, source)
                     self._select_external(market, now)
                     continue
                 prior = self.external_cache[source].get(market)
@@ -224,16 +234,37 @@ class Study:
                     if actual != expected:
                         self.external_quarantine.add(key)
                         self.external.pop(market, None)
-                        self.history[market].clear()
+                        self._invalidate_external_history(market, source)
                         self.counts["externalConflicts"] += 1
                         continue
                     self.counts["externalDuplicates"] += 1
                 else:
                     self.external_cache[source][market] = value
                     self.external_quarantine.discard(key)
+                    self._remember_external(market, value, now)
                 self.external_invalid.discard(key)
                 self._select_external(market, now)
         self.counts["externalPolls"] += 1
+
+    @staticmethod
+    def _external_identity(value):
+        return tuple(value.get(k) for k in ("source", "ticker", "mappingKind", "sid", "wsEpoch", "streamBoundary"))
+
+    def _invalidate_external_history(self, market, source):
+        entry = self.source_histories.get((market, source))
+        if entry:
+            entry[1].clear()
+
+    def _remember_external(self, market, value, now):
+        key, identity = (market, value["source"]), self._external_identity(value)
+        entry = self.source_histories.get(key)
+        if entry is None or entry[0] != identity:
+            entry = (identity, collections.deque())
+            self.source_histories[key] = entry
+        h = entry[1]
+        h.append(value)
+        while h and (h[0]["receivedMs"] < now-180000 or len(h) > 4096):
+            h.popleft()
 
     def _select_external(self, market, now):
         selected = None
@@ -248,18 +279,14 @@ class Study:
         prior = self.external.get(market)
         if selected is None:
             self.external.pop(market, None)
-            self.history[market].clear()
+            self.history[market] = collections.deque()
             return None
         if selected is prior:
             return selected
-        h = self.history[market]
         if prior and (prior["source"], prior.get("sid"), prior.get("wsEpoch"), prior.get("streamBoundary")) != (selected["source"], selected.get("sid"), selected.get("wsEpoch"), selected.get("streamBoundary")):
-            h.clear()  # Source/SID handover is not a price innovation.
             self.counts["externalSourceChanges"] += 1
         self.external[market] = selected
-        h.append(selected)
-        while h and (h[0]["receivedMs"] < now-180000 or len(h) > 4096):
-            h.popleft()
+        self.history[market] = self.source_histories.get((market, selected["source"]), (None, collections.deque()))[1]
         return selected
 
     def breadth(self, row, now):
@@ -365,14 +392,16 @@ class Study:
             self.counts["noCurrentExternal"] += 1
             return
         sample_id = hashlib.sha256(f"{market}:{exchange}:{row['hash']}:{ext['bodySha256']}:{now}".encode()).hexdigest()
-        changes = {}
+        changes, anchors = {}, {}
         for ms in (1000, 5000, 30000):
-            prior = next((v for v in reversed(self.history[market]) if v["receivedMs"] <= now - ms), None)
-            changes[str(ms)] = (logit(ext["features"]["midpoint"]) - logit(prior["features"]["midpoint"])) if prior and now - ms - prior["receivedMs"] <= self.external_age else None
+            prior = next((v for v in reversed(self.history[market]) if v["receivedMs"] <= now-ms and v["availableMs"] <= now), None)
+            eligible = prior is not None and now-ms-prior["receivedMs"] <= self.external_age
+            changes[str(ms)] = (logit(ext["features"]["midpoint"]) - logit(prior["features"]["midpoint"])) if eligible else None
+            anchors[str(ms)] = ({**{k: prior.get(k) for k in ("bodySha256", "receivedMs", "availableMs", "source", "ticker", "mappingKind", "sid", "sequence", "wsEpoch", "streamBoundary", "sourceTsMs")}, "midpoint": prior["features"]["midpoint"]} if eligible else None)
         sample = {"kind": "decision_features", "sampleId": sample_id, "decisionMs": now, "decisionAt": stamp(now),
                   "marketId": market, "exchangeId": exchange, "sig": {"journalHash": row["hash"], "journalSequence": row["sequence"],
                   "sourceAt": b["sourceAt"], "receivedAt": b["receivedAt"], "features": f},
-                  "external": ext, "externalLogitChanges": changes, "pricingAuthority": False,
+                  "external": ext, "externalLogitChanges": changes, "externalLagAnchors": anchors, "pricingAuthority": False,
                   "executionAuthority": False, "horizonsMs": list(self.horizons)}
         self.emit(sample)
         waiting.append({**sample, "remaining": set(self.horizons)})

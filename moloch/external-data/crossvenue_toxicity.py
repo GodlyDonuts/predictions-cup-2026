@@ -5,7 +5,7 @@ from decimal import Decimal
 import hashlib
 from pathlib import Path
 from crossvenue_economics import (load, clock, canonical, digest, require, money,
-                                 signed_money, HEX)
+                                 signed_money, HEX, validate_lag_anchors)
 
 HORIZONS = (1000, 3000, 10000, 30000)
 POLICY = {
@@ -40,6 +40,7 @@ def feature_state(row, sample_id_format):
     require(all(isinstance(h, str) and HEX.fullmatch(h) for h in (sig['journalHash'], ext['bodySha256'])), 'FEATURE_SOURCE_HASH')
     prefix = f"{row['marketId']}:{row['exchangeId']}:" if sample_id_format == 'scoped_v2' else ''
     require(row['sampleId'] == hashlib.sha256(f"{prefix}{sig['journalHash']}:{ext['bodySha256']}:{at}".encode()).hexdigest(), 'SAMPLE_BINDING')
+    validate_lag_anchors(row)
     before = sig['features']
     bid, ask = money(before['bid']), money(before['ask'])
     require(0 <= bid <= ask <= 1, 'BOOK_PRICES')

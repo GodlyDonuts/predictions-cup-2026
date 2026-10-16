@@ -355,6 +355,54 @@ class ObserverTests(unittest.TestCase):
         self.assertEqual(len(s.history['1']), 1)
         self.assertEqual(s.counts['externalUnknownNewStreams'], 1)
 
+    def test_ws_thirty_second_history_survives_rest_fallback_without_source_splicing(self):
+        out = []; s = Study(out.append)
+        s.external_update(websocket(10000), 10000)
+        s.external_update(external(25000, bid='0.600000', ask='0.620000'), 25000)
+        self.assertEqual(s.external['1']['source'], 'kalshi_official_ws_v2')
+        s.external_update(external(35000, bid='0.610000', ask='0.630000'), 35000)
+        self.assertEqual(s.external['1']['source'], 'kalshi_official_v2')
+        s.external_update(websocket(40000, sequence=2, sha='d'*64, bid='0.420000', ask='0.440000'), 40000)
+        s.accept(row(40000), 40000)
+        sample = out[-1]; anchor = sample['externalLagAnchors']['30000']
+        self.assertEqual(anchor['receivedMs'], 10000)
+        self.assertEqual(anchor['availableMs'], 10000)
+        self.assertEqual(anchor['bodySha256'], 'c'*64)
+        self.assertEqual(anchor['source'], 'kalshi_official_ws_v2')
+        self.assertAlmostEqual(anchor['midpoint'], .42)
+        self.assertIsNotNone(sample['externalLogitChanges']['30000'])
+        self.assertIsNone(sample['externalLagAnchors']['5000'])
+        self.assertEqual(len(s.source_histories[('1','kalshi_official_v2')][1]), 2)
+        self.assertEqual(len(s.source_histories[('1','kalshi_official_ws_v2')][1]), 2)
+        from crossvenue_economics import feature_vector
+        from crossvenue_toxicity import feature_state
+        self.assertIsNone(feature_vector(sample))  # Other missing lags are not imputed.
+        self.assertEqual(feature_state(sample, 'scoped_v2'), (None, 'missingInnovation'))
+
+    def test_reconnect_and_conflict_clear_only_ws_history_not_retained_rest(self):
+        s = Study(lambda v: None)
+        s.external_update(external(10000), 10000)
+        s.external_update(websocket(11000), 11000)
+        s.external_update(external(12000), 12000)
+        s.external_update(websocket(13000, sequence=1, sid=2, sha='d'*64), 13000)
+        self.assertEqual(len(s.source_histories[('1','kalshi_official_ws_v2')][1]), 1)
+        self.assertEqual(len(s.source_histories[('1','kalshi_official_v2')][1]), 2)
+        s.external_update(websocket(13000, sequence=1, sid=2, sha='e'*64), 14000)
+        self.assertEqual(len(s.source_histories[('1','kalshi_official_ws_v2')][1]), 0)
+        self.assertEqual(len(s.source_histories[('1','kalshi_official_v2')][1]), 2)
+
+    def test_stale_or_future_first_available_lag_anchor_stays_missing(self):
+        for mode in ('stale', 'future'):
+            out = []; s = Study(out.append)
+            s.external_update(websocket(10000), 10000)
+            at = 70000 if mode == 'stale' else 40000
+            if mode == 'future':
+                s.source_histories[('1','kalshi_official_ws_v2')][1][0]['availableMs'] = at+1
+            s.external_update(websocket(at, sequence=2, sha='d'*64), at)
+            s.accept(row(at), at)
+            self.assertIsNone(out[-1]['externalLagAnchors']['30000'])
+            self.assertIsNone(out[-1]['externalLogitChanges']['30000'])
+
 
 if __name__ == "__main__":
     unittest.main()
