@@ -117,6 +117,52 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
         fn permit(&self,q:&Value,at:u64)->Permit{Permit{run_id:"fundamental-fixture".into(),intent_id:q["id"].as_u64().unwrap().to_string(),owner:"Codex".into(),expires_at_ms:at+10000,maximum_quantity:q["quantity"].as_u64().unwrap() as u32,maximum_cost:moloch_replay::money(baal_transport_service::decimal_units(q["price"].as_str().unwrap()).unwrap()*q["quantity"].as_u64().unwrap() as i128)}}
         fn retire_drafts(&mut self,at:u64){for q in self.bank.engine().order_records(){let id=q["id"].as_u64().unwrap();if q["retired"]==false&&self.log.never_attempted(id){self.event(json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":"c".repeat(64),"receivedAt":iso(at),"deferPlanningForPackage":true}));}}}
     }
+    fn entry_fixture()->(F,baal_transport_service::Transport,moloch_live_runtime::authority::SnapshotSet){
+        use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport,Receipt};
+        let mut f=F::setup(true,"11111111-1111-1111-1111-111111111111");let tid=f.scope.tournament_id.clone();
+        let receipt=|i:u64,endpoint:String,data:Value|Receipt{endpoint,status:200,request_started_at:iso(NOW+10+i*2),received_at:iso(NOW+11+i*2),data};
+        let facts=moloch_live_runtime::authority::SnapshotSet{
+            account:receipt(0,format!("/tournaments/{}",f.scope.tournament_slug),json!({"id":tid,"slug":f.scope.tournament_slug,"status":"active"})),
+            positions:receipt(1,format!("/tournaments/{}/portfolio/positions",f.scope.tournament_slug),json!({"positions":[]})),
+            open_orders:receipt(2,format!("/orders?status=open&limit=200&tournamentId={tid}"),json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null}})),
+            cash_balance:receipt(3,format!("/account?tournamentId={tid}"),json!({"balance":1000,"availableAdvance":0,"buyingPower":1000})),
+            market:receipt(4,format!("/markets/201?tournamentId={tid}"),json!({"id":"201","status":"open","isComposite":false,"isMultiOutcome":false,"contexts":[{"status":"open","type":"tournament","tournament":{"id":tid}}]})),
+            contract:receipt(5,format!("/markets/201/nodes?tournamentId={tid}"),serde_json::from_slice(ORIGINALS[2]).unwrap()),
+            book:receipt(6,format!("/markets/201/orderbook?tournamentId={tid}&depth=20"),json!({"contexts":[{"type":"tournament","tournament":{"id":tid},"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":99,"at":iso(NOW+23)},"bids":[{"price":0.10,"quantity":100}],"asks":[{"price":0.12,"quantity":100}]}]}}]})),
+        };
+        let b=&facts.book;let events=moloch_replay::source::receipt_events(&json!({"source":"official_sig_api_v1","kind":"book","tournamentId":tid,"marketId":"201","exchangeId":"101","endpoint":b.endpoint,"status":b.status,"requestStartedAt":b.request_started_at,"receivedAt":b.received_at,"data":b.data})).unwrap();
+        for (i,e) in events.iter().enumerate(){f.bank.accept("original-preflight-book",i as u64+1,e).unwrap();}
+        f.retire_drafts(NOW+24);
+        let transport=Transport::new_for_mock(Config{queue_dir:f.root.join("original-account-queue"),account_scope:"synthetic-entry-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false},Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();(f,transport,facts)
+    }
+    #[test]fn independent_entry_hint_survives_missing_book_and_no_live_native_quote(){
+        let mut f=F::new();f.retire_drafts(NOW);f.event(json!({"type":"gap","exchangeId":"101","receivedAt":iso(NOW+1)}));
+        let hints=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+1).unwrap();assert_eq!(hints.len(),1);assert_eq!(hints[0].contract_id,"301");assert!(!f.bank.engine().order_records().iter().any(|q|q["retired"]==false));
+    }
+    #[test]fn independent_entry_uses_original_seven_facts_and_real_native_derived_quantity(){
+        let(mut f,t,facts)=entry_fixture();let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);
+        let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).unwrap().unwrap();plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+25).unwrap();
+        assert!(plan.event().get("quantity").is_none(),"only native derives quantity");assert_eq!(plan.event()["expectedPayout"],"0.940500");assert_eq!(plan.event()["limitPrice"],"0.880000");
+        let before=f.bank.engine().wallet.cash;f.bank.accept("reviewed-entry",1,plan.event()).unwrap();
+        let q=f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some()).unwrap();assert_eq!(q["side"],"NO");assert_eq!(q["quantity"],2);assert_eq!(q["reviewedFundamentalEntry"]["reviewSha256"],hint.review_sha256);
+        assert_eq!(f.bank.engine().wallet.cash,before);assert!(f.bank.engine().fills().is_empty());assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+26).is_err());
+        let spec=f.spec(&q);assert!(matches!(f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,q["id"].as_u64().unwrap(),&spec,&f.trust,NOW+26).unwrap(),Decision::Entry{..}));
+    }
+    #[test]fn independent_entry_rejects_changed_rules_cash_positions_scope_and_unadmitted_book(){
+        for case in 0..9{let(f,t,mut facts)=entry_fixture();let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);
+            match case{0=>facts.contract.data["root"]["title"]=json!("changed resolver root"),1=>facts.cash_balance.data["balance"]=json!(999),2=>facts.positions.data["positions"]=json!([{"exchangeId":"101","quantity":1}]),3=>facts.book.data["contexts"][0]["orderbook"]["exchanges"][0]["bids"][0]["quantity"]=json!(99),4=>facts.book.endpoint.push_str("&other=1"),5=>facts.open_orders.data["coverage"]["complete"]=json!(false),6=>facts.positions.request_started_at=iso(NOW-20001),7=>facts.open_orders.data["data"]=json!([{"id":"7","exchangeId":"101"}]),_=>facts.contract.request_started_at=iso(NOW+1)}
+            assert!(store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).is_err(),"case {case}");
+        }
+    }
+    #[test]fn independent_entry_hint_never_clears_unknown_acceptance_or_reuses_existing_cohort(){
+        let mut f=F::new();let(q,spec)=f.bind_entry();f.log_intent(&q,&spec);assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+1).is_err());
+        let mut f=F::new();f.fill_entry(false);assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+5).unwrap().is_empty());
+    }
+    #[test]fn independent_entry_plan_expires_and_detects_dispatch_or_review_file_change(){
+        for case in 0..3{let(mut f,t,facts)=entry_fixture();let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).unwrap().unwrap();
+            match case{0=>assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,plan.valid_until_ms()).is_err()),1=>{f.log.append(json!({"kind":"source","qid":999,"diagnostic":"actual local journal advance"})).unwrap();assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+26).is_err());},_=>{std::fs::write(f.root.join("review-authority.json"),b"changed").unwrap();assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+26).is_err());}}
+        }
+    }
     fn inherited_fixture()->(F,baal_transport_service::Transport,Value){
         use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport};
         let mut f=F::setup(false,"11111111-1111-1111-1111-111111111111");f.retire_drafts(NOW-1);

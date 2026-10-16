@@ -173,7 +173,10 @@ fn fifo_remaining(lots:&Value,mut closed:u64)->Result<Value>{
 }
 fn no_existing_liability(bank:&Session,log:&DispatchLog,ex:&str)->Result<()>{
     log.require_resolved_attempts()?;
-    let orders=bank.engine().order_records();for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
+    let orders=bank.engine().order_records();
+    for id in bank.engine().live_order_bindings().keys(){let q=orders.iter().find(|q|q["id"]==*id).ok_or("FUNDAMENTAL_UNMAPPED_ACTUAL_BINDING")?;
+        need(q["exchangeId"]!=ex||log.closed.contains(id),"FUNDAMENTAL_EXISTING_ACTUAL_NOT_CLOSED")?;}
+    for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
         let q=orders.iter().find(|q|q["id"]==*id).ok_or("FUNDAMENTAL_UNMAPPED_OPEN_ACK")?;need(q["exchangeId"]!=ex,"FUNDAMENTAL_EXISTING_LIABILITY")?;
     }
     need(!bank.engine().order_records().iter().any(|q|q["exchangeId"]==ex&&q["retired"]==false)
@@ -210,6 +213,34 @@ impl ExistingExit{pub fn event(&self)->&Value{&self.event}}
 #[derive(Clone,Debug,Serialize)]
 #[serde(rename_all="camelCase")]
 pub struct ExistingExitHint{pub exchange_id:String,pub market_id:String,pub contract_id:String,pub side:String,pub reason:String}
+/// Non-authoritative nomination: it may trigger the existing seven reads even
+/// when no ordinary pair is currently eligible. It never reserves capital.
+#[derive(Clone,Debug,Serialize,PartialEq,Eq)]
+#[serde(rename_all="camelCase")]
+pub struct EntryHint{pub exchange_id:String,pub market_id:String,pub contract_id:String,pub side:String,pub review_sha256:String}
+/// Opaque, short-lived native reservation proposal, not HTTP authority.
+/// Discard after any bank, original dispatch, queue or review mutation.
+pub struct EntryPlan{event:Value,scope_sha:String,head:Value,report_sha:String,dispatch:Value,queue:Value,account_sha:String,
+    review:ReviewInput,minted:u64,until:u64,sidecar:FilePin,marker:FilePin,authority:FilePin,_owner:Arc<ExclusiveLock>}
+impl EntryPlan{
+    pub fn event(&self)->&Value{&self.event}
+    pub fn exchange_id(&self)->&str{&self.review.exchange_id}
+    pub fn valid_until_ms(&self)->u64{self.until}
+    pub fn validate_current(&self,bank:&Session,log:&DispatchLog,transport:&Transport,authority:&ReviewAuthority,now:u64)->Result<()>{
+        self.sidecar.validate()?;self.marker.validate()?;self.authority.validate()?;authority.validate()?;
+        need(now>=self.minted&&now<self.until&&current(&self.review,now)&&authority.trusted().contains(&digest(&self.review)?)
+            &&digest(transport.scope())?==self.scope_sha&&bytes_sha(transport.account_scope().as_bytes())==self.account_sha
+            &&bank.durable_head()==self.head&&digest(&bank.engine().report()?)?==self.report_sha
+            &&log.descriptor_identity()?==self.dispatch&&queue_view(transport)?==self.queue,"FUNDAMENTAL_ENTRY_PLAN_CHANGED")?;
+        no_existing_liability(bank,log,&self.review.exchange_id)?;
+        need(bank.engine().wallet.quantity(&self.review.exchange_id,Side::Yes)==0&&bank.engine().wallet.quantity(&self.review.exchange_id,Side::No)==0,"FUNDAMENTAL_ENTRY_NOT_FLAT")
+    }
+}
+fn entry_receipt(r:&Receipt,endpoint:&str,now:u64,age:u64)->Result<(u64,u64)>{
+    let start=daily_windows::clock(&r.request_started_at)?;
+    let end=daily_windows::clock(&r.received_at)?;
+    need(r.status==200&&r.endpoint==endpoint&&start<=end&&end<=now&&now-start<=age,"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE")?;Ok((start,end))
+}
 #[derive(Clone,Debug,Serialize,PartialEq,Eq)]
 #[serde(tag="kind",rename_all="snake_case")]
 pub enum Decision{
@@ -369,6 +400,70 @@ impl PhysicalDecision{
     }
 }
 impl Cohorts{
+    /// Stale/missing books and missing ordinary quotes do not suppress reads.
+    /// Physical/unknown liabilities and already-owned cohorts still suppress nomination.
+    pub fn entry_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,trusted:&BTreeSet<String>,now:u64)->Result<Vec<EntryHint>>{
+        self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
+        for (ex,r) in &self.policies{
+            if r.existing_origin.is_some()||self.cohorts.contains_key(ex)||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
+            need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id),"FUNDAMENTAL_ENTRY_SCOPE")?;
+            if bank.engine().wallet.quantity(ex,Side::Yes)>0||bank.engine().wallet.quantity(ex,Side::No)>0{continue}
+            if bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|(!log.never_attempted(id)||bank.engine().live_order_bindings().contains_key(&id))&&!log.closed.contains(&id))){continue}
+            if bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true
+                &&(p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["exchangeId"]==*ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|ls|ls.iter().any(|l|l==ex)))){continue}
+            let policy=bank.engine().policy();if policy["entriesEnabled"]!=true||policy["entryStopAt"].as_str().map(daily_windows::clock).transpose()?.is_some_and(|t|now>=t){continue}
+            out.push(EntryHint{exchange_id:ex.clone(),market_id:r.market_id.clone(),contract_id:r.contract_id.clone(),side:r.side.clone(),review_sha256:digest(r)?});
+        }need(out.len()<=32,"FUNDAMENTAL_ENTRY_HINT_BOUND")?;Ok(out)
+    }
+    /// Call ONLY after original seven scoped reads, actual source admission, and
+    /// retirement of proved never-sent blocking drafts. Quantity is derived by
+    /// the native primitive; no ordinary pair or stale quote is repurposed.
+    pub fn prepare_entry(&self,bank:&Session,log:&DispatchLog,transport:&Transport,scope:&Scope,hint:&EntryHint,f:&crate::authority::SnapshotSet,authority:&ReviewAuthority,now:u64)->Result<Option<EntryPlan>>{
+        authority.validate()?;let hints=self.entry_hints(bank,log,scope,authority.trusted(),now)?;
+        if !hints.iter().any(|h|h==hint){return Ok(None)}
+        need(digest(scope)?==digest(transport.scope())?,"FUNDAMENTAL_ENTRY_TRANSPORT_SCOPE")?;
+        no_existing_liability(bank,log,&hint.exchange_id)?;let queue=queue_view(transport)?;let r=&self.policies[&hint.exchange_id];
+        let tid=&scope.tournament_id;let market=&hint.market_id;
+        let endpoints=[format!("/tournaments/{}",scope.tournament_slug),format!("/tournaments/{}/portfolio/positions",scope.tournament_slug),format!("/orders?status=open&limit=200&tournamentId={tid}"),format!("/account?tournamentId={tid}"),format!("/markets/{market}?tournamentId={tid}"),format!("/markets/{market}/nodes?tournamentId={tid}"),format!("/markets/{market}/orderbook?tournamentId={tid}&depth=20")];
+        let receipts=[&f.account,&f.positions,&f.open_orders,&f.cash_balance,&f.market,&f.contract,&f.book];let mut last=0;let mut fact_until=u64::MAX;
+        for (i,(receipt,endpoint)) in receipts.iter().zip(&endpoints).enumerate(){let age=if i<4{20000}else{10000};let(start,end)=entry_receipt(receipt,endpoint,now,age)?;
+            need(start>=last,"FUNDAMENTAL_ENTRY_RECEIPT_ORDER")?;last=end;fact_until=fact_until.min(start.checked_add(age).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
+        need(f.account.data["id"]==*tid&&f.account.data["slug"]==scope.tournament_slug&&f.account.data["status"]=="active"
+            &&f.positions.data.get("pagination").is_none()&&f.open_orders.data["coverage"]["complete"]==true&&f.open_orders.data["pagination"]["hasMore"]==false
+            &&f.open_orders.data["pagination"]["nextCursor"].is_null(),"FUNDAMENTAL_ENTRY_ACCOUNT_COVERAGE")?;
+        let mut seen=BTreeSet::new();for p in f.positions.data["positions"].as_array().ok_or("FUNDAMENTAL_ENTRY_POSITIONS")?{
+            let ex=p["exchangeId"].as_str().ok_or("FUNDAMENTAL_ENTRY_POSITION_SCOPE")?;need(seen.insert(ex),"FUNDAMENTAL_ENTRY_DUPLICATE_POSITION")?;
+            if ex==hint.exchange_id{need(p["quantity"].as_i64()==Some(0),"FUNDAMENTAL_ENTRY_NOT_FLAT")?;}}
+        for o in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_ENTRY_OPEN_ORDERS")?{
+            need(o["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY")?;}
+        let cash=baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?;
+        need(cash.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_ENTRY_CASH_RECONCILIATION")?;
+        need(f.market.data["id"]==*market&&f.market.data["status"]=="open"&&f.market.data["isComposite"]==false&&f.market.data["isMultiOutcome"]==false
+            &&f.market.data["contexts"].as_array().is_some_and(|cs|cs.iter().any(|c|c["status"]=="open"&&c["type"]=="tournament"&&c["tournament"]["id"]==*tid)),"FUNDAMENTAL_ENTRY_MARKET")?;
+        validate_contract_data(r,&f.contract.data)?;
+        let wrapper=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":tid,"marketId":market,"exchangeId":hint.exchange_id,"endpoint":f.book.endpoint,"status":f.book.status,"requestStartedAt":f.book.request_started_at,"receivedAt":f.book.received_at,"data":f.book.data});
+        let events=moloch_replay::source::receipt_events(&wrapper)?;let expected=events.iter().find(|e|e["type"]=="book").ok_or("FUNDAMENTAL_ENTRY_ORIGINAL_BOOK")?;
+        let current_book=bank.engine().live_package_books().into_iter().find(|b|b["exchangeId"]==hint.exchange_id).ok_or("FUNDAMENTAL_ENTRY_NATIVE_BOOK")?;
+        let mut compare=current_book.clone();if compare["invalid"]==false{compare.as_object_mut().ok_or("FUNDAMENTAL_ENTRY_NATIVE_BOOK")?.remove("invalid");}
+        need(compare==expected["book"],"FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED")?;
+        let policy=bank.engine().policy();let age=policy["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?;
+        let(books,hashes)=package_admission::native_books(bank,scope,now,age)?;let Some(book)=books.get(&hint.exchange_id)else{return Ok(None)};
+        let(bids,asks)=if r.side=="YES"{(&book.yes_bids,&book.yes_asks)}else{(&book.no_bids,&book.no_asks)};
+        let Some(bid)=bids.first()else{return Ok(None)};let Some(ask)=asks.first()else{return Ok(None)};
+        if bid.price<=0||bid.price>=ask.price||bid.price>structure(r)?{return Ok(None)}
+        need(policy["feeBps"]==0&&amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_ENTRY_FEES")?)?==0,"FUNDAMENTAL_ENTRY_UNKNOWN_FEES")?;
+        let mut until=r.expires_at_ms.min(r.hold_until_ms);for source in &r.sources{until=until.min(source.observed_at_ms.checked_add(source.maximum_age_ms).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
+        if let Some(stop)=policy["entryStopAt"].as_str().map(daily_windows::clock).transpose()?{until=until.min(stop);}
+        let expires=now.checked_add(policy["lifetimeMs"].as_u64().ok_or("FUNDAMENTAL_LIFETIME")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?.min(until);
+        if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
+        let head=bank.durable_head();let report_sha=digest(&bank.engine().report()?)?;let dispatch=log.descriptor_identity()?;
+        let origin=digest(&json!({"review":r,"receipts":receipts,"scope":scope,"bankHead":head,"dispatch":dispatch,"queue":queue}))?;
+        let event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":tid},"bankHead":head,"expectedReportSha256":report_sha,
+            "marketId":market,"exchangeId":hint.exchange_id,"side":hint.side,"originSha256":origin,"reviewSha256":hint.review_sha256,"bookSha256":hashes.get(&hint.exchange_id).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reviewCurrentUntilMs":until,"reviewMaximumQuantity":r.maximum_quantity,"reviewMaximumPrincipal":r.maximum_principal,"expectedPayout":money(add(structure(r)?,amount(&r.margin_per_share)?)?),"marginPerShare":r.margin_per_share,"limitPrice":money(bid.price),"expiresAt":daily_windows::iso(expires)?});
+        let plan=EntryPlan{event,scope_sha:digest(scope)?,head,report_sha,dispatch,queue,account_sha:bytes_sha(transport.account_scope().as_bytes()),review:r.clone(),minted:now,until:fact_until.min(until).min(expires).min(book.observed_ms.checked_add(age).ok_or("FUNDAMENTAL_CLOCK_RANGE")?).min(book.source.received_ms.checked_add(age).ok_or("FUNDAMENTAL_CLOCK_RANGE")?),
+            sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,authority:authority.pin.duplicate()?,_owner:self._owner.clone()};
+        plan.validate_current(bank,log,transport,authority,now)?;Ok(Some(plan))
+    }
     pub fn existing_exit_hint(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExitHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;
         let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some())else{return Ok(None)};
