@@ -1,0 +1,380 @@
+{
+  "accountRequests": 0,
+  "diagnostics": {
+    "discovery-schedule.json": {
+      "at": "2026-10-16T12:07:24.396Z",
+      "bytes": 787,
+      "maximumDiscoveryReads": 12,
+      "pid": 494293,
+      "requiredScopeCount": 27,
+      "sha256": "61bfc9196fe4e7cc2508ac2459a2fc967d5f618e1ddace0707503f814b6ca3bb"
+    },
+    "progress.json": {
+      "actualFills": 147,
+      "actualOrders": 965,
+      "at": "2026-10-16T12:08:51.256Z",
+      "bytes": 262,
+      "completedReadScopes": 3,
+      "phase": "trading",
+      "pid": 494293,
+      "realtimeHealthy": true,
+      "selectedReadScopes": 39,
+      "sha256": "8facf466eb98aa025219efe57b878c457bef0cf8156b39e8cf075a4597151fef",
+      "terminalOrders": 959
+    },
+    "status.json": {
+      "actualOrders": 964,
+      "at": "2026-10-16T12:07:05.172Z",
+      "bytes": 640202,
+      "cycles": 1,
+      "pid": 494293,
+      "realtimeHealthy": true,
+      "sha256": "81dba92dbda061e8b81e5a2e252c61870fceb9a3cef3e20fa67f9637b380607c",
+      "terminalOrders": 958
+    }
+  },
+  "dispatch": {
+    "attemptToAckReceivedMs": {
+      "count": 22,
+      "max": 1267,
+      "median": 761,
+      "min": 629,
+      "p90": 863
+    },
+    "attemptsWithoutAckInWindow": 0,
+    "datedEventCounts": {
+      "ack": 22,
+      "attempt": 22,
+      "cancel_ack": 10,
+      "cancel_attempt": 10,
+      "intent": 22
+    },
+    "firstRow": {
+      "hash": "d007b903301a75e8e6edc49a3e4c5f41852af7eed7d87bf1fa568b38508f0999",
+      "previous": "2ff36574abdb9e53019f09b632093fa74afb9ada9d1af94a83a6fc9b9266ec22",
+      "sequence": 5993
+    },
+    "fullPrefixVerified": false,
+    "lastRow": {
+      "hash": "b366a79847b230250d4eb95a5e4279b0c99a6e2634a771285d5c7c625b634dbe",
+      "previous": "1f00b35a2489b4a631b3e3c04822d9c749192867d128bd6b7ec30719075df148",
+      "sequence": 10099
+    },
+    "limitations": "Undated rows excluded from time-window counts. Unacknowledged suffix attempts are censored, not proof of unknown acceptance. Attempt-to-ACK includes SDK admission, HTTP, validation and completion; it is not provider-only latency.",
+    "sourceBoundary": {
+      "bytes": 2096113,
+      "endByte": 5132117,
+      "incompleteTrailingBytesExcluded": 0,
+      "observedFileBytes": 5132117,
+      "sha256": "f22040a57508fcee494ad83f0a432dc1dd30d47001e263a6619af798cb542f67",
+      "startByte": 3036004
+    },
+    "suffixRowSealsAndChainVerified": true
+  },
+  "financialReplayPerformed": false,
+  "journal": {
+    "clockLimitation": "processedAt is stamped before accept_batch, not a durable completion timestamp; timestamp groups are not guaranteed batch boundaries",
+    "eventCounts": {
+      "actual_fill": 1,
+      "actual_order_ack": 22,
+      "actual_order_terminal": 16,
+      "book": 3018,
+      "coverage": 43,
+      "gap": 145,
+      "tick": 1,
+      "trade": 47,
+      "unsubmitted_intent_retired": 135
+    },
+    "eventsPerProcessingTimestamp": {
+      "count": 1242,
+      "max": 36,
+      "median": 2,
+      "min": 1,
+      "p90": 6
+    },
+    "firstRow": {
+      "hash": "6d74619827c72495abf17628492f82b1d2f6e3a14a8e8b828fea256545dc26c9",
+      "previous": "b46f2805e97942785960b9a04efa3dca19662a74c56e07d6d23771a0bd6828d7",
+      "sequence": 236404
+    },
+    "fullPrefixVerified": false,
+    "lastRow": {
+      "hash": "94bd31acad249d53e1f78378a16c971177183513eef62b74f10914ce2939bb1d",
+      "previous": "33c5ac881d7c9eab64138b156d62f9b431a691bccab87ed37a8f139c09b33361",
+      "sequence": 241057
+    },
+    "processingTimestampGapMs": {
+      "count": 1241,
+      "max": 22476,
+      "median": 221,
+      "min": 1,
+      "p90": 2283
+    },
+    "processingTimestampGroups": 1242,
+    "receivedToProcessingStartMs": {
+      "actual_fill": {
+        "count": 1,
+        "max": 5,
+        "median": 5,
+        "min": 5,
+        "p90": 5
+      },
+      "actual_order_ack": {
+        "count": 22,
+        "max": 10,
+        "median": 7,
+        "min": 6,
+        "p90": 8
+      },
+      "actual_order_terminal": {
+        "count": 16,
+        "max": 982,
+        "median": 83,
+        "min": 74,
+        "p90": 103
+      },
+      "book": {
+        "count": 124,
+        "max": 83,
+        "median": 65,
+        "min": 44,
+        "p90": 73
+      },
+      "coverage": {
+        "count": 43,
+        "max": 88,
+        "median": 63,
+        "min": 42,
+        "p90": 76
+      },
+      "gap": {
+        "count": 145,
+        "max": 33650,
+        "median": 5840,
+        "min": 2700,
+        "p90": 24907
+      },
+      "official_sig_realtime": {
+        "count": 2894,
+        "max": 37595,
+        "median": 11383,
+        "min": 61,
+        "p90": 25119
+      },
+      "tick": {
+        "count": 1,
+        "max": 0,
+        "median": 0,
+        "min": 0,
+        "p90": 0
+      },
+      "trade": {
+        "count": 47,
+        "max": 30376,
+        "median": 74,
+        "min": 49,
+        "p90": 18244
+      },
+      "unsubmitted_intent_retired": {
+        "count": 135,
+        "max": 0,
+        "median": 0,
+        "min": 0,
+        "p90": 0
+      }
+    },
+    "suffixRowSealsAndChainVerified": true
+  },
+  "notBefore": "2026-10-16T11:47:44.050Z",
+  "observedCutoff": "2026-10-16T12:09:14.564608+00:00",
+  "pid": 494293,
+  "processDeltas": [
+    {
+      "bytesPerWriteSyscall": 17.42125794630604,
+      "elapsedSeconds": 5.000927822009544,
+      "oneCoreCpuPercent": 55.58968453343726,
+      "readBytes": 0,
+      "systemCpuSeconds": 0.82,
+      "userCpuSeconds": 1.96,
+      "writeBytes": 12103680,
+      "writeChars": 12008717,
+      "writeSyscalls": 689314
+    },
+    {
+      "bytesPerWriteSyscall": 2490.2954,
+      "elapsedSeconds": 5.00076853200153,
+      "oneCoreCpuPercent": 15.197664021770155,
+      "readBytes": 0,
+      "systemCpuSeconds": 0.06,
+      "userCpuSeconds": 0.7,
+      "writeBytes": 12554240,
+      "writeChars": 12451477,
+      "writeSyscalls": 5000
+    },
+    {
+      "bytesPerWriteSyscall": 35.229296831116756,
+      "elapsedSeconds": 10.001696354011074,
+      "oneCoreCpuPercent": 35.39399592530442,
+      "readBytes": 0,
+      "systemCpuSeconds": 0.88,
+      "userCpuSeconds": 2.66,
+      "writeBytes": 24657920,
+      "writeChars": 24460194,
+      "writeSyscalls": 694314
+    }
+  ],
+  "processSamples": [
+    {
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3554441535,
+        "read_bytes": 1818624,
+        "syscr": 161584,
+        "syscw": 300974788,
+        "wchar": 2738055969,
+        "write_bytes": 2763145216
+      },
+      "monotonic": 122210.09620782,
+      "rssBytes": 373395456,
+      "startTicks": 12034128,
+      "systemTicks": 31167,
+      "ticksPerSecond": 100,
+      "userTicks": 101229,
+      "utc": "2026-10-16T12:09:16.045388+00:00"
+    },
+    {
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3554799985,
+        "read_bytes": 1818624,
+        "syscr": 161773,
+        "syscw": 301664102,
+        "wchar": 2750064686,
+        "write_bytes": 2775248896
+      },
+      "monotonic": 122215.097135642,
+      "rssBytes": 373395456,
+      "startTicks": 12034128,
+      "systemTicks": 31249,
+      "ticksPerSecond": 100,
+      "userTicks": 101425,
+      "utc": "2026-10-16T12:09:21.046313+00:00"
+    },
+    {
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 3555350731,
+        "read_bytes": 1818624,
+        "syscr": 162014,
+        "syscw": 301669102,
+        "wchar": 2762516163,
+        "write_bytes": 2787803136
+      },
+      "monotonic": 122220.097904174,
+      "rssBytes": 373395456,
+      "startTicks": 12034128,
+      "systemTicks": 31255,
+      "ticksPerSecond": 100,
+      "userTicks": 101495,
+      "utc": "2026-10-16T12:09:26.047086+00:00"
+    }
+  ],
+  "receipts": {
+    "availableRecentFiles": 722,
+    "byEndpointClassMs": {
+      "account": {
+        "count": 36,
+        "max": 551,
+        "median": 333,
+        "min": 311,
+        "p90": 430
+      },
+      "book": {
+        "count": 88,
+        "max": 886,
+        "median": 336,
+        "min": 304,
+        "p90": 421
+      },
+      "contract": {
+        "count": 26,
+        "max": 523,
+        "median": 275,
+        "min": 253,
+        "p90": 348
+      },
+      "market": {
+        "count": 26,
+        "max": 375,
+        "median": 184,
+        "min": 162,
+        "p90": 257
+      },
+      "open_orders": {
+        "count": 93,
+        "max": 1084,
+        "median": 226,
+        "min": 186,
+        "p90": 590
+      },
+      "other": {
+        "count": 20,
+        "max": 515,
+        "median": 256,
+        "min": 225,
+        "p90": 323
+      },
+      "owned_fills": {
+        "count": 263,
+        "max": 693,
+        "median": 217,
+        "min": 181,
+        "p90": 269
+      },
+      "owned_order": {
+        "count": 55,
+        "max": 986,
+        "median": 216,
+        "min": 181,
+        "p90": 543
+      },
+      "positions": {
+        "count": 36,
+        "max": 500,
+        "median": 366,
+        "min": 346,
+        "p90": 456
+      },
+      "public_trades": {
+        "count": 43,
+        "max": 795,
+        "median": 338,
+        "min": 303,
+        "p90": 467
+      },
+      "tournament": {
+        "count": 36,
+        "max": 765,
+        "median": 298,
+        "min": 241,
+        "p90": 409
+      }
+    },
+    "concatenatedRawFileSha256DigestSha256": "b2802b321ad70f1ea857c6670b6b7341b8627ac8979bb2e2552fb82abc1cec01",
+    "firstStartMs": 1792151264096,
+    "invalidClocks": 0,
+    "lastEndMs": 1792152550969,
+    "meaning": "network-start through validation and durable completion; excludes pre-admission wait; aggregate pagination may span multiple calls",
+    "receiptWindowUnionMs": 211960,
+    "selectedFiles": 722
+  },
+  "schemaVersion": 1,
+  "sourceBoundary": {
+    "bytes": 16774502,
+    "endByte": 742645201,
+    "incompleteTrailingBytesExcluded": 0,
+    "observedFileBytes": 742645201,
+    "sha256": "fbc7fe815b5d35c6a7c0f8d2772076a65f22d016d9b3cd7251bb49c29d3d6dbd",
+    "startByte": 725870699
+  }
+}
