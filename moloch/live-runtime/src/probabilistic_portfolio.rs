@@ -51,12 +51,12 @@ pub struct Metrics{
  pub gross_buy_funding:i128,pub minimum_sell_proceeds:i128,pub fees:i128,
  pub modeled_sleeve_basis:i128,
 }
-pub struct Plan{head:Value,report_sha:String,policy_sha:String,model_sha:String,semantic_sha:String,legs:Vec<Leg>,metrics:Metrics,expires:u64,proof:Value}
+pub struct Plan{head:Value,report_sha:String,dispatch_sha:String,policy_sha:String,model_sha:String,semantic_sha:String,legs:Vec<Leg>,metrics:Metrics,expires:u64,proof:Value}
 impl Plan{
  pub fn legs(&self)->&[Leg]{&self.legs}pub fn metrics(&self)->&Metrics{&self.metrics}pub fn proof(&self)->&Value{&self.proof}pub fn expires_at_ms(&self)->u64{self.expires}
  pub fn model_sha256(&self)->&str{&self.model_sha}pub fn semantic_review_sha256(&self)->&str{&self.semantic_sha}
  pub fn validate_current(&self,bank:&Session,log:&DispatchLog,scope:&Scope,p:&Policy,now:u64)->Result<()>{
-  need(now<self.expires&&bank.durable_head()==self.head&&hash(&bank.engine().report()?)?==self.report_sha&&p.sha==self.policy_sha,"PROB_PLAN_CHANGED_OR_EXPIRED")?;
+  need(now<self.expires&&bank.durable_head()==self.head&&hash(&bank.engine().report()?)?==self.report_sha&&hash(&log.descriptor_identity()?)?==self.dispatch_sha&&p.sha==self.policy_sha,"PROB_PLAN_CHANGED_OR_EXPIRED")?;
   log.require_resolved_attempts()?;let(_,books)=package_admission::native_books(bank,scope,now,p.input.maximum_book_age_ms)?;
   for l in &self.legs{need(books.get(&l.exchange_id)==Some(&l.book_sha256),"PROB_BOOK_CHANGED")?;}Ok(())
  }
@@ -109,10 +109,10 @@ pub fn optimize(bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurfac
  need(bank.engine().is_live()&&bank.live_account_seed().is_some_and(|s|s["runId"]==cfg.run_id)&&c.run_id()==cfg.run_id&&bank.manifest_hash().as_str()==Some(&cfg.bank_manifest_sha256)&&c.bank_manifest_sha256()==cfg.bank_manifest_sha256
   &&scope.tournament_id==c.tournament_id()&&scope.tournament_slug==c.tournament_slug()&&head==*surface.bound_head()&&now<cfg.valid_until_ms&&now<surface.valid_until_ms()&&!bank.engine().package_blocks_submissions(),"PROB_CONTEXT")?;
  log.require_resolved_attempts()?;let exchanges:BTreeSet<_>=c.contracts().iter().map(|x|x.exchange_id.as_str()).collect();
- for q in bank.engine().order_records(){if q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e)){let id=q["id"].as_u64().ok_or("PROB_ORDER")?;need(q["retired"]==true&&(!bank.engine().live_order_bindings().contains_key(&id)||log.closed.contains(&id)),"PROB_PENDING_COMPONENT")?;}}
+ let mut occupied_markets=BTreeSet::new();for q in bank.engine().order_records(){if q["retired"]==false&&q["action"]=="buy"{occupied_markets.insert(q["exchangeId"].as_str().ok_or("PROB_ORDER_SCOPE")?.to_owned());}if q["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e)){let id=q["id"].as_u64().ok_or("PROB_ORDER")?;need(q["retired"]==true&&(!bank.engine().live_order_bindings().contains_key(&id)||log.closed.contains(&id)),"PROB_PENDING_COMPONENT")?;}}
  for pkg in bank.engine().package_records().as_array().ok_or("PROB_PACKAGES")?{if pkg["phase"]=="no_execution"||pkg["protectionReleased"]==true{continue}need(!pkg["legs"].as_array().ok_or("PROB_PACKAGES")?.iter().any(|l|l["exchangeId"].as_str().is_some_and(|e|exchanges.contains(e))),"PROB_PROTECTED_COMPONENT")?;}
  need(native["feeBps"]==0&&decimal_units(native["feePerShare"].as_str().ok_or("PROB_FEE")?)?==cfg.fee_per_share,"PROB_FEE_POLICY")?;
- let positions=bank.engine().wallet.positions();let mut held=vec![];let mut options=vec![];let mut baseline_basis=0;
+ let positions=bank.engine().wallet.positions();for(ex,s)in positions.as_object().ok_or("PROB_POSITIONS")?{if ["YES","NO"].iter().any(|k|s[*k].as_array().is_some_and(|lots|!lots.is_empty())){occupied_markets.insert(ex.clone());}}let mut held=vec![];let mut options=vec![];let mut baseline_basis=0;
  let(books,book_hashes)=package_admission::native_books(bank,scope,now,cfg.maximum_book_age_ms)?;
  for(i,contract)in c.contracts().iter().enumerate(){need(scope.exchanges.get(&contract.exchange_id)==Some(&contract.market_id),"PROB_SCOPE")?;let side=if surface.contracts().get(i).ok_or("PROB_MODEL_CONTRACT")?.side==NativeSide::Yes{Side::Yes}else{Side::No};
   need(bank.engine().wallet.quantity(&contract.exchange_id,ns(if side==Side::Yes{Side::No}else{Side::Yes}))==0,"PROB_OPPOSITE_HELD_NETTING_UNSUPPORTED")?;
@@ -120,7 +120,7 @@ pub fn optimize(bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurfac
   let quantity=bank.engine().wallet.quantity(&contract.exchange_id,ns(side));need(lots.iter().try_fold(0u64,|a,l|a.checked_add(l.0)).ok_or("PROB_RANGE")?==quantity,"PROB_LOT_QUANTITY")?;let principal=fifo(&lots,quantity)?;baseline_basis=add(baseline_basis,principal)?;held.push(Instrument{side,quantity,principal,lots});
   let book=books.get(&contract.exchange_id).ok_or("PROB_FRESH_BOOK_REQUIRED")?;let asks=if side==Side::Yes{&book.yes_asks}else{&book.no_asks};let bids=if side==Side::Yes{&book.yes_bids}else{&book.no_bids};let mut choices=vec![None];
   for qty in &cfg.quantities{for buy in [true,false]{if !buy&&*qty>quantity{continue}let Some(price)=fixed(if buy{asks}else{bids},*qty)else{continue};let value=mul(price,*qty as i128)?;let fee=mul(cfg.fee_per_share,*qty as i128)?;
-   let review=&surface.contracts()[i];if *qty>review.maximum_quantity||add(value,fee)?>review.maximum_principal{continue}if buy&&!review.allowed_modes.contains(&crate::alpha_proposal::Mode::BoundedLimitMayRest){continue}
+   let review=&surface.contracts()[i];if *qty>review.maximum_quantity||add(value,fee)?>review.maximum_principal{continue}if buy&&(!review.allowed_modes.contains(&crate::alpha_proposal::Mode::BoundedLimitMayRest)||add(add(price,cfg.fee_per_share)?,review.margin_per_share)?>review.expected_payout_micros||add(add(principal,value)?,fee)?>review.maximum_principal||quantity.checked_add(*qty).is_none_or(|q|q>review.maximum_quantity)){continue}
    choices.push(Some(OptionLeg{leg:Leg{market_id:contract.market_id.clone(),exchange_id:contract.exchange_id.clone(),contract_id:contract.contract_id.clone(),side,action:if buy{"buy"}else{"sell"}.into(),quantity:*qty,limit_price:price,book_sha256:book_hashes[&contract.exchange_id].clone()},cost:if buy{value}else{0},proceeds:if buy{0}else{value},fee,sold_principal:if buy{0}else{fifo(&held[i].lots,*qty)?}}));
   }}options.push(choices);
  }
@@ -132,8 +132,7 @@ pub fn optimize(bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurfac
   if funding>available||funding>cfg.maximum_gross_buy_cost||add(committed,funding)?>total_cap||selected.iter().flatten().map(|o|o.leg.quantity).sum::<u64>()>maxq{continue}
   let buys=selected.iter().flatten().any(|o|o.cost>0);if buys&&(native["entriesEnabled"]!=true||now>=crate::daily_windows::clock(native["entryStopAt"].as_str().ok_or("PROB_ENTRY_CLOCK")?)?){continue}
   let new_markets:BTreeSet<_>=selected.iter().flatten().filter(|o|o.cost>0&&bank.engine().wallet.market_cost(&o.leg.exchange_id)==0).map(|o|o.leg.exchange_id.as_str()).collect();
-  let held_markets=positions.as_object().ok_or("PROB_POSITIONS")?.iter().filter(|(_,s)|["YES","NO"].iter().any(|k|s[*k].as_array().is_some_and(|lots|!lots.is_empty()))).map(|(e,_)|e.as_str()).collect::<BTreeSet<_>>();
-  let all_markets=held_markets.union(&new_markets).count();if new_markets.len()>3||all_markets>native["maximumMarkets"].as_u64().ok_or("PROB_CAP")? as usize{continue}
+  let all_markets=occupied_markets.iter().map(|e|e.as_str()).chain(new_markets.iter().copied()).collect::<BTreeSet<_>>().len();if new_markets.len()>3||all_markets>native["maximumMarkets"].as_u64().ok_or("PROB_CAP")? as usize{continue}
   if selected.iter().flatten().any(|o|o.cost>0&&bank.engine().wallet.market_cost(&o.leg.exchange_id).checked_add(o.cost).and_then(|v|v.checked_add(o.fee)).is_none_or(|v|v>market_cap)){continue}
   let mut factor_ok=true;for f in cfg.factors.values(){let mut exposure=0;for(i,h)in held.iter().enumerate(){let delta=selected[i].map(|o|if o.cost>0{o.leg.quantity as i128}else{-(o.leg.quantity as i128)}).unwrap_or(0);exposure=add(exposure,mul(h.quantity as i128+delta,f.loading_ppm[i])?)?;}if exposure.checked_abs().ok_or("PROB_RANGE")?>f.maximum_absolute_shares_micros{factor_ok=false}}if !factor_ok{continue}
   let opportunity=ceil(mul(mul(funding,cfg.capital_rate_ppm_per_day as i128)?,surface.horizon_ms()as i128)?,UNIT*86_400_000)?;
@@ -145,6 +144,6 @@ pub fn optimize(bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurfac
   let metrics=Metrics{expected_wealth_numerator:wealth,expected_increment_numerator:expected,capital_opportunity_cost:opportunity,incremental_cvar_loss:incremental_cvar,terminal_cvar_loss:terminal_cvar,minimum_modeled_increment:minimum,gross_buy_funding:funding,minimum_sell_proceeds:proceeds,fees,modeled_sleeve_basis:baseline_basis};let legs=selected.iter().flatten().map(|o|o.leg.clone()).collect::<Vec<_>>();if best.as_ref().is_none_or(|(_,_,score)|expected>*score){best=Some((legs,metrics,expected));}
  }
  let Some((legs,metrics,_))=best else{return Ok(None)};let expires=now.checked_add(cfg.maximum_plan_age_ms).ok_or("PROB_RANGE")?.min(cfg.valid_until_ms).min(c.valid_until_ms()).min(surface.valid_until_ms());let report_sha=hash(&bank.engine().report()?)?;
- let proof=json!({"version":1,"classification":"reviewed_probabilistic_portfolio","guaranteedArbitrage":false,"realizedProfit":false,"usesFutureCollateral":false,"tournamentId":scope.tournament_id,"bankHead":head,"reportSha256":report_sha,"policySha256":p.sha,"modelSha256":surface.source_sha256(),"semanticReviewSha256":c.review_sha256(),"atMs":now,"expiresAtMs":expires,"horizonMs":surface.horizon_ms(),"legs":legs,"metrics":metrics,"excludedStates":c.excluded_states(),"exceptionWeightsPpm":c.exception_weights_ppm(),"wealthScope":"reviewed sleeve plus actual cash; unrelated holdings excluded","executionProbability":null});
- Ok(Some(Plan{head,report_sha,policy_sha:p.sha.clone(),model_sha:surface.source_sha256().into(),semantic_sha:c.review_sha256().into(),legs,metrics,expires,proof}))
+ let dispatch_sha=hash(&log.descriptor_identity()?)?;let proof=json!({"version":1,"classification":"reviewed_probabilistic_portfolio","guaranteedArbitrage":false,"realizedProfit":false,"usesFutureCollateral":false,"tournamentId":scope.tournament_id,"bankHead":head,"reportSha256":report_sha,"dispatchSha256":dispatch_sha,"policySha256":p.sha,"modelSha256":surface.source_sha256(),"semanticReviewSha256":c.review_sha256(),"atMs":now,"expiresAtMs":expires,"horizonMs":surface.horizon_ms(),"legs":legs,"metrics":metrics,"excludedStates":c.excluded_states(),"exceptionWeightsPpm":c.exception_weights_ppm(),"wealthScope":"reviewed sleeve plus actual cash; unrelated holdings excluded","executionProbability":null});
+ Ok(Some(Plan{head,report_sha,dispatch_sha,policy_sha:p.sha.clone(),model_sha:surface.source_sha256().into(),semantic_sha:c.review_sha256().into(),legs,metrics,expires,proof}))
 }

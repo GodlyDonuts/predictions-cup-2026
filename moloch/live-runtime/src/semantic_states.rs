@@ -125,7 +125,7 @@ pub fn compile(bytes:&[u8],expected_sha:&str,approved:&BTreeSet<String>,original
  }
  let mut states=BTreeSet::new();
  for s in &r.states{
-  need(atom(&s.id)&&states.insert(&s.id)&&s.outcomes.len()==r.contracts.len()&&!s.assumption_label.trim().is_empty()&&s.assumption_label.len()<=4096
+  need(atom(&s.id)&&states.insert(s.id.clone())&&s.outcomes.len()==r.contracts.len()&&!s.assumption_label.trim().is_empty()&&s.assumption_label.len()<=4096
    &&!s.source_sha256.is_empty()&&s.source_sha256.len()<=32&&s.source_sha256.iter().all(|h|source_map.contains_key(h)),"SEMANTIC_STATE_BINDING")?;
   need(!matches!(s.kind,StateKind::NotApplicable|StateKind::Cancelled)||s.outcomes.contains(&PayoutRule::RefundPrincipal),"SEMANTIC_REFUND_STATE")?;
  }
