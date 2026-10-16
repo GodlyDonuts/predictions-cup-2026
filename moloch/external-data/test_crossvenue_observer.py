@@ -19,6 +19,13 @@ def external(at, bid="0.410000", ask="0.430000", mapping="direct_party_reference
                            "yesAsks": [{"price": ask, "quantity": "3.250000"}]}}]}
 
 
+def websocket(at, sequence=1, sid=1, sha="c"*64, **kwargs):
+    e = external(at, **kwargs)
+    e["source"] = "kalshi_official_ws_v2"
+    e["markets"][0].update(valid=True, sid=sid, sequence=sequence, stateChainSha256=sha, sourceTsMs=at)
+    return e
+
+
 class ObserverTests(unittest.TestCase):
     def test_later_original_source_book_labels_exact_crossing_cost_without_fill_claim(self):
         out = []
@@ -188,9 +195,117 @@ class ObserverTests(unittest.TestCase):
         self.assertEqual(s.external, {})
         e["markets"][0]["valid"] = True
         e["markets"][0]["stateChainSha256"] = "c" * 64
+        e["markets"][0].update(sid=1, sequence=1, sourceTsMs=9000)
         s.external_update(e, 10000)
         self.assertEqual(s.external["1"]["hashKind"], "state_chain")
         self.assertEqual(s.external["1"]["bodySha256"], "c" * 64)
+
+    def test_same_millisecond_websocket_advances_require_increasing_original_cursor(self):
+        s = Study(lambda v: None)
+        s.external_update(websocket(9000), 10000)
+        s.external_update(websocket(9000, sequence=2, sha="d"*64, bid="0.420000"), 10001)
+        self.assertEqual(s.external["1"]["sequence"], 2)
+        self.assertEqual(s.external["1"]["receivedMs"], 9000)
+        self.assertEqual(s.external["1"]["availableMs"], 10001)
+        s.external_update(websocket(9000, sequence=2, sha="d"*64, bid="0.420000"), 11000)
+        self.assertEqual(s.external["1"]["availableMs"], 10001)
+        self.assertEqual(len(s.history["1"]), 2)
+
+    def test_conflicting_same_cursor_quarantines_market_without_global_crash(self):
+        s = Study(lambda v: None)
+        s.external_update(websocket(9000), 10000)
+        s.external_update(websocket(9000, sha="d"*64), 10001)
+        self.assertNotIn("1", s.external)
+        self.assertEqual(s.counts["externalConflicts"], 1)
+        s.external_update(websocket(9000), 10002)
+        self.assertNotIn("1", s.external)
+        s.external_update(websocket(9000, sequence=2, sha="e"*64), 10003)
+        self.assertEqual(s.external["1"]["sequence"], 2)
+
+    def test_newer_rest_does_not_replace_valid_fresh_websocket_or_clear_history(self):
+        s = Study(lambda v: None)
+        s.external_update(websocket(10000), 10000)
+        for at in (11000, 12000, 13000):
+            s.external_update(external(at), at)
+            self.assertEqual(s.external["1"]["source"], "kalshi_official_ws_v2")
+        self.assertEqual(len(s.history["1"]), 1)
+        self.assertEqual(s.external["1"]["availableMs"], 10000)
+
+    def test_invalid_ws_withdraws_immediately_falls_back_then_return_clears_once(self):
+        s = Study(lambda v: None)
+        s.external_update(external(9000), 10000)
+        s.external_update(websocket(10000), 10000)
+        s.external_update(websocket(11000, sequence=2, sha="d"*64), 11000)
+        self.assertEqual(len(s.history["1"]), 2)
+        invalid = websocket(11000, sequence=2, sha="d"*64)
+        invalid["markets"][0]["valid"] = False
+        s.external_update(invalid, 12000)
+        self.assertEqual(s.external["1"]["source"], "kalshi_official_v2")
+        self.assertEqual(s.external["1"]["availableMs"], 10000)
+        self.assertEqual(len(s.history["1"]), 1)
+        s.external_update(websocket(13000, sequence=3, sha="e"*64), 13000)
+        self.assertEqual(s.external["1"]["source"], "kalshi_official_ws_v2")
+        self.assertEqual(len(s.history["1"]), 1)
+        s.external_update(websocket(14000, sequence=4, sha="f"*64), 14000)
+        self.assertEqual(len(s.history["1"]), 2)
+
+    def test_stale_ws_original_source_uses_original_rest_without_clock_renewal(self):
+        s = Study(lambda v: None)
+        s.external_update(websocket(10000), 10000)
+        s.external_update(external(29000), 29000)
+        self.assertEqual(s.external["1"]["source"], "kalshi_official_ws_v2")
+        s.accept(row(30001), 30001)
+        self.assertEqual(s.external["1"]["source"], "kalshi_official_v2")
+        self.assertEqual(s.external["1"]["receivedMs"], 29000)
+        self.assertEqual(s.external["1"]["availableMs"], 29000)
+        future = websocket(30001, sequence=2)
+        future["markets"][0]["sourceTsMs"] = 30002
+        s.external_update(future, 30001)
+        self.assertEqual(s.external["1"]["source"], "kalshi_official_v2")
+
+    def test_source_clock_ahead_of_receipt_can_be_used_only_after_original_clock_catches_up(self):
+        s = Study(lambda v: None)
+        e = websocket(10000)
+        e["markets"][0]["sourceTsMs"] = 10014
+        s.external_update(e, 10014)
+        self.assertEqual(s.external["1"]["sourceTsMs"], 10014)
+        self.assertEqual(s.external["1"]["receivedMs"], 10000)
+
+    def test_invalid_ws_without_rest_removes_previous_selected_state(self):
+        s = Study(lambda v: None)
+        s.external_update(websocket(10000), 10000)
+        e = websocket(10000); e["markets"][0]["valid"] = False
+        s.external_update(e, 10001)
+        self.assertEqual(s.external, {})
+        self.assertEqual(len(s.history["1"]), 0)
+
+    def test_reordered_ws_cursor_does_not_replace_or_renew_current_observation(self):
+        s = Study(lambda v: None)
+        s.external_update(websocket(10000, sequence=3), 10000)
+        s.external_update(websocket(10000, sequence=2, sha="d"*64), 10001)
+        self.assertEqual(s.external["1"]["sequence"], 3)
+        self.assertEqual(s.external["1"]["availableMs"], 10000)
+        self.assertEqual(s.counts["externalClockRegression"], 1)
+        s.external_update(websocket(11000, sequence=1, sid=2, sha="e"*64), 11000)
+        self.assertEqual(len(s.history["1"]), 1)
+        self.assertEqual(s.external["1"]["sid"], 2)
+
+    def test_conflict_affects_only_bound_market_and_caches_are_bounded(self):
+        s = Study(lambda v: None)
+        e = websocket(10000)
+        for i in range(238):
+            e["markets"][0]["sigMarketIds"] = [str(i)]
+            e["markets"][0]["ticker"] = f'RACE-{i}'
+            s.external_update(e, 10000)
+        self.assertEqual(len(s.external_cache['kalshi_official_ws_v2']), 237)
+        self.assertEqual(len(s.external_tickers), 237)
+        self.assertNotIn('237', s.external)
+        e["markets"][0]["sigMarketIds"] = ['1']
+        e["markets"][0]["ticker"] = 'RACE-1'
+        e["markets"][0]["stateChainSha256"] = 'd'*64
+        s.external_update(e, 10001)
+        self.assertNotIn('1', s.external)
+        self.assertIn('2', s.external)
 
 
 if __name__ == "__main__":

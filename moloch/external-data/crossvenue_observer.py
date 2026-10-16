@@ -130,6 +130,9 @@ class Study:
         self.emit, self.horizons = emit, horizons
         self.sig_age, self.external_age, self.label_slack = sig_age, external_age, label_slack
         self.external, self.history = {}, collections.defaultdict(collections.deque)
+        self.external_cache = collections.defaultdict(dict)
+        self.external_invalid, self.external_quarantine = set(), set()
+        self.external_tickers = set()
         self.pending = collections.defaultdict(collections.deque)
         self.last_sample, self.last_source, self.revisions = {}, {}, {}
         self.counts = collections.Counter()
@@ -137,45 +140,107 @@ class Study:
 
     def external_update(self, envelope, now):
         # Fetch completion is when this observer first has these features.
+        source = envelope.get("source", "kalshi_official_v2")
+        if source not in ("kalshi_official_v2", "kalshi_official_ws_v2"):
+            raise ValueError("OBSERVER_EXTERNAL_SOURCE")
+        ws = source == "kalshi_official_ws_v2"
         for row in envelope["markets"]:
-            if envelope.get("source") == "kalshi_official_ws_v2" and not row.get("valid"):
-                continue
-            received = millis(row["receivedAt"])
-            if received > now or now - received > self.external_age:
-                self.counts["externalStaleOrFuture"] += 1
-                continue
-            original_hash = row.get("stateChainSha256", row.get("bodySha256"))
-            if not isinstance(original_hash, str) or len(original_hash) != 64:
-                raise ValueError("OBSERVER_EXTERNAL_PROVENANCE")
-            n = row["normalized"]
-            try:
-                f = features(levels(n["yesBids"], False), levels(n["yesAsks"], True))
-            except (ValueError, InvalidOperation, KeyError):
-                self.counts["externalInvalidOrOneSided"] += 1
-                continue
-            value = {"ticker": row["ticker"], "mappingKind": row["mappingKind"], "receivedMs": received,
-                     "availableMs": now, "bodySha256": original_hash, "features": f,
-                     "source": envelope.get("source", "kalshi_official_v2"),
-                     "hashKind": "state_chain" if "stateChainSha256" in row else "original_body",
-                     "pricingAuthority": False}
             for market in row["sigMarketIds"]:
                 market = str(market)
-                prior = self.external.get(market)
-                if prior and received < prior["receivedMs"]:
+                if market not in self.external_cache[source] and len(self.external_cache[source]) >= 237:
+                    self.counts["externalScopeLimit"] += 1
+                    continue
+                key = (source, market)
+                ticker = row.get("ticker")
+                if ticker not in self.external_tickers and len(self.external_tickers) >= 237:
+                    self.counts["externalScopeLimit"] += 1
+                    continue
+                if isinstance(ticker, str):
+                    self.external_tickers.add(ticker)
+                if ws and row.get("valid") is not True:
+                    self.external_invalid.add(key)
+                    self.counts["externalWsWithdrawn"] += 1
+                    self._select_external(market, now)
+                    continue
+                try:
+                    received = millis(row["receivedAt"])
+                    source_ts = row.get("sourceTsMs") if ws else None
+                    if (received < 0 or received > now or now-received > self.external_age or
+                            source_ts is not None and (type(source_ts) is not int or source_ts < 0 or source_ts > now or now-source_ts > self.external_age)):
+                        self.counts["externalStaleOrFuture"] += 1
+                        if ws:
+                            self.external_invalid.add(key)
+                        self._select_external(market, now)
+                        continue
+                    original_hash = row.get("stateChainSha256", row.get("bodySha256"))
+                    if not isinstance(ticker, str) or not ticker:
+                        raise ValueError("OBSERVER_EXTERNAL_TICKER")
+                    if not isinstance(original_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", original_hash):
+                        raise ValueError("OBSERVER_EXTERNAL_PROVENANCE")
+                    sid, seq = (row.get("sid"), row.get("sequence")) if ws else (None, None)
+                    if ws and not (type(sid) is int and sid > 0 and type(seq) is int and seq >= 0):
+                        raise ValueError("OBSERVER_EXTERNAL_CURSOR")
+                    n = row["normalized"]
+                    f = features(levels(n["yesBids"], False), levels(n["yesAsks"], True))
+                    value = {"ticker": ticker, "mappingKind": row["mappingKind"], "receivedMs": received,
+                             "availableMs": now, "bodySha256": original_hash, "features": f,
+                             "source": source, "hashKind": "state_chain" if ws else "original_body", "pricingAuthority": False}
+                    if ws:
+                        value.update(sid=sid, sequence=seq, sourceTsMs=source_ts)
+                except (ValueError, InvalidOperation, KeyError, TypeError):
+                    self.counts["externalInvalidOrOneSided"] += 1
+                    self.external_invalid.add(key)
+                    self._select_external(market, now)
+                    continue
+                prior = self.external_cache[source].get(market)
+                if prior and (received < prior["receivedMs"] or ws and sid == prior["sid"] and seq < prior["sequence"]):
                     self.counts["externalClockRegression"] += 1
                     continue
-                if prior and received == prior["receivedMs"]:
-                    if prior["bodySha256"] != value["bodySha256"]:
-                        raise ValueError("OBSERVER_EXTERNAL_CONFLICT")
-                    continue  # Retain first local availability; no renewed clock.
-                self.external[market] = value
-                h = self.history[market]
-                if prior and prior["source"] != value["source"]:
-                    h.clear()  # A source handover is not a price innovation.
-                h.append(value)
-                while h and h[0]["receivedMs"] < now - 180000:
-                    h.popleft()
+                same_cursor = prior and (sid == prior.get("sid") and seq == prior.get("sequence") if ws else received == prior["receivedMs"])
+                if same_cursor:
+                    # Compare immutable observation, excluding first availability.
+                    expected = {k: v for k, v in prior.items() if k != "availableMs"}
+                    actual = {k: v for k, v in value.items() if k != "availableMs"}
+                    if actual != expected:
+                        self.external_quarantine.add(key)
+                        self.external.pop(market, None)
+                        self.history[market].clear()
+                        self.counts["externalConflicts"] += 1
+                        continue
+                    self.counts["externalDuplicates"] += 1
+                else:
+                    self.external_cache[source][market] = value
+                    self.external_quarantine.discard(key)
+                self.external_invalid.discard(key)
+                self._select_external(market, now)
         self.counts["externalPolls"] += 1
+
+    def _select_external(self, market, now):
+        selected = None
+        for source in ("kalshi_official_ws_v2", "kalshi_official_v2"):
+            value = self.external_cache[source].get(market)
+            key = (source, market)
+            if (value and key not in self.external_invalid and key not in self.external_quarantine and
+                    0 <= now-value["receivedMs"] <= self.external_age and value["availableMs"] <= now and
+                    (value.get("sourceTsMs") is None or 0 <= now-value["sourceTsMs"] <= self.external_age)):
+                selected = value
+                break
+        prior = self.external.get(market)
+        if selected is None:
+            self.external.pop(market, None)
+            self.history[market].clear()
+            return None
+        if selected is prior:
+            return selected
+        h = self.history[market]
+        if prior and (prior["source"], prior.get("sid")) != (selected["source"], selected.get("sid")):
+            h.clear()  # Source/SID handover is not a price innovation.
+            self.counts["externalSourceChanges"] += 1
+        self.external[market] = selected
+        h.append(selected)
+        while h and (h[0]["receivedMs"] < now-180000 or len(h) > 4096):
+            h.popleft()
+        return selected
 
     def breadth(self, row, now):
         frame = row["event"]
@@ -275,7 +340,7 @@ class Study:
         # Samples are per-market at most once/second, not every journal update.
         if now - received > self.sig_age or now - source > self.sig_age or now - self.last_sample.get(key, -10000) < 1000:
             return
-        ext = self.external.get(market)
+        ext = self._select_external(market, now)
         if not ext or now - ext["receivedMs"] > self.external_age or ext["availableMs"] > now:
             self.counts["noCurrentExternal"] += 1
             return
