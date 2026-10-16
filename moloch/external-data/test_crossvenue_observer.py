@@ -307,6 +307,54 @@ class ObserverTests(unittest.TestCase):
         self.assertNotIn('1', s.external)
         self.assertIn('2', s.external)
 
+    def test_connection_epoch_scopes_same_sid_cursor_and_resets_history_once(self):
+        s = Study(lambda v: None)
+        def e(at, seq, epoch, sha):
+            value = websocket(at, sequence=seq, sha=sha)
+            value['websocket'] = {'coverage': {'connections': epoch}}
+            return value
+        s.external_update(e(10000, 200, 1, 'a'*64), 10000)
+        s.external_update(e(11000, 201, 1, 'b'*64), 11000)
+        self.assertEqual(len(s.history['1']), 2)
+        s.external_update(e(12000, 1, 2, 'c'*64), 12000)
+        self.assertEqual(s.external['1']['wsEpoch'], 2)
+        self.assertEqual(len(s.history['1']), 1)
+        s.external_update(e(13000, 2, 2, 'd'*64), 13000)
+        self.assertEqual(len(s.history['1']), 2)
+        s.external_update(e(13000, 2, 2, 'd'*64), 14000)
+        self.assertEqual(s.external['1']['availableMs'], 13000)
+
+    def test_process_epoch_reuse_or_missing_epoch_lower_sequence_is_unknown_boundary(self):
+        for epoch in (None, 1):
+            s = Study(lambda v: None)
+            def e(at, seq, sha):
+                value = websocket(at, sequence=seq, sha=sha)
+                if epoch is not None: value['websocket'] = {'coverage': {'connections': epoch}}
+                return value
+            s.external_update(e(10000, 900, 'a'*64), 10000)
+            s.external_update(e(11000, 901, 'b'*64), 11000)
+            invalid = e(11000, 901, 'b'*64); invalid['markets'][0]['valid'] = False
+            s.external_update(invalid, 12000)
+            s.external_update(e(13000, 1, 'c'*64), 13000)
+            self.assertEqual(s.external['1']['sequence'], 1)
+            self.assertEqual(s.counts['externalUnknownNewStreams'], 1)
+            self.assertEqual(len(s.history['1']), 1)
+            s.external_update(e(14000, 2, 'd'*64), 14000)
+            self.assertEqual(len(s.history['1']), 2)
+            s.external_update(e(14000, 2, 'd'*64), 15000)
+            self.assertEqual(s.external['1']['availableMs'], 14000)
+            s.external_update(e(13000, 0, 'e'*64), 15000)
+            self.assertEqual(s.external['1']['sequence'], 2)
+
+    def test_later_valid_exported_sequence_reset_without_epoch_is_not_stuck_forever(self):
+        s = Study(lambda v: None)
+        s.external_update(websocket(10000, sequence=500), 10000)
+        s.external_update(websocket(11000, sequence=1, sha='d'*64), 11000)
+        self.assertEqual(s.external['1']['sequence'], 1)
+        self.assertEqual(s.external['1']['streamBoundary'], 1)
+        self.assertEqual(len(s.history['1']), 1)
+        self.assertEqual(s.counts['externalUnknownNewStreams'], 1)
+
 
 if __name__ == "__main__":
     unittest.main()
