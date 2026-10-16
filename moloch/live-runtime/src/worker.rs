@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default,skip_serializing_if="Option::is_none")]fundamental_acquisition:Option<moloch_live_runtime::execution_distribution::AcquisitionConfig>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default,skip_serializing_if="is_false")]account_realtime:bool,#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default,skip_serializing_if="Option::is_none")]fundamental_acquisition:Option<moloch_live_runtime::execution_distribution::AcquisitionConfig>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn is_false(v:&bool)->bool{!*v}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
@@ -298,11 +298,13 @@ fn reconciliation_read_with(bank:&mut Session,endpoint:Endpoint,mut service:impl
 }
 fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,cache:&mut Reconciler,stream:&Realtime,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<reconciliation::Cycle>{
  log.require_resolved_attempts()?;
+ let account_signal=stream.account_signal();let account_start=account_signal.as_ref().map(|s|s.generation());
  let pending:Vec<_>=log.acknowledgments.iter().filter(|(q,_)|!log.closed.contains(q)).map(|(q,_)|*q).collect();
  let mut owned=vec![];
  for qid in pending{let q=quote(bank,qid)?;let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_ACK_BINDING_MISSING")?;
   owned.push(reconciliation::owned_from_quote(&q,actual,log.cancel_acknowledged.contains(&qid),false)?);
  }
+ if let Some(signal)=&account_signal{moloch_live_runtime::account_realtime::prioritize(&mut owned,|q|q.exchange_id.as_str(),signal);}
  struct Live<'a>{t:&'a mut Transport,c:&'a Control,bank:&'a mut Session,log:&'a mut DispatchLog,stream:&'a Realtime,source:&'a mut RestSource,breadth:&'a mut Option<Recorder>,universe:&'a mut Option<Universe>}
  impl reconciliation::Backend for Live<'_>{
   fn now_ms(&self)->u64{now()}
@@ -314,7 +316,9 @@ fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,
   fn apply(&mut self,e:&Value)->Result<()>{accept(self.bank,e)}
   fn close(&mut self,id:u64,e:&Value,order:&Receipt,fills:&Receipt)->Result<()>{accept(self.bank,e)?;self.log.append(json!({"kind":"closed","qid":id,"orderReceiptHash":feedback::digest(order)?,"fillReceiptHash":feedback::digest(fills)?}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(self.bank,self.log,id,order,fills,now());moloch_live_runtime::execution_distribution::confirm_acquisition_terminal(self.bank,self.log,id,order,fills,now());Ok(())}
  }
- cache.cycle(&c.scope,&owned,false,&mut Live{t,c,bank,log,stream,source,breadth,universe})
+ let result=cache.cycle(&c.scope,&owned,false,&mut Live{t,c,bank,log,stream,source,breadth,universe})?;
+ if !result.blocks_new_submissions{if let(Some(signal),Some(generation))=(account_signal,account_start){signal.reconciled_through(generation);}}
+ Ok(result)
 }
 fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64)->Result<u64>{
  let from=s.recovery_start_ms(market).map_or(from,|recovery|from.min(recovery));let to=now();let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(to)})?;
@@ -713,6 +717,17 @@ fn record_original_attempt(bank:&Session,log:&mut DispatchLog,qid:u64,config:Opt
  let event=json!({"kind":"attempt","qid":qid,"at":iso(at),"captureAtMs":at,"evidenceVersion":1,"nativeHead":bank.durable_head(),"sourceFrontier":frontier,"originalQuoteSha256":hash(&q),"dispatchBefore":log.proof(qid),"modelConfigSha256":config_sha,"modelAlgorithmSha256":format!("{:x}",Sha256::digest(include_bytes!("execution_edge.rs")))});
  log.append(event)?;moloch_live_runtime::execution_distribution::track_runtime_attempt(bank,log,qid,at);moloch_live_runtime::execution_distribution::track_acquisition_attempt(bank,log,qid,at);if config.is_some(){moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);}Ok(())
 }
+/// Only an account-generation fence BEFORE the original operation attempt may
+/// defer. No SDK error, control/STOP error, or already issued operation is hidden.
+fn defer_account_preintent(c:&Control,bank:&Session,log:&DispatchLog,authority:&ProductionAuthority,qid:u64,cancel:bool,error:&(dyn std::error::Error+'static))->Result<bool>{
+ if !error.is::<moloch_live_runtime::account_realtime::AccountGenerationChanged>(){return Ok(false)}
+ let untouched=if cancel{cancel_may_start(log,qid)&&bank.engine().live_order_bindings().contains_key(&qid)&&log.acknowledgments.contains_key(&qid)}else{
+  log.require_resolved_attempts()?;
+  log.never_attempted(qid)&&!log.intents.contains_key(&qid)&&!log.acknowledgments.contains_key(&qid)&&!bank.engine().live_order_bindings().contains_key(&qid)&&!bank.engine().fills().iter().any(|f|f["orderId"]==qid)
+ };
+ if !untouched{return Err("LIVE_ACCOUNT_DEFER_AFTER_ORIGINAL_OPERATION".into())}
+ authority.clear_ready();atomic_json(&c.root.join("account-realtime-deferred.json"),&json!({"at":iso(now()),"qid":qid,"operation":if cancel{"cancel"}else{"order"},"reason":error.to_string(),"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity()?,"physicalAttempted":false,"requiresAuthoritativeRefresh":true}))?;Ok(true)
+}
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if !owner_capital_buys_allowed(c,bank,&q["action"])?{return Ok(())}
  use moloch_live_runtime::decision_trace::{Trace,Stage};
@@ -734,7 +749,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  if let Some((decision,review))=&maker{if let Err(error)=decision.validate_current(bank,review,log,now()){
   if !expected_maker_expiry(error.as_ref()){return Err(error)}authority.clear_ready();atomic_json(&c.root.join("maker-policy-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":error.to_string(),"physicalAttempted":false}))?;return Ok(())
  }}
- authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision)?;
+ if let Err(error)=authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision){if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
@@ -1299,7 +1314,7 @@ fn cancel_owned(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  // call still retains this original expiry and every physical guard.
  let p=Permit{run_id:c.activation.run_id.clone(),intent_id:format!("{qid}-cancel"),owner:"Codex".into(),expires_at_ms:expires,maximum_quantity:c.activation.maximum_quantity,maximum_cost:c.activation.maximum_committed.clone()};
  let spec=RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{actual}"),body:None,body_json:None};
- authority.prepare_cancel(bank,qid,spec.clone(),p.clone(),facts)?;
+ if let Err(error)=authority.prepare_cancel(bank,qid,spec.clone(),p.clone(),facts){if defer_account_preintent(c,bank,log,authority,qid,true,error.as_ref())?{return Ok(())}return Err(error)}
  if let Err(e)=authority.authorize(&c.scope,&spec,&p,false,now()){authority.clear_ready();if defense.is_some()&&!authority.can_read(&c.scope){return Err("LIVE_DEFENSIVE_CANCEL_CONTROL_OR_STOP".into())}atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code,"optionalDefensiveCancel":defense.is_some()}))?;return Ok(())}
  if now()>=expires{authority.clear_ready();return Ok(())}
  let attempt_at=now();
@@ -1518,12 +1533,13 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  let material=t.realtime_token().map_err(moloch_live_runtime::stream_token_retry::TokenFailure::from_token_error)?;let auth=Auth::from_official_response(material)?;
  // Only the native connection boundary produces this retryable type. HTTP,
  // credentials, JOIN and durable source errors retain their original types.
- let stream=Realtime::connect(auth,&c.scope.tournament_id).map_err(moloch_live_runtime::stream_connect_retry::ConnectionFailure::from_connect_error)?;
+ let stream=if c.account_realtime{Realtime::connect_with_account(auth,&c.scope.tournament_id,moloch_live_runtime::account_realtime::options(&c.scope,&c.root)?)}else{Realtime::connect(auth,&c.scope.tournament_id)}.map_err(moloch_live_runtime::stream_connect_retry::ConnectionFailure::from_connect_error)?;
  let joined_at=match stream.incoming.recv_timeout(Duration::from_secs(12)){
   Ok(Incoming::Joined{received_at})=>{accept_source_events(bank,&source.subscribed(&received_at)?)?;received_at}
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
  };Ok((stream,joined_at))
 }
+fn account_reconciliation_due(stream:&Realtime)->bool{stream.account_signal().is_some_and(|s|s.requires_reconciliation())}
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  require_stream(stream)?;
  let mut pending=QueuedSourceBatch::default();
@@ -1596,7 +1612,7 @@ fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog
  if let Some(u)=universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
  let from=now().saturating_sub(60_000);for old in windows.values_mut(){*old=(*old).min(from);}
  atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"joined_requires_scope_recovery","reason":failure.reason(),"joinedAt":joined_at,"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
- require_stream(&connected)?;*stream=Some(connected);let connected=stream.as_ref().unwrap();authority.bind_stream(connected.failure_signal(),connected.deadline_ms);Ok(())
+ require_stream(&connected)?;*stream=Some(connected);let connected=stream.as_ref().unwrap();authority.bind_stream(connected.failure_signal(),connected.deadline_ms);authority.bind_account_stream(connected.account_signal())?;Ok(())
 }
 pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run","recover-unadmitted"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run|recover-unadmitted /absolute/control.json".into())}
@@ -1681,7 +1697,7 @@ pub fn main()->Result<()>{
   let recovery_budget_path=c.root.join("stream-recovery-budget.json");let mut recovery_budget=recovery_budget(&recovery_budget_path,now())?;
   if !recovery_budget_path.exists(){atomic_json(&recovery_budget_path,&serde_json::to_value(&recovery_budget)?)?;}
   let (connected,joined_at)=connect_with_budget(&mut t,&c,&mut bank,&log,&authority,&mut source_state,&mut recovery_budget)?;require_stream(&connected)?;let mut stream=Some(connected);
-  authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);
+  authority.bind_stream(stream.as_ref().unwrap().failure_signal(),stream.as_ref().unwrap().deadline_ms);authority.bind_account_stream(stream.as_ref().unwrap().account_signal())?;
   let mut relationship_census=None;let mut preflight_cursor=None;let mut package_last_scan=0;let mut package_certificate_cursor=0;
   let graph_rotation_path=c.root.join("relationship-graph-rotation.json");
   let(mut graph_rotation,mut graph_rotation_state_error)=match moloch_live_runtime::graph_discovery::Rotation::load(&graph_rotation_path,&c.scope){Ok(state)=>(state,None),Err(reason)=>(moloch_live_runtime::graph_discovery::Rotation::new(&c.scope),Some(reason))};
@@ -1718,7 +1734,7 @@ pub fn main()->Result<()>{
     order.scopes
    }else{selected};
    for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let source_started=now();let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;owned_age_reads.record_source_read(ex,source_started,now())?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
-    if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
+    if account_reconciliation_due(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)||reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
      collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
@@ -1743,7 +1759,7 @@ pub fn main()->Result<()>{
      let execution_clock=if hint.reason()=="new_lot_maximum_age"{Some(hint.oldest_execution_ms())}else{None};
      let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"reason":hint.reason(),"nativeQid":hint.native_qid(),"oldestExecutionMs":execution_clock,"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
      drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
-     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
+     if account_reconciliation_due(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)||reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
       reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
       reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
      }
@@ -2414,6 +2430,14 @@ pub fn main()->Result<()>{
   let mut changed=e.clone();changed["actualOrderId"]=json!("foreign");assert!(!closed_legacy_ack(&bank,&log,id,&changed));
   let old=log.intents[&id].clone();log.intents.get_mut(&id).unwrap()["fundamental"]=json!({"bindingSha256":"a".repeat(64)});assert!(!closed_legacy_ack(&bank,&log,id,&e));log.intents.insert(id,old);
   drop(log);drop(bank);let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();let head=bank.durable_head();assert!(closed_legacy_ack(&bank,&log,id,&e));assert!(!restore_ack(&mut bank,&e).unwrap());assert_eq!(bank.durable_head(),head);
+ }
+ #[test]fn account_realtime_control_is_optional_default_off_and_only_explicitly_enabled(){let mut c:Control=serde_json::from_value(json!({"activation":{"runId":"fixture","entryUntilMs":100000,"maximumCommitted":"100.000000","maximumMarketCost":"50.000000","maximumQuantity":12,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{"101":"101"}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/fixture/owner.lock","accountScope":"fixture"})).unwrap();assert!(!c.account_realtime);assert!(serde_json::to_value(&c).unwrap().get("accountRealtime").is_none());c.account_realtime=true;assert_eq!(serde_json::to_value(&c).unwrap()["accountRealtime"],true);}
+ #[test]fn account_preintent_defer_is_typed_and_cannot_hide_an_original_attempt(){
+  let temp=Temp::new();let(bank,mut log,_,_)=setup(&temp.0,1);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();let binary=temp.0.join("checked-binary");fs::write(&binary,b"offline fixture").unwrap();let control_path=temp.0.join("checked-control");fs::write(&control_path,b"unchanged").unwrap();
+  let c:Control=serde_json::from_value(json!({"activation":{"runId":"package-hook-fixture","entryUntilMs":now()+60000,"maximumCommitted":"100.000000","maximumMarketCost":"50.000000","maximumQuantity":12,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":format!("{:x}",Sha256::digest(b"offline fixture"))},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{"101":"101"}},"policy":{},"root":temp.0,"credentials":"/unused","ownerLock":temp.0.join("execution-owner.lock"),"accountScope":"fixture"})).unwrap();
+  let authority=ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![],control_path,binary,Arc::new(ExclusiveLock::acquire(&c.owner_lock).unwrap())).unwrap();let signal=Arc::new(moloch_replay::realtime::AccountSignal::default());signal.invalidate_for_resync().unwrap();let stamp=iso(signal.last_received_ms());let r=Receipt{endpoint:"original-account-fact".into(),request_started_at:stamp.clone(),received_at:stamp,status:200,data:json!({})};let error=match moloch_live_runtime::account_realtime::capture(&Some(signal),&[&r]){Err(e)=>e,Ok(_)=>panic!("old fact accepted")};
+  let head=bank.durable_head();let bytes=fs::read(temp.0.join("dispatch.ndjson")).unwrap();assert!(defer_account_preintent(&c,&bank,&log,&authority,id,false,error.as_ref()).unwrap());assert_eq!(bank.durable_head(),head);assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),bytes);assert!(!defer_account_preintent(&c,&bank,&log,&authority,id,false,&std::io::Error::other("LIVE_ACCOUNT_REALTIME_CHANGED")).unwrap());
+  log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap();log.append(json!({"kind":"attempt","qid":id,"at":iso(now())})).unwrap();assert!(defer_account_preintent(&c,&bank,&log,&authority,id,false,error.as_ref()).is_err());
  }
  fn genuine_reviewed_entry_reservation(temp:&Temp)->(Session,DispatchLog,Value,Value,Value){
   let(mut bank,mut log,policy,seed)=setup(&temp.0,1);for q in bank.engine().order_records(){retire_for_package(&mut bank,&mut log,&q).unwrap();}

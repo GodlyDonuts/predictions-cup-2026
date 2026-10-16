@@ -13,10 +13,10 @@ pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_comm
 /// Cancellation never consumes a contract/book observation. Keep its actual
 /// four official account receipts distinct rather than inventing unused facts.
 #[derive(Clone)]pub struct CancelSnapshotSet {pub account:Receipt,pub cash_balance:Receipt,pub positions:Receipt,pub open_orders:Receipt}
-#[derive(Clone)]struct OrderReady {spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>}
-#[derive(Clone)]struct CancelReady {spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet}
+#[derive(Clone)]struct OrderReady {account_stamp:Option<crate::account_realtime::Stamp>,spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>}
+#[derive(Clone)]struct CancelReady {account_stamp:Option<crate::account_realtime::Stamp>,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet}
 #[derive(Clone)]enum Ready {Order(OrderReady),Cancel(CancelReady)}
-pub struct ProductionAuthority {fundamental_exchanges:Mutex<Option<std::collections::BTreeSet<String>>>,maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
+pub struct ProductionAuthority {account_required:std::sync::atomic::AtomicBool,account_stream:Mutex<Option<Arc<moloch_replay::realtime::AccountSignal>>>,package_account_stamp:Mutex<Option<crate::account_realtime::Stamp>>,fundamental_exchanges:Mutex<Option<std::collections::BTreeSet<String>>>,maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
 /// Actual attributed cash only. Borrowed principal remains outside unlevered
 /// Wallet sizing; until original fill economics reconcile it cannot authorize
 /// a replacement physical order. Cancellation keeps its separate authority.
@@ -35,7 +35,7 @@ fn fresh(r:&Receipt,now:u64,max_age:u64)->bool{r.status==200&&clock(&r.request_s
 impl ProductionAuthority {
  pub fn new(activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,binary:PathBuf,lease:Arc<ExclusiveLock>)->Result<Self>{
   if activation.run_id.is_empty()||activation.maximum_quantity==0||activation.maximum_quantity>10000||decimal_units(&activation.maximum_committed)?<=0||decimal_units(&activation.maximum_market_cost)?<=0||scope.tournament_id!=activation.tournament_id||scope.tournament_slug!=activation.tournament_slug||hash_bytes(&fs::read(&binary)?)!=activation.binary_sha256{return Err("LIVE_ACTIVATION_BINDING".into())}
-  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{fundamental_exchanges:Mutex::new(None),maker_review:Mutex::new(None),package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{account_required:std::sync::atomic::AtomicBool::new(false),account_stream:Mutex::new(None),package_account_stamp:Mutex::new(None),fundamental_exchanges:Mutex::new(None),maker_review:Mutex::new(None),package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
  }
  pub fn require_maker_review(&self,sha:&str)->Result<()>{
   if sha.len()!=64||!sha.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("LIVE_MAKER_REVIEW_HASH".into())}
@@ -62,7 +62,14 @@ impl ProductionAuthority {
   *bound=Some((cfg.clone(),end));Ok(())
  }
  pub fn bind_owned(&self,id:String){self.owned.lock().unwrap().insert(id);}
- pub fn clear_ready(&self){*self.ready.lock().unwrap()=None;*self.package_ready.lock().unwrap()=None;}
+ pub fn clear_ready(&self){*self.ready.lock().unwrap()=None;*self.package_ready.lock().unwrap()=None;*self.package_account_stamp.lock().unwrap()=None;}
+ pub fn bind_account_stream(&self,signal:Option<Arc<moloch_replay::realtime::AccountSignal>>)->Result<()>{
+  if signal.is_none()&&self.account_required.load(std::sync::atomic::Ordering::SeqCst){return Err("LIVE_ACCOUNT_REALTIME_CANNOT_DISABLE".into())}
+  if signal.is_some(){self.account_required.store(true,std::sync::atomic::Ordering::SeqCst);}
+  self.clear_ready();*self.account_stream.lock().unwrap()=signal;Ok(())
+ }
+ fn account_stamp(&self,receipts:&[&Receipt])->Result<Option<crate::account_realtime::Stamp>>{crate::account_realtime::capture(&self.account_stream.lock().unwrap().clone(),receipts)}
+ fn validate_account_stamp(&self,stamp:&Option<crate::account_realtime::Stamp>)->Result<()>{crate::account_realtime::validate(stamp,&self.account_stream.lock().unwrap().clone())}
  pub fn bind_stream(&self,failed:Arc<std::sync::atomic::AtomicBool>,deadline:u64){*self.stream.lock().unwrap()=Some((failed,deadline));}
  pub fn prepare(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet)->Result<()> {
   self.prepare_with_maker(bank,qid,spec,permit,snapshots,None)
@@ -72,6 +79,7 @@ impl ProductionAuthority {
  }
  pub fn prepare_with_policies(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>)->Result<()> {
   self.clear_ready();
+  let account_stamp=self.account_stamp(&[&snapshots.account,&snapshots.cash_balance,&snapshots.positions,&snapshots.open_orders])?;
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
   if !bank.engine().is_live(){return Err("PAPER_BANK_CANNOT_AUTHORIZE_WRITES".into())}
   if bank.engine().is_package_order(qid){return Err("PACKAGE_REQUIRES_BASKET_AUTHORITY".into())}
@@ -86,18 +94,19 @@ impl ProductionAuthority {
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+bank.engine().order_records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
   let expected_cash=reconciled_expected_cash(bank)?;
-  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental}));Ok(())
+  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{account_stamp,spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental}));Ok(())
  }
  pub fn prepare_cancel(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet)->Result<()> {
   self.clear_ready();
+  let account_stamp=self.account_stamp(&[&snapshots.account,&snapshots.cash_balance,&snapshots.positions,&snapshots.open_orders])?;
   if !bank.engine().is_live()||bank.live_account_seed().is_none_or(|s|s["runId"]!=self.activation.run_id){return Err("LIVE_CANCEL_BANK_SCOPE".into())}
   if bank.engine().is_package_order(qid){return Err("PACKAGE_REQUIRES_BASKET_AUTHORITY".into())}
   let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_CANCEL_BINDING")?;
   if bank.engine().order_records().iter().all(|q|q["id"].as_u64()!=Some(qid)||q["retired"]!=false)||spec.method!="DELETE"||spec.endpoint!=format!("/orders/{actual}")||spec.body.is_some()||spec.body_json.is_some()||permit.intent_id!=format!("{qid}-cancel")||permit.run_id!=self.activation.run_id {return Err("LIVE_CANCEL_REQUEST_BINDING".into())}
-  *self.ready.lock().unwrap()=Some(Ready::Cancel(CancelReady{spec,permit,snapshots}));Ok(())
+  *self.ready.lock().unwrap()=Some(Ready::Cancel(CancelReady{account_stamp,spec,permit,snapshots}));Ok(())
  }
  pub fn prepare_package(&self,bank:&Session,admission:&crate::package_admission::Admission,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
-  self.clear_ready();log.require_resolved_attempts()?;
+  self.clear_ready();let account_stamp=self.account_stamp(&[&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders])?;log.require_resolved_attempts()?;
   if admission.basket().legs.iter().any(|leg|self.fundamental_required(&leg.exchange_id)){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}
   let orders=bank.engine().order_records();
   for qid in log.acknowledgments.keys().filter(|qid|!log.closed.contains(qid)){
@@ -105,28 +114,28 @@ impl ProductionAuthority {
    if admission.basket().legs.iter().any(|l|q["exchangeId"]==l.exchange_id){return Err("PACKAGE_PRIOR_COMPONENT_ACK_UNRECONCILED".into())}
   }
   let prepared=crate::package_authority::Prepared::new(bank,&self.activation,&self.scope,admission,permit,facts,at,self.entry_until_ms())?;
-  *self.package_ready.lock().unwrap()=Some(prepared);Ok(())
+  *self.package_ready.lock().unwrap()=Some(prepared);*self.package_account_stamp.lock().unwrap()=account_stamp;Ok(())
  }
  pub fn prepare_portfolio(&self,bank:&Session,plan:&crate::package_portfolio::Plan,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
   use baal_transport_service::{multi_leg,multi_leg_portfolio as wire};
-  self.clear_ready();log.require_resolved_attempts()?;
+  self.clear_ready();let account_stamp=self.account_stamp(&[&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders])?;log.require_resolved_attempts()?;
   let orders=bank.engine().order_records();let component=plan.proof()["portfolio"]["componentExchanges"].as_array().ok_or("PORTFOLIO_COMPONENTS")?;
   for exchange in component{if self.fundamental_required(exchange.as_str().ok_or("PORTFOLIO_COMPONENTS")?){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}}
   for qid in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){let q=orders.iter().find(|q|q["id"]==*qid).ok_or("PORTFOLIO_PRIOR_QUOTE")?;if component.iter().any(|ex|*ex==q["exchangeId"]){return Err("PORTFOLIO_PRIOR_ACK_UNRECONCILED".into())}}
   let basket=wire::Basket{idempotency_key:format!("{}:{}",self.activation.run_id,plan.package_id()),tournament_id:self.scope.tournament_id.clone(),maximum_gross_buy_cost:plan.proof()["grossFunding"].as_str().ok_or("PORTFOLIO_FUNDING")?.into(),minimum_gross_sell_proceeds:plan.proof()["minimumCashProceeds"].as_str().ok_or("PORTFOLIO_PROCEEDS")?.into(),relationship_constraint:None,legs:plan.legs().iter().map(|l|Ok(wire::Leg{exchange_id:l.exchange_id.clone(),side:if l.side=="YES"{multi_leg::Side::Yes}else{multi_leg::Side::No},action:if l.action=="buy"{wire::Action::Buy}else{wire::Action::Sell},quantity:u32::try_from(l.quantity)?,limit_price:l.limit_price.clone()})).collect::<Result<_>>()?};
-  let prepared=crate::package_authority::Prepared::new_portfolio(bank,&self.activation,&self.scope,plan,&basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);Ok(())
+  let prepared=crate::package_authority::Prepared::new_portfolio(bank,&self.activation,&self.scope,plan,&basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);*self.package_account_stamp.lock().unwrap()=account_stamp;Ok(())
  }
  /// Separate probabilistic lane. Only the original opaque qualified factory
  /// reservation can populate the existing physical SDK/STOP/stream authority.
  pub fn prepare_probabilistic(&self,bank:&Session,plan:&crate::probabilistic_portfolio::Plan,reservation:&crate::probabilistic_portfolio::Reservation,basket:&baal_transport_service::multi_leg_portfolio::Basket,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
-  self.clear_ready();log.require_resolved_attempts()?;reservation.validate_plan(plan)?;
+  self.clear_ready();let account_stamp=self.account_stamp(&[&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders])?;log.require_resolved_attempts()?;reservation.validate_plan(plan)?;
   let qualification=&reservation.event()["qualification"];let components=qualification["contracts"].as_array().ok_or("PROB_AUTH_COMPONENTS")?;let mut exchanges=std::collections::BTreeSet::new();
   for c in components{let ex=c["exchangeId"].as_str().ok_or("PROB_AUTH_COMPONENTS")?;if !exchanges.insert(ex)||self.fundamental_required(ex){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}}
   if hash_bytes(&serde_json::to_vec(&log.descriptor_identity()?)?)!=qualification["dispatchSha256"].as_str().ok_or("PROB_AUTH_DISPATCH_BINDING")?{return Err("PROB_AUTH_ORIGINAL_DISPATCH_CHANGED".into())}
   let orders=bank.engine().order_records();
   for qid in log.acknowledgments.keys().filter(|qid|!log.closed.contains(qid)){let q=orders.iter().find(|q|q["id"]==*qid).ok_or("PROB_AUTH_PRIOR_ACK_QUOTE_MISSING")?;if q["exchangeId"].as_str().is_some_and(|ex|exchanges.contains(ex)){return Err("PROB_AUTH_PRIOR_ACK_UNRECONCILED".into())}}
   for qid in bank.engine().live_order_bindings().keys(){let q=orders.iter().find(|q|q["id"]==*qid).ok_or("PROB_AUTH_PRIOR_NATIVE_QUOTE_MISSING")?;if q["exchangeId"].as_str().is_some_and(|ex|exchanges.contains(ex))&&!log.closed.contains(qid){return Err("PROB_AUTH_PRIOR_BINDING_UNRECONCILED".into())}}
-  let prepared=crate::package_authority::Prepared::new_probabilistic(bank,&self.activation,&self.scope,plan,reservation,basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);Ok(())
+  let prepared=crate::package_authority::Prepared::new_probabilistic(bank,&self.activation,&self.scope,plan,reservation,basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);*self.package_account_stamp.lock().unwrap()=account_stamp;Ok(())
  }
  fn check(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->Result<()> {
   if !self.can_read(scope)||p.owner!="Codex"||p.run_id!=self.activation.run_id||p.expires_at_ms<=now{return Err("LIVE_OWNER_OR_ACTIVATION".into())}
@@ -140,14 +149,17 @@ impl ProductionAuthority {
    let end=self.entry_until_ms();
    if self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,bound)|cfg.end_at(now).ok()!=Some(*bound)){return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}
    let locked=self.package_ready.lock().unwrap();let prepared=locked.as_ref().ok_or("PACKAGE_FRESH_FACTS_REQUIRED")?;if prepared.requires_entry()&&now>=end{return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}
-   return prepared.authorize(spec,p,now,&self.owned.lock().unwrap(),end);
+   self.validate_account_stamp(&self.package_account_stamp.lock().unwrap())?;
+   prepared.authorize(spec,p,now,&self.owned.lock().unwrap(),end)?;
+   return self.validate_account_stamp(&self.package_account_stamp.lock().unwrap());
   }
   let locked=self.ready.lock().unwrap();let prepared=locked.as_ref().ok_or("LIVE_FRESH_FACTS_REQUIRED")?;
-  let f=match prepared {Ready::Order(f)=>f,Ready::Cancel(f)=>{
+  let f=match prepared {Ready::Order(f)=>{self.validate_account_stamp(&f.account_stamp)?;f},Ready::Cancel(f)=>{
+   self.validate_account_stamp(&f.account_stamp)?;
    if serde_json::to_value(spec)?!=serde_json::to_value(&f.spec)?||serde_json::to_value(p)?!=serde_json::to_value(&f.permit)?{return Err("LIVE_REQUEST_CHANGED".into())}
    self.check_cancel_facts(scope,&f.snapshots,now)?;
    let id=spec.endpoint.strip_prefix("/orders/").ok_or("LIVE_CANCEL_PATH")?;
-   if spec.method!="DELETE"||!self.owns_order(id){return Err("LIVE_CANCEL_UNOWNED".into())}return Ok(())
+   if spec.method!="DELETE"||!self.owns_order(id){return Err("LIVE_CANCEL_UNOWNED".into())}self.validate_account_stamp(&f.account_stamp)?;return Ok(())
   }};
   if serde_json::to_value(spec)?!=serde_json::to_value(&f.spec)?||serde_json::to_value(p)?!=serde_json::to_value(&f.permit)?{return Err("LIVE_REQUEST_CHANGED".into())}
   if self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&f.fundamental.is_none(){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
@@ -185,7 +197,8 @@ impl ProductionAuthority {
   if body["tournamentId"]!=scope.tournament_id||body["exchangeId"]!=ex||body["side"].as_str()!=f.quote["side"].as_str().map(|s|if s=="YES"{"yes"}else{"no"})||body["action"]!=f.quote["action"]||!quantity_matches||price!=decimal_units(f.quote["price"].as_str().ok_or("LIVE_ORDER_PRICE")?)?||n>p.maximum_quantity as u64||price*n as i128>decimal_units(&p.maximum_cost)?{return Err("LIVE_ORDER_INTENT_MISMATCH".into())}
   if body["action"]=="buy" {if now>=self.entry_until_ms()||f.entry_until!=self.entry_until_ms()||self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,end)|cfg.end_at(now).ok()!=Some(*end)||f.snapshots.account.data["endDate"].as_str().and_then(clock).is_none_or(|t|t<*end))||cash_economics.gross_cash_units.ok_or("LIVE_ACCOUNT_CASH_REQUIRED")?<price*n as i128{return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}}
   else if body["action"]!="sell"||n>f.owned{return Err("LIVE_SELL_NOT_COVERED".into())}
-  Ok(())
+  self.validate_account_stamp(&f.account_stamp)
+
  }
  fn check_cancel_facts(&self,s:&Scope,f:&CancelSnapshotSet,now:u64)->Result<()> {
   for r in [&f.account,&f.cash_balance,&f.positions,&f.open_orders]{
@@ -319,4 +332,10 @@ impl Authority for SharedAuthority {
  #[test]fn package_physical_guard_cannot_consume_managed_inventory(){
   let(root,a,b,s,mut r,p,_,n)=super::tests::fixture();a.require_fundamental_exchanges(&["101".into()].into()).unwrap();r.endpoint="/orders/multi-leg".into();r.body=Some(json!({"legs":[{"exchangeId":"101","action":"sell"}]}));r.body_json=Some(serde_json::to_string(r.body.as_ref().unwrap()).unwrap());assert_eq!(a.authorize(&s,&r,&p,true,n).unwrap_err().code,"LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED");drop(b);drop(a);fs::remove_dir_all(root).unwrap();
  }
+}
+
+#[cfg(test)]mod account_realtime_tests{
+ use super::*;
+ #[test]fn enabling_account_watch_clears_old_prepared_authority_and_has_no_none_bypass(){let(root,a,bank,scope,spec,permit,facts,at)=super::tests::fixture();a.prepare(&bank,permit.intent_id.parse().unwrap(),spec.clone(),permit.clone(),facts.clone()).unwrap();a.authorize(&scope,&spec,&permit,true,at).unwrap();let signal=Arc::new(moloch_replay::realtime::AccountSignal::default());a.bind_account_stream(Some(signal.clone())).unwrap();assert!(a.bind_account_stream(None).is_err());assert!(a.ready.lock().unwrap().is_none());assert!(a.authorize(&scope,&spec,&permit,true,at).is_err());signal.invalidate_for_resync().unwrap();let error=a.prepare(&bank,permit.intent_id.parse().unwrap(),spec,permit,facts).unwrap_err();assert!(error.is::<crate::account_realtime::AccountGenerationChanged>());assert!(a.ready.lock().unwrap().is_none());drop(bank);drop(a);fs::remove_dir_all(root).unwrap();}
+ #[test]fn changed_account_after_prepare_blocks_physical_even_when_old_ready_has_no_stamp(){let(root,a,bank,scope,spec,permit,facts,at)=super::tests::fixture();a.prepare(&bank,permit.intent_id.parse().unwrap(),spec.clone(),permit.clone(),facts).unwrap();*a.account_stream.lock().unwrap()=Some(Arc::new(moloch_replay::realtime::AccountSignal::default()));assert_eq!(a.authorize(&scope,&spec,&permit,true,at).unwrap_err().code,"LIVE_ACCOUNT_REALTIME_CHANGED");drop(bank);drop(a);fs::remove_dir_all(root).unwrap();}
 }
