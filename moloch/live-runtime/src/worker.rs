@@ -1713,10 +1713,14 @@ pub fn main()->Result<()>{
  impl OrdinaryPreflightReads for Reads{
   fn now_ms(&self)->u64{now()}
   fn guarded(&mut self)->Result<bool>{Ok(true)}
-  fn service_before_read(&mut self,bank:&mut Session,_source:&mut RestSource)->Result<()>{
+  fn service_before_read(&mut self,bank:&mut Session,source:&mut RestSource)->Result<()>{
    self.calls+=1;self.trace.push("service");if self.fail_at==Some(self.calls){return Err("LIVE_PREFLIGHT_QUOTE_INVALIDATED".into())}
-   let change=self.invalidate_at==Some(self.calls);let(ex,market,bid,ask)=if change{("101","201","0.405000","0.415000")}else{("102","202","0.200000","0.220000")};let at=iso(now());
-   accept_source_events(bank,&[json!({"type":"book","receivedAt":at,"book":{"tournamentId":T,"marketId":market,"exchangeId":ex,"sequence":(self.calls+1).to_string(),"sourceAt":at,"requestStartedAt":at,"receivedAt":at,"transport":"official_sig_realtime","bids":[{"price":bid,"quantity":100}],"asks":[{"price":ask,"quantity":100}]}})])
+   let change=self.invalidate_at==Some(self.calls);let(bid,ask)=if change{("0.405000","0.415000")}else{("0.400000","0.410000")};let at=iso(now());
+   // Use the same original broadcast normalizer as drain_stream, keeping its
+   // revision/book state coherent with the real Session. A later REST response
+   // cannot roll native state back to this fixture's older sequence1 book.
+   let payload=json!({"markets":[{"marketId":"201","batch":{"delivery":{"model":"best-effort-authoritative-resync","revision":self.calls,"previousRevision":self.calls-1,"sourceSequenceFrom":self.calls+1,"sourceSequenceThrough":self.calls+1,"correlationId":format!("preflight-{}",self.calls)},"books":[{"exchangeId":"101","asOf":{"sequence":self.calls+1,"at":at},"nextExpiryAt":null,"bids":[{"price":bid,"quantity":10}],"asks":[{"price":ask,"quantity":990}]}],"trades":[],"bookDirty":[],"marketSettled":[]}}]});
+   accept_source_events(bank,&source.broadcast("markets_batch",&payload,&at)?)
   }
   fn read(&mut self,ep:Endpoint)->Result<Receipt>{
    assert_eq!(self.calls,self.endpoints.len()+1,"one service must immediately precede each GET");self.trace.push("get");self.endpoints.push(serde_json::to_value(&ep)?);let at=iso(now());
@@ -1744,7 +1748,7 @@ pub fn main()->Result<()>{
   for at in [1usize,3]{let(_root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);reads.fail_at=Some(at);let error=ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).err().expect("untyped stream/durable error must propagate");assert_eq!(error.to_string(),"LIVE_PREFLIGHT_QUOTE_INVALIDATED");assert!(!error.is::<PreflightQuoteInvalidated>());assert_eq!(reads.endpoints.len(),at-1);assert_eq!(reads.calls,at);assert_eq!(reads.trace.last(),Some(&"service"));assert!(log.intents.is_empty()&&log.attempted.is_empty());}
  }
  #[test]fn changed_quote_is_expected_defer_before_next_get_without_new_intent(){
-  let(_root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);reads.invalidate_at=Some(1);let frozen=q.clone();
+  let(_root,c,mut bank,log,mut source,_q,book)=fixture();let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="101"&&q["retired"]==false).unwrap();assert_eq!(q["side"],"NO");let mut reads=Reads::new(book);reads.invalidate_at=Some(1);let frozen=q.clone();
   assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).unwrap().is_none());assert_eq!(reads.calls,1);assert!(reads.endpoints.is_empty());let current=quote(&bank,q["id"].as_u64().unwrap()).unwrap();assert!(current["cancelEffectiveAt"].is_u64());for key in ["id","price","quantity","createdAt","activationAt","expiresAt"]{assert_eq!(current[key],frozen[key]);}assert!(log.intents.is_empty()&&log.attempted.is_empty());
  }
  #[test]fn unreserved_read_target_still_collects_all_original_facts_after_source_changes_drafts(){
