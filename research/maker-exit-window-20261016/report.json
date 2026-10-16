@@ -1,0 +1,905 @@
+{
+  "accounting": {
+    "cash": "16316.280000",
+    "fees": "0.000000",
+    "feesNotAssignedToAcquisitionCohort": "0.000000",
+    "inheritedRealizedGross": "45.130000",
+    "initialCash": "40000.000000",
+    "newTradingRealized": "-119.535000",
+    "openingInventoryCost": "24729.485000",
+    "ownedCost": "23609.315000",
+    "realized": "-74.405000"
+  },
+  "actualByOriginAndExitReason": [
+    {
+      "grossRealized": "45.130000",
+      "origin": "inherited",
+      "reason": "other",
+      "shares": 3042
+    },
+    {
+      "grossRealized": "-119.535000",
+      "origin": "ordinary",
+      "reason": "maximumAge",
+      "shares": 12628
+    }
+  ],
+  "actualFifoParity": "exact_native_fills_fifo_positions_cash_cost_fees_realized_attribution",
+  "analysis": "actual_maker_exit_window",
+  "analysisSourceSha256": {
+    "analyzer": "72a253f9e6f40b06b83db41ebb08659a75348decd02297ef4dc2d8bf4fca1757",
+    "fifo": "62a55e85774cf273dfc74b0becc4ffba4513f8351bc4909b0fed3ff05989c8d6",
+    "rawSealVerifier": "f1db3b56bf701a0ded0c84486c04f805122deb0342fe196af17113e566e4ba39"
+  },
+  "clockStageDecomposition": {
+    "actualExitExecutionToReceipt": {
+      "count": 101,
+      "maximumMs": "89257",
+      "medianMs": "16797",
+      "minimumMs": "6632",
+      "p90Ms": "30516"
+    },
+    "buyExecutionToFillReceipt": {
+      "count": 41,
+      "maximumMs": "579221",
+      "medianMs": "23004",
+      "minimumMs": "2728",
+      "p90Ms": "261998"
+    },
+    "buyExecutionToFirstNativeFreshBook": {
+      "count": 41,
+      "maximumMs": "1477300",
+      "medianMs": "32183",
+      "minimumMs": "2207",
+      "p90Ms": "637643"
+    },
+    "buyExecutionToOriginalPostAckReceiptSigned": {
+      "count": 41,
+      "maximumMs": "-11367",
+      "medianMs": "-122804",
+      "minimumMs": "-446699",
+      "p90Ms": "-28361"
+    },
+    "exitQuoteCreatedToActualFillExecution": {
+      "count": 101,
+      "maximumMs": "10086",
+      "medianMs": "3459",
+      "minimumMs": "3272",
+      "p90Ms": "8736"
+    },
+    "exitReceiptToNativeIngestion": {
+      "count": 101,
+      "maximumMs": "945",
+      "medianMs": "4",
+      "minimumMs": "2",
+      "p90Ms": "12"
+    },
+    "fillReceiptToNativeIngestion": {
+      "count": 41,
+      "maximumMs": "3771",
+      "medianMs": "71",
+      "minimumMs": "3",
+      "p90Ms": "756"
+    },
+    "missingNativeFreshBookAfterExecutionCohorts": 0,
+    "missingNativeFreshBookAfterFillIngestionCohorts": 0,
+    "nativeFillIngestionToExitQuoteCreated": {
+      "count": 101,
+      "maximumMs": "11555504",
+      "medianMs": "891881",
+      "minimumMs": "43951",
+      "p90Ms": "10535454"
+    },
+    "nativeFillIngestionToFirstNativeFreshBook": {
+      "count": 41,
+      "maximumMs": "1444216",
+      "medianMs": "28626",
+      "minimumMs": "9402",
+      "p90Ms": "332996"
+    },
+    "originalPostAckBeforeBuyExecutionCohorts": 41,
+    "originalPostAckMissingOrRecoveredCohorts": 0,
+    "originalPostAckToNativeFillIngestion": {
+      "count": 41,
+      "maximumMs": "671850",
+      "medianMs": "276514",
+      "minimumMs": "26188",
+      "p90Ms": "380785"
+    },
+    "quotePredatesThisLotObservationFragments": 0,
+    "unit": "Unweighted actual BUY-fill cohorts or FIFO-close fragments; not current-service cycle benchmarks."
+  },
+  "cutoff": "2026-10-16T11:26:17.690Z",
+  "duplicateActualFillEvents": 59,
+  "hypotheticalExitWindows": {
+    "180000": {
+      "cohorts": 41,
+      "depthMissingLabels": 0,
+      "fillNotYetObservedLabels": 0,
+      "freshPostHorizonLabels": 14,
+      "fullDepthLabels": 14,
+      "hypotheticalFullDepthGain": "-72.680000",
+      "hypotheticalPositiveLabels": 0,
+      "interpretation": "Counterfactual displayed liquidation only; overlapping acquisition cohorts, not executable portfolio profit or maker fill.",
+      "missingLabels": 27,
+      "noValidBookInWindowCohorts": 15,
+      "observedOneTickFullDepthOpportunityCohorts": 0,
+      "opportunityAfter60sCohorts": 0,
+      "rightCensoredBySnapshot": 1
+    },
+    "300000": {
+      "cohorts": 41,
+      "depthMissingLabels": 0,
+      "fillNotYetObservedLabels": 0,
+      "freshPostHorizonLabels": 13,
+      "fullDepthLabels": 13,
+      "hypotheticalFullDepthGain": "-65.465000",
+      "hypotheticalPositiveLabels": 0,
+      "interpretation": "Counterfactual displayed liquidation only; overlapping acquisition cohorts, not executable portfolio profit or maker fill.",
+      "missingLabels": 28,
+      "noValidBookInWindowCohorts": 15,
+      "observedOneTickFullDepthOpportunityCohorts": 1,
+      "opportunityAfter60sCohorts": 1,
+      "rightCensoredBySnapshot": 1
+    },
+    "60000": {
+      "cohorts": 41,
+      "depthMissingLabels": 0,
+      "fillNotYetObservedLabels": 0,
+      "freshPostHorizonLabels": 17,
+      "fullDepthLabels": 17,
+      "hypotheticalFullDepthGain": "-40.145000",
+      "hypotheticalPositiveLabels": 0,
+      "interpretation": "Counterfactual displayed liquidation only; overlapping acquisition cohorts, not executable portfolio profit or maker fill.",
+      "missingLabels": 24,
+      "noValidBookInWindowCohorts": 18,
+      "observedOneTickFullDepthOpportunityCohorts": 0,
+      "opportunityAfter60sCohorts": 0,
+      "rightCensoredBySnapshot": 0
+    },
+    "600000": {
+      "cohorts": 41,
+      "depthMissingLabels": 0,
+      "fillNotYetObservedLabels": 0,
+      "freshPostHorizonLabels": 21,
+      "fullDepthLabels": 21,
+      "hypotheticalFullDepthGain": "-119.125000",
+      "hypotheticalPositiveLabels": 0,
+      "interpretation": "Counterfactual displayed liquidation only; overlapping acquisition cohorts, not executable portfolio profit or maker fill.",
+      "missingLabels": 20,
+      "noValidBookInWindowCohorts": 5,
+      "observedOneTickFullDepthOpportunityCohorts": 1,
+      "opportunityAfter60sCohorts": 1,
+      "rightCensoredBySnapshot": 2
+    }
+  },
+  "inventoryAgeThresholdMs": 60000,
+  "labelWindowMs": 30000,
+  "limitations": [
+    "No maker fill is inferred from quote touch, public print or displayed depth. Hypothetical exits do not change actual FIFO/PnL.",
+    "Public trades have no verified aggressor/own-queue identity; no public print is classified as an own fill.",
+    "Labels require original source and receipt clocks, valid depth and source >= horizon; missing/censored labels are not zero gains.",
+    "Overlapping fill cohorts and shared depth cannot be summed into feasible portfolio profit.",
+    "Selected native books are sparse; only explicitly named frozen breadth files supplement them. The09:20 capture gap and restart gaps prevent continuous opportunity/no-opportunity claims.",
+    "Fixed-horizon gains are hypothetical taker liquidation at displayed full depth, not guaranteed submission/ACK/fill outcomes.",
+    "Actual gross inherited attribution remains distinct from new trading and from whole-account/dashboard PnL.",
+    "All-history timing statistics include earlier service stops/restarts and are not current-worker latency benchmarks. ACK minus fill execution is signed because passive ACKs normally precede later fills."
+  ],
+  "nativeEventTypes": {
+    "actual_fill": 203,
+    "actual_order_ack": 4629,
+    "actual_order_terminal": 940,
+    "actual_position_adoption": 1,
+    "book": 166633,
+    "coverage": 2793,
+    "gap": 42667,
+    "live_entry_window": 1,
+    "live_market_capacity_v1": 1,
+    "ordinary_entry_exclusions_v1": 1,
+    "reviewed_fundamental_entry_reserved_v1": 2,
+    "tick": 228,
+    "trade": 14216,
+    "unsubmitted_intent_retired": 5067
+  },
+  "nativeRelevantBookStatuses": {
+    "invalid": 206,
+    "stale_rest_request": 2,
+    "stale_source_or_observer": 8631,
+    "valid": 9830
+  },
+  "oneTickOpportunityEvidence": [
+    {
+      "acquisitionShares": 966,
+      "actualProfitClaimed": false,
+      "exchangeId": "934",
+      "firstOpportunityAfterExecutionMs": "213077",
+      "firstOpportunityAfterNativeFillObservedMs": "191483",
+      "hypotheticalGrossGain": "4.830000",
+      "lane": "public",
+      "marginalBid": "0.650000",
+      "receivedAtUnixNs": "1792149865270000000",
+      "side": "NO",
+      "sourceAtUnixNs": "1792149864038848300",
+      "sourceRowSha256": "ea09ebbcd83d394b469184be1e3c83013a9f85dc32a8552dbfe101a03da89aff"
+    }
+  ],
+  "ordinaryTimings": {
+    "buyExecutionToActualExit": {
+      "count": 101,
+      "maximumMs": "11591930",
+      "medianMs": "916668",
+      "minimumMs": "78061",
+      "p90Ms": "10678416"
+    },
+    "buyExecutionToExitQuoteCreated": {
+      "count": 101,
+      "maximumMs": "11588588",
+      "medianMs": "909609",
+      "minimumMs": "74755",
+      "p90Ms": "10675085"
+    },
+    "buyExecutionToFirstFreshBook": {
+      "count": 41,
+      "maximumMs": "1477300",
+      "medianMs": "32183",
+      "minimumMs": "1806",
+      "p90Ms": "637643"
+    },
+    "buyExecutionToFirstFreshBookAfterFillObserved": {
+      "count": 41,
+      "maximumMs": "1477300",
+      "medianMs": "49442",
+      "minimumMs": "3378",
+      "p90Ms": "637643"
+    },
+    "buyExecutionToObserved": {
+      "count": 41,
+      "maximumMs": "579292",
+      "medianMs": "23016",
+      "minimumMs": "2733",
+      "p90Ms": "262474"
+    },
+    "exitExecutionToObserved": {
+      "count": 101,
+      "maximumMs": "89260",
+      "medianMs": "16801",
+      "minimumMs": "6638",
+      "p90Ms": "30998"
+    }
+  },
+  "origins": {
+    "forecast": {
+      "closed": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 0,
+        "grossRealized": "0.000000",
+        "maximumHoldingMs": null,
+        "minimumHoldingMs": null,
+        "quantityWeightedHoldingMs": null,
+        "shares": 0
+      },
+      "feesExpensed": "0.000000",
+      "fullyClosedAcquisitionPrincipal": "0.000000",
+      "fullyClosedCohorts": 0,
+      "fullyClosedExitTurnover": "0.000000",
+      "fullyClosedNetFlat": 0,
+      "fullyClosedNetLosses": 0,
+      "fullyClosedNetWins": 0,
+      "grossRealized": "0.000000",
+      "lotCohorts": 1,
+      "maximumAgeExits": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 0,
+        "grossRealized": "0.000000",
+        "maximumHoldingMs": null,
+        "minimumHoldingMs": null,
+        "quantityWeightedHoldingMs": null,
+        "shares": 0
+      },
+      "maximumAgeGrossLoss": "0.000000",
+      "netRealizedAttribution": "0.000000",
+      "remainingUnmarkedCost": "395.600000"
+    },
+    "inherited": {
+      "closed": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 26,
+        "grossRealized": "45.130000",
+        "maximumHoldingMs": "1120504210.724700",
+        "minimumHoldingMs": "542194520.809200",
+        "quantityWeightedHoldingMs": "966125680.7876392833662064431",
+        "shares": 3042
+      },
+      "feesExpensed": "0.000000",
+      "fullyClosedAcquisitionPrincipal": "611.625000",
+      "fullyClosedCohorts": 16,
+      "fullyClosedExitTurnover": "637.145000",
+      "fullyClosedNetFlat": 0,
+      "fullyClosedNetLosses": 0,
+      "fullyClosedNetWins": 16,
+      "grossRealized": "45.130000",
+      "lotCohorts": 43,
+      "maximumAgeExits": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 0,
+        "grossRealized": "0.000000",
+        "maximumHoldingMs": null,
+        "minimumHoldingMs": null,
+        "quantityWeightedHoldingMs": null,
+        "shares": 0
+      },
+      "maximumAgeGrossLoss": "0.000000",
+      "netRealizedAttribution": "45.130000",
+      "remainingUnmarkedCost": "22335.915000"
+    },
+    "new": {
+      "closed": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 101,
+        "grossRealized": "-119.535000",
+        "maximumHoldingMs": "11591930.000000",
+        "minimumHoldingMs": "78061.000000",
+        "quantityWeightedHoldingMs": "1595895.943775736458663287932",
+        "shares": 12628
+      },
+      "feesExpensed": "0.000000",
+      "fullyClosedAcquisitionPrincipal": "8038.205000",
+      "fullyClosedCohorts": 40,
+      "fullyClosedExitTurnover": "7918.670000",
+      "fullyClosedNetFlat": 9,
+      "fullyClosedNetLosses": 28,
+      "fullyClosedNetWins": 3,
+      "grossRealized": "-119.535000",
+      "lotCohorts": 41,
+      "maximumAgeExits": {
+        "belowExplicitAgeThresholdShares": 0,
+        "fragments": 101,
+        "grossRealized": "-119.535000",
+        "maximumHoldingMs": "11591930.000000",
+        "minimumHoldingMs": "78061.000000",
+        "quantityWeightedHoldingMs": "1595895.943775736458663287932",
+        "shares": 12628
+      },
+      "maximumAgeGrossLoss": "-119.835000",
+      "netRealizedAttribution": "-119.535000",
+      "remainingUnmarkedCost": "877.800000"
+    }
+  },
+  "perExchangeSide": [
+    {
+      "acquiredShares": 133,
+      "actualClosedShares": 133,
+      "actualGrossRealized": "0.000000",
+      "actualHolding": {
+        "count": 2,
+        "maximumMs": "155407",
+        "medianMs": "155407",
+        "minimumMs": "155407",
+        "p90Ms": "155407"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "8662",
+        "medianMs": "8662",
+        "minimumMs": "8662",
+        "p90Ms": "8662"
+      },
+      "exchangeId": "1003",
+      "flatClosedShares": 133,
+      "maximumAgeClosedShares": 133,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    },
+    {
+      "acquiredShares": 123,
+      "actualClosedShares": 123,
+      "actualGrossRealized": "-0.615000",
+      "actualHolding": {
+        "count": 3,
+        "maximumMs": "358995",
+        "medianMs": "294618",
+        "minimumMs": "294618",
+        "p90Ms": "294618"
+      },
+      "buyFillCohorts": 2,
+      "buyObservationLag": {
+        "count": 2,
+        "maximumMs": "29866",
+        "medianMs": "20816",
+        "minimumMs": "20816",
+        "p90Ms": "20816"
+      },
+      "exchangeId": "1011",
+      "flatClosedShares": 0,
+      "maximumAgeClosedShares": 123,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 229,
+      "actualClosedShares": 229,
+      "actualGrossRealized": "0.000000",
+      "actualHolding": {
+        "count": 1,
+        "maximumMs": "121906",
+        "medianMs": "121906",
+        "minimumMs": "121906",
+        "p90Ms": "121906"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "7012",
+        "medianMs": "7012",
+        "minimumMs": "7012",
+        "p90Ms": "7012"
+      },
+      "exchangeId": "1011",
+      "flatClosedShares": 229,
+      "maximumAgeClosedShares": 229,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    },
+    {
+      "acquiredShares": 525,
+      "actualClosedShares": 525,
+      "actualGrossRealized": "0.000000",
+      "actualHolding": {
+        "count": 3,
+        "maximumMs": "2744534",
+        "medianMs": "670446",
+        "minimumMs": "670446",
+        "p90Ms": "670446"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "21952",
+        "medianMs": "21952",
+        "minimumMs": "21952",
+        "p90Ms": "21952"
+      },
+      "exchangeId": "1012",
+      "flatClosedShares": 525,
+      "maximumAgeClosedShares": 525,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 67,
+      "actualClosedShares": 67,
+      "actualGrossRealized": "-0.335000",
+      "actualHolding": {
+        "count": 6,
+        "maximumMs": "1180625",
+        "medianMs": "1163631",
+        "minimumMs": "1155516",
+        "p90Ms": "1174542"
+      },
+      "buyFillCohorts": 6,
+      "buyObservationLag": {
+        "count": 6,
+        "maximumMs": "20314",
+        "medianMs": "13700",
+        "minimumMs": "4995",
+        "p90Ms": "16802"
+      },
+      "exchangeId": "1019",
+      "flatClosedShares": 0,
+      "maximumAgeClosedShares": 67,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    },
+    {
+      "acquiredShares": 173,
+      "actualClosedShares": 173,
+      "actualGrossRealized": "-0.100000",
+      "actualHolding": {
+        "count": 4,
+        "maximumMs": "608391",
+        "medianMs": "377334",
+        "minimumMs": "238364",
+        "p90Ms": "536499"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "23016",
+        "medianMs": "23016",
+        "minimumMs": "23016",
+        "p90Ms": "23016"
+      },
+      "exchangeId": "1033",
+      "flatClosedShares": 153,
+      "maximumAgeClosedShares": 173,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 588,
+      "actualClosedShares": 588,
+      "actualGrossRealized": "-3.080000",
+      "actualHolding": {
+        "count": 18,
+        "maximumMs": "3782843",
+        "medianMs": "891776",
+        "minimumMs": "252551",
+        "p90Ms": "1319079"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "7112",
+        "medianMs": "7112",
+        "minimumMs": "7112",
+        "p90Ms": "7112"
+      },
+      "exchangeId": "1034",
+      "flatClosedShares": 280,
+      "maximumAgeClosedShares": 588,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    },
+    {
+      "acquiredShares": 607,
+      "actualClosedShares": 607,
+      "actualGrossRealized": "0.000000",
+      "actualHolding": {
+        "count": 3,
+        "maximumMs": "140345",
+        "medianMs": "81851",
+        "minimumMs": "78061",
+        "p90Ms": "81851"
+      },
+      "buyFillCohorts": 3,
+      "buyObservationLag": {
+        "count": 3,
+        "maximumMs": "33361",
+        "medianMs": "30804",
+        "minimumMs": "6107",
+        "p90Ms": "30804"
+      },
+      "exchangeId": "1045",
+      "flatClosedShares": 607,
+      "maximumAgeClosedShares": 607,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 2030,
+      "actualClosedShares": 490,
+      "actualGrossRealized": "0.000000",
+      "actualHolding": {
+        "count": 1,
+        "maximumMs": "167995",
+        "medianMs": "167995",
+        "minimumMs": "167995",
+        "p90Ms": "167995"
+      },
+      "buyFillCohorts": 2,
+      "buyObservationLag": {
+        "count": 2,
+        "maximumMs": "33625",
+        "medianMs": "11250",
+        "minimumMs": "11250",
+        "p90Ms": "11250"
+      },
+      "exchangeId": "843",
+      "flatClosedShares": 490,
+      "maximumAgeClosedShares": 490,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 1540,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 431,
+      "actualClosedShares": 431,
+      "actualGrossRealized": "0.000000",
+      "actualHolding": {
+        "count": 1,
+        "maximumMs": "143093",
+        "medianMs": "143093",
+        "minimumMs": "143093",
+        "p90Ms": "143093"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "2733",
+        "medianMs": "2733",
+        "minimumMs": "2733",
+        "p90Ms": "2733"
+      },
+      "exchangeId": "843",
+      "flatClosedShares": 431,
+      "maximumAgeClosedShares": 431,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    },
+    {
+      "acquiredShares": 22,
+      "actualClosedShares": 22,
+      "actualGrossRealized": "-0.110000",
+      "actualHolding": {
+        "count": 1,
+        "maximumMs": "282479",
+        "medianMs": "282479",
+        "minimumMs": "282479",
+        "p90Ms": "282479"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "11429",
+        "medianMs": "11429",
+        "minimumMs": "11429",
+        "p90Ms": "11429"
+      },
+      "exchangeId": "863",
+      "flatClosedShares": 0,
+      "maximumAgeClosedShares": 22,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    },
+    {
+      "acquiredShares": 3522,
+      "actualClosedShares": 3522,
+      "actualGrossRealized": "-41.805000",
+      "actualHolding": {
+        "count": 24,
+        "maximumMs": "5500974",
+        "medianMs": "2773835",
+        "minimumMs": "175726",
+        "p90Ms": "3292091"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "41338",
+        "medianMs": "41338",
+        "minimumMs": "41338",
+        "p90Ms": "41338"
+      },
+      "exchangeId": "885",
+      "flatClosedShares": 0,
+      "maximumAgeClosedShares": 3522,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 966,
+      "actualClosedShares": 966,
+      "actualGrossRealized": "0.000000",
+      "actualHolding": {
+        "count": 1,
+        "maximumMs": "111062",
+        "medianMs": "111062",
+        "minimumMs": "111062",
+        "p90Ms": "111062"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "21594",
+        "medianMs": "21594",
+        "minimumMs": "21594",
+        "p90Ms": "21594"
+      },
+      "exchangeId": "934",
+      "flatClosedShares": 966,
+      "maximumAgeClosedShares": 966,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 1,
+        "60000": 0,
+        "600000": 1
+      },
+      "remainingShares": 0,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 351,
+      "actualClosedShares": 351,
+      "actualGrossRealized": "-3.510000",
+      "actualHolding": {
+        "count": 12,
+        "maximumMs": "10856783",
+        "medianMs": "10722499",
+        "minimumMs": "10599069",
+        "p90Ms": "10801169"
+      },
+      "buyFillCohorts": 12,
+      "buyObservationLag": {
+        "count": 12,
+        "maximumMs": "318178",
+        "medianMs": "183619",
+        "minimumMs": "59905",
+        "p90Ms": "262474"
+      },
+      "exchangeId": "942",
+      "flatClosedShares": 0,
+      "maximumAgeClosedShares": 351,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    },
+    {
+      "acquiredShares": 716,
+      "actualClosedShares": 716,
+      "actualGrossRealized": "-2.425000",
+      "actualHolding": {
+        "count": 3,
+        "maximumMs": "301042",
+        "medianMs": "235944",
+        "minimumMs": "142109",
+        "p90Ms": "235944"
+      },
+      "buyFillCohorts": 1,
+      "buyObservationLag": {
+        "count": 1,
+        "maximumMs": "10784",
+        "medianMs": "10784",
+        "minimumMs": "10784",
+        "p90Ms": "10784"
+      },
+      "exchangeId": "949",
+      "flatClosedShares": 231,
+      "maximumAgeClosedShares": 716,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "NO"
+    },
+    {
+      "acquiredShares": 3685,
+      "actualClosedShares": 3685,
+      "actualGrossRealized": "-67.555000",
+      "actualHolding": {
+        "count": 18,
+        "maximumMs": "11591930",
+        "medianMs": "840496",
+        "minimumMs": "140659",
+        "p90Ms": "11556853"
+      },
+      "buyFillCohorts": 6,
+      "buyObservationLag": {
+        "count": 6,
+        "maximumMs": "579292",
+        "medianMs": "17728",
+        "minimumMs": "6981",
+        "p90Ms": "578723"
+      },
+      "exchangeId": "953",
+      "flatClosedShares": 0,
+      "maximumAgeClosedShares": 3685,
+      "oneTickOpportunityCohortsByHorizon": {
+        "180000": 0,
+        "300000": 0,
+        "60000": 0,
+        "600000": 0
+      },
+      "remainingShares": 0,
+      "side": "YES"
+    }
+  ],
+  "policyChanged": false,
+  "profitabilityEstablished": false,
+  "schemaVersion": 1,
+  "source": {
+    "allOriginalBankRowSealsAndChainVerified": true,
+    "bankPrefixBytes": 729558692,
+    "bankPrefixSha256": "4f21f50a329450aec5245acbbb4f35d3a010db797d9ef935c97489d6db2e44c3",
+    "bankPrevious": "36d575c2ce75b110eb76b400c884b4cc283b94a72b80fc752c37467c1dab8d1b",
+    "bankSequence": 237382,
+    "boundaryFileSha256": "7619e8a4ba7f78dcd49012a2b97bd3a20e774d47c51d614c3111e8926eaa1529",
+    "breadth": [
+      {
+        "acceptedBooks": 2856,
+        "bookStatuses": {
+          "valid": 2856
+        },
+        "bytes": 134022095,
+        "fileName": "breadth-441490-1792141363313.jsonl",
+        "rows": 1028,
+        "sha256": "f34a02154ba3b361e143dbe4f6f53dea78f044cfa7303fbcbdcf96fff0fa1ba0"
+      },
+      {
+        "acceptedBooks": 1188,
+        "bookStatuses": {
+          "valid": 1188
+        },
+        "bytes": 60959462,
+        "fileName": "breadth-488093-1792149535356.jsonl",
+        "rows": 435,
+        "sha256": "7c5dcbcf10a7fdae86705fb30573ae5e691f415fd731cf08e9eb87edb153e796"
+      }
+    ],
+    "dispatchHead": "18cda781795118116c7b87090117d2c814cacb3cb3a38f6276f14c857eee7d5b",
+    "dispatchPrefixSha256": "b4271d12578c46381d08dfa06d3cc91d01225a8737fa869ffaf10bcbd5375e1a",
+    "dispatchRows": 9821,
+    "reportEnvelopeHash": "cb60756e4ef69512cffe155eecf6b56b0445fed28922a0814500164da6c909a4",
+    "reportFileSha256": "79f03bf77de3db808e6656bd748cebf0f5d8b5a4b1015be2e85e9b70e82de8e9"
+  },
+  "uniqueActualFills": 144
+}
