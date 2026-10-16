@@ -1,0 +1,377 @@
+{
+  "analysis": "fixed_existing_microprice_guard_retrospective_falsification",
+  "contexts": {
+    "prefill": {
+      "contextAvailableFills": 9,
+      "contextMissingFills": 41,
+      "horizonsMs": {
+        "1000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-21.075000",
+            "fills": 8,
+            "intentCohorts": 4,
+            "marketScopes": 4,
+            "nativeEdgeUnitsRange": [
+              1124,
+              4939
+            ],
+            "negative": 3,
+            "positive": 0,
+            "shares": 4983,
+            "zero": 5
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-7.165000",
+            "fills": 1,
+            "intentCohorts": 1,
+            "marketScopes": 1,
+            "nativeEdgeUnitsRange": [
+              704,
+              704
+            ],
+            "negative": 1,
+            "positive": 0,
+            "shares": 1433,
+            "zero": 0
+          }
+        },
+        "120000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-23.885000",
+            "fills": 7,
+            "intentCohorts": 3,
+            "marketScopes": 3,
+            "nativeEdgeUnitsRange": [
+              1124,
+              4939
+            ],
+            "negative": 6,
+            "positive": 0,
+            "shares": 4827,
+            "zero": 1
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-7.165000",
+            "fills": 1,
+            "intentCohorts": 1,
+            "marketScopes": 1,
+            "nativeEdgeUnitsRange": [
+              704,
+              704
+            ],
+            "negative": 1,
+            "positive": 0,
+            "shares": 1433,
+            "zero": 0
+          }
+        },
+        "30000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-22.525000",
+            "fills": 7,
+            "intentCohorts": 3,
+            "marketScopes": 3,
+            "nativeEdgeUnitsRange": [
+              1124,
+              4939
+            ],
+            "negative": 3,
+            "positive": 0,
+            "shares": 4827,
+            "zero": 4
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-7.165000",
+            "fills": 1,
+            "intentCohorts": 1,
+            "marketScopes": 1,
+            "nativeEdgeUnitsRange": [
+              704,
+              704
+            ],
+            "negative": 1,
+            "positive": 0,
+            "shares": 1433,
+            "zero": 0
+          }
+        },
+        "5000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-21.025000",
+            "fills": 7,
+            "intentCohorts": 4,
+            "marketScopes": 4,
+            "nativeEdgeUnitsRange": [
+              1124,
+              4939
+            ],
+            "negative": 3,
+            "positive": 0,
+            "shares": 4883,
+            "zero": 4
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-7.165000",
+            "fills": 1,
+            "intentCohorts": 1,
+            "marketScopes": 1,
+            "nativeEdgeUnitsRange": [
+              704,
+              704
+            ],
+            "negative": 1,
+            "positive": 0,
+            "shares": 1433,
+            "zero": 0
+          }
+        }
+      }
+    },
+    "submission": {
+      "contextAvailableFills": 9,
+      "contextMissingFills": 41,
+      "horizonsMs": {
+        "1000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-3.900000",
+            "fills": 7,
+            "intentCohorts": 3,
+            "marketScopes": 3,
+            "nativeEdgeUnitsRange": [
+              2749,
+              3507
+            ],
+            "negative": 2,
+            "positive": 0,
+            "shares": 1548,
+            "zero": 5
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-24.340000",
+            "fills": 2,
+            "intentCohorts": 2,
+            "marketScopes": 2,
+            "nativeEdgeUnitsRange": [
+              456,
+              571
+            ],
+            "negative": 2,
+            "positive": 0,
+            "shares": 4868,
+            "zero": 0
+          }
+        },
+        "120000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-6.710000",
+            "fills": 6,
+            "intentCohorts": 2,
+            "marketScopes": 2,
+            "nativeEdgeUnitsRange": [
+              2749,
+              3507
+            ],
+            "negative": 5,
+            "positive": 0,
+            "shares": 1392,
+            "zero": 1
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-24.340000",
+            "fills": 2,
+            "intentCohorts": 2,
+            "marketScopes": 2,
+            "nativeEdgeUnitsRange": [
+              456,
+              571
+            ],
+            "negative": 2,
+            "positive": 0,
+            "shares": 4868,
+            "zero": 0
+          }
+        },
+        "30000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-5.350000",
+            "fills": 6,
+            "intentCohorts": 2,
+            "marketScopes": 2,
+            "nativeEdgeUnitsRange": [
+              2749,
+              3507
+            ],
+            "negative": 2,
+            "positive": 0,
+            "shares": 1392,
+            "zero": 4
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-24.340000",
+            "fills": 2,
+            "intentCohorts": 2,
+            "marketScopes": 2,
+            "nativeEdgeUnitsRange": [
+              456,
+              571
+            ],
+            "negative": 2,
+            "positive": 0,
+            "shares": 4868,
+            "zero": 0
+          }
+        },
+        "5000": {
+          "pass": {
+            "displayedMarkMinusEntryAndEntryFees": "-3.850000",
+            "fills": 6,
+            "intentCohorts": 3,
+            "marketScopes": 3,
+            "nativeEdgeUnitsRange": [
+              2749,
+              3507
+            ],
+            "negative": 2,
+            "positive": 0,
+            "shares": 1448,
+            "zero": 4
+          },
+          "unavailable": {
+            "displayedMarkMinusEntryAndEntryFees": null,
+            "fills": 0,
+            "intentCohorts": 0,
+            "marketScopes": 0,
+            "nativeEdgeUnitsRange": null,
+            "negative": 0,
+            "positive": 0,
+            "shares": 0,
+            "zero": 0
+          },
+          "veto": {
+            "displayedMarkMinusEntryAndEntryFees": "-24.340000",
+            "fills": 2,
+            "intentCohorts": 2,
+            "marketScopes": 2,
+            "nativeEdgeUnitsRange": [
+              456,
+              571
+            ],
+            "negative": 2,
+            "positive": 0,
+            "shares": 4868,
+            "zero": 0
+          }
+        }
+      }
+    }
+  },
+  "diagnostics": {
+    "resets": 2
+  },
+  "feesPerShare": "0.000000",
+  "inputCaptureManifestSha256": "dff429da9ae6154679842e1c0458fa30ff053162c35ffb7687a805049322a97a",
+  "limitations": [
+    "Retrospective same finite fill-conditioned cohort; no threshold or feature fitting, no prospective qualification.",
+    "Submission context uses original breadth received before POST requestStartedAt, not proof that runtime consumed it.",
+    "Prefill context may change long after order submission; a submission-only veto cannot prevent later adverse resting fills.",
+    "No alternative order, cancellation, replacement fill or avoided PnL is credited.",
+    "Own resting liquidity and STP can distort microprice/depth; markouts remain optimistic displayed-depth diagnostics.",
+    "Missing contexts/outcomes remain missing; partial fills share intent and market risk."
+  ],
+  "nativeIntegerMicroprice": "floor((YESask*bidQty+YESbid*askQty)/(bidQty+askQty)); NO=1-YESmicro",
+  "ordinaryActualBuyFillObservations": 50,
+  "originalAnalyzerSha256": "c8d693b45c24543122500d0ca4cedf699d9ac3efaafec5b37d02b6dd9ec30cb2",
+  "originalQuotedLimitUsed": true,
+  "originalReportSha256": "93ec8735e455e26bc2d6144eae67cc805d84ac40ebd9820c70605f53adda0f5f",
+  "originalStudySha256": "d576eafdbc67b215c0160a590c3a70c3ef694ab94a0ab9b188ea71dee13f8e38",
+  "policyExtractSha256": "a2664a76823975c43575b5e88c8ba07fce7241e28c1d68d6f88de26c09182597",
+  "policyProvenance": {
+    "controlRawSha256": "7e7cb15ab9dc853887edec5768690fc682f01753d59c9109f102dd6f20641fa2",
+    "originalBankManifestEnvelopeHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "originalBankManifestRawSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+  },
+  "profitabilityEstablished": false,
+  "reportCutoff": "2026-10-16T13:35:02.604Z",
+  "runtimeGuardImplemented": false,
+  "schemaVersion": 1,
+  "sourceCodeSha256": "bde5cb0a29fceaf36790219a24d2913076daa1203cc149db42e812e7aead3033",
+  "threshold": "0.001000",
+  "thresholdTuned": false
+}
