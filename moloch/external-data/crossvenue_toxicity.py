@@ -12,6 +12,7 @@ POLICY = {
     'version': 1, 'innovationThresholds': {'1000': '0.002', '5000': '0.005', '30000': '0.010'},
     'maximumSigSourceAgeMs': 10000, 'maximumExternalAvailabilityAgeMs': 30000,
     'maximumExternalOriginalAgeMs': 20000,
+    'maximumExternalSourceAheadAtReceiptMs': 1000,
     'maximumSpread': '0.050000', 'minimumClusters': 100,
     'rule': 'all three signed innovations meet thresholds: favorable; opposite: toxic; otherwise quiet',
     'quote': 'YES BUY at original bid; NO BUY at one minus original ask',
@@ -27,11 +28,15 @@ def feature_state(row, sample_id_format):
     require(source <= received <= at, 'FEATURE_LOOKAHEAD')
     require(type(ext.get('receivedMs')) is int and type(ext.get('availableMs')) is int and
             0 <= ext['receivedMs'] <= ext['availableMs'] <= at, 'FEATURE_LOOKAHEAD')
-    # Existing producer emits receipt/availability only. If a later original
-    # producer retains sourceTs, it must also remain causal and independently old.
-    source_ts = ext.get('sourceTs')
+    # Original WS clocks may lead local receipt by <=1s, but must already be
+    # causal at ORIGINAL first availability. Preserve clocks; never clamp them.
+    # Retain legacy sourceTs compatibility without ignoring conflicting fields.
+    if ext.get('sourceTsMs') is not None and ext.get('sourceTs') is not None:
+        require(ext['sourceTsMs'] == ext['sourceTs'], 'SOURCE_CLOCK_CONFLICT')
+    source_ts = ext.get('sourceTsMs') if ext.get('sourceTsMs') is not None else ext.get('sourceTs')
     if source_ts is not None:
-        require(type(source_ts) is int and 0 <= source_ts <= ext['receivedMs'], 'FEATURE_LOOKAHEAD')
+        require(type(source_ts) is int and 0 <= source_ts <= ext['availableMs'] and
+                source_ts-ext['receivedMs'] <= POLICY['maximumExternalSourceAheadAtReceiptMs'], 'FEATURE_LOOKAHEAD')
     require(all(isinstance(h, str) and HEX.fullmatch(h) for h in (sig['journalHash'], ext['bodySha256'])), 'FEATURE_SOURCE_HASH')
     prefix = f"{row['marketId']}:{row['exchangeId']}:" if sample_id_format == 'scoped_v2' else ''
     require(row['sampleId'] == hashlib.sha256(f"{prefix}{sig['journalHash']}:{ext['bodySha256']}:{at}".encode()).hexdigest(), 'SAMPLE_BINDING')
