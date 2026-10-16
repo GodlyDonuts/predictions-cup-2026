@@ -5,7 +5,7 @@ This is a standard-library-only offline reporting pipeline for original `crossve
 ## Run on sealed inputs
 
 ```powershell
-python moloch/external-data/crossvenue_economics.py --input sealed-a.jsonl.gz sealed-b.jsonl.gz --as-of 2026-10-16T10:00:00Z --output new-report.json --fee-per-share 0 --buffer-per-share 0.005
+python moloch/external-data/crossvenue_economics.py --input sealed-a.jsonl.gz sealed-b.jsonl.gz --as-of 2026-10-16T10:00:00Z --output new-report.json --producer-source retained-observer.py --producer-sha256 ACTUAL_SHA256 --sample-id-format scoped_v2 --fee-per-share 0 --buffer-per-share 0.005
 ```
 
 The output file must be new. Inputs may be gzip or plain newline-delimited JSON, must be regular nonsymlink files, and must remain unchanged during parsing. Limits are 128 files, 500,000 records, 1 MiB per line, and 512 MiB total compressed/uncompressed input. Truncated gzip, conflicting duplicates, duplicate JSON keys, nonfinite numbers, invalid timestamps and inconsistent source/sample hashes stop the report. These bounds are safeguards, not a memory estimate; use smaller sealed batches on constrained hosts.
@@ -14,7 +14,7 @@ Each original compressed file's SHA256, source-bundle SHA256, source-code SHA256
 
 ## Frozen data and fixed model
 
-Exact `sampleId` joins original `decision_features` and `horizon_label` records. The ID is independently recomputed from market/exchange, original SIG hash, external hash and decision clock. Both source receipt time and first observer availability must precede the decision. Future labels must use original source and receipt clocks within the requested horizon plus 3-second slack, and actually have become available by the cutoff. Later observations never replace missing labels with zero.
+Exact `sampleId` joins original `decision_features` and `horizon_label` records. The explicitly selected `scoped_v2` ID is independently recomputed from market/exchange, original SIG hash, external hash and decision clock. Retained observer v2 used the older `legacy_unscoped_v1` format (SIG hash, external hash and decision clock only); that fixed format must be explicitly selected, never guessed or rewritten. CLI requires the retained producer source file and its expected SHA256, validates the original bytes, and records both format and producer hash in the cutoff/policy digest. This verifies declared producer provenance, not an independent proof that the process ran those bytes. Conflicting old-ID scope collisions fail closed. Both source receipt time and first observer availability must precede the decision. Future labels must use original source and receipt clocks within the requested horizon plus 3-second slack, and actually have become available by the cutoff. Later observations never replace missing labels with zero.
 
 The fixed seven features are external log-odds changes at 1/5/30 seconds, external imbalance, SIG imbalance, SIG spread and external/SIG log-odds gap. A null feature drops the row and is counted; there is no imputation, interpolation or synthetic history. The default mapping cohort is `direct_party_reference`; analog mappings are counted and excluded. Even direct mappings remain conditional observations, not certified settlement equivalence.
 
@@ -34,4 +34,4 @@ Each horizon reports held-out/selected cluster counts, selected net crossing ret
 
 ## Checks
 
-`python -m unittest discover -s moloch/external-data -p test_crossvenue_economics.py -v`: **14/14 pass**. Tests include actual observer-schema output, unchanged-midpoint crossing loss, positive synthetic held-out signal versus intercept, insufficient clusters, nonoverlap windows, missing history, feature lookahead, source/sample binding, exact cutoff/hash changes, duplicate conflicts, delayed/early/tampered labels, missing liquidation capacity, full purge/availability fences, truncated/bounded input and training-only standardization. Synthetic tests establish implementation behavior only.
+`python -m unittest discover -s moloch/external-data -p test_crossvenue_economics.py -v`: **15/15 pass**. Tests include explicit retained legacy-producer hash/ID validation, actual observer-schema output, unchanged-midpoint crossing loss, positive synthetic held-out signal versus intercept, insufficient clusters, nonoverlap windows, missing history, feature lookahead, source/sample binding, exact cutoff/hash changes, duplicate conflicts, delayed/early/tampered labels, missing liquidation capacity, full purge/availability fences, truncated/bounded input and training-only standardization. Synthetic tests establish implementation behavior only.

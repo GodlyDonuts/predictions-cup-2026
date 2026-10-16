@@ -41,6 +41,18 @@ class EconomicsTests(unittest.TestCase):
         r=report([self.write(out)],BASE+1000)
         self.assertGreater(r['horizons']['1000']['data']['missingFeature'],0)
         self.assertTrue(r['horizons']['1000']['abstain'])
+    def test_explicit_legacy_producer_format_preserves_original_ids_and_requires_exact_source_hash(self):
+        rows=records(2)
+        for i in (0,6):
+            r=rows[i];old=r['sampleId'];r['sampleId']=hashlib.sha256(f"{r['sig']['journalHash']}:{r['external']['bodySha256']}:{r['decisionMs']}".encode()).hexdigest()
+            for l in rows[i+1:i+6]:l['sampleId']=r['sampleId']
+        p=self.write(rows);producer=self.root/'actual-producer.py';producer.write_text('original retained producer source')
+        h=hashlib.sha256(producer.read_bytes()).hexdigest()
+        with self.assertRaisesRegex(ValueError,'SAMPLE_BINDING'):report([p],BASE+500000)
+        result=report([p],BASE+500000,sample_id_format='legacy_unscoped_v1',producer_source=producer,producer_sha256=h)
+        self.assertTrue(result['producerSourceVerified']);self.assertEqual(result['producerSource']['sha256'],h)
+        self.assertEqual(result['policy']['sampleIdFormat'],'legacy_unscoped_v1')
+        with self.assertRaisesRegex(ValueError,'PRODUCER_SOURCE_HASH'):report([p],BASE+500000,sample_id_format='legacy_unscoped_v1',producer_source=producer,producer_sha256='0'*64)
     def test_actual_exact_ask_to_future_bid_can_be_negative_even_midpoint_unchanged(self):
         rows=records(1)
         for l in rows[1:]:l['features']=copy.deepcopy(rows[0]['sig']['features']);l['yesOneShareTakerRoundTrip']='-0.020000';l['noOneShareTakerRoundTrip']='-0.020000'

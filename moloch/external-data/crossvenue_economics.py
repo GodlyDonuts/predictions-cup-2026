@@ -113,12 +113,14 @@ def load(paths, as_of, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
     counts['unmatchedLabels'] = sum(sid not in decisions for sid, _ in labels)
     return decisions, labels, files, counts
 
-def feature_vector(row):
+def feature_vector(row, sample_id_format="scoped_v2"):
     d, sig, ext = row['decisionMs'], row['sig'], row['external']
     require(clock(sig['sourceAt']) <= clock(sig['receivedAt']) <= d, 'FEATURE_LOOKAHEAD')
     require(type(ext['receivedMs']) is int and type(ext['availableMs']) is int and ext['receivedMs'] <= ext['availableMs'] <= d, 'FEATURE_LOOKAHEAD')
     require(isinstance(sig.get('journalHash'), str) and HEX.fullmatch(sig['journalHash']) and isinstance(ext.get('bodySha256'), str) and HEX.fullmatch(ext['bodySha256']), 'FEATURE_SOURCE_HASH')
-    expected = hashlib.sha256(f"{row['marketId']}:{row['exchangeId']}:{sig['journalHash']}:{ext['bodySha256']}:{d}".encode()).hexdigest()
+    require(sample_id_format in ('scoped_v2', 'legacy_unscoped_v1'), 'PRODUCER_FORMAT')
+    prefix = f"{row['marketId']}:{row['exchangeId']}:" if sample_id_format == 'scoped_v2' else ''
+    expected = hashlib.sha256(f"{prefix}{sig['journalHash']}:{ext['bodySha256']}:{d}".encode()).hexdigest()
     require(row['sampleId'] == expected, 'SAMPLE_BINDING')
     changes = row['externalLogitChanges']
     values = [changes.get(str(h)) for h in (1000, 5000, 30000)]
@@ -131,14 +133,14 @@ def feature_vector(row):
     require(all(-1 <= v <= 1 for v in values[3:5]) and 0 <= values[5] <= 1, 'FEATURE_RANGE')
     return values + [math.log(em / (1-em)) - math.log(sm / (1-sm))]
 
-def examples(decisions, labels, horizon, as_of, slack, fee, buffer, mapping_kind):
+def examples(decisions, labels, horizon, as_of, slack, fee, buffer, mapping_kind, sample_id_format="scoped_v2"):
     rows, counts = [], Counter()
     for sid, sample in sorted(decisions.items(), key=lambda v: (v[1]['decisionMs'], v[0])):
         counts['decisions'] += 1
         if sample['external'].get('mappingKind') != mapping_kind:
             counts['otherMapping'] += 1
             continue
-        x = feature_vector(sample)
+        x = feature_vector(sample, sample_id_format)
         if x is None:
             counts['missingFeature'] += 1
             continue
@@ -250,16 +252,25 @@ def walk_forward(rows, minimum_clusters=100):
             'selectedSampleIdsSha256': digest([r['sampleId'] for r in chosen]), 'actualFill': False, 'executionAuthority': False,
             'clusterCaveat': 'Nonoverlapping market/time windows do not prove cross-market statistical independence.'}
 
-def report(paths, as_of, *, slack=3000, fee=Decimal('0'), buffer=Decimal('0.005'), minimum_clusters=100, mapping_kind='direct_party_reference', max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
+def report(paths, as_of, *, slack=3000, fee=Decimal('0'), buffer=Decimal('0.005'), minimum_clusters=100, mapping_kind='direct_party_reference', max_rows=MAX_ROWS, max_bytes=MAX_BYTES, sample_id_format="scoped_v2", producer_source=None, producer_sha256=None):
+    require(sample_id_format in ("scoped_v2", "legacy_unscoped_v1"), "PRODUCER_FORMAT")
+    require((producer_source is None) == (producer_sha256 is None), "PRODUCER_PROVENANCE")
+    producer = None
+    if producer_source is not None:
+        source = Path(producer_source)
+        require(source.is_file() and not source.is_symlink() and source.stat().st_size <= 1024*1024 and isinstance(producer_sha256, str) and HEX.fullmatch(producer_sha256), "PRODUCER_SOURCE")
+        actual = hashlib.sha256(source.read_bytes()).hexdigest()
+        require(actual == producer_sha256, "PRODUCER_SOURCE_HASH")
+        producer = {"name": source.name, "sha256": actual, "sampleIdFormat": sample_id_format}
     require(type(slack) is int and 0 <= slack <= 30000 and fee.is_finite() and buffer.is_finite() and fee >= 0 and buffer >= 0, 'POLICY')
     d, labels, files, counts = load(paths, as_of, max_rows, max_bytes)
-    policy = {'features': FEATURES, 'algorithm': 'two-fixed-ridge-return-regressions', 'ridgePenalty': 1.0, 'folds': 3, 'labelSlackMs': slack, 'feePerShareRoundTrip': str(fee), 'bufferPerShare': str(buffer), 'mappingKind': mapping_kind, 'minimumClusters': minimum_clusters, 'counterfactualQuantityShares': 1, 'predictionThresholdNet': 0, 'yesCrossingConvention': 'future SIG bid minus original SIG ask', 'noCrossingConvention': 'original SIG bid minus future SIG ask'}
+    policy = {'features': FEATURES, 'sampleIdFormat': sample_id_format, 'algorithm': 'two-fixed-ridge-return-regressions', 'ridgePenalty': 1.0, 'folds': 3, 'labelSlackMs': slack, 'feePerShareRoundTrip': str(fee), 'bufferPerShare': str(buffer), 'mappingKind': mapping_kind, 'minimumClusters': minimum_clusters, 'counterfactualQuantityShares': 1, 'predictionThresholdNet': 0, 'yesCrossingConvention': 'future SIG bid minus original SIG ask', 'noCrossingConvention': 'original SIG bid minus future SIG ask'}
     horizons = {}
     for h in HORIZONS:
-        rows, diagnostics = examples(d, labels, h, as_of, slack, fee, buffer, mapping_kind)
+        rows, diagnostics = examples(d, labels, h, as_of, slack, fee, buffer, mapping_kind, sample_id_format)
         horizons[str(h)] = {**walk_forward(rows, minimum_clusters), 'data': diagnostics}
-    return {'schemaVersion': 1, 'asOfMs': as_of, 'sourceBundleSha256': digest(files), 'sources': files,
-            'policy': policy, 'cutoffPolicySha256': digest({'asOfMs': as_of, 'policy': policy}), 'input': dict(counts),
+    return {'schemaVersion': 1, 'asOfMs': as_of, 'producerSource': producer, 'producerSourceVerified': producer is not None, 'sourceBundleSha256': digest(files), 'sources': files,
+            'policy': policy, 'cutoffPolicySha256': digest({'asOfMs': as_of, 'policy': policy, 'producerSource': producer}), 'input': dict(counts),
             'sourceCodeSha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), 'horizons': horizons,
             'status': 'UNQUALIFIED_RESEARCH', 'modelApproval': False, 'profitEstablished': False, 'executionAuthority': False}
 
@@ -268,12 +279,15 @@ def main():
     p.add_argument('--input', nargs='+', required=True, type=Path)
     p.add_argument('--as-of', required=True)
     p.add_argument('--output', required=True, type=Path)
+    p.add_argument('--producer-source', required=True, type=Path)
+    p.add_argument('--producer-sha256', required=True)
+    p.add_argument('--sample-id-format', required=True, choices=['scoped_v2', 'legacy_unscoped_v1'])
     p.add_argument('--fee-per-share', default='0')
     p.add_argument('--buffer-per-share', default='0.005')
     p.add_argument('--label-slack-ms', type=int, default=3000)
     p.add_argument('--minimum-clusters', type=int, default=100)
     a = p.parse_args()
-    result = report(a.input, clock(a.as_of), slack=a.label_slack_ms, fee=signed_money(a.fee_per_share), buffer=signed_money(a.buffer_per_share), minimum_clusters=a.minimum_clusters)
+    result = report(a.input, clock(a.as_of), slack=a.label_slack_ms, fee=signed_money(a.fee_per_share), buffer=signed_money(a.buffer_per_share), minimum_clusters=a.minimum_clusters, sample_id_format=a.sample_id_format, producer_source=a.producer_source, producer_sha256=a.producer_sha256)
     with a.output.open('x', encoding='utf-8') as f:
         f.write(canonical(result)+'\n')
 
