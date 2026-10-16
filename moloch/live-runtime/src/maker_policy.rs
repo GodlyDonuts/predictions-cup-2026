@@ -38,13 +38,17 @@ impl Reviewed{
   let sha=hash(&settings)?;let out=Self{settings,sha};out.bind(bank)?;Ok(out)
  }
  pub fn sha256(&self)->&str{&self.sha}
+ /// Validate static model configuration before any account client/connect.
+ /// Missing data after startup is an entry defer, never an inventory STOP.
+ pub fn validate_model(&self,config:&edge::Config)->Result<()>{config.validate()?;need(config.markout_ms==self.settings.expected_inventory_age_ms,"MAKER_MODEL_HORIZON")}
  fn bind(&self,bank:&Session)->Result<()>{
   let s=&self.settings;let head=bank.durable_head();let report=bank.engine().report()?;
   need(bank.engine().is_live()&&bank.manifest_hash()==&json!(s.bank_manifest_hash)&&bank.live_account_seed().is_some_and(|seed|seed["runId"]==s.run_id),"MAKER_BANK_BINDING")?;
   need(s.baseline_native_head["manifestHash"]==*bank.manifest_hash()&&s.baseline_native_head["sequence"].as_u64().is_some_and(|n|head["sequence"].as_u64().is_some_and(|m|m>=n))&&s.baseline_native_head["previous"].as_str().is_some_and(hex),"MAKER_BASELINE_HEAD")?;
   let at=clock(&report["at"])?;need(at>=s.reviewed_at_ms,"MAKER_BEFORE_REVIEW")?;
   if head==s.baseline_native_head{need(hash(&report)?==s.baseline_report_sha256&&new_realized(&report)?==decimal_units(&s.baseline_new_trading_realized)?,"MAKER_BASELINE_REPORT")?;}
-  need(bank.engine().policy()["maximumInventoryAgeMs"].as_u64()==Some(s.expected_inventory_age_ms)&&bank.engine().policy()["inventoryAgeClock"]=="execution","MAKER_INVENTORY_HORIZON")
+  need(bank.engine().policy()["maximumInventoryAgeMs"].as_u64()==Some(s.expected_inventory_age_ms)&&bank.engine().policy()["inventoryAgeClock"]=="execution","MAKER_INVENTORY_HORIZON")?;
+  need(bank.engine().policy()["feeBps"]==0&&cash(&bank.engine().policy()["feePerShare"])?==0,"MAKER_UNSUPPORTED_FEE_POLICY")
  }
 }
 fn new_realized(report:&Value)->Result<i128>{if report.get("inheritedInventory").is_some(){cash(&report["newTradingRealized"])}else{cash(&report["realized"])}}
@@ -106,7 +110,7 @@ pub fn decide(bank:&Session,scope:&Scope,log:&DispatchLog,review:&Reviewed,qid:u
  else{
  let s=&review.settings;let gross=mul(cash(&q["price"])?,remaining(&q)? as i128)?;let horizon=edge::CapitalHorizon{milliseconds:s.expected_inventory_age_ms,source_sha256:hash(bank.engine().policy())?};let mut costs=edge::ExecutionCosts{inventory_and_partial_risk_units:0,source_sha256:review.sha.clone(),horizon};
  match edge::evaluate_runtime_maker(bank,qid,Some(&costs),now){Err(e)=>{d.reason=format!("observer_unavailable:{e}");},Ok(initial)=>{
-  need(initial.config().markout_ms==s.expected_inventory_age_ms,"MAKER_MODEL_HORIZON")?;let estimate=&initial.evaluation().estimate;let veto=estimate.valid_marks>=initial.config().minimum_samples&&estimate.valid_marks*10000>=estimate.matured_marks*initial.config().minimum_coverage_bps as usize&&estimate.stressed_conditional_per_share.is_some_and(|n|n<=0);
+  if initial.config().markout_ms!=s.expected_inventory_age_ms{d.reason="model_horizon_mismatch".into();d.model=Some(initial);}else{let estimate=&initial.evaluation().estimate;let veto=estimate.valid_marks>=initial.config().minimum_samples&&estimate.valid_marks*10000>=estimate.matured_marks*initial.config().minimum_coverage_bps as usize&&estimate.stressed_conditional_per_share.is_some_and(|n|n<=0);
   d.expires=d.expires.min(initial.valid_until_ms());
   if veto{d.reason="covered_empirical_nonpositive_markout_veto".into();d.model=Some(initial);}
   else if estimate.available{
@@ -115,7 +119,7 @@ pub fn decide(bank:&Session,scope:&Scope,log:&DispatchLog,review:&Reviewed,qid:u
   }else{let deployed=deployed_new_capital(bank,log)?;let realized=new_realized(&bank.engine().report()?)?;let baseline=decimal_units(&s.baseline_new_trading_realized)?;let loss=baseline.checked_sub(realized).ok_or("MAKER_OVERFLOW")?.max(0);
    d.reason=if remaining(&q)?>s.exploration_maximum_quantity||gross>decimal_units(&s.exploration_maximum_order_notional)?{"exploration_order_cap"}else if add(deployed,gross)?>decimal_units(&s.exploration_maximum_deployed_notional)?{"exploration_deployed_cap"}else if loss>=decimal_units(&s.additional_realized_loss_stop)?{"exploration_realized_loss_cap"}else{d.class=Class::Exploration;"bounded_unqualified_exploration_not_positive_ev"}.into();d.model=Some(initial);
   }
- }}
+ }}}
  }}
  d.proof=json!({"class":d.class,"reason":d.reason,"qid":qid,"nativeHead":d.head,"dispatchHead":d.dispatch,"reviewedSettingsSha256":d.settings_sha,"expiresAtMs":d.expires,"statisticalConfidenceClaimed":false,"executionAuthority":false,"baselineHistoricalAncestryProven":false,"realizedLossStopIsHardLossBound":false,"maximumOutstandingExploratoryDownside":review.settings.exploration_maximum_deployed_notional,"partialRiskChargeKind":"explicit_full_loss_non_full_trial_policy_not_calibrated_estimate","model":d.model.as_ref().map(|m|m.evaluation())});Ok(d)
 }
