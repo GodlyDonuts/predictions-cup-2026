@@ -1,4 +1,28 @@
-# Current research baseline: October16,10:43UTC
+# Current research baseline: October16,11:26UTC
+
+Start with the newest [CURRENT_STATE](CURRENT_STATE.md) entry. Full-capital
+candidate`e7bb62d1`/`d0a3113c…` is staged; actual allocation is still40,000 until
+the owner-contribution event is observed. The original worker was fresh11:23,
+then stopped11:26 for final copied-bank verification. No replacement trading,
+capital increase or profitability is claimed yet. A real8MiB bridge-file bound
+blocked the first attempt before the original bank changed; the corrected
+bounded32MiB reader has passed its checks/builds. Original history remains intact.
+
+Kalshi references remain234 conditional direct mappings plus three analogs,
+with zero newly certified settlement equivalents. Actual feed was rolled back
+to stable30-second WS snapshot refresh after the10-second trial reconnected
+repeatedly. REST remains20starts/sec across the shared collector. Prospective
+observation is live, physical external pricing is inactive, the first economic
+model selected zero trades, and the passive shadow study saw no TOXIC/FAVORABLE
+cases. These are useful negative findings, not demonstrated returns.
+
+Attributed realized−74.405000 at the latest boundary remains separate from
+unrealized/dashboard valuation and from owner funding. Paper6 still needs a
+qualified cross-venue trading rule, genuine semantic completeness certificates,
+prize-utility deployment and real election-night vintages. Checked source,
+actual production and economic qualification must remain distinct.
+
+# Historical research baseline: October16,10:43UTC
 
 Production is still sole SIG441490/`fec81a5e`, verified fresh10:39:26UTC with
 matching binary and no STOP.79ACKs/four fill rows since08:55restart;

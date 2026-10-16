@@ -1,6 +1,6 @@
 # Cross-venue economic evaluation — October 16
 
-This is a standard-library-only offline reporting pipeline for original `crossvenue_observer.py` output. It has no network, credentials, account client, model approval or execution authority. No actual sealed production capture has been evaluated by this agent; the parent will supply that evidence separately.
+This is a standard-library-only offline reporting pipeline for original `crossvenue_observer.py` output. It has no network, credentials, account client, model approval or execution authority. The parent has now evaluated the first sealed prospective capture:200 decisions/291 future labels/35 markets, zero selected trades and abstention at all five horizons. [Original report and limitations](../moloch-crossvenue-economics-20261016/README.md).
 
 ## Run on sealed inputs
 
