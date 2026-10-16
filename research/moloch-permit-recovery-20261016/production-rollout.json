@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-16T03:58:03.673971+00:00",
+  "newPid": 381131,
+  "oldPid": 374227,
+  "release": "/home/archon/apps/moloch/releases/permit-recovery-da4202e064ff/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-permit-recovery-20261016.json",
+  "binarySha256": "da4202e064ffb89cac1eb4aab2dcb076a1d2bc3cde3c1a2197799f6cf9c5fefc",
+  "sourceCommit": "4148fe5d",
+  "nativeEngineChanged": false,
+  "financialBridgeEntries": 9,
+  "controlChanges": [
+    "activation.binarySha256",
+    "executionDistribution=null",
+    "executionModel=null"
+  ],
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "boundary": {
+    "at": "2026-10-16T03:54:31.092632+00:00",
+    "stop": {
+      "action": "no automatic write retry or activation renewal",
+      "at": "2026-10-16T03:33:45.739Z",
+      "reason": "LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"
+    },
+    "bankHead": {
+      "hash": "474fd57f9add430bc63b8cf858786dc2ab7a7d3602fe93102531b446ae3b2b81",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "16be3b25d6c01cce24d06db09bf314645a99b9b1030c64b139d6a8a5d668e126",
+      "sequence": 149916
+    },
+    "bankReportHash": "fb9b4334f56c54c3421d5e0dbae96f296c8c6994576d7ebab20a425ce28f82e8",
+    "journalSha256": "74de7616153ac1156b15ddb6bf9baa1929fbd77ec72f7ec481636234bb0f41c8",
+    "bridgeSha256": "6f4b5ef4460ccd80c33a210d2e18e8dcd4600e0a4aa3893a45e24e2f67c1512b",
+    "bridgeEntries": 9,
+    "dispatchSha256": "4d792993ecb79589574e71326437b004131f016ed92194264f10519bc307fa55",
+    "actualFills": 118,
+    "queue": {
+      "globalUnknownCount": 0,
+      "hasUnknown": false,
+      "sequence": 122128,
+      "previous": "42b7361a1f29a3f428ddb2f952cd9dcfc6db5d4d89e97a6cea7a11cad528df77"
+    }
+  },
+  "recovery": {
+    "at": "2026-10-16T03:55:04.935Z",
+    "dispatchHead": {
+      "bytes": 3135226,
+      "device": 66305,
+      "inode": 12353650,
+      "previous": "e420f4c4cb7ae82ab7314e80f4ef28ec6db53c1263c0db0731bab8dfeb0b681d",
+      "schemaVersion": 1,
+      "sequence": 6192
+    },
+    "financialStateChanged": false,
+    "networkRequests": 0,
+    "recoveredOriginalQids": [
+      3411
+    ],
+    "sameIntentRetryAuthorized": false,
+    "sdkArchiveReverified": true,
+    "stopPreserved": true
+  },
+  "checks": {
+    "sdkProofTests": 6,
+    "dispatchTests": 10,
+    "workerTests": 34,
+    "fundamentalIntegrationTests": 78,
+    "release": "locked offline ARM64",
+    "sourceSha256": {
+      "backend-rust/transport-service/src/lib.rs": "b06f69f5446f2b149913fb9976bfc043328dcc2e896641f4703416b4fce4c8c3",
+      "backend-rust/transport-service/src/admission.rs": "0a7f85ee48b6c7a029f99e1b7d449977cb854174db4f8533bb32f1568f0ee326",
+      "backend-rust/transport-service/src/ordinary_pre_admission_tests.rs": "4b16c68a365042c4f50f10701725b4426865cae717e68b8e5200520991abf595",
+      "moloch/live-runtime/src/dispatch.rs": "1ee5ff0f957d56bd5d8211e214210cb40c57b743541dffe8469316a5009ad75a",
+      "moloch/live-runtime/src/worker.rs": "b89e09b1b42b56a6a3bdc91e2dd8f8b2a3210c566def111ad44091ae5cf212f3",
+      "moloch/live-runtime/src/execution_distribution.rs": "0dee35856d4ee72e56c4221929fd6f5e0d45c0b5c5f5440a1f829f56df5f8cbc",
+      "moloch/live-runtime/src/fundamental_policy.rs": "77f7ea61abff985b11f929a79525183be93f0297542841490e4619aa5ed9aba5",
+      "moloch/live-runtime/tests/fundamental_policy.rs": "b0b8e432f6ab19fdbe2813c76386fe0fb1e987ce3d71fc7cd30d8452f219cc40"
+    }
+  },
+  "originalSdkArchiveContainsPrivateSource": true,
+  "originalSdkArchivePublished": false
+}
