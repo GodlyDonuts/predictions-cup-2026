@@ -248,16 +248,21 @@ class LifecycleTests(unittest.TestCase):
     def test_sealed_original_shaped_gzip_prefix_end_to_end_and_tamper_rejection(self):
         def canonical(v): return json.dumps(v, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
         def seal(v): return canonical({**v, 'hash': m.h(canonical(v))})+b'\n'
-        def chain(events):
-            previous = '0'*64; out = []
+        def chain(events, initial_previous, native=False):
+            previous = initial_previous; out = []
             for seq, e in enumerate(events, 1):
+                if native:
+                    # Session::accept hashes the original event, adds sourceRef,
+                    # then seals the native Journal row; no source body rewriting.
+                    e = {k:v for k,v in e.items() if k != 'sourceRef'}
+                    e['sourceRef'] = {'id':'fixture','sequence':seq,'hash':m.h(canonical(e))}
                 raw = seal({'event':e,'previous':previous,'sequence':seq}); previous = json.loads(raw)['hash']; out.append(raw)
             return b''.join(out)
         q = quote(); events = [actual(q, 'actual_order_ack', -500), actual(q, 'actual_fill', 0, n=1), coverage(), book()]
         with tempfile.TemporaryDirectory() as d:
             p = Path(d); files = {'bankManifest': ('bank.json', seal({'schemaVersion':1,'mode':'rust_live_session','seed':{'kind':'actual_account_allocation'},'policy':POLICY})),
-                                  'dispatch': ('dispatch.gz', gzip.compress(chain(log(q)), mtime=0)),
-                                  'events': ('events.gz', gzip.compress(chain(events), mtime=0))}
+                                  'dispatch': ('dispatch.gz', gzip.compress(chain(log(q), '0'*64), mtime=0)),
+                                  'events': ('events.gz', gzip.compress(chain(events, '', native=True), mtime=0))}
             manifest = {'schemaVersion':1,'sealed':True,'protocolSha256':m.PROTOCOL_SHA,'asOfUtc':stamp(61000)}
             for key, (name, raw) in files.items():
                 (p/name).write_bytes(raw); manifest[key] = {'path':name,'bytes':len(raw),'sha256':m.h(raw)}
@@ -266,8 +271,25 @@ class LifecycleTests(unittest.TestCase):
             self.assertEqual(result['descriptiveTotals']['markedShares'], 1)
             self.assertFalse(result['nativeFinancialReplayIndependentlyPerformed'])
             self.assertFalse(result['executionAuthority'])
+            native_first = json.loads(gzip.decompress(files['events'][1]).splitlines()[0])
+            self.assertEqual(native_first['previous'], '')
+            ref = native_first['event']['sourceRef']
+            self.assertEqual(ref['hash'], m.h(canonical({k:v for k,v in native_first['event'].items() if k != 'sourceRef'})))
+            dispatch_first = json.loads(gzip.decompress(files['dispatch'][1]).splitlines()[0])
+            self.assertEqual(dispatch_first['previous'], '0'*64)
             broken = bytearray((p/'events.gz').read_bytes()); broken[20] ^= 1; (p/'events.gz').write_bytes(broken)
             with self.assertRaisesRegex(ValueError, 'INPUT_PIN'): m.analyze(source, digest)
+
+    def test_native_and_dispatch_genesis_cannot_be_cross_seeded(self):
+        def canonical(x): return json.dumps(x,sort_keys=True,separators=(',',':')).encode()
+        with tempfile.TemporaryDirectory() as d:
+            for previous, correct, wrong in (('', '', '0'*64), ('0'*64, '0'*64, '')):
+                body = {'event':event('tick'), 'previous':previous, 'sequence':1}
+                raw = canonical({**body,'hash':m.h(canonical(body))})+b'\n'
+                p = Path(d)/('native' if previous == '' else 'dispatch'); p.write_bytes(raw)
+                sig = (p.stat().st_dev,p.stat().st_ino,p.stat().st_size,p.stat().st_mtime_ns)
+                self.assertEqual(len(list(m.journal(p,sig,correct))),1)
+                with self.assertRaisesRegex(ValueError,'ORIGINAL_CHAIN'): list(m.journal(p,sig,wrong))
 
     def test_same_price_depth_multiple_levels_and_unknown_attempt_shadow(self):
         q = quote(quantity=4); unknown = quote(2, quantity=2)

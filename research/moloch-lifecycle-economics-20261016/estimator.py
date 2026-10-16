@@ -4,7 +4,8 @@ No Session, account client, fitted model or execution authority. Restart by repl
 CLI manifest schema1: sealed:true,protocolSha256,asOfUtc,bankManifest:{path,bytes,
 sha256},dispatch:{path,bytes,sha256},events:{path,bytes,sha256}; paths are relative.
 The original bank manifest must be a sealed live manifest. Full original journals
-start at sequence1/previous zero. No suffix is silently treated as an empty wallet.
+start at sequence1: native previous is empty, dispatch previous is64 zeros.
+No suffix is silently treated as an empty wallet.
 """
 from collections import Counter, defaultdict
 from decimal import Decimal
@@ -23,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PARSER_PATH = ROOT/'research/moloch-owned-fill-markouts-20261015/analyze.py'
 spec = importlib.util.spec_from_file_location('lifecycle_raw_parser', PARSER_PATH)
 RAW = importlib.util.module_from_spec(spec); sys.modules[spec.name] = RAW; spec.loader.exec_module(RAW)
-PROTOCOL_SHA = '04e5dd3ccd678921e34531b8b141cf1e57b33bf340b6162ff990248e1f087235'
+PROTOCOL_SHA = 'ec397295f2fd5bbc6c6773cd627fec15ffc07418fb0e4c014c58646632dcb5a6'
 UNIT, NS = 1000000, 1000000
 AGE, SLACK, BOOK_AGE = 60000*NS, 5000*NS, 10000*NS
 MAX_BYTES, MAX_ROWS, MAX_ROW, MAX_OWN = 2*1024**3, 1000000, 16*1024**2, 100000
@@ -396,8 +397,9 @@ def pinned(base, spec):
     return p, (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
 
 
-def journal(path, signature):
-    previous, size, count = '0'*64, 0, 0
+def journal(path, signature, initial_previous):
+    need(initial_previous in ('', '0'*64), 'GENESIS_REQUIRED')
+    previous, size, count = initial_previous, 0, 0
     with gzip.open(path, 'rb') if path.suffix == '.gz' else path.open('rb') as f:
         while raw := f.readline(MAX_ROW+1):
             size += len(raw); count += 1
@@ -417,9 +419,9 @@ def analyze(path, expected):
     bank = inputs['bankManifest'][0].read_bytes(); need(h(bank) == m['bankManifest']['sha256'], 'BANK_MANIFEST_CHANGED')
     bank = RAW.native_sealed_object(bank if bank.endswith(b'\n') else bank+b'\n')
     need(bank['mode'] == 'rust_live_session' and bank['seed']['kind'] == 'actual_account_allocation', 'ORIGINAL_LIVE_SEED')
-    dispatch = dispatch_metadata(journal(*inputs['dispatch']))
+    dispatch = dispatch_metadata(journal(*inputs['dispatch'], initial_previous='0'*64))
     observer = Observer(bank['policy'], dispatch); cutoff = clock(m['asOfUtc'])
-    for event in journal(*inputs['events']):
+    for event in journal(*inputs['events'], initial_previous=''):
         need(clock(event.get('processedAt', event['receivedAt'])) <= cutoff, 'EVENT_AFTER_CUTOFF')
         observer.accept(event)
     result = observer.summary()

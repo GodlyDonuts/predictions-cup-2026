@@ -3,6 +3,12 @@
 The [protocol](protocol.json) was frozen at15:42:21UTC before any actual new
 outcome analysis: Git-LF SHA256
 `04e5dd3ccd678921e34531b8b141cf1e57b33bf340b6162ff990248e1f087235`.
+Independent review identified the original reader/fixture's shared-genesis error.
+Engineering revision2, declared15:56:27UTC, corrects native `previous:""` versus
+dispatch64 zeros. Its new protocol SHA is
+`ec397295f2fd5bbc6c6773cd627fec15ffc07418fb0e4c014c58646632dcb5a6`;
+the original declaration/hash remain recorded. Economic/model/label/selection
+choices are unchanged, and no actual outcome was read between these versions.
 No actual cohort has been evaluated by this task. The observer is deterministic
 bookkeeping and descriptive estimation, not a fitted policy or execution module.
 
@@ -80,7 +86,8 @@ Manifest schema1 contains `sealed:true`, `protocolSha256`, `asOfUtc` and
 `bankManifest`, `dispatch`, `events`, each `{path,bytes,sha256}`. Paths are relative
 to the manifest; hashes pin original file bytes, including gzip wrappers. The
 original bank manifest must be a sealed actual-account live manifest. Both journals
-must begin at sequence1/previous-zero; each exact row seal/hash chain is validated
+must begin at sequence1, with native previous empty and dispatch previous64 zeros;
+each exact row seal/hash chain is validated
 through the existing original-byte parser, whose hash is retained in output.
 All three inputs are pinned before replay. No suffix is treated as an empty wallet.
 
@@ -100,11 +107,15 @@ rather than treating inventory disappearance as realized profit. Other native
 cash/capital updates do not become trading gains. This reader is not a replacement
 for the financial ledger or a claim that all historical branches are implemented.
 
-Twenty-seven synthetic checks pass, including an end-to-end sealed/gzip native+
+Twenty-eight synthetic checks pass, including an end-to-end sealed/gzip native+
 dispatch fixture, partial0/full59/native60, persistent partials, FIFO retargeting,
 actual netting/SELL cash, rational fees, inherited/mixed ownership, duplicate/conflict,
 restart, terminal receipt-pair proof, unknown/own depth, NO complement, stale/gap/
-late/absent coverage and old-book versus later physical state. No actual new outcome
+late/absent coverage and old-book versus later physical state. The original-shaped
+native envelope test follows Session::accept's event→sourceRef→sealed-row sequence;
+negative tests reject either journal seeded with the other's genesis. These are
+serialization fixtures, not an executed Rust Session or native financial replay.
+No actual new outcome
 files, model fitting, account/network/SSH calls, compiler, live service, production
 control or native/runtime source was used or changed. The source is ready for
 independent review before any separately authorized sealed-cohort evaluation.
