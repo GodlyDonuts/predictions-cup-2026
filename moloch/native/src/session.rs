@@ -760,3 +760,55 @@ mod tests {
         assert_eq!(exact_engine_state(&bank.engine),before);assert_eq!(bank.refs,refs);assert_eq!(bank.cursors,cursors);assert_eq!(fs::read(root.join("head.json")).unwrap(),head);assert_eq!(fs::read(root.join("report.json")).unwrap(),report);assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),journal);assert!(!bank.poisoned);
     }
 }
+
+#[cfg(test)]
+mod staged_prefix_benchmark {
+    use super::*;
+    use std::{collections::VecDeque,time::Instant};
+    fn state(e:&Engine)->Result<Value>{Ok(json!({"report":e.report()?,"orders":e.order_records(),"fills":e.fills(),"books":e.live_package_books(),"bindings":e.live_order_bindings(),"required":e.required_exchanges(),"packages":e.package_records()}))}
+    #[test]
+    #[ignore="explicit immutable copied prefix, bytes and SHA environment required; no live Session"]
+    fn original_frozen_prefix_staged_clone_benchmark()->Result<()> {
+        let root=PathBuf::from(std::env::var("MOLOCH_FROZEN_PREFIX_DIRECTORY")?);
+        if !root.is_absolute()||fs::symlink_metadata(&root)?.file_type().is_symlink(){return Err("BENCH_FROZEN_DIRECTORY".into())}
+        let expected_bytes: u64=std::env::var("MOLOCH_FROZEN_PREFIX_BYTES")?.parse()?;
+        let expected_sha=std::env::var("MOLOCH_FROZEN_PREFIX_SHA256")?;
+        if expected_bytes==0||expected_bytes>2*1024*1024*1024||expected_sha.len()!=64||!expected_sha.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("BENCH_FROZEN_BOUND".into())}
+        let path=root.join("events.jsonl");let metadata=fs::symlink_metadata(&path)?;
+        if !metadata.is_file()||metadata.file_type().is_symlink()||metadata.len()!=expected_bytes{return Err("BENCH_FROZEN_LENGTH".into())}
+        // Verify original bytes BEFORE any replay. No source, lease, queue,
+        // Session::open, authority migration, account or report writes occur.
+        let mut file=File::open(&path)?;let mut digest=Sha256::new();let mut buffer=[0u8;65536];
+        loop{let n=file.read(&mut buffer)?;if n==0{break}digest.update(&buffer[..n]);}
+        if format!("{:x}",digest.finalize())!=expected_sha{return Err("BENCH_FROZEN_SHA256".into())}
+        let manifest=verified(&root.join("manifest.json"))?;
+        let original_boundary:Value=serde_json::from_slice(&fs::read(root.join("original-boundary.json"))?)?;
+        let boundary=&original_boundary["boundary"];
+        if manifest["mode"]!="rust_live_session"||boundary["prefixBytes"]!=expected_bytes||boundary["prefixSha256"]!=expected_sha||boundary["bankHead"]["manifestHash"]!=manifest["hash"]{return Err("BENCH_FROZEN_BOUNDARY".into())}
+        let replay_started=Instant::now();let mut engine=Engine::new_live(&manifest["policy"])?;
+        let mut chain=Journal::default();let mut cursors=BTreeMap::<String,u64>::new();let mut tail=VecDeque::new();
+        let mut reader=BufReader::new(File::open(&path)?);let mut line=Vec::new();
+        loop{line.clear();let n=reader.by_ref().take(16*1024*1024+1).read_until(b'\n',&mut line)?;if n==0{break}
+            if n>16*1024*1024||line.last()!=Some(&b'\n'){return Err("BENCH_PREFIX_ROW".into())}
+            let event=chain.accept(&serde_json::from_slice(&line)?)?;
+            Session::restore_ref(&event,&mut BTreeMap::new(),&mut cursors)?;
+            tail.push_back(event);if tail.len()>64{engine=engine.advance_replay_unpublished(&tail.pop_front().ok_or("BENCH_TAIL")?)?;}
+        }
+        if tail.len()!=64||boundary["bankHead"]["sequence"]!=chain.sequence||boundary["bankHead"]["previous"]!=chain.previous{return Err("BENCH_PREFIX_CHAIN".into())}
+        let replay_ns=replay_started.elapsed().as_nanos();let tail:Vec<Value>=tail.into_iter().collect();let event_order_sha=hash(&json!(tail));let before_sha=hash(&state(&engine)?);
+        let mut serial_times=Vec::new();let mut staged_times=Vec::new();let mut expected_state:Option<Value>=None;
+        for round in 0..5{for consuming in if round%2==0{[false,true]}else{[true,false]}{
+            let started=Instant::now();let mut next=engine.clone();
+            for event in &tail{if consuming{next=next.advance_replay_unpublished(event)?;}else{next.advance(event)?;}}
+            let elapsed=started.elapsed().as_nanos();let actual=state(&next)?;
+            if let Some(expected)=&expected_state{if expected!=&actual{return Err("BENCH_FINANCIAL_PARITY".into())}}else{expected_state=Some(actual.clone());
+                let report=sealed(json!({"manifestHash":manifest["hash"],"sequence":chain.sequence,"previous":chain.previous,"report":next.report()?,"orders":next.order_records(),"fills":next.fills(),"sourceCursors":cursors,"contestOrders":next.live_order_bindings().len()}));
+                if report["hash"]!=boundary["bankReportHash"]{return Err("BENCH_ORIGINAL_REPORT_PARITY".into())}
+            }
+            if consuming{staged_times.push(elapsed)}else{serial_times.push(elapsed)}
+        }}
+        if hash(&state(&engine)?)!=before_sha||hash(&json!(tail))!=event_order_sha{return Err("BENCH_INPUT_MUTATION".into())}
+        let final_state=expected_state.ok_or("BENCH_STATE")?;
+        println!("{}",json!({"schemaVersion":1,"mode":"original_prefix_unpublished_staging_memory_only","engineIdentity":engine_identity(),"prefixBytes":expected_bytes,"prefixSha256":expected_sha,"prefixSequence":chain.sequence,"originalReportHash":boundary["bankReportHash"],"eventsPerRound":64,"rounds":5,"replayWallNs":replay_ns,"baselineOuterClonePlusTransactionalNs":serial_times,"candidateOuterClonePlusConsumingNs":staged_times,"startingStateSha256":before_sha,"finalStateSha256":hash(&final_state),"eventOrderSha256":event_order_sha,"orderCount":final_state["orders"].as_array().map(Vec::len),"actualFillCount":final_state["fills"].as_array().map(Vec::len),"financialParity":true,"sourceMutated":false,"networkRequests":0,"limitations":["In-memory Session staging component only; excludes fsync/report serialization/HTTP/full-cycle timing.","Both strategies use the same original starting Engine and original 64-event order.","Reduced-priority CPU sharing and cache noise remain; no production throughput/latency guarantee."]}));Ok(())
+    }
+}
