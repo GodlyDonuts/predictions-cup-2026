@@ -834,7 +834,7 @@ impl Engine {
             // A reviewed resting BUY owns this flat scope's entry selection.
             // Filled inventory still uses normal exit generation, with runtime
             // review authority controlling every physical disposition.
-            if yes==0&&no==0&&self.orders.iter().any(|q|q.exchange==b.exchange&&!q.retired&&self.reviewed_fundamental_entries.contains_key(&q.id)){continue;}
+            if !self.reviewed_fundamental_entries.is_empty()&&yes==0&&no==0&&self.orders.iter().any(|q|q.exchange==b.exchange&&!q.retired&&self.reviewed_fundamental_entries.contains_key(&q.id)){continue;}
             if yes > 0 || no > 0 {
                 if p.raw["repriceProfitableHedge"] != true {
                     for q in &self.orders {
