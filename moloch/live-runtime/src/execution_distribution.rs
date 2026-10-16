@@ -181,6 +181,208 @@ pub fn estimate_runtime_attempt(qid:u64,at:u64)->Result<Estimate>{OBSERVER.with(
 /// No observer initialization, fit import, account reads or lifecycle mutations.
 pub fn estimate_runtime_action(bank:&Session,scope:&baal_transport_service::Scope,action:&Value,strategy_sha:&str,created_at:u64,expiry:u64,horizon:u64,at:u64)->Result<Estimate>{OBSERVER.with(|s|s.borrow().as_ref().ok_or("DIST_RUNTIME_UNAVAILABLE")?.estimate_action(bank,scope,action,strategy_sha,created_at,expiry,horizon,at))}
 
+/// A separate, prospective data cohort. It supplies no estimates, price labels,
+/// probability qualification or execution capability to the ordinary model.
+#[derive(Clone,Serialize,Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct AcquisitionConfig {
+ pub cohort_id:String,pub maximum_pending:usize,pub retained_completed:usize,
+}
+impl AcquisitionConfig {
+ pub fn validate(&self)->Result<()> {
+  need(!self.cohort_id.is_empty()&&self.cohort_id.len()<=96&&self.cohort_id.bytes().all(|b|b.is_ascii_alphanumeric()||b"-_".contains(&b))
+   &&(1..=256).contains(&self.maximum_pending)&&(1..=1024).contains(&self.retained_completed),"ACQ_CONFIG")
+ }
+}
+#[derive(Clone)]
+struct AcquisitionFill {facts:Value,quantity:u64,executed:u64,observed:u64}
+struct AcquisitionExposure {
+ evidence:Value,quote:Value,intent_sha:String,attempt_sha:String,requested:u64,native_reserved:u64,
+ admitted:Option<u64>,ack_receipt:Option<String>,ack_observed:Option<u64>,actual_id:Option<String>,
+ created:u64,attempt:u64,expires:u64,limit:i128,capital_at:u64,reserved:i128,reservation_time:i128,
+ owned_closed_time:i128,owned_remaining:u64,fills:BTreeMap<(String,String),AcquisitionFill>,
+ terminal:Option<Value>,confirmed:bool,aborted:bool,close_proof:Option<String>,
+}
+impl AcquisitionExposure {
+ fn integrate(&mut self,at:u64)->Result<()> {
+  self.reservation_time=plus(self.reservation_time,times(self.reserved,at.checked_sub(self.capital_at).ok_or("ACQ_CAPITAL_CLOCK")?)?)?;
+  self.capital_at=at;Ok(())
+ }
+}
+#[derive(Clone)]
+struct AcquisitionLot {quantity:u64,price:i128,observed:u64,owner:Option<u64>}
+/// Exact quantities and clock differences, rather than a fitted fill model.
+/// Principal-time fields are decimal INTEGER strings in millionths * ms.
+#[derive(Serialize)]
+#[serde(rename_all="camelCase")]
+pub struct AcquisitionOutcome {
+ pub qid:u64,pub class:String,pub requested_quantity:u64,pub native_reserved_quantity:u64,
+ pub admitted_quantity:Option<u64>,pub observed_filled_quantity:u64,pub filled_fraction:Option<[u64;2]>,
+ pub first_execution_latency_ms:Option<u64>,pub first_observation_latency_ms:Option<u64>,pub maximum_fill_observation_delay_ms:Option<u64>,
+ pub attempt_at_ms:u64,pub quote_created_at_ms:u64,pub original_expiry_ms:u64,pub observed_through_ms:u64,
+ pub reservation_principal_time_unit_ms:String,pub owned_principal_time_observed_unit_ms:String,pub owned_remaining_quantity:u64,
+ pub reservation_released:bool,pub acquisition_confirmed:bool,pub terminal_status:Option<String>,
+ pub cancellation_is_informative:bool,pub original_evidence:Value,pub close_proof_sha256:Option<String>,
+ pub execution_authority:bool,
+}
+/// Cannot deserialize a fit, restore an unresolved order as zero, or change the
+/// Session. Each restart names a new prefix/cohort and leaves prior orders unscored.
+pub struct AcquisitionShadow {
+ config:AcquisitionConfig,scope:baal_transport_service::Scope,manifest:Value,run:String,cohort_sha:String,
+ initial_head:Value,started:u64,last:u64,disabled:Option<&'static str>,dispatch_identity:Value,
+ cursors:BTreeMap<String,(u64,String)>,pre_cohort:BTreeSet<u64>,exposures:BTreeMap<u64,AcquisitionExposure>,
+ retained:VecDeque<u64>,inventory:BTreeMap<(String,String),VecDeque<AcquisitionLot>>,
+ seen_fills:BTreeMap<(String,String),String>,duplicates:u64,completed:[u64;3],excluded_ordinary:u64,
+}
+fn acquisition_identity(log:&DispatchLog)->Result<Value> {
+ let d=log.descriptor_identity().map_err(|_|"ACQ_ORIGINAL_DISPATCH")?;Ok(json!({"device":d["device"],"inode":d["inode"]}))
+}
+fn acquisition_fill_facts(e:&Value)->Result<Value> {
+ Ok(json!({"orderId":e["orderId"],"actualOrderId":id(&e["actualOrderId"])?,"fillId":id(&e["fillId"])?,
+  "marketId":id(&e["marketId"])?,"exchangeId":id(&e["exchangeId"])?,"side":e["side"],"action":e["action"],
+  "quantity":e["quantity"],"priceUnits":amount(&e["price"])?,"feeUnits":amount(&e["fee"])?,"executedAt":e["executedAt"]}))
+}
+impl AcquisitionShadow {
+ pub fn new(bank:&Session,log:&DispatchLog,scope:&baal_transport_service::Scope,config:AcquisitionConfig,started:u64)->Result<Self> {
+  config.validate()?;need(!scope.tournament_id.is_empty()&&!scope.exchanges.is_empty()&&scope.exchanges.len()<=4096,"ACQ_SCOPE")?;
+  let seed=bank.live_account_seed().ok_or("ACQ_LIVE_BANK")?;let run=id(&seed["runId"])?;
+  let at=bank.engine().report().map_err(|_|"ACQ_REPORT")?["at"].clone();need(at.as_str().is_none_or(|s|s.is_empty())||clock(&at)?<=started,"ACQ_START_CLOCK")?;
+  let pre_cohort=log.attempted.iter().filter(|id|!log.closed.contains(id)).copied().collect::<BTreeSet<_>>();need(pre_cohort.len()<=4096,"ACQ_PRE_COHORT_BOUND")?;
+  let mut inventory=BTreeMap::new();let positions=bank.engine().wallet.positions();
+  for(ex,p)in positions.as_object().ok_or("ACQ_POSITIONS")? {for side in ["YES","NO"] {
+   let mut lots=VecDeque::new();for l in p[side].as_array().ok_or("ACQ_LOTS")? {lots.push_back(AcquisitionLot{quantity:l["quantity"].as_u64().ok_or("ACQ_QUANTITY")?,price:amount(&l["price"])?,observed:started,owner:None});}
+   inventory.insert((ex.clone(),side.into()),lots);
+  }}
+  let mut seen_fills=BTreeMap::new();need(bank.engine().fills().len()<=65_536,"ACQ_FILL_BOUND")?;
+  for f in bank.engine().fills(){let mut e=f.clone();e["fillId"]=f["sourceId"].clone();let key=(id(&e["actualOrderId"])?,id(&e["fillId"])?);seen_fills.insert(key,digest(&acquisition_fill_facts(&e)?)?);}
+  let initial_head=bank.durable_head();let cohort_sha=digest(&json!({"config":config,"scope":scope,"manifest":bank.manifest_hash(),"run":run,"head":initial_head,"startedAtMs":started}))?;
+  Ok(Self{config,scope:scope.clone(),manifest:bank.manifest_hash().clone(),run,cohort_sha,initial_head,started,last:started,disabled:None,dispatch_identity:acquisition_identity(log)?,
+   cursors:["moloch-live","moloch-package"].into_iter().map(|s|(s.into(),(bank.last_source_sequence(s),String::new()))).collect(),pre_cohort,exposures:BTreeMap::new(),retained:VecDeque::new(),inventory,seen_fills,duplicates:0,completed:[0;3],excluded_ordinary:0})
+ }
+ fn bind(&self,bank:&Session)->Result<()> {need(self.disabled.is_none()&&bank.manifest_hash()==&self.manifest&&bank.live_account_seed().is_some_and(|s|s["runId"]==self.run),"ACQ_BANK_OR_DISABLED")}
+ fn log(&self,log:&DispatchLog)->Result<()> {need(acquisition_identity(log)?==self.dispatch_identity,"ACQ_ORIGINAL_DISPATCH_CHANGED")}
+ /// Immediately after the original durable attempt, before its one SDK call.
+ pub fn track_attempt(&mut self,bank:&Session,log:&DispatchLog,qid:u64,at:u64)->Result<bool> {
+  self.bind(bank)?;self.log(log)?;need(at>=self.last&&at>=self.started,"ACQ_ATTEMPT_CLOCK")?;
+  if self.pre_cohort.contains(&qid)||self.exposures.contains_key(&qid){return Ok(false)}
+  let i=log.intents.get(&qid).ok_or("ACQ_ORIGINAL_INTENT")?;if i["fundamental"].is_null(){self.excluded_ordinary+=1;return Ok(false)}
+  need(log.attempted.contains(&qid)&&!log.acknowledgments.contains_key(&qid)&&!log.closed.contains(&qid)&&!log.aborted_records().contains_key(&qid),"ACQ_ORIGINAL_ATTEMPT")?;
+  let attempt=log.original_attempt(qid).ok_or("ACQ_ORIGINAL_ATTEMPT")?;need(clock(&attempt["at"])?==at&&attempt.get("captureAtMs").is_none_or(|n|n.as_u64()==Some(at)),"ACQ_ORIGINAL_ATTEMPT_CLOCK")?;
+  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("ACQ_NATIVE_QUOTE")?;
+  if q["action"]!="buy"||bank.engine().is_package_order(qid){return Ok(false)}
+  let tag=&i["fundamental"];need(tag["version"]==1&&tag["runId"]==self.run&&tag["bankManifestHash"]==self.manifest&&tag["qid"]==qid
+   &&tag["bindingSha256"].as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit()))&&q["retired"]==false&&q["filled"]==0&&i["quote"]==q,"ACQ_ORIGINAL_TAG_OR_QUOTE")?;
+  let tournament=intent_tournament(log,qid)?;let spec=&i["spec"];let body=&spec["body"];let n=body["quantity"].as_u64().filter(|n|*n>0).ok_or("ACQ_REQUEST_QUANTITY")?;
+  let native=q["quantity"].as_u64().ok_or("ACQ_NATIVE_QUANTITY")?;let ex=id(&q["exchangeId"])?;let market=id(&q["marketId"])?;let limit=amount(&q["price"])?;
+  need(tournament==self.scope.tournament_id&&self.scope.exchanges.get(&ex)==Some(&market)&&body["exchangeId"]==q["exchangeId"]&&body["action"]=="buy"
+   &&body["side"]==if q["side"]=="NO"{"no"}else{"yes"}&&n<=native&&amount(&body["price"])?==limit&&clock(&body["expirationDate"])?==q["expiresAt"].as_u64().ok_or("ACQ_EXPIRY")?
+   &&body["idempotencyKey"]==format!("{}:{qid}",self.run),"ACQ_EXACT_REQUEST_SCOPE")?;
+  let created=q["createdAt"].as_u64().filter(|t|*t<=at).ok_or("ACQ_CREATED_CLOCK")?;let expires=q["expiresAt"].as_u64().filter(|t|*t>at).ok_or("ACQ_EXPIRY")?;
+  let raw=bank.engine().live_package_books().into_iter().find(|b|b["exchangeId"]==ex);
+  if let Some(b)=&raw{need(b["marketId"]==market&&b["tournamentId"]==tournament,"ACQ_BOOK_SCOPE")?;}
+  let mode=q["reviewedFundamentalEntry"].get("executionMode").and_then(Value::as_str).unwrap_or("joinBid");need(matches!(mode,"joinBid"|"improveOneTick"|"boundedLimitMayRest"),"ACQ_EXECUTION_MODE")?;
+  self.prune();need(self.exposures.values().filter(|p|!p.confirmed&&!p.aborted).count()<self.config.maximum_pending&&self.exposures.len()<self.config.maximum_pending+self.config.retained_completed,"ACQ_EXPOSURE_BOUND")?;
+  let descriptor=log.descriptor_identity().map_err(|_|"ACQ_ORIGINAL_DISPATCH")?;let evidence=json!({"nativeHead":bank.durable_head(),"originalIntentSha256":digest(i)?,"originalAttemptSha256":digest(attempt)?,"originalSpecSha256":digest(spec)?,"originalQuoteSha256":digest(&q)?,"fundamentalTag":tag,"tournamentId":tournament,"marketId":market,"exchangeId":ex,"side":q["side"],"executionMode":mode,"legacyJoinMode":q["reviewedFundamentalEntry"].get("executionMode").is_none(),"nativeReviewMetadata":q["reviewedFundamentalEntry"],"policySha256":digest(bank.engine().policy())?,"book":raw,"includesOwnLiquidity":true,"dispatch":descriptor,"reviewApprovalIndependentlyVerified":false});
+  let reserved=times(limit,native)?;let reservation_time=times(reserved,at-created)?;
+  self.exposures.insert(qid,AcquisitionExposure{evidence,quote:q,intent_sha:digest(i)?,attempt_sha:digest(attempt)?,requested:n,native_reserved:native,admitted:None,ack_receipt:None,ack_observed:None,actual_id:None,created,attempt:at,expires,limit,capital_at:at,reserved,reservation_time,owned_closed_time:0,owned_remaining:0,fills:BTreeMap::new(),terminal:None,confirmed:false,aborted:false,close_proof:None});self.last=at;Ok(true)
+ }
+ fn reservation(&mut self,bank:&Session,qid:u64,at:u64)->Result<()> {
+  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("ACQ_NATIVE_QUOTE")?;let p=self.exposures.get_mut(&qid).ok_or("ACQ_EXPOSURE")?;p.integrate(at)?;
+  let n=q["quantity"].as_u64().ok_or("ACQ_QUANTITY")?.checked_sub(q["filled"].as_u64().ok_or("ACQ_QUANTITY")?).ok_or("ACQ_QUANTITY")?;
+  p.reserved=if q["retired"]==true{0}else{times(p.limit,n)?};Ok(())
+ }
+ pub fn observe_committed(&mut self,bank:&Session,source:&str,sequence:u64,e:&Value)->Result<()> {
+  let result=self.observe_inner(bank,source,sequence,e);if let Err(error)=result{self.disabled=Some(error)}result
+ }
+ fn observe_inner(&mut self,bank:&Session,source:&str,sequence:u64,e:&Value)->Result<()> {
+  self.bind(bank)?;let mut original=e.clone();original.as_object_mut().ok_or("ACQ_EVENT")?.remove("sourceRef");let sha=digest(&original)?;
+  need(sequence>0&&bank.committed_source_hash(source,sequence)==Some(sha.as_str())&&e.get("sourceRef").is_none_or(|r|*r==json!({"id":source,"sequence":sequence,"hash":sha})),"ACQ_SOURCE_MEMBERSHIP")?;
+  if let Some((n,h))=self.cursors.get(source){if sequence==*n&&h==&sha{self.duplicates+=1;return Ok(())}need(sequence==n+1,"ACQ_SOURCE_ORDER")?;}else{need(sequence==1&&self.cursors.len()<16,"ACQ_SOURCE_BASELINE")?;}
+  let at=clock(e.get("processedAt").unwrap_or(&e["receivedAt"]))?;need(at>=self.last,"ACQ_OBSERVATION_CLOCK")?;
+  match e["type"].as_str() {
+   Some("actual_order_ack")=>{let qid=e["orderId"].as_u64().ok_or("ACQ_QID")?;if let Some(p)=self.exposures.get_mut(&qid){let n=e["quantity"].as_u64().filter(|n|*n>0&&*n<=p.requested).ok_or("ACQ_ACK_QUANTITY")?;
+    need(bank.engine().live_order_bindings().get(&qid).is_some_and(|id|e["actualOrderId"]==*id)&&e["exchangeId"]==p.quote["exchangeId"]&&e["action"]=="buy","ACQ_ACK_BINDING")?;
+    let actual=id(&e["actualOrderId"])?;let receipt=id(&e["receiptHash"])?;if let Some(old)=&p.actual_id{need(old==&actual&&p.admitted==Some(n)&&p.ack_receipt.as_ref()==Some(&receipt),"ACQ_ACK_CHANGED")?;}else{p.actual_id=Some(actual);p.admitted=Some(n);p.ack_receipt=Some(receipt);p.ack_observed=Some(at);}self.reservation(bank,qid,at)?;}}
+   Some("actual_fill")=>self.fill(bank,e,at)?,
+   Some("actual_order_terminal")=>{let qid=e["orderId"].as_u64().ok_or("ACQ_QID")?;if let Some(p)=self.exposures.get_mut(&qid){if let Some(old)=&p.terminal{let mut a=old.clone();let mut b=e.clone();for k in ["sourceRef","processedAt"]{a.as_object_mut().unwrap().remove(k);b.as_object_mut().unwrap().remove(k);}need(a==b,"ACQ_TERMINAL_CHANGED")?;}else{let mut terminal=e.clone();terminal.as_object_mut().unwrap().remove("sourceRef");p.terminal=Some(terminal);}self.reservation(bank,qid,at)?;}},
+   Some("unsubmitted_intent_retired")=>{let qid=e["orderId"].as_u64().ok_or("ACQ_QID")?;if self.exposures.contains_key(&qid){self.reservation(bank,qid,at)?;}},
+   Some("actual_position_adoption"|"actual_collateral_settlement")=>return Err("ACQ_UNSUPPORTED_INVENTORY_TRANSITION"),
+   _=>{},
+  }
+  self.cursors.insert(source.into(),(sequence,sha));self.last=at;self.prune();Ok(())
+ }
+ fn fill(&mut self,bank:&Session,e:&Value,at:u64)->Result<()> {
+  need(bank.engine().fills().iter().any(|f|native_fill_matches(f,e)),"ACQ_NATIVE_FILL_MEMBERSHIP")?;
+  let facts=acquisition_fill_facts(e)?;let key=(id(&e["actualOrderId"])?,id(&e["fillId"])?);let sha=digest(&facts)?;
+  if let Some(old)=self.seen_fills.get(&key){need(old==&sha,"ACQ_FILL_CONFLICT")?;self.duplicates+=1;return Ok(())}
+  need(self.seen_fills.len()<65_536,"ACQ_FILL_BOUND")?;
+  let qid=e["orderId"].as_u64().ok_or("ACQ_QID")?;let n=e["quantity"].as_u64().filter(|n|*n>0).ok_or("ACQ_QUANTITY")?;let price=amount(&e["price"])?;let executed=clock(&e["executedAt"])?;need(executed<=clock(&e["receivedAt"])?&&clock(&e["receivedAt"])?<=at,"ACQ_FILL_CLOCK")?;
+  if let Some(p)=self.exposures.get_mut(&qid){need(p.actual_id.as_ref()==Some(&key.0)&&e["side"]==p.quote["side"]&&e["exchangeId"]==p.quote["exchangeId"]&&e["action"]=="buy"&&executed>=p.attempt&&p.fills.len()<256
+   &&p.fills.values().map(|f|f.quantity).sum::<u64>().checked_add(n).is_some_and(|s|s<=p.admitted.unwrap_or(0)),"ACQ_FILL_BINDING")?;
+   need(!p.confirmed,"ACQ_LATE_FILL_AFTER_CONFIRMED_TAPE")?;p.fills.insert(key.clone(),AcquisitionFill{facts,quantity:n,executed,observed:at});self.reservation(bank,qid,at)?;
+  }
+  let ex=id(&e["exchangeId"])?;let side=id(&e["side"])?;let buy=e["action"]=="buy";need(matches!(side.as_str(),"YES"|"NO")&&matches!(e["action"].as_str(),Some("buy"|"sell")),"ACQ_FILL_ACTION")?;
+  let consumed=if buy{if side=="YES"{"NO"}else{"YES"}}else{side.as_str()};let mut left=n;let mut closed=Vec::new();
+  if let Some(lots)=self.inventory.get_mut(&(ex.clone(),consumed.into())){while left>0 {let Some(l)=lots.front_mut()else{break};let take=left.min(l.quantity);closed.push((l.owner,take,l.price,l.observed));left-=take;l.quantity-=take;if l.quantity==0{lots.pop_front();}}}
+  for(owner,n,cost,entered)in closed{if let Some(owner)=owner{let p=self.exposures.get_mut(&owner).ok_or("ACQ_OWNED_EVIDENCE_DROPPED")?;p.owned_remaining=p.owned_remaining.checked_sub(n).ok_or("ACQ_FIFO_QUANTITY")?;p.owned_closed_time=plus(p.owned_closed_time,times(times(cost,n)?,at.checked_sub(entered).ok_or("ACQ_OWNED_CLOCK")?)?)?;}}
+  if buy&&left>0{let owner=self.exposures.contains_key(&qid).then_some(qid);self.inventory.entry((ex.clone(),side.clone())).or_default().push_back(AcquisitionLot{quantity:left,price,observed:at,owner});if let Some(p)=self.exposures.get_mut(&qid){p.owned_remaining=p.owned_remaining.checked_add(left).ok_or("ACQ_RANGE")?;}}else if !buy{need(left==0,"ACQ_FIFO_MISSING")?;}
+  for(s,native)in [("YES",moloch_replay::Side::Yes),("NO",moloch_replay::Side::No)]{let tracked=self.inventory.get(&(ex.clone(),s.into())).map(|ls|ls.iter().map(|l|l.quantity).sum::<u64>()).unwrap_or(0);need(tracked==bank.engine().wallet.quantity(&ex,native),"ACQ_NATIVE_FIFO_QUANTITY")?;}
+  self.seen_fills.insert(key,sha);Ok(())
+ }
+ /// SAME original receipts already applied by the worker; never fetches a tape.
+ /// Durable log.closed, exact committed terminal and the entire fill set agree.
+ pub fn confirm_terminal(&mut self,bank:&Session,log:&DispatchLog,qid:u64,order:&Receipt,tape:&Receipt,at:u64)->Result<bool> {
+  self.bind(bank)?;self.log(log)?;need(at>=self.last,"ACQ_CONFIRM_CLOCK")?;let Some(p)=self.exposures.get(&qid)else{return Ok(false)};if p.confirmed{return Ok(false)}
+  need(log.closed.contains(&qid)&&log.attempted.contains(&qid)&&log.intents.get(&qid).is_some_and(|i|digest(i).ok().as_ref()==Some(&p.intent_sha))&&log.original_attempt(qid).is_some_and(|a|digest(a).ok().as_ref()==Some(&p.attempt_sha)),"ACQ_ORIGINAL_CLOSED")?;
+  let ack:Receipt=serde_json::from_value(log.acknowledgments.get(&qid).ok_or("ACQ_ORIGINAL_ACK")?.clone()).map_err(|_|"ACQ_ACK_RECEIPT")?;let tid=intent_tournament(log,qid)?;let stamp=crate::daily_windows::iso(at).map_err(|_|"ACQ_CLOCK")?;
+  need(p.attempt<=clock(&json!(ack.request_started_at))?&&clock(&json!(ack.request_started_at))?<=clock(&json!(ack.received_at))?&&clock(&json!(ack.received_at))?<=at,"ACQ_ORIGINAL_ACK_CLOCK")?;
+  let acknowledged=if let Some(recovery)=log.recovered.get(&qid){let t:Receipt=serde_json::from_value(recovery["fills"].clone()).map_err(|_|"ACQ_RECOVERED_TAPE")?;need(t.endpoint==format!("/orders/{}/fills?limit=200",id(&recovery["actualOrderId"])?),"ACQ_RECOVERED_TAPE_ENDPOINT")?;feedback::recovered_acknowledgment(&p.quote,id(&recovery["actualOrderId"])?.as_str(),tid,&ack,&t,&stamp).map_err(|_|"ACQ_ORIGINAL_ACK")?}else{need(ack.endpoint=="/orders","ACQ_ACK_ENDPOINT")?;feedback::acknowledgment(&p.quote,&ack,&stamp).map_err(|_|"ACQ_ORIGINAL_ACK")?};
+  let actual=id(&acknowledged["actualOrderId"])?;need(p.actual_id.as_ref()==Some(&actual)&&p.admitted==acknowledged["quantity"].as_u64()&&p.ack_receipt.as_ref()==Some(&feedback::digest(&ack).map_err(|_|"ACQ_RECEIPT_HASH")?)
+   &&bank.engine().live_order_bindings().get(&qid)==Some(&actual)&&order.endpoint==format!("/orders/{actual}")&&tape.endpoint==format!("/orders/{actual}/fills?limit=200"),"ACQ_ORIGINAL_ACK_BINDING")?;
+  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("ACQ_NATIVE_QUOTE")?;let witness=p.terminal.as_ref().ok_or("ACQ_COMMITTED_TERMINAL_REQUIRED")?;
+  let processed=witness["processedAt"].as_str().or_else(||witness["receivedAt"].as_str()).ok_or("ACQ_CLOCK")?;
+  let terminal=feedback::terminal(&q,&actual,tid,order,tape,processed).map_err(|_|"ACQ_TERMINAL_RECEIPTS")?.ok_or("ACQ_ORDER_OPEN")?;need(&terminal==witness&&q["retired"]==true,"ACQ_TERMINAL_MEMBERSHIP")?;
+  let rows=feedback::fills(&q,&actual,tid,tape,processed).map_err(|_|"ACQ_COMPLETE_TAPE")?;
+  need(rows.len()==p.fills.len()&&rows.iter().all(|e|acquisition_fill_facts(e).ok().is_some_and(|facts|p.fills.get(&(actual.clone(),id(&e["fillId"]).unwrap_or_default())).is_some_and(|f|f.facts==facts))&&bank.engine().fills().iter().any(|f|native_fill_matches(f,e))),"ACQ_TAPE_FILL_SET")?;
+  let filled=p.fills.values().map(|f|f.quantity).sum::<u64>();need(q["filled"]==filled&&terminal["filledQuantity"]==filled,"ACQ_NATIVE_FILL_TOTAL")?;
+  let proof=digest(&json!({"intent":p.intent_sha,"attempt":p.attempt_sha,"orderReceipt":feedback::digest(order).map_err(|_|"ACQ_RECEIPT_HASH")?,"fillReceipt":feedback::digest(tape).map_err(|_|"ACQ_RECEIPT_HASH")?,"terminal":witness,"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity().map_err(|_|"ACQ_ORIGINAL_DISPATCH")?}))?;
+  let class=if filled==0{0}else if filled==p.requested{2}else{1};let p=self.exposures.get_mut(&qid).unwrap();p.integrate(at)?;need(p.reserved==0,"ACQ_RESERVATION_NOT_RELEASED")?;p.confirmed=true;p.close_proof=Some(proof);self.completed[class]+=1;self.retained.push_back(qid);self.last=at;self.prune();Ok(true)
+ }
+ /// A positive SDK proof is separate from terminal-zero. It grants no retry and
+ /// is never inferred from an error string, expiry, or an unverified JSON row.
+ pub fn refresh_aborts(&mut self,bank:&Session,log:&DispatchLog,at:u64)->Result<()> {
+  self.bind(bank)?;self.log(log)?;need(at>=self.last,"ACQ_OBSERVATION_CLOCK")?;
+  let ids=self.exposures.iter().filter(|(id,p)|!p.aborted&&log.proved_no_network(**id)).map(|(id,_)|*id).collect::<Vec<_>>();
+  for id in ids {let p=&self.exposures[&id];need(p.fills.is_empty()&&p.admitted.is_none()&&!log.acknowledgments.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&log.aborted_records().contains_key(&id),"ACQ_ABORT_CONTRADICTION")?;self.reservation(bank,id,at)?;self.exposures.get_mut(&id).unwrap().aborted=true;self.retained.push_back(id);}
+  self.last=at;self.prune();Ok(())
+ }
+ fn prune(&mut self) {while self.retained.len()>self.config.retained_completed{let id=self.retained.pop_front().unwrap();if self.exposures.get(&id).is_some_and(|p|p.owned_remaining==0&&p.reserved==0){self.exposures.remove(&id);}}
+  let keep=self.retained.iter().copied().collect::<BTreeSet<_>>();self.exposures.retain(|id,p|(!p.confirmed&&!p.aborted)||p.owned_remaining>0||p.reserved>0||keep.contains(id));
+ }
+ pub fn outcome(&self,qid:u64,at:u64)->Result<AcquisitionOutcome> {
+  need(at>=self.last,"ACQ_QUERY_CLOCK")?;let p=self.exposures.get(&qid).ok_or("ACQ_EXPOSURE")?;let filled=p.fills.values().map(|f|f.quantity).sum::<u64>();
+  let reservation=plus(p.reservation_time,times(p.reserved,at.checked_sub(p.capital_at).ok_or("ACQ_CAPITAL_CLOCK")?)?)?;let mut owned=p.owned_closed_time;
+  for l in self.inventory.values().flat_map(|ls|ls.iter()).filter(|l|l.owner==Some(qid)){owned=plus(owned,times(times(l.price,l.quantity)?,at.checked_sub(l.observed).ok_or("ACQ_OWNED_CLOCK")?)?)?;}
+  Ok(AcquisitionOutcome{qid,class:if p.aborted{"proved_no_network"}else if !p.confirmed{if p.admitted.is_some(){"acknowledged_pending"}else{"unknown_or_pending_ack"}}else if filled==0{"confirmed_zero"}else if filled==p.requested{"confirmed_full"}else{"confirmed_partial"}.into(),requested_quantity:p.requested,native_reserved_quantity:p.native_reserved,admitted_quantity:p.admitted,observed_filled_quantity:filled,filled_fraction:p.confirmed.then_some([filled,p.requested]),first_execution_latency_ms:p.fills.values().map(|f|f.executed-p.attempt).min(),first_observation_latency_ms:p.fills.values().map(|f|f.observed-p.attempt).min(),maximum_fill_observation_delay_ms:p.fills.values().map(|f|f.observed-f.executed).max(),attempt_at_ms:p.attempt,quote_created_at_ms:p.created,original_expiry_ms:p.expires,observed_through_ms:at,reservation_principal_time_unit_ms:reservation.to_string(),owned_principal_time_observed_unit_ms:owned.to_string(),owned_remaining_quantity:p.owned_remaining,reservation_released:p.reserved==0,acquisition_confirmed:p.confirmed,terminal_status:p.terminal.as_ref().and_then(|e|e["status"].as_str()).map(str::to_owned),cancellation_is_informative:true,original_evidence:p.evidence.clone(),close_proof_sha256:p.close_proof.clone(),execution_authority:false})
+ }
+ pub fn diagnostic(&self,at:u64)->Result<Value> {
+  need(at>=self.last,"ACQ_QUERY_CLOCK")?;let rows=self.exposures.keys().map(|qid|self.outcome(*qid,at)).collect::<Result<Vec<_>>>()?;
+  Ok(json!({"version":1,"kind":"fundamental_acquisition_only","cohortId":self.config.cohort_id,"cohortSha256":self.cohort_sha,"startedAtMs":self.started,"initialNativeHead":self.initial_head,"bankManifestHash":self.manifest,"scopeSha256":digest(&self.scope)?,"disabled":self.disabled,"preCohortPendingUnscored":self.pre_cohort,"rows":rows,"completedZeroPartialFull":self.completed,"excludedOrdinary":self.excluded_ordinary,"duplicateEvents":self.duplicates,"sourceCursors":self.cursors,"cancellationIsInformative":true,"independentCensoringAssumed":false,"reservationClock":"native_committed_observation_steps_from_original_quote_creation","ownedCapitalClock":"native_committed_observation_FIFO_until_actual_close_or_truncated_at_query","restart":"new_named_cohort_prior_pending_unscored","priceValueLabelsCollected":false,"fittedModel":false,"executionAuthority":false}))
+ }
+}
+thread_local!{static ACQUISITION_OBSERVER:std::cell::RefCell<Option<AcquisitionShadow>>=const{std::cell::RefCell::new(None)};}
+pub fn initialize_acquisition_observer(bank:&Session,log:&DispatchLog,scope:&baal_transport_service::Scope,config:Option<AcquisitionConfig>,started:u64)->Result<()> {
+ ACQUISITION_OBSERVER.with(|s|*s.borrow_mut()=None);let observer=config.map(|c|AcquisitionShadow::new(bank,log,scope,c,started)).transpose()?;ACQUISITION_OBSERVER.with(|s|*s.borrow_mut()=observer);Ok(())
+}
+fn acquisition_runtime(f:impl FnOnce(&mut AcquisitionShadow)->Result<()>) {ACQUISITION_OBSERVER.with(|s|{if let Some(m)=s.borrow_mut().as_mut(){if m.disabled.is_none(){if let Err(e)=f(m){m.disabled=Some(e);}}}});}
+pub fn observe_acquisition_committed(bank:&Session,source:&str,sequence:u64,event:&Value){acquisition_runtime(|m|m.observe_committed(bank,source,sequence,event));}
+pub fn track_acquisition_attempt(bank:&Session,log:&DispatchLog,qid:u64,at:u64){acquisition_runtime(|m|m.track_attempt(bank,log,qid,at).map(|_|()));}
+pub fn confirm_acquisition_terminal(bank:&Session,log:&DispatchLog,qid:u64,order:&Receipt,tape:&Receipt,at:u64){acquisition_runtime(|m|m.confirm_terminal(bank,log,qid,order,tape,at).map(|_|()));}
+pub fn acquisition_observer_diagnostic(bank:&Session,log:&DispatchLog,at:u64)->Option<Value> {
+ ACQUISITION_OBSERVER.with(|s|{let mut s=s.borrow_mut();let m=s.as_mut()?;if m.disabled.is_none(){if let Err(e)=m.refresh_aborts(bank,log,at){m.disabled=Some(e);}}
+  Some(m.diagnostic(at).unwrap_or_else(|e|json!({"state":"unavailable","reason":e,"executionAuthority":false})))})
+}
+
 /// Read-only identity of the actual configured observer, never imported fits.
 /// The caller must still use estimate_runtime_action for current source proof.
 pub fn runtime_configuration(bank:&Session)->Result<(Config,String)>{OBSERVER.with(|slot|{

@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default,skip_serializing_if="Option::is_none")]fundamental_acquisition:Option<moloch_live_runtime::execution_distribution::AcquisitionConfig>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn is_false(v:&bool)->bool{!*v}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
@@ -41,7 +41,7 @@ fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).un
 fn load(p:&Path)->Result<Value>{Ok(serde_json::from_slice(&fs::read(p)?)?)}
 fn private_dir(p:&Path)->Result<()>{use std::os::unix::fs::PermissionsExt;fs::create_dir_all(p)?;let m=fs::symlink_metadata(p)?;if m.file_type().is_symlink()||!m.is_dir(){return Err("LIVE_DIRECTORY".into())}fs::set_permissions(p,fs::Permissions::from_mode(0o700))?;Ok(())}
 fn transport(c:&Control,auth:Box<dyn Authority>,writes:bool)->Result<Transport>{Ok(Transport::new_with_read_budget(Config{queue_dir:c.root.join("account-queue"),account_scope:c.account_scope.clone(),scope:c.scope.clone(),maximum_pages:20,writes_enabled:writes},Box::new(UnixFileCredentials::approved_file(c.credentials.clone())?),Box::new(SystemClock),auth,100,600)?.with_full_account_observation())}
-fn observe_execution(bank:&Session,sequence:u64,event:&Value){moloch_live_runtime::execution_edge::observe_runtime_committed(bank,"moloch-live",sequence,event);moloch_live_runtime::execution_distribution::observe_runtime_committed(bank,"moloch-live",sequence,event);}
+fn observe_execution(bank:&Session,sequence:u64,event:&Value){moloch_live_runtime::execution_edge::observe_runtime_committed(bank,"moloch-live",sequence,event);moloch_live_runtime::execution_distribution::observe_runtime_committed(bank,"moloch-live",sequence,event);moloch_live_runtime::execution_distribution::observe_acquisition_committed(bank,"moloch-live",sequence,event);}
 fn accept(bank:&mut Session,event:&Value)->Result<()>{let mut e=event.clone();e["processedAt"]=json!(iso(now()));let seq=bank.last_source_sequence("moloch-live")+1;if bank.accept("moloch-live",seq,&e)?{observe_execution(bank,seq,&e);}Ok(())}
 /// The original dispatch receipt is still fully validated before this call.
 /// Recheck a previously committed ACK against the real native validator without
@@ -312,7 +312,7 @@ fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,
   }
   fn quote(&self,id:u64)->Result<Value>{quote(self.bank,id)}
   fn apply(&mut self,e:&Value)->Result<()>{accept(self.bank,e)}
-  fn close(&mut self,id:u64,e:&Value,order:&Receipt,fills:&Receipt)->Result<()>{accept(self.bank,e)?;self.log.append(json!({"kind":"closed","qid":id,"orderReceiptHash":feedback::digest(order)?,"fillReceiptHash":feedback::digest(fills)?}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(self.bank,self.log,id,order,fills,now());Ok(())}
+  fn close(&mut self,id:u64,e:&Value,order:&Receipt,fills:&Receipt)->Result<()>{accept(self.bank,e)?;self.log.append(json!({"kind":"closed","qid":id,"orderReceiptHash":feedback::digest(order)?,"fillReceiptHash":feedback::digest(fills)?}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(self.bank,self.log,id,order,fills,now());moloch_live_runtime::execution_distribution::confirm_acquisition_terminal(self.bank,self.log,id,order,fills,now());Ok(())}
  }
  cache.cycle(&c.scope,&owned,false,&mut Live{t,c,bank,log,stream,source,breadth,universe})
 }
@@ -711,7 +711,7 @@ fn record_original_attempt(bank:&Session,log:&mut DispatchLog,qid:u64,config:Opt
  // through a JSON Value and assigning a different digest to the same policy.
  let config_sha=config.map(|value|serde_json::to_vec(value).map(|bytes|format!("{:x}",Sha256::digest(bytes)))).transpose()?;
  let event=json!({"kind":"attempt","qid":qid,"at":iso(at),"captureAtMs":at,"evidenceVersion":1,"nativeHead":bank.durable_head(),"sourceFrontier":frontier,"originalQuoteSha256":hash(&q),"dispatchBefore":log.proof(qid),"modelConfigSha256":config_sha,"modelAlgorithmSha256":format!("{:x}",Sha256::digest(include_bytes!("execution_edge.rs")))});
- log.append(event)?;moloch_live_runtime::execution_distribution::track_runtime_attempt(bank,log,qid,at);if config.is_some(){moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);}Ok(())
+ log.append(event)?;moloch_live_runtime::execution_distribution::track_runtime_attempt(bank,log,qid,at);moloch_live_runtime::execution_distribution::track_acquisition_attempt(bank,log,qid,at);if config.is_some(){moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);}Ok(())
 }
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if !owner_capital_buys_allowed(c,bank,&q["action"])?{return Ok(())}
@@ -1322,7 +1322,7 @@ fn cancel_owned(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
    let observed=request(t,&c.root,Endpoint::OwnedOrder{order_id:actual.clone()})?;let filled=request(t,&c.root,Endpoint::OwnedFills{order_id:actual.clone()})?;
    // No source hook may interrupt a returned actual fill tape and its commit.
    for e in feedback::fills(old,&actual,&c.scope.tournament_id,&filled,&iso(now()))?{accept(bank,&e)?}
-   if let Some(e)=feedback::terminal(old,&actual,&c.scope.tournament_id,&observed,&filled,&iso(now()))?{accept(bank,&e)?;log.append(json!({"kind":"closed","qid":qid,"orderReceiptHash":feedback::digest(&observed)?,"fillReceiptHash":feedback::digest(&filled)?,"afterRejectedCancel":true}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(bank,log,qid,&observed,&filled,now());return Ok(())}
+   if let Some(e)=feedback::terminal(old,&actual,&c.scope.tournament_id,&observed,&filled,&iso(now()))?{accept(bank,&e)?;log.append(json!({"kind":"closed","qid":qid,"orderReceiptHash":feedback::digest(&observed)?,"fillReceiptHash":feedback::digest(&filled)?,"afterRejectedCancel":true}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(bank,log,qid,&observed,&filled,now());moloch_live_runtime::execution_distribution::confirm_acquisition_terminal(bank,log,qid,&observed,&filled,now());return Ok(())}
   }
   // No mayHaveExecuted/string-based no-network inference: missing typed
   // evidence, writes after the marker and uncertain outcomes remain fatal.
@@ -1675,6 +1675,7 @@ pub fn main()->Result<()>{
   // Previously owned holdings are filtered from the financial feed as well as discovery.
   let pairs:Value=if let Some(u)=&universe{u.pairs(&c.scope.exchanges)}else{c.scope.exchanges.iter().map(|(e,m)|json!({"exchangeId":e,"marketId":m})).collect::<Vec<_>>().into()};
   if let Err(error)=moloch_live_runtime::execution_distribution::initialize_observer(&bank,c.execution_distribution.clone()){let _=atomic_json(&c.root.join("execution-distribution.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error,"executionAuthority":false}));}
+  if let Err(error)=moloch_live_runtime::execution_distribution::initialize_acquisition_observer(&bank,&log,&c.scope,c.fundamental_acquisition.clone(),now()){let _=atomic_json(&c.root.join("fundamental-acquisition.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error,"executionAuthority":false}));}
   if let Err(error)=moloch_live_runtime::execution_edge::initialize_observer(&bank,c.execution_model.clone()){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error,"executionAuthority":false}));}
   let start=now();let mut source_state=RestSource::new(&pairs,&c.scope.tournament_id,&iso(start))?;source_state.seed_trade_facts(bank.source_facts())?;
   let recovery_budget_path=c.root.join("stream-recovery-budget.json");let mut recovery_budget=recovery_budget(&recovery_budget_path,now())?;
@@ -1778,6 +1779,11 @@ pub fn main()->Result<()>{
     if census.report.transport_guard_observed{return Err("LIVE_RELATIONSHIP_CENSUS_GUARD".into())}relationship_census=Some(census);
    }
    if let Some(model)=moloch_live_runtime::execution_distribution::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-distribution.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
+   if let Some(model)=moloch_live_runtime::execution_distribution::acquisition_observer_diagnostic(&bank,&log,now()){
+    // Keep each cold-start cohort's latest bounded view; a restart must not
+    // overwrite the preceding cohort or pretend its pending orders were zero.
+    if let Some(cohort)=model["cohortSha256"].as_str(){let _=atomic_json(&c.root.join(format!("fundamental-acquisition-{cohort}.json")),&model);}
+   }
    if cycles%20==0{t.compact()?;}
    std::thread::sleep(Duration::from_millis(if selected.is_empty(){600}else{100}));
    Ok(())})();
