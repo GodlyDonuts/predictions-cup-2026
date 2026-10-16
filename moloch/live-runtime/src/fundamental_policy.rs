@@ -159,7 +159,7 @@ struct ExistingOrigin{approval:ExistingApproval,adoption_ref:Value,adopted_posit
 /// Historical zero-exposure entry retained independently of future policies.
 /// Its original quote/side/spec and immutable fill prefix are never reinterpreted.
 #[derive(Clone)]
-struct AbandonedCohort{exchange:String,cohort:Cohort,not_sent:Value,retirement:Value}
+struct AbandonedCohort{exchange:String,cohort:Cohort,not_sent:Value,retirement:Value,closed_zero:Option<Value>}
 impl Cohort{
     fn entry_id(&self)->Option<u64>{self.entry.as_ref().map(|b|b.qid)}
     fn binding(&self,qid:u64)->Option<&Binding>{self.entry.as_ref().filter(|b|b.qid==qid).or_else(||self.exits.get(&qid))}
@@ -257,9 +257,48 @@ impl AbandonPlan{
         need(now>=self.minted&&now<self.until&&bank.durable_head()==self.head&&digest(&bank.engine().report()?)?==self.report_sha
             &&log.descriptor_identity()?==self.dispatch&&queue_view(transport)?==self.queue&&digest(transport.scope())?==self.scope_sha
             &&bytes_sha(transport.account_scope().as_bytes())==self.account_sha,"FUNDAMENTAL_ABANDON_PLAN_CHANGED")?;
-        need(log.never_attempted(self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())
-            &&!bank.engine().fills().iter().any(|f|f["orderId"]==self.qid()),"FUNDAMENTAL_ABANDON_PHYSICAL_EVENT")
+        let physical=if self.event["kind"]=="rearm_closed_zero"{log.attempted.contains(&self.qid())&&log.closed.contains(&self.qid())&&bank.engine().live_order_bindings().get(&self.qid()).is_some_and(|id|self.event["closedZeroEvidence"]["actualId"]==*id)}else{log.never_attempted(self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())};
+        need(physical&&!bank.engine().fills().iter().any(|f|f["orderId"]==self.qid()),"FUNDAMENTAL_ABANDON_PHYSICAL_EVENT")
     }
+}
+/// Read-only hint for a previously attempted, acknowledged and independently
+/// closed entry with zero actual fills. This is never retry permission.
+#[derive(Clone,Debug,Serialize,PartialEq,Eq)]
+#[serde(rename_all="camelCase")]
+pub struct RearmHint{pub exchange_id:String,pub qid:u64,pub actual_id:String,pub binding_sha256:String}
+pub struct RearmPlan{inner:AbandonPlan}
+impl RearmPlan{pub fn exchange_id(&self)->&str{self.inner.exchange_id()}pub fn qid(&self)->u64{self.inner.qid()}pub fn valid_until_ms(&self)->u64{self.inner.valid_until_ms()}}
+fn validate_zero_closure(binding:&Binding,proof:&Value,terminal:&Value)->Result<()>{
+    let actual=proof["actualId"].as_str().filter(|s|!s.starts_with('0')&&!s.is_empty()&&s.bytes().all(|b|b.is_ascii_digit())).ok_or("FUNDAMENTAL_REARM_ACTUAL_ID")?;
+    let ack:Receipt=serde_json::from_value(proof["ack"].clone())?;let order:Receipt=serde_json::from_value(proof["order"].clone())?;let fills:Receipt=serde_json::from_value(proof["fills"].clone())?;
+    let n=request_quantity(&binding.spec)?;let tournament=binding.spec.body.as_ref().and_then(|v|v["tournamentId"].as_str()).ok_or("FUNDAMENTAL_REARM_TOURNAMENT")?;
+    let processed=terminal["processedAt"].as_str().ok_or("FUNDAMENTAL_REARM_TERMINAL_CLOCK")?;let at=daily_windows::clock(processed)?;
+    let ack_start=daily_windows::clock(&ack.request_started_at)?;let ack_end=daily_windows::clock(&ack.received_at)?;
+    need(ack.status==200&&binding.bound_at_ms<=ack_start&&ack_start<=ack_end&&ack_end<=at,"FUNDAMENTAL_REARM_ACK_CLOCK")?;
+    let acknowledged=if proof["recovered"].is_null(){
+        need(ack.endpoint=="/orders","FUNDAMENTAL_REARM_POST_ACK")?;crate::feedback::acknowledgment(&binding.quote,&ack,&ack.received_at)?
+    }else{let recovery=&proof["recovered"];need(recovery["kind"]=="recovered_ack"&&recovery["qid"]==binding.qid&&recovery["actualOrderId"]==actual&&recovery["order"]==proof["ack"],"FUNDAMENTAL_REARM_RECOVERY")?;
+        let original_fills:Receipt=serde_json::from_value(recovery["fills"].clone())?;
+        need(original_fills.endpoint==format!("/orders/{actual}/fills?limit=200"),"FUNDAMENTAL_REARM_RECOVERY_FILLS")?;
+        let recovery_processed=recovery["event"]["processedAt"].as_str().ok_or("FUNDAMENTAL_REARM_RECOVERY_EVENT")?;
+        let e=crate::feedback::recovered_acknowledgment(&binding.quote,actual,tournament,&ack,&original_fills,recovery_processed)?;
+        need(e==recovery["event"]&&crate::feedback::fills(&binding.quote,actual,tournament,&original_fills,recovery_processed)?.is_empty(),"FUNDAMENTAL_REARM_RECOVERY_EVENT")?;e
+    };
+    need(acknowledged["actualOrderId"]==actual&&acknowledged["quantity"]==n,"FUNDAMENTAL_REARM_ACK_BINDING")?;
+    entry_receipt(&order,&format!("/orders/{actual}"),at,at)?;entry_receipt(&fills,&format!("/orders/{actual}/fills?limit=200"),at,at)?;
+    need(daily_windows::clock(order.data["createdAt"].as_str().ok_or("FUNDAMENTAL_REARM_ORDER_CLOCK")?)?>=binding.quote["createdAt"].as_u64().ok_or("FUNDAMENTAL_REARM_INTENT_CLOCK")?
+        &&daily_windows::clock(order.data["expirationDate"].as_str().ok_or("FUNDAMENTAL_REARM_ORDER_EXPIRY")?)?==binding.quote["expiresAt"].as_u64().ok_or("FUNDAMENTAL_REARM_INTENT_EXPIRY")?,"FUNDAMENTAL_REARM_ORDER_CLOCK")?;
+    need(ack_end<=daily_windows::clock(&order.request_started_at)?&&order.data["quantity"]==n&&order.data["quantityFilled"]==0&&order.data["open"]==false
+        &&fills.data["totalQuantityFilled"]==0&&fills.data["data"].as_array().is_some_and(|a|a.is_empty()),"FUNDAMENTAL_REARM_ZERO_FILLS_REQUIRED")?;
+    let mut q=binding.quote.clone();q["quantity"]=json!(n);
+    let expected=crate::feedback::terminal(&q,actual,tournament,&order,&fills,processed)?.ok_or("FUNDAMENTAL_REARM_TERMINAL_REQUIRED")?;
+    need(expected==*terminal&&matches!(terminal["status"].as_str(),Some("canceled"|"expired"))&&terminal["filledQuantity"]==0&&terminal["fillsComplete"]==true,"FUNDAMENTAL_REARM_TERMINAL_BINDING")?;
+    let rows=proof["rows"].as_array().ok_or("FUNDAMENTAL_REARM_ORIGINAL_ROWS")?;need(rows.len()==4&&rows[0]["event"]["kind"]=="intent"&&rows[1]["event"]["kind"]=="attempt"
+        &&matches!(rows[2]["event"]["kind"].as_str(),Some("ack"|"recovered_ack"))&&rows[3]["event"]["kind"]=="closed","FUNDAMENTAL_REARM_ORIGINAL_LIFECYCLE")?;
+    let spec:RequestSpec=serde_json::from_value(rows[0]["event"]["spec"].clone())?;
+    need(digest(&spec)?==binding.spec_sha256&&rows.iter().all(|r|r["event"]["qid"]==binding.qid)
+        &&rows[3]["event"]["orderReceiptHash"]==crate::feedback::digest(&order)?&&rows[3]["event"]["fillReceiptHash"]==crate::feedback::digest(&fills)?
+        &&if rows[2]["event"]["kind"]=="ack"{rows[2]["event"]["receipt"]==proof["ack"]&&proof["recovered"].is_null()}else{rows[2]["event"]==proof["recovered"]},"FUNDAMENTAL_REARM_ORIGINAL_RECEIPT_HASH")
 }
 fn entry_receipt(r:&Receipt,endpoint:&str,now:u64,age:u64)->Result<(u64,u64)>{
     let start=daily_windows::clock(&r.request_started_at)?;
@@ -491,6 +530,56 @@ impl Cohorts{
         need(self.cohorts.get(plan.exchange_id()).is_some_and(|c|c.entry_id()==Some(plan.qid())&&digest(c).ok().as_ref()==plan.event["cohortSha256"].as_str().map(str::to_owned).as_ref()),"FUNDAMENTAL_ABANDON_COHORT_CHANGED")?;
         self.append(plan.event,now)?;self.check(bank,log)
     }
+    /// Known closure is essential: retired/native-filled/open-list absence is
+    /// not enough. Complete original receipt proof is checked by prepare_rearm.
+    pub fn rearm_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,_now:u64)->Result<Vec<RearmHint>>{
+        self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
+        for(ex,c)in &self.cohorts{let Some(b)=&c.entry else{continue};need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_REARM_SCOPE")?;
+            if c.existing.is_some()||!c.exits.is_empty()||!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)
+                ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
+            let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{continue};let Some(q)=bank.engine().order_records().into_iter().find(|q|q["id"]==b.qid)else{return Err("FUNDAMENTAL_REARM_NATIVE_QUOTE".into())};
+            if q["retired"]!=true||q["filled"]!=0{continue}out.push(RearmHint{exchange_id:ex.clone(),qid:b.qid,actual_id:actual.clone(),binding_sha256:digest(b)?});
+        }Ok(out)
+    }
+    fn original_closed_records(&self,log:&DispatchLog,wanted:&BTreeSet<u64>)->Result<(BTreeMap<u64,Vec<Value>>,FilePin)>{
+        need(wanted.len()<=128&&wanted.iter().all(|id|log.attempted.contains(id)&&log.closed.contains(id)&&log.acknowledgments.contains_key(id)),"FUNDAMENTAL_REARM_NOT_CLOSED")?;
+        let before=log.descriptor_identity()?;let pin=FilePin::from_held(File::open(&self.ordinary_path)?,self.ordinary_path.clone(),64*1024*1024,None)?;
+        need(pin.identity==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_REARM_DISPATCH_TORN")?;
+        let mut sequence=0u64;let mut previous="0".repeat(64);let mut found:BTreeMap<u64,Vec<Value>>=BTreeMap::new();
+        for line in bytes.split(|b|*b==b'\n').filter(|l|!l.is_empty()){
+            need(line.len()<=2*1024*1024,"FUNDAMENTAL_REARM_DISPATCH_ROW_BOUND")?;let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_REARM_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_REARM_DISPATCH_HASH")?;
+            need(row["sequence"]==sequence+1&&row["previous"]==previous&&sha==digest(&row)?,"FUNDAMENTAL_REARM_DISPATCH_CHAIN")?;
+            if let Some(id)=row["event"]["qid"].as_u64().filter(|id|wanted.contains(id)){
+                if matches!(row["event"]["kind"].as_str(),Some("intent"|"attempt"|"ack"|"recovered_ack"|"closed")){let rows=found.entry(id).or_default();need(rows.len()<4,"FUNDAMENTAL_REARM_DUPLICATE_LIFECYCLE")?;rows.push(original);}}
+            sequence+=1;previous=sha.as_str().ok_or("FUNDAMENTAL_REARM_DISPATCH_HASH")?.into();
+        }
+        pin.validate()?;need(before==log.descriptor_identity()?&&before["sequence"]==sequence&&before["previous"]==previous&&found.len()==wanted.len()&&found.values().all(|r|r.len()==4),"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;Ok((found,pin))
+    }
+    pub fn prepare_rearm(&self,bank:&Session,log:&DispatchLog,transport:&Transport,scope:&Scope,hint:&RearmHint,f:&crate::authority::CancelSnapshotSet,order:&Receipt,fills:&Receipt,source_id:&str,sequence:u64,terminal:&Value,now:u64)->Result<RearmPlan>{
+        need(self.rearm_hints(bank,log,scope,now)?.iter().any(|h|h==hint)&&digest(scope)?==digest(transport.scope())?,"FUNDAMENTAL_REARM_HINT_CHANGED")?;
+        no_existing_liability(bank,log,&hint.exchange_id)?;let queue=queue_view(transport)?;let c=&self.cohorts[&hint.exchange_id];let b=c.entry.as_ref().ok_or("FUNDAMENTAL_REARM_ORIGIN")?;
+        let(mut records,ordinary)=self.original_closed_records(log,&[hint.qid].into())?;let rows=records.remove(&hint.qid).ok_or("FUNDAMENTAL_REARM_ORIGINAL_ROWS")?;
+        let proof=json!({"actualId":hint.actual_id,"rows":rows,"ack":log.acknowledgments[&hint.qid],"recovered":log.recovered.get(&hint.qid),"order":order,"fills":fills});
+        let mut event=terminal.clone();let reference=event.as_object_mut().ok_or("FUNDAMENTAL_REARM_TERMINAL")?.remove("sourceRef");let sha=digest(&event)?;
+        need(sequence>0&&bank.committed_source_hash(source_id,sequence)==Some(sha.as_str())&&reference.is_none_or(|r|r==json!({"id":source_id,"sequence":sequence,"hash":sha})),"FUNDAMENTAL_REARM_COMMITTED_TERMINAL")?;
+        validate_zero_closure(b,&proof,&event)?;
+        let mut last=daily_windows::clock(event["processedAt"].as_str().ok_or("FUNDAMENTAL_REARM_TERMINAL_CLOCK")?)?;let mut until=u64::MAX;let tid=&scope.tournament_id;
+        let endpoints=[format!("/tournaments/{}",scope.tournament_slug),format!("/tournaments/{}/portfolio/positions",scope.tournament_slug),format!("/orders?status=open&limit=200&tournamentId={tid}"),format!("/account?tournamentId={tid}")];let receipts=[&f.account,&f.positions,&f.open_orders,&f.cash_balance];
+        for(receipt,endpoint)in receipts.iter().zip(&endpoints){let(start,end)=entry_receipt(receipt,endpoint,now,20000)?;need(start>=last,"FUNDAMENTAL_REARM_ACCOUNT_CLOCK")?;last=end;until=until.min(start.checked_add(20000).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
+        need(f.account.data["id"]==*tid&&f.account.data["slug"]==scope.tournament_slug&&f.account.data["status"]=="active"&&f.positions.data.get("pagination").is_none()
+            &&f.open_orders.data["coverage"]["complete"]==true&&f.open_orders.data["pagination"]["hasMore"]==false&&f.open_orders.data["pagination"]["nextCursor"].is_null(),"FUNDAMENTAL_REARM_ACCOUNT_COVERAGE")?;
+        let mut seen=BTreeSet::new();for row in f.positions.data["positions"].as_array().ok_or("FUNDAMENTAL_REARM_POSITIONS")?{let ex=row["exchangeId"].as_str().ok_or("FUNDAMENTAL_REARM_POSITION_SCOPE")?;need(seen.insert(ex),"FUNDAMENTAL_REARM_DUPLICATE_POSITION")?;if ex==hint.exchange_id{need(row["quantity"].as_i64()==Some(0),"FUNDAMENTAL_REARM_NOT_FLAT")?;}}
+        for row in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_REARM_OPEN_ORDERS")?{need(row["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_REARM_OPEN_ORDER")?;}
+        need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_REARM_CASH")?;
+        let inner=AbandonPlan{event:json!({"kind":"rearm_closed_zero","exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"closedZeroEvidence":proof,"committedTerminal":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
+            head:bank.durable_head(),report_sha:digest(&bank.engine().report()?)?,dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
+            sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,_owner:self._owner.clone()};inner.validate(bank,log,transport,now)?;Ok(RearmPlan{inner})
+    }
+    pub fn apply_rearm(&mut self,plan:RearmPlan,bank:&Session,log:&DispatchLog,transport:&Transport,now:u64)->Result<()>{
+        self.check(bank,log)?;plan.inner.validate(bank,log,transport,now)?;
+        need(self.cohorts.get(plan.exchange_id()).is_some_and(|c|c.entry_id()==Some(plan.qid())&&digest(c).ok().as_ref()==plan.inner.event["cohortSha256"].as_str().map(str::to_owned).as_ref()),"FUNDAMENTAL_REARM_COHORT_CHANGED")?;
+        self.append(plan.inner.event,now)?;self.check(bank,log)
+    }
     /// Stale/missing books and missing ordinary quotes do not suppress reads.
     /// Physical/unknown liabilities and already-owned cohorts still suppress nomination.
     pub fn entry_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,trusted:&BTreeSet<String>,now:u64)->Result<Vec<EntryHint>>{
@@ -678,8 +767,10 @@ impl Cohorts{
             out.apply(&row["event"])?;out.sequence+=1;out.previous=sha.as_str().ok_or("FUNDAMENTAL_HASH")?.into();out.clock=at;
         }
         out.check(bank,ordinary)?;
-        if !out.abandoned.is_empty(){let wanted=out.abandoned.keys().copied().collect();let(records,_)=out.original_not_sent_records(ordinary,&wanted)?;
-            for(id,a)in &out.abandoned{need(records.get(id)==Some(&a.not_sent),"FUNDAMENTAL_ABANDONED_ORIGINAL_CHANGED")?;}}
+        if !out.abandoned.is_empty(){let wanted=out.abandoned.iter().filter(|(_,a)|a.closed_zero.is_none()).map(|(id,_)|*id).collect();let(records,_)=out.original_not_sent_records(ordinary,&wanted)?;
+            for(id,a)in out.abandoned.iter().filter(|(_,a)|a.closed_zero.is_none()){need(records.get(id)==Some(&a.not_sent),"FUNDAMENTAL_ABANDONED_ORIGINAL_CHANGED")?;}
+            let wanted=out.abandoned.iter().filter(|(_,a)|a.closed_zero.is_some()).map(|(id,_)|*id).collect();let(records,_)=out.original_closed_records(ordinary,&wanted)?;
+            for(id,a)in out.abandoned.iter().filter(|(_,a)|a.closed_zero.is_some()){need(records.get(id).map(serde_json::to_value).transpose()?.as_ref()==a.closed_zero.as_ref().map(|v|&v["rows"]),"FUNDAMENTAL_REARMED_ORIGINAL_CHANGED")?;}}
         Ok(out)
     }
     fn apply(&mut self,event:&Value)->Result<()>{
@@ -705,7 +796,13 @@ impl Cohorts{
                 need(c.entry_id()==Some(id)&&c.existing.is_none()&&c.exits.is_empty()&&event["cohortSha256"]==digest(c)?
                     &&!self.abandoned.contains_key(&id)&&self.abandoned.len()<128&&event["originalNotSent"].is_object()&&event["committedRetirement"].is_object()
                     &&hex(event["factsSha256"].as_str().ok_or("FUNDAMENTAL_ABANDON_FACTS")?),"FUNDAMENTAL_ABANDON_EVENT")?;
-                let c=self.cohorts.remove(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;self.abandoned.insert(id,AbandonedCohort{exchange:ex.into(),cohort:c,not_sent:event["originalNotSent"].clone(),retirement:event["committedRetirement"].clone()});
+                let c=self.cohorts.remove(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;self.abandoned.insert(id,AbandonedCohort{exchange:ex.into(),cohort:c,not_sent:event["originalNotSent"].clone(),retirement:event["committedRetirement"].clone(),closed_zero:None});
+            },
+            Some("rearm_closed_zero")=>{
+                let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let id=event["qid"].as_u64().ok_or("FUNDAMENTAL_QID")?;let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
+                need(c.entry_id()==Some(id)&&c.existing.is_none()&&c.exits.is_empty()&&event["cohortSha256"]==digest(c)?&&!self.abandoned.contains_key(&id)&&self.abandoned.len()<128
+                    &&event["closedZeroEvidence"].is_object()&&event["committedTerminal"].is_object()&&hex(event["factsSha256"].as_str().ok_or("FUNDAMENTAL_REARM_FACTS")?),"FUNDAMENTAL_REARM_EVENT")?;
+                let c=self.cohorts.remove(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;self.abandoned.insert(id,AbandonedCohort{exchange:ex.into(),cohort:c,not_sent:Value::Null,retirement:event["committedTerminal"].clone(),closed_zero:Some(event["closedZeroEvidence"].clone())});
             },
             Some("exit")=>{let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let b:Binding=serde_json::from_value(event["binding"].clone())?;let c=self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
                 need(c.exits.len()<128&&!c.exits.contains_key(&b.qid),"FUNDAMENTAL_EXIT_BINDING_LIMIT_OR_DUPLICATE")?;c.exits.insert(b.qid,b);},
@@ -740,16 +837,22 @@ impl Cohorts{
         for(id,a)in &self.abandoned{
             let b=a.cohort.entry.as_ref().ok_or("FUNDAMENTAL_ABANDONED_ORIGIN")?;
             let retirement=&a.retirement;let source=retirement["id"].as_str().ok_or("FUNDAMENTAL_ABANDONED_REFERENCE")?;let seq=retirement["sequence"].as_u64().ok_or("FUNDAMENTAL_ABANDONED_REFERENCE")?;
-            need(bank.committed_source_hash(source,seq)==retirement["sha256"].as_str()&&retirement["sha256"]==digest(&retirement["event"])?
-                &&retirement["event"]["orderId"]==*id&&retirement["event"]["type"]=="unsubmitted_intent_retired"
-                &&retirement["event"]["receiptHash"]==digest(&a.not_sent["event"]["proof"])? ,"FUNDAMENTAL_ABANDONED_SOURCE_CHANGED")?;
-            need(b.qid==*id&&a.cohort.existing.is_none()&&a.cohort.exits.is_empty()&&log.never_attempted(*id)
-                &&!bank.engine().live_order_bindings().contains_key(id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_ABANDONED_LATE_PHYSICAL_EVENT")?;
+            need(bank.committed_source_hash(source,seq)==retirement["sha256"].as_str()&&retirement["sha256"]==digest(&retirement["event"])?&&retirement["event"]["orderId"]==*id,"FUNDAMENTAL_ABANDONED_SOURCE_CHANGED")?;
+            let physical=if let Some(proof)=&a.closed_zero{
+                need(log.attempted.contains(id)&&log.closed.contains(id)&&log.acknowledgments.get(id)==Some(&proof["ack"])
+                    &&bank.engine().live_order_bindings().get(id).is_some_and(|actual|proof["actualId"]==*actual),"FUNDAMENTAL_REARMED_ORIGINAL_CHANGED")?;
+                validate_zero_closure(b,proof,&retirement["event"])?;true
+            }else{
+                need(retirement["event"]["type"]=="unsubmitted_intent_retired"&&retirement["event"]["receiptHash"]==digest(&a.not_sent["event"]["proof"])? ,"FUNDAMENTAL_ABANDONED_SOURCE_CHANGED")?;
+                log.never_attempted(*id)&&!bank.engine().live_order_bindings().contains_key(id)
+            };
+            need(b.qid==*id&&a.cohort.existing.is_none()&&a.cohort.exits.is_empty()&&physical
+                &&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_ABANDONED_LATE_PHYSICAL_EVENT")?;
             need(a.cohort.first_fill_index<=bank.engine().fills().len()&&digest(&bank.engine().fills()[..a.cohort.first_fill_index])?==a.cohort.prior_fills_sha256
                 &&digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_ABANDONED_PREFIX_CHANGED")?;
             let q=bank.engine().order_records().into_iter().find(|q|q["id"]==*id).ok_or("FUNDAMENTAL_ABANDONED_QUOTE")?;
             need(q["retired"]==true&&q["filled"]==0&&q["exchangeId"]==a.exchange&&q["side"]==b.quote["side"]&&q["action"]==b.quote["action"]
-                &&q["price"]==b.quote["price"]&&q["quantity"]==b.quote["quantity"],"FUNDAMENTAL_ABANDONED_NATIVE_CHANGED")?;
+                &&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(if a.closed_zero.is_some(){request_quantity(&b.spec)?}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?}),"FUNDAMENTAL_ABANDONED_NATIVE_CHANGED")?;
             if let Some(original)=log.intents.get(id){let spec:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&spec)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(*id).as_ref(),"FUNDAMENTAL_ABANDONED_ORIGINAL_CHANGED")?;}
         }
         for(ex,c)in &self.cohorts{
