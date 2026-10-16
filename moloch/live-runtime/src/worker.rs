@@ -102,6 +102,7 @@ fn owner_capital_buys_allowed(c:&Control,bank:&Session,action:&Value)->Result<bo
 /// No independent account client. Original physical liabilities are reconciled
 /// by the existing loop. Pending allocation pauses BUYs but keeps owned SELL,
 /// cancellation and recovery lanes live; it never forces a cancel or a fill.
+fn expected_owner_capital_defer(code:&str)->bool{matches!(code,"CAPITAL_COMMIT_EXPIRED"|"CAPITAL_MANDATE_EXPIRED"|"CAPITAL_ORIGINAL_CASH_MISMATCH"|"CAPITAL_POSITION_MISMATCH"|"CAPITAL_POSITION_MISSING"|"CAPITAL_ORIGINAL_SOURCE_CLOCK"|"CAPITAL_RECEIPT_CLOCK"|"CAPITAL_OPEN_ORDERS_OR_COVERAGE"|"CAPITAL_DEBT_OR_COMPONENT_SCOPE"|"CAPITAL_CASH_OR_ADVANCE")}
 fn owner_capital_receipts_with(mut read:impl FnMut(Endpoint)->Result<Receipt>)->Result<[Receipt;4]>{
  Ok([read(Endpoint::Account)?,read(Endpoint::Collateral)?,read(Endpoint::Positions)?,read(Endpoint::Orders{status:"open".into()})?])
 }
@@ -126,7 +127,7 @@ fn advance_owner_capital(t:&mut Transport,c:&Control,control_path:&Path,bank:&mu
   if current_control()?!=control_sha{return Err("LIVE_OWNER_CAPITAL_CONTROL_CHANGED".into())}
   let boundary=Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary,packages};let approved=settings.approved()?;
   let result=ca::prepare_with_control(bank,&boundary,&approved,ca::Sources{account:&a,collateral:&k,positions:&p,orders:&o},&iso(now()),&control_sha).and_then(|prepared|prepared.commit(bank,&boundary,&iso(now())));
-  match result{Ok(_)=>{},Err(e)if matches!(e.to_string().as_str(),"CAPITAL_ORIGINAL_CASH_MISMATCH"|"CAPITAL_POSITION_MISMATCH"|"CAPITAL_POSITION_MISSING"|"CAPITAL_ORIGINAL_SOURCE_CLOCK"|"CAPITAL_RECEIPT_CLOCK"|"CAPITAL_OPEN_ORDERS_OR_COVERAGE"|"CAPITAL_DEBT_OR_COMPONENT_SCOPE"|"CAPITAL_CASH_OR_ADVANCE")=>{atomic_json(&c.root.join("owner-capital-allocation.json"),&json!({"at":iso(now()),"state":"source_reconciliation_deferred","reason":e.to_string(),"buyEntriesPaused":true,"coveredSellsAndReconciliationEnabled":true}))?;return Ok(true)},Err(e)=>return Err(e)}
+  match result{Ok(_)=>{},Err(e)if expected_owner_capital_defer(&e.to_string())=>{atomic_json(&c.root.join("owner-capital-allocation.json"),&json!({"at":iso(now()),"state":"source_reconciliation_deferred","reason":e.to_string(),"buyEntriesPaused":true,"coveredSellsAndReconciliationEnabled":true}))?;return Ok(true)},Err(e)=>return Err(e)}
  }
  // Crash after the contribution is safe: this branch resumes only the mandate
  // revision, and cannot contribute the same cash twice or rewrite an old event.
@@ -1990,6 +1991,7 @@ pub fn main()->Result<()>{
 
 #[cfg(test)]mod owner_capital_startup_tests{
  use super::*;
+ #[test]fn expired_funding_is_a_buy_only_defer_and_integrity_errors_remain_fatal(){for code in ["CAPITAL_COMMIT_EXPIRED","CAPITAL_MANDATE_EXPIRED","CAPITAL_ORIGINAL_SOURCE_CLOCK"]{assert!(expected_owner_capital_defer(code));}for code in ["CAPITAL_BOUNDARY_CHANGED","CAPITAL_COMMIT_REFERENCE","LIVE_OWNER_CAPITAL_CONTROL_CHANGED","io failure"]{assert!(!expected_owner_capital_defer(code));}}
  #[test]fn legacy_controls_do_not_change_cap_binding_and_opt_in_requires_verified_approval(){
   let mut c:Control=serde_json::from_value(json!({"activation":{"runId":"test","entryUntilMs":100000,"maximumCommitted":"40000.000000","maximumMarketCost":"10000.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{"initialCash":"40000.000000","maximumCommitted":"40000.000000","maximumMarketCost":"10000.000000","quantity":2,"entryStopAt":iso(100000)},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap();assert!(c.owner_capital_allocation.is_none());assert!(validate_owner_capital_control(&c).unwrap());c.activation.maximum_committed="95579.915000".into();assert!(!validate_owner_capital_control(&c).unwrap());
  }
