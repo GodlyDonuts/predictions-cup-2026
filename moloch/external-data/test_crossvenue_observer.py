@@ -101,16 +101,58 @@ class ObserverTests(unittest.TestCase):
         self.assertFalse(out[0]["pricingAuthority"])
         self.assertFalse(out[0]["executionAuthority"])
 
-    def test_duplicate_sequence_and_coverage_boundary_do_not_create_markout_path(self):
+    def test_duplicate_exact_version_and_coverage_boundary_do_not_create_markout_path(self):
         out = []
         s = Study(out.append, horizons=(1000,))
         s.external_update(external(9000), 10000)
         s.accept(row(10000), 10000)
-        s.accept(row(11000), 11000)
+        s.accept(row(11000, source=10000), 11000)
         self.assertEqual(s.counts["sigDuplicateOrReordered"], 1)
         s.accept({"event": {"type": "coverage"}}, 11000)
         s.accept(row(12000, 2), 12000)
         self.assertFalse(any(v["kind"] == "horizon_label" for v in out))
+
+    def test_same_engine_sequence_new_original_read_time_supplies_later_label(self):
+        out=[]; s=Study(out.append,horizons=(1000,))
+        s.external_update(external(9000),10000); s.accept(row(10000,7),10000)
+        original=row(11000,7)
+        s.accept(original,11000)
+        labels=[v for v in out if v['kind']=='horizon_label']
+        self.assertEqual(len(labels),1)
+        self.assertEqual((labels[0]['sourceAt'],labels[0]['receivedAt']),('1970-01-01T00:00:11.000Z',)*2)
+        self.assertEqual(s.counts['sigBooks'],2)
+        self.assertEqual(original,row(11000,7))
+
+    def test_duplicate_batch_still_applies_new_book_version_without_revising_coverage(self):
+        out=[]; s=Study(out.append,horizons=(1000,))
+        s.external_update(external(9000),10000)
+        def frame(at, revision=4, previous=3):
+            return {'hash':'b'*64,'sequence':at,'event':{'source':'official_sig_realtime','event':'markets_batch','receivedAt':stamp(at),
+                    'payload':{'markets':[{'marketId':'1','batch':{'delivery':{'model':'best-effort-authoritative-resync','revision':revision,'previousRevision':previous},
+                    'books':[{'exchangeId':101,'asOf':{'sequence':7,'at':stamp(at)},'bids':[{'price':.4,'quantity':10}],'asks':[{'price':.42,'quantity':10}]}],
+                    'trades':[{'id':'original-public-trade'}]}}]}}}
+        s.breadth(frame(10000),10000)
+        before=dict(s.revisions); boundaries=s.counts['coverageBoundaries']
+        s.breadth(frame(11000),11000)
+        self.assertEqual(s.revisions,before)
+        self.assertEqual(s.counts['coverageBoundaries'],boundaries)
+        self.assertEqual(s.counts['labels'],1)
+        s.breadth(frame(12000,3,2),12000)
+        self.assertEqual(s.revisions,before)
+        self.assertEqual(s.counts['sigBooks'],3)
+
+    def test_version_order_keeps_exact_submicrosecond_time_and_offset_equivalence(self):
+        s=Study(lambda _:None,sampling_mode='trade')
+        first=row(40000,7); first['event']['book']['sourceAt']='1970-01-01T00:00:39.123456700Z'
+        s.accept(first,40000)
+        newer=copy.deepcopy(first); newer['event']['book']['sourceAt']='1970-01-01T00:00:39.123456701Z'
+        s.accept(newer,40001)
+        self.assertEqual(s.counts['sigBooks'],2)
+        equal=copy.deepcopy(newer); equal['event']['book']['sourceAt']='1969-12-31T19:00:39.123456701-05:00'
+        equal['event']['book']['receivedAt']=stamp(40002)
+        s.accept(equal,40002)
+        self.assertEqual(s.counts['sigDuplicateOrReordered'],1)
+        self.assertEqual(s.sig_current[('1','101')]['row'],newer)
 
     def test_complete_trade_tape_coverage_does_not_invalidate_prospective_paths(self):
         out = []

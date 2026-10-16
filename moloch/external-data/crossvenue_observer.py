@@ -38,6 +38,20 @@ def millis(value):
     return int(parsed.timestamp() * 1000)
 
 
+def book_version_time(value):
+    """Original RFC3339 instant, retaining up to nine fractional digits.
+
+    This orders engine read versions only; freshness still uses the original
+    source/receipt clocks and the existing millisecond policy bounds.
+    """
+    match = re.fullmatch(r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(?:\.(\d{1,9}))?(Z|[+-]\d{2}:\d{2})', value)
+    if not match:
+        raise ValueError('OBSERVER_BOOK_VERSION_CLOCK')
+    whole = dt.datetime.fromisoformat(match[1] + match[3].replace('Z', '+00:00'))
+    delta = whole.astimezone(dt.timezone.utc) - dt.datetime(1970, 1, 1, tzinfo=dt.timezone.utc)
+    return (delta.days * 86400 + delta.seconds) * 1000000000 + int((match[2] or '').ljust(9, '0'))
+
+
 def decimal(value):
     if isinstance(value, bool) or not isinstance(value, (str, int)):
         raise ValueError("OBSERVER_DECIMAL")
@@ -542,11 +556,13 @@ class Study:
             if delivery["model"] != "best-effort-authoritative-resync" or revision <= previous:
                 raise ValueError("OBSERVER_BREADTH_REVISION")
             old = self.revisions.get(market)
-            if old is not None and revision <= old:
-                continue
-            if (old is not None and previous != old) or batch.get("resyncRequired") or batch.get("marketSettled"):
-                self.accept({"event": {"type": "gap", "marketId": market}}, now)
-            self.revisions[market] = revision
+            duplicate = old is not None and revision <= old
+            if not duplicate:
+                if (old is not None and previous != old) or batch.get("resyncRequired") or batch.get("marketSettled"):
+                    self.accept({"event": {"type": "gap", "marketId": market}}, now)
+                self.revisions[market] = revision
+            # Original books compare by their own (sequence, asOf.at), even on
+            # duplicate batch revisions. Never reapply batch arrays/coverage.
             for b in batch.get("books", []):
                 def exact(rows):
                     result = []
@@ -595,19 +611,31 @@ class Study:
             self.accept({"event": {"type": "gap", "marketId": market, "exchangeId": exchange}}, now)
             self.counts["tradeInvalidSigSkip"] += 1
             return
-        revision = int(b["sequence"])
-        if revision <= self.last_source.get(key, -1):
+        version = (int(b["sequence"]), book_version_time(b["sourceAt"]))
+        prior = self.last_source.get(key)
+        if prior is not None and version < prior[:2]:
             self.counts["sigDuplicateOrReordered"] += 1
             return
-        self.last_source[key] = revision
         try:
             bids, asks = levels(b["bids"], False), levels(b["asks"], True)
             f = features(bids, asks)
         except (ValueError, InvalidOperation, KeyError):
+            self.last_source[key] = (*version, None)
             if self.sampling_mode == "trade":
                 self.sig_current.pop(key, None)
             self.counts["sigInvalidOrOneSided"] += 1
             return
+        depth = (tuple(bids), tuple(asks))
+        if prior is not None and version == prior[:2]:
+            if prior[2] is not None and depth != prior[2]:
+                # A conflicting original engine version is not a fresh read.
+                # Invalidate current/pending evidence before refusing it.
+                self.accept({"event": {"type": "gap", "marketId": market, "exchangeId": exchange}}, now)
+                self.last_source[key] = (*version, None)
+                raise ValueError("OBSERVER_SIG_BOOK_VERSION_CONFLICT")
+            self.counts["sigDuplicateOrReordered"] += 1
+            return
+        self.last_source[key] = (*version, depth)
         self.counts["sigBooks"] += 1
         waiting = self.pending[key]
         for sample in list(waiting):

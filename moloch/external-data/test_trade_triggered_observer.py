@@ -1,5 +1,6 @@
 """Prospective sampler tests use the original public trade/book wire shapes."""
 import hashlib
+import copy
 import json
 from pathlib import Path
 import tempfile
@@ -47,6 +48,65 @@ class TradeTriggeredObserverTests(unittest.TestCase):
         original=compact(out[0]); s.external_update(e,40110)
         self.assertEqual(len(out),1); self.assertEqual(compact(out[0]),original)
         self.assertEqual(s.external_flow['1']['availableMs'],40010); self.assertGreater(s.counts['tradeDuplicateSkip'],0)
+
+    def test_new_read_same_sequence_refreshes_book_without_retriggering_original_trade(self):
+        s,out=self.study();s.accept(row(39950,7),39950);e=envelope();s.external_update(e,40010)
+        original=compact(out[0]);s.accept(row(40100,7),40100);s.external_update(e,40110)
+        self.assertEqual(len(out),1);self.assertEqual(compact(out[0]),original)
+        self.assertEqual(s.sig_current[('1','101')]['row']['event']['book']['sourceAt'],row(40100,7)['event']['book']['sourceAt'])
+        self.assertEqual(len(s.trigger_seen),1);self.assertEqual(s.external_flow['1']['availableMs'],40010)
+
+    def test_duplicate_wire_batch_admits_new_read_without_duplicate_trade_flow_or_revision(self):
+        s,out=self.study()
+        def frame(at):
+            return {'hash':'b'*64,'sequence':at,'event':{'source':'official_sig_realtime','event':'markets_batch','receivedAt':row(at)['event']['book']['receivedAt'],
+                    'payload':{'markets':[{'marketId':'1','batch':{'delivery':{'model':'best-effort-authoritative-resync','revision':4,'previousRevision':3},
+                    'books':[{'exchangeId':101,'asOf':{'sequence':7,'at':row(at)['event']['book']['sourceAt']},'bids':[{'price':.4,'quantity':10}],'asks':[{'price':.42,'quantity':10}]}],
+                    'trades':[{'id':'same-original-sig-public-trade'}]}}]}}}
+        s.breadth(frame(39950),39950);e=envelope();s.external_update(e,40010)
+        first=compact(out[0]);boundaries=s.counts['coverageBoundaries']
+        s.breadth(frame(40050),40050);s.external_update(e,40060)
+        self.assertEqual(s.revisions,{'1':4});self.assertEqual(s.counts['coverageBoundaries'],boundaries)
+        self.assertEqual(s.counts['sigBooks'],2);self.assertEqual(len(s.trigger_seen),1)
+        self.assertEqual(len(out),1);self.assertEqual(compact(out[0]),first)
+        self.assertEqual(s.external_flow['1']['availableMs'],40010)
+
+    def test_same_old_version_new_receipt_does_not_renew_cached_read_or_admit_stale_trade(self):
+        s,out=self.study();first=row(35000,7);s.accept(first,35000)
+        repeated=row(39950,7,source=35000);s.accept(repeated,39950)
+        self.assertEqual(s.sig_current[('1','101')]['row'],first)
+        self.assertEqual(s.sig_current[('1','101')]['observedMs'],35000)
+        s.external_update(envelope(),40010)
+        self.assertEqual(out,[]);self.assertEqual(s.counts['tradeStaleSigSkip'],1)
+
+    def test_same_version_conflicting_depth_refuses_and_censors_pending_path(self):
+        s,out=self.study();s.accept(row(39950,7),39950);s.external_update(envelope(),40010)
+        conflict=row(40020,7,source=39950,bid='0.390000')
+        with self.assertRaisesRegex(ValueError,'OBSERVER_SIG_BOOK_VERSION_CONFLICT'):s.accept(conflict,40020)
+        self.assertNotIn(('1','101'),s.sig_current)
+        self.assertEqual(s.counts['labelsMissingTimelyBook'],5)
+        # An identical version cannot heal a contradictory engine source. Only
+        # a strictly later original engine version can become new evidence.
+        s.accept(row(40030,7,source=39950),40030)
+        self.assertNotIn(('1','101'),s.sig_current)
+        self.assertFalse(any(r['kind']=='horizon_label' for r in out))
+
+    def test_lower_sequence_new_clock_future_and_stale_reads_preserve_age_guards(self):
+        s,out=self.study();first=row(39950,7);s.accept(first,39950)
+        s.accept(row(40000,6),40000)
+        self.assertEqual(s.sig_current[('1','101')]['row'],first)
+        future=row(40000,8,source=41000);s.accept(future,40000)
+        self.assertNotIn(('1','101'),s.sig_current);self.assertEqual(s.counts['sigFuture'],1)
+        s.accept(row(39960,8),45000);s.external_update(envelope(45000),45010)
+        self.assertEqual(out,[]);self.assertEqual(s.counts['tradeStaleSigSkip'],1)
+
+    def test_equal_version_equivalent_decimal_depth_is_not_a_conflict(self):
+        s,out=self.study();first=row(39950,7);s.accept(first,39950)
+        repeated=copy.deepcopy(first);repeated['event']['book']['bids'][0]['price']='0.4'
+        repeated['event']['book']['asks'][0]['quantity']='10';repeated['event']['book']['receivedAt']=row(40000)['event']['book']['receivedAt']
+        s.accept(repeated,40000)
+        self.assertEqual(s.sig_current[('1','101')]['row'],first)
+        self.assertEqual(s.counts['sigDuplicateOrReordered'],1)
 
     def test_stale_sig_skips_identity_once_without_waiting_for_later_book(self):
         s,out=self.study(); s.accept(row(35000),35000); e=envelope(); s.external_update(e,40010)
