@@ -35,6 +35,34 @@ Only `native/src/session.rs` staging changes: clone the currently published Engi
 
 Existing durability semantics must remain explicit: after a filesystem failure a complete or partial journal prefix may already have been written. The Session remains poisoned; the source owner must restart/reconcile the validated serialized prefix. Neither existing code nor this candidate promises to undo disk writes that already succeeded.
 
-Five focused tests compare live Session prefixes against public transactional Engine behavior, actual ACK/partial-fill/terminal serial-versus-batch exact bytes and restart, final-invalid-batch rollback after candidate cash mutation, failed individual admission with reusable source sequence, and poisoned head-publication recovery. Tests are source-only until the parent's ARM64 run.
+Five focused tests compare live Session prefixes against public transactional Engine behavior, actual ACK/partial-fill/terminal serial-versus-batch exact bytes and restart, final-invalid-batch rollback after candidate cash mutation, failed individual admission with reusable source sequence, and poisoned head-publication recovery. The isolated ARM64 results are recorded below.
 
 Before any future immutable release: run all native/runtime checks and the existing batch benchmark on old/new candidates; compare the **same original prepared64events on the same sealed copied bank prefix**, including all financial/report/orders/fills/cursors/journal bytes, original failure/restart cases and wall/resource timings. `session.rs` participates in native identity, so require an explicit checked old-prefix bridge. No benchmark or bridge may alter the live original bank. Broader RestSource copy-on-write, active-order indexing or report-publication changes require separate scope and measurements.
+
+## Isolated ARM64 validation and original-prefix component measurement
+
+Candidate `1bdaba45` passed all232 native checks, including the five new focused tests, and a locked offline release-library build in an entirely new private Cargo target. Candidate `3033d1e6` adds only the opt-in ignored benchmark below. Its final verification explicitly touched only private extracted Rust/tests/Cargo file modification times, verified their byte hashes unchanged, and cleaned only `moloch-replay` artifacts from that private target before rebuilding. Final results: focused5/5, library56/56 with the benchmark deliberately ignored, locked offline release-library build, and the explicitly selected ignored benchmark1/1 all passed. The final release build took27.919seconds; this is a build duration, not runtime performance.
+
+The test is `session::staged_prefix_benchmark::original_frozen_prefix_staged_clone_benchmark`. It requires an explicit absolute frozen-directory path, exact prefix length and SHA256. It verifies every original input byte before replay, then the original journal chain, source-reference hashes/cursors and authentic rollout boundary. It never opens a live Session, acquires a bank lease, rewrites a report or bridge, or calls an account/queue API.
+
+The read-only copied prefix was555,521,087bytes through sequence186684, SHA256 `7ae9944a10e3a8afdf20ca9fd865821a9b5de8da753967a6c7c9a0cb93431a12`. Both algorithms reconstruct the same unpublished starting Engine and receive the same final64 original events. Five matched rounds alternate execution order. The final state contains4,650 order records and132 actual fill rows.
+
+| In-memory staging algorithm | Median per64 original events | Minimum–maximum |
+|---|---:|---:|
+| Outer staging clone, then transactional public `advance` per event |787.196ms|765.963–818.931ms|
+| Outer staging clone, then consuming unpublished advance |264.785ms|258.504–269.066ms|
+
+This component was2.973times faster, saving522.410ms per64 events in this fixture. The final run replayed the complete original prefix in202.499seconds before the matched comparisons. The64-event comparison is an offline workload, **not** a physical64-event Session commit; the worker's batch bound remains32.
+
+The final comparisons exactly matched report, orders, fills, valid raw books, actual bindings, required exchanges and package state. The original sealed report, including source cursors and chain boundary, was reproduced:
+
+| Checked value | SHA256 |
+|---|---|
+| Authentic original report seal |`8d047ab1dcadbf99014ec976b3f12ea111288bdc1de8dbea45856e2eb10f78ac`|
+| Canonical final complete comparison state |`dd76147265c2242ef2775b46ab36dbe3ea6ad4312f0806c63202e05db22a3412`|
+| Original64-event order |`72e4847c4f623a5441ac1f38a22900e2532c4ebf2cd7f4a3f2db4acd048c3119`|
+| Final forced-rebuild benchmark log |`8a5bff62768fb16f917f42f32a627ec852f2b59cc71a9be18cc127b8c4035043`|
+
+Build-byte provenance matters: the tested archive was from the Windows worktree with CRLF bytes; all57 archived source files normalize exactly to Git commit `3033d1e6`. Its archive SHA256 is `8c4783091fed71a1d0bfa5a95d9e603dcc7e1bad13ce2399deb85dd17d5941c3` and its actually compiled native identity is `8becd3911f558d0a83a344e89cbb6953db8db4c2f0776aabd6e086b9b84b27d1`. Git-LF bytes have a different identity; a future production build must verify its own exact source bytes/compiled identity and pass the required actual-prefix bridge. An earlier cached release result was superseded by the explicit package-clean rebuild and is not the final build evidence.
+
+All jobs used the private target, one Cargo build job and `nice10`. Controllers and Cargo processes ended; original production source, services and bank were untouched. Detailed original logs remain in the private validation packet, not the repository. These measurements exclude RestSource cloning, report serialization/fsync, HTTP pacing, live reconciliation and whole-cycle scheduling, and do not establish production latency, fill probability or profitability. CPU sharing and cache noise remain. No new production/native identity bridge or deployment is claimed by this audit.
