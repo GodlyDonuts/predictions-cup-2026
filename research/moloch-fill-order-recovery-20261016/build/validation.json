@@ -1,0 +1,55 @@
+{
+  "sourceCommit": "ec8b0fef24ec6b43960784c05d40b7862a7643e3",
+  "sourceManifestSha256": "09308fe3a64695f9d38882aea03ef01803f8b0e2fb6e1f107e9d137f69ee6096",
+  "archiveSha256": "f8c1c4e779502c4d29ee7d1317184fa7e8a2dfb7df30a6a776a2a3521cefa4ad",
+  "sourceFiles": 251,
+  "changedPaths": [
+    "moloch/live-runtime/src/feedback.rs",
+    "moloch/live-runtime/src/ordinary_side_edge.rs",
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "nativeSourcesChanged": false,
+  "sdkSourcesChanged": false,
+  "bankMigration": false,
+  "startedAt": "2026-10-16T18:41:57.674680+00:00",
+  "checks": {
+    "library": {
+      "exitCode": 0,
+      "seconds": 56.59443999300129,
+      "logSha256": "83a598e6bd3a679afa01b8aa4ff9a657f6d19a9818fe3ee6ba8db063af603eb4",
+      "logBytes": 30152,
+      "passedTests": 208
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 67.36021270701895,
+      "logSha256": "a5dc97572704d5e5c16a86aa7a3981accbf0ce9db16637a4b564b8ace5834486",
+      "logBytes": 20329,
+      "passedTests": 97
+    },
+    "release": {
+      "exitCode": 0,
+      "seconds": 232.19201972297742,
+      "logSha256": "50e620c1fa9de2a5ca393efc950949817bd0792cea7bad918143e9ead50491e5",
+      "logBytes": 182328
+    },
+    "engine-probe-build": {
+      "exitCode": 0,
+      "seconds": 1.5155844789987896,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "engine-probe-run": {
+      "exitCode": 0,
+      "seconds": 0.008068529015872627,
+      "logSha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc",
+      "logBytes": 65
+    }
+  },
+  "binarySha256": "40fbaa4731be72c735b6bfc6bff86423cd833e57e20ad80640935d585be8a8d6",
+  "binaryBytes": 13096584,
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "nativeRlibSha256": "4660f1ea17921a791156b6639882887cfd83bec1b79641a611e4deb5b3c010ec",
+  "nativeRlibPath": "/tmp/moloch-sell-timestamp-recovery-20261016/moloch/live-runtime/target/release/deps/libmoloch_replay-9e4420f86f631fba.rlib",
+  "finishedAt": "2026-10-16T18:47:55.418829+00:00"
+}

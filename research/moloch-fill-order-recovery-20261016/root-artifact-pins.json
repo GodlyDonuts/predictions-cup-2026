@@ -1,0 +1,110 @@
+{
+  "sourceCommit": "ec8b0fef24ec6b43960784c05d40b7862a7643e3",
+  "binarySha256": "40fbaa4731be72c735b6bfc6bff86423cd833e57e20ad80640935d585be8a8d6",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "originalSourceInputs": 251,
+  "unchangedSourceInputs": 248,
+  "sdkRerun": false,
+  "artifacts": {
+    "build/checkpoint-validation.json": {
+      "sha256": "aef0274fbd537073e8fdcf754dbe9285d8f669c2a134a765baaec00ed3ee62b5",
+      "bytes": 1729
+    },
+    "build/engine-identity-probe.rs": {
+      "sha256": "98469879001615af607b29aadbf343c6db57ce65af7251f2345594b8d471da1e",
+      "bytes": 69
+    },
+    "build/engine-probe-build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "build/engine-probe-run.log": {
+      "sha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc",
+      "bytes": 65
+    },
+    "build/library-toolchain-path-failure.log": {
+      "sha256": "a8d6e8605c0520f01d6e2eef826fda877e9033eaa07cfc922ac1e66a9991818a",
+      "bytes": 45
+    },
+    "build/library.log": {
+      "sha256": "83a598e6bd3a679afa01b8aa4ff9a657f6d19a9818fe3ee6ba8db063af603eb4",
+      "bytes": 30152
+    },
+    "build/release.log": {
+      "sha256": "50e620c1fa9de2a5ca393efc950949817bd0792cea7bad918143e9ead50491e5",
+      "bytes": 182328
+    },
+    "build/source-manifest.json": {
+      "sha256": "09308fe3a64695f9d38882aea03ef01803f8b0e2fb6e1f107e9d137f69ee6096",
+      "bytes": 30723
+    },
+    "build/validation.json": {
+      "sha256": "b2e2b78b54413a25c91689f3f37181919d457ecc38766193c3cb088a1f4f7741",
+      "bytes": 2106
+    },
+    "build/worker.log": {
+      "sha256": "a5dc97572704d5e5c16a86aa7a3981accbf0ce9db16637a4b564b8ace5834486",
+      "bytes": 20329
+    },
+    "forecast/nc-review.json": {
+      "sha256": "b339c77da9e98bdbd54fe898f06afe85f3105bb6baf18ed5e0cee737c38f3e84",
+      "bytes": 3359
+    },
+    "forecast/or-review.json": {
+      "sha256": "f4371abd456ecf0a920f98391d6e014a6f9a641c93986da079b41d17d62b956e",
+      "bytes": 3607
+    },
+    "forecast/authority.json": {
+      "sha256": "d39148823ea24dd54dfe95493bf8e7cf1380ceae83837d7346c3575abc0e4ace",
+      "bytes": 482
+    },
+    "forecast/settings.json": {
+      "sha256": "ff2002596b350e9357cb430e22550ef34e229e3d9c703345043b394f2a65bf92",
+      "bytes": 4012
+    },
+    "forecast/validation.json": {
+      "sha256": "0f1e309e56b881822a360f6ecf75aa87c826a33b605950bb2a0a6f1d6ee9396b",
+      "bytes": 741
+    },
+    "forecast/typed-review-result.json": {
+      "sha256": "653148ac3dca01daa1a28ee22de4f2b3249b7716fc02828b51fdad8c79e9c697",
+      "bytes": 671
+    },
+    "forecast/typed-settings-result.json": {
+      "sha256": "501391cdc942be0370a3dbea5d8724ed6136fef1c0660d9ebb00805c0e64d15e",
+      "bytes": 229
+    },
+    "forecast/typed-validator-build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "forecast/final-pins.json": {
+      "sha256": "49437224665516628f39f05a228bc9e66a212989873d331e9e680e0bf1190519",
+      "bytes": 2094
+    },
+    "deployment/owner-recovery-review.json": {
+      "sha256": "f112e5167622854077fba6230befdbf59fdb9a593ab1a7162fdd93916364aa2c",
+      "bytes": 1734
+    },
+    "deployment/paper6_early_entry_recovery_rollout_frozen_r1_20261016.py": {
+      "sha256": "388e33a826538e054a6e95a4ddb155364033ea7795028d3519f0e59cca24db25",
+      "bytes": 37031
+    },
+    "deployment/paper6_early_entry_recovery_rollout.py": {
+      "sha256": "94696b91ffb05fc5a242248635f513dce12f0d7a3ec177ba7fee95551cfae774",
+      "bytes": 35772
+    },
+    "deployment/test_paper6_early_entry_recovery_rollout.py": {
+      "sha256": "0f3c7ba5dc06eb7b219bebb1d8b4381e6c0ba6aad6c1979696e32c5df77d0c7e",
+      "bytes": 6970
+    },
+    "deployment/paper6-sell-recovery-approved-manifest-20261016.json": {
+      "sha256": "952ff796efd6ee4c5959d111c706fbbdc7ca5d13fd179b9b83030a89e9b79e19",
+      "bytes": 35653
+    },
+    "forecast/validate_recovery_forecasts.rs": {
+      "sha256": "057dee1ebffe07964a398f0967b5afc8a561a18783128827f4b5be6d4336320e",
+      "bytes": 2232
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "reviewerId": "Rhaegal-Viserion-paper6-20261016",
+  "assumptionLabel": "Execution-owner reviewed refresh of existing NC Democratic YES terminal experiment: retain ordinary probability0.919, exceptional allowance0.03, zero exceptional payout and0.01 margin. Current original CalltheMap Oct16 lower displayed Cooper win chance91.9% (daily table92.0%) corroborates the retained assumption; this is not a calibrated lower bound or new model. Poll-based forecasts share inputs and are not multiplied. Kalshi party quote is predictive consensus only, not equivalent payoff or true probability. Official ballot confirms Cooper DEM and Whatley REP; exact SIG Party Winner root is retained. Exceptional/resolver/replacement/refund and correlated-election/model risk remain operator assumptions. Hold for actual settlement if delayed beyond nominalNov4; source expiry blocks new entries and does not force liquidation. Principal2000 is an explicit execution-owner risk allocation increase from400 within the existing full-account mandate. No claim current prices qualify.",
+  "runId": "moloch-live-20261015-v1",
+  "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "marketId": "277",
+  "exchangeId": "966",
+  "contractId": "278",
+  "officialContractRootSha256": "56670f0ec4ec7e9837de07ca07cc7573996a89e94d578f9db675252613936da1",
+  "side": "YES",
+  "ordinaryProbability": "0.919000",
+  "exceptionalProbabilityAllowance": "0.030000",
+  "minimumExceptionalPayout": "0.000000",
+  "marginPerShare": "0.010000",
+  "maximumPrincipal": "2000.000000",
+  "maximumQuantity": 10000,
+  "reviewedAtMs": 1792176327848,
+  "expiresAtMs": 1792194321269,
+  "holdUntilMs": 1793811600000,
+  "payoutMappingIsOperatorAssumption": true,
+  "revokeExisting": false,
+  "sources": [
+    {
+      "kind": "forecast",
+      "url": "https://www.callthemap.com/senate/north-carolina",
+      "sha256": "fbe3194c1c938057f36bffb6d6ab27910175affcecdddf4fef6112342a171de2",
+      "publishedAtMs": 1792173446000,
+      "observedAtMs": 1792175317858,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_ballot",
+      "url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/2026_general_candidate_list_by_contest_federal_and_state.pdf",
+      "sha256": "378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d",
+      "publishedAtMs": 1791910059000,
+      "observedAtMs": 1792175317852,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_contract_node",
+      "url": "https://sig.thesuper.market/api/v1/markets/277/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "sha256": "58a98acc30aa5c67510de0b505550df49d3dd58892a141c17eb8b51b05b9434e",
+      "publishedAtMs": 1792107921269,
+      "observedAtMs": 1792107921269,
+      "maximumAgeMs": 86400000
+    }
+  ],
+  "executionPolicy": {
+    "version": 1,
+    "allowedModes": [
+      "boundedLimitMayRest",
+      "improveOneTick",
+      "joinBid"
+    ]
+  },
+  "valuationObjective": {
+    "kind": "terminalSettlement",
+    "timingSourceSha256": "58a98acc30aa5c67510de0b505550df49d3dd58892a141c17eb8b51b05b9434e",
+    "timingJsonPointer": "/data/root/settlement_date",
+    "scheduledSettlementAtMs": 1793811600000,
+    "delayPolicy": "holdForActualSettlement"
+  }
+}

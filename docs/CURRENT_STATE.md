@@ -1,4 +1,30 @@
-# October16,18:21UTC: fresh actual entry and checked read-saving candidate
+# October16,18:49UTC: diagnosed fill-parser stop and checked recovery
+
+Production525450/sourceb112c6c1 **stopped18:31:17UTC** with
+ACCOUNT_FILL_ORDER_AMBIGUOUS. The exact known SELL tape contains two prices at
+one timestamp; no operator pause was requested. It had204 cumulative fill rows,
+54 post-launch ACKs and combined realized−131.465000 before the missing sale.
+The original447NO exit implies a further−2.160000 when genuinely reconciled;
+it has not been manually booked. Full capital and all original history remain.
+
+Recovery candidateec8b0fef/binary40fbaa47 passes actual ARM64 library208,
+worker97, release and native8acc probe. It handles these commutative SELL ties
+with explicit nonchronological provenance, preserving BUY ambiguity rejection,
+and includes the negative-only early ordinary screen. The separately reviewed
+recovery procedure requires the original failure and independent root witness;
+earlier controlled-stop approval cannot be reused.
+[Exact source, tests, recovery and model assumptions](../research/moloch-fill-order-recovery-20261016/README.md).
+
+The same pending recovery includes refreshed NC terminal review and new Oregon
+Republican NO terminal model, each capped at2,000. Primary forecast inputs.919/
+.995 with explicit3%exception/1cmargin produce tick ceilings.880/.955; they are
+uncalibrated model assumptions. Actual typed source/contract/objective checks and
+all four Settings entries pass. Fresh physical price/depth/account checks still
+decide entry. Neither review nor a successful build proves a live order or profit.
+Original V5 normally sealed18:38:14 with23 exported rows; exact replay/metadata
+coverage results are still pending. Paper6 and the profit objective remain open.
+
+# Historical October16,18:21UTC: fresh actual entry and checked read-saving candidate
 
 Sole production **PID525450/sourceb112c6c1/binary3ab6ef7c** remains fresh trading
 at **18:21:55 UTC**, healthy realtime and no STOP. It has 45 post-launch official
