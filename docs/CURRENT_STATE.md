@@ -1,3 +1,31 @@
+# October16,12:22UTC: full-capital production continues; measured disk bottleneck
+
+Sole SIG494293/source`e7bb62d1` remains fresh and trading with matching binary,
+healthy realtime and no STOP. At12:22:54UTC it had34 new official acknowledgments
+and one post-launch fill row; complete-cycle status now matches494293. Effective
+capital/commitment95,579.915000 and attributed realized−74.405000 are unchanged.
+[Latest actual observation](../research/moloch-full-account-20261016/live-verification.json).
+
+The signed-flow public-data update is live separately: Kalshi9240/supervisor33752,
+237 valid WS books on one connection at12:21:48,135 public trade frames,20 REST
+starts/sec, six recovered network errors/zero throttles. Observer496491 retains
+causal flow evidence independently of REST book fallback. The SIG worker was
+not restarted. [Feed and actual validation](../research/kalshi-signed-flow-20261016/README.md).
+
+The sealed all-market cohort has1,348 decisions/1,903 labels/229 markets.
+The unchanged model selected zero after-cost opportunities; all944 complete
+toxicity states wereQUIET. This supports neither a live oracle nor a profitable
+cancel rule. [Economic study](../research/moloch-crossvenue-economics-20261016/all-market-v6-README.md),
+[passive shadow study](../research/crossvenue-toxicity-20261016/all-market-v6-README.md).
+
+A measured production bottleneck is unbuffered report serialization:
+3,754,271 tiny write syscalls/20.61MB in one10-second burst. The first35-scope
+pass took19m21s; realtime receipt-to-processing lag was median11.383s. A narrow
+64KiB buffered-writer source fix passes72 native-library/78 worker checks and is
+building separately. File bytes, explicit flush, fsync, rename and directory
+sync remain; no live speedup or alpha is claimed before actual deployment.
+[Timing evidence and limits](../research/moloch-hotpath-20261016/README.md).
+
 # October16,11:51UTC: full capital committed and replacement trading verified
 
 The sole SIG worker494293/source`e7bb62d1`/binary`d0a3113c…` is fresh and

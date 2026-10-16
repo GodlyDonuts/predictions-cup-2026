@@ -1,4 +1,25 @@
-# Original public Kalshi directional flow — source-only
+# Original public Kalshi directional flow
+
+## Actual deployment at12:21UTC
+
+The checked public-data release from`47f8693c` is live: supervisor33752,
+collector9240, with the original cache/journals and pinned`ws8.22.0`. At12:21:48UTC
+it had237 valid books, one connection, zero sequence gaps,135 actual public trade
+frames and20 REST starts/sec. Six recoverable network errors and zero throttles
+were recorded. The30-second snapshot default remains. SIG worker494293 was
+not restarted by this feed update. [Exact release and feed observation](live-verification.json).
+
+The source-bound observer496491/`67426474…` is also live on the existing all-market
+capture. At12:05:08UTC it validated237 actual flow exports, one with30-second
+trade evidence.456 complete decision rows retained flow snapshots; one contained
+an identified observed signed quantity. Empty/missing flow is not zero market
+trading; completeTradeTape remains false. The active gzip was not sealed and
+this bounded live read is not a frozen training cohort. [Original-clock validation](observer-live-verification.json).
+
+This enables data collection for later qualification. Existing seven-feature
+pricing and toxicity models are unchanged; physical Kalshi pricing remains
+inactive. Windows/SSH availability is still a dependency of this external cache.
+The following source-handoff details record the implementation and its checks.
 
 Primary documentation observed2026-10-16T11:48Z: [Public Trades](https://docs.kalshi.com/websockets/public-trades), [official AsyncAPI](https://docs.kalshi.com/asyncapi.yaml), tradePayload fields. The retained original AsyncAPI SHA-256 is `3c86bae7d89b44baba1119b3a097a54054c1d851e1dcd8ad894c7cb35b9890b6`. Canonical taker outcome YES (or book-side bid) represents positive YES-directional exposure; NO/ask represents negative exposure. This identifies direction, not the taker's literal buy/sell action, our fills, calibrated alpha, or matching-price changes. Deprecated taker_side is accepted only as its documented yes/no directional bit. Conflicting, absent or unknown side fields remain unsigned.
 

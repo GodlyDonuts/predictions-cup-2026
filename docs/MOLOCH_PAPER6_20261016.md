@@ -9,7 +9,24 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at 11:51 UTC
+## Latest operation and qualification at12:22UTC
+
+The full-capital worker494293 remains the actual deployment, with34 new ACKs
+and one post-launch fill row at12:22:54UTC; attributed realized remains−74.405000.
+The signed public-flow feed and source-bound observer are now live separately
+without a SIG restart. A larger sealed cohort of1,348 decisions/1,903 labels
+still selects zero after-cost trades; all944 complete toxicity states areQUIET.
+No calibrated external-price or cancellation authority is inferred.
+
+The new mechanical bottleneck is measured local I/O:3.75million tiny writes
+in10seconds, with a19m21s first35-scope pass. The narrowly buffered writer is
+checked source under separate optimized build; it preserves exact files and
+durability. Deployment and a genuine subsequent latency comparison are still
+pending. See [the timing audit](../research/moloch-hotpath-20261016/README.md),
+[live public flow](../research/kalshi-signed-flow-20261016/README.md), and
+[the larger fixed-model result](../research/moloch-crossvenue-economics-20261016/all-market-v6-README.md).
+
+## Historical operation and qualification at 11:51 UTC
 
 Full-account production is active on sole SIG494293/source`e7bb62d1` with its
 matching immutable binary, healthy realtime and fresh per-scope trading. Seven
