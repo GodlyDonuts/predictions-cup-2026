@@ -1,0 +1,93 @@
+{
+  "actualNetting": {
+    "oppositeBuyNettingFills": 0,
+    "oppositeBuyNettingShares": 0,
+    "ordinaryOppositeBuyNettingFills": 0
+  },
+  "bankSequence": 260738,
+  "checks": {
+    "accountRequests": 0,
+    "dispatchRowsChainVerified": 10837,
+    "duplicateFillObservations": 0,
+    "endingPositionQuantityParity": true,
+    "engineReplayPerformed": false,
+    "reportSealVerified": true,
+    "v7OwnJournalChainVerified": false,
+    "v7ReferencedSourceMembersVerified": false
+  },
+  "executionSourceChanged": false,
+  "limitations": [
+    "Original quote mate matching uses same creation clock, exchange, market and opposite side.",
+    "Ever-attempted and cancellation times describe the finite prefix, not independent venue causation.",
+    "Whole-mate coverage test uses the first actual fill only; it is not a complete historical eligibility replay.",
+    "Only inventory quantities are replayed here; exact financial/FIFO-cost audit remains separate.",
+    "V7 feature clocks/quantities are derived observations, without full original order/preflight/current-cash proof.",
+    "No matching observation is missing coverage, not proof no opportunity existed.",
+    "No maker fill, avoided loss, profitability or policy activation is inferred."
+  ],
+  "mateCancelMinusFirstNativeObservationMs": {
+    "count": 21,
+    "maximum": 18783,
+    "median": 3000,
+    "minimum": -482560
+  },
+  "missedProfitableHedgeEstablished": false,
+  "ordinaryBuyFills": 50,
+  "ordinaryBuyShares": 20584,
+  "pairLifecycle": {
+    "mateCancelEffectiveBeforeFirstObservation": 8,
+    "mateCancelExactlyObservedFillPlus3000ms": 5,
+    "mateCancelLaterOtherDelay": 8,
+    "mateEverAttempted": 16,
+    "mateExpiredBeforeFirstNativeFillObservation": 1,
+    "mateLimitPlusFirstActualBuyBelowOne": 22,
+    "mateNeverAttemptedInPrefix": 6,
+    "neverAttemptedWholeMateCoveredByFirstFillAndCanceled3000msLater": 0,
+    "noUniqueOriginalMate": 2,
+    "ordinaryIntents": 24,
+    "uniqueOriginalMate": 22
+  },
+  "policy": {
+    "feeBps": 0,
+    "feePerShare": "0.000000",
+    "inventoryAgeClock": "execution",
+    "inventoryExitMode": "fixedGain",
+    "inventoryMinimumGain": "0.005000",
+    "inventoryTakerAfterMs": 0,
+    "maximumHedgeOvershoot": 0,
+    "maximumInventoryAgeMs": 60000,
+    "repriceProfitableHedge": null,
+    "retainProfitableHedge": false
+  },
+  "reportCutoff": "2026-10-16T13:35:02.604Z",
+  "reportEnvelopeSeal": "39c68c25e0395129ea2e1d1ab342800644406dff261b82a2efd45f4b16aa8100",
+  "schemaVersion": 1,
+  "sourceRevisionInspected": "e5fa7d6f601a9c5ac507d6e17d0f7feb3b7cc9bb",
+  "sources": {
+    "auditScriptSourceSha256": "b837a470b26581cc43e7bb5ff8a0680e9a49e50dd69d8ad1e83fb62996f58b89",
+    "dispatchBytes": 5554528,
+    "dispatchSha256": "07052ce42f7ebfaf6b5b288614fc3fd65d5da72cd756519fc56991df11ba774d",
+    "makerAnalyzerSourceSha256": "fb5fcf8d8fb97d13827d8ea555d426f7610753ad63b31f17347a121fc8411830",
+    "manifestSha256": "dff429da9ae6154679842e1c0458fa30ff053162c35ffb7687a805049322a97a",
+    "policyExtractSha256": "a2664a76823975c43575b5e88c8ba07fce7241e28c1d68d6f88de26c09182597",
+    "rawSealParserSourceSha256": "f1db3b56bf701a0ded0c84486c04f805122deb0342fe196af17113e566e4ba39",
+    "reportBytes": 2069727,
+    "reportSha256": "93ec8735e455e26bc2d6144eae67cc805d84ac40ebd9820c70605f53adda0f5f",
+    "v7DecodedBytes": 22251122,
+    "v7DecodedSha256": "e804111af645d66e31f86b3a5c1dd7e863b8084f1748f8c19dbbdc1956fe67f4",
+    "v7WrapperBytes": 2598985,
+    "v7WrapperSha256": "3fd8f87f38a93e180d572b5f6f41f672032611fdf5c689737e0f9ad02ce6af0b"
+  },
+  "uniqueFills": 163,
+  "v7": {
+    "decisionExchangeSidesWithAnyObservedOrdinaryInventory": 0,
+    "decisionExchangeSidesWithEntirelyObservedOrdinaryInventory": 0,
+    "firstDecisionMs": 1792152097211,
+    "fullDepthOrPhysicalPreflightProof": false,
+    "lastDecisionMs": 1792154167245,
+    "rowsByKind": {
+      "decision_features": 3883,
+      "horizon_label": 5837
+    }
+  }
+}
