@@ -1,17 +1,17 @@
 # Moloch research baseline
 
-**As of2026-10-16 06:38UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
+**As of2026-10-16 06:48:54UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
 
 ## Exact deployed system
 
 | Item | Verified state |
 | --- | --- |
-| Service |Sole `moloch-live.service`, PID415286, VPS; restoring history, no execution STOP; fresh trading verification pending|
+| Service |Sole `moloch-live.service`, PID415286, VPS; fresh realtime/trading, no execution STOP|
 | Deployed source |`52116911`|
 | Executable SHA256 |`0ba0f6c16a1e88fc7f73b361948b676769fb144c77adc4a6afc37562241e6b75`|
 | Native engine identity |`c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82`, ten explicit financial identity bridges|
 | Account/bank |One serialized SDK V1 queue and original funded bank; no second collector/writer|
-| Fresh activity |Original stopped174561-event boundary:122 fill rows; fresh ACK/fill throughput for06:37 replacement not yet verified|
+| Fresh activity |Six new official ACKs/zero new actual fills since06:37 replacement;122 total fills; first22-scope cycle completed06:47:11UTC|
 | Fresh-market breadth |12 ordinary fresh markets after startup durable capacity event; reviewed-managed exchanges excluded from ordinary flat BUY planning; discovery slots and package-specific rules unchanged|
 | Risk limits |40,000 total commitment;10,000 per market;10,000 shares maximum order; existing holdings separately attributed|
 | Read/write limits |100-read rolling ceiling/600ms completion gap;24-write ceiling/2500ms gap. These are admission ceilings, not measured achieved throughput|
@@ -19,7 +19,7 @@
 | Ordinary policy |Paired-spread maker, one-tick minimum spread,.001 minimum edge,.005 fixed-gain exit; execution-clock maximum inventory age **60,000ms**|
 | Optional features OFF |Execution-distribution diagnostic, old execution-model diagnostic, empirical maker-policy gate and collateral accounting|
 
-[Actual immutable throughput rollout and stopped boundary](../research/moloch-throughput-20261016/production-rollout.json), [repair and measurement limits](../research/moloch-throughput-20261016/README.md). Original financial report/head parity passed; replacement is restoring. Negative book screens reduce expensive refreshes for uncompetitive candidates. Competitive dispatch still obtains independent complete fresh facts. Actual fill rate after this replacement is pending. Paper5 implementation remains incomplete; modules described below must not be inferred active merely from source existence.
+[Actual immutable throughput rollout and stopped boundary](../research/moloch-throughput-20261016/production-rollout.json), [repair and measurement limits](../research/moloch-throughput-20261016/README.md). Original financial report/head parity passed; replacement is fresh trading/realtime. Negative book screens reduce expensive refreshes for uncompetitive candidates. Competitive dispatch still obtains independent complete fresh facts. No new completed fills by06:48:54UTC; do not infer fill-rate improvement from ACKs. [Live verification](../research/moloch-throughput-20261016/live-verification.json). Paper5 implementation remains incomplete; modules described below must not be inferred active merely from source existence.
 ## Capabilities that exist now
 
 - Independent reviewed forecast origination with real native funding, fresh final official facts and exact physical capabilities. Explicit reviews support join bid, improve one tick and bounded marketable limits with a possible resting remainder. Ordinary maker BUYs retain their passive rule.
@@ -36,7 +36,7 @@ The restored worker bought430 Delaware Democratic Senate YES1042 at.920, princip
 
 The actual sealed FIFO audit reconciles119 unique fills/38 duplicate original events and all final cash, positions, costs and fees. New ordinary trading realized−119.100000, inherited gross+43.395000, combined−75.705000. All30 closed ordinary acquisition lots exited through maximum-age orders;953YES and885NO account for91.82% of the loss. This warrants evaluating entry adverse selection and exit economics; it does not prove that disabling the timer or excluding those markets would improve future returns. [Audit and exact source boundary](../research/moloch-actual-economics-20261016/README.md).
 
-Cash17,046.770000 and owned cost22,877.525000 are attributed-bank measures at the linked observation. They are not whole-account equity or marked liquidation value. The human's earlier official daily dashboard+1,168 observation is separate and differently dated; it is not the new-entry realized measure above.
+At06:48:54UTC cash17,158.170000 and owned cost22,767.455000 are attributed-bank measures, with ordinary realized-119.100000/inherited44.725000/combined-74.375000. The preceding119-fill audit is historical; the current bank has122 fill rows. They are not whole-account equity or marked liquidation value. The human's earlier official daily dashboard+1,168 observation is separate and differently dated; it is not the new-entry realized measure above.
 
 ## Unfinished work and research targets
 

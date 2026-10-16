@@ -32,4 +32,8 @@ More activity does not establish profitable execution. Earlier new ordinary trad
 
 ## Next work
 
-Measure fresh activity after the controlled release, diagnose remaining admission/decision delays, and resume Paper5 integration once the urgent throughput issue is addressed. A separate uncompiled bulk-price negative screen candidate can potentially replace repeated far-price book probes; it is not included in this release and supplies no positive depth/execution authority.
+Measure fresh activity after the controlled release, diagnose remaining admission/decision delays, and resume Paper5 integration once the urgent throughput issue is addressed. A separate bulk-price negative screen candidate checked in nine isolated ARM64 tests can potentially replace repeated far-price book probes; it is not included in this deployed release and supplies no positive depth/execution authority.
+
+## First fresh observation
+
+[06:48:54UTC verification](live-verification.json): sole415286 is fresh trading/realtime, binary matched, STOP absent; six new official acknowledgments, zero new actual fills. First full22-scope cycle completed06:47:11UTC. Startup [exclusions](entry-exclusions.json) and [12-market capacity](market-breadth.json) are installed, with three proved-unsent drafts retired. The [owner-derived trailing60s window](after-window.json) measured34 read/1 write admissions and zero uncertainty. This differs in workload and time from the37/0 baseline; it is not a controlled speedup and no completed-fill improvement or profitability is established. New discovery/read scheduling work remains separate from this deployed source.
