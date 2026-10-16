@@ -804,9 +804,27 @@ fn refresh_fundamental_cohort(t:&mut Transport,c:&Control,bank:&Session,log:&Dis
 }
 /// Only evidenced exits preempt new entry. A stale-book-only holding refresh
 /// competes fairly with entry reads using the SAME persistent preflight cursor.
-fn fundamental_read_rotation(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],cursor:Option<&str>)->Option<(bool,usize,String)>{
+#[cfg(test)]fn fundamental_read_rotation(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],cursor:Option<&str>)->Option<(bool,usize,String)>{
  let mut choices:Vec<_>=existing.iter().enumerate().map(|(i,h)|(true,i,format!("{}:{}:sell",h.exchange_id,h.side))).chain(entries.iter().enumerate().map(|(i,h)|(false,i,format!("{}:{}:buy",h.exchange_id,h.side)))).collect();
  choices.sort_by(|a,b|a.2.cmp(&b.2));let keys:Vec<_>=choices.iter().map(|c|c.2.clone()).collect();moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first().map(|index|choices[*index].clone())
+}
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+enum SharedPreflight{ExistingRead(usize),EntryRead(usize),Physical(usize)}
+/// Read hints cannot permanently consume the sole expensive packet. Use ONE
+/// stable market/side/action cursor for the union, including unqualified hints.
+/// A real ready quote supersedes a same-key hint; only evidenced owned exits
+/// preempt this fair union. `physical` is already native-priority/value filtered.
+fn shared_preflight_rotation(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],physical:&[(String,usize,bool)],cursor:Option<&str>)->Option<(SharedPreflight,String)>{
+ if let Some((key,index,_))=physical.iter().find(|(_,_,urgent)|*urgent){return Some((SharedPreflight::Physical(*index),key.clone()))}
+ let mut choices=std::collections::BTreeMap::new();
+ for(i,h)in existing.iter().enumerate(){choices.insert(format!("{}:{}:sell",h.exchange_id,h.side),SharedPreflight::ExistingRead(i));}
+ for(i,h)in entries.iter().enumerate(){choices.insert(format!("{}:{}:buy",h.exchange_id,h.side),SharedPreflight::EntryRead(i));}
+ let mut seen=std::collections::BTreeSet::new();for(key,index,_)in physical{if seen.insert(key){choices.insert(key.clone(),SharedPreflight::Physical(*index));}}
+ let keys:Vec<_>=choices.keys().cloned().collect();let index=*moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first()?;let key=keys[index].clone();Some((choices[&key],key))
+}
+fn physical_preflight_ready(q:&Value,never_attempted:bool,has_intent:bool,at:u64)->bool{
+ let early=moloch_live_runtime::dispatch_window::may_prefetch(q,never_attempted,has_intent,at);
+ q["retired"]==false&&never_attempted&&(early||q["activationAt"].as_u64().is_some_and(|v|v<=at))&&q["expiresAt"].as_u64().is_some_and(|v|v>at.saturating_add(5000))&&!q["cancelEffectiveAt"].is_u64()
 }
 fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,prior_window:u64)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
@@ -909,12 +927,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
- if let Some(f)=fundamental.as_deref_mut(){f.authority.validate()?;let entry_hints:Vec<_>=f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect();
-  if let Some((is_existing,index,key))=fundamental_read_rotation(&stale_existing_hints,&entry_hints,preflight_cursor.as_deref()){if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
-   if is_existing{let hint=&stale_existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}
-   else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}return Ok(())
-  }
- }
+ let entry_hints=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
  // At most one new physical order per pass; subsequent fills change funding.
  // Retired history and already-physical orders have separate reconciliation
  // paths above; they cannot become a new submission or consume its ranking.
@@ -934,6 +947,25 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  if !maker_decisions.is_empty(){let decisions:Vec<_>=maker_decisions.iter().map(|(_,decision)|decision).collect();for position in moloch_live_runtime::maker_policy::rank(&decisions,now())?{let(index,decision)=&maker_decisions[position];ranked.push((decision.priority(),*index));}}
  if maker_review.is_some(){let _=atomic_json(&c.root.join("maker-policy.json"),&json!({"at":iso(now()),"assessments":maker_assessments,"executionAuthority":false}));}
  ranked.sort_by_key(|(priority,_)|*priority);
+ let selection_at=now();let mut physical=Vec::new();
+ for(_,index)in &ranked{let q=&quotes[*index];let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+  if !physical_preflight_ready(q,log.never_attempted(qid),log.intents.contains_key(&qid),selection_at){continue}
+  if q["action"]=="buy"&&selection_at>=authority.entry_until_ms(){retire_never_sent(bank,log,q)?;continue}
+  let managed=fundamental.as_ref().is_some_and(|f|f.cohorts.manages(q["exchangeId"].as_str().unwrap_or("")));
+  let urgent=q["action"]=="sell"&&(managed||selection.assessments.iter().any(|a|a.index==*index&&matches!(a.decision.class,moloch_live_runtime::quote_priority::Class::RiskExit|moloch_live_runtime::quote_priority::Class::CoveredMarketable)));
+  physical.push((keys[*index].clone(),*index,urgent));
+ }
+ let Some((chosen,key))=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref())else{return Ok(())};
+ let chosen_index=match chosen{
+  SharedPreflight::Physical(index)=>index,
+  SharedPreflight::ExistingRead(index)|SharedPreflight::EntryRead(index)=>{
+   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
+   let f=fundamental.as_deref_mut().ok_or("LIVE_FUNDAMENTAL_READ_RUNTIME")?;f.authority.validate()?;
+   if matches!(chosen,SharedPreflight::ExistingRead(_)){let hint=&stale_existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}
+   else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}return Ok(())
+  }
+ };
+ ranked.retain(|(_,index)|*index==chosen_index);
  for(_,index)in ranked{let q=quotes[index].clone();
   let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if bank.engine().is_package_order(qid){continue}
   let prefetch_started=now();
@@ -1396,6 +1428,21 @@ pub fn main()->Result<()>{
   for code in ["FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED","FUNDAMENTAL_ENTRY_CASH_RECONCILIATION","REVIEWED_ENTRY_FRESH_MARKET_CAP"]{assert!(expected_fundamental_entry_denial(code));}
   for code in ["PAPER_SESSION_POISONED","FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED","FUNDAMENTAL_COMMITTED_ADOPTION_REQUIRED","DISPATCH_UNKNOWN_ACCEPTANCE_MANUAL_RECONCILIATION","QUEUE_DURABLE_FAILURE","FUNDAMENTAL_ENTRY_TRANSPORT_SCOPE"]{assert!(!expected_fundamental_entry_denial(code));}
  }
+ fn entry(ex:&str)->fundamental::EntryHint{fundamental::EntryHint{exchange_id:ex.into(),market_id:"277".into(),contract_id:"278".into(),side:"YES".into(),review_sha256:"a".repeat(64)}}
+ #[test]fn one_cursor_services_multiple_read_hints_and_ready_physical_quotes(){
+  let entries=vec![entry("1042"),entry("966")];let existing=vec![fundamental::ExistingExitHint{exchange_id:"1068".into(),market_id:"379".into(),contract_id:"380".into(),side:"YES".into(),reason:"reviewed_inventory_book_refresh".into()}];let physical=vec![("1030:NO:buy".into(),7,false),("1070:YES:buy".into(),8,false)];let mut cursor=None;let mut served=Vec::new();
+  for _ in 0..10{let(choice,key)=shared_preflight_rotation(&existing,&entries,&physical,cursor.as_deref()).unwrap();served.push(choice);cursor=Some(key);}
+  assert_eq!(served[..5],served[5..]);for expected in [SharedPreflight::ExistingRead(0),SharedPreflight::EntryRead(0),SharedPreflight::EntryRead(1),SharedPreflight::Physical(7),SharedPreflight::Physical(8)]{assert_eq!(served.iter().filter(|s|**s==expected).count(),2,"{expected:?}");}
+ }
+ #[test]fn perpetually_unqualified_nc_read_cannot_starve_ready_ordinary_quote(){
+  let entries=vec![entry("966")];let physical=vec![("1040:NO:buy".into(),2,false)];let mut cursor=None;let mut ordinary=0;let mut reads=0;
+  // A failed qualification does not remove the hint or reset the cursor.
+  for _ in 0..8{let(choice,key)=shared_preflight_rotation(&[],&entries,&physical,cursor.as_deref()).unwrap();cursor=Some(key);match choice{SharedPreflight::Physical(2)=>ordinary+=1,SharedPreflight::EntryRead(0)=>reads+=1,_=>panic!("unexpected selection")}}
+  assert_eq!((ordinary,reads),(4,4));
+ }
+ #[test]fn no_ready_physical_quote_still_performs_fundamental_refresh(){let entries=vec![entry("966")];assert_eq!(shared_preflight_rotation(&[],&entries,&[],Some("966:YES:buy")),Some((SharedPreflight::EntryRead(0),"966:YES:buy".into())));assert!(shared_preflight_rotation(&[],&[],&[],None).is_none());}
+ #[test]fn real_same_key_quote_supersedes_read_hint_and_urgent_exit_preempts_union(){let entries=vec![entry("966")];let physical=vec![("966:YES:buy".into(),9,false)];assert_eq!(shared_preflight_rotation(&[],&entries,&physical,None).unwrap().0,SharedPreflight::Physical(9));let physical=vec![("1000:NO:buy".into(),3,false),("1076:YES:sell".into(),4,true)];assert_eq!(shared_preflight_rotation(&[],&entries,&physical,None).unwrap().0,SharedPreflight::Physical(4));}
+ #[test]fn actual_native_activation_cancel_and_expiry_guard_determine_union_membership(){let(_root,bank,log,_,_,_)=fixture();let mut q=bank.engine().order_records()[0].clone();let at=now();q["action"]=json!("buy");q["retired"]=json!(false);q["activationAt"]=json!(at);q["expiresAt"]=json!(at+10000);q["cancelEffectiveAt"]=Value::Null;assert!(physical_preflight_ready(&q,true,false,at));q["activationAt"]=json!(at+1);assert!(!physical_preflight_ready(&q,true,false,at));q["activationAt"]=json!(at);q["expiresAt"]=json!(at+5000);assert!(!physical_preflight_ready(&q,true,false,at));q["expiresAt"]=json!(at+10000);q["cancelEffectiveAt"]=json!(at+100);assert!(!physical_preflight_ready(&q,true,false,at));q["cancelEffectiveAt"]=Value::Null;assert!(!physical_preflight_ready(&q,false,false,at));assert!(log.attempted.is_empty());}
 }
 
 #[cfg(test)]mod package_hook_tests{
