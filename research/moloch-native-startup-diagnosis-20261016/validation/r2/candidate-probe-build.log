@@ -1,0 +1,15 @@
+error[E0463]: can't find crate for `moloch_replay`
+ --> /tmp/moloch-native-flow-build-b2202660-20261016-r2/offline_probe.rs:3:5
+  |
+3 | use moloch_replay::session::{Session, engine_identity, propose_live_engine_upgrade};
+  |     ^^^^^^^^^^^^^ can't find crate
+
+error[E0463]: can't find crate for `serde_json`
+ --> /tmp/moloch-native-flow-build-b2202660-20261016-r2/offline_probe.rs:4:5
+  |
+4 | use serde_json::{Value, json};
+  |     ^^^^^^^^^^ can't find crate
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0463`.

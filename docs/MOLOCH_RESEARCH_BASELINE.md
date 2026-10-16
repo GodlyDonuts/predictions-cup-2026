@@ -1,4 +1,21 @@
-# Current research baseline: October16,19:57UTC
+# Current research baseline: October16,20:19UTC
+
+Sole540259/source774f94fe/binary1180882d remains fresh trading; full-cycle status
+matches the actual worker at20:16:19 and progress advances at20:19:11. There are
+23 post-launch official ACKs/three new fill rows,214 cumulative. New324/1013YES
+234-share round trip bought/sold at.18, cost/proceeds42.12, zero fees and zero
+realized gain. Combined realized−133.625000, cash70,765.455000 and owned
+cost24,680.835000. [Original dated proof](../research/moloch-buy-fill-recovery-20261016/deployment/post-recovery-roundtrip.json).
+
+AK/ME candidates remain inactive while a separate immutable activation generation
+is prepared. Activity-window native candidate passes77 actual ARM64 native unit
+checks/release/probes; the existing explicit benchmark is ignored by unit tests.
+The actual original308166-event detached baseline/candidate comparison is running,
+with no measured benefit, completed parity or production migration yet claimed.
+[Source, actual build evidence and limitations](../research/moloch-native-startup-diagnosis-20261016/README.md).
+Paper6/profitability remain open; earlier dated observations follow.
+
+# Historical research baseline: October16,19:57UTC
 
 Sole production **540259**, source774f94fe/binary1180882d, is verified fresh
 trading at **19:57UTC**: healthy realtime, matching executable, no STOP and eight

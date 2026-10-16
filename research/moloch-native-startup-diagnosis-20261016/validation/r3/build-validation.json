@@ -1,0 +1,407 @@
+{
+  "artifacts": {
+    "baseline": {
+      "buildEvidence": {
+        "bytes": 181978,
+        "sha256": "03e227871d6f86d814343d81859c65e59b7954e0688b2c11c5fda43daad1cef3"
+      },
+      "buildEvidencePath": "/tmp/moloch-buy-timestamp-recovery-20261016/release.log",
+      "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+      "nativeCargoArtifact": {
+        "executable": null,
+        "features": [],
+        "filenames": [
+          "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/live-runtime/target/release/deps/libmoloch_replay-1e049d55bba63d75.rlib",
+          "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/live-runtime/target/release/deps/libmoloch_replay-1e049d55bba63d75.rmeta"
+        ],
+        "fresh": false,
+        "manifest_path": "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/native/Cargo.toml",
+        "package_id": "path+file:///tmp/moloch-buy-timestamp-recovery-20261016/moloch/native#moloch-replay@0.1.0",
+        "profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "reason": "compiler-artifact",
+        "target": {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2024",
+          "kind": [
+            "lib"
+          ],
+          "name": "moloch_replay",
+          "src_path": "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/native/src/lib.rs",
+          "test": true
+        }
+      },
+      "nativeRlib": {
+        "bytes": 7639174,
+        "sha256": "828e9f9371571f6e6e2700cc3a1c7cd75b9e9ea7d57d3f6d71e412484db19f29"
+      },
+      "nativeRlibPath": "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/live-runtime/target/release/deps/libmoloch_replay-1e049d55bba63d75.rlib",
+      "nativeSourceRoot": "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/native",
+      "optimizedProfile": "release",
+      "probe": {
+        "bytes": 3996792,
+        "sha256": "b6d605192f24fd8b2ba2d06e6e9f52104d5109572998d2f131ebbe84c1fe0461"
+      },
+      "probePath": "/tmp/moloch-native-flow-build-b2202660-20261016-r2/baseline-probe",
+      "serdeCargoArtifact": {
+        "executable": null,
+        "features": [
+          "arbitrary_precision",
+          "default",
+          "std"
+        ],
+        "filenames": [
+          "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/live-runtime/target/release/deps/libserde_json-0cc4c80014a529ad.rlib",
+          "/tmp/moloch-buy-timestamp-recovery-20261016/moloch/live-runtime/target/release/deps/libserde_json-0cc4c80014a529ad.rmeta"
+        ],
+        "fresh": true,
+        "manifest_path": "/home/archon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/Cargo.toml",
+        "package_id": "registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154",
+        "profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "reason": "compiler-artifact",
+        "target": {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "serde_json",
+          "src_path": "/home/archon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/lib.rs",
+          "test": true
+        }
+      },
+      "sourceFiles": {
+        "Cargo.lock": {
+          "bytes": 38239,
+          "sha256": "6a4dd670279ea79a9b1dc7447a50ea6f0cad623ef0aa7e5bbcdf878090c362d6"
+        },
+        "src/engine.rs": {
+          "bytes": 84710,
+          "sha256": "b99192130a0b5a20eea081e1acc57f3afe9654cc5c0229f49b6a45f72a06cfef"
+        },
+        "src/engine_capital.rs": {
+          "bytes": 13200,
+          "sha256": "6ab332b2dccc48771ae9ccf11dba8e769390237fec7c67026f226de08ee19f1d"
+        },
+        "src/engine_collateral.rs": {
+          "bytes": 26681,
+          "sha256": "a032c1d0191ef444404f84a669c0136c1e754d8b087abb7342ee5bd770d9e439"
+        },
+        "src/engine_live.rs": {
+          "bytes": 14660,
+          "sha256": "a78b4085f246d84beee831f00fdc607c376580f2b7ed25416714162f6af10cfa"
+        },
+        "src/engine_packages.rs": {
+          "bytes": 46529,
+          "sha256": "92dc2f052a5ae42c563adf19b54964fa15e711259c40ae6ebc9e26a4ac7962df"
+        },
+        "src/journal.rs": {
+          "bytes": 2392,
+          "sha256": "90b2f3bea38a7449d0ce7d9960be73f36b42a230e5acd9b20debec9b4875f1a6"
+        },
+        "src/legacy.rs": {
+          "bytes": 3672,
+          "sha256": "357dfde00920097a051ea3ee6965c28e856d621e5fd007548471d6459b139529"
+        },
+        "src/lib.rs": {
+          "bytes": 20477,
+          "sha256": "a1bbdb8b98f6cdefd0532afd1f9ee4f659b9f1f2f8a4c89fde62ad30b37e0328"
+        },
+        "src/live_market_capacity.rs": {
+          "bytes": 4086,
+          "sha256": "711c24a4fb2e3564ac35f8c3d1258a96c284bba148ffbeff0c40203813897c2a"
+        },
+        "src/ordinary_entry_exclusions.rs": {
+          "bytes": 3141,
+          "sha256": "27d6e73ca1d0d7d9a1a41e629d8b0d5cde7fb386b9194cf355a2587623364e80"
+        },
+        "src/probabilistic_packages.rs": {
+          "bytes": 13827,
+          "sha256": "520b69bf2fc22b246592b2782e6cb459fa9828c9990a2c96d0cf6305aeb77b62"
+        },
+        "src/reviewed_fundamental_entry.rs": {
+          "bytes": 25458,
+          "sha256": "2da3db3304c65ed79099e7d4f1a99f60beb52c446ddd0febaf8b017a7258e61c"
+        },
+        "src/reviewed_inventory_exit.rs": {
+          "bytes": 4280,
+          "sha256": "afef2425aaea708289d44c645b2cefe7be17db9a3f9cb28a001efcfeb088c245"
+        },
+        "src/semantic_floor.rs": {
+          "bytes": 29764,
+          "sha256": "7d15b750e99cd1b133043fe30d0f0556b372f5ab1c9d2a0407678cfe131bab9e"
+        },
+        "src/session.rs": {
+          "bytes": 56622,
+          "sha256": "d8a8a46219605572c1479a05a7efe93f34c4b0b8434905f1f464be670998b26d"
+        }
+      }
+    },
+    "candidate": {
+      "buildEvidence": {
+        "bytes": 128845,
+        "sha256": "f8763e8c1e40fe8cdb5147756e001e2cb586277b0e44ded147cd186ef2bf9fe8"
+      },
+      "buildEvidencePath": "/tmp/moloch-native-flow-build-b2202660-20261016-r2/native-release.log",
+      "engineIdentity": "0ba143798b09a09c6d685d3804e6c49e9e09ffa0b9e9ec406167aa4d89e0b25d",
+      "nativeCargoArtifact": {
+        "executable": null,
+        "features": [],
+        "filenames": [
+          "/tmp/moloch-native-flow-build-b2202660-20261016/target/release/libmoloch_replay.rlib",
+          "/tmp/moloch-native-flow-build-b2202660-20261016/target/release/deps/libmoloch_replay-6725e955ec7e6c65.rmeta"
+        ],
+        "fresh": false,
+        "manifest_path": "/tmp/moloch-native-flow-build-b2202660-20261016-r2/moloch/native/Cargo.toml",
+        "package_id": "path+file:///tmp/moloch-native-flow-build-b2202660-20261016-r2/moloch/native#moloch-replay@0.1.0",
+        "profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "reason": "compiler-artifact",
+        "target": {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2024",
+          "kind": [
+            "lib"
+          ],
+          "name": "moloch_replay",
+          "src_path": "/tmp/moloch-native-flow-build-b2202660-20261016-r2/moloch/native/src/lib.rs",
+          "test": true
+        }
+      },
+      "nativeRlib": {
+        "bytes": 7635110,
+        "sha256": "bc74d1c00085dc2e4dc69e197a6b22c6d6ccf2b3004731d4b954bd07b312b64e"
+      },
+      "nativeRlibPath": "/tmp/moloch-native-flow-build-b2202660-20261016/target/release/libmoloch_replay.rlib",
+      "nativeSourceRoot": "/tmp/moloch-native-flow-build-b2202660-20261016-r2/moloch/native",
+      "optimizedProfile": "release",
+      "probe": {
+        "bytes": 4062424,
+        "sha256": "1d956c0125fe6cd81eb45ba19996115006a7e9d08e25452464cdc5e9ea6d2882"
+      },
+      "probePath": "/tmp/moloch-native-flow-build-b2202660-20261016-r3/candidate-probe",
+      "serdeCargoArtifact": {
+        "executable": null,
+        "features": [
+          "arbitrary_precision",
+          "default",
+          "std"
+        ],
+        "filenames": [
+          "/tmp/moloch-native-flow-build-b2202660-20261016/target/release/deps/libserde_json-0cc4c80014a529ad.rlib",
+          "/tmp/moloch-native-flow-build-b2202660-20261016/target/release/deps/libserde_json-0cc4c80014a529ad.rmeta"
+        ],
+        "fresh": false,
+        "manifest_path": "/home/archon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/Cargo.toml",
+        "package_id": "registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154",
+        "profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "reason": "compiler-artifact",
+        "target": {
+          "crate_types": [
+            "lib"
+          ],
+          "doc": true,
+          "doctest": true,
+          "edition": "2021",
+          "kind": [
+            "lib"
+          ],
+          "name": "serde_json",
+          "src_path": "/home/archon/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/lib.rs",
+          "test": true
+        }
+      },
+      "sourceFiles": {
+        "Cargo.lock": {
+          "bytes": 38239,
+          "sha256": "6a4dd670279ea79a9b1dc7447a50ea6f0cad623ef0aa7e5bbcdf878090c362d6"
+        },
+        "src/engine.rs": {
+          "bytes": 89961,
+          "sha256": "350fff58d61577c6a4d030a0b0db8f1bf459f2324ff361f89d784bd5868e1e64"
+        },
+        "src/engine_capital.rs": {
+          "bytes": 13200,
+          "sha256": "6ab332b2dccc48771ae9ccf11dba8e769390237fec7c67026f226de08ee19f1d"
+        },
+        "src/engine_collateral.rs": {
+          "bytes": 26681,
+          "sha256": "a032c1d0191ef444404f84a669c0136c1e754d8b087abb7342ee5bd770d9e439"
+        },
+        "src/engine_live.rs": {
+          "bytes": 14660,
+          "sha256": "a78b4085f246d84beee831f00fdc607c376580f2b7ed25416714162f6af10cfa"
+        },
+        "src/engine_packages.rs": {
+          "bytes": 46529,
+          "sha256": "92dc2f052a5ae42c563adf19b54964fa15e711259c40ae6ebc9e26a4ac7962df"
+        },
+        "src/journal.rs": {
+          "bytes": 2392,
+          "sha256": "90b2f3bea38a7449d0ce7d9960be73f36b42a230e5acd9b20debec9b4875f1a6"
+        },
+        "src/legacy.rs": {
+          "bytes": 3672,
+          "sha256": "357dfde00920097a051ea3ee6965c28e856d621e5fd007548471d6459b139529"
+        },
+        "src/lib.rs": {
+          "bytes": 20477,
+          "sha256": "a1bbdb8b98f6cdefd0532afd1f9ee4f659b9f1f2f8a4c89fde62ad30b37e0328"
+        },
+        "src/live_market_capacity.rs": {
+          "bytes": 4086,
+          "sha256": "711c24a4fb2e3564ac35f8c3d1258a96c284bba148ffbeff0c40203813897c2a"
+        },
+        "src/ordinary_entry_exclusions.rs": {
+          "bytes": 3141,
+          "sha256": "27d6e73ca1d0d7d9a1a41e629d8b0d5cde7fb386b9194cf355a2587623364e80"
+        },
+        "src/probabilistic_packages.rs": {
+          "bytes": 13827,
+          "sha256": "520b69bf2fc22b246592b2782e6cb459fa9828c9990a2c96d0cf6305aeb77b62"
+        },
+        "src/reviewed_fundamental_entry.rs": {
+          "bytes": 25458,
+          "sha256": "2da3db3304c65ed79099e7d4f1a99f60beb52c446ddd0febaf8b017a7258e61c"
+        },
+        "src/reviewed_inventory_exit.rs": {
+          "bytes": 4280,
+          "sha256": "afef2425aaea708289d44c645b2cefe7be17db9a3f9cb28a001efcfeb088c245"
+        },
+        "src/semantic_floor.rs": {
+          "bytes": 29764,
+          "sha256": "7d15b750e99cd1b133043fe30d0f0556b372f5ab1c9d2a0407678cfe131bab9e"
+        },
+        "src/session.rs": {
+          "bytes": 56622,
+          "sha256": "d8a8a46219605572c1479a05a7efe93f34c4b0b8434905f1f464be670998b26d"
+        }
+      }
+    }
+  },
+  "bankReplayRun": false,
+  "bridgeProposed": false,
+  "checks": {
+    "baseline-identity": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 65,
+        "sha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc"
+      },
+      "seconds": 0.009208340983605012
+    },
+    "candidate-identity": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 65,
+        "sha256": "2c8aab177894c97564ddd45a3b5d842f9c1ebacdf26187a43aa8bfaecad07899"
+      },
+      "seconds": 0.008614790014689788
+    },
+    "candidate-probe-build": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "seconds": 23.851437965000514
+    },
+    "original-r2-baseline-identity": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 65,
+        "sha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc"
+      },
+      "seconds": 0.00902671500807628
+    },
+    "original-r2-baseline-probe-build": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "seconds": 23.332003649004037
+    },
+    "original-r2-candidate-probe-build": {
+      "exitCode": 1,
+      "log": {
+        "bytes": 572,
+        "sha256": "11f26796d10444293222eda7140c6cd860e2c1755d7fe0e7f91e7d230d6a9d5a"
+      },
+      "seconds": 0.0652130990056321
+    },
+    "original-r2-compiler": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 197,
+        "sha256": "60586c5678459d91006a242307c9d42841a6a719f612863d27ff30ffb3f4bf4f"
+      },
+      "seconds": 0.06506467700819485
+    },
+    "original-r2-native-library": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 9335,
+        "sha256": "388a9ee6a9fcc5a0dc31a83ed88ce886c89189647c1a6db5a396196547b6a3cf"
+      },
+      "seconds": 38.791736319020856
+    },
+    "original-r2-native-release": {
+      "exitCode": 0,
+      "log": {
+        "bytes": 128845,
+        "sha256": "f8763e8c1e40fe8cdb5147756e001e2cb586277b0e44ded147cd186ef2bf9fe8"
+      },
+      "seconds": 221.6760230420041
+    }
+  },
+  "finishedAt": "2026-10-16T20:12:40.758916+00:00",
+  "linkRepair": "Add actual serde artifact parent as a dependency search directory; preserve R2 failed link.",
+  "nativeTestSummary": {
+    "failed": 0,
+    "flowWindowTestsPassed": 5,
+    "ignored": 1,
+    "passed": 77
+  },
+  "offlineOnly": true,
+  "probeSource": {
+    "bytes": 3040,
+    "sha256": "352b5fc3fc39627d3bff391e121a5e612df6712ba7a8f2cf4cb911748deff886"
+  },
+  "productionAuthorization": false,
+  "startedAt": "2026-10-16T20:12:16.703061+00:00"
+}

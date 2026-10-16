@@ -1,0 +1,70 @@
+{
+  "research/moloch-buy-fill-recovery-20261016/deployment/post-recovery-roundtrip.json": {
+    "bytes": 4154,
+    "sha256": "15625346a6e2ff9c1b56562e1e13346375bf0a820c32563586965dc57a4cce53"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/benchmark-input-manifest.json": {
+    "bytes": 13102,
+    "sha256": "dad559b7631ca6eac35142186549d4543e57aef7d9cfe9fb51f4e8ce2b051250"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/build_native_flow_candidate_20261016_r2.py": {
+    "bytes": 9330,
+    "sha256": "d2cbd3fbb7feabb120ad1d00ae32b22237fc1f4b4f372188c52c7d21c0bb70da"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/finish_native_flow_probe_20261016_r3.py": {
+    "bytes": 6558,
+    "sha256": "939dc0fecc912eac2450f7db00113d73d16a01aa53fe3b5da25eb210b3764feb"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r2/candidate-probe-build-receipt.json": {
+    "bytes": 168,
+    "sha256": "34a0eb8be06dcdacbf13461be12cd902cadf16a58f004c72842657d0650fe319"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r2/candidate-probe-build.log": {
+    "bytes": 572,
+    "sha256": "11f26796d10444293222eda7140c6cd860e2c1755d7fe0e7f91e7d230d6a9d5a"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r2/native-library-receipt.json": {
+    "bytes": 169,
+    "sha256": "2d3a80df726184380f2bec63ce758f43188e345a77cfc0b12b8cd1ee59976498"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r2/native-library.log": {
+    "bytes": 9335,
+    "sha256": "388a9ee6a9fcc5a0dc31a83ed88ce886c89189647c1a6db5a396196547b6a3cf"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r2/native-release-receipt.json": {
+    "bytes": 170,
+    "sha256": "5e206a9f57f723ff84befe466377b5643f8d8adfbcd2870b58e12d9f21ff3982"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r2/native-release.log": {
+    "bytes": 128845,
+    "sha256": "f8763e8c1e40fe8cdb5147756e001e2cb586277b0e44ded147cd186ef2bf9fe8"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r3/baseline-identity-receipt.json": {
+    "bytes": 169,
+    "sha256": "d3c7d0a1656dfe508fa6f234f5260a1afd73d4b8cdabb16fa44c71743a87714c"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r3/baseline-identity.log": {
+    "bytes": 65,
+    "sha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r3/build-validation.json": {
+    "bytes": 14814,
+    "sha256": "9aa23583b34ce0dc2f9ee2841c388e9ca582c600a8332ff00b49fd2cd581cd25"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r3/candidate-identity-receipt.json": {
+    "bytes": 169,
+    "sha256": "c4dfadaf41d959f2efee851f5b6ea928365300aee5e310360081146635969167"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r3/candidate-identity.log": {
+    "bytes": 65,
+    "sha256": "2c8aab177894c97564ddd45a3b5d842f9c1ebacdf26187a43aa8bfaecad07899"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r3/candidate-probe-build-receipt.json": {
+    "bytes": 166,
+    "sha256": "37d5775e7d8b869f38e85400716c566372e2b5bb35e1a03329dfa4206b8df58a"
+  },
+  "research/moloch-native-startup-diagnosis-20261016/validation/r3/candidate-probe-build.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -75,6 +75,10 @@
     "deployment/v6-observer-rollout.json": {
       "sha256": "cd647787f1257142cdf2593de70d85375b7722ec13d4c0fbcc547b9c7729164b",
       "bytes": 942
+    },
+    "deployment/post-recovery-roundtrip.json": {
+      "bytes": 4154,
+      "sha256": "15625346a6e2ff9c1b56562e1e13346375bf0a820c32563586965dc57a4cce53"
     }
   }
 }

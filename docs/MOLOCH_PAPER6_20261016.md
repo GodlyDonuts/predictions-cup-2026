@@ -9,7 +9,25 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation at19:57UTC
+## Latest operation at20:19UTC
+
+Sole540259/source774f94fe/binary1180882d is trading with matching full-cycle
+status20:16:19 and subsequent progress20:19:11. There are23 post-launch ACKs and
+three new fill rows,214 cumulative. The234YES round trip on324/1013 closes flat
+at.18,42.12 cost/proceeds and zero fees. Combined realized remains−133.625000;
+cash70,765.455000/owned cost24,680.835000. This is execution evidence without new
+profit. [Original rows and process/status proof](../research/moloch-buy-fill-recovery-20261016/deployment/post-recovery-roundtrip.json).
+
+Alaska/Maine activation remains preparation, not production. The native
+activity-window candidate passes77 actual ARM64 unit checks/release/identity
+probes, with one existing explicit benchmark ignored in the unit invocation.
+Its original308166-event detached comparison is running; no native production
+change or speedup is claimed. [Source and build evidence](../research/moloch-native-startup-diagnosis-20261016/README.md).
+V6 originals/protocol remain intact while a prospective pre-trigger SIG-drain
+correction is being developed separately. No model qualification or completed
+Paper6 integration is inferred.
+
+## Historical operation at19:57UTC
 
 Sole production **540259**, source774f94fe/binary1180882d, is verified fresh
 trading at **19:57UTC**: healthy realtime, matching executable, no STOP and eight

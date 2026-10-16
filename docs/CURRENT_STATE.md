@@ -1,4 +1,23 @@
-# October16,19:57UTC: fresh trading, genuine Oregon reconciliation
+# October16,20:19UTC: full cycle completes; new round trip closes flat
+
+Sole production540259/source774f94fe/binary1180882d remains fresh trading.
+Full-cycle status now genuinely matches540259 at20:16:19UTC; current progress
+advances again at20:19:11. There are23 post-launch official acknowledgments and
+three genuinely new fill rows,214 cumulative. Market324/exchange1013 bought234YES
+at.18 and sold222+12 at.18:42.12 cost/proceeds, zero fees and **zero realized
+gain**. Combined realized remains**−133.625000**, cash70,765.455000 and owned
+cost24,680.835000. The Oregon five-row recovery remains separate from those new
+executions. [Original execution/status evidence](../research/moloch-buy-fill-recovery-20261016/deployment/post-recovery-roundtrip.json).
+
+Alaska/Maine activation preparation is underway; both remain inactive. The
+isolated native activity-window candidate passed77 ARM64 native checks plus
+optimized release/identity probes; one explicit benchmark is ignored in the
+unit invocation. The actual original308166-event detached comparison is running;
+no production native change, parity outcome or speedup is claimed.
+[Checked source, build and frozen comparison](../research/moloch-native-startup-diagnosis-20261016/README.md).
+Paper6 and demonstrated overall profitability remain unfinished.
+
+# Historical October16,19:57UTC: fresh trading, genuine Oregon reconciliation
 
 Sole production **540259**, source774f94fe/binary1180882d, is verified fresh
 trading at **19:57UTC**: healthy realtime, matching executable, no STOP and eight
