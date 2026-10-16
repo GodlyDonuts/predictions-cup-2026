@@ -119,6 +119,21 @@ class ToxicityTests(unittest.TestCase):
         row['external']['sourceTs'] = BASE-20000
         self.assertEqual(feature_state(row, 'scoped_v2')[0]['YES'], 'FAVORABLE')
 
+    def test_original_ws_server_skew_is_bounded_and_causal_at_first_availability(self):
+        row = records()[0]
+        row['external'].update(receivedMs=BASE-100, availableMs=BASE, sourceTsMs=BASE-86)
+        original = copy.deepcopy(row)
+        self.assertEqual(feature_state(row, 'scoped_v2')[0]['YES'], 'FAVORABLE')
+        self.assertEqual(row, original)
+        row['external']['sourceTsMs'] = BASE+1
+        with self.assertRaisesRegex(ValueError, 'FEATURE_LOOKAHEAD'): feature_state(row, 'scoped_v2')
+        row['external'].update(receivedMs=BASE-2000, sourceTsMs=BASE-999)
+        with self.assertRaisesRegex(ValueError, 'FEATURE_LOOKAHEAD'): feature_state(row, 'scoped_v2')
+        row['external']['sourceTsMs'] = BASE-1000
+        self.assertEqual(feature_state(row, 'scoped_v2')[0]['YES'], 'FAVORABLE')
+        row['external']['sourceTs'] = BASE-1001
+        with self.assertRaisesRegex(ValueError, 'SOURCE_CLOCK_CONFLICT'): feature_state(row, 'scoped_v2')
+
     def test_label_cannot_leak_early_late_or_fabricated_execution(self):
         for case in ('early', 'late', 'fill', 'value'):
             rows = records()
