@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "state": "awaiting_parent_pid_and_post_restore_readiness",
+  "productionObservationPerformed": false,
+  "accountRequests": 0,
+  "wholeLoopSpeedupEstablished": false
+}
