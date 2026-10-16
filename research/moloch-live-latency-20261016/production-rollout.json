@@ -1,0 +1,110 @@
+{
+  "at": "2026-10-16T04:44:32.377433+00:00",
+  "sourceCommit": "bfd51082",
+  "release": "/home/archon/apps/moloch/releases/source-batch-3f5631c0b69d/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-source-batch-20261016.json",
+  "binarySha256": "3f5631c0b69de40478172f22d1881d6234e03da7e55974f0a04a7417e15d33ed",
+  "controlSha256": "377ed63f1e4fb2a9bee7c3be4b3a73a56e19e11f665a689fd044f40d8f8975e6",
+  "priorControl": "/home/archon/apps/moloch/shared/moloch-live-permit-recovery-20261016.json",
+  "priorControlSha256": "bf47e6f5937260d6743535ebb3b1e382400518116c370e83f1528b0f124853e8",
+  "priorRelease": "/home/archon/apps/moloch/releases/permit-recovery-da4202e064ff/bin/moloch-live-runtime",
+  "oldPid": 381131,
+  "nativeEngineChanged": false,
+  "benchmark": {
+    "batchCommitNs": 1621782095,
+    "batchRestartNs": 137963444299,
+    "batchRestoreNs": 132129529187,
+    "batchSize": 32,
+    "bytesEqual": true,
+    "events": 64,
+    "files": {
+      "events.jsonl": {
+        "batchBytes": 430963210,
+        "batchSha256": "1a38a374617d240daaf035d57dac5251103949da4f1906abf13625d3a7ad315d",
+        "equal": true,
+        "serialBytes": 430963210,
+        "serialSha256": "1a38a374617d240daaf035d57dac5251103949da4f1906abf13625d3a7ad315d"
+      },
+      "head.json": {
+        "batchBytes": 254,
+        "batchSha256": "8928820c7ac08529e3cca0e296fd0aa4f2dc415cf62a77cc91c2857b336f5291",
+        "equal": true,
+        "serialBytes": 254,
+        "serialSha256": "8928820c7ac08529e3cca0e296fd0aa4f2dc415cf62a77cc91c2857b336f5291"
+      },
+      "manifest.json": {
+        "batchBytes": 16090,
+        "batchSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+        "equal": true,
+        "serialBytes": 16090,
+        "serialSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+      },
+      "report.json": {
+        "batchBytes": 1093814,
+        "batchSha256": "0ba855f56464e35d4d8cbc74e4accc06ead5f6e1f517647a504f493a88f34d10",
+        "equal": true,
+        "serialBytes": 1093814,
+        "serialSha256": "0ba855f56464e35d4d8cbc74e4accc06ead5f6e1f517647a504f493a88f34d10"
+      }
+    },
+    "fixture": "64_original_consecutive_journal_rows_single_event_frames",
+    "inputSha256": "1646518fc24b6675c8f86c36c5c079c876def5bba56cb4d8e49f8411020bcf6d",
+    "networkRequests": 0,
+    "originalRowsEqual": true,
+    "restartEqual": true,
+    "schemaVersion": 1,
+    "semanticEqual": true,
+    "serialCommitNs": 31898828176,
+    "serialRestartNs": 135498795482,
+    "serialRestoreNs": 133901325385,
+    "stateCounts": {
+      "contestOrders": 682,
+      "fills": 118,
+      "orders": 3405,
+      "sequence": 149663
+    }
+  },
+  "deployed": true,
+  "newPid": 383074,
+  "boundary": {
+    "at": "2026-10-16T04:44:28.033197+00:00",
+    "stop": {
+      "action": "no automatic write retry or activation renewal",
+      "at": "2026-10-16T04:44:25.708Z",
+      "reason": "STOPPED_OR_OWNER_LOST"
+    },
+    "head": {
+      "hash": "595c199ab050e1bf98a861cc32930a43f3ab4e4c485251179f287153b2f431d5",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "5a909ecb3ef2802f31280f299b20fb8396b4e9630dac5dffd533e3c1a44358b0",
+      "sequence": 156782
+    },
+    "reportHash": "bc484dcac97b0f673472c8574bacdb497d91583d9d53be64dfd50882ddc80ec7",
+    "journalSha256": "9dece60f91f6615059280f5c6c94914a389a825fa6126291a2717967b62c80c1",
+    "bridgeSha256": "6f4b5ef4460ccd80c33a210d2e18e8dcd4600e0a4aa3893a45e24e2f67c1512b",
+    "bridgeEntries": 9,
+    "dispatch": {
+      "sequence": 6474,
+      "hash": "0c1878569e491009dc7190a8a1cd1b819b7fdb0e7aa922d1d6b397d511c1013a",
+      "acknowledged": 700,
+      "provedAborted": {
+        "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7"
+      },
+      "unknownOrdinaryAttempts": 0
+    },
+    "queue": {
+      "globalUnknownCount": 0,
+      "hasUnknown": false,
+      "sequence": 125783,
+      "previous": "e2e6fff4994b70bcfa6dc92f7adfdcf7f975aedd384fd57774e80754f4b2751b"
+    },
+    "fundamentalSha256": "07451253715a03e55b97d7b0690efcda4374d8daac483f90f162602e6faff3b1",
+    "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+    "actualFills": 119,
+    "newTradingRealized": "-119.100000",
+    "inheritedRealizedGross": "43.395000",
+    "realized": "-75.705000"
+  },
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false
+}

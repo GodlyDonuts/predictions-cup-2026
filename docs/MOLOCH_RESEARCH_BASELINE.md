@@ -1,24 +1,24 @@
 # Moloch research baseline
 
-**As of2026-10-16 04:33:41UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
+**As of2026-10-16 04:49:42UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
 
 ## Exact deployed system
 
 | Item | Verified state |
 | --- | --- |
-| Service |Sole `moloch-live.service`, PID381131, VPS; running, no execution STOP|
-| Deployed source |`4148fe5dd3bb1bd4c1ba53855ab1422d80d6f61d`|
-| Executable SHA256 |`da4202e064ffb89cac1eb4aab2dcb076a1d2bc3cde3c1a2197799f6cf9c5fefc`|
+| Service |Sole `moloch-live.service`, PID383074, VPS; running, no execution STOP|
+| Deployed source |`bfd51082`|
+| Executable SHA256 |`3f5631c0b69de40478172f22d1881d6234e03da7e55974f0a04a7417e15d33ed`|
 | Native engine identity |`4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98`, nine explicit financial identity bridges|
 | Account/bank |One serialized SDK V1 queue and original funded bank; no second collector/writer|
-| Fresh activity |Healthy realtime/trading;696 total acknowledged orders,119 actual fill rows;14 new ACKs/1 new fill since03:58 recovery launch|
+| Fresh activity |Healthy realtime/trading;702 total acknowledged orders,119 actual fill rows;2 new ACKs/0 new fills since04:44 source-batching launch|
 | Risk limits |40,000 total commitment;10,000 per market;10,000 shares maximum order; existing holdings separately attributed|
 | Read/write limits |100-read rolling ceiling/600ms completion gap;24-write ceiling/2500ms gap. These are admission ceilings, not measured achieved throughput|
 | Entry schedule |Human-authorized daily windows; current cutoff14:44:34.413UTC October16, fixed campaign end17:00UTC November4; exits continue|
 | Ordinary policy |Paired-spread maker, one-tick minimum spread,.001 minimum edge,.005 fixed-gain exit; execution-clock maximum inventory age **60,000ms**|
 | Optional features OFF |Execution-distribution diagnostic, old execution-model diagnostic, empirical maker-policy gate and collateral accounting|
 
-[Actual immutable rollout and stopped boundary](../research/moloch-permit-recovery-20261016/production-rollout.json), [latest checked live observation](../research/moloch-permit-recovery-20261016/live-verification.json). Checked `main` may advance beyond deployed source. A source commit, test or documentation edit does not establish deployment. No runtime change was made for this documentation refresh.
+[Actual immutable rollout and stopped boundary](../research/moloch-live-latency-20261016/production-rollout.json), [latest checked live observation](../research/moloch-live-latency-20261016/live-verification.json). Checked `main` may advance beyond deployed source. A source commit, test or documentation edit does not establish deployment. This observation follows the actual source-batching promotion; the first full-cycle status still belongs to the old PID.
 
 ## Capabilities that exist now
 
@@ -50,4 +50,4 @@ Rhode Island official September primary nomination evidence is retained, with it
 
 Pin `git rev-parse HEAD`, this baseline's observation UTC and the separately recorded deployed source/binary. Read [PAPER_INTAKE](PAPER_INTAKE.md), the current capability specification and actual economic evidence. Label each proposed improvement as already deployed, checked but inactive, or missing. Use official semantics and executable depth; separate assumptions, counterfactual outcomes, actual fills, attributed realized P&L and dashboard marks. Include the precise files/behavior to change and an attributable economic outcome to measure. Task evidence: [production #120](https://github.com/GodlyDonuts/predictions-cup-2026/issues/120), [Paper3 #144](https://github.com/GodlyDonuts/predictions-cup-2026/issues/144), [incident #145](https://github.com/GodlyDonuts/predictions-cup-2026/issues/145), [actual economics #146](https://github.com/GodlyDonuts/predictions-cup-2026/issues/146).
 
-Current checked but inactive performance work: queued-frame source batching d1e15194 passes38 worker checks and its ARM64 release build; an original-prefix serial/batch benchmark is still running. This is not the deployed service. [Measured cycle-latency work](../research/moloch-live-latency-20261016/README.md).
+Deployed performance work: queued-frame source batching d1e15194 passes38 worker checks and its ARM64 release build. The original-prefix64-row benchmark completed31.90s serial versus1.62s batched commits with exact financial/journal/restart parity. SDK proof-archive recovery fca914f0/bfd51082 is also deployed. Actual live-cycle improvement remains to be measured; the fixture ratio is not live throughput. [Measured cycle-latency work](../research/moloch-live-latency-20261016/README.md).
