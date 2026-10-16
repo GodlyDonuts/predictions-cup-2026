@@ -1,3 +1,31 @@
+# October16,10:43UTC: live production, first cross-venue economics, capital upgrade pending
+
+Sole SIG441490/source`fec81a5e` verified10:39:26UTC: fresh trading/realtime,
+matching binary and no STOP. Since08:55restart:79 official acknowledgments,
+four additional fill rows,136 cumulative fill rows. Cash17,194.180000, owned
+cost22,731.515000 and attributed realized−74.305000 remain unchanged. Actual
+reservation retirement released2,547.20 locally; it credited no cash or profit.
+[Original release evidence](../research/moloch-throughput-20261016/draft-refresh-first-release.json).
+
+The sole Kalshi collector10868/supervisor8976 measured237valid WebSocket books
+on one connection at10:29:52, zero sequence gaps. REST measured20 starts/sec,
+1193/minute and one recovered network error since restart. Coverage is234
+conditional direct references plus three candidate analogs, not237 certified
+settlement equivalents. [Dated feed evidence](../research/kalshi-websocket-20261016/live-verification.json).
+
+The first sealed prospective cross-venue study has200 decisions/291 future
+labels across35 markets. All five horizons abstained and selected zero trades
+after the stated crossing buffer. Predictive improvement in this small sample
+is not economic qualification. [Full results](../research/moloch-crossvenue-economics-20261016/README.md).
+
+Human full-account authority is implemented in the separate successor as an
+exact55,579.915000 owner contribution plus explicit daily-mandate migration;
+the deployed40,000 allocation has not yet changed. The successor also adds bulk
+negative screening and bounded all-market capture rotation. An independent
+review caught a funding-clock expiry that could unnecessarily stop exits; a
+narrow runtime fix and optimized rebuild precede controlled promotion. Current
+production continues throughout development. [Implementation ledger](MOLOCH_PAPER6_20261016.md).
+
 # October16,10:08UTC: full Kalshi shadow market live; SIG continues
 
 SIG solePID441490/sourcefec81a5e was verified healthy at09:55:04UTC: fresh trading/realtime, matching binary, STOP absent,44new acknowledgments/two actual fill rows since08:55restart. Cumulative134fillrows; ordinary realized−119.435/inherited gross+45.130/combined−74.305. These are attributed trading results, distinct from daily dashboard marks. The stale-draft repair actually released2,547.20 of local reservations at09:07; it did not credit cash or profit.

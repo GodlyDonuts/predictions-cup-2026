@@ -109,6 +109,7 @@ pub fn engine_identity() -> String {
         include_bytes!("ordinary_entry_exclusions.rs").as_slice(),
         include_bytes!("live_market_capacity.rs").as_slice(),
         include_bytes!("engine_capital.rs").as_slice(),
+        include_bytes!("semantic_floor.rs").as_slice(),
         include_bytes!("engine_packages.rs").as_slice(),
         include_bytes!("probabilistic_packages.rs").as_slice(),
         include_bytes!("engine_collateral.rs").as_slice(),
@@ -415,6 +416,13 @@ impl Session {
             if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
                 ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
                 ||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("PROBABILISTIC_SESSION_PREFIX".into())}
+        }
+        if event["type"]=="live_owner_mandate_revision_v1" {
+            let seed=self.live_account_seed().ok_or("CAPITAL_MANDATE_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||event["nativeHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportHash"]!=hash(&engine.report()?)
+                ||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid){return Err("CAPITAL_MANDATE_SESSION_PREFIX".into())}
         }
         if event["type"]=="live_capital_allocation_v1" {
             let seed=self.live_account_seed().ok_or("CAPITAL_SESSION_NOT_LIVE")?;

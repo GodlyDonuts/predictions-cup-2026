@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -65,6 +65,7 @@ fn closed_legacy_ack(bank:&Session,log:&DispatchLog,qid:u64,event:&Value)->bool{
 }
 fn ensure_entry_window(c:&Control,bank:&mut Session,authority:&ProductionAuthority)->Result<()>{
  let Some(cfg)=&c.daily_entry_windows else{return Ok(())};let at=now();cfg.validate(&c.activation,at)?;
+ if !owner_capital_ready(c,bank)?{validate_owner_daily(c,bank)?;return Ok(())}
  let current=moloch_live_runtime::daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("DAILY_POLICY_STOP")?)?;
  let end=cfg.end_at(at)?;
  if at>=cfg.campaign_end_ms{return Ok(())}
@@ -79,6 +80,63 @@ fn ensure_entry_window(c:&Control,bank:&mut Session,authority:&ProductionAuthori
   }
  }
  if authority.entry_until_ms()!=end||end==cfg.anchor_ms{authority.bind_entry_window(bank,cfg,at)?;}Ok(())
+}
+// An explicit optional contribution mandate can raise the outer activation
+// bound, never the immutable replay seed. Until the source-bound event commits,
+// native sizing remains at its original cap and BUYs are withheld.
+fn validate_owner_capital_control(c:&Control)->Result<bool>{
+ let Some(settings)=&c.owner_capital_allocation else{return Ok(c.activation.maximum_committed==c.policy["maximumCommitted"].as_str().unwrap_or(""))};
+ settings.validate_control(&c.activation,&c.scope,&c.account_scope,&c.policy)?;
+ let cfg=c.daily_entry_windows.as_ref().ok_or("LIVE_OWNER_CAPITAL_DAILY_REQUIRED")?;
+ if cfg.authorization_id!=settings.mandate.authorization_id||cfg.approved_at!=settings.mandate.approved_at{return Err("LIVE_OWNER_CAPITAL_DAILY_APPROVAL".into())}Ok(true)
+}
+fn owner_capital_ready(c:&Control,bank:&Session)->Result<bool>{match &c.owner_capital_allocation{None=>Ok(true),Some(settings)=>settings.ready(bank)}}
+fn validate_owner_daily(c:&Control,bank:&Session)->Result<()>{
+ let Some(settings)=&c.owner_capital_allocation else{return Ok(())};
+ let old=bank.engine().daily_entry_mandate().ok_or("CAPITAL_PREVIOUS_DAILY_MANDATE_REQUIRED")?;
+ if hash(&old)!=settings.previous_daily_mandate_sha256{return Err("CAPITAL_PREVIOUS_DAILY_MANDATE_MISMATCH".into())}
+ let next=c.daily_entry_windows.as_ref().ok_or("LIVE_OWNER_CAPITAL_DAILY_REQUIRED")?.mandate(&c.activation);
+ for field in ["anchorMs","campaignEndMs","intervalMs","maximumMarketCost","maximumQuantity"]{if old[field]!=next[field]{return Err("CAPITAL_MANDATE_GEOMETRY_CHANGED".into())}}Ok(())
+}
+fn owner_capital_buys_allowed(c:&Control,bank:&Session,action:&Value)->Result<bool>{Ok(action!="buy"||owner_capital_ready(c,bank)?)}
+/// No independent account client. Original physical liabilities are reconciled
+/// by the existing loop. Pending allocation pauses BUYs but keeps owned SELL,
+/// cancellation and recovery lanes live; it never forces a cancel or a fill.
+fn expected_owner_capital_defer(code:&str)->bool{matches!(code,"CAPITAL_COMMIT_EXPIRED"|"CAPITAL_MANDATE_EXPIRED"|"CAPITAL_ORIGINAL_CASH_MISMATCH"|"CAPITAL_POSITION_MISMATCH"|"CAPITAL_POSITION_MISSING"|"CAPITAL_ORIGINAL_SOURCE_CLOCK"|"CAPITAL_RECEIPT_CLOCK"|"CAPITAL_OPEN_ORDERS_OR_COVERAGE"|"CAPITAL_DEBT_OR_COMPONENT_SCOPE"|"CAPITAL_CASH_OR_ADVANCE")}
+fn owner_capital_receipts_with(mut read:impl FnMut(Endpoint)->Result<Receipt>)->Result<[Receipt;4]>{
+ Ok([read(Endpoint::Account)?,read(Endpoint::Collateral)?,read(Endpoint::Positions)?,read(Endpoint::Orders{status:"open".into()})?])
+}
+fn advance_owner_capital(t:&mut Transport,c:&Control,control_path:&Path,bank:&mut Session,ordinary:&DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,last_check:&mut u64)->Result<bool>{
+ use moloch_live_runtime::{capital_allocation as ca,collateral_feedback::{Boundary,RetainedReceipt,ReceiptStore}};
+ let Some(settings)=&c.owner_capital_allocation else{return Ok(false)};
+ if settings.ready(bank)?{return Ok(false)}validate_owner_daily(c,bank)?;
+ // Also pins the actual SharedAuthority Control/STOP boundary on crash resume.
+ match t.package_queue_quiet(){Ok(_)=>{},Err(e)if e.code=="PACKAGE_QUEUE_NOT_QUIET"=>return Ok(true),Err(e)=>return Err(e.into())}
+ let current_control=||->Result<String>{Ok(format!("{:x}",Sha256::digest(fs::read(control_path)?)))};
+ let control_sha=current_control()?;
+ if !settings.contributed(bank)?{
+  ordinary.require_resolved_attempts()?;
+  let open=ordinary.attempted.iter().any(|q|!ordinary.closed.contains(q)&&!ordinary.proved_no_network(*q))||ordinary.acknowledgments.keys().any(|q|!ordinary.closed.contains(q))||packages.unresolved()||bank.engine().package_blocks_new_submissions();
+  if open{let _=atomic_json(&c.root.join("owner-capital-allocation.json"),&json!({"at":iso(now()),"state":"waiting_for_original_physical_terminal","buyEntriesPaused":true,"coveredSellsAndReconciliationEnabled":true}));return Ok(true)}
+  match t.package_queue_quiet(){Ok(_)=>{},Err(e)if e.code=="PACKAGE_QUEUE_NOT_QUIET"=>return Ok(true),Err(e)=>return Err(e.into())}
+  let at=now();if *last_check!=0&&at.saturating_sub(*last_check)<30_000{return Ok(true)}*last_check=at;
+  // Each request persists the genuine original Receipt. No clocks or projected
+  // fields are synthesized; the native event independently verifies all four.
+  let [a,k,p,o]=owner_capital_receipts_with(|endpoint|request(t,&c.root,endpoint))?;
+  let a=RetainedReceipt::open(&c.root,&a,ReceiptStore::Ordinary)?;let k=RetainedReceipt::open(&c.root,&k,ReceiptStore::Ordinary)?;let p=RetainedReceipt::open(&c.root,&p,ReceiptStore::Ordinary)?;let o=RetainedReceipt::open(&c.root,&o,ReceiptStore::Ordinary)?;
+  if current_control()?!=control_sha{return Err("LIVE_OWNER_CAPITAL_CONTROL_CHANGED".into())}
+  let boundary=Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary,packages};let approved=settings.approved()?;
+  let result=ca::prepare_with_control(bank,&boundary,&approved,ca::Sources{account:&a,collateral:&k,positions:&p,orders:&o},&iso(now()),&control_sha).and_then(|prepared|prepared.commit(bank,&boundary,&iso(now())));
+  match result{Ok(_)=>{},Err(e)if expected_owner_capital_defer(&e.to_string())=>{atomic_json(&c.root.join("owner-capital-allocation.json"),&json!({"at":iso(now()),"state":"source_reconciliation_deferred","reason":e.to_string(),"buyEntriesPaused":true,"coveredSellsAndReconciliationEnabled":true}))?;return Ok(true)},Err(e)=>return Err(e)}
+ }
+ // Crash after the contribution is safe: this branch resumes only the mandate
+ // revision, and cannot contribute the same cash twice or rewrite an old event.
+ if current_control()?!=control_sha{return Err("LIVE_OWNER_CAPITAL_CONTROL_CHANGED".into())}
+ let stamp=iso(now());let event=settings.revision_event(bank,c.daily_entry_windows.as_ref().ok_or("LIVE_OWNER_CAPITAL_DAILY_REQUIRED")?.mandate(&c.activation),&control_sha,&stamp)?;
+ let seq=bank.last_source_sequence("moloch-owner-mandate").checked_add(1).ok_or("LIVE_SOURCE_SEQUENCE_RANGE")?;
+ if !bank.accept("moloch-owner-mandate",seq,&event)?{return Err("LIVE_OWNER_CAPITAL_REVISION_COMMIT".into())}
+ if !settings.ready(bank)?{return Err("LIVE_OWNER_CAPITAL_REVISION_BINDING".into())}
+ atomic_json(&c.root.join("owner-capital-allocation.json"),&json!({"at":iso(now()),"state":"original_cash_attributed","mandateSha256":settings.approved_mandate_sha256,"record":bank.engine().owner_capital_allocation_record(),"dailyMandateRevision":bank.engine().owner_mandate_revision_record(),"actualAccountCashChanged":false,"profitCredited":false}))?;Ok(false)
 }
 fn accept_source_events(bank:&mut Session,events:&[Value])->Result<()>{
  use moloch_replay::session::SESSION_BATCH_MAX_EVENTS;
@@ -356,7 +414,7 @@ fn urgent_source_exchanges(orders:&[Value],pending:&std::collections::BTreeSet<u
 fn install_human_market_breadth(c:&Control,control_path:&Path,bank:&mut Session)->Result<()>{
  if !c.all_markets||bank.engine().fresh_market_limit()>=12{return Ok(())}
  let policy=bank.engine().policy();
- if policy["maximumCommitted"]!=c.activation.maximum_committed||policy["maximumMarketCost"]!=c.activation.maximum_market_cost||policy["quantity"].as_u64()!=Some(u64::from(c.activation.maximum_quantity)){return Err("LIVE_BREADTH_MONETARY_CAP_MISMATCH".into())}
+ if (policy["maximumCommitted"]!=c.activation.maximum_committed&&!(c.owner_capital_allocation.is_some()&&!owner_capital_ready(c,bank)?&&policy["maximumCommitted"]==c.policy["maximumCommitted"]))||policy["maximumMarketCost"]!=c.activation.maximum_market_cost||policy["quantity"].as_u64()!=Some(u64::from(c.activation.maximum_quantity)){return Err("LIVE_BREADTH_MONETARY_CAP_MISMATCH".into())}
  let old=bank.engine().fresh_market_limit();let maximum=policy["maximumMarkets"].as_u64().ok_or("LIVE_BREADTH_MARKET_LIMIT")?;let effective=maximum.checked_add(12u64.checked_sub(old as u64).ok_or("LIVE_BREADTH_MARKET_LIMIT")?).ok_or("LIVE_BREADTH_MARKET_LIMIT")?;
  let at=now();let event=json!({"type":"live_market_capacity_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":c.activation.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":c.scope.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?),"expectedPolicySha256":hash(&policy),"expectedPreviousFreshMarketLimit":old,"expectedPreviousMaximumMarkets":maximum,"freshMarketLimit":12,"effectiveMaximumMarkets":effective,"scopeExchangeIds":c.scope.exchanges.keys().collect::<Vec<_>>(),"controlSha256":format!("{:x}",Sha256::digest(fs::read(control_path)?)),"authorizationId":"human_moloch_breadth_20261016","expectedPreviousCapacitySha256":bank.engine().live_market_capacity_record().map(|v|v["sha256"].clone()).unwrap_or(Value::Null)});
  accept(bank,&event)?;let _=atomic_json(&c.root.join("ordinary-market-breadth.json"),&json!({"at":iso(now()),"record":bank.engine().live_market_capacity_record(),"monetaryCapsChanged":false,"additionalDiscoveryReadSlots":0}));Ok(())
@@ -637,6 +695,7 @@ fn record_original_attempt(bank:&Session,log:&mut DispatchLog,qid:u64,config:Opt
  log.append(event)?;moloch_live_runtime::execution_distribution::track_runtime_attempt(bank,log,qid,at);if config.is_some(){moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);}Ok(())
 }
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+ if !owner_capital_buys_allowed(c,bank,&q["action"])?{return Ok(())}
  use moloch_live_runtime::decision_trace::{Trace,Stage};
  // Only bounded in-memory timestamps precede the physical call. Diagnostic IO
  // happens after the original ACK and native accounting have committed.
@@ -1167,7 +1226,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
- let entry_hints=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
+ let entry_hints=if !owner_capital_ready(c,bank)?{Vec::new()}else if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
  // At most one new physical order per pass; subsequent fills change funding.
  // Retired history and already-physical orders have separate reconciliation
  // paths above; they cannot become a new submission or consume its ranking.
@@ -1177,7 +1236,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
  let mut ranked=Vec::new();let mut maker_assessments=Vec::new();let mut maker_decisions=Vec::new();
  for index in selection.ordered_indices.iter().copied(){
-  let q=&quotes[index];
+  let q=&quotes[index];if !owner_capital_buys_allowed(c,bank,&q["action"])?{continue}
   if let Some(f)=fundamental.as_ref(){if f.cohorts.manages(q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?){if f.eligible(bank,log,&c.scope,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now())?{ranked.push((if q["action"]=="sell"{0}else{1},index));}continue}}
   if q["action"]=="buy"{if let Some(review)=maker_review{
    let decision=match moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now()){Ok(d)=>d,Err(error)if expected_maker_expiry(error.as_ref())=>{continue},Err(error)=>return Err(error)};
@@ -1329,13 +1388,13 @@ fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog
 }
 pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run","recover-unadmitted"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run|recover-unadmitted /absolute/control.json".into())}
- let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let c:Control=serde_json::from_value(load(&path)?)?;
+ let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let original_control_bytes=fs::read(&path)?;let c:Control=serde_json::from_slice(&original_control_bytes)?;
  validate_collateral_accounting(&c)?;
  validate_maker_configuration(&c)?;
  let fundamental_loaded=c.fundamental_policy.as_ref().map(fundamental::Settings::load).transpose()?;
  if let Some(settings)=&c.package_allocation{settings.validate()?;if c.packages.is_none(){return Err("LIVE_ALLOCATION_PACKAGE_SETTINGS".into())}}
  if !c.bank_name.starts_with("bank")||c.bank_name.contains(['/', '\\'])||c.predecessor_bank.as_ref().is_some_and(|p|p==&c.bank_name){return Err("LIVE_BANK_NAME".into())}
- if !c.root.is_absolute()||!c.credentials.is_absolute()||!c.owner_lock.is_absolute()||c.activation.maximum_committed!=c.policy["maximumCommitted"].as_str().unwrap_or("")||c.activation.maximum_market_cost!=c.policy["maximumMarketCost"].as_str().unwrap_or("")||c.policy["quantity"].as_u64()!=Some(c.activation.maximum_quantity as u64)||c.policy["entryStopAt"]!=iso(c.activation.entry_until_ms){return Err("LIVE_CONTROL_POLICY_BINDING".into())}
+ if !c.root.is_absolute()||!c.credentials.is_absolute()||!c.owner_lock.is_absolute()||!validate_owner_capital_control(&c)?||c.activation.maximum_market_cost!=c.policy["maximumMarketCost"].as_str().unwrap_or("")||c.policy["quantity"].as_u64()!=Some(c.activation.maximum_quantity as u64)||c.policy["entryStopAt"]!=iso(c.activation.entry_until_ms){return Err("LIVE_CONTROL_POLICY_BINDING".into())}
  if let Some(settings)=&c.packages{settings.load(&c.scope)?;} if let Some(cfg)=&c.execution_model{cfg.validate()?;}
  private_dir(&c.root)?;private_dir(&c.root.join("receipts"))?;private_dir(&c.root.join("package-receipts"))?;
  let lease=Arc::new(ExclusiveLock::acquire(&c.owner_lock)?);
@@ -1364,7 +1423,9 @@ pub fn main()->Result<()>{
    let event=moloch_live_runtime::inventory::adoption(&p,bank.engine(),&c.scope.tournament_id,&c.scope.tournament_slug,&c.scope.exchanges,&iso(now()))?;
    accept(&mut bank,&event)?;atomic_json(&c.root.join("inherited-position-transfer.json"),&json!({"positionsReceipt":p,"event":event,"report":bank.engine().report()?,"sourceBankPreserved":true}))?;
   }
+  if fs::read(&path)?!=original_control_bytes{return Err("LIVE_CONTROL_CHANGED_DURING_STARTUP".into())}
   let authority=Arc::new(ProductionAuthority::new(c.activation.clone(),c.scope.clone(),vec![stop.clone(),global_stop.clone()],path.clone(),std::env::current_exe()?,lease.clone())?);
+  if fs::read(&path)?!=original_control_bytes{return Err("LIVE_CONTROL_CHANGED_DURING_STARTUP".into())}
   let maker_review=c.maker_policy.as_ref().map(|settings|moloch_live_runtime::maker_policy::Reviewed::load(settings.clone(),&bank)).transpose()?;
   if let Some(review)=&maker_review{review.validate_model(c.execution_model.as_ref().ok_or("LIVE_MAKER_MODEL_REQUIRED")?)?;authority.require_maker_review(review.sha256())?;}
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(&c,&mut log)?;log.require_resolved_attempts()?;
@@ -1387,6 +1448,7 @@ pub fn main()->Result<()>{
   let mut packages=moloch_live_runtime::package_dispatch::PackageDispatchLog::open(&c.root.join("package-dispatch"))?;
   recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
   let state=t.admission_state()?;if state["state"]["unknown"].as_object().is_some_and(|m|!m.is_empty()){return Err("LIVE_QUEUE_UNKNOWN_ACCEPTANCE".into())}
+  let mut owner_capital_last_check=0;advance_owner_capital(&mut t,&c,&path,&mut bank,&log,&packages,lease.as_ref(),&mut owner_capital_last_check)?;
   ensure_entry_window(&c,&mut bank,&authority)?;
   let fully_managed=bank.engine().report()?.get("inheritedInventory").is_some();
   let empty_positions=json!({"positions":[]});
@@ -1412,7 +1474,7 @@ pub fn main()->Result<()>{
   let mut reconciliation_schedule=moloch_live_runtime::scheduling::ReconciliationSchedule::new(10_000)?;
   let pending_version=|log:&DispatchLog|moloch_live_runtime::scheduling::PendingVersion{acknowledged:log.acknowledgments.len() as u64,terminal:log.closed.len() as u64};
   let breadth_path=c.root.join(format!("breadth-{}-{}.jsonl",std::process::id(),now()));
-  let mut breadth=Recorder::new(&breadth_path).ok();
+  let mut breadth=Recorder::new_rotating(&breadth_path).ok();
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
@@ -1427,6 +1489,7 @@ pub fn main()->Result<()>{
    let mut package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
    let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
+   advance_owner_capital(&mut t,&c,&path,&mut bank,&log,&packages,lease.as_ref(),&mut owner_capital_last_check)?;ensure_entry_window(&c,&mut bank,&authority)?;
    let mut collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let mut required=bank.engine().required_exchanges();if let Some(f)=fundamental.as_ref(){required.extend(f.cohorts.managed_exchanges());}
@@ -1446,7 +1509,7 @@ pub fn main()->Result<()>{
      collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
     }
     ensure_entry_window(&c,&mut bank,&authority)?;
-    if !package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
+    if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      package_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,&mut relationship_census,&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut package_last_scan,&mut package_certificate_cursor,&mut package_allocation_fairness,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
     }
     package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
@@ -1475,7 +1538,7 @@ pub fn main()->Result<()>{
     // ordinary reconciliation permission after those paced reads.
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows,maker_review.as_ref(),fundamental.as_mut())?;
-    if !package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
+    if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      paper5_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,paper5_runtime.as_ref(),&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut paper5_last_opportunity,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
     }
     // Optional bounded inference runs after completed dispatch/accounting, with
@@ -1923,5 +1986,17 @@ pub fn main()->Result<()>{
  #[test]fn known_binding_never_skips_native_validation_of_changed_ack_identity_and_terms(){
   let temp=Temp::new();let(mut bank,_,_,_)=setup(&temp.0,1);let e=ack(&bank.engine().order_records()[0]);restore_ack(&mut bank,&e).unwrap();let report=bank.engine().report().unwrap();let original=fs::read(temp.0.join("bank/events.jsonl")).unwrap();
   for(field,value)in [("actualOrderId",json!("other")),("quantity",json!(1)),("side",json!("other")),("price",json!("0.995000")),("receiptHash",json!("invalid")),("type",json!("actual_order_terminal"))]{let mut bad=e.clone();bad[field]=value;assert!(restore_ack(&mut bank,&bad).is_err(),"accepted {field}");assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),original);}
+ }
+}
+
+#[cfg(test)]mod owner_capital_startup_tests{
+ use super::*;
+ #[test]fn expired_funding_is_a_buy_only_defer_and_integrity_errors_remain_fatal(){for code in ["CAPITAL_COMMIT_EXPIRED","CAPITAL_MANDATE_EXPIRED","CAPITAL_ORIGINAL_SOURCE_CLOCK"]{assert!(expected_owner_capital_defer(code));}for code in ["CAPITAL_BOUNDARY_CHANGED","CAPITAL_COMMIT_REFERENCE","LIVE_OWNER_CAPITAL_CONTROL_CHANGED","io failure"]{assert!(!expected_owner_capital_defer(code));}}
+ #[test]fn legacy_controls_do_not_change_cap_binding_and_opt_in_requires_verified_approval(){
+  let mut c:Control=serde_json::from_value(json!({"activation":{"runId":"test","entryUntilMs":100000,"maximumCommitted":"40000.000000","maximumMarketCost":"10000.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{"initialCash":"40000.000000","maximumCommitted":"40000.000000","maximumMarketCost":"10000.000000","quantity":2,"entryStopAt":iso(100000)},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap();assert!(c.owner_capital_allocation.is_none());assert!(validate_owner_capital_control(&c).unwrap());c.activation.maximum_committed="95579.915000".into();assert!(!validate_owner_capital_control(&c).unwrap());
+ }
+ #[test]fn allocation_uses_four_original_shared_reads_in_order_without_realtime_or_writes(){let mut reads=Vec::new();let _=owner_capital_receipts_with(|endpoint|{reads.push(serde_json::to_value(&endpoint)?);Ok(Receipt{endpoint:format!("original-{}",reads.len()),request_started_at:iso(0),received_at:iso(1),status:200,data:json!({})})}).unwrap();assert_eq!(reads,[Endpoint::Account,Endpoint::Collateral,Endpoint::Positions,Endpoint::Orders{status:"open".into()}].iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>());let mut reads=0;assert!(owner_capital_receipts_with(|_|{reads+=1;Err("original read failed".into())}).is_err());assert_eq!(reads,1);}
+ #[test]fn pending_original_bank_withholds_buys_but_not_owned_sell_lane(){
+  let root=std::env::temp_dir().join(format!("capital-buy-veto-{}-{}",std::process::id(),now()));let policy=json!({"initialCash":"40000.000000","maximumCommitted":"40000.000000","maximumMarketCost":"10000.000000","quantity":2,"entryStopAt":iso(100000)});let seed=json!({"runId":"test","availableCash":"70850.430000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(0)});let bank=Session::open_live(&root,&policy,&seed).unwrap();let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"101".into())].into()};let scope_sha=format!("{:x}",Sha256::digest(serde_json::to_vec(&scope).unwrap()));let input=json!({"authorizationId":"human_moloch_full_account_20261016","allocationId":"human-all-cash","controlSha256":"b".repeat(64),"bankManifestHash":bank.manifest_hash(),"runId":"test","accountScope":"fixture","tournamentId":"cup","tournamentSlug":"cup","profileId":"profile","scopeSha256":scope_sha,"delta":"55579.915000","maximumExtra":"55579.915000","maximumEffectiveInitial":"95579.915000","maximumCommitted":"95579.915000","approvedAt":"2026-10-16T09:43:45Z","validUntil":"2026-11-03T00:00:00Z"});let c:Control=serde_json::from_value(json!({"ownerCapitalAllocation":{"mandate":input,"approvedMandateSha256":hash(&input),"previousDailyMandateSha256":"c".repeat(64)},"activation":{"runId":"test","entryUntilMs":100000,"maximumCommitted":"95579.915000","maximumMarketCost":"10000.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"dailyEntryWindows":{"authorizationId":"human_moloch_full_account_20261016","approvedAt":"2026-10-16T09:43:45Z","anchorMs":100000,"campaignEndMs":100000+20*86400000u64},"scope":scope,"policy":policy,"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap();assert!(validate_owner_capital_control(&c).unwrap());assert!(!owner_capital_ready(&c,&bank).unwrap());assert!(!owner_capital_buys_allowed(&c,&bank,&json!("buy")).unwrap());assert!(owner_capital_buys_allowed(&c,&bank,&json!("sell")).unwrap());assert_eq!(bank.engine().wallet.initial,40_000_000_000);assert_eq!(bank.engine().policy()["maximumCommitted"],"40000.000000");drop(bank);fs::remove_dir_all(root).unwrap();
  }
 }

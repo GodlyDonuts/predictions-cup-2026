@@ -15,6 +15,7 @@ import math
 import os
 from pathlib import Path
 import re
+import signal
 import stat
 import time
 import urllib.request
@@ -360,8 +361,13 @@ def main():
     tail, output = Tail(current), Output(args.output)
     study = Study(output.emit)
     started, last_poll, last_status = time.monotonic(), 0, 0
+    stopping = [False]
+    def stop(_signal, _frame):
+        stopping[0] = True
+    signal.signal(signal.SIGINT, stop)
+    signal.signal(signal.SIGTERM, stop)
     try:
-        while not (args.output / "STOP").exists():
+        while not stopping[0] and not (args.output / "STOP").exists():
             if args.duration_seconds and time.monotonic() - started >= args.duration_seconds:
                 break
             if time.monotonic() - last_poll >= 1:
@@ -395,6 +401,12 @@ def main():
                 temp.write_text(compact(status) + "\n", encoding="utf-8")
                 os.replace(temp, args.output / "status.json")
             time.sleep(.1)
+        status_file = args.output / "status.json"
+        status = json.loads(status_file.read_text()) if status_file.exists() else {"pid": os.getpid()}
+        status.update(state="stopped", at=stamp(int(time.time() * 1000)))
+        temp = args.output / "status.json.tmp"
+        temp.write_text(compact(status) + "\n", encoding="utf-8")
+        os.replace(temp, status_file)
     finally:
         output.close()
         tail.close()

@@ -1,0 +1,109 @@
+{
+  "allThreeChangesAvailable": 192,
+  "asOfMs": 1792146160388,
+  "codeSha256": "8e9524c374d5b26121131e7a353facf3421d49209603d2bba96cd66a475d3046",
+  "decisionFirstMs": 1792144867298,
+  "decisionLastMs": 1792146063926,
+  "horizons": {
+    "1000": {
+      "abstain": true,
+      "data": {
+        "decisions": 200,
+        "independentClusters": 70,
+        "missingFeature": 8,
+        "missingLabel": 119,
+        "overlappingClusterRows": 3
+      },
+      "interceptBaselineMseNetReturn": 2.1256781045751638e-06,
+      "modelMseNetReturn": 8.181722225027588e-07,
+      "outOfSampleClusters": 36,
+      "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+      "selectedClusters": 0,
+      "selectedNetCrossingReturnSumExact": "0"
+    },
+    "10000": {
+      "abstain": true,
+      "data": {
+        "decisions": 200,
+        "independentClusters": 74,
+        "missingFeature": 8,
+        "missingLabel": 114,
+        "overlappingClusterRows": 4
+      },
+      "interceptBaselineMseNetReturn": 5.72168346555929e-06,
+      "modelMseNetReturn": 1.0444199020397473e-06,
+      "outOfSampleClusters": 56,
+      "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+      "selectedClusters": 0,
+      "selectedNetCrossingReturnSumExact": "0"
+    },
+    "120000": {
+      "abstain": true,
+      "data": {
+        "decisions": 200,
+        "independentClusters": 1,
+        "missingFeature": 8,
+        "missingLabel": 191
+      },
+      "interceptBaselineMseNetReturn": null,
+      "modelMseNetReturn": null,
+      "outOfSampleClusters": 0,
+      "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+      "selectedClusters": 0,
+      "selectedNetCrossingReturnSumExact": "0"
+    },
+    "3000": {
+      "abstain": true,
+      "data": {
+        "decisions": 200,
+        "independentClusters": 64,
+        "missingFeature": 8,
+        "missingLabel": 128
+      },
+      "interceptBaselineMseNetReturn": 2.6749645006931865e-06,
+      "modelMseNetReturn": 1.4744356695182695e-06,
+      "outOfSampleClusters": 32,
+      "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+      "selectedClusters": 0,
+      "selectedNetCrossingReturnSumExact": "0"
+    },
+    "30000": {
+      "abstain": true,
+      "data": {
+        "decisions": 200,
+        "independentClusters": 59,
+        "missingFeature": 8,
+        "missingLabel": 126,
+        "overlappingClusterRows": 7
+      },
+      "interceptBaselineMseNetReturn": 4.093356450546305e-06,
+      "modelMseNetReturn": 1.4747424608245878e-06,
+      "outOfSampleClusters": 29,
+      "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+      "selectedClusters": 0,
+      "selectedNetCrossingReturnSumExact": "0"
+    }
+  },
+  "input": {
+    "rows": 491,
+    "unmatchedLabels": 0
+  },
+  "mappingCounts": {
+    "direct_party_reference": 200
+  },
+  "observedMarkets": 35,
+  "producer": {
+    "name": "moloch-crossvenue-observer-v2-20261016.py",
+    "sampleIdFormat": "legacy_unscoped_v1",
+    "sha256": "793eafabe067d4042a27854dd8613c9883b3a679997ac8072a0cb1bceeb983b4"
+  },
+  "rawLabelCounts": {
+    "1000": 75,
+    "10000": 81,
+    "120000": 1,
+    "3000": 66,
+    "30000": 68
+  },
+  "reportSha256": "d373acb0f2830d2506f5c904085cd79d7a72a119b9b00d38c5fe9b9f86b1eb7c",
+  "sourceBundleSha256": "be2e87b52381999e29317efbde69734e42363154e60035d29edba128c6ff5038"
+}
