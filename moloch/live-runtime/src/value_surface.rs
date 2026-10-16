@@ -117,6 +117,13 @@ impl BoundSurface{
   let rows=prepared.iter().zip(receipts).collect::<Vec<_>>();Self::bind_prepared(surface,bank,scope,&rows,now)
  }
  pub fn bind_prepared(surface:Surface,bank:&Session,scope:&Scope,reviews:&[(&PreparedReview,&Receipt)],now:u64)->Result<Self>{
+  Self::bind_prepared_with_semantic_age(surface,bank,scope,reviews,10000,now)
+ }
+ /// Proposal-only semantic receipt age may differ from BOOK age. It is capped
+ /// by the exact approved original-node source lifetime. Physical execution
+ /// still requires its separate fresh original scoped packet and authority.
+ pub fn bind_prepared_with_semantic_age(surface:Surface,bank:&Session,scope:&Scope,reviews:&[(&PreparedReview,&Receipt)],maximum_semantic_age_ms:u64,now:u64)->Result<Self>{
+  need((1..=86400000).contains(&maximum_semantic_age_ms),"SURFACE_SEMANTIC_AGE_POLICY")?;
   need(bank.engine().is_live()&&now>=surface.observed&&now<surface.expires&&(1..=128).contains(&reviews.len()),"SURFACE_BANK_OR_CLOCK")?;
   let age=bank.engine().policy()["bookAgeMs"].as_u64().ok_or("SURFACE_POLICY")?.min(10_000);let(available,_)=package_admission::native_books(bank,scope,now,age)?;
   let mut contracts=Vec::new();let mut books=BTreeMap::new();let mut seen=BTreeSet::new();let mut until=surface.expires;let mut horizon=0;
@@ -128,8 +135,8 @@ impl BoundSurface{
    need(input.sources.iter().any(|s|s.kind=="forecast"&&s.sha256==surface.source_sha),"SURFACE_MODEL_NOT_REVIEWED_SOURCE")?;
    let settlement=r.settlement;
    need(settlement>now&&!input.revoke_existing,"SURFACE_TERMINAL_EXPIRED_OR_REVOKED")?;
-   let start=daily_windows::clock(&receipt.request_started_at)?;let received=daily_windows::clock(&receipt.received_at)?;
-   need(receipt.status==200&&receipt.endpoint==format!("/markets/{}/nodes?tournamentId={}",input.market_id,scope.tournament_id)&&start<=received&&received<=now&&now-start<=age,"SURFACE_CURRENT_CONTRACT")?;
+   let start=daily_windows::clock(&receipt.request_started_at)?;let received=daily_windows::clock(&receipt.received_at)?;let semantic_age=maximum_semantic_age_ms.min(input.sources.iter().find(|s|s.kind=="official_contract_node").ok_or("SURFACE_SEMANTIC_SOURCE")?.maximum_age_ms);
+   need(receipt.status==200&&receipt.endpoint==format!("/markets/{}/nodes?tournamentId={}",input.market_id,scope.tournament_id)&&start<=received&&received<=now&&now-start<=semantic_age,"SURFACE_CURRENT_CONTRACT")?;
    need(receipt.data["market_id"]==input.market_id&&receipt.data["root"]["node_type"]=="contract"&&receipt.data["root"]["node_id"]==input.contract_id&&receipt.data["root"]["contract_id"]==input.contract_id&&fundamental_policy::official_contract_root_sha256(&receipt.data)?==input.official_contract_root_sha256,"SURFACE_CURRENT_CONTRACT_CHANGED")?;
    // An operator mapping cannot override contradictory structured primary
    // party metadata. Opaque/other resolver semantics remain labeled assumptions
@@ -142,7 +149,7 @@ impl BoundSurface{
    need((mean-decimal_units(&input.ordinary_probability)?).abs()<=r.mapping.maximum_model_deviation_micros as i128,"SURFACE_MODEL_REVIEW_PROBABILITY_DRIFT")?;
    let exceptional=decimal_units(&input.exceptional_probability_allowance)?;let floor=decimal_units(&input.minimum_exceptional_payout)?;let expected=plus(mul(UNIT-exceptional,mean)?,mul(exceptional,floor)?)?/UNIT;
    let b=available.get(&input.exchange_id).ok_or("SURFACE_CURRENT_NATIVE_BOOK_REQUIRED")?.clone();
-   until=until.min(input.expires_at_ms).min(start.checked_add(age).ok_or("SURFACE_RANGE")?).min(b.source.received_ms.checked_add(age).ok_or("SURFACE_RANGE")?).min(b.observed_ms.checked_add(age).ok_or("SURFACE_RANGE")?);horizon=horizon.max(settlement-now);
+   until=until.min(input.expires_at_ms).min(start.checked_add(semantic_age).ok_or("SURFACE_RANGE")?).min(b.source.received_ms.checked_add(age).ok_or("SURFACE_RANGE")?).min(b.observed_ms.checked_add(age).ok_or("SURFACE_RANGE")?);horizon=horizon.max(settlement-now);
    books.insert(input.exchange_id.clone(),b);
    contracts.push(BoundContract{market_id:input.market_id.clone(),exchange_id:input.exchange_id.clone(),contract_id:input.contract_id.clone(),side,official_root_sha256:input.official_contract_root_sha256.clone(),race_id:r.mapping.race_id.clone(),party:r.mapping.party,expected_payout_micros:expected,ordinary_payout_micros:mean,exceptional_allowance_micros:exceptional,minimum_exceptional_payout_micros:floor,review_sha256:review,mapping_sha256:map_hash,loadings:r.mapping.loadings.clone(),maximum_principal:decimal_units(&input.maximum_principal)?,maximum_quantity:input.maximum_quantity,margin_per_share:decimal_units(&input.margin_per_share)?,scheduled_settlement_at_ms:settlement,reviewed_at_ms:input.reviewed_at_ms,valid_until_ms:input.expires_at_ms,allowed_modes:modes(input)});
   }

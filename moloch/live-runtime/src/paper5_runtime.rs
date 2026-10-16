@@ -23,7 +23,7 @@ pub struct Settings{
  pub version:u32,pub artifact:SourceFile,pub approved_artifact_sha256:BTreeSet<String>,
  pub authority_path:PathBuf,pub authority_sha256:String,pub approved_mapping_sha256:BTreeSet<String>,
  pub bindings:Vec<BindingFiles>,pub router:RouterSettings,pub curve:Option<FitPolicy>,pub hedges:Option<HedgeLimits>,
- pub allow_research_diagnostics:bool,pub maximum_proposals:usize,
+ pub allow_research_diagnostics:bool,pub maximum_proposals:usize,pub maximum_semantic_receipt_age_ms:u64,
  /// Explicit diagnostic work bounds, not live trading limits. Exceeding them
  /// defers this optional module; it never changes account/native funding caps.
  pub maximum_dispatch_records:usize,pub maximum_bank_sequence:u64,
@@ -41,14 +41,14 @@ pub struct Runtime{settings:Settings,surface:Surface,reviews:Vec<PreparedReview>
 #[serde(rename_all="camelCase")]
 pub struct Diagnostic{
  pub state:&'static str,pub at_ms:u64,pub source_sha256:String,pub model_sha256:String,
- pub qualification:Value,pub bank_head:Value,pub deferred:Vec<Value>,pub routing:Vec<Value>,pub curve:Option<Value>,pub hedge_ideas:Vec<Value>,
+ pub qualification:Value,pub bank_head:Value,pub deferred:Vec<Value>,pub routing:Vec<Value>,pub curve:Option<Value>,pub hedge_ideas:Vec<Value>,pub source_freshness:Vec<Value>,
  pub execution_authority:bool,pub financial_state_changed:bool,pub source_files_read_during_evaluation:u32,
 }
 impl Runtime{
  /// Loading an old artifact validates it at its ORIGINAL as-of for provenance.
  /// This does not renew it: evaluate checks original observed/expiry clocks.
  pub fn load(settings:&Settings)->Result<Self>{
-  need(settings.version==1&&(1..=16).contains(&settings.bindings.len())&&(1..=32).contains(&settings.maximum_proposals)&&(1..=20000).contains(&settings.maximum_dispatch_records)&&(1..=1_000_000).contains(&settings.maximum_bank_sequence)&&settings.router.order_lifetime_ms>0&&settings.router.order_lifetime_ms<=600000,"P5_SETTINGS")?;
+  need(settings.version==1&&(1..=16).contains(&settings.bindings.len())&&(1..=32).contains(&settings.maximum_proposals)&&(1..=86400000).contains(&settings.maximum_semantic_receipt_age_ms)&&(1..=20000).contains(&settings.maximum_dispatch_records)&&(1..=1_000_000).contains(&settings.maximum_bank_sequence)&&settings.router.order_lifetime_ms>0&&settings.router.order_lifetime_ms<=600000,"P5_SETTINGS")?;
   let mut total=0;let artifact=read_original(&settings.artifact.path,&settings.artifact.sha256,16*1024*1024,&mut total)?;let raw:Value=serde_json::from_slice(&artifact)?;let original_asof=raw["observedAtMs"].as_u64().ok_or("P5_ORIGINAL_ASOF")?;
   let surface=Surface::load(&artifact,&settings.artifact.sha256,&settings.approved_artifact_sha256,original_asof)?;
   let authority=ReviewAuthority::load(&settings.authority_path,&settings.authority_sha256)?;let mut reviews=Vec::new();let mut hashes=BTreeSet::from([settings.artifact.sha256.clone(),settings.authority_sha256.clone()]);let mut exchanges=BTreeSet::new();
@@ -66,15 +66,16 @@ impl Runtime{
  /// preflight/cache. Missing/stale records do not trigger any extra API reads.
  /// This must run BEFORE reservation/attempt/preflight permit-critical work.
  pub fn evaluate(&self,bank:&Session,scope:&Scope,dispatch:&DispatchLog,nodes:&BTreeMap<String,Receipt>,signals:&BTreeMap<String,Signal>,trusted_innovation_models:&BTreeSet<String>,now:u64)->Diagnostic{
-  let mut out=Diagnostic{state:"unavailable",at_ms:now,source_sha256:self.surface.source_sha256().into(),model_sha256:self.surface.model_sha256().into(),qualification:self.surface.qualification().clone(),bank_head:bank.durable_head(),deferred:Vec::new(),routing:Vec::new(),curve:None,hedge_ideas:Vec::new(),execution_authority:false,financial_state_changed:false,source_files_read_during_evaluation:0};
+  let mut out=Diagnostic{state:"unavailable",at_ms:now,source_sha256:self.surface.source_sha256().into(),model_sha256:self.surface.model_sha256().into(),qualification:self.surface.qualification().clone(),bank_head:bank.durable_head(),deferred:Vec::new(),routing:Vec::new(),curve:None,hedge_ideas:Vec::new(),source_freshness:Vec::new(),execution_authority:false,financial_state_changed:false,source_files_read_during_evaluation:0};
   let defer=|out:&mut Diagnostic,reason:&str|out.deferred.push(json!({"reason":reason}));
   if now<self.surface.observed_at_ms(){defer(&mut out,"posterior_not_yet_observed");return out}if now>=self.surface.valid_until_ms(){defer(&mut out,"posterior_expired_original_clock");return out}
   if self.surface.is_research()&&!self.settings.allow_research_diagnostics{defer(&mut out,"research_model_not_promoted");return out}
-  if dispatch.intents.len()>self.settings.maximum_dispatch_records||dispatch.attempted.len()>self.settings.maximum_dispatch_records||out.bank_head["sequence"].as_u64().is_none_or(|s|s>self.settings.maximum_bank_sequence){defer(&mut out,"diagnostic_work_bound");return out}
+  if scope.exchanges.len()>1024||dispatch.intents.len()>self.settings.maximum_dispatch_records||dispatch.attempted.len()>self.settings.maximum_dispatch_records||out.bank_head["sequence"].as_u64().is_none_or(|s|s>self.settings.maximum_bank_sequence){defer(&mut out,"diagnostic_work_bound");return out}
   if let Err(e)=dispatch.require_resolved_attempts(){out.state="deferred";defer(&mut out,&e.to_string());return out}
   let mut selected=Vec::new();for r in &self.reviews{if !r.is_current(now){out.deferred.push(json!({"exchangeId":r.exchange_id(),"reason":"review_or_source_not_current"}));continue}let Some(node)=nodes.get(r.exchange_id())else{out.deferred.push(json!({"exchangeId":r.exchange_id(),"reason":"original_current_node_not_retained"}));continue};selected.push((r,node));}
   if selected.is_empty(){return out}
-  let panel=match BoundSurface::bind_prepared(self.surface.clone(),bank,scope,&selected,now){Ok(s)=>s,Err(e)=>{defer(&mut out,&e.to_string());return out}};
+  let panel=match BoundSurface::bind_prepared_with_semantic_age(self.surface.clone(),bank,scope,&selected,self.settings.maximum_semantic_receipt_age_ms,now){Ok(s)=>s,Err(e)=>{defer(&mut out,&e.to_string());return out}};
+  for(c,(_,receipt))in panel.contracts().iter().zip(&selected){let b=&panel.books()[&c.exchange_id];out.source_freshness.push(json!({"exchangeId":c.exchange_id,"originalSemanticReceiptSha256":crate::feedback::digest(receipt).ok(),"semanticReceiptRequestAgeMs":crate::daily_windows::clock(&receipt.request_started_at).ok().and_then(|at|now.checked_sub(at)),"maximumSemanticReceiptAgeMs":self.settings.maximum_semantic_receipt_age_ms,"bookSourceAgeMs":now-b.observed_ms,"bookReceiptAgeMs":now-b.source.received_ms,"maximumBookAgeMs":bank.engine().policy()["bookAgeMs"].as_u64().map(|a|a.min(10000)),"physicalPacketStillRequired":true}));}
   let native_lifetime=bank.engine().policy()["lifetimeMs"].as_u64().unwrap_or(0);let Some(expiry)=now.checked_add(self.settings.router.order_lifetime_ms.min(native_lifetime))else{defer(&mut out,"proposal_clock_overflow");return out};
   let policy=RoutePolicy{strategy_sha256:self.settings.router.strategy_sha256.clone(),order_expiry_ms:expiry,model_uncertainty_per_share:self.settings.router.model_uncertainty_per_share,terminal_tail_charge_per_share:self.settings.router.terminal_tail_charge_per_share,write_charge_per_order:self.settings.router.write_charge_per_order,capital_charge_per_million_unit_ms:self.settings.router.capital_charge_per_million_unit_ms};
   let mut remaining=self.settings.maximum_proposals;for(i,c)in panel.contracts().iter().enumerate(){if remaining==0{defer(&mut out,"proposal_count_bound");break}
