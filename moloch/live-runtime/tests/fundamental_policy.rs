@@ -70,9 +70,9 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
     impl Drop for F{fn drop(&mut self){self.store.take();let _=std::fs::remove_dir_all(&self.root);}}
     impl F{
         fn new()->Self{
-            Self::base(true,"cup")
+            Self::setup(true,"cup")
         }
-        fn base(install:bool,tournament:&str)->Self{
+        fn setup(install:bool,tournament:&str)->Self{
             static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);
             let root=std::env::temp_dir().join(format!("fundamental-fixture-{}-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos(),NEXT.fetch_add(1,std::sync::atomic::Ordering::Relaxed)));
             std::fs::create_dir(&root).unwrap();let owner=Arc::new(ExclusiveLock::acquire(&root.join("owner.lock")).unwrap());
@@ -119,7 +119,7 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
     }
     fn inherited_fixture()->(F,baal_transport_service::Transport,Value){
         use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport};
-        let mut f=F::base(false,"11111111-1111-1111-1111-111111111111");f.retire_drafts(NOW-1);
+        let mut f=F::setup(false,"11111111-1111-1111-1111-111111111111");f.retire_drafts(NOW-1);
         let adoption=json!({"type":"actual_position_adoption","source":"official_sig_api_v1","authority":"human_moloch_inherited_management_20261015","complete":true,"receiptHash":"d".repeat(64),"requestStartedAt":iso(NOW-1),"receivedAt":iso(NOW),"processedAt":iso(NOW),"tournamentId":f.scope.tournament_id,"openingCost":"1.900000","effectiveMaximumMarkets":4,"positions":[{"exchangeId":"101","marketId":"201","quantity":-3,"lotPrincipal":"1.900000","reportedCostBasis":"1.900000","reportedMinusLotPrincipal":"0.000000","basisClassification":"exact","lots":[{"lotId":"501","quantity":1,"side":"NO","entryPrice":0.9,"openedAt":iso(NOW-86400000)},{"lotId":"502","quantity":2,"side":"NO","entryPrice":0.5,"openedAt":iso(NOW-43200000)}]}]});
         f.bank.accept("fixture-adoption",1,&adoption).unwrap();f.retire_drafts(NOW+3001);
         let config=Config{queue_dir:f.root.join("original-account-queue"),account_scope:"synthetic-existing-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false};
