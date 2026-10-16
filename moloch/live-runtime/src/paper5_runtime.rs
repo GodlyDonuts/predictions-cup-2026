@@ -1,9 +1,12 @@
-//! Optional proposal-only Paper 5 adapter for the existing sole worker. Source
+//! Optional Paper 5 source adapter for the existing sole worker. Diagnostics
+//! remain proposal-only; explicit approved execution sources can expose a
+//! readonly opaque optimizer context, never a physical permit. Source
 //! files are read/hash-checked at setup; evaluation uses the actual Session,
 //! original dispatch barrier and already-retained official node receipts. No
 //! network client, fsync, journal replay, posterior fitting or physical permit.
 use crate::{dispatch::DispatchLog,election_curve::{self,FitPolicy,HedgeLimits},execution_router::{self,Policy as RoutePolicy},feedback::Result,fundamental_policy::{ReviewAuthority,ReviewFile,ReviewInput,SourceBytes,SourceFile},source_innovation::Signal,value_surface::{BoundSurface,MappingReview,PreparedReview,Surface,sha256}};
 use baal_transport_service::{Receipt,Scope};
+use crate::{semantic_states::{self,Compiled,OriginalSource},probabilistic_portfolio::{self,Policy as PortfolioPolicy,PolicyInput,Plan}};
 use moloch_replay::session::Session;
 use serde::{Deserialize,Serialize};
 use serde_json::{json,Value};
@@ -19,6 +22,12 @@ pub struct RouterSettings{pub strategy_sha256:String,pub order_lifetime_ms:u64,p
 /// allowlists are external approvals, never values copied from the artifact.
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct ExecutionSettings{
+ pub version:u32,pub semantic_review:SourceFile,pub approved_semantic_review_sha256:BTreeSet<String>,
+ pub semantic_sources:Vec<SourceFile>,pub risk_policy:SourceFile,pub approved_risk_policy_sha256:BTreeSet<String>,
+}
+#[derive(Clone,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct Settings{
  pub version:u32,pub artifact:SourceFile,pub approved_artifact_sha256:BTreeSet<String>,
  pub authority_path:PathBuf,pub authority_sha256:String,pub approved_mapping_sha256:BTreeSet<String>,
@@ -27,6 +36,10 @@ pub struct Settings{
  /// Explicit diagnostic work bounds, not live trading limits. Exceeding them
  /// defers this optional module; it never changes account/native funding caps.
  pub maximum_dispatch_records:usize,pub maximum_bank_sequence:u64,
+ /// Absent preserves proposal-only behavior and original serialized settings.
+ /// Source/model diagnostic permission never implies execution qualification.
+ #[serde(default,skip_serializing_if="Option::is_none")]
+ pub execution:Option<ExecutionSettings>,
 }
 fn read_original(path:&Path,expected:&str,maximum:usize,total:&mut usize)->Result<Vec<u8>>{
  need(path.is_absolute(),"P5_ABSOLUTE_SOURCE_PATH")?;let path_meta=fs::symlink_metadata(path)?;need(path_meta.is_file()&&!path_meta.file_type().is_symlink(),"P5_REGULAR_SOURCE")?;let mut file=File::open(path)?;let meta=file.metadata()?;need(meta.len()<=maximum as u64,"P5_SOURCE_SIZE")?;
@@ -36,7 +49,32 @@ fn read_original(path:&Path,expected:&str,maximum:usize,total:&mut usize)->Resul
  #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(after.dev()==meta.dev()&&after.ino()==meta.ino(),"P5_SOURCE_REPLACED")?;}
  *total=total.checked_add(bytes.len()).ok_or("P5_SOURCE_SIZE")?;need(*total<=32*1024*1024,"P5_TOTAL_SOURCE_SIZE")?;Ok(bytes)
 }
-pub struct Runtime{settings:Settings,surface:Surface,reviews:Vec<PreparedReview>,source_hashes:BTreeSet<String>}
+struct ExecutionSources{semantics:Compiled,policy:PortfolioPolicy,input:PolicyInput}
+pub struct Runtime{settings:Settings,surface:Surface,reviews:Vec<PreparedReview>,source_hashes:BTreeSet<String>,execution:Option<ExecutionSources>}
+/// Authentic cached source objects bound to an exact, current Session/dispatch.
+/// No Serialize/Deserialize or public constructor: diagnostic JSON cannot mint
+/// this context. It grants neither a physical permit nor execution authority.
+pub struct ExecutionContext<'a>{surface:BoundSurface,semantics:&'a Compiled,policy:&'a PortfolioPolicy,policy_input:&'a PolicyInput,nodes:BTreeMap<String,Receipt>,dispatch_sha256:String,at:u64}
+impl ExecutionContext<'_>{
+ pub fn surface(&self)->&BoundSurface{&self.surface}
+ pub fn semantics(&self)->&Compiled{self.semantics}
+ pub fn policy(&self)->&PortfolioPolicy{self.policy}
+ pub fn validate_current(&self,bank:&Session,scope:&Scope,dispatch:&DispatchLog,now:u64)->Result<()>{
+  need(now>=self.at&&now<self.policy_input.valid_until_ms&&!self.surface.surface().is_research(),"P5_EXECUTION_EXPIRED_OR_RESEARCH")?;
+  self.surface.validate_current(bank,scope,now)?;self.semantics.validate_current_contracts(scope,&self.nodes,now)?;
+  dispatch.require_resolved_attempts()?;need(sha256(&serde_json::to_vec(&dispatch.descriptor_identity()?)?)==self.dispatch_sha256,"P5_EXECUTION_DISPATCH_CHANGED")?;
+  need(bank.engine().is_live()&&bank.live_account_seed().is_some_and(|s|s["runId"]==self.policy_input.run_id)&&bank.manifest_hash().as_str()==Some(self.policy_input.bank_manifest_sha256.as_str())&&!bank.engine().package_blocks_submissions(),"P5_EXECUTION_BANK_CHANGED")?;Ok(())
+ }
+ pub fn optimize(&self,bank:&Session,scope:&Scope,dispatch:&DispatchLog,now:u64)->Result<Option<Plan>>{
+  self.validate_current(bank,scope,dispatch,now)?;probabilistic_portfolio::optimize(bank,dispatch,scope,&self.surface,self.semantics,self.policy,now)
+ }
+}
+fn execution_node_body_scope(receipt:&Receipt,scope:&Scope)->Result<()>{
+ let contexts=receipt.data["contexts"].as_array().ok_or("P5_EXECUTION_NODE_BODY_SCOPE")?;
+ let tournaments=contexts.iter().filter_map(|c|c.get("tournament")).collect::<Vec<_>>();
+ need(!tournaments.is_empty()&&tournaments.iter().all(|t|t["id"]==scope.tournament_id),"P5_EXECUTION_NODE_BODY_SCOPE")?;
+ if let Some(t)=receipt.data.get("tournamentId"){need(*t==scope.tournament_id,"P5_EXECUTION_NODE_BODY_SCOPE")?;}Ok(())
+}
 #[derive(Debug,Serialize)]
 #[serde(rename_all="camelCase")]
 pub struct Diagnostic{
@@ -58,7 +96,44 @@ impl Runtime{
    let mut originals=Vec::new();for s in &b.review.source_files{originals.push(read_original(&s.path,&s.sha256,8*1024*1024,&mut total)?);hashes.insert(s.sha256.clone());}
    let refs=b.review.source_files.iter().zip(&originals).map(|(s,bytes)|SourceBytes{sha256:&s.sha256,bytes}).collect::<Vec<_>>();let reviewed_at=input.reviewed_at_ms;
    reviews.push(PreparedReview::verify(&surface,input,&refs,mapping,authority.trusted(),&settings.approved_mapping_sha256,reviewed_at)?);hashes.insert(b.review.file_sha256.clone());hashes.insert(b.mapping.sha256.clone());
-  }authority.validate()?;Ok(Self{settings:settings.clone(),surface,reviews,source_hashes:hashes})
+  }authority.validate()?;
+  let execution=if let Some(cfg)=&settings.execution{
+   need(cfg.version==1&&(1..=32).contains(&cfg.semantic_sources.len()),"P5_EXECUTION_SETTINGS")?;
+   let bytes=read_original(&cfg.semantic_review.path,&cfg.semantic_review.sha256,2*1024*1024,&mut total)?;
+   let raw:semantic_states::Review=serde_json::from_slice(&bytes)?;
+   let originals=cfg.semantic_sources.iter().map(|s|read_original(&s.path,&s.sha256,8*1024*1024,&mut total)).collect::<Result<Vec<_>>>()?;
+   let refs=cfg.semantic_sources.iter().zip(&originals).map(|(s,b)|OriginalSource{sha256:&s.sha256,bytes:b}).collect::<Vec<_>>();
+   let semantics=semantic_states::compile(&bytes,&cfg.semantic_review.sha256,&cfg.approved_semantic_review_sha256,&refs,raw.reviewed_at_ms)?;
+   need(semantics.scenario_source_sha256()==surface.source_sha256()&&semantics.contracts().len()==reviews.len(),"P5_EXECUTION_SEMANTIC_SET")?;
+   let expected=reviews.iter().map(|r|(r.exchange_id(),r.market_id())).collect::<BTreeMap<_,_>>();
+   need(semantics.contracts().iter().all(|c|expected.get(c.exchange_id.as_str())==Some(&c.market_id.as_str())),"P5_EXECUTION_SEMANTIC_SET")?;
+   let policy_bytes=read_original(&cfg.risk_policy.path,&cfg.risk_policy.sha256,64*1024,&mut total)?;
+   let policy=PortfolioPolicy::load(&policy_bytes,&cfg.risk_policy.sha256,&cfg.approved_risk_policy_sha256)?;let input:PolicyInput=serde_json::from_slice(&policy_bytes)?;
+   need(input.run_id==semantics.run_id()&&input.bank_manifest_sha256==semantics.bank_manifest_sha256(),"P5_EXECUTION_POLICY_SCOPE")?;
+   hashes.insert(cfg.semantic_review.sha256.clone());hashes.insert(cfg.risk_policy.sha256.clone());for s in &cfg.semantic_sources{hashes.insert(s.sha256.clone());}
+   Some(ExecutionSources{semantics,policy,input})
+  }else{None};
+  Ok(Self{settings:settings.clone(),surface,reviews,source_hashes:hashes,execution})
+ }
+ /// Strict financial-context preparation from cached verified originals.
+ /// Unlike evaluate(), this never permits research qualification or widened
+ /// diagnostic semantic ages. The caller supplies existing original receipts;
+ /// missing/freshness failures do not fetch or manufacture replacement data.
+ pub fn execution_context<'a>(&'a self,bank:&Session,scope:&Scope,dispatch:&DispatchLog,nodes:&BTreeMap<String,Receipt>,now:u64)->Result<ExecutionContext<'a>>{
+  let cfg=self.execution.as_ref().ok_or("P5_EXECUTION_NOT_CONFIGURED")?;
+  need(!self.surface.is_research(),"P5_EXECUTION_RESEARCH_MODEL")?;
+  need(now>=self.surface.observed_at_ms()&&now<self.surface.valid_until_ms(),"P5_EXECUTION_ORIGINAL_MODEL_CLOCK")?;
+  need(scope.exchanges.len()<=1024&&dispatch.intents.len()<=self.settings.maximum_dispatch_records&&dispatch.attempted.len()<=self.settings.maximum_dispatch_records&&bank.durable_head()["sequence"].as_u64().is_some_and(|n|n<=self.settings.maximum_bank_sequence),"P5_EXECUTION_WORK_BOUND")?;
+  dispatch.require_resolved_attempts()?;
+  need(bank.live_account_seed().is_some_and(|s|s["runId"]==cfg.input.run_id)&&bank.manifest_hash().as_str()==Some(cfg.input.bank_manifest_sha256.as_str())&&scope.tournament_id==cfg.semantics.tournament_id()&&scope.tournament_slug==cfg.semantics.tournament_slug(),"P5_EXECUTION_SCOPE")?;
+  let mut current=BTreeMap::new();let mut selected=Vec::new();
+  for c in cfg.semantics.contracts(){let review=self.reviews.iter().find(|r|r.exchange_id()==c.exchange_id&&r.market_id()==c.market_id).ok_or("P5_EXECUTION_SEMANTIC_SET")?;need(review.is_current(now),"P5_EXECUTION_REVIEW_EXPIRED")?;
+   let receipt=nodes.get(&c.exchange_id).ok_or("P5_EXECUTION_CURRENT_NODE_MISSING")?;execution_node_body_scope(receipt,scope)?;current.insert(c.exchange_id.clone(),receipt.clone());selected.push((review,receipt));
+  }
+  cfg.semantics.validate_current_contracts(scope,&current,now)?;
+  let surface=BoundSurface::bind_prepared(self.surface.clone(),bank,scope,&selected,now)?;
+  need(surface.contracts().iter().zip(cfg.semantics.contracts()).all(|(a,b)|a.market_id==b.market_id&&a.exchange_id==b.exchange_id&&a.contract_id==b.contract_id&&a.official_root_sha256==b.official_root_sha256),"P5_EXECUTION_SEMANTIC_SET")?;
+  let context=ExecutionContext{surface,semantics:&cfg.semantics,policy:&cfg.policy,policy_input:&cfg.input,nodes:current,dispatch_sha256:sha256(&serde_json::to_vec(&dispatch.descriptor_identity()?)?),at:now};context.validate_current(bank,scope,dispatch,now)?;Ok(context)
  }
  pub fn source_sha256(&self)->&str{self.surface.source_sha256()}
  pub fn original_source_hashes(&self)->&BTreeSet<String>{&self.source_hashes}
