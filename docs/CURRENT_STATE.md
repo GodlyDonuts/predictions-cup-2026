@@ -1,3 +1,26 @@
+# October16,19:57UTC: fresh trading, genuine Oregon reconciliation
+
+Sole production **540259**, source774f94fe/binary1180882d, is verified fresh
+trading at **19:57UTC**: healthy realtime, matching executable, no STOP and eight
+new official order acknowledgments. The five original Oregon purchase fills
+are genuinely reconciled; q8803 is filled2,094NO/retired, cost1,949.320000.
+Cash is70,765.455000 and owned cost24,680.835000. Combined realized remains
+**−133.625000**; no new post-launch execution is claimed at this observation.
+Full95,579.915000 capital, same bank/native8acc/twelve bridges and daily windows
+remain. Incremental progress is current; complete31-scope status is pending.
+[Actual trading and reconciliation proof](../research/moloch-buy-fill-recovery-20261016/deployment/fresh-trading-verification.json).
+
+Oregon and refreshed NC terminal strategies are installed. Separate Alaska/Maine
+models and six-entry Settings pass actual typed checks but remain inactive;
+current four-entry production control is unchanged. [Sources and limits](../research/moloch-cold-candidates-validation-20261016/README.md).
+V6 read-only observer542436 started19:54 on the existing worker, finite1h/2GiB,
+preserving V5/no new account client. Original V5 replay/audit completed:23rows,
+15labels and only1/158 witnessed mapped units within the old3s book criterion.
+Payout equivalence is not a universal predictive-fit gate; the fixed model still
+lacks enough OOS decisions. [Measured coverage](../research/moloch-causal-state-sampling-20261016/v5-result/README.md).
+The private native activity-window candidate is under offline build/parity work,
+with no production engine change or speedup claim. Paper6/profitability remain open.
+
 # October16,19:38UTC: BUY accounting recovery deployed, history restoring
 
 Sole worker **540259**, source774f94fe/binary1180882d, started19:35UTC after

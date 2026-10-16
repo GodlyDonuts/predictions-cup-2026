@@ -1,0 +1,38 @@
+{
+  "alaska-review.json": {
+    "sha256": "ae008cd18567b7912c24fe53be1b06fe9bf5d30e994bbf7f6de77e90c6baf661",
+    "bytes": 3940
+  },
+  "artifact-pins.json": {
+    "sha256": "88115be955fd2dda66341f78fdb90cfd9ebe8baa618e231e869b56d71e36af7e",
+    "bytes": 1478
+  },
+  "authority.json": {
+    "sha256": "2956246e3d5ce0300f690978738aea420e00f61f16f76c5537de8debf45d6351",
+    "bytes": 626
+  },
+  "jobs.json": {
+    "sha256": "8978667b117f7ba9dc31020051f58530634bb754ec0d320ea54c475c97fabed3",
+    "bytes": 1644
+  },
+  "maine-review.json": {
+    "sha256": "2cb3c4ca88a638bafa95d3756752df92dc72cf6de40228d36f4a34cc0ffdac97",
+    "bytes": 3898
+  },
+  "owner-model-review.json": {
+    "sha256": "c9d72ec8a68548436246308d2bcdcf29d7960b3661ea4db6db74708f71cc83a8",
+    "bytes": 989
+  },
+  "settings.json": {
+    "sha256": "b19bb3f0843cb217b9bc44170edb3a862f3d3156da789303fb344fcb09ead099",
+    "bytes": 5697
+  },
+  "typed-reviews.json": {
+    "sha256": "a8c50baa7ab907b59acb3c0b7075a3cc90fb16e28ee6e9e08f0b423f5ff1d937",
+    "bytes": 678
+  },
+  "typed-settings.json": {
+    "sha256": "e976a43ff769817bef04829861a41e55069c46e120a9177072756ad7e24c251c",
+    "bytes": 229
+  }
+}

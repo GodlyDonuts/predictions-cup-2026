@@ -1,3 +1,16 @@
+# Fresh production verified — October16,19:57UTC
+
+Sole540259 is genuinely trading with healthy realtime, matching checked binary,
+no STOP and eight new official acknowledgments. The original five Oregon BUY
+fills are genuinely booked, q8803 fully filled/retired:2,094NO cost1,949.320000.
+Cash70,765.455000/owned cost24,680.835000 match the original expected values.
+Combined realized remains−133.625000. No new post-launch execution was reported
+at this observation; acknowledgments and recovered older fills are distinct.
+Incremental progress is current; a complete31-scope cycle is still pending.
+Read-only V6 observer542436 started19:54 against this exact producer, preserving
+V5 originals with no SIG restart or new account client. See the two new actual
+deployment proofs. Historical recovery/build evidence follows.
+
 # Recovery of simultaneous purchase fills — October16
 
 The newly enabled Oregon terminal model bought2,094NO shares for1,949.320000

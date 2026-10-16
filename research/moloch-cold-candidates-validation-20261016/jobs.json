@@ -1,0 +1,40 @@
+{
+  "reviews": [
+    {
+      "key": "alaska",
+      "path": "/tmp/moloch-cold-approved-candidates-20261016/alaska-review.json",
+      "sourceFiles": [
+        {
+          "path": "/tmp/moloch-cold-approved-candidates-20261016/sources/alaska/ak-senate.html",
+          "sha256": "955c9d1d819ffc6e1194aa0027d378dfb5d6eeabd9dd04345433ffe0dcd7aaf8"
+        },
+        {
+          "path": "/tmp/moloch-cold-approved-candidates-20261016/sources/alaska/ak-official-candidates.html",
+          "sha256": "a5676ae3baa845a4cb618fe97fa7551d786103df0f7c5a02bc55898450dd26f2"
+        },
+        {
+          "path": "/tmp/moloch-cold-approved-candidates-20261016/sources/alaska/official-contract-node-378.original.json",
+          "sha256": "38ad364b1d91ae1825a38e3e8c135ba49d2a79554fd46210e835772ef40b19c0"
+        }
+      ]
+    },
+    {
+      "key": "maine",
+      "path": "/tmp/moloch-cold-approved-candidates-20261016/maine-review.json",
+      "sourceFiles": [
+        {
+          "path": "/tmp/moloch-cold-approved-candidates-20261016/sources/maine/forecast.html",
+          "sha256": "0b6f1861631f02cc66d07587008a9164bdb97a9d4223a283c083f7c6c9602ce5"
+        },
+        {
+          "path": "/tmp/moloch-cold-approved-candidates-20261016/sources/maine/official-candidates.xlsx",
+          "sha256": "c628e48fa6298b6862e709166adf3145f7bc4a3f60929c3e6ef5a3ea324e03ea"
+        },
+        {
+          "path": "/tmp/moloch-cold-approved-candidates-20261016/sources/maine/official-contract-node.json",
+          "sha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499"
+        }
+      ]
+    }
+  ]
+}

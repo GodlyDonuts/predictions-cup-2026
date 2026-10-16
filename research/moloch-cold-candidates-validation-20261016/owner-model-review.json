@@ -1,0 +1,26 @@
+{
+  "reviewerId": "Rhaegal-Viserion-paper6-20261016",
+  "reviewedAtMs": 1792180126962,
+  "executionAuthority": false,
+  "productionChanged": false,
+  "rootAcceptsExplicitModelAssumptions": true,
+  "maximumPrincipalEach": "2000.000000",
+  "forecastCalibrationVerified": false,
+  "currentPhysicalBookChecked": false,
+  "sameUnderlyingAccountAndCapital": true,
+  "sourcePacketManifestSha256": "3fc720bb184368190d958018a89f7c369f7905a46bc9a66aa560564fa0694ea4",
+  "models": [
+    {
+      "key": "alaska",
+      "path": "/tmp/moloch-cold-approved-candidates-20261016/alaska-review.json"
+    },
+    {
+      "key": "maine",
+      "path": "/tmp/moloch-cold-approved-candidates-20261016/maine-review.json"
+    }
+  ],
+  "originalSourceClocksChanged": false,
+  "alaskaStaticOriginalNodeReferenceTtlMs": 172800000,
+  "freshExactPhysicalRootStillMandatory": true,
+  "remainingActivation": "separate runtime generation/control approval and fresh sole-worker physical checks"
+}

@@ -67,6 +67,14 @@
     "deployment/test_paper6_buy_fill_recovery_rollout.py": {
       "sha256": "fc0b45b417153843d61adf4d790d2de026a68d47bb000cb6a56fefc00e6f3949",
       "bytes": 7822
+    },
+    "deployment/fresh-trading-verification.json": {
+      "sha256": "4736cfa0f91259fa5c0c308bdfc4d3a4ed40957f5f4bc1190dd3b5690e4ff951",
+      "bytes": 1874
+    },
+    "deployment/v6-observer-rollout.json": {
+      "sha256": "cd647787f1257142cdf2593de70d85375b7722ec13d4c0fbcc547b9c7729164b",
+      "bytes": 942
     }
   }
 }
