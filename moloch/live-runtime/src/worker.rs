@@ -577,13 +577,22 @@ fn refresh_controls(c:&Control,authority:&ProductionAuthority,stream:&Realtime)-
  require_stream(stream)?;
  if !authority.can_read(&c.scope){return Err("LIVE_EXIT_REFRESH_CONTROL_OR_STOP".into())}Ok(())
 }
+/// The two booleans come only from the CURRENT actual Session projections.
+/// An SDK-proved local abort is never retryable and grants no synthetic close.
+/// Contradictory actual execution is integrity failure, even for a retired qid.
+fn refresh_physical_pending(log:&DispatchLog,qid:u64,native_binding:bool,actual_fill:bool)->Result<bool>{
+ let actual=log.acknowledgments.contains_key(&qid)||native_binding||actual_fill;
+ if log.proved_no_network(qid)&&actual{return Err("LIVE_ABORT_PROOF_CONTRADICTS_ACTUAL_EXECUTION".into())}
+ Ok(!log.closed.contains(&qid)&&(actual||(log.attempted.contains(&qid)&&!log.proved_no_network(qid))))
+}
 fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&ProductionAuthority,stream:&Realtime,q:&Value,global_unknown:bool)->Result<moloch_live_runtime::exit_refresh::Safety>{
  refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;
  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let ex=q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?;
  let side=match q["side"].as_str(){Some("YES")=>moloch_replay::Side::Yes,Some("NO")=>moloch_replay::Side::No,_=>return Err("LIVE_SIDE".into())};
  let records=bank.engine().order_records();let mut physical=false;let mut reserved=0u64;
+ let actual_fills:std::collections::BTreeSet<_>=bank.engine().fills().iter().map(|f|f["orderId"].as_u64().ok_or("LIVE_ACTUAL_FILL_NATIVE_ID")).collect::<std::result::Result<_,_>>()?;
  for old in &records{let id=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if old["exchangeId"]!=ex||id==qid{continue}
-  if (log.attempted.contains(&id)||log.acknowledgments.contains_key(&id))&&!log.closed.contains(&id){physical=true;}
+  if refresh_physical_pending(log,id,bank.engine().live_order_bindings().contains_key(&id),actual_fills.contains(&id))?{physical=true;}
   if old["side"]==q["side"]&&old["action"]=="sell"&&old["retired"]==false&&old["expiresAt"].as_u64().ok_or("LIVE_EXPIRY")?>now(){
    reserved=reserved.checked_add(old["quantity"].as_u64().ok_or("LIVE_SIZE")?.checked_sub(old["filled"].as_u64().ok_or("LIVE_FILLED")?).ok_or("LIVE_FILLED")?).ok_or("LIVE_SIZE_OVERFLOW")?;
   }
@@ -1416,6 +1425,28 @@ pub fn main()->Result<()>{
  }
  #[test]fn attempt_anchor_cannot_reinterpret_a_changed_original_intent_as_the_native_quote(){
   let temp=Temp::new();let(bank,mut log,_,_)=setup(&temp.0,1);let mut q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();q["price"]=json!("0.005000");log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap();let original=fs::read(temp.0.join("dispatch.ndjson")).unwrap();assert!(record_original_attempt(&bank,&mut log,id,None,now()).is_err());assert!(log.never_attempted(id));assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),original);
+ }
+ #[cfg(target_os="linux")]
+ fn proved_abort_fixture(temp:&Temp,bank:&mut Session,log:&mut DispatchLog)->(u64,Config,Value){
+  let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();let at=now();let n=q["quantity"].as_u64().unwrap() as u32;let price=q["price"].as_str().unwrap();let tid="cup";
+  let order=Order{idempotency_key:format!("package-hook-fixture:{id}"),exchange_id:q["exchangeId"].as_str().unwrap().into(),side:if q["side"]=="YES"{"yes"}else{"no"}.into(),action:q["action"].as_str().unwrap().into(),quantity:n,price:price.into(),expiration_date:iso(q["expiresAt"].as_u64().unwrap()),tournament_id:tid.into()};let request=spec(&order).unwrap();
+  let permit=Permit{run_id:"package-hook-fixture".into(),intent_id:id.to_string(),owner:"Codex".into(),expires_at_ms:at-1,maximum_quantity:n,maximum_cost:money(decimal_units(price).unwrap()*n as i128)};let error=api::TransportError{code:"PERMIT_EXPIRED_OR_INVALID".into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None};
+  log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":request,"permit":permit})).unwrap();record_original_attempt(bank,log,id,None,at).unwrap();log.append(json!({"kind":"error","qid":id,"at":iso(at),"error":error})).unwrap();let dir=temp.0.join("original-sdk-queue");fs::create_dir(&dir).unwrap();{let mut queue=api::admission::AccountAdmission::open(&dir,"synthetic-refresh-account","fixture").unwrap();queue.command(json!({"op":"status","scope":"synthetic-refresh-account","now":at-1000})).unwrap();}
+  let config=Config{queue_dir:dir,account_scope:"synthetic-refresh-account".into(),scope:Scope{tournament_id:tid.into(),tournament_slug:"cup".into(),exchanges:[(q["exchangeId"].as_str().unwrap().into(),q["marketId"].as_str().unwrap().into())].into()},maximum_pages:2,writes_enabled:false};let proof=api::verify_frozen_ordinary_pre_admission(&config,&request,&permit,at,&error).unwrap();let evidence=proof.evidence().clone();log.append_aborted_before_admission(id,&proof,&iso(now())).unwrap();retire_proved_unadmitted(bank,log,id).unwrap();(id,config,evidence)
+ }
+ #[cfg(target_os="linux")]
+ #[test]fn refresh_liability_uses_original_sdk_proof_and_requires_restart_reverification(){
+  let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,1);let(id,config,evidence)=proved_abort_fixture(&temp,&mut bank,&mut log);let report=bank.engine().report().unwrap();let head=bank.durable_head();let bytes=fs::read(temp.0.join("dispatch.ndjson")).unwrap();assert_eq!(quote(&bank,id).unwrap()["retired"],true);
+  assert!(!refresh_physical_pending(&log,id,bank.engine().live_order_bindings().contains_key(&id),bank.engine().fills().iter().any(|f|f["orderId"]==id)).unwrap());assert!(!log.never_attempted(id)&&!log.closed.contains(&id)&&!log.acknowledgments.contains_key(&id));
+  drop(log);let mut log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();assert!(refresh_physical_pending(&log,id,false,false).unwrap(),"serialized abort is not an opaque capability");assert!(log.require_resolved_attempts().is_err());let(request,permit,at,error)=log.pre_admission_originals(id).unwrap();let proof=api::verify_retained_ordinary_pre_admission(&config,&request,&permit,at,&error,&evidence).unwrap();log.verify_aborted_before_admission(id,&proof).unwrap();assert!(!refresh_physical_pending(&log,id,false,false).unwrap());log.require_resolved_attempts().unwrap();
+  log.append(json!({"kind":"intent","qid":999})).unwrap();log.append(json!({"kind":"attempt","qid":999})).unwrap();assert!(refresh_physical_pending(&log,999,false,false).unwrap());assert!(log.require_resolved_attempts().is_err());assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert!(fs::read(temp.0.join("dispatch.ndjson")).unwrap().starts_with(&bytes));assert!(bank.engine().fills().is_empty());assert!(!log.never_attempted(id));
+ }
+ #[cfg(target_os="linux")]
+ #[test]fn contradicted_verified_abort_blocks_native_binding_actual_fill_or_ack_even_if_marked_closed(){
+  let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,1);let(id,_,_)=proved_abort_fixture(&temp,&mut bank,&mut log);for closed in [false,true]{if closed{log.closed.insert(id);}for(binding,fill)in [(true,false),(false,true),(true,true)]{assert_eq!(refresh_physical_pending(&log,id,binding,fill).unwrap_err().to_string(),"LIVE_ABORT_PROOF_CONTRADICTS_ACTUAL_EXECUTION");}log.acknowledgments.insert(id,json!({"orderId":"contradictory-test-only"}));assert!(refresh_physical_pending(&log,id,false,false).is_err());log.acknowledgments.remove(&id);}assert!(!log.never_attempted(id));
+ }
+ #[test]fn ordinary_actual_evidence_requires_terminal_closure_without_creating_a_retry(){
+  let temp=Temp::new();let(_bank,mut log,_,_)=setup(&temp.0,1);assert!(!refresh_physical_pending(&log,1,false,false).unwrap());log.append(json!({"kind":"intent","qid":1})).unwrap();log.append(json!({"kind":"attempt","qid":1})).unwrap();assert!(refresh_physical_pending(&log,1,false,false).unwrap());assert!(refresh_physical_pending(&log,1,true,false).unwrap());assert!(refresh_physical_pending(&log,1,false,true).unwrap());log.append(json!({"kind":"ack","qid":1,"receipt":{"orderId":"901"}})).unwrap();assert!(refresh_physical_pending(&log,1,false,false).unwrap());log.append(json!({"kind":"closed","qid":1})).unwrap();assert!(!refresh_physical_pending(&log,1,true,true).unwrap());assert!(!log.never_attempted(1));
  }
  #[test]fn original_dispatch_proved_retirement_does_not_recreate_component_quotes_and_replays(){
   for n in [2,3]{let temp=Temp::new();let(mut bank,mut log,policy,seed)=setup(&temp.0,n);let original=bank.engine().order_records();assert_eq!(original.len(),n*2);assert!(!ordinary_liability_due(&bank,&log,now()).unwrap());
