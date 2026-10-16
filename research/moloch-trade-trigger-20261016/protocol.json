@@ -1,0 +1,46 @@
+{
+  "analysisStatus": "no fitted model or selected trading threshold; separate pre-analysis fit/heldout protocol required before outcome inspection",
+  "cohortIsolation": "new output directory per process; durable create_new policy marker refuses continuation after restart",
+  "conditionalMappingCertified": false,
+  "executionAuthority": false,
+  "fees": "future crossing labels retain explicit original zero-fee counterfactual assumption, never actual fill/PnL",
+  "labelPolicy": "original first later valid SIG source/receipt at horizon, both within horizon+3000ms; actual gaps or invalid books censor; no fill inference",
+  "minimumResearchCoverageBeforeFinancialConsideration": {
+    "coverageDoesNotGrantFinancialAuthority": true,
+    "outOfSampleIndependentClusters": 100,
+    "selectedIndependentClusters": 100
+  },
+  "samplingPolicy": {
+    "completeTradeTape": false,
+    "consumeSkippedIdentity": true,
+    "executionAuthority": false,
+    "horizonsMs": [
+      1000,
+      3000,
+      10000,
+      30000,
+      120000
+    ],
+    "labelSlackMs": 3000,
+    "maximumExternalAgeMs": 20000,
+    "maximumPendingPerScope": 128,
+    "maximumSeenIdentities": 32768,
+    "maximumSigAgeMs": 3000,
+    "maximumSigScopes": 237,
+    "maximumSourceExportAgeMs": 2000,
+    "maximumTriggerAgeMs": 2000,
+    "minimumScopeSampleSpacingMs": 1000,
+    "pricingAuthority": false,
+    "requireKnownDirection": true,
+    "resolutionEquivalenceVerified": false,
+    "samplingMode": "first_observed_public_trade_v1",
+    "version": 1
+  },
+  "samplingPolicySha256": "031edcb2d4d6ca144e89d86b467e6b879113f1e172c3ef19457f2b577996717b",
+  "samplingUnit": "first observer-visible known-direction public trade identity per mapped SIG market, consumed once even when skipped",
+  "schemaVersion": 1,
+  "selectionBias": "event-conditioned, fresh-SIG/fresh-external/known-direction/poll-visible subset; not event-unconditional or random trading profitability",
+  "status": "PREDECLARED_SOURCE_ONLY_NOT_DEPLOYED",
+  "studyId": "moloch-trade-trigger-20261016-v1",
+  "triggerPopulation": "complete validated retained evidence windows only; missing/truncated/unsigned observations are not inferred"
+}

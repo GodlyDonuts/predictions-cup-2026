@@ -194,8 +194,29 @@ class Tail:
         os.close(self.fd)
 
 
+TRADE_SAMPLING_POLICY = {
+    "version": 1, "samplingMode": "first_observed_public_trade_v1",
+    "maximumTriggerAgeMs": 2000, "maximumSigAgeMs": 3000,
+    "maximumExternalAgeMs": 20000, "maximumSourceExportAgeMs": 2000,
+    "minimumScopeSampleSpacingMs": 1000, "maximumSeenIdentities": 32768,
+    "maximumSigScopes": 237, "maximumPendingPerScope": 128,
+    "horizonsMs": [1000, 3000, 10000, 30000, 120000], "labelSlackMs": 3000,
+    "requireKnownDirection": True, "consumeSkippedIdentity": True,
+    "completeTradeTape": False, "resolutionEquivalenceVerified": False,
+    "pricingAuthority": False, "executionAuthority": False,
+}
+TRADE_SAMPLING_POLICY_SHA256 = hashlib.sha256(compact(TRADE_SAMPLING_POLICY).encode()).hexdigest()
+
+
 class Study:
-    def __init__(self, emit, horizons=(1000, 3000, 10000, 30000, 120000), sig_age=3000, external_age=20000, label_slack=3000):
+    def __init__(self, emit, horizons=(1000, 3000, 10000, 30000, 120000), sig_age=3000, external_age=20000, label_slack=3000, sampling_mode="book"):
+        if sampling_mode not in ("book", "trade"):
+            raise ValueError("OBSERVER_SAMPLING_MODE")
+        if sampling_mode == "trade" and (tuple(horizons) != tuple(TRADE_SAMPLING_POLICY["horizonsMs"]) or sig_age != 3000 or external_age != 20000 or label_slack != 3000):
+            raise ValueError("OBSERVER_TRADE_FIXED_POLICY")
+        self.sampling_mode = sampling_mode
+        self.trigger_seen, self.sig_current = {}, {}
+        self.trigger_disabled = False
         self.emit, self.horizons = emit, horizons
         self.sig_age, self.external_age, self.label_slack = sig_age, external_age, label_slack
         self.external, self.history = {}, collections.defaultdict(collections.deque)
@@ -316,6 +337,8 @@ class Study:
                 self.external_invalid.discard(key)
                 self._select_external(market, now)
         self.counts["externalPolls"] += 1
+        if self.sampling_mode == "trade" and ws:
+            self._trigger_trades(envelope, now)
 
     @staticmethod
     def _external_identity(value):
@@ -340,8 +363,97 @@ class Study:
             self.external_flow_seen[market] = (flow['asOfMs'], sha)
             self.external_flow[market] = {'sourceSnapshot': flow, 'sourceSnapshotSha256': sha, 'availableMs': now}
         except (ValueError, KeyError, TypeError, InvalidOperation):
+            if self.sampling_mode == "trade":
+                # Counter only: invalid untrusted evidence never becomes a trigger.
+                raw = row.get('tradeFlow')
+                windows = raw.get('windows') if isinstance(raw, dict) else None
+                records = []
+                if isinstance(windows, dict):
+                    for window in list(windows.values())[:3]:
+                        evidence = window.get('evidence') if isinstance(window, dict) else None
+                        if isinstance(evidence, list):
+                            records.extend(r for r in evidence[:8] if isinstance(r, dict))
+                future_export = isinstance(raw, dict) and type(raw.get('asOfMs')) is int and raw['asOfMs'] > now
+                if future_export or any(type(r.get(k)) is int and r[k] > now for r in records for k in ('sourceTsMs', 'receivedMs', 'availableMs')):
+                    self.counts['tradeFutureSkip'] += 1
+                self.counts['tradeInvalidEvidenceSkip'] += 1
             self.external_flow.pop(market, None)
             self.counts['tradeFlowInvalid'] += 1
+
+    def _trigger_trades(self, envelope, now):
+        if self.trigger_disabled:
+            self.counts["tradeDisabledPollSkip"] += 1
+            return
+        for row in envelope["markets"]:
+            for market in map(str, row["sigMarketIds"]):
+                cached = self.external_flow.get(market)
+                if not cached:
+                    self.counts["tradeNoValidFlowSkip"] += 1
+                    continue
+                snapshot = cached["sourceSnapshot"]
+                if snapshot["ticker"] != row["ticker"]:
+                    self.counts["tradeScopeSkip"] += 1
+                    continue
+                records = {}
+                for window in snapshot["windows"].values():
+                    if not window["evidenceComplete"]:
+                        self.counts["tradePartialWindowSkip"] += 1
+                        continue
+                    for record in window["evidence"]:
+                        records[record["tradeId"]] = record
+                for record in sorted(records.values(), key=lambda r: (r["availableMs"], r["sourceTsMs"], r["tradeId"])):
+                    identity = (market, record["ticker"], record["tradeId"])
+                    fingerprint = hashlib.sha256(compact(record).encode()).hexdigest()
+                    prior = self.trigger_seen.get(identity)
+                    if prior is not None:
+                        if prior != fingerprint:
+                            self.trigger_disabled = True
+                            self.counts["tradeIdentityConflict"] += 1
+                            return
+                        self.counts["tradeDuplicateSkip"] += 1
+                        continue
+                    if len(self.trigger_seen) >= 32768:
+                        self.trigger_disabled = True
+                        self.counts["tradeIdentityCapReached"] += 1
+                        return  # Never evict a seen ID and allow it to trigger again.
+                    self.trigger_seen[identity] = fingerprint  # Consume even skipped IDs.
+                    if row["mappingKind"] != "direct_party_reference":
+                        self.counts["tradeAnalogSkip"] += 1
+                        continue
+                    if not (record["sourceTsMs"] <= now and record["receivedMs"] <= record["availableMs"] <= snapshot["asOfMs"] <= cached["availableMs"] <= now):
+                        self.counts["tradeFutureSkip"] += 1
+                        continue
+                    if now-record["sourceTsMs"] > 2000 or now-record["receivedMs"] > 2000 or now-snapshot["asOfMs"] > 2000:
+                        self.counts["tradeOldSkip"] += 1
+                        continue
+                    if record["direction"] is None:
+                        self.counts["tradeUnsignedSkip"] += 1
+                        continue
+                    ext = self._select_external(market, now)
+                    if not ext or ext["ticker"] != record["ticker"] or ext["mappingKind"] != "direct_party_reference":
+                        self.counts["tradeNoCurrentExternalSkip"] += 1
+                        continue
+                    books = [(key, value) for key, value in self.sig_current.items() if key[0] == market]
+                    if not books:
+                        self.counts["tradeNoCurrentSigSkip"] += 1
+                        continue
+                    for key, book in books:
+                        b = book["row"]["event"]["book"]
+                        if not (0 <= now-book["observedMs"] and 0 <= now-millis(b["sourceAt"]) <= 3000 and 0 <= now-millis(b["receivedAt"]) <= 3000):
+                            self.counts["tradeStaleSigSkip"] += 1
+                            continue
+                        if now-self.last_sample.get(key, -10000) < 1000:
+                            self.counts["tradeSampleSpacingSkip"] += 1
+                            continue
+                        if len(self.pending[key]) >= 128:
+                            self.counts["tradePendingCapSkip"] += 1
+                            continue
+                        trigger = {"kind": "first_observed_public_trade_v1", "record": json.loads(compact(record)),
+                                   "sourceSnapshotSha256": cached["sourceSnapshotSha256"], "sourceExportMs": snapshot["asOfMs"],
+                                   "observerFirstAvailableMs": cached["availableMs"], "firstObservedAtMs": now,
+                                   "sigBookObservedMs": book["observedMs"], "resolutionEquivalenceVerified": False}
+                        if self._sample(book["row"], now, book["features"], trigger):
+                            self.counts["tradeTriggeredSamples"] += 1
 
     def _flow_for_decision(self, market, now):
         cached = self.external_flow.get(market)
@@ -441,6 +553,10 @@ class Study:
             # Incomplete scope coverage invalidates that scope's horizon path.
             # A complete trade-tape coverage receipt is not a global stream reset.
             self.counts["coverageBoundaries"] += 1
+            if self.sampling_mode == "trade":
+                for key in list(self.sig_current):
+                    if (not event.get("marketId") or key[0] == str(event["marketId"])) and (not event.get("exchangeId") or key[1] == str(event["exchangeId"])):
+                        self.sig_current.pop(key)
             keys = [key for key in self.pending if
                     (not event.get("marketId") or key[0] == str(event["marketId"])) and
                     (not event.get("exchangeId") or key[1] == str(event["exchangeId"]))]
@@ -455,7 +571,13 @@ class Study:
         source, received = millis(b["sourceAt"]), millis(b["receivedAt"])
         key = (market, exchange)
         if source > received or received > now:
+            if self.sampling_mode == "trade":
+                self.sig_current.pop(key, None)
             self.counts["sigFuture"] += 1
+            return
+        if self.sampling_mode == "trade" and b.get("invalid") is True:
+            self.accept({"event": {"type": "gap", "marketId": market, "exchangeId": exchange}}, now)
+            self.counts["tradeInvalidSigSkip"] += 1
             return
         revision = int(b["sequence"])
         if revision <= self.last_source.get(key, -1):
@@ -466,6 +588,8 @@ class Study:
             bids, asks = levels(b["bids"], False), levels(b["asks"], True)
             f = features(bids, asks)
         except (ValueError, InvalidOperation, KeyError):
+            if self.sampling_mode == "trade":
+                self.sig_current.pop(key, None)
             self.counts["sigInvalidOrOneSided"] += 1
             return
         self.counts["sigBooks"] += 1
@@ -487,10 +611,25 @@ class Study:
                          "yesOneShareTakerRoundTrip": str(bids[0][0] - Decimal(before["ask"])) if bids[0][1] >= 1 and Decimal(before["askQuantity"]) >= 1 else None,
                          "noOneShareTakerRoundTrip": str(Decimal(before["bid"]) - asks[0][0]) if asks[0][1] >= 1 and Decimal(before["bidQuantity"]) >= 1 else None,
                          "counterfactual": True, "feesAssumed": "0", "actualFill": False}
+                if "samplingPolicySha256" in sample:
+                    label.update(samplingPolicySha256=sample["samplingPolicySha256"], samplingMode="first_observed_public_trade_v1")
                 self.emit(label)
                 self.counts["labels"] += 1
             if not sample["remaining"] or now > sample["decisionMs"] + max(self.horizons) + self.label_slack:
                 waiting.remove(sample)
+        if self.sampling_mode == "trade":
+            if key in self.sig_current or len(self.sig_current) < 237:
+                self.sig_current[key] = {"row": json.loads(compact(row)), "features": f, "observedMs": now}
+            else:
+                self.counts["tradeSigScopeCapSkip"] += 1
+            return  # Actual SIG books still supply future labels, never triggers.
+        self._sample(row, now, f)
+
+    def _sample(self, row, now, f, trigger=None):
+        b = row["event"]["book"]
+        market, exchange = str(b["marketId"]), str(b["exchangeId"])
+        source, received = millis(b["sourceAt"]), millis(b["receivedAt"])
+        key, waiting = (market, exchange), self.pending[(market, exchange)]
         # Samples are per-market at most once/second, not every journal update.
         if now - received > self.sig_age or now - source > self.sig_age or now - self.last_sample.get(key, -10000) < 1000:
             return
@@ -511,6 +650,11 @@ class Study:
                   "external": ext, "externalLogitChanges": changes, "externalLagAnchors": anchors, "pricingAuthority": False,
                   "externalTradeFlow": self._flow_for_decision(market, now),
                   "executionAuthority": False, "horizonsMs": list(self.horizons)}
+        if trigger is not None:
+            sample["samplingPolicy"] = json.loads(compact(TRADE_SAMPLING_POLICY))
+            sample["samplingPolicySha256"] = TRADE_SAMPLING_POLICY_SHA256
+            sample["trigger"] = trigger
+            sample["sampleId"] = hashlib.sha256(compact({"policy": TRADE_SAMPLING_POLICY_SHA256, "trigger": trigger, "bookSampleId": sample_id}).encode()).hexdigest()
         self.emit(sample)
         waiting.append({**sample, "remaining": set(self.horizons)})
         self.last_sample[key] = now
@@ -522,6 +666,14 @@ class Study:
             while q and now > q[0]["decisionMs"] + max(self.horizons) + self.label_slack:
                 old = q.popleft()
                 self.counts["labelsMissingTimelyBook"] += len(old["remaining"])
+        return True
+
+
+def require_trade_output_fresh(path):
+    # Seen identities are process-local. Never append a restarted process to its
+    # prior trade cohort and silently label reobserved IDs as new information.
+    if path.exists() and ((path / "status.json").exists() or (path / "sampling-policy.json").exists() or any(path.glob("*.jsonl.gz"))):
+        raise ValueError("OBSERVER_TRADE_NEW_COHORT_REQUIRED")
 
 
 class Output:
@@ -567,12 +719,26 @@ def main():
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--duration-seconds", type=int, default=0)
     parser.add_argument("--format", choices=["native", "breadth"], default="native")
+    parser.add_argument("--sampling-mode", choices=["book", "trade"], default="book")
     args = parser.parse_args()
+    if args.sampling_mode == "trade":
+        require_trade_output_fresh(args.output)
     # Unix VPS read-only sidecar, advisory lock kept on the same inode.
     import fcntl
     args.output.mkdir(parents=True, exist_ok=True, mode=0o700)
     lock = (args.output / "observer.lock").open("a+")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    if args.sampling_mode == "trade":
+        # A crash before the first sample/status still permanently marks this
+        # cohort as started. Restart requires another explicitly chosen output.
+        with (args.output / "sampling-policy.json").open("x", encoding="utf-8") as marker:
+            marker.write(compact({"samplingPolicy": TRADE_SAMPLING_POLICY, "samplingPolicySha256": TRADE_SAMPLING_POLICY_SHA256, "observerStartedAtMs": int(time.time()*1000)}) + "\n")
+            marker.flush(); os.fsync(marker.fileno())
+        directory = os.open(args.output, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
     base = args.journal
     segment = 0
     if args.format == "breadth":
@@ -580,7 +746,7 @@ def main():
             segment += 1
     current = base.with_name(f"{base.stem}-part-{segment:04}.jsonl") if segment else base
     tail, output = Tail(current), Output(args.output)
-    study = Study(output.emit)
+    study = Study(output.emit, sampling_mode=args.sampling_mode)
     started, last_poll, last_status = time.monotonic(), 0, 0
     stopping = [False]
     def stop(_signal, _frame):
@@ -618,6 +784,8 @@ def main():
                           "pendingSamples": sum(map(len, study.pending.values())), "journalPosition": tail.position,
                           "journalSequence": tail.sequence, "originalJournalHash": tail.previous, "format": args.format, "captureSegment": segment,
                           "readOnly": True, "executionAuthority": False, "historyPrefixVerified": False}
+                if args.sampling_mode == "trade":
+                    status.update(samplingPolicy=TRADE_SAMPLING_POLICY, samplingPolicySha256=TRADE_SAMPLING_POLICY_SHA256, triggerDisabled=study.trigger_disabled)
                 temp = args.output / "status.json.tmp"
                 temp.write_text(compact(status) + "\n", encoding="utf-8")
                 os.replace(temp, args.output / "status.json")
