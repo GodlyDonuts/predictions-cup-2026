@@ -1,6 +1,49 @@
 //! Actual-account feedback. Public prints and depth cannot fill live orders.
 use super::*;
 impl Engine {
+ /// Replay-derived optional policy. A source/hash string is audit provenance,
+ /// not human authority: the sole runtime authenticates the pinned Control.
+ pub fn profitable_depth_mode_record(&self)->Option<&Value>{self.profitable_depth_mode.as_ref()}
+ pub fn profitable_depth_enabled(&self)->bool{self.profitable_depth_mode.as_ref().is_some_and(|r|r["enabled"]==true)}
+ pub(super) fn apply_profitable_depth_mode(&mut self,e:&Value,at:i64)->Result<()>{
+  let digest=|v:&Value|v.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)));
+  if !self.live_mode||e["source"]!="moloch_live_dispatcher"{return Err("PROFITABLE_DEPTH_SOURCE")}
+  if ms(&e["processedAt"])?!=at||ms(&e["receivedAt"])? >at{return Err("PROFITABLE_DEPTH_CLOCK")}
+  let scope=&e["bankScope"];
+  if scope.as_object().is_none_or(|m|m.len()!=3)||scope["runId"].as_str().is_none_or(|s|s.is_empty()||s.len()>128)||scope["tournamentId"].as_str().is_none_or(|s|s.is_empty())||!digest(&scope["bankManifestHash"]){return Err("PROFITABLE_DEPTH_SCOPE")}
+  if !digest(&e["controlSha256"])||e["expectedPolicySha256"]!=hash(&self.policy.raw){return Err("PROFITABLE_DEPTH_POLICY_BINDING")}
+  let enabled=e["enabled"].as_bool().ok_or("PROFITABLE_DEPTH_ENABLED")?;
+  if e["depthBps"].as_u64()!=Some(5000)||self.policy.raw["inventoryExitDepthBps"].as_u64()!=Some(5000){return Err("PROFITABLE_DEPTH_FRACTION")}
+  let previous=self.profitable_depth_mode.as_ref().map_or(Value::Null,|r|r["sha256"].clone());
+  if e.get("expectedPreviousModeSha256")!=Some(&previous){return Err("PROFITABLE_DEPTH_PREVIOUS")}
+  if let Some(old)=&self.profitable_depth_mode{if old["bankScope"]!=*scope{return Err("PROFITABLE_DEPTH_SCOPE_CHANGED")};if old["enabled"]==enabled{return Ok(())}}
+  let revision=self.profitable_depth_mode.as_ref().map_or(Some(1),|r|r["revision"].as_u64().and_then(|n|n.checked_add(1))).ok_or("PROFITABLE_DEPTH_REVISION")?;
+  let mut record=json!({"version":1,"revision":revision,"bankScope":scope,"enabled":enabled,"depthBps":5000,"controlSha256":e["controlSha256"],"policySha256":e["expectedPolicySha256"],"installedAtMs":at,"previousSha256":previous});record["sha256"]=json!(hash(&record));self.profitable_depth_mode=Some(record);Ok(())
+ }
+ /// Own-side executable levels in descending price order. Count deeper shares
+ /// only at their actual marginal price, never at the top price.
+ pub(super) fn profitable_depth_target(&self,b:&Book,side:Side,maximum:u64,worst:i128)->Result<Option<(u64,i128)>>{
+  let minimum=self.policy.raw.get("inventoryMinimumGain").map(dec).transpose()?.unwrap_or(0);
+  let levels=if side==Side::Yes{&b.bids}else{&b.asks};
+  let mut total=0u64;
+  for &(yes_price,quantity) in levels{
+   let price=if side==Side::Yes{yes_price}else{SCALE-yes_price};
+   if price-worst-self.policy.fee(worst,1)?-self.policy.fee(price,1)?<minimum{break}
+   total=total.checked_add(quantity).ok_or("PROFITABLE_DEPTH_RANGE")?;
+  }
+  let quantity=maximum.min((u128::from(total)*5000/10000) as u64);
+  if quantity==0{return Ok(None)}
+  let mut covered=0u64;
+  for &(yes_price,size) in levels{
+   let limit=if side==Side::Yes{yes_price}else{SCALE-yes_price};
+   covered=covered.checked_add(size).ok_or("PROFITABLE_DEPTH_RANGE")?;
+   if covered>=quantity{
+    if limit-worst-self.policy.fee(worst,1)?-self.policy.fee(limit,1)?<minimum{return Err("PROFITABLE_DEPTH_GAIN")}
+    return Ok(Some((quantity,limit)))
+   }
+  }Err("PROFITABLE_DEPTH_COVERAGE")
+ }
+
  pub fn new_live(policy:&Value)->Result<Self>{let mut e=Self::new(policy)?;if e.policy.conditional{return Err("LIVE_CONDITIONAL_FILL_MODEL")};e.live_mode=true;Ok(e)}
  pub fn is_live(&self)->bool{self.live_mode}
  pub fn live_order_bindings(&self)->&BTreeMap<u64,String>{&self.live_orders}

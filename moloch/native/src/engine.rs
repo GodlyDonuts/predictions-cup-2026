@@ -458,6 +458,7 @@ pub struct Engine {
     reviewed_inventory_exits: BTreeMap<u64,Value>,
     reviewed_fundamental_entries: BTreeMap<u64,Value>,
     ordinary_entry_exclusions: Option<Value>,
+    profitable_depth_mode: Option<Value>,
     live_market_capacity: Option<Value>,
     capital_allocation: Option<Value>,
     capital_mandate_revision: Option<Value>,
@@ -483,6 +484,7 @@ impl Engine {
     pub fn from_seed_state(state: &Value) -> Result<Self> {
         if state.get("ownerCapitalAllocation").is_some()||state.get("ownerMandateRevision").is_some(){return Err("SEED_OWNER_CAPITAL_REQUIRE_REPLAY")}
         if state.get("liveMarketCapacity").is_some(){return Err("SEED_LIVE_MARKET_CAPACITY_REQUIRE_REPLAY")}
+        if state.get("profitableDepthMode").is_some(){return Err("SEED_PROFITABLE_DEPTH_REQUIRE_REPLAY")}
         if state.get("ordinaryEntryExclusions").is_some(){return Err("SEED_ORDINARY_ENTRY_EXCLUSIONS_REQUIRE_REPLAY")}
         if state.get("reviewedInventoryExitReservations").is_some(){return Err("SEED_REVIEWED_EXIT_REQUIRE_REPLAY")}
         if state.get("reviewedFundamentalEntryReservations").is_some(){return Err("SEED_REVIEWED_ENTRY_REQUIRE_REPLAY")}
@@ -725,6 +727,7 @@ impl Engine {
             reviewed_inventory_exits: BTreeMap::new(),
             reviewed_fundamental_entries: BTreeMap::new(),
             ordinary_entry_exclusions: None,
+            profitable_depth_mode: None,
             live_market_capacity: None,
             capital_allocation: None,
             capital_mandate_revision: None,
@@ -979,6 +982,16 @@ impl Engine {
                 } else {
                     false
                 };
+                // Opt-in affects only future profitable exits. An insufficient
+                // profitable curve leaves the original maximum-age loss path intact.
+                if n > 0 && profitable_age && self.profitable_depth_enabled()
+                    && !self.ordinary_entry_excluded(&b.exchange) {
+                    if let Some((quantity, limit)) = self.profitable_depth_target(b, side, n, worst)? {
+                        out.push(Target { book: b.clone(), side, buy: false, quantity,
+                            limit, rank: 1e12, aon: true, age_reason: maximum_age, hedge_for: None });
+                        continue;
+                    }
+                }
                 if n > 0 && (maximum_age || profitable_age) {
                     let quantity = if let Some(bps) = p.raw["inventoryExitDepthBps"].as_u64() {
                         n.min(
@@ -1486,6 +1499,7 @@ impl Engine {
         match kind {
             "reviewed_inventory_exit_reserved_v1" => self.reserve_reviewed_inventory_exit(e,at)?,
             "reviewed_fundamental_entry_reserved_v1" => self.reserve_reviewed_fundamental_entry(e,at)?,
+            "ordinary_profitable_depth_mode_v1" => self.apply_profitable_depth_mode(e,at)?,
             "ordinary_entry_exclusions_v1" => self.apply_ordinary_entry_exclusions(e,at)?,
             "live_market_capacity_v1" => self.apply_live_market_capacity(e,at)?,
             "live_capital_allocation_v1" => self.apply_owner_capital(e,at)?,
@@ -1814,7 +1828,7 @@ impl Engine {
         // No persistent state is set: a subsequent tick/book plans normally.
         if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
         let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
-        if kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="live_owner_mandate_revision_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
+        if kind!="ordinary_profitable_depth_mode_v1"&&kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="live_owner_mandate_revision_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1850,6 +1864,7 @@ impl Engine {
         let mut report = json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"executionMode":if self.live_mode{"live"}else{"paper"},"fillModel":if self.live_mode{"actualAccountFills"}else if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":if self.live_mode{self.live_orders.len()}else{0},"networkRequests":0,"profitabilityEstablished":false});
         if !self.reviewed_inventory_exits.is_empty(){report["reviewedInventoryExitReservations"]=json!(self.reviewed_inventory_exits);}
         if !self.reviewed_fundamental_entries.is_empty(){report["reviewedFundamentalEntryReservations"]=json!(self.reviewed_fundamental_entries);}
+        if let Some(record)=&self.profitable_depth_mode{report["profitableDepthMode"]=record.clone();}
         if let Some(record)=&self.ordinary_entry_exclusions{report["ordinaryEntryExclusions"]=record.clone();}
         if let Some(record)=&self.live_market_capacity{report["liveMarketCapacity"]=record.clone();}
         if let Some(record)=&self.capital_allocation{report["ownerCapitalAllocation"]=record.clone();}

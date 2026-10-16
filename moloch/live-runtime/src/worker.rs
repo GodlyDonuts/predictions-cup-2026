@@ -13,7 +13,8 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+fn is_false(v:&bool)->bool{!*v}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -419,6 +420,15 @@ fn urgent_source_exchanges(orders:&[Value],pending:&std::collections::BTreeSet<u
  for q in orders{if q["retired"]==true{continue}let id=q["id"].as_u64().ok_or("LIVE_SOURCE_QUOTE_ID")?;
   if pending.contains(&id)||q["inventoryExitReason"]=="maximumAge"||q["executionStyle"]=="inventoryAON"{urgent.insert(q["exchangeId"].as_str().ok_or("LIVE_SOURCE_QUOTE_SCOPE")?.to_owned());}
  }Ok(urgent)
+}
+/// Sole pinned-Control startup transition; no quote, intent or order is sent.
+fn install_profitable_depth_mode(c:&Control,control_path:&Path,bank:&mut Session,authority:&ProductionAuthority,t:&Transport,log:&DispatchLog)->Result<()>{
+ if !c.profitable_depth_mode&&bank.engine().profitable_depth_mode_record().is_none(){return Ok(())}
+ if bank.engine().profitable_depth_enabled()==c.profitable_depth_mode{return Ok(())}
+ if !authority.can_read(&c.scope){return Err("LIVE_PROFITABLE_DEPTH_CONTROL_OR_STOP".into())}
+ log.require_resolved_attempts()?;t.package_queue_quiet()?;
+ let at=now();let event=json!({"type":"ordinary_profitable_depth_mode_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":c.activation.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":c.scope.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?),"expectedPolicySha256":hash(bank.engine().policy()),"controlSha256":format!("{:x}",Sha256::digest(fs::read(control_path)?)),"enabled":c.profitable_depth_mode,"depthBps":5000,"expectedPreviousModeSha256":bank.engine().profitable_depth_mode_record().map_or(Value::Null,|v|v["sha256"].clone())});
+ if !authority.can_read(&c.scope){return Err("LIVE_PROFITABLE_DEPTH_CONTROL_OR_STOP".into())}accept(bank,&event)
 }
 fn install_human_market_breadth(c:&Control,control_path:&Path,bank:&mut Session)->Result<()>{
  if !c.all_markets||bank.engine().fresh_market_limit()>=12{return Ok(())}
@@ -1637,6 +1647,7 @@ pub fn main()->Result<()>{
   let state=t.admission_state()?;if state["state"]["unknown"].as_object().is_some_and(|m|!m.is_empty()){return Err("LIVE_QUEUE_UNKNOWN_ACCEPTANCE".into())}
   let mut owner_capital_last_check=0;advance_owner_capital(&mut t,&c,&path,&mut bank,&log,&packages,lease.as_ref(),&mut owner_capital_last_check)?;
   ensure_entry_window(&c,&mut bank,&authority)?;
+  install_profitable_depth_mode(&c,&path,&mut bank,&authority,&t,&log)?;
   let fully_managed=bank.engine().report()?.get("inheritedInventory").is_some();
   let empty_positions=json!({"positions":[]});
   // Verified adoption updates the native managed-market limit while preserving
@@ -2400,5 +2411,16 @@ pub fn main()->Result<()>{
  #[test]fn allocation_uses_four_original_shared_reads_in_order_without_realtime_or_writes(){let mut reads=Vec::new();let _=owner_capital_receipts_with(|endpoint|{reads.push(serde_json::to_value(&endpoint)?);Ok(Receipt{endpoint:format!("original-{}",reads.len()),request_started_at:iso(0),received_at:iso(1),status:200,data:json!({})})}).unwrap();assert_eq!(reads,[Endpoint::Account,Endpoint::Collateral,Endpoint::Positions,Endpoint::Orders{status:"open".into()}].iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>());let mut reads=0;assert!(owner_capital_receipts_with(|_|{reads+=1;Err("original read failed".into())}).is_err());assert_eq!(reads,1);}
  #[test]fn pending_original_bank_withholds_buys_but_not_owned_sell_lane(){
   let root=std::env::temp_dir().join(format!("capital-buy-veto-{}-{}",std::process::id(),now()));let policy=json!({"initialCash":"40000.000000","maximumCommitted":"40000.000000","maximumMarketCost":"10000.000000","quantity":2,"entryStopAt":iso(100000)});let seed=json!({"runId":"test","availableCash":"70850.430000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(0)});let bank=Session::open_live(&root,&policy,&seed).unwrap();let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"101".into())].into()};let scope_sha=format!("{:x}",Sha256::digest(serde_json::to_vec(&scope).unwrap()));let input=json!({"authorizationId":"human_moloch_full_account_20261016","allocationId":"human-all-cash","controlSha256":"b".repeat(64),"bankManifestHash":bank.manifest_hash(),"runId":"test","accountScope":"fixture","tournamentId":"cup","tournamentSlug":"cup","profileId":"profile","scopeSha256":scope_sha,"delta":"55579.915000","maximumExtra":"55579.915000","maximumEffectiveInitial":"95579.915000","maximumCommitted":"95579.915000","approvedAt":"2026-10-16T09:43:45Z","validUntil":"2026-11-03T00:00:00Z"});let c:Control=serde_json::from_value(json!({"ownerCapitalAllocation":{"mandate":input,"approvedMandateSha256":hash(&input),"previousDailyMandateSha256":"c".repeat(64)},"activation":{"runId":"test","entryUntilMs":100000,"maximumCommitted":"95579.915000","maximumMarketCost":"10000.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"dailyEntryWindows":{"authorizationId":"human_moloch_full_account_20261016","approvedAt":"2026-10-16T09:43:45Z","anchorMs":100000,"campaignEndMs":100000+20*86400000u64},"scope":scope,"policy":policy,"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap();assert!(validate_owner_capital_control(&c).unwrap());assert!(!owner_capital_ready(&c,&bank).unwrap());assert!(!owner_capital_buys_allowed(&c,&bank,&json!("buy")).unwrap());assert!(owner_capital_buys_allowed(&c,&bank,&json!("sell")).unwrap());assert_eq!(bank.engine().wallet.initial,40_000_000_000);assert_eq!(bank.engine().policy()["maximumCommitted"],"40000.000000");drop(bank);fs::remove_dir_all(root).unwrap();
+ }
+}
+
+#[cfg(test)]
+mod profitable_depth_control_tests{
+ use super::*;
+ #[test]fn prospective_mode_is_opt_in_and_omitted_from_old_control_serialization(){
+  let original=json!({"activation":{"runId":"fixture","entryUntilMs":100000,"maximumCommitted":"40.000000","maximumMarketCost":"10.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/fixture/owner.lock","accountScope":"offline"});
+  let c:Control=serde_json::from_value(original.clone()).unwrap();assert!(!c.profitable_depth_mode);assert!(serde_json::to_value(c).unwrap().get("profitableDepthMode").is_none());
+  let mut enabled=original.clone();enabled["profitableDepthMode"]=json!(true);let c:Control=serde_json::from_value(enabled).unwrap();assert!(c.profitable_depth_mode);assert_eq!(serde_json::to_value(c).unwrap()["profitableDepthMode"],true);
+  let mut malformed=original;malformed["profitableDepthMode"]=json!("true");assert!(serde_json::from_value::<Control>(malformed).is_err());
  }
 }

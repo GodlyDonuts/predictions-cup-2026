@@ -457,6 +457,13 @@ impl Session {
                 ||event["expectedReportSha256"]!=hash(&engine.report()?)
                 ||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid){return Err("LIVE_CAPACITY_SESSION_PREFIX".into())}
         }
+        if event["type"]=="ordinary_profitable_depth_mode_v1"{
+            let seed=self.live_account_seed().ok_or("PROFITABLE_DEPTH_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid)
+                ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("PROFITABLE_DEPTH_SESSION_PREFIX".into())}
+        }
         if event["type"]=="ordinary_entry_exclusions_v1"{
             let seed=self.live_account_seed().ok_or("ORDINARY_EXCLUSION_SESSION_NOT_LIVE")?;
             if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
