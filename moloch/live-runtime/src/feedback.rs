@@ -44,13 +44,16 @@ pub fn fills(q:&Value,actual:&str,tournament:&str,r:&Receipt,processed_at:&str)-
  while start<events.len(){
   let mut end=start+1;while end<events.len()&&events[end].0==events[start].0{end+=1}
   if events[start+1..end].iter().any(|row|row.1["price"]!=events[start].1["price"]){
-   if q["action"]!="sell"{return Err("ACCOUNT_FILL_ORDER_AMBIGUOUS".into())}
-   // One complete original order tape, one covered SELL. Total proceeds and
-   // total FIFO basis consumed do not depend on within-timestamp sale order.
-   // Stable sort retains original tape order, NOT invented ID/price chronology.
-   // Per-fill lot attribution is canonical bookkeeping, not finer venue time.
+   let kind=match q["action"].as_str(){Some("sell")=>"same_owned_sell_timestamp_original_tape_order_v1",Some("buy")=>"same_owned_buy_timestamp_original_tape_order_v1",_=>return Err("ACCOUNT_FILL_ORDER_AMBIGUOUS".into())};
+   // Stable sort retains this complete original tape's order, never an invented
+   // ID/price chronology. BUY ties use first-admitted canonical FIFO bookkeeping:
+   // total purchase cash/shares are exact, but later partial disposal/redemption
+   // lot basis and realized attribution depend on this explicit convention.
+   // Already journaled fills remain immutable on later reordered observations;
+   // native original fill-ID conflict/dedup checks remain authoritative. This
+   // proves neither finer venue chronology nor global cross-order ordering.
    let count=end-start;
-   for(index,(_,event))in events[start..end].iter_mut().enumerate(){event["tiedFillAccounting"]=json!({"kind":"same_owned_sell_timestamp_original_tape_order_v1","groupSize":count,"originalTiePosition":index,"chronologyInferred":false});}
+   for(index,(_,event))in events[start..end].iter_mut().enumerate(){event["tiedFillAccounting"]=json!({"kind":kind,"groupSize":count,"originalTiePosition":index,"chronologyInferred":false});}
   }
   start=end;
  }
@@ -98,7 +101,7 @@ pub fn terminal(q:&Value,actual:&str,tournament:&str,order:&Receipt,filled:&Rece
   wallet.reserve("no",Reservation{exchange:"994".into(),side:Side::No,quantity:1,limit:amount("0.50").unwrap()}).unwrap();wallet.buy_fill_exact("no",1,amount("0.50").unwrap(),0).unwrap();
   assert_eq!(money(wallet.cash),"99.900000");assert_eq!(money(wallet.realized),"0.300000");assert_eq!(money(wallet.owned_cost()),"0.400000");assert_eq!(wallet.quantity("994",Side::Yes),1);assert_eq!(wallet.quantity("994",Side::No),0);wallet.audit().unwrap();
  }
- #[test]fn unequal_price_timestamp_ties_fail_without_inventing_trade_id_order(){let(quote,mut receipt)=varied_buy();receipt.data["data"][1]["filledAt"]=receipt.data["data"][0]["filledAt"].clone();assert!(fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").is_err());receipt.data["data"][1]["price"]=json!(0.40);assert_eq!(fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap().len(),2);}
+ #[test]fn unequal_price_buy_ties_use_original_tape_order_not_id_order(){let(mut quote,mut receipt)=varied_buy();receipt.data["data"][1]["filledAt"]=receipt.data["data"][0]["filledAt"].clone();let events=fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap();assert_eq!(events[0]["fillId"],"302");assert_eq!(events[1]["fillId"],"301");assert_eq!(events[0]["tiedFillAccounting"]["kind"],"same_owned_buy_timestamp_original_tape_order_v1");assert_eq!(events[0]["tiedFillAccounting"]["chronologyInferred"],false);quote["action"]=json!("unknown");assert!(fills(&quote,"201","cup",&receipt,"2026-10-15T00:00:06Z").is_err());}
  #[test]fn tied_different_price_sell_preserves_original_rows_and_explains_nonchronological_accounting(){
   let mut receipt=tape();receipt.data["data"][1]["filledAt"]=receipt.data["data"][0]["filledAt"].clone();let original=receipt.clone();let hash=digest(&receipt).unwrap();
   let events=fills(&q(),"201","cup",&receipt,"2026-10-15T00:00:06Z").unwrap();assert_eq!(receipt.data,original.data);assert_eq!(digest(&receipt).unwrap(),hash);assert_eq!(events[0]["fillId"],"301");assert_eq!(events[1]["fillId"],"302");assert_eq!(events[0]["price"],"0.060000");assert_eq!(events[1]["price"],"0.055000");
@@ -134,4 +137,43 @@ pub fn terminal(q:&Value,actual:&str,tournament:&str,order:&Receipt,filled:&Rece
   let clocks=admitted.iter().map(|e|chrono::DateTime::parse_from_rfc3339(e["executedAt"].as_str().unwrap()).unwrap()).collect::<Vec<_>>();
   assert!(clocks[0]>clocks[1],"a future global staging barrier is still required");
  }
+ fn known_tied_buy()->(Value,Receipt){
+  let quote=json!({"id":8803,"marketId":"288","exchangeId":"977","side":"NO","action":"buy","quantity":2094,"price":"0.935000"});
+  let receipt=r(json!({"orderId":43530180,"exchangeId":"977","tournamentId":"cup","coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null},"totalQuantityFilled":-2094,"data":[
+   {"id":181428203,"price":0.935,"quantity":-380,"side":"no","filledAt":"2026-10-16T19:17:18.513Z"},
+   {"id":181428198,"price":0.930,"quantity":-30,"side":"no","filledAt":"2026-10-16T19:17:18.513Z"},
+   {"id":181428193,"price":0.930,"quantity":-359,"side":"no","filledAt":"2026-10-16T19:17:18.513Z"},
+   {"id":181428187,"price":0.930,"quantity":-325,"side":"no","filledAt":"2026-10-16T19:17:18.513Z"},
+   {"id":181428182,"price":0.930,"quantity":-1000,"side":"no","filledAt":"2026-10-16T19:17:18.513Z"}]}),"2026-10-16T19:17:25Z","2026-10-16T19:17:26Z");(quote,receipt)
+ }
+ #[test]fn known_2094_buy_retains_five_original_fills_and_exact_cash_with_explicit_partial_basis_convention(){
+  use moloch_replay::{Wallet,Reservation,Side,amount};
+  let(q,r)=known_tied_buy();let original=digest(&r).unwrap();
+  for reverse in [false,true]{let mut tape=r.clone();if reverse{tape.data["data"].as_array_mut().unwrap().reverse();}let events=fills(&q,"43530180","cup",&tape,"2026-10-16T19:17:27Z").unwrap();
+   assert_eq!(events.len(),5);let mut w=Wallet::new(amount("10000").unwrap(),amount("10000").unwrap(),0,0).unwrap();w.reserve("buy",Reservation{exchange:"977".into(),side:Side::No,quantity:2094,limit:amount("0.935").unwrap()}).unwrap();
+   for(i,e)in events.iter().enumerate(){assert_eq!(e["fillId"],tape.data["data"][i]["id"].as_u64().unwrap().to_string());assert_eq!(e["executedAt"],tape.data["data"][i]["filledAt"]);assert_eq!(e["tiedFillAccounting"]["originalTiePosition"],i);w.buy_fill_exact("buy",e["quantity"].as_u64().unwrap(),amount(e["price"].as_str().unwrap()).unwrap(),0).unwrap();}
+   assert_eq!(money(w.cash),"8050.680000");assert_eq!(money(w.owned_cost()),"1949.320000");assert_eq!(w.quantity("977",Side::No),2094);
+   w.sell_fill_exact("977",Side::No,380,amount("0.94").unwrap(),0).unwrap();assert_eq!(money(w.realized),if reverse{"3.800000"}else{"1.900000"});assert_eq!(money(w.owned_cost()),if reverse{"1595.920000"}else{"1594.020000"});
+   w.sell_fill_exact("977",Side::No,1714,amount("0.94").unwrap(),0).unwrap();assert_eq!(money(w.realized),"19.040000");assert_eq!(w.quantity("977",Side::No),0);w.audit().unwrap();
+  }assert_eq!(digest(&r).unwrap(),original);
+ }
+ #[test]fn tied_buy_partial_opposite_redemption_conserves_wealth_but_does_not_claim_unique_basis(){
+  use moloch_replay::{Wallet,Reservation,Side,amount};
+  let(q,mut tape)=varied_buy();tape.data["data"][1]["filledAt"]=tape.data["data"][0]["filledAt"].clone();
+  for reverse in [false,true]{let mut r=tape.clone();if reverse{r.data["data"].as_array_mut().unwrap().reverse();}let mut w=Wallet::new(amount("100").unwrap(),amount("100").unwrap(),0,0).unwrap();w.reserve("yes",Reservation{exchange:"994".into(),side:Side::Yes,quantity:2,limit:amount("0.4").unwrap()}).unwrap();for e in fills(&q,"201","cup",&r,"2026-10-15T00:00:06Z").unwrap(){w.buy_fill_exact("yes",1,amount(e["price"].as_str().unwrap()).unwrap(),0).unwrap();}
+   w.reserve("no",Reservation{exchange:"994".into(),side:Side::No,quantity:1,limit:amount("0.5").unwrap()}).unwrap();w.buy_fill_exact("no",1,amount("0.5").unwrap(),0).unwrap();assert_eq!(money(w.cash),"99.900000");assert_eq!(w.quantity("994",Side::Yes),1);assert_eq!(money(w.realized),if reverse{"0.300000"}else{"0.100000"});assert_eq!(money(w.owned_cost()),if reverse{"0.400000"}else{"0.200000"});assert_eq!(money(w.realized-w.owned_cost()),"-0.100000");w.audit().unwrap();
+  }
+ }
+ #[test]fn original_native_fill_id_dedup_preserves_first_admitted_buy_tie_lots_on_reordered_receipt(){
+  use moloch_replay::engine::Engine;
+  let mut bank=Engine::new_live(&json!({"quantity":3})).unwrap();bank.advance(&json!({"type":"book","receivedAt":"2026-10-15T00:00:00Z","book":{"tournamentId":"cup","marketId":"101","exchangeId":"994","sequence":"1","requestStartedAt":"2026-10-15T00:00:00Z","receivedAt":"2026-10-15T00:00:00Z","sourceAt":"2026-10-15T00:00:00Z","bids":[{"price":"0.400000","quantity":1000}],"asks":[{"price":"0.450000","quantity":1000}]}})).unwrap();
+  let quote=bank.order_records().into_iter().find(|q|q["side"]=="YES").unwrap();let(_,mut tape)=varied_buy();tape.data["data"][1]["filledAt"]=tape.data["data"][0]["filledAt"].clone();
+  let mut ack=base("actual_order_ack",&quote,"201",&tape,"2026-10-15T00:00:06Z").unwrap();ack["quantity"]=json!(3);ack["price"]=quote["price"].clone();bank.advance(&ack).unwrap();
+  for e in fills(&quote,"201","cup",&tape,"2026-10-15T00:00:06Z").unwrap(){bank.advance(&e).unwrap();}
+  let cash=bank.wallet.cash;let lots=serde_json::to_value(bank.wallet.positions()).unwrap();assert_eq!(bank.fills().len(),2);
+  tape.data["data"].as_array_mut().unwrap().reverse();for e in fills(&quote,"201","cup",&tape,"2026-10-15T00:00:07Z").unwrap(){bank.advance(&e).unwrap();}assert_eq!(bank.wallet.cash,cash);assert_eq!(serde_json::to_value(bank.wallet.positions()).unwrap(),lots);assert_eq!(bank.fills().len(),2);
+  let mut changed=fills(&quote,"201","cup",&tape,"2026-10-15T00:00:08Z").unwrap()[0].clone();changed["price"]=json!("0.205000");assert!(bank.advance(&changed).is_err());assert_eq!(bank.wallet.cash,cash);
+ }
+ #[test]fn buy_ties_preserve_complete_total_scope_and_duplicate_rejection(){for case in 0..4{let(q,mut r)=known_tied_buy();match case{0=>r.data["coverage"]["complete"]=json!(false),1=>r.data["totalQuantityFilled"]=json!(-2093),2=>r.data["data"][1]["id"]=r.data["data"][0]["id"].clone(),_=>r.data["exchangeId"]=json!("978")};assert!(fills(&q,"43530180","cup",&r,"2026-10-16T19:17:27Z").is_err());}}
+
 }
