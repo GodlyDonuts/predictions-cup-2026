@@ -1,0 +1,38 @@
+{
+  "derivedSummary": true,
+  "originalDescriptorArchivedPrivately": "/tmp/moloch-turnover-20261016-proposed-bridge.json",
+  "originalDescriptorSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "priorDescriptorSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+  "originalTwelveEntriesExactlyPreserved": true,
+  "upgrades": 13,
+  "last": {
+    "approval": {
+      "approvedAt": "2026-10-16T22:31:27.568428+00:00",
+      "oldBinarySha256": "1180882d0a47f1af948258c37b333fb51552c31ef9823a51e1c058cf8558e95f",
+      "previousProcessStopped": true,
+      "role": "human_authorized_execution_owner"
+    },
+    "fromEngineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+    "hash": "be024d01c8ec1ac271041fa35bbdb69c4fe956d37245004285e8348f5aa0d772",
+    "journalPrefix": {
+      "bytes": 1083938002,
+      "sha256": "c7ad0eec182ac9fd2d676f49f1682b8891bd4964a5c15b7ace3840407fab1a38"
+    },
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "oldHead": {
+      "hash": "869192e9fa009729a3fd613f9cd590b74c83b7c85b9aa11a1166b8f5522501e0",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "37d98937fb8afa7f0e95c00644b1826399770acb6e65a246b2ac91db7dc8f435",
+      "sequence": 348466
+    },
+    "previousUpgradeHash": "90e139d7e7f522599340a0fd762e75c63153a421594f908e440868bf6aa715aa",
+    "schemaVersion": 1,
+    "toEngineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+    "oldReportEnvelopeSeal": {
+      "hash": "1998d695830a2178ca75a33d9ec64b7fa38a3b79fc659f58d359b0082d50b19e",
+      "sequence": 348466,
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "37d98937fb8afa7f0e95c00644b1826399770acb6e65a246b2ac91db7dc8f435"
+    }
+  }
+}

@@ -1,0 +1,100 @@
+   Compiling serde_json v1.0.154
+   Compiling moloch-replay v0.1.0 (/tmp/moloch-turnover-730c0962-20261016/moloch/native)
+warning: unnecessary parentheses around `if` condition
+  --> src/engine_collateral.rs:90:254
+   |
+90 | ...before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{1...
+   |                     ^                                                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+90 -   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+90 +   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint" {86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |
+
+warning: `moloch-replay` (lib test) generated 1 warning (run `cargo fix --lib -p moloch-replay --tests` to apply 1 suggestion)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.81s
+     Running unittests src/lib.rs (/tmp/moloch-turnover-730c0962-20261016/moloch/live-runtime/target/debug/deps/moloch_replay-b624d798fa3e393f)
+
+running 77 tests
+test engine::reviewed_fundamental_entry::tests::actual_ack_partial_fill_terminal_and_restart_preserve_real_accounting_only ... ok
+test engine::reviewed_fundamental_entry::tests::derives_quantity_from_total_market_cash_and_review_quantity_bounds ... ok
+test engine::reviewed_fundamental_entry::tests::explicit_top_up_caps_total_basis_and_quantity_without_crediting_cash ... ok
+test engine::reviewed_fundamental_entry::tests::full_executable_bid_depth_clips_quantity_and_stale_book_denies ... ok
+test engine::reviewed_fundamental_entry::tests::exact_session_head_report_and_book_bindings_reject_stale_plans_without_mutation ... ok
+test engine::reviewed_fundamental_entry::tests::managed_market_cap_includes_other_active_reviewed_reservation ... ok
+test engine::reviewed_fundamental_entry::tests::legacy_entry_cannot_claim_held_lots_without_explicit_top_up ... ok
+test engine::reviewed_fundamental_entry::tests::modes_bounded_buy_uses_all_ask_levels_within_frozen_limit ... ok
+test engine::reviewed_fundamental_entry::tests::modes_full_frozen_price_funding_not_weighted_depth_clips_quantity ... ok
+test engine::reviewed_fundamental_entry::tests::modes_generated_action_and_review_provenance_survive_ticks_and_restart ... ok
+test engine::reviewed_fundamental_entry::tests::modes_improved_entry_does_not_require_liquidation_bid_at_acquisition_price ... ok
+test engine::reviewed_fundamental_entry::tests::modes_marketable_reservation_is_not_atomic_fill_or_ack_profit ... ok
+test engine::reviewed_fundamental_entry::tests::modes_bad_mode_ceiling_provenance_and_value_fail_atomically ... ok
+test engine::reviewed_fundamental_entry::tests::modes_no_side_complements_both_acquisition_and_liquidation_depth ... ok
+test engine::reviewed_fundamental_entry::tests::modes_native_caps_apply_to_aggressive_reservations ... ok
+test engine::reviewed_fundamental_entry::tests::modes_omission_and_explicit_join_preserve_old_metadata_and_financials ... ok
+test engine::reviewed_fundamental_entry::tests::modes_stale_or_gap_book_cannot_reserve_despite_positive_forecast ... ok
+test engine::reviewed_fundamental_entry::tests::ordinary_ticks_never_add_opposite_pair_or_cancel_reviewed_quote ... ok
+test engine::reviewed_fundamental_entry::tests::reserves_real_capped_single_buy_without_pair_flow_or_minimum_spread ... ok
+test engine::reviewed_fundamental_entry::tests::second_unresolved_same_exchange_entry_cannot_replace_or_double_fund ... ok
+test engine::reviewed_fundamental_entry::tests::top_up_total_quantity_caps_whole_cohort_in_addition_to_per_order_cap ... ok
+test engine::reviewed_fundamental_entry::tests::unrelated_ordinary_draft_reservations_are_funded_before_reviewed_entry ... ok
+test journal::tests::changed_skipped_and_reordered_events_fail ... ok
+test legacy::tests::canonical_matches_js_numeric_keys_and_number_spelling ... ok
+test legacy::tests::counterfeit_snapshot_is_rejected ... ok
+test realtime::tests::authenticated_official_custom_origins_are_supported_without_private_routing ... ok
+test realtime::tests::disconnected_consumer_is_not_queue_capacity_failure ... ok
+test realtime::tests::failed_signal_observer_always_finds_reason_already_published ... ok
+test realtime::tests::first_reason_survives_later_cleanup_and_reporter_drop ... ok
+test realtime::tests::heartbeat_replies_are_correlated ... ok
+test realtime::tests::native_websocket_receives_join_and_broadcast ... ok
+test realtime::tests::planned_deadline_and_requested_stop_have_distinct_socket_results ... ok
+test realtime::tests::poisoned_diagnostic_mutex_still_publishes_failure ... ok
+test realtime::tests::protocol_requires_ack_and_known_topic ... ok
+test realtime::tests::rejects_arbitrary_auth_destinations_and_expired_tokens ... ok
+test realtime::tests::saturated_queue_cannot_hide_published_reason_or_weaken_failed_gate ... ok
+test realtime::tests::unreported_return_is_fixed_unexplained_and_unknown_input_is_sanitized ... ok
+test realtime::tests::unwind_reports_fixed_panic_code_without_retaining_payload ... ok
+test semantic_floor::tests::candidate_leg_bound_and_duplicate_consumption_deny ... ok
+test semantic_floor::tests::current_receipt_cannot_refresh_old_source_clock ... ok
+test semantic_floor::tests::depth_exhaustion_and_insufficient_full_limit_cash_do_not_become_opportunities ... ok
+test semantic_floor::tests::finite_model_without_separate_reviewed_completeness_never_certifies ... ok
+test semantic_floor::tests::fresh_current_node_with_changed_rule_cannot_use_old_certificate ... ok
+test semantic_floor::tests::full_depth_limit_funding_and_minimum_net_are_separate ... ok
+test semantic_floor::tests::known_fees_can_remove_an_apparent_floor ... ok
+test semantic_floor::tests::no_side_uses_complementary_bid_depth_and_not_yes_ask ... ok
+test semantic_floor::tests::omitted_exceptions_unresolved_obligations_and_wrong_matrix_deny ... ok
+test semantic_floor::tests::original_source_mutation_or_current_foreign_scope_deny ... ok
+test semantic_floor::tests::positive_expected_single_leg_is_not_positive_minimum ... ok
+test semantic_floor::tests::refund_is_principal_not_dollar_and_fees_remain_costs ... ok
+test semantic_floor::tests::separately_approved_proof_pins_matrix_and_fee_bound_not_only_state_names ... ok
+test session::staged_prefix_benchmark::original_frozen_prefix_staged_clone_benchmark ... ignored, explicit immutable copied prefix, bytes and SHA environment required; no live Session
+test session::tests::altered_source_prefix_and_invalid_event_do_not_change_finance ... ok
+test session::tests::atomic_json_buffer_write_or_flush_failure_never_publishes ... ok
+test session::tests::atomic_json_buffered_exact_bytes_and_bounded_write_count ... ok
+test session::tests::atomic_json_failed_rename_preserves_destination_and_complete_temp ... ok
+test session::tests::committed_truncation_and_partial_tail_fail_closed ... ok
+test session::tests::competing_writer_cannot_open_and_released_kernel_lock_can ... ok
+test session::tests::consuming_unpublished_replay_matches_transactional_every_reference_prefix ... ok
+test session::tests::failed_unpublished_replay_never_publishes_partial_head_or_report ... ok
+test engine::reviewed_fundamental_entry::tests::top_up_wrong_fifo_actual_binding_side_counts_and_caps_fail_without_mutation ... ok
+test session::tests::fully_written_event_before_head_update_recovers_once ... ok
+test session::tests::live_accept_still_rolls_back_and_preserves_all_published_bytes_on_error ... ok
+test session::tests::live_restart_replays_original_ack_fill_terminal_and_sources_exactly ... ok
+test session::tests::lost_projection_is_rebuilt_and_changed_policy_rejected ... ok
+test source::tests::full_chain_minimum_checkpoint ... ok
+test source::tests::initial_resync_requires_book_and_complete_tape ... ok
+test source::tests::late_socket_gap_retains_the_actual_recovery_start ... ok
+test source::tests::market_registry_can_watch_the_venue_without_expanding_read_concurrency ... ok
+test source::tests::missing_reordered_cyclic_incomplete_pages ... ok
+test source::tests::served_window_and_foreign_context_fail ... ok
+test tests::decimals ... ok
+test tests::failed_mutations_are_atomic ... ok
+test tests::losses_and_fifo_preserved ... ok
+test tests::paired_fifo_netting ... ok
+test tests::partial_fills_keep_reservations_and_round_fees ... ok
+test session::tests::restart_preserves_fill_and_repeated_input_is_exactly_once ... ok
+
+test result: ok. 76 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 13.34s
+

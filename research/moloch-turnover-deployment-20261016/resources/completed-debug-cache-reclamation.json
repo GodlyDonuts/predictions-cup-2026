@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-16T22:23:59.444465+00:00",
+  "removedOnlyDisposableDebugCache": "/tmp/moloch-turnover-730c0962-20261016/moloch/live-runtime/target/debug",
+  "retained": [
+    "source trees",
+    "release binaries and rlibs",
+    "original test/build logs",
+    "all financial histories and captures"
+  ],
+  "freeBefore": 13088305152,
+  "freeAfter": 18862915584
+}

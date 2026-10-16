@@ -1,0 +1,13 @@
+[package]
+name="moloch-review-fixture-validation"
+version="0.1.0"
+edition="2024"
+[dependencies]
+moloch-live-runtime={path="/tmp/moloch-turnover-20543435-20261016/moloch/live-runtime"}
+moloch-replay={path="/tmp/moloch-turnover-20543435-20261016/moloch/native"}
+baal-transport-service={path="/tmp/moloch-turnover-20543435-20261016/backend-rust/transport-service",features=["offline-fixtures"]}
+serde_json={version="1",features=["arbitrary_precision"]}
+sha2="0.10"
+[[test]]
+name="fundamental_policy"
+path="fundamental_policy.rs"

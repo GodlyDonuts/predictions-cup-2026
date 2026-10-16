@@ -1,0 +1,12 @@
+{
+  "operator": "moloch-turnover-20261016-v1",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "executionOwnerReviewed": true,
+  "stagingSha256": "5e60caf4c224db264668284ed2f596cecf1d5da0fd775f5b77e83e11a01b3d55",
+  "boundarySha256": "453ffaa2e4d0391efd73cdcb867b46e0f2e91cb2a326419c615e3312b2bc179e",
+  "proposalSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "requestSha256": "9dc9c2850225c0853fab07e5268bac421f6224b27bca197e217215fb9c2b2118",
+  "stopSha256": "a08af84342cb4b5e60f8f38f281cba92f5623b0a72e9a85958f6fe2f0a3e0c05",
+  "workerStatusSha256": "8aeb2ff05ac5c17191000f6aab4e0997323928e46bf6bb98dca77bd1592863ef",
+  "reason": "root-reviewed-controlled-turnover-stop-only-not-human-stop"
+}

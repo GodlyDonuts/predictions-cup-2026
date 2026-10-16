@@ -6,6 +6,25 @@ Received October16,2026. Private attachment SHA256
 The paper is research input. Its embedded source identifiers and schedules are
 not verified API evidence, execution authority or measured deployment results.
 
+## Current update at22:34UTC
+
+Turnover source20543435 is now physically deployed as565108/binaryd9f5cbc6,
+restoring original history; fresh trading remains pending. The genuine original
+308166-event prefix comparison passes. Current-boundary bridge13 preserves all
+12 earlier entries and final241 fills/combined realized−136.230000.
+[Exact production release](MOLOCH_TURNOVER_RELEASE_20261016.md).
+
+Paper7 is a separate local source candidate: joint maker qualification,
+acquisition-only lifecycle/capital evidence, and the existing socket's private
+account invalidation topic. Account revision conflicts invalidate facts before
+capture; account WS is never financial booking. Independent source reviews found
+no remaining concrete blocker. Actual native90/runtime222/worker109 checks pass;
+remaining integration checks and release are running. The initial maker fixture
+used the wrong config serialization digest; the original failure is retained,
+its fixture correction does not weaken production100/20 coverage thresholds.
+No Paper7 feature is activated by the turnover release; no calibrated posterior,
+qualified empirical maker, rank-risk allocation or overall profit is established.
+
 ## Corrected starting point at22:09UTC
 
 The paper audited main27b4ad10 and historical worker540259. Actual production is

@@ -1,0 +1,113 @@
+{
+  "sourceCommit": "20543435f9354ae5a599866545cbf1aae6a03cfa",
+  "sourceManifestSha256": "4e40355421e9a9eab1209b6e3c359d5782e259d992d3138642e6c6a224684577",
+  "productionChanged": false,
+  "deploymentReady": false,
+  "priorRuntimeChecks": {
+    "runtime-library": {
+      "exitCode": 0,
+      "seconds": 81.7488288829918,
+      "logSha256": "9f1ed5e3139207cddb5f92847f1f5b706801f489eb1b0da392493d9d515be084",
+      "logBytes": 30216,
+      "testResults": [
+        [
+          "212",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 93.32637108600466,
+      "logSha256": "2d085d5fed9ae5afe0e06886034937c5f9ebfd100ed98bdccff65cbed6e9c78b",
+      "logBytes": 21123,
+      "testResults": [
+        [
+          "106",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    }
+  },
+  "knownPriorFixtureFailureRetained": true,
+  "startedAt": "2026-10-16T22:07:41.683873+00:00",
+  "checks": {
+    "value-surface": {
+      "exitCode": 0,
+      "seconds": 8.3769587080169,
+      "logSha256": "2723eaa752583d37c33e60cfc0ce2d48addd42365e0af89bc530e0029f78f6e6",
+      "logBytes": 9407,
+      "testResults": [
+        [
+          "8",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "profitable-depth": {
+      "exitCode": 0,
+      "seconds": 68.91849005699623,
+      "logSha256": "f737830656b6014d8ad94b6199ec9c11b0b6b23159963c9294b603be570f1198",
+      "logBytes": 2980,
+      "testResults": [
+        [
+          "14",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "release": {
+      "exitCode": 0,
+      "seconds": 307.20442593999906,
+      "logSha256": "9143e63d2dcdf9eba34ce16145f69018fea391135cdb82c17c7d69fe73a58c76",
+      "logBytes": 181161
+    },
+    "turnover-offline-probe-build": {
+      "exitCode": 0,
+      "seconds": 21.59113386599347,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "moloch-upgrade-build": {
+      "exitCode": 0,
+      "seconds": 6.81461357997614,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "validate-turnover-forecasts-build": {
+      "exitCode": 0,
+      "seconds": 9.432777291018283,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "engine-probe-run": {
+      "exitCode": 0,
+      "seconds": 0.007113956002285704,
+      "logSha256": "80f79583bc1ba42e61d5826b6f17a05bfd04f0a9a42eaef7c51fa56b48b5f2ca",
+      "logBytes": 65
+    }
+  },
+  "engineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "binarySha256": "d9f5cbc628dd2e2d2d4f970106706029b8af56b723b5ac51f80ac1939ab48b3d",
+  "binaryBytes": 13246008,
+  "nativeRlib": "/tmp/moloch-turnover-730c0962-20261016/moloch/live-runtime/target/release/deps/libmoloch_replay-7db673738191255a.rlib",
+  "nativeRlibSha256": "3e5e31a79153a6c0dc72af791a104a8466d472d08249a1f994e93b41bccac061",
+  "helperPins": {
+    "turnover-offline-probe": "d914837e877015bbe208851ffb4429820340db97bad71fb737c57b58a0e02338",
+    "moloch-upgrade": "5b48aced4f49b71577db0dc0005b9c49cfda69d4be4b2dab3a011009d62e86c0",
+    "validate-turnover-forecasts": "a0fed579c6ac602313449ff350672bbdb3abaf206eff10b24bd4d63d022ebcec"
+  },
+  "finishedAt": "2026-10-16T22:14:44.125409+00:00"
+}

@@ -1,3 +1,20 @@
+# Latest research baseline — October16,22:34UTC
+
+Production is **565108/source20543435/binaryd9f5cbc6/nativeb5**, currently
+restoring after a controlled ledger-preserving upgrade. Fresh trading and
+post-upgrade fills are pending. Baseline final old-worker P&L is−136.230000,
+241 cumulative fill rows; all earlier losses and original financial events
+remain. Read [the current turnover release](MOLOCH_TURNOVER_RELEASE_20261016.md)
+for exact flags, model limits, checks, original proofs and unfinished verification.
+
+New active Control enables profitable cumulative-depth exits and aggregate
+OR5,000/AK3,000/ME3,000 top-ups,max2 entries/10,000 total shares, with original
+model points and source expiry unchanged. Account capital remains95,579.915.
+Paper7's optional joint maker/account realtime/acquisition shadow candidate is
+local, partly checked and unactivated. Its first native90/runtime222/worker109
+checks pass; no calibration, new alpha or profit is established. Historical
+sections below are dated evidence, not current deployment specifications.
+
 # Current research baseline: October16,22:09UTC
 
 Actual sole545165/source774f94fe/binary1180882d is healthy/fresh trading with

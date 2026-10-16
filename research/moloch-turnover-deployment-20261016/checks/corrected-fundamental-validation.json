@@ -1,0 +1,33 @@
+{
+  "fixtureSourceCommit": "a40888d753bcb2e09763172e6beac21a3ef50fb4",
+  "productionLibrarySourceCommit": "20543435f9354ae5a599866545cbf1aae6a03cfa",
+  "fixtureSha256": "6002ae441ca3eb52cdb278c53f67d299a8aa765764d2a463a021d6674527f86e",
+  "productionSourcesUnchanged": true,
+  "changesOnlyOfflineFixture": true,
+  "productionActivated": false,
+  "startedAt": "2026-10-16T22:06:44.002860+00:00",
+  "lock": {
+    "exitCode": 0,
+    "seconds": 0.6694589399849065,
+    "logSha256": "96fc511faf4b0226fe968cc94a257489d298991497ea7b58a13027c2fa6684a5"
+  },
+  "tests": {
+    "exitCode": 0,
+    "seconds": 121.90972621901892,
+    "logSha256": "3878cf97bcb02d99a1d5680525e58fd95e760e09f73ac7a60e991827dba63bb5",
+    "testResults": [
+      [
+        "96",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ]
+  },
+  "fixtureBytes": 146257,
+  "fixtureHashMatches": true,
+  "cargoTomlSha256": "925b7f816d0592ba41e5023dce54b24c185b241b8d9e9f84fc101e28050e0ae0",
+  "cargoLockSha256": "80c487824f3d766b7b45006302cac4614699449b3dd29fce7b0fc75ed1cfd131",
+  "finishedAt": "2026-10-16T22:08:46.613978+00:00"
+}
