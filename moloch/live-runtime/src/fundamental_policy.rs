@@ -1226,7 +1226,10 @@ impl Cohorts{
         need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_SCOPE_CHANGED")?;
         if liquidation_due(r,c,now){return Ok(true)}
         if !trusted.contains(&digest(r)?)||!current(r,now){return Ok(false)}
-        if r.revoke_existing||c.entry.as_ref().is_some_and(|b|digest(r).is_ok_and(|h|h!=b.review_sha256)){return Ok(true)}
+        // A revised source/cap hash is attribution, not an executable exit reason.
+        // Reprice against the CURRENT reviewed value below; never rewrite the
+        // original entry binding or repeatedly preempt acquisitions on hash alone.
+        if r.revoke_existing{return Ok(true)}
         let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
         let value=add(structure(r)?,amount(&r.margin_per_share)?)?;
         Ok(books.get(exchange).and_then(|b|if r.side=="YES"{b.yes_bids.first()}else{b.no_bids.first()}).is_some_and(|l|l.price>=value))
