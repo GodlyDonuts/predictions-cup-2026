@@ -81,6 +81,25 @@ impl Decision{
  }
 }
 fn dispatch(log:&DispatchLog)->Value{log.proof(0)}
+/// Selection only over opaque decisions, in the caller's existing fair order.
+/// Owned management precedes qualified gain / (gross capital * horizon), then
+/// exploration. Equal exact ratios retain input order. Expired/deferred entries
+/// are omitted. This grants no risk budget or physical authority; re-evaluate
+/// the selected quote after real preflight and retain its final physical token.
+pub fn rank(decisions:&[&Decision],now:u64)->Result<Vec<usize>>{
+ need(decisions.len()<=4096,"MAKER_RANK_BOUND")?;
+ if let Some(first)=decisions.first(){need(decisions.iter().all(|d|d.head==first.head&&d.dispatch==first.dispatch&&d.settings_sha==first.settings_sha&&d.run==first.run&&d.tournament==first.tournament),"MAKER_RANK_CONTEXT")?;}
+ let mut ordered:Vec<usize>=Vec::new();
+ for(index,d)in decisions.iter().enumerate(){
+  if !d.allowed()||now>=d.expires{continue}
+  if d.class==Class::Qualified{let c=d.candidate().ok_or("MAKER_RANK_CANDIDATE")?;need(c.net_gain_units>0&&c.gross_funding_units>0&&c.holding_horizon_ms>0&&now<c.valid_until_ms,"MAKER_RANK_ECONOMICS")?;mul(c.gross_funding_units,c.holding_horizon_ms as i128)?;}
+  let mut position=ordered.len();for(i,old_index)in ordered.iter().enumerate(){let old=decisions[*old_index];let before=if d.priority()!=old.priority(){d.priority()<old.priority()}else if d.class==Class::Qualified{
+   let c=d.candidate().ok_or("MAKER_RANK_CANDIDATE")?;let old=old.candidate().ok_or("MAKER_RANK_CANDIDATE")?;
+   mul(c.net_gain_units,mul(old.gross_funding_units,old.holding_horizon_ms as i128)?)?>mul(old.net_gain_units,mul(c.gross_funding_units,c.holding_horizon_ms as i128)?)?
+  }else{false};if before{position=i;break}}
+  ordered.insert(position,index);
+ }Ok(ordered)
+}
 fn remaining(q:&Value)->Result<u64>{Ok(q["quantity"].as_u64().ok_or("MAKER_QUANTITY")?.checked_sub(q["filled"].as_u64().ok_or("MAKER_QUANTITY")?).ok_or("MAKER_QUANTITY")?)}
 /// Public diagnostics use actual native lots/attempts. Absent timestamps are
 /// excluded only after reconstructing original adoption FIFO consumption.
