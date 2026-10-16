@@ -35,6 +35,14 @@
 
 At the186684-event promotion boundary: cash17,194.180000, owned cost22,731.515000; ordinary realized-119.435000/inherited gross+45.130000/combined-74.305000. New67YES1019 round trip lost.335. Earlier economic sections below retain their original observation times.
 
+## Checked follow-up source; not deployed
+
+The Session staging candidate removes redundant Engine clones only from unpublished staging. ARM64 actual-Session5 and native232 checks pass; a forced rebuild also passes unit56 and optimized native library. The exact copied186684-event prefix reproduces its original sealed report. A matched64-event in-memory workload improves median787.196 to264.785ms (2.973x), excluding source parsing/cloning, durability, HTTP and whole-cycle time. This is not a measured production speedup. A new actual source-identity/prefix bridge is still required before promotion. [Evidence and byte provenance](../research/moloch-throughput-20261016/native-hotpath-audit.md).
+
+Checked canonical SDK fill-tape endpoint corrections retain body/order/exchange/tournament/coverage checks;52 focused package/feedback/coordinator checks pass on the advanced snapshot. These fixes are not in current5577e984 production. A separate merged Paper5 candidate retains both current throughput and opaque model/semantic/risk execution qualification; combined validation and full worker opportunity wiring remain incomplete.
+
+New-to-this-dataset original YouGov Iowa/Kansas polls produce a research-only update. This is not verified news since the previous artifact expired. Retained Iowa/Kansas books are13–18hours old at the comparison; no current executable edge or production-model activation is established. [Sources, dates and sensitivities](../research/atlas_model/current-refresh-20261016/README.md).
+
 ## Actual economics and current position
 
 The restored worker bought430 Delaware Democratic Senate YES1042 at.920, principal395.600000, fee0, executed04:02:17.490UTC, order41846939/q3420. It remains open; realized profit from this position is0. Review9523497c… assumes.95 ordinary probability/.01 exceptional allowance/.01 margin, giving.9405 expected payout and.9305 ceiling before tick flooring. New principal cap400; source/review validity ends09:00UTC October16; original holding deadline17:00UTC October19. Model assumptions do not guarantee a favorable exit by that deadline.
