@@ -5,6 +5,7 @@ Training features are frozen at local decision time; future labels use later
 original SIG source/receipt clocks. Old records never become fresh on restart.
 """
 import argparse
+import base64
 import collections
 import datetime as dt
 from decimal import Decimal, InvalidOperation
@@ -16,6 +17,7 @@ import os
 from pathlib import Path
 import re
 import signal
+import shutil
 import stat
 import time
 import urllib.request
@@ -156,6 +158,16 @@ class Tail:
             self.skip = os.read(self.fd, 1) != b"\n"
         os.lseek(self.fd, self.position, os.SEEK_SET)
         self.previous, self.sequence = None, None
+        self.last_row_bytes, self.last_row_offset = None, None
+
+    def bookmark(self):
+        info = os.fstat(self.fd)
+        return {"path": str(self.path), "device": info.st_dev, "inode": info.st_ino,
+                "fileBytesAtObservation": info.st_size, "readOffset": self.position,
+                "bufferedBytes": len(self.buffer), "skipPartialLine": self.skip,
+                "lastHash": self.previous, "lastSequence": self.sequence,
+                "lastConsumedEndOffset": self.last_row_offset+len(self.last_row_bytes) if self.last_row_bytes is not None else None,
+                "historyPrefixVerified": False}
 
     def read(self):
         info = self.path.lstat()
@@ -166,9 +178,12 @@ class Tail:
         self.buffer += chunk
         if len(self.buffer) > 12 * 1024 * 1024:
             raise ValueError("OBSERVER_LINE_LIMIT")
+        line_offset = self.position-len(self.buffer)
         lines = self.buffer.split(b"\n")
         self.buffer = lines.pop()
         for line in lines:
+            offset = line_offset
+            line_offset += len(line)+1
             if self.skip:
                 self.skip = False
                 continue
@@ -188,6 +203,7 @@ class Tail:
             if self.previous is not None and (row["previous"] != self.previous or row["sequence"] != self.sequence + 1):
                 raise ValueError("OBSERVER_JOURNAL_GAP")
             self.previous, self.sequence = row["hash"], row["sequence"]
+            self.last_row_bytes, self.last_row_offset = line+b"\n", offset
             yield row
 
     def close(self):
@@ -713,6 +729,225 @@ class Output:
             self.stream = None
 
 
+INPUT_TRACE_PROTOCOL = {
+    "version": 1, "captureCondition": "original_input_consumption_trace_v1",
+    "maximumCompressedBytes": 2 * 1024 ** 3, "minimumFreeBytes": 10 * 1024 ** 3,
+    "maximumCacheBodyBytes": 16 * 1024 ** 2, "sealReserveBytes": 65536,
+    "historyPrefixVerified": False, "executionAuthority": False,
+    "sourceClocksRenewed": False, "pruningAllowed": False,
+}
+
+
+class InputTraceError(RuntimeError):
+    """Fatal to this sidecar; deliberately not swallowed as a cache OSError."""
+
+
+def trace_file_reference(path):
+    path = Path(path)
+    info = path.lstat()
+    if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+        raise InputTraceError("TRACE_REFERENCE_NOT_REGULAR")
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        opened = os.fstat(source.fileno())
+        if (opened.st_dev, opened.st_ino) != (info.st_dev, info.st_ino):
+            raise InputTraceError("TRACE_REFERENCE_CHANGED")
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+        after = os.fstat(source.fileno())
+    current = path.lstat()
+    identity = lambda x: (x.st_dev, x.st_ino, x.st_size, x.st_mtime_ns)
+    if identity(info) != identity(after) or identity(info) != identity(current):
+        raise InputTraceError("TRACE_REFERENCE_CHANGED")
+    return {"path": str(path.resolve()), "sha256": digest.hexdigest(), "bytes": info.st_size,
+            "device": info.st_dev, "inode": info.st_ino}
+
+
+class InputTrace:
+    """One new cohort, concatenated gzip members, no deletion or clock repair.
+
+    Every member's compressed length is known BEFORE append. Limits apply to
+    BOTH original-input and ordinary sample files; a reserved terminal seal is
+    metadata, never replacement evidence for a failed/partial append.
+    """
+    MAXIMUM_BYTES = INPUT_TRACE_PROTOCOL["maximumCompressedBytes"]
+    MINIMUM_FREE = INPUT_TRACE_PROTOCOL["minimumFreeBytes"]
+    SEAL_RESERVE = INPUT_TRACE_PROTOCOL["sealReserveBytes"]
+
+    def __init__(self, root, mapping, config, bookmark, clock=None):
+        self.root = Path(root)
+        self.clock = clock or (lambda: int(time.time() * 1000))
+        self.sequence, self.previous, self.bytes, self.output_rows = 0, "", 0, 0
+        self.poisoned, self.pending, self.sealed = False, set(), False
+        self.streams, self.file_sizes, self.file_hashes = {}, {}, {}
+        self.mapping = trace_file_reference(mapping)
+        self.producer = trace_file_reference(Path(__file__))
+        try:
+            if shutil.disk_usage(self.root).free < self.MINIMUM_FREE + self.SEAL_RESERVE:
+                raise InputTraceError("TRACE_MINIMUM_FREE_SPACE")
+            for name in ("input-trace-v1.jsonl.gz", "trace-samples-v1.jsonl.gz"):
+                fd = os.open(self.root / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o600)
+                self.streams[name] = fd
+                self.file_sizes[name], self.file_hashes[name] = 0, hashlib.sha256()
+            self.sync_directory()
+            self.record({"kind": "run_start", "protocol": INPUT_TRACE_PROTOCOL,
+                         "producer": self.producer, "mappingFileReference": self.mapping,
+                         "effectiveCacheMappingsWitnessedBy": "original_cache_response_bodies",
+                         "effectiveSamplerConfig": config,
+                         "effectiveSamplerConfigSha256": hashlib.sha256(compact(config).encode()).hexdigest(),
+                         "samplingPolicy": TRADE_SAMPLING_POLICY if config['samplingMode'] == 'trade' else None,
+                         "samplingPolicySha256": TRADE_SAMPLING_POLICY_SHA256 if config['samplingMode'] == 'trade' else None,
+                         "initialBookmark": bookmark, "traceStartedAtMs": self.clock(),
+                         "historyPrefixVerified": False, "executionAuthority": False})
+        except Exception:
+            self.poisoned = True
+            self.close()
+            raise
+
+    def sync_directory(self):
+        # Directory fsync is mandatory on the deployment's Unix filesystem.
+        if os.name != 'nt':
+            fd = os.open(self.root, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0))
+            try:
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+
+    def append(self, name, value):
+        if self.poisoned or self.sealed:
+            raise InputTraceError("TRACE_CAPTURE_UNAVAILABLE")
+        member = gzip.compress((compact(value) + "\n").encode(), compresslevel=1, mtime=0)
+        try:
+            if self.bytes + len(member) + self.SEAL_RESERVE > self.MAXIMUM_BYTES:
+                raise InputTraceError("TRACE_COMPRESSED_LIMIT")
+            if shutil.disk_usage(self.root).free - len(member) - self.SEAL_RESERVE < self.MINIMUM_FREE:
+                raise InputTraceError("TRACE_MINIMUM_FREE_SPACE")
+            fd = self.streams[name]
+            info, actual = os.fstat(fd), (self.root / name).lstat()
+            if not stat.S_ISREG(actual.st_mode) or actual.st_nlink != 1 or (info.st_dev, info.st_ino) != (actual.st_dev, actual.st_ino):
+                raise InputTraceError("TRACE_FILE_CHANGED")
+            expected = sum(os.fstat(f).st_size for f in self.streams.values())
+            if expected != self.bytes or any(os.fstat(f).st_size != self.file_sizes[n] for n,f in self.streams.items()):
+                raise InputTraceError("TRACE_FILE_CHANGED")
+            view = memoryview(member)
+            while view:
+                written = os.write(fd, view)
+                if written <= 0:
+                    raise OSError("short trace write")
+                view = view[written:]
+            os.fsync(fd)
+            self.bytes += len(member)
+            self.file_sizes[name] += len(member)
+            self.file_hashes[name].update(member)
+        except Exception as exc:
+            self.poisoned = True
+            if isinstance(exc, InputTraceError):
+                raise
+            raise InputTraceError("TRACE_DURABILITY_FAILURE") from exc
+
+    def record(self, event):
+        unsigned = {"sequence": self.sequence + 1, "previous": self.previous, "event": event}
+        digest = hashlib.sha256(compact(unsigned).encode()).hexdigest()
+        self.append("input-trace-v1.jsonl.gz", {**unsigned, "hash": digest})
+        self.sequence, self.previous = unsigned['sequence'], digest
+        return self.sequence
+
+    def emit(self, row):
+        self.append("trace-samples-v1.jsonl.gz", row)
+        self.output_rows += 1
+
+    def apply(self, kind, reference, callback, value, now):
+        begin = self.record({"kind": "apply_begin", "inputKind": kind, "input": reference,
+                             "samplerNowMs": now, "recordedAtMs": self.clock()})
+        self.pending.add(('apply', begin))
+        before = self.output_rows
+        try:
+            callback(value, now)
+        except Exception:
+            self.record({"kind": "apply_failed", "beginSequence": begin, "completedAtMs": self.clock(),
+                         "emittedRowsBefore": before, "emittedRowsAfter": self.output_rows})
+            raise
+        self.record({"kind": "apply_complete", "beginSequence": begin, "completedAtMs": self.clock(),
+                     "emittedRowsBefore": before, "emittedRowsAfter": self.output_rows})
+        self.pending.remove(('apply', begin))
+
+    def consume_sig(self, tail, row, callback, now):
+        raw = tail.last_row_bytes
+        reference = {"bookmark": tail.bookmark(), "offset": tail.last_row_offset, "bytes": len(raw),
+                     "rawLineSha256": hashlib.sha256(raw).hexdigest(), "sequence": row['sequence'],
+                     "hash": row['hash'], "previous": row['previous'],
+                     "originalEventType": row.get('event', {}).get('type')}
+        # Raw SIG source remains separately retained; this is a membership reference.
+        self.apply("sig_row", reference, callback, row, now)
+
+    def close(self):
+        for fd in self.streams.values():
+            os.close(fd)
+        self.streams = {}
+
+    def seal(self, complete, reason, bookmark):
+        self.close()
+        files = [trace_file_reference(self.root / name) for name in ('input-trace-v1.jsonl.gz', 'trace-samples-v1.jsonl.gz')]
+        unchanged = all(f['bytes'] == self.file_sizes[Path(f['path']).name] and
+                        f['sha256'] == self.file_hashes[Path(f['path']).name].hexdigest() for f in files)
+        references_unchanged = trace_file_reference(self.mapping['path']) == self.mapping and trace_file_reference(self.producer['path']) == self.producer
+        seal = {"version": 1, "kind": "input_trace_terminal_seal", "complete": bool(complete and not self.poisoned and not self.pending and unchanged and references_unchanged),
+                "reason": reason, "traceSequence": self.sequence, "traceHead": self.previous,
+                "outputRows": self.output_rows, "pendingInputs": len(self.pending),
+                "finalBookmark": bookmark, "sealedAtMs": self.clock(), "producer": self.producer,
+                "mappingFileReference": self.mapping, "historyPrefixVerified": False,
+                "wholeWitnessVerified": False, "executionAuthority": False,
+                "storedBytesMatchWrittenMembers": unchanged, "pinnedReferencesUnchanged": references_unchanged, "files": files}
+        raw = (compact(seal) + "\n").encode()
+        if len(raw) > self.SEAL_RESERVE or sum(f['bytes'] for f in seal['files']) + len(raw) > self.MAXIMUM_BYTES:
+            raise InputTraceError("TRACE_SEAL_LIMIT")
+        fd = os.open(self.root / 'input-trace-seal.json', os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0), 0o600)
+        try:
+            with os.fdopen(fd, 'wb') as output:
+                output.write(raw); output.flush(); os.fsync(output.fileno())
+            self.sync_directory()
+        except Exception as exc:
+            raise InputTraceError("TRACE_SEAL_DURABILITY") from exc
+        self.sealed = True
+        return seal
+
+
+def trace_cache_poll(study, route, trace, fetch=None):
+    if route not in ('/v1/quotes', '/v1/ws/quotes'):
+        raise InputTraceError('TRACE_ROUTE')
+    begin = trace.record({"kind": "poll_begin", "route": route, "requestStartedAtMs": trace.clock()})
+    trace.pending.add(('poll', begin))
+    try:
+        request = urllib.request.Request('http://127.0.0.1:17841' + route)
+        with (fetch or urllib.request.urlopen)(request, timeout=2) as response:
+            raw = response.read(INPUT_TRACE_PROTOCOL['maximumCacheBodyBytes'] + 1)
+            status = getattr(response, 'status', None)
+        completed = trace.clock()
+        maximum = INPUT_TRACE_PROTOCOL['maximumCacheBodyBytes']
+        body = raw[:maximum]
+        body_sequence = trace.record({"kind": "poll_body", "beginSequence": begin, "route": route,
+            "readCompletedAtMs": completed, "status": status, "readBytes": len(raw),
+            "bodyComplete": len(raw) <= maximum, "bodyBytesBase64": base64.b64encode(body).decode('ascii'),
+            "bodySha256": hashlib.sha256(body).hexdigest(), "bodyBytes": len(body)})
+        if len(raw) > maximum:
+            raise ValueError('OBSERVER_CACHE_LIMIT')
+        value = json.loads(raw)
+        now = trace.clock()  # Exactly the argument subsequently given to the sampler.
+        trace.apply('cache_body', {"bodySequence": body_sequence, "route": route}, study.external_update, value, now)
+        trace.record({"kind": "poll_complete", "beginSequence": begin, "completedAtMs": trace.clock()})
+        trace.pending.remove(('poll', begin))
+    except InputTraceError:
+        raise
+    except Exception as exc:
+        trace.record({"kind": "poll_failed", "beginSequence": begin, "completedAtMs": trace.clock(),
+                      "failureKind": 'transport' if isinstance(exc, (OSError, TimeoutError)) else 'parse_or_apply',
+                      "httpStatus": getattr(exc, 'code', None) if isinstance(getattr(exc, 'code', None), int) else None,
+                      "errorTextRetained": False, "bodyAvailable": False if isinstance(exc, (OSError, TimeoutError)) else True})
+        if isinstance(exc, (OSError, TimeoutError)):
+            trace.pending.remove(('poll', begin))
+        raise
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--journal", required=True, type=Path)
@@ -720,8 +955,12 @@ def main():
     parser.add_argument("--duration-seconds", type=int, default=0)
     parser.add_argument("--format", choices=["native", "breadth"], default="native")
     parser.add_argument("--sampling-mode", choices=["book", "trade"], default="book")
+    parser.add_argument("--input-trace", action="store_true")
+    parser.add_argument("--trace-mapping", type=Path)
     args = parser.parse_args()
-    if args.sampling_mode == "trade":
+    if args.input_trace and not args.trace_mapping:
+        parser.error("--input-trace requires --trace-mapping")
+    if args.sampling_mode == "trade" or args.input_trace:
         require_trade_output_fresh(args.output)
     # Unix VPS read-only sidecar, advisory lock kept on the same inode.
     import fcntl
@@ -745,7 +984,11 @@ def main():
         while base.with_name(f"{base.stem}-part-{segment + 1:04}.jsonl").exists():
             segment += 1
     current = base.with_name(f"{base.stem}-part-{segment:04}.jsonl") if segment else base
-    tail, output = Tail(current), Output(args.output)
+    tail = Tail(current)
+    trace = InputTrace(args.output, args.trace_mapping, {"format": args.format, "samplingMode": args.sampling_mode,
+        "journal": str(base), "durationSeconds": args.duration_seconds, "horizonsMs": [1000,3000,10000,30000,120000],
+        "sigMaximumAgeMs": 3000, "externalMaximumAgeMs": 20000, "labelSlackMs": 3000}, tail.bookmark()) if args.input_trace else None
+    output = trace if trace else Output(args.output)
     study = Study(output.emit, sampling_mode=args.sampling_mode)
     started, last_poll, last_status = time.monotonic(), 0, 0
     stopping = [False]
@@ -753,6 +996,7 @@ def main():
         stopping[0] = True
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
+    completed_normally = False
     try:
         while not stopping[0] and not (args.output / "STOP").exists():
             if args.duration_seconds and time.monotonic() - started >= args.duration_seconds:
@@ -761,6 +1005,9 @@ def main():
                 last_poll = time.monotonic()
                 try:
                     for route in ["/v1/quotes", "/v1/ws/quotes"]:
+                        if trace:
+                            trace_cache_poll(study, route, trace)
+                            continue
                         request = urllib.request.Request("http://127.0.0.1:17841" + route)
                         with urllib.request.urlopen(request, timeout=2) as response:
                             raw = response.read(16 * 1024 * 1024 + 1)
@@ -770,13 +1017,22 @@ def main():
                 except (OSError, TimeoutError):
                     study.counts["externalUnavailable"] += 1
             for row in tail.read():
-                (study.breadth if args.format == "breadth" else study.accept)(row, int(time.time() * 1000))
+                callback = study.breadth if args.format == "breadth" else study.accept
+                now = int(time.time() * 1000)
+                if trace:
+                    trace.consume_sig(tail, row, callback, now)
+                else:
+                    callback(row, now)
             if args.format == "breadth" and not tail.buffer:
                 next_file = base.with_name(f"{base.stem}-part-{segment + 1:04}.jsonl")
                 if next_file.exists():
+                    old_bookmark = tail.bookmark() if trace else None
                     tail.close()
                     segment += 1
                     tail = Tail(next_file, from_start=True)
+                    if trace:
+                        trace.record({"kind": "sig_rotation", "previousBookmark": old_bookmark,
+                            "nextBookmark": tail.bookmark(), "observedAtMs": trace.clock(), "crossSegmentContinuityVerified": False})
             if time.monotonic() - last_status >= 5:
                 last_status = time.monotonic()
                 status = {"at": stamp(int(time.time() * 1000)), "state": "observing", "pid": os.getpid(),
@@ -796,10 +1052,28 @@ def main():
         temp = args.output / "status.json.tmp"
         temp.write_text(compact(status) + "\n", encoding="utf-8")
         os.replace(temp, status_file)
+        completed_normally = True
+    except Exception:
+        if trace:
+            # This sidecar's status only. Never create a financial-service STOP.
+            try:
+                temp = args.output / 'status.json.tmp'
+                temp.write_text(compact({'state': 'capture_stopped', 'at': stamp(int(time.time()*1000)),
+                    'pid': os.getpid(), 'reason': 'TRACE_OR_INPUT_FAILURE', 'inputTraceComplete': False,
+                    'executionAuthority': False, 'historyPrefixVerified': False}) + "\n", encoding='utf-8')
+                os.replace(temp, args.output / 'status.json')
+            except OSError:
+                pass  # Missing/incomplete terminal seal still denies verification.
+        raise
     finally:
-        output.close()
-        tail.close()
-        lock.close()
+        try:
+            if trace:
+                trace.seal(completed_normally, "normal_stop" if completed_normally else "capture_or_input_failure", tail.bookmark())
+            else:
+                output.close()
+        finally:
+            tail.close()
+            lock.close()
 
 
 if __name__ == "__main__":

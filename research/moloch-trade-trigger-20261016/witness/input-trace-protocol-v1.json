@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "protocolFrozenAt": "2026-10-16",
+  "newCohortRequired": true,
+  "capture": {
+    "version": 1,
+    "captureCondition": "original_input_consumption_trace_v1",
+    "maximumCompressedBytes": 2147483648,
+    "minimumFreeBytes": 10737418240,
+    "maximumCacheBodyBytes": 16777216,
+    "sealReserveBytes": 65536,
+    "historyPrefixVerified": false,
+    "executionAuthority": false,
+    "sourceClocksRenewed": false,
+    "pruningAllowed": false
+  },
+  "samplingPolicySha256": "031edcb2d4d6ca144e89d86b467e6b879113f1e172c3ef19457f2b577996717b",
+  "routes": [
+    "/v1/quotes",
+    "/v1/ws/quotes"
+  ],
+  "requestPolicy": "Original once-per-second two-route loop; first transport failure skips remaining route as before. No extra requests.",
+  "sourceInputs": {
+    "cache": "Base64 original bytes read from existing loopback cache before parsing, original byte SHA256, route and request/read clocks; oversized reads explicitly truncated and fatal.",
+    "sig": "Original raw line SHA256 including newline, segment identity/path, byte offset/length, original sequence/hash/previous, start bookmark. Raw source separately retained.",
+    "mapping": "Original effective-universe file reference; actual effective cache mappings witnessed only in original response bodies."
+  },
+  "consumption": "Every actual sampler invocation has begin with exact supplied now and input reference, followed by completion with emission ordinal range. No-sample invocations and failed polls remain recorded.",
+  "firstAvailability": "Actual recorded observer argument, not inferred from an earlier stored source row or collector publication.",
+  "rotation": "Each observed transition has old/new bookmark. No global chain or completeness across independently rotated segments is asserted.",
+  "termination": "Create-new terminal seal pins gzip bytes/SHA, trace chain head, output count, final bookmark, mapping/producer. Missing or incomplete seal cannot support full verification.",
+  "wholeWitnessVerifiedByCaptureAlone": false,
+  "selection": "Original book/trade policy unchanged; new trace I/O overhead is a separately declared producer/capture condition. No active or historical cohort is relabeled.",
+  "authority": "Read-only observation evidence, never financial authority, settlement equivalence or calibrated profit."
+}
