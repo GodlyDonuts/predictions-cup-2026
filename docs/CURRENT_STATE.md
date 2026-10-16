@@ -1,3 +1,31 @@
+# October16,11:51UTC: full capital committed and replacement trading verified
+
+The sole SIG worker494293/source`e7bb62d1`/binary`d0a3113c…` is fresh and
+trading with healthy realtime and no STOP. At11:51:16UTC it had seven new
+official acknowledgments and one actual post-launch fill row. Per-scope progress
+was fresh; its first complete-cycle status was still pending. Original fills
+recovered during startup retain their earlier execution timestamps.
+
+The55,579.915000 owner contribution and explicit daily-mandate revision are
+committed: effective initial capital and maximum commitment95,579.915000.
+Cash72,773.995000, owned cost22,731.515000 and combined attributed realized
+−74.405000 reconcile. Ordinary realized−119.535000 and inherited gross45.130000
+remain separate. Owner funding is not profit or a change to official cash.
+
+The actual successor reproduced the full237,382-event/729,558,692-byte stopped
+history and all11 genuine upgrade bridges on a detached copy in424,344ms with
+exact financial parity. Original bank bytes and the first ten bridges were
+preserved. Production then started11:38 and recovered its original liabilities.
+The release also enables bulk negative screening and bounded rotating
+all-market capture. [Release and actual evidence](../research/moloch-full-account-20261016/README.md).
+
+The read-only observer now uses that capture:378 decisions/487 future labels
+across188 observed markets at11:51:14UTC, with independent causal source
+histories. Kalshi remains a237-reference shadow feed; no calibrated physical
+pricing rule is qualified. Existing sealed crossing/toxicity studies do not
+establish alpha. A bounded STOP-preserving restart drop-in was loaded without
+restarting the SIG process; the legacy SDK crash-lease blocker remains explicit.
+
 # October16,11:26UTC: full-capital upgrade at final copied-bank verification
 
 The human-authorized full-capital successor`e7bb62d1`/binary`d0a3113c…` is

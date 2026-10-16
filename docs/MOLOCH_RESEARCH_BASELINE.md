@@ -1,4 +1,25 @@
-# Current research baseline: October16,11:26UTC
+# Current research baseline: October16,11:51UTC
+
+Actual production is sole SIG494293/source`e7bb62d1`/binary`d0a3113c…`.
+Fresh per-scope trading/realtime verified11:51:16UTC, seven new official ACKs
+and one post-launch fill row. Full-capital owner funding55,579.915000 and daily
+mandate revision are committed, giving effective initial/commitment95,579.915000.
+Cash72,773.995000 plus owned cost22,731.515000 equals95,505.510000; attributed
+realized remains−74.405000. Funding is not profit. Full original stopped-prefix
+financial parity passed before the genuine eleventh bridge and production start.
+[Deployment and dated actual evidence](../research/moloch-full-account-20261016/README.md).
+
+Bulk negative screening and rotating all-market capture are now deployed. The
+read-only source-local observer has378 decisions/487 labels/188 markets at
+11:51:14UTC. These new observations are not yet an economic qualification.
+The first sealed crossing model selected zero trades; passive shadow states
+were allQUIET. Kalshi-based physical pricing, certified semantic floors, prize
+utility and genuine election-night vintages remain unfinished. Bounded restart
+conditions are installed without a SIG restart; automatic OS-crash recovery is
+not qualified because of the legacy SDK lease. Source and deployment remain
+separate from evidence of economic advantage.
+
+# Historical research baseline: October16,11:26UTC
 
 Start with the newest [CURRENT_STATE](CURRENT_STATE.md) entry. Full-capital
 candidate`e7bb62d1`/`d0a3113c…` is staged; actual allocation is still40,000 until
