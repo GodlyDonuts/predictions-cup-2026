@@ -461,6 +461,15 @@ impl Transport {
   need(proof.evidence()["terminal"]["completedAtMs"].as_u64().is_some_and(|at|at<=self.clock.now_ms()),"FIRST_CALL_CLOCK")?;
   let after=self.package_queue_quiet()?;need(before.sequence==after.sequence&&before.previous==after.previous,"FIRST_CALL_CONTROLLER_CHANGED")?;Ok(proof)
  }
+ /// Positive pre-admission proof from THIS original held SDK controller.
+ /// Call immediately after the original local error, before any queue operation.
+ /// Does not retry, clear poison/unknown, or authorize any physical request.
+ pub fn verify_current_ordinary_pre_admission(&self,spec:&RequestSpec,p:&Permit,at:u64,error:&TransportError)->Result<OrdinaryPreAdmissionProof>{
+  need(!self.poisoned&&self.authority.can_read(&self.config.scope),"UNADMITTED_CONTROLLER_STOPPED_OR_POISONED")?;
+  let context=unadmitted_context(&self.config,spec,p,at,error)?;let binding:admission::ImmutableBinding=serde_json::from_value(context["binding"].clone()).map_err(|_|fail("UNADMITTED_BINDING"))?;
+  let capture=self.queue.capture_current_unadmitted(&binding,at).map_err(|e|fail(&e))?;
+  seal_unadmitted_proof(&self.config,spec,p,at,error,context,capture)
+ }
  pub fn last_basket_response_evidence(&self)->Option<&multi_leg::ResponseEvidence>{self.last_basket_response.as_ref()}
  pub fn cancel(&mut self,order_id:String,permit:Permit)->Result<Receipt>{self.local_not_sent=None;self.first_call_proof=None;self.owned(&order_id)?;self.perform(RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{order_id}"),body:None,body_json:None},Some(&permit),|s,v|need(id_value(&v["orderId"]).as_ref()==Some(&order_id)&&v["tournamentId"]==s.config.scope.tournament_id,"CANCEL_ACK_SCOPE"))}
  pub fn reconcile(&mut self)->Result<AccountReconciliation>{self.local_not_sent=None;self.first_call_proof=None;let started=utc(self.clock.now_ms())?;let tournament=self.request(Endpoint::Tournament)?;let positions=self.request(Endpoint::Positions)?;let orders=self.request(Endpoint::Orders{status:"all".into()})?;let cash=tournament.data["myBalance"].to_string();decimal_units(&cash)?;Ok(AccountReconciliation{tournament,positions,orders,exact_cash:cash,started_at:started,completed_at:utc(self.clock.now_ms())?,adopts_holdings:false})}
@@ -477,6 +486,77 @@ fn parse_clock(v:&Value)->Option<u64>{v.as_str().and_then(|s|DateTime::parse_fro
 fn id_value(v:&Value)->Option<String>{v.as_str().filter(|s|numeric(s)).map(str::to_string).or_else(||v.as_u64().filter(|n|*n>0&&*n<=9_007_199_254_740_991).map(|n|n.to_string()))}
 fn pagination(v:&Value)->Result<()> {let p=&v["pagination"];need(p.is_object()&&p["hasMore"].is_boolean()&&p["limit"].as_u64().is_some_and(|n|(1..=200).contains(&n))&&(p["nextCursor"].is_null()||p["nextCursor"].is_string()),"INCOMPLETE_PAGINATION")}
 fn safe_api_code(code:&str)->Option<String>{["MISSING_API_KEY","INVALID_API_KEY","API_KEY_REVOKED","API_KEY_EXPIRED","UNAUTHORIZED","INSUFFICIENT_SCOPES","ACCOUNT_BANNED","RESIDENCE_UPDATE_REQUIRED","FORBIDDEN","TERMS_NOT_ACKNOWLEDGED","RATE_LIMITED","INVALID_JSON","INVALID_ID","INVALID_CURSOR","VALIDATION_ERROR","ORDER_CONFLICT","NOT_FOUND","CONFLICT","REQUEST_IN_FLIGHT","TERMINAL_ENGINE_SCOPE","RELATIONSHIP_VIOLATION","DATABASE_ERROR","INTERNAL_ERROR","ORDER_STATUS_UNKNOWN","TX_CONFLICT","SERVICE_UNAVAILABLE","IDEMPOTENCY_KEY_REUSED","IDEMPOTENCY_CONFLICT"].contains(&code).then(||code.into())}
+/// Historical local no-HTTP evidence only. It grants neither queue health,
+/// retry authority nor permission to erase the original attempted intent.
+#[derive(Serialize)]
+pub struct OrdinaryPreAdmissionProof{evidence:Value}
+impl OrdinaryPreAdmissionProof{
+ pub fn evidence(&self)->&Value{&self.evidence}
+ pub fn validate_binding(&self,spec:&RequestSpec,permit:&Permit,attempt_at:u64,error:&TransportError)->Result<()>{
+  need(self.evidence["originalRequestSha256"]==digest(&serde_json::to_vec(spec).map_err(|_|fail("UNADMITTED_SERIALIZE"))?)
+   &&self.evidence["permitSha256"]==digest(&serde_json::to_vec(permit).map_err(|_|fail("UNADMITTED_SERIALIZE"))?)&&self.evidence["attemptAtMs"]==attempt_at
+   &&self.evidence["originalError"]==serde_json::to_value(error).map_err(|_|fail("UNADMITTED_SERIALIZE"))?,"UNADMITTED_ORIGINAL_BINDING_CHANGED")
+ }
+}
+fn unadmitted_context(config:&Config,spec:&RequestSpec,p:&Permit,at:u64,error:&TransportError)->Result<Value>{
+ need(config.queue_dir.is_absolute()&&!config.account_scope.is_empty()&&at>0&&at<=SystemClock.now_ms()&&p.owner=="Codex"&&!p.run_id.is_empty()&&!p.intent_id.is_empty()
+  &&!error.may_have_executed&&error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none()&&error.retry_after_ms==0
+  &&error.code=="PERMIT_EXPIRED_OR_INVALID","UNADMITTED_ORIGINAL_ERROR_OR_PERMIT")?;
+ need(spec.method=="POST"&&spec.endpoint=="/orders","UNADMITTED_ORDINARY_ONLY")?;let b=spec.body.as_ref().ok_or_else(||fail("UNADMITTED_BODY"))?;
+ need(b.as_object().is_some_and(|m|m.len()==8)&&b["tournamentId"]==config.scope.tournament_id&&b["exchangeId"].as_str().is_some_and(|e|config.scope.exchanges.contains_key(e))
+  &&matches!(b["side"].as_str(),Some("yes"|"no"))&&matches!(b["action"].as_str(),Some("buy"|"sell")),"UNADMITTED_ORDER_SCOPE")?;
+ if let Some(raw)=&spec.body_json{need(serde_json::from_str::<Value>(raw).map_err(|_|fail("UNADMITTED_BODY"))?==*b,"UNADMITTED_BODY_CHANGED")?;}
+ let key=b["idempotencyKey"].as_str().filter(|s|!s.is_empty()&&s.len()<=255&&!s.chars().any(char::is_control)).ok_or_else(||fail("UNADMITTED_KEY"))?;
+ let n=b["quantity"].as_u64().filter(|n|*n>0&&*n<=p.maximum_quantity as u64&&*n<=2_147_483_647).ok_or_else(||fail("UNADMITTED_QUANTITY"))?;
+ let price=decimal_units(&b["price"].as_str().map(str::to_owned).unwrap_or_else(||b["price"].to_string()))?;
+ need((5000..=995000).contains(&price)&&price%5000==0&&price.checked_mul(n as i128).is_some_and(|v|decimal_units(&p.maximum_cost).is_ok_and(|cap|v<=cap)),"UNADMITTED_PRICE_OR_COST")?;
+ let expiry=b["expirationDate"].as_str().ok_or_else(||fail("UNADMITTED_EXPIRY"))?;need(parse_clock(&json!(expiry)).is_some_and(|n|n>0),"UNADMITTED_EXPIRY")?;
+ // SDK place always normalizes price to six decimal JSON and supplies body_json.
+ // Bind BOTH the original durable spec and this actual immutable queue payload.
+ let mut body=b.clone();body["price"]=json!(serde_json::Number::from_string_unchecked(format!("{}.{:06}",price/1_000_000,price%1_000_000)));
+ let actual=RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body_json:Some(serde_json::to_string(&body).map_err(|_|fail("UNADMITTED_SERIALIZE"))?),body:Some(body)};
+ let binding=admission::ImmutableBinding{intent:format!("{}:{}",p.run_id,p.intent_id),key:key.into(),payload_hash:digest(serde_json::to_string(&json!({"scope":config.scope,"spec":actual})).map_err(|_|fail("UNADMITTED_SERIALIZE"))?.as_bytes())};
+ let meta=std::fs::symlink_metadata(&config.queue_dir).map_err(|_|fail("UNADMITTED_DIRECTORY"))?;need(meta.is_dir()&&!meta.file_type().is_symlink(),"UNADMITTED_DIRECTORY")?;
+ #[cfg(unix)]let directory_identity={use std::os::unix::fs::MetadataExt;json!({"device":meta.dev(),"inode":meta.ino()})};
+ #[cfg(not(unix))]let directory_identity:Value={return Err(fail("UNADMITTED_DIRECTORY_IDENTITY_PLATFORM_UNAVAILABLE"));};
+ Ok(json!({"schemaVersion":1,"kind":"sdk_stopped_v1_before_admit_no_http","queueScope":config.account_scope,"queueDirectory":config.queue_dir,"queueDirectoryIdentity":directory_identity,"scopeSha256":digest(&serde_json::to_vec(&config.scope).map_err(|_|fail("UNADMITTED_SERIALIZE"))?),"originalRequestSha256":digest(&serde_json::to_vec(spec).map_err(|_|fail("UNADMITTED_SERIALIZE"))?),"sdkRequestSha256":digest(&serde_json::to_vec(&actual).map_err(|_|fail("UNADMITTED_SERIALIZE"))?),"permitSha256":digest(&serde_json::to_vec(p).map_err(|_|fail("UNADMITTED_SERIALIZE"))?),"binding":binding,"attemptAtMs":at,"originalError":error}))
+}
+fn unadmitted_archive(config:&Config,context:&Value)->std::path::PathBuf{config.queue_dir.join(format!("ordinary-unadmitted-{}.json",digest(serde_json::to_string(context).expect("JSON").as_bytes())))}
+fn unadmitted_read(path:&std::path::Path)->Result<Vec<u8>>{
+ let meta=std::fs::symlink_metadata(path).map_err(|_|fail("UNADMITTED_ARCHIVE_UNAVAILABLE"))?;need(meta.is_file()&&!meta.file_type().is_symlink()&&meta.len()<=768*1024*1024,"UNADMITTED_ARCHIVE_BOUND_OR_SYMLINK")?;
+ let mut file=std::fs::File::open(path).map_err(|_|fail("UNADMITTED_ARCHIVE_UNAVAILABLE"))?;let held=file.metadata().map_err(|_|fail("UNADMITTED_ARCHIVE_UNAVAILABLE"))?;let mut bytes=Vec::new();file.by_ref().take(meta.len()+1).read_to_end(&mut bytes).map_err(|_|fail("UNADMITTED_ARCHIVE_READ"))?;
+ let end=std::fs::symlink_metadata(path).map_err(|_|fail("UNADMITTED_ARCHIVE_CHANGED"))?;
+ #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(meta.dev()==held.dev()&&meta.ino()==held.ino()&&end.dev()==held.dev()&&end.ino()==held.ino(),"UNADMITTED_ARCHIVE_REPLACED")?;}
+ need(bytes.len()as u64==meta.len()&&end.len()==meta.len()&&meta.modified().ok()==end.modified().ok(),"UNADMITTED_ARCHIVE_CHANGED")?;Ok(bytes)
+}
+/// Offline frozen incident capture. Acquire the actual core lease exclusively,
+/// or pin a retained original lease whose Linux PID is stopped. Caller holds the original
+/// worker capture lease/STOP and validates the original durable attempt/error.
+/// No queue open/recovery/commands, credentials or HTTP occurs. Unknown/active,
+/// a tail at/after attempt, any permanent intent/key, V2 and missing data deny.
+pub fn verify_frozen_ordinary_pre_admission(config:&Config,spec:&RequestSpec,p:&Permit,at:u64,error:&TransportError)->Result<OrdinaryPreAdmissionProof>{
+ let context=unadmitted_context(config,spec,p,at,error)?;let binding:admission::ImmutableBinding=serde_json::from_value(context["binding"].clone()).map_err(|_|fail("UNADMITTED_BINDING"))?;
+ let capture=admission::capture_unadmitted_v1(&config.queue_dir,&config.account_scope,&binding,at).map_err(|e|fail(&e))?;
+ seal_unadmitted_proof(config,spec,p,at,error,context,capture)
+}
+fn seal_unadmitted_proof(config:&Config,spec:&RequestSpec,p:&Permit,at:u64,error:&TransportError,context:Value,mut capture:admission::FrozenUnadmittedSource)->Result<OrdinaryPreAdmissionProof>{
+ let source=capture.snapshot();let value=json!({"context":context,"source":source});let bytes=serde_json::to_vec(&value).map_err(|_|fail("UNADMITTED_SERIALIZE"))?;need(bytes.len()<=768*1024*1024,"UNADMITTED_ARCHIVE_BOUND")?;let path=unadmitted_archive(config,&context);
+ use std::io::Write;let mut options=std::fs::OpenOptions::new();options.write(true).create_new(true);#[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
+ let mut file=options.open(&path).map_err(|_|fail("UNADMITTED_ARCHIVE_ALREADY_EXISTS_OR_UNAVAILABLE"))?;file.write_all(&bytes).and_then(|_|file.sync_all()).map_err(|_|fail("UNADMITTED_ARCHIVE_DURABILITY"))?;
+ #[cfg(unix)]std::fs::File::open(&config.queue_dir).and_then(|f|f.sync_all()).map_err(|_|fail("UNADMITTED_ARCHIVE_DURABILITY"))?;
+ let mut evidence=context;evidence["sourceArchive"]=json!(path.file_name().and_then(|s|s.to_str()).ok_or_else(||fail("UNADMITTED_ARCHIVE_NAME"))?);evidence["sourceArchiveSha256"]=json!(digest(&bytes));evidence["originalHead"]=source["verifiedHead"].clone();
+ let verified=verify_retained_ordinary_pre_admission(config,spec,p,at,error,&evidence)?;capture.unchanged().map_err(|e|fail(&e))?;Ok(verified)
+}
+/// Reverify ONLY the deterministic original immutable SDK archive, independently
+/// of later current queue clock/profile/compaction. Not a queue-health claim.
+pub fn verify_retained_ordinary_pre_admission(config:&Config,spec:&RequestSpec,p:&Permit,at:u64,error:&TransportError,evidence:&Value)->Result<OrdinaryPreAdmissionProof>{
+ let context=unadmitted_context(config,spec,p,at,error)?;let path=unadmitted_archive(config,&context);need(evidence["sourceArchive"].as_str()==path.file_name().and_then(|s|s.to_str()),"UNADMITTED_ARCHIVE_NAME")?;
+ let bytes=unadmitted_read(&path)?;need(evidence["sourceArchiveSha256"]==digest(&bytes),"UNADMITTED_ARCHIVE_HASH")?;let archive:Value=serde_json::from_slice(&bytes).map_err(|_|fail("UNADMITTED_ARCHIVE_JSON"))?;need(archive["context"]==context,"UNADMITTED_ARCHIVE_CONTEXT")?;
+ let binding:admission::ImmutableBinding=serde_json::from_value(context["binding"].clone()).map_err(|_|fail("UNADMITTED_BINDING"))?;let head=admission::verify_unadmitted_snapshot_v1(&config.account_scope,&binding,at,&archive["source"]).map_err(|e|fail(&e))?;
+ let mut expected=context;expected["sourceArchive"]=json!(path.file_name().and_then(|s|s.to_str()).ok_or_else(||fail("UNADMITTED_ARCHIVE_NAME"))?);expected["sourceArchiveSha256"]=json!(digest(&bytes));expected["originalHead"]=head;need(*evidence==expected,"UNADMITTED_EVIDENCE_CHANGED")?;
+ Ok(OrdinaryPreAdmissionProof{evidence:expected})
+}
+#[cfg(test)]#[path="ordinary_pre_admission_tests.rs"]mod ordinary_pre_admission_tests;
 #[cfg(test)]mod tests;
 #[cfg(test)]#[path="transport_not_sent_tests.rs"]mod transport_not_sent_tests;
 

@@ -265,4 +265,77 @@ fn verify_local_not_sent_v1_mode(directory:&Path,scope:&str,binding:&ImmutableBi
  #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(final_dir.dev()==dir_meta.dev()&&final_dir.ino()==dir_meta.ino(),"NOT_SENT_DIRECTORY_CHANGED")?;}
  Ok(VerifiedLocalNotSentV1{evidence})
 }
+/// Original source capsule for a stopped V1 controller. No queue commands,
+/// state recovery, compaction or account request occurs during capture/replay.
+/// The enclosing SDK factory separately verifies stopped original lease PID.
+struct UnadmittedCaptureLease{path:PathBuf,identity:Vec<u8>,_file:File}
+impl UnadmittedCaptureLease{
+ fn acquire(directory:&Path,scope:&str)->std::result::Result<Self,String>{
+  let path=directory.join("offline-account-queue.lock");let identity=serde_json::to_vec(&json!({"scope":scope,"token":"sdk-unadmitted-exclusive-capture-v1","pid":std::process::id()})).map_err(|_|"UNADMITTED_LEASE_SERIALIZE")?;
+  let mut options=OpenOptions::new();options.write(true).create_new(true);#[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
+  let mut file=options.open(&path).map_err(|_|"UNADMITTED_EXCLUSIVE_CAPTURE_REQUIRED")?;file.write_all(&identity).and_then(|_|file.sync_all()).map_err(|_|"UNADMITTED_LEASE_DURABILITY")?;
+  #[cfg(unix)]File::open(directory).and_then(|f|f.sync_all()).map_err(|_|"UNADMITTED_LEASE_DURABILITY")?;Ok(Self{path,identity,_file:file})
+ }
+}
+impl Drop for UnadmittedCaptureLease{fn drop(&mut self){if fs::read(&self.path).ok().as_deref()==Some(self.identity.as_slice()){let _=fs::remove_file(&self.path);if let Some(dir)=self.path.parent(){let _=File::open(dir).and_then(|f|f.sync_all());}}}}
+impl AccountAdmission{
+ pub(crate) fn capture_current_unadmitted(&self,binding:&ImmutableBinding,attempt:u64)->std::result::Result<FrozenUnadmittedSource,String>{
+  let Backend::V1(store)=&self.store else{return Err("UNADMITTED_V1_REQUIRED".into())};store.owned()?;
+  need(store.state.active.is_none()&&!store.state.manual_review&&store.state.unknown.is_empty()&&store.state.last_clock<attempt
+    &&!store.state.intents.contains_key(&binding.intent)&&!store.state.keys.contains_key(&binding.key),"UNADMITTED_LIVE_STATE")?;
+  let captured=capture_unadmitted_v1_mode(&self.directory,&self.scope,binding,attempt,Some(&store.identity))?;store.owned()?;
+  need(captured.snapshot["verifiedHead"]["sequence"]==store.sequence&&captured.snapshot["verifiedHead"]["previous"]==store.previous
+    &&captured.snapshot["verifiedHead"]["lastClock"]==store.state.last_clock,"UNADMITTED_LIVE_HEAD_CHANGED")?;Ok(captured)
+ }
+}
+pub(crate) struct FrozenUnadmittedSource{snapshot:Value,pins:Vec<NotSentPinnedFile>,_owned:Option<UnadmittedCaptureLease>}
+impl FrozenUnadmittedSource{pub(crate) fn snapshot(&self)->&Value{&self.snapshot}pub(crate) fn unchanged(&mut self)->std::result::Result<(),String>{for pin in &mut self.pins{pin.unchanged()?;}Ok(())}}
+pub(crate) fn capture_unadmitted_v1(directory:&Path,scope:&str,binding:&ImmutableBinding,attempt:u64)->std::result::Result<FrozenUnadmittedSource,String>{capture_unadmitted_v1_mode(directory,scope,binding,attempt,None)}
+fn capture_unadmitted_v1_mode(directory:&Path,scope:&str,binding:&ImmutableBinding,attempt:u64,held:Option<&[u8]>)->std::result::Result<FrozenUnadmittedSource,String>{
+ let meta=fs::symlink_metadata(directory).map_err(|_|"UNADMITTED_DIRECTORY")?;need(meta.is_dir()&&!meta.file_type().is_symlink(),"UNADMITTED_DIRECTORY")?;
+ let lock_path=directory.join("offline-account-queue.lock");let owned=if held.is_none()&&!not_sent_exists(&lock_path)?{Some(UnadmittedCaptureLease::acquire(directory,scope)?)}else{None};
+ let lease=NotSentPinnedFile::read(&lock_path,4096)?;let owner:Value=serde_json::from_slice(&lease.bytes).map_err(|_|"UNADMITTED_ORIGINAL_LEASE")?;
+ let pid=owner["pid"].as_u64().filter(|n|*n>0).ok_or("UNADMITTED_ORIGINAL_PID")?;need(owner["scope"]==scope&&owner["token"].as_str().is_some_and(|s|!s.is_empty()),"UNADMITTED_ORIGINAL_LEASE")?;
+ if let Some(identity)=held{need(lease.bytes==identity,"UNADMITTED_HELD_LEASE_CHANGED")?;}else if owned.is_none(){
+  #[cfg(target_os="linux")]need(Path::new("/proc/self/stat").exists()&&!Path::new("/proc").join(pid.to_string()).exists(),"UNADMITTED_ORIGINAL_OWNER_NOT_STOPPED")?;
+  #[cfg(not(target_os="linux"))]return Err("UNADMITTED_STOPPED_OWNER_PLATFORM_UNAVAILABLE".into());
+ }
+ let mut pins=vec![lease];let manifest_path=directory.join("account-queue-manifest.json");let guard_path=directory.join("account-queue-generation.guard");
+ let mut snapshot=json!({"schemaVersion":1,"manifest":null,"guard":null,"checkpoint":null,"journalName":"account-queue.jsonl","leaseKind":if held.is_some(){"heldOriginalSdkController"}else if owned.is_some(){"exclusiveSdkCapture"}else{"retainedStoppedOwner"},"originalLease":String::from_utf8(pins[0].bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?});
+ if not_sent_exists(&manifest_path)?{
+  let m=NotSentPinnedFile::read(&manifest_path,4096)?;let manifest:Manifest=serde_json::from_slice(&m.bytes).map_err(|_|"UNADMITTED_MANIFEST")?;
+  need(manifest.schema_version==1&&manifest.scope==scope&&local_name(&manifest.journal)&&local_name(&manifest.checkpoint),"UNADMITTED_V1_SCOPE")?;
+  let guard=NotSentPinnedFile::read(&guard_path,4096)?;let cp=NotSentPinnedFile::read(&directory.join(&manifest.checkpoint),MAX_CHECKPOINT_BYTES)?;
+  snapshot["manifest"]=json!(String::from_utf8(m.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);snapshot["guard"]=json!(String::from_utf8(guard.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);snapshot["checkpoint"]=json!(String::from_utf8(cp.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);snapshot["journalName"]=json!(manifest.journal);pins.extend([m,guard,cp]);
+ }else{need(!not_sent_exists(&guard_path)?,"UNADMITTED_MANIFEST_REQUIRED")?;}
+ let journal=NotSentPinnedFile::read(&directory.join(snapshot["journalName"].as_str().ok_or("UNADMITTED_JOURNAL")?),MAX_ACTIVE_JOURNAL_BYTES)?;
+ snapshot["journal"]=json!(String::from_utf8(journal.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);pins.push(journal);
+ snapshot["verifiedHead"]=verify_unadmitted_snapshot_v1(scope,binding,attempt,&snapshot)?;
+ for pin in &mut pins{pin.unchanged()?;}if snapshot["manifest"].is_null(){need(!not_sent_exists(&manifest_path)?&&!not_sent_exists(&guard_path)?,"UNADMITTED_GENERATION_CHANGED")?;}
+ let end=fs::symlink_metadata(directory).map_err(|_|"UNADMITTED_DIRECTORY_CHANGED")?;
+ #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(meta.dev()==end.dev()&&meta.ino()==end.ino(),"UNADMITTED_DIRECTORY_CHANGED")?;}
+ need(end.is_dir()&&!end.file_type().is_symlink(),"UNADMITTED_DIRECTORY_CHANGED")?;Ok(FrozenUnadmittedSource{snapshot,pins,_owned:owned})
+}
+pub(crate) fn verify_unadmitted_snapshot_v1(scope:&str,binding:&ImmutableBinding,attempt:u64,snapshot:&Value)->std::result::Result<Value,String>{
+ valid_binding(binding)?;need(!scope.is_empty()&&attempt>0&&attempt<=MAX_TIME&&snapshot["schemaVersion"]==1,"UNADMITTED_ARGUMENT")?;
+ let lease:Value=serde_json::from_str(snapshot["originalLease"].as_str().ok_or("UNADMITTED_RETAINED_LEASE")?).map_err(|_|"UNADMITTED_RETAINED_LEASE")?;
+ need(lease["scope"]==scope&&lease["pid"].as_u64().is_some_and(|n|n>0)&&lease["token"].as_str().is_some_and(|s|!s.is_empty())
+   &&matches!(snapshot["leaseKind"].as_str(),Some("heldOriginalSdkController"|"exclusiveSdkCapture"|"retainedStoppedOwner")),"UNADMITTED_RETAINED_LEASE")?;
+ let mut state=State::new(scope.into());let mut sequence=0u64;let mut previous=String::new();
+ if let Some(raw)=snapshot["manifest"].as_str(){let m:Manifest=serde_json::from_str(raw).map_err(|_|"UNADMITTED_MANIFEST")?;
+  need(m.schema_version==1&&m.scope==scope&&local_name(&m.journal)&&local_name(&m.checkpoint)&&snapshot["journalName"]==m.journal&&snapshot["guard"]==scope,"UNADMITTED_MANIFEST_SCOPE")?;
+  let cp_raw=snapshot["checkpoint"].as_str().ok_or("UNADMITTED_CHECKPOINT")?;need(raw.len()<=4096&&cp_raw.len()as u64<=MAX_CHECKPOINT_BYTES,"UNADMITTED_CHECKPOINT_BOUND")?;
+  let cp:Checkpoint=serde_json::from_str(cp_raw).map_err(|_|"UNADMITTED_CHECKPOINT")?;
+  need(cp.schema_version==1&&cp.state.schema_version==1&&cp.state.scope==scope&&cp.hash==m.checkpoint_hash&&cp.hash==checkpoint_hash(&cp.anchor,&cp.state)&&local_name(&cp.anchor.source_journal),"UNADMITTED_CHECKPOINT_HASH")?;
+  state=cp.state;sequence=cp.anchor.sequence;previous=cp.anchor.previous;
+ }else{need(snapshot["guard"].is_null()&&snapshot["checkpoint"].is_null()&&snapshot["journalName"]=="account-queue.jsonl","UNADMITTED_LEGACY_SOURCE")?;}
+ let raw=snapshot["journal"].as_str().ok_or("UNADMITTED_JOURNAL")?;need(raw.len()as u64<=MAX_ACTIVE_JOURNAL_BYTES&&(raw.is_empty()||raw.ends_with('\n')),"UNADMITTED_JOURNAL_BOUND_OR_TORN")?;
+ for line in raw.lines(){let row:Record=serde_json::from_str(line).map_err(|_|"UNADMITTED_RECORD")?;
+  need(row.sequence==sequence+1&&row.previous==previous&&row.state.schema_version==1&&row.state.scope==scope&&row.hash==record_hash(row.sequence,&row.previous,&row.state)
+   &&row.state.last_clock>=state.last_clock,"UNADMITTED_RECORD_CHAIN")?;state=row.state;sequence=row.sequence;previous=row.hash;
+ }
+ need(sequence>0&&valid_hash(&previous)&&state.last_clock>0&&state.last_clock<attempt&&state.active.is_none()&&state.unknown.is_empty()&&!state.manual_review
+  &&!state.intents.contains_key(&binding.intent)&&!state.keys.contains_key(&binding.key),"UNADMITTED_POSITIVE_WATERMARK_OR_BINDING")?;
+ Ok(json!({"sequence":sequence,"previous":previous,"lastClock":state.last_clock,"queueScope":scope,"globalUnknownCount":0,"active":null,"manualReview":false,"binding":binding}))
+}
 #[cfg(test)]#[path="admission_not_sent_tests.rs"]mod admission_not_sent_tests;
