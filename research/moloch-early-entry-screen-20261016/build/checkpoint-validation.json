@@ -1,0 +1,50 @@
+{
+  "sourceCommit": "248b11bf6e7ec57e686f76877cc2654da225fda1",
+  "sourceManifestSha256": "bba187f5484ad3566eefa90806dcc8f783bba3b7e16bbe66dd994c4165daf782",
+  "archiveSha256": "85bf8741f30672a097833c18b4d3961297d8fcd2350014219dfe45712745688a",
+  "sourceFiles": 251,
+  "changedPaths": [
+    "moloch/live-runtime/src/ordinary_side_edge.rs",
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "nativeSourcesChanged": false,
+  "sdkSourcesChanged": false,
+  "bankMigration": false,
+  "startedAt": "2026-10-16T18:08:06.625352+00:00",
+  "checks": {
+    "library": {
+      "exitCode": 0,
+      "seconds": 96.98064847901696,
+      "logSha256": "4ed2055686a0d00bab69bb3e4d3c55991e14437b9cd15db4b6a07859e0b023cb",
+      "logBytes": 33442,
+      "passedTests": 204
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 70.76870855802554,
+      "logSha256": "5bc2884e60fbf5d08ec9b24d05df87d550643d13b5274d1dde217ce81b759ba9",
+      "logBytes": 20314,
+      "passedTests": 97
+    },
+    "release": {
+      "exitCode": 0,
+      "seconds": 304.48789770301664,
+      "logSha256": "c6f6196ee2d65e63bfe1e09b80b75cec8c38f25e7d18f56b7b4467bcca1c154f",
+      "logBytes": 186894
+    },
+    "engine-probe-build": {
+      "exitCode": 0,
+      "seconds": 6.051896066986956,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "engine-probe-run": {
+      "exitCode": 0,
+      "seconds": 0.0065605319978203624,
+      "logSha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc",
+      "logBytes": 65
+    }
+  },
+  "binarySha256": "6cecf2037550bd400cfa729a092e2e6f681311955d1b24de5aa3ec585fd194de",
+  "binaryBytes": 13093608
+}

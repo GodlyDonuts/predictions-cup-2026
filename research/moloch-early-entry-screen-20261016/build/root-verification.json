@@ -1,0 +1,51 @@
+{
+  "sourceCommit": "248b11bf6e7ec57e686f76877cc2654da225fda1",
+  "exactChangedPaths": [
+    "moloch/live-runtime/src/ordinary_side_edge.rs",
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "unchangedSourceInputs": 249,
+  "sdkRerun": false,
+  "originalProofZipSha256": "222415c07bdc1a42a910bd1b0443421a0f6b1eb656b3552261d0e2f73a81d4b2",
+  "artifacts": {
+    "checkpoint-validation.json": {
+      "sha256": "247073debd2c7fe1ff55dc4a65d9e613b42aa20ccc3349a7101f554f56ad5158",
+      "bytes": 1686
+    },
+    "engine-identity-probe.rs": {
+      "sha256": "98469879001615af607b29aadbf343c6db57ce65af7251f2345594b8d471da1e",
+      "bytes": 69
+    },
+    "engine-probe-build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "engine-probe-run.log": {
+      "sha256": "3c5f3feed2383794b2ee7cfed5114c0f351eb200e7f149fcb0cdd2a9e14228fc",
+      "bytes": 65
+    },
+    "library.log": {
+      "sha256": "4ed2055686a0d00bab69bb3e4d3c55991e14437b9cd15db4b6a07859e0b023cb",
+      "bytes": 33442
+    },
+    "release.log": {
+      "sha256": "c6f6196ee2d65e63bfe1e09b80b75cec8c38f25e7d18f56b7b4467bcca1c154f",
+      "bytes": 186894
+    },
+    "source-manifest.json": {
+      "sha256": "bba187f5484ad3566eefa90806dcc8f783bba3b7e16bbe66dd994c4165daf782",
+      "bytes": 30680
+    },
+    "validation.json": {
+      "sha256": "34b0f56e0799decbd01fdb2a55768e3bdbf7592d0e22d8a84840392966a4c675",
+      "bytes": 2058
+    },
+    "worker.log": {
+      "sha256": "5bc2884e60fbf5d08ec9b24d05df87d550643d13b5274d1dde217ce81b759ba9",
+      "bytes": 20314
+    }
+  },
+  "candidateOnly": true,
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "binarySha256": "6cecf2037550bd400cfa729a092e2e6f681311955d1b24de5aa3ec585fd194de"
+}
