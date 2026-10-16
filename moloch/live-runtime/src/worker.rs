@@ -262,7 +262,7 @@ fn retire_for_package(bank:&mut Session,log:&mut DispatchLog,q:&Value)->Result<(
 fn retire_existing_drafts(bank:&mut Session,log:&mut DispatchLog,exchange:&str)->Result<usize>{
  log.require_resolved_attempts()?;let mut retired=0;
  for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
-  if q["exchangeId"]!=exchange||q["retired"]!=false||bank.engine().is_package_order(id)||q.get("reviewedInventoryExit").is_some(){continue}
+  if q["exchangeId"]!=exchange||q["retired"]!=false||bank.engine().is_package_order(id)||q.get("reviewedInventoryExit").is_some()||q.get("reviewedFundamentalEntry").is_some(){continue}
   if !log.never_attempted(id)||bank.engine().live_order_bindings().contains_key(&id){continue}
   retire_for_package(bank,log,&q)?;retired+=1;
  }Ok(retired)
@@ -272,7 +272,7 @@ fn existing_target_busy(bank:&Session,log:&DispatchLog,exchange:&str)->Result<bo
  for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
   let q=orders.iter().find(|q|q["id"]==*id).ok_or("LIVE_ACK_QUOTE_MISSING")?;if q["exchangeId"]==exchange{return Ok(true)}
  }
- Ok(orders.iter().any(|q|q["exchangeId"]==exchange&&q["retired"]==false&&(q.get("reviewedInventoryExit").is_some()||q["id"].as_u64().is_some_and(|id|bank.engine().is_package_order(id)||!log.never_attempted(id)))))
+ Ok(orders.iter().any(|q|q["exchangeId"]==exchange&&q["retired"]==false&&(q.get("reviewedInventoryExit").is_some()||q.get("reviewedFundamentalEntry").is_some()||q["id"].as_u64().is_some_and(|id|bank.engine().is_package_order(id)||!log.never_attempted(id)))))
 }
 fn ordinary_liability_due(bank:&Session,log:&DispatchLog,at:u64)->Result<bool>{
  for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
@@ -652,6 +652,41 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  let current=quote(bank,qid)?;if !f.eligible(bank,log,&c.scope,qid,now())?{return existing_exit_deferred(c,ex,"value","CURRENT_REVIEWED_EXIT_INELIGIBLE")}
  submit_order(t,c,bank,log,authority,&current,facts,None,Some(f))
 }
+fn expected_fundamental_entry_denial(reason:&str)->bool{
+ matches!(reason,"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE"|"FUNDAMENTAL_ENTRY_RECEIPT_ORDER"|"FUNDAMENTAL_ENTRY_NOT_FLAT"|"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY"|"FUNDAMENTAL_ENTRY_CASH_RECONCILIATION"|"FUNDAMENTAL_ENTRY_MARKET"|"FUNDAMENTAL_REVIEWED_CONTRACT_CHANGED"|"FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED"|"FUNDAMENTAL_ENTRY_NATIVE_BOOK"|"FUNDAMENTAL_ENTRY_PLAN_CHANGED"|"REVIEWED_ENTRY_DEADLINE"|"REVIEWED_ENTRY_EXISTING_EXPOSURE"|"REVIEWED_ENTRY_REVIEW_EXPIRED"|"REVIEWED_ENTRY_CLOCK"|"REVIEWED_ENTRY_BOOK"|"REVIEWED_ENTRY_PASSIVE_PRICE"|"REVIEWED_ENTRY_FUNDING"|"REVIEWED_ENTRY_DEPTH"|"REVIEWED_ENTRY_MARKET_CAP"|"REVIEWED_ENTRY_FRESH_MARKET_CAP"|"REVIEWED_ENTRY_WRITE_BUDGET")
+}
+fn fundamental_entry_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->Result<()>{atomic_json(&c.root.join("fundamental-entry.json"),&json!({"at":iso(now()),"exchangeId":exchange,"stage":stage,"reason":reason,"physicalAttempted":false,"nativeRiskCapsChanged":false}))}
+fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,prior_window:u64)->Result<()>{
+ let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
+ if existing_target_busy(bank,log,ex)?{return Ok(())}
+ if let Some(from)=exit_recovery_from(source,market,prior_window){let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(now())})?;
+  let wrapped=json!({"source":"official_sig_api_v1","kind":"trades","tournamentId":c.scope.tournament_id,"marketId":market,"exchangeId":ex,"endpoint":tape.endpoint,"status":tape.status,"requestStartedAt":tape.request_started_at,"receivedAt":tape.received_at,"data":tape.data});accept_source_events(bank,&source.accept(&wrapped)?)?;
+  let scopes=source.scopes();if !scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{return fundamental_entry_deferred(c,ex,"coverage","COMPLETE_TARGET_TAPE_REQUIRED")}
+ }
+ let facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
+ let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;if existing_target_busy(bank,log,ex)?{return fundamental_entry_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
+ retire_existing_drafts(bank,log,ex)?;
+ let gap=bank.engine().policy()["writeGapMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_WRITE_GAP")?;let latency=bank.engine().policy()["latencyMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_ACTIVATION")?;let ready=now().checked_add(gap).ok_or("LIVE_EXISTING_CLOCK_RANGE")?;
+ if ready.checked_add(latency).is_none_or(|end|end>=facts_until){return fundamental_entry_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
+ while now()<ready{refresh_controls(c,authority,stream)?;f.authority.validate()?;std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).clamp(1,100)));}
+ refresh_controls(c,authority,stream)?;
+ let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};
+ if let Err(e)=plan.validate_current(bank,log,t,&f.authority,now()){if expected_fundamental_entry_denial(&e.to_string()){return fundamental_entry_deferred(c,ex,"current",&e.to_string())}return Err(e)}
+ let before=bank.engine().order_records().iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);let mut event=plan.event().clone();event["processedAt"]=json!(iso(now()));let mut preview=bank.engine().clone();
+ if let Err(e)=preview.advance(&event){if expected_fundamental_entry_denial(e){return fundamental_entry_deferred(c,ex,"native",e)}return Err(e.into())}
+ // No I/O source or tick can alter the frozen plan before this commit. A
+ // native financial/durability failure at actual acceptance remains fatal.
+ accept(bank,&event)?;let qs:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|id|id>before)&&q["retired"]==false&&q["exchangeId"]==ex&&q["action"]=="buy"&&q["reviewedFundamentalEntry"]["reviewSha256"]==event["reviewSha256"]&&q["reviewedFundamentalEntry"]["originSha256"]==event["originSha256"]).collect();
+ if qs.len()!=1{return Err("LIVE_REVIEWED_ENTRY_NATIVE_RESERVATION_NOT_UNIQUE".into())}let q=&qs[0];let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+ loop{refresh_controls(c,authority,stream)?;f.authority.validate()?;let at=now();if at>=facts_until.min(plan.valid_until_ms())||q["expiresAt"].as_u64().is_none_or(|end|end<=at){return fundamental_entry_deferred(c,ex,"activation","RESERVATION_OR_ORIGINAL_PACKET_EXPIRED")}
+  if quote(bank,id)?!=*q{return Err("LIVE_REVIEWED_ENTRY_RESERVED_QUOTE_CHANGED".into())}let active=q["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?;if at>=active{break}std::thread::sleep(Duration::from_millis(active.saturating_sub(now()).clamp(1,100)));
+ }
+ if queue_has_unknown(t)?{return fundamental_entry_deferred(c,ex,"queue","GLOBAL_UNKNOWN_ACCEPTANCE")}
+ if !f.eligible(bank,log,&c.scope,id,now())?{return fundamental_entry_deferred(c,ex,"value","CURRENT_REVIEWED_ENTRY_INELIGIBLE")}
+ // Native clipped the actual funded quantity. submit_order binds that exact
+ // genuine quote/slice, never the read hint or an invented quantity.
+ submit_order(t,c,bank,log,authority,q,facts,None,Some(f))
+}
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
@@ -705,6 +740,11 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key.clone());
   refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
+ }
+ if let Some(f)=fundamental.as_deref_mut(){f.authority.validate()?;let entry_hints:Vec<_>=f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect();
+  if !entry_hints.is_empty(){let keys:Vec<_>=entry_hints.iter().map(|h|format!("{}:{}:buy",h.exchange_id,h.side)).collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());let hint=&entry_hints[index];
+   reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;return Ok(())
+  }
  }
  // At most one new physical order per pass; subsequent fills change funding.
  // Retired history and already-physical orders have separate reconciliation
