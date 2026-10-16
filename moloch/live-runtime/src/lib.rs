@@ -62,4 +62,5 @@ pub mod stale_entry_drafts;
 pub mod bulk_price_screen;
 
 pub mod capital_allocation;
+pub mod ordinary_side_edge;
 pub mod prize_utility;
