@@ -759,10 +759,17 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
   if quote(bank,id)?!=*q{return Err("LIVE_REVIEWED_ENTRY_RESERVED_QUOTE_CHANGED".into())}let active=q["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?;if at>=active{break}std::thread::sleep(Duration::from_millis(active.saturating_sub(now()).clamp(1,100)));
  }
  if queue_has_unknown(t)?{return fundamental_entry_deferred(c,ex,"queue","GLOBAL_UNKNOWN_ACCEPTANCE")}
+ // Activation and native write pacing intentionally consume time. Obtain a
+ // FINAL genuine seven-receipt packet after that wait instead of dispatching
+ // against the earlier planning packet. Keep the exact funded qid and price.
+ let final_facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;
+ accept_fresh_book(bank,c,&target,&final_facts.book,source)?;
+ let current=quote(bank,id)?;
+ if current!=*q||current["retired"]!=false{return fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED")}
  if !f.eligible(bank,log,&c.scope,id,now())?{return fundamental_entry_deferred(c,ex,"value","CURRENT_REVIEWED_ENTRY_INELIGIBLE")}
  // Native clipped the actual funded quantity. submit_order binds that exact
  // genuine quote/slice, never the read hint or an invented quantity.
- submit_order(t,c,bank,log,authority,q,facts,None,Some(f))
+ submit_order(t,c,bank,log,authority,&current,final_facts,None,Some(f))
 }
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  let orders=bank.engine().order_records();
