@@ -1,0 +1,38 @@
+{
+  "validation.json": {
+    "sha256": "3665cc9f88e09feed414648a406d96f00f3bc07fe91af474dda6adfaf10952b7",
+    "bytes": 1180
+  },
+  "observer-checks.log": {
+    "sha256": "5905c152454d34e01fbd90f011af315e2feec825b5253ad00c3a8ca221cd0a20",
+    "bytes": 203
+  },
+  "witness-checks.log": {
+    "sha256": "dff8fd22e6bbe5ae19e46b34ea5f7c75ad3e781acd47d2944e6ddee43fd13760",
+    "bytes": 123
+  },
+  "adapter-checks.log": {
+    "sha256": "e13c972a90de25dc174800e8bd467bf9ac4a672ff154eeb01a722c3d8e733f63",
+    "bytes": 113
+  },
+  "parent-checks.log": {
+    "sha256": "8a3d5134cc6a4be968fa64677cbee78da5487b6e64ffea6aebda23bf7be2a948",
+    "bytes": 121
+  },
+  "start-v5.json": {
+    "sha256": "f97e1ea350643cb0fb778aebdbd168f281520ddf7ff9f2ece953c0887bf3a488",
+    "bytes": 799
+  },
+  "prior-v4-seal.json": {
+    "sha256": "6edfb205f249336321d631f440138340543069f777f5f9a679c15559c76fb116",
+    "bytes": 1721
+  },
+  "full-cycle-verification.json": {
+    "sha256": "d2ff381afda65a08bbbacf73a87c9af1d9edc9e181681cb7661dd0ca1c11ab0d",
+    "bytes": 1442
+  },
+  "fresh-observer-status.json": {
+    "sha256": "9352373161b5cfb584bf403b15f51c664132dfa2012623753f7883d15fbae9bc",
+    "bytes": 1372
+  }
+}

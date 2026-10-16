@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-16T17:38:10.287147+00:00",
+  "sourceCommit": "bfd1e368",
+  "producerSha256": "2fa9b142b672f4a9076e185ac91be0b288945b0e1bba6afb0797594ed6678529",
+  "mappingSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+  "sigPid": 525450,
+  "sigStartIdentityUnchanged": true,
+  "priorObserverPid": 525623,
+  "priorCohort": "crossvenue-observer-trade-trace-v4",
+  "priorTerminalSealSha256": "6edfb205f249336321d631f440138340543069f777f5f9a679c15559c76fb116",
+  "priorCohortNormallySealed": true,
+  "currentCohort": "crossvenue-observer-trade-trace-v5",
+  "pid": 526213,
+  "durationSeconds": 3600,
+  "readOnly": true,
+  "executionAuthority": false,
+  "unitSha256": "4b33c479e2422e7f4f1fa03bf1b8f6f20e2aeff3ff46c02d48529e95c4c523e1",
+  "economicsOpened": false
+}

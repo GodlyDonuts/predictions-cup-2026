@@ -33,4 +33,3 @@ python summarize-age.py --input actual-age-probe.jsonl.gz --output reproduced.js
 ```
 
 [Full report](age-report.json) / [bounded comparison](age-comparison.json).
-

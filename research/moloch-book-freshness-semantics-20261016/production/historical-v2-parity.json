@@ -1,0 +1,14 @@
+{
+  "startedAt": "2026-10-16T17:38:44.467943+00:00",
+  "finishedAt": "2026-10-16T17:40:49.265928+00:00",
+  "seconds": 124.79802679599379,
+  "exitCode": 0,
+  "originalManifestSha256": "fcb8dadea57b1d5799441579db2fec10293b7de51f0a61339a5e57414e4c6962",
+  "newVerifierLfSha256": "a51f89856d4848d4bc576d8aa15e0e51db942513db21fd8dac8a09d53702d57b",
+  "originalResultRawSha256": "26015e2cac4c61a6e8118240a08ebf7f9068bf0bcc5cb0dbb8e70cd8fa6eb095",
+  "newResultRawSha256": "26015e2cac4c61a6e8118240a08ebf7f9068bf0bcc5cb0dbb8e70cd8fa6eb095",
+  "exactOriginalResultReproduced": true,
+  "samplerInputReplayVerified": true,
+  "wholeWitnessVerified": false,
+  "executionAuthority": false
+}
