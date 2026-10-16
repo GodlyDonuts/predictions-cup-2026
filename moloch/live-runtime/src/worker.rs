@@ -1016,6 +1016,7 @@ trait OrdinaryPreflightReads{
  fn now_ms(&self)->u64;
  fn guarded(&mut self)->Result<bool>;
  fn read(&mut self,endpoint:Endpoint)->Result<Receipt>;
+ fn read_serviced(&mut self,_bank:&mut Session,_source:&mut RestSource,endpoint:Endpoint)->Result<Receipt>{self.read(endpoint)}
   fn service_before_read(&mut self,_bank:&mut Session,_source:&mut RestSource)->Result<()>{Ok(())}
 }
 // Only this private typed error is an expected quote invalidation. A stream,
@@ -1031,7 +1032,7 @@ fn preflight_read(bank:&mut Session,source:&mut RestSource,reads:&mut impl Ordin
  }
  // There is deliberately no callback after the returned receipt. Its original
  // identity/clocks reach the existing validation/application unchanged.
- reads.read(endpoint)
+ reads.read_serviced(bank,source,endpoint)
 }
 fn preflight_snapshots(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut impl OrdinaryPreflightReads)->Result<SnapshotSet>{
  snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep))
@@ -1086,6 +1087,23 @@ impl OrdinaryPreflightReads for LivePreflightReads<'_>{
  fn now_ms(&self)->u64{now()}
  fn guarded(&mut self)->Result<bool>{refresh_controls(self.c,self.authority,self.stream)?;Ok(!queue_has_unknown(self.t)?)}
  fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
+ fn read_serviced(&mut self,bank:&mut Session,source:&mut RestSource,ep:Endpoint)->Result<Receipt>{
+  let Self{t,c,authority,stream,breadth,universe}=self;
+  let mut service=||{refresh_controls(c,authority,stream)?;drain_stream(stream,bank,source,breadth,universe)?;refresh_controls(c,authority,stream)};
+  for attempt in 0..3u64{
+   // One exclusive SDK GET; source admission stays on this Session thread.
+   // Outer service errors are fatal and never enter SDK retry classification.
+   match moloch_live_runtime::serviced_read::request(t,ep.clone(),&mut service)?{
+    Ok(receipt)=>{record_receipt(&c.root,&receipt)?;return Ok(receipt)},
+    Err(error)=>{
+     if attempt==2||!moloch_live_runtime::read_recovery::retryable_read(&error){return Err(error.into())}
+     atomic_json(&c.root.join("read-recovery.json"),&json!({"at":iso(now()),"endpoint":ep,"attempt":attempt+1,"code":error.code,"status":error.status,"retryAfterMs":error.retry_after_ms,"ordersRetried":false}))?;
+     let until=now().checked_add(2000*(attempt+1)).ok_or("LIVE_SERVICED_READ_CLOCK")?;
+     while now()<until{service()?;std::thread::sleep(Duration::from_millis(until.saturating_sub(now()).clamp(1,25)));}
+    }
+   }
+  }Err("LIVE_READ_RETRY_EXHAUSTED".into())
+ }
   fn service_before_read(&mut self,bank:&mut Session,source:&mut RestSource)->Result<()>{
    refresh_controls(self.c,self.authority,self.stream)?;
    drain_stream(self.stream,bank,source,self.breadth,self.universe)?;
@@ -1259,17 +1277,30 @@ fn cancel_owned(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  authority.prepare_cancel(bank,qid,spec.clone(),p.clone(),facts)?;
  if let Err(e)=authority.authorize(&c.scope,&spec,&p,false,now()){authority.clear_ready();if defense.is_some()&&!authority.can_read(&c.scope){return Err("LIVE_DEFENSIVE_CANCEL_CONTROL_OR_STOP".into())}atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code,"optionalDefensiveCancel":defense.is_some()}))?;return Ok(())}
  if now()>=expires{authority.clear_ready();return Ok(())}
- log.append(json!({"kind":"cancel_attempt","qid":qid,"spec":spec,"permit":p,"at":iso(now()),"defensive":defense.map(|d|d.evidence())}))?;
- let ack=match t.cancel(actual.clone(),p){Ok(r)=>r,Err(e)=>{
-  log.append(json!({"kind":"error","operation":"cancel","qid":qid,"error":e,"at":iso(now())}))?;authority.clear_ready();
+ let attempt_at=now();
+ log.append(json!({"kind":"cancel_attempt","qid":qid,"spec":spec,"permit":p,"at":iso(attempt_at),"defensive":defense.map(|d|d.evidence())}))?;
+ let ack=match t.cancel(actual.clone(),p.clone()){Ok(r)=>r,Err(e)=>{
+  log.append(json!({"kind":"error","operation":"cancel","qid":qid,"error":e,"at":iso(now())}))?;
+  if defense.is_some(){if let Ok(proof)=t.take_cancel_no_http_proof(){
+   proof.validate_binding(&spec,&p,attempt_at,&e)?;
+   let scope_sha=format!("{:x}",Sha256::digest(serde_json::to_vec(&c.scope)?));
+   if proof.evidence()["accountScope"]!=c.account_scope||proof.evidence()["scopeSha256"]!=scope_sha||proof.evidence()["orderId"]!=actual{return Err("LIVE_CANCEL_NO_HTTP_SCOPE".into())}
+   // Persist historical evidence without creating an ACK, terminal, retry
+   // capability or native retirement. The original attempt stays nonretryable.
+   log.append(json!({"kind":"source","operation":"defensive_cancel_no_http","qid":qid,"at":iso(now()),"originalAttemptAt":iso(attempt_at),"proof":proof.evidence()}))?;
+   authority.clear_ready();
+   atomic_json(&c.root.join("defensive-cancel.json"),&json!({"at":iso(now()),"qid":qid,"state":"deferred_proved_no_http","reason":e.code,"retryPermitted":false,"orderTerminal":false}))?;
+   return Ok(())
+  }}
+  authority.clear_ready();
   if moloch_live_runtime::read_recovery::reconcilable_cancel_rejection(&e){
    let observed=request(t,&c.root,Endpoint::OwnedOrder{order_id:actual.clone()})?;let filled=request(t,&c.root,Endpoint::OwnedFills{order_id:actual.clone()})?;
    // No source hook may interrupt a returned actual fill tape and its commit.
    for e in feedback::fills(old,&actual,&c.scope.tournament_id,&filled,&iso(now()))?{accept(bank,&e)?}
    if let Some(e)=feedback::terminal(old,&actual,&c.scope.tournament_id,&observed,&filled,&iso(now()))?{accept(bank,&e)?;log.append(json!({"kind":"closed","qid":qid,"orderReceiptHash":feedback::digest(&observed)?,"fillReceiptHash":feedback::digest(&filled)?,"afterRejectedCancel":true}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(bank,log,qid,&observed,&filled,now());return Ok(())}
   }
-  // Deliberately no mayHaveExecuted/string-based no-network inference. This
-  // default-off prototype needs typed DELETE evidence before activation.
+  // No mayHaveExecuted/string-based no-network inference: missing typed
+  // evidence, writes after the marker and uncertain outcomes remain fatal.
   return Err("LIVE_CANCEL_REJECTED_RECONCILIATION_REQUIRED".into())
  }};record_cancel_ack(c,log,qid,&ack)?;authority.clear_ready();Ok(())
 }
