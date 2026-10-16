@@ -9,32 +9,21 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at16:16UTC
+## Latest operation and qualification at17:01UTC
 
-Sole518852/source2225b1ef/binaryfb55f739 is back in fresh production trading,
-with healthy realtime/no STOP. First fresh proof16:03:23 shows one new ACK;
-at16:16:16 it has14 new official ACKs and successor full status. Original capital95,579.915000 and194fills
-remain, attributed realized−143.860000 (ordinary−188.990000/inherited+45.130000).
-[Actual live proof](../research/moloch-preflight-service-20261016/measurement/fresh-live-verification.json).
+Production SIG PID518852 / source2225b1ef / binaryfb55f739 continues trading. The latest root check at **16:57:01 UTC** verified fresh realtime, no STOP, 59 successor order acknowledgments and 194 cumulative fill rows, with no postlaunch fills. Cash 72,704.540000, owned cost 22,731.515000, ordinary realized -188.990000, inherited gross +45.130000 and combined realized -143.860000 SUSQies remain separate. The full 95,579.915000 capital authorization includes 55,579.915000 of contributions, not profit.
+[Original service proof](../research/moloch-trade-trigger-20261016/witness/deployment/fresh-sig-verification.json).
 
-The same30s metadata probe observed receipt-to-probe median7.924s→2.069s and
-p9011.291s→7.923s across777 versus779 books. Different natural windows and
-frame/market mixes prevent causal CPU/whole-loop attribution. Original clocks
-remain; median source age is still4.157s, so coverage remains a limitation.
-[Actual measurement](../research/moloch-preflight-service-20261016/measurement/README.md).
+Read-only trace V3 PID519257 is capturing for 3600 seconds without restarting SIG. Prior V2 stopped normally and sealed. Its original input manifest was pinned before outcomes; after 19 local/Linux checks, replay reproduced 488 cache polls, 386 SIG callbacks, 3,213 trace records and both emitted rows, including one horizon label. Whole history, provider completeness, collector epoch and resolution equivalence remain unproved. One label cannot qualify profitable predictive trading.
+[Sealed original-input result](../research/moloch-trade-trigger-20261016/witness/actual-v2/README.md).
 
-The new lifecycle reader passed32 root checks and independent review. Actual
-sealed281,121-event replay completed72.515s and reconstructed ordinary gross/net
-−188.990000, with zero eligible full-depth lifecycle marks. It is descriptive,
-not a positive-EV model or financial authority.
-[Actual original-prefix result](../research/moloch-lifecycle-economics-20261016/actual-evaluation/README.md).
+Candidate **b112c6c1** adds resting ordinary BUY cancellation when fresh books fail the existing entry criterion, plus stream servicing during the sole SDK's preflight GET waits. Typed owned-DELETE no-HTTP evidence can defer an optional expired cancellation; the original attempt remains nonretryable, with no ACK, terminal or funding release. Root and independent source reviews are complete. Actual ARM64 checks pass: SDK 231, runtime library 197, worker 95. Optimized release completed at16:57:53 UTC (binary3ab6ef7c); compiled native-engine identity8acc is unchanged. **The candidate is not deployed; defensiveCancel remains off in production.** Native financial sources, capital policy, banks and twelve bridges are unchanged. Original failed fixture/compile logs are retained.
+[Actual build evidence](../research/moloch-defensive-cancel-20261016/build/README.md) | [Candidate design and limits](../research/moloch-defensive-cancel-20261016/worker-design.md).
 
-Opt-in original input tracing is checked94 distinct Python tests, independently
-reviewed and awaiting a separate new read-only cohort activation. It records
-actual cache/SIG inputs, clocks and completions under a shared2GiB/no-pruning
-cap and10GiB free-space floor. Sampling choices/age bounds stay fixed; complete
-input recording is separate from provider completeness or model qualification.
-[Trace protocol and limits](../research/moloch-trade-trigger-20261016/witness/input-trace-v1.md).
+Kalshi's existing Windows process 9240 / supervisor 33752 remains active. At16:48:46 UTC, 237/237 tickers were cached; target 20 reads/sec, 19 starts in the last second and 1,191 in the last minute, zero throttles, live WebSocket reception. Three direct mappings remain unresolved; analog references do not establish equivalence. Existing data remains predictive research input rather than an executable fair-value oracle.
+
+Earlier source-age measurements and the281,121-event lifecycle reconstruction remain the current economic baseline: ordinary realized -188.990000 and zero qualified lifecycle marks. Missing marks are not zero outcomes. The30-second receipt-delay comparison is descriptive, not causal CPU/whole-loop evidence.
+[Latency limits](../research/moloch-preflight-service-20261016/measurement/README.md) | [Original lifecycle result](../research/moloch-lifecycle-economics-20261016/actual-evaluation/README.md).
 
 ## Historical operation and qualification at 14:57 UTC
 
@@ -76,7 +65,7 @@ bounded observational result, with no CPU/whole-cycle/profit claim.
 
 Recovered510591/source4ee/executable011ffde0 is genuinely fresh trading at
 14:03:28UTC with healthy realtime/no STOP, one official new ACK; five by14:04:45,
-zero new fill rows. Original163fills/−106.485000 realized/full95579.915000 capital
+zero new fill rows. Original163fills/−106.485000 realized/full 95579.915000 capital
 remain. Read-only674 observer510713 starts new v9; old v8 stays sealed.
 [Actual recovery/readiness](../research/moloch-inter-read-20261016/README.md).
 The fixed actual-fill study exposes weak one-sided entries: two covered original
@@ -209,7 +198,7 @@ Full capital availability does not establish completion of those capabilities.
 The sole SIG worker441490/source`fec81a5e` remains live. At10:39:26UTC its
 binary matched, STOP was absent and trading/realtime were fresh. Since08:55
 restart it recorded79 acknowledgments and four fill rows,136 cumulative fill
-rows. Cash17,194.180000, owned cost22,731.515000 and combined attributed
+rows. Cash17,194.180000, owned cost 22,731.515000 and combined attributed
 realized−74.305000 were unchanged. Fill rows can be partial executions and
 are not a count of independent profitable trades.
 

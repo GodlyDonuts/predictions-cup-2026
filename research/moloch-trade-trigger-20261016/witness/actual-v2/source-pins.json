@@ -1,0 +1,11 @@
+{
+  "commit": "fb0da65b64452e49ac10052518cb1f4f207b402e",
+  "files": {
+    "moloch/external-data/crossvenue_observer.py": "200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40",
+    "research/moloch-trade-trigger-20261016/witness/test_trace_replay.py": "b18fb462f56a2f156bead54ebe40347efb5b43defda284174c68c754f533df36",
+    "research/moloch-trade-trigger-20261016/witness/trace_replay.py": "38e9b96cbc7030ba5c47ccd5e8ffb59192124e678a20b7132a7d05415b212122",
+    "research/moloch-trade-trigger-20261016/witness/trace-replay.md": "d7f0c67d8f22c794b20490a5529d689df19947a6c2313fb3fe3af349f8049ba5",
+    "moloch/external-data/test_crossvenue_observer.py": "a295b4d212df8a4cfbdee7575df37736831438913d3ad167bb7c20d235195616",
+    "moloch/external-data/test_trade_triggered_observer.py": "ed2ee96329c085c6a0e1dfec58636f296efcfd62bebac1674f00f1fbf37206e7"
+  }
+}

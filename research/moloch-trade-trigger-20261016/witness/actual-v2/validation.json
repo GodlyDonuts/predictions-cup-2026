@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-16T16:43:30.939160+00:00",
+  "inputManifestSha256": "fcb8dadea57b1d5799441579db2fec10293b7de51f0a61339a5e57414e4c6962",
+  "sourcePinsSha256": "aeaea4fcb316e913aa1e8c60fc66c97490683e08687a1c47ab26b2dc8a1080e6",
+  "checks": [
+    {
+      "name": "tests",
+      "start": "2026-10-16T16:41:24.637928+00:00",
+      "elapsedSeconds": 2.0923198749951553,
+      "exitCode": 0,
+      "logSha256": "9221d441f733b0fd5af1385800f1ff6f69798ae6e650664b3a13907b5b357688"
+    },
+    {
+      "name": "actual-v2-replay",
+      "start": "2026-10-16T16:41:26.730773+00:00",
+      "elapsedSeconds": 124.20762680398184,
+      "exitCode": 0,
+      "logSha256": "26015e2cac4c61a6e8118240a08ebf7f9068bf0bcc5cb0dbb8e70cd8fa6eb095"
+    }
+  ]
+}

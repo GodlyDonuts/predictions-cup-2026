@@ -1,0 +1,10 @@
+{
+  "pinnedAt": "2026-10-16T16:36:12.923008+00:00",
+  "manifest": {
+    "path": "/tmp/moloch-trace-v2-inputs-20261016-163140-r1/manifest.json",
+    "sha256": "fcb8dadea57b1d5799441579db2fec10293b7de51f0a61339a5e57414e4c6962",
+    "bytes": 1520
+  },
+  "sources": 1,
+  "outcomesInspectedBeforePinning": false
+}

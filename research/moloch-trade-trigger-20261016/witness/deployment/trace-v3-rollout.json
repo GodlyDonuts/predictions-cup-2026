@@ -1,0 +1,81 @@
+{
+  "at": "2026-10-16T16:31:40.144413+00:00",
+  "durationSeconds": 3600,
+  "financialAuthority": false,
+  "newCohort": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-trace-v3",
+  "newPid": 519257,
+  "oldCohort": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-trace-v2",
+  "oldSeal": {
+    "complete": true,
+    "executionAuthority": false,
+    "files": [
+      {
+        "bytes": 117051357,
+        "device": 66305,
+        "inode": 12607015,
+        "path": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-trace-v2/input-trace-v1.jsonl.gz",
+        "sha256": "c87dca2a3c99d0ffb8ca70a8d63805658d8779570ad7bf1200612b7932c93283"
+      },
+      {
+        "bytes": 2378,
+        "device": 66305,
+        "inode": 12607016,
+        "path": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-trace-v2/trace-samples-v1.jsonl.gz",
+        "sha256": "56b9460323f72da05d6d13d1d5affe0ed13acd6bfe2c78d716e00b83e44d096a"
+      }
+    ],
+    "finalBookmark": {
+      "bufferedBytes": 0,
+      "device": 66305,
+      "fileBytesAtObservation": 72692983,
+      "historyPrefixVerified": false,
+      "inode": 12444870,
+      "lastConsumedEndOffset": 72692983,
+      "lastHash": "f13aad186c53f02d8a6e16c9b379e6702a2795a810413c919aab5539ae4448c4",
+      "lastSequence": 496,
+      "path": "/home/archon/apps/moloch/shared/live-production-v1/breadth-518852-1792166549922-part-0001.jsonl",
+      "readOffset": 72692983,
+      "skipPartialLine": false
+    },
+    "historyPrefixVerified": false,
+    "kind": "input_trace_terminal_seal",
+    "mappingFileReference": {
+      "bytes": 326009,
+      "device": 66305,
+      "inode": 12607011,
+      "path": "/home/archon/apps/moloch/sidecars/kalshi-universe-3f8dd6fa3ef6e5e2.json",
+      "sha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0"
+    },
+    "outputRows": 2,
+    "pendingInputs": 0,
+    "pinnedReferencesUnchanged": true,
+    "producer": {
+      "bytes": 61865,
+      "device": 66305,
+      "inode": 12607002,
+      "path": "/home/archon/apps/moloch/sidecars/crossvenue-observer-200abfd0701f56f4.py",
+      "sha256": "200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40"
+    },
+    "reason": "normal_stop",
+    "sealedAtMs": 1792168299520,
+    "storedBytesMatchWrittenMembers": true,
+    "traceHead": "306113e13f95d265dc5f6f63e470a4405ee01bb0097c340c3a2ba65cbe4af88a",
+    "traceSequence": 3213,
+    "version": 1,
+    "wholeWitnessVerified": false
+  },
+  "oldSealSha256": "b0bfac45896be6f2ee43f512cbaae94bbcce530ca29df2cfcb0ef11c38ebfd3e",
+  "producerSha256": "200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40",
+  "publishedBeforeActivation": "32c4704f114f3acc160d178f0b8d4034a058ea07",
+  "sigAfter": {
+    "pid": "518852",
+    "start": "13538706"
+  },
+  "sigBefore": {
+    "pid": "518852",
+    "start": "13538706"
+  },
+  "sigRestarted": false,
+  "sourceCommit": "017ea827438c010fc287f67bf1647d2e985939f6",
+  "unitSha256": "45bf2806118b13c071c4aa8486a4bfdfaea73dfda75b51accff8608cc5628f4e"
+}

@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-16T16:20:49.647702+00:00",
+  "sourceCommit": "017ea827438c010fc287f67bf1647d2e985939f6",
+  "producerRawLfSha256": "200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40",
+  "protocolGitLfSha256": "0192b4ab31f5f278cdc1f5ae341e17234c1f12a9dc0b3af43e742071314bc853",
+  "existingSamplingProtocolFixtureGitLfSha256": "26a9a113f838bd496e5f1a7488086f06d5ae55be57a7bcadc25c29f81cba43ff",
+  "distinctPassed": 94,
+  "newTraceSubset": 16,
+  "testLogSha256": "f3e2ea2482050aaa6c855b9048460a265a6d88ff6af3e7ac612243b048555bcf",
+  "initialPackagingMissingFixtureLogSha256": "7b107cdb475b48e153fabd5dcc1601d0faa9bd017497209f2ffd0574236cf092",
+  "linuxFilesystem": true,
+  "accountRequests": 0,
+  "deployed": false
+}

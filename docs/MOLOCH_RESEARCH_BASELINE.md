@@ -1,29 +1,18 @@
-# Current research baseline: October 16, 16:16 UTC
+# Current research baseline: October 16, 17:01 UTC
 
-Sole518852/source2225b1ef/binaryfb55f739 is back in fresh production trading,
-with healthy realtime/no STOP. First fresh proof16:03:23 shows one new ACK;
-at16:16:16 it has14 new official ACKs and successor full status. Original capital95,579.915000 and194fills
-remain, attributed realized−143.860000 (ordinary−188.990000/inherited+45.130000).
-[Actual live proof](../research/moloch-preflight-service-20261016/measurement/fresh-live-verification.json).
+Production SIG PID518852 / source2225b1ef / binaryfb55f739 continues trading. The latest root check at **16:57:01 UTC** verified fresh realtime, no STOP, 59 successor order acknowledgments and 194 cumulative fill rows, with no postlaunch fills. Cash 72,704.540000, owned cost 22,731.515000, ordinary realized -188.990000, inherited gross +45.130000 and combined realized -143.860000 SUSQies remain separate. The full 95,579.915000 capital authorization includes 55,579.915000 of contributions, not profit.
+[Original service proof](../research/moloch-trade-trigger-20261016/witness/deployment/fresh-sig-verification.json).
 
-The same30s metadata probe observed receipt-to-probe median7.924s→2.069s and
-p9011.291s→7.923s across777 versus779 books. Different natural windows and
-frame/market mixes prevent causal CPU/whole-loop attribution. Original clocks
-remain; median source age is still4.157s, so coverage remains a limitation.
-[Actual measurement](../research/moloch-preflight-service-20261016/measurement/README.md).
+Read-only trace V3 PID519257 is capturing for 3600 seconds without restarting SIG. Prior V2 stopped normally and sealed. Its original input manifest was pinned before outcomes; after 19 local/Linux checks, replay reproduced 488 cache polls, 386 SIG callbacks, 3,213 trace records and both emitted rows, including one horizon label. Whole history, provider completeness, collector epoch and resolution equivalence remain unproved. One label cannot qualify profitable predictive trading.
+[Sealed original-input result](../research/moloch-trade-trigger-20261016/witness/actual-v2/README.md).
 
-The new lifecycle reader passed32 root checks and independent review. Actual
-sealed281,121-event replay completed72.515s and reconstructed ordinary gross/net
-−188.990000, with zero eligible full-depth lifecycle marks. It is descriptive,
-not a positive-EV model or financial authority.
-[Actual original-prefix result](../research/moloch-lifecycle-economics-20261016/actual-evaluation/README.md).
+Candidate **b112c6c1** adds resting ordinary BUY cancellation when fresh books fail the existing entry criterion, plus stream servicing during the sole SDK's preflight GET waits. Typed owned-DELETE no-HTTP evidence can defer an optional expired cancellation; the original attempt remains nonretryable, with no ACK, terminal or funding release. Root and independent source reviews are complete. Actual ARM64 checks pass: SDK 231, runtime library 197, worker 95. Optimized release completed at16:57:53 UTC (binary3ab6ef7c); compiled native-engine identity8acc is unchanged. **The candidate is not deployed; defensiveCancel remains off in production.** Native financial sources, capital policy, banks and twelve bridges are unchanged. Original failed fixture/compile logs are retained.
+[Actual build evidence](../research/moloch-defensive-cancel-20261016/build/README.md) | [Candidate design and limits](../research/moloch-defensive-cancel-20261016/worker-design.md).
 
-Opt-in original input tracing is checked94 distinct Python tests, independently
-reviewed and awaiting a separate new read-only cohort activation. It records
-actual cache/SIG inputs, clocks and completions under a shared2GiB/no-pruning
-cap and10GiB free-space floor. Sampling choices/age bounds stay fixed; complete
-input recording is separate from provider completeness or model qualification.
-[Trace protocol and limits](../research/moloch-trade-trigger-20261016/witness/input-trace-v1.md).
+Kalshi's existing Windows process 9240 / supervisor 33752 remains active. At16:48:46 UTC, 237/237 tickers were cached; target 20 reads/sec, 19 starts in the last second and 1,191 in the last minute, zero throttles, live WebSocket reception. Three direct mappings remain unresolved; analog references do not establish equivalence. Existing data remains predictive research input rather than an executable fair-value oracle.
+
+Earlier source-age measurements and the281,121-event lifecycle reconstruction remain the current economic baseline: ordinary realized -188.990000 and zero qualified lifecycle marks. Missing marks are not zero outcomes. The30-second receipt-delay comparison is descriptive, not causal CPU/whole-loop evidence.
+[Latency limits](../research/moloch-preflight-service-20261016/measurement/README.md) | [Original lifecycle result](../research/moloch-lifecycle-economics-20261016/actual-evaluation/README.md).
 
 # Historical research baseline: October 16, 14:57 UTC
 
@@ -183,7 +172,7 @@ Actual production is sole SIG494293/source`e7bb62d1`/binary`d0a3113c…`.
 Fresh per-scope trading/realtime verified11:51:16UTC, seven new official ACKs
 and one post-launch fill row. Full-capital owner funding55,579.915000 and daily
 mandate revision are committed, giving effective initial/commitment95,579.915000.
-Cash72,773.995000 plus owned cost22,731.515000 equals95,505.510000; attributed
+Cash 72,773.995000 plus owned cost 22,731.515000 equals95,505.510000; attributed
 realized remains−74.405000. Funding is not profit. Full original stopped-prefix
 financial parity passed before the genuine eleventh bridge and production start.
 [Deployment and dated actual evidence](../research/moloch-full-account-20261016/README.md).
@@ -264,7 +253,7 @@ SolePID441490/sourcefec81a5e replaces421878 with the stale never-submitted reser
 
 # Latest observation: October16,08:32:54UTC
 
-Production remains solePID421878/source5577e984, fresh trading/realtime with matching binary and no STOP. Since launch:43 new official ACKs, zero new fill rows; cumulative132fill rows. Last actual fill07:41:06.571UTC. Cash17,194.18/owned cost22,731.515/attributed combined realized−74.305. Dashboard daily marks are a different measure. The [current-state entry](CURRENT_STATE.md) and [reservation audit](../research/moloch-throughput-20261016/reservation-throughput-audit.md) supersede earlier observations for this timestamp. Root is developing runtime-only stale-draft retirement and covered-exit source nomination; neither is active yet. Current small fills reflect residual quantities, top-level maker sizing and partial execution; large requested sizes remain unfilled.
+Production remains solePID421878/source5577e984, fresh trading/realtime with matching binary and no STOP. Since launch:43 new official ACKs, zero new fill rows; cumulative132fill rows. Last actual fill07:41:06.571UTC. Cash17,194.18/owned cost 22,731.515/attributed combined realized−74.305. Dashboard daily marks are a different measure. The [current-state entry](CURRENT_STATE.md) and [reservation audit](../research/moloch-throughput-20261016/reservation-throughput-audit.md) supersede earlier observations for this timestamp. Root is developing runtime-only stale-draft retirement and covered-exit source nomination; neither is active yet. Current small fills reflect residual quantities, top-level maker sizing and partial execution; large requested sizes remain unfilled.
 
 # Moloch research baseline
 
@@ -301,7 +290,7 @@ Production remains solePID421878/source5577e984, fresh trading/realtime with mat
 
 ## Latest attributed realized update
 
-At the186684-event promotion boundary: cash17,194.180000, owned cost22,731.515000; ordinary realized-119.435000/inherited gross+45.130000/combined-74.305000. New67YES1019 round trip lost.335. Earlier economic sections below retain their original observation times.
+At the186684-event promotion boundary: cash17,194.180000, owned cost 22,731.515000; ordinary realized-119.435000/inherited gross+45.130000/combined-74.305000. New67YES1019 round trip lost.335. Earlier economic sections below retain their original observation times.
 
 ## Checked follow-up source; not deployed
 
@@ -317,7 +306,7 @@ The restored worker bought430 Delaware Democratic Senate YES1042 at.920, princip
 
 The actual sealed FIFO audit reconciles119 unique fills/38 duplicate original events and all final cash, positions, costs and fees. New ordinary trading realized−119.100000, inherited gross+43.395000, combined−75.705000. All30 closed ordinary acquisition lots exited through maximum-age orders;953YES and885NO account for91.82% of the loss. This warrants evaluating entry adverse selection and exit economics; it does not prove that disabling the timer or excluding those markets would improve future returns. [Audit and exact source boundary](../research/moloch-actual-economics-20261016/README.md).
 
-At07:16:25UTC cash17,194.515000 and owned cost22,731.515000 are attributed-bank measures, with ordinary realized-119.100000/inherited45.130000/combined-73.970000. The preceding119-fill audit is historical; the current bank has125 fill rows. Three later fill rows came from two inherited exits, not new passive BUY fills. The small18.245/18.100 sale proceeds reflect residual holdings; actual buy requests of1868shares/principals849.94 and1008.72 show that order sizing is not universally tiny. They are not whole-account equity or marked liquidation value. The human's earlier official daily dashboard+1,168 observation is separate and differently dated; it is not the new-entry realized measure above.
+At07:16:25UTC cash17,194.515000 and owned cost 22,731.515000 are attributed-bank measures, with ordinary realized-119.100000/inherited45.130000/combined-73.970000. The preceding119-fill audit is historical; the current bank has125 fill rows. Three later fill rows came from two inherited exits, not new passive BUY fills. The small18.245/18.100 sale proceeds reflect residual holdings; actual buy requests of1868shares/principals849.94 and1008.72 show that order sizing is not universally tiny. They are not whole-account equity or marked liquidation value. The human's earlier official daily dashboard+1,168 observation is separate and differently dated; it is not the new-entry realized measure above.
 
 ## Unfinished work and research targets
 
