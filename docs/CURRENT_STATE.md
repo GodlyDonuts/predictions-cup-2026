@@ -1,4 +1,17 @@
-# October16,13:43UTC: inter-read successor restoring; financial history retained
+# October16,13:54UTC: network-token failure reconciled; successor restoring
+
+First inter-read successor506740 restored history, then stopped13:47:15UTC
+with CONNECTION_UNCONFIRMED during realtime-token HTTP, before stream connection.
+No successor orders/fills or financial-history changes occurred. Root verified
+the actual SDK queue had zero unknown/active requests and no manual review,
+retained the failure STOP/status and unchanged bank/dispatch/twelve bridges,
+then started the same binary/control once as510591 at13:51:29UTC. At13:54:14
+it was running/restoring; fresh trading remained pending. Activation and token
+markers were not reset. [Actual recovery](../research/moloch-inter-read-20261016/README.md).
+Kalshi continues. A bounded separately typed token-HTTP recovery is being
+developed without interrupting the restoring worker.
+
+# Historical October16,13:43UTC: inter-read successor restoring; financial history retained
 
 Sole SIG506740/source`4ee16356`/binary`011ffde0…` started13:36:03UTC with
 the actual executable verified. At13:43:24UTC it was restoring original history;

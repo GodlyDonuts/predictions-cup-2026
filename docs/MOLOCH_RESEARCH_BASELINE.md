@@ -1,4 +1,14 @@
-# Current research baseline: October16,13:43UTC
+# Current research baseline: October16,13:54UTC
+
+First successor506740 stopped after history restoration at13:47:15 with a
+realtime-token HTTP CONNECTION_UNCONFIRMED, before stream connection or any new
+financial request. Root reconciled actual quiet/unknown state and all financial
+journal hashes, retained the failed attempt and started unchanged binary011ffde0
+once as510591 at13:51:29. It was still restoring at13:54:14. No activation,
+token-budget, bank or bridge reset. Fresh trading/latency remain pending.
+[Failure and recovery evidence](../research/moloch-inter-read-20261016/README.md).
+
+# Historical research baseline: October16,13:43UTC
 
 Sole SIG506740/source4ee16356/executable011ffde0 started13:36:03UTC and was
 still restoring original history at13:43:24. Fresh trading is not yet claimed.
