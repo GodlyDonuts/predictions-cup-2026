@@ -137,6 +137,9 @@ impl AccountTracker {
                 // Capture the original conflicting frame, then fail closed. An old
                 // revision outside bounded retained identity is equally unverified.
                 if self.revisions.get(&revision)!=Some(&digest){
+                    // Invalidate BEFORE potentially blocking capture IO so a
+                    // concurrent physical guard cannot retain its old stamp.
+                    self.signal.invalidate(&self.options.exchanges.keys().cloned().collect(),received_ms)?;
                     (self.options.capture)(event,raw,payload,received)?;
                     return Err(if self.revisions.contains_key(&revision){"STREAM_ACCOUNT_REVISION_CONFLICT"}else{"STREAM_ACCOUNT_REVISION_UNVERIFIABLE"});
                 }
@@ -709,7 +712,7 @@ mod tests {
     }
     #[test]fn account_authentication_is_exact_and_cannot_request_an_arbitrary_topic(){let(_,_,_)=account_protocol();let options=AccountOptions{exchanges:Default::default(),capture:Box::new(|_,_,_,_|Ok(()))};validate_account_options(&format!("user:{CUP}"),&options).unwrap();validate_account_options("user:12345",&options).unwrap();for topic in ["", "realtime:user:other", "market:101", "user:", "user:another:topic", "user:00000000/0000/0000/0000/000000000001"]{assert!(validate_account_options(topic,&options).is_err());}}
 
-    #[test]fn changed_same_revision_is_captured_and_fails_closed_instead_of_hiding_mutation(){let(mut p,signal,captured)=account_protocol();joined_account(&mut p);let original=account_message(account_batch(1,0));p.accept(&original).unwrap();let before=(signal.generation(),signal.last_received_ms());let mut changed=account_batch(1,0);changed["fills"]=json!([{"orderId":"901","exchangeId":"101","marketId":"201","quantity":1,"price":0.4,"tournamentId":CUP}]);let bad=account_message(changed);assert_eq!(p.accept_original(&bad,"EXACT_CONFLICTING_ORIGINAL_BODY").err(),Some("STREAM_ACCOUNT_REVISION_CONFLICT"));assert_eq!(captured.lock().unwrap().last().unwrap()["raw"],"EXACT_CONFLICTING_ORIGINAL_BODY");assert_eq!((signal.generation(),signal.last_received_ms()),before);assert_eq!(sanitized_exit("STREAM_ACCOUNT_REVISION_CONFLICT"),"STREAM_ACCOUNT_REVISION_CONFLICT");}
+    #[test]fn changed_same_revision_is_captured_and_fails_closed_instead_of_hiding_mutation(){let(mut p,signal,captured)=account_protocol();joined_account(&mut p);let original=account_message(account_batch(1,0));p.accept(&original).unwrap();let before=(signal.generation(),signal.last_received_ms());let mut changed=account_batch(1,0);changed["fills"]=json!([{"orderId":"901","exchangeId":"101","marketId":"201","quantity":1,"price":0.4,"tournamentId":CUP}]);let bad=account_message(changed);assert_eq!(p.accept_original(&bad,"EXACT_CONFLICTING_ORIGINAL_BODY").err(),Some("STREAM_ACCOUNT_REVISION_CONFLICT"));assert_eq!(captured.lock().unwrap().last().unwrap()["raw"],"EXACT_CONFLICTING_ORIGINAL_BODY");assert_eq!(signal.generation(),before.0+1);assert!(signal.last_received_ms()>=before.1);assert_eq!(sanitized_exit("STREAM_ACCOUNT_REVISION_CONFLICT"),"STREAM_ACCOUNT_REVISION_CONFLICT");}
     #[test]fn lower_revision_requires_retained_exact_identity_and_unknown_old_revision_fails(){let(mut p,signal,_)=account_protocol();joined_account(&mut p);let original=account_message(account_batch(1,0));p.accept(&original).unwrap();p.accept(&account_message(account_batch(2,1))).unwrap();let before=(signal.generation(),signal.last_received_ms());p.accept(&original).unwrap();assert_eq!((signal.generation(),signal.last_received_ms()),before);p.account.as_mut().unwrap().revisions.remove(&1);assert_eq!(p.accept(&original).err(),Some("STREAM_ACCOUNT_REVISION_UNVERIFIABLE"));}
 
 }
