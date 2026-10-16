@@ -1639,7 +1639,8 @@ pub fn main()->Result<()>{
   install_managed_entry_exclusions(&c,&path,&mut bank,&mut log,fundamental.as_ref())?;
   install_human_market_breadth(&c,&path,&mut bank)?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
-  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !closed_legacy_ack(&bank,&log,qid,&e){f.cohorts.validate_restored_acknowledgment(&bank,&log,qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());restore_ack(&mut bank,&e)?;}
+  let mut startup_quotes=moloch_live_runtime::startup_ack::Index::new(&bank)?;
+  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=startup_quotes.quote(&bank,qid)?.clone();let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !startup_quotes.closed_legacy(&bank,&log,qid,&e)?{f.cohorts.validate_restored_acknowledgment(&bank,&log,qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());if !startup_quotes.validate_closed_duplicate(&bank,&log,qid,&e)?&&restore_ack(&mut bank,&e)?{startup_quotes=moloch_live_runtime::startup_ack::Index::new(&bank)?;}}
   // Always recover original liabilities even when new package scanning is off.
   // Recovery never recreates a Staged capability or retries a physical send.
   let mut packages=moloch_live_runtime::package_dispatch::PackageDispatchLog::open(&c.root.join("package-dispatch"))?;
@@ -2391,6 +2392,36 @@ pub fn main()->Result<()>{
   let mut changed=e.clone();changed["actualOrderId"]=json!("foreign");assert!(!closed_legacy_ack(&bank,&log,id,&changed));
   let old=log.intents[&id].clone();log.intents.get_mut(&id).unwrap()["fundamental"]=json!({"bindingSha256":"a".repeat(64)});assert!(!closed_legacy_ack(&bank,&log,id,&e));log.intents.insert(id,old);
   drop(log);drop(bank);let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();let head=bank.durable_head();assert!(closed_legacy_ack(&bank,&log,id,&e));assert!(!restore_ack(&mut bank,&e).unwrap());assert_eq!(bank.durable_head(),head);
+ }
+ fn closed_startup_fixture(temp:&Temp,partial:bool)->(Session,DispatchLog,Value,Value,Value){
+  let(mut bank,mut log,policy,seed)=setup(&temp.0,1);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();let stamp=iso(now());
+  let receipt=Receipt{endpoint:"/orders".into(),status:200,request_started_at:stamp.clone(),received_at:stamp.clone(),data:json!({"orderId":format!("9{id}"),"exchangeId":q["exchangeId"],"side":if q["side"]=="YES"{"yes"}else{"no"},"action":q["action"],"quantity":q["quantity"],"price":serde_json::from_str::<Value>(q["price"].as_str().unwrap()).unwrap()})};let mut e=feedback::acknowledgment(&q,&receipt,&stamp).unwrap();
+  for row in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id,"at":stamp}),json!({"kind":"ack","qid":id,"receipt":receipt})]{log.append(row).unwrap();}
+  restore_ack(&mut bank,&e).unwrap();
+  if partial{let mut fill=e.clone();fill["type"]=json!("actual_fill");fill["fillId"]=json!("80001");fill["quantity"]=json!(1);fill["fee"]=json!("0.000000");fill["executedAt"]=e["receivedAt"].clone();accept(&mut bank,&fill).unwrap();}
+  let mut terminal=e.clone();terminal["type"]=json!("actual_order_terminal");terminal["status"]=json!("canceled");terminal["filledQuantity"]=json!(if partial{1}else{0});terminal["fillsComplete"]=json!(true);accept(&mut bank,&terminal).unwrap();log.append(json!({"kind":"closed","qid":id})).unwrap();
+  e["processedAt"]=json!(iso(now()));(bank,log,e,policy,seed)
+ }
+ #[test]fn startup_closed_duplicate_matches_native_and_never_writes_even_after_restart(){
+  for partial in [false,true]{let temp=Temp::new();let(bank,log,e,policy,seed)=closed_startup_fixture(&temp,partial);let id=e["orderId"].as_u64().unwrap();let index=moloch_live_runtime::startup_ack::Index::new(&bank).unwrap();let mut native=bank.engine().clone();native.advance(&e).unwrap();
+   let head=bank.durable_head();let report=bank.engine().report().unwrap();let bytes=fs::read(temp.0.join("bank/events.jsonl")).unwrap();assert!(index.validate_closed_duplicate(&bank,&log,id,&e).unwrap());assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),bytes);drop(bank);drop(log);
+   let bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();let index=moloch_live_runtime::startup_ack::Index::new(&bank).unwrap();assert!(index.validate_closed_duplicate(&bank,&log,id,&e).unwrap());assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);
+  }
+ }
+ #[test]fn startup_closed_duplicate_rejects_the_same_changed_native_ack_fields(){
+  let temp=Temp::new();let(bank,log,e,_,_)=closed_startup_fixture(&temp,false);let id=e["orderId"].as_u64().unwrap();let index=moloch_live_runtime::startup_ack::Index::new(&bank).unwrap();
+  for(field,value)in [("actualOrderId",json!("999999")),("quantity",json!(1)),("quantity",json!(0)),("exchangeId",json!("999")),("marketId",json!("999")),("side",json!(if e["side"]=="YES"{"NO"}else{"YES"})),("action",json!("sell")),("price",json!("0.995000")),("receiptHash",json!("invalid")),("source",json!("foreign")),("type",json!("actual_order_terminal")),("orderId",json!(999999)),("receivedAt",json!("bad")),("processedAt",json!("1969-12-31T23:59:59.999999999Z")),("deferPlanningForPackage",json!(false))]{let mut bad=e.clone();bad[field]=value;let mut native=bank.engine().clone();assert!(native.advance(&bad).is_err(),"native accepted {field}");assert!(index.validate_closed_duplicate(&bank,&log,id,&bad).is_err(),"index accepted {field}");}
+ }
+ #[test]fn startup_closed_duplicate_uses_exact_nanosecond_native_clock_boundaries(){
+  let temp=Temp::new();let(bank,log,mut e,_,_)=closed_startup_fixture(&temp,false);let id=e["orderId"].as_u64().unwrap();let index=moloch_live_runtime::startup_ack::Index::new(&bank).unwrap();let at=bank.engine().report().unwrap()["at"].clone();e["receivedAt"]=at.clone();e["processedAt"]=at.clone();let mut native=bank.engine().clone();native.advance(&e).unwrap();assert!(index.validate_closed_duplicate(&bank,&log,id,&e).unwrap());
+  let stamp=chrono::DateTime::parse_from_rfc3339(at.as_str().unwrap()).unwrap();e["processedAt"]=json!((stamp-chrono::Duration::nanoseconds(1)).to_rfc3339());let mut native=bank.engine().clone();assert!(native.advance(&e).is_err());assert!(index.validate_closed_duplicate(&bank,&log,id,&e).is_err());
+  e["processedAt"]=at;e["receivedAt"]=json!((stamp+chrono::Duration::nanoseconds(1)).to_rfc3339());let mut native=bank.engine().clone();assert!(native.advance(&e).is_err());assert!(index.validate_closed_duplicate(&bank,&log,id,&e).is_err());
+ }
+ #[test]fn startup_index_is_invalidated_by_real_acceptance_and_rebuilt_for_next_ack(){
+  let temp=Temp::new();let(mut bank,log,_,_)=setup(&temp.0,1);let index=moloch_live_runtime::startup_ack::Index::new(&bank).unwrap();let e=ack(&bank.engine().order_records()[0]);let id=e["orderId"].as_u64().unwrap();assert!(!index.validate_closed_duplicate(&bank,&log,id,&e).unwrap());assert!(restore_ack(&mut bank,&e).unwrap());assert!(index.quote(&bank,id).is_err());let index=moloch_live_runtime::startup_ack::Index::new(&bank).unwrap();assert!(!index.validate_closed_duplicate(&bank,&log,id,&e).unwrap());assert!(!restore_ack(&mut bank,&e).unwrap());
+ }
+ #[test]fn startup_closed_fastpath_never_adopts_fundamental_or_unclosed_orders(){
+  let temp=Temp::new();let(bank,mut log,e,_,_)=closed_startup_fixture(&temp,false);let id=e["orderId"].as_u64().unwrap();let index=moloch_live_runtime::startup_ack::Index::new(&bank).unwrap();log.closed.remove(&id);assert!(!index.validate_closed_duplicate(&bank,&log,id,&e).unwrap());log.closed.insert(id);log.intents.get_mut(&id).unwrap()["fundamental"]=json!({"bindingSha256":"a".repeat(64)});assert!(!index.validate_closed_duplicate(&bank,&log,id,&e).unwrap());
  }
  #[test]fn recovered_ack_is_durable_once_then_restart_revalidation_writes_no_duplicate_history(){
   let temp=Temp::new();let(mut bank,_,policy,seed)=setup(&temp.0,1);let e=ack(&bank.engine().order_records()[0]);assert!(restore_ack(&mut bank,&e).unwrap());let report=bank.engine().report().unwrap();let original=fs::read(temp.0.join("bank/events.jsonl")).unwrap();assert!(!restore_ack(&mut bank,&e).unwrap());assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),original);drop(bank);
