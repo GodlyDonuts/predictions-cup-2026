@@ -7,6 +7,7 @@ pub mod legacy;
 pub mod realtime;
 pub mod session;
 pub mod source;
+pub mod semantic_floor;
 pub const SCALE: i128 = 1_000_000;
 pub const TICK: i128 = 5_000;
 pub type Result<T> = std::result::Result<T, &'static str>;

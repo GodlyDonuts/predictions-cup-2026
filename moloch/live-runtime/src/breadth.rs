@@ -105,10 +105,10 @@ pub fn replay(path:&Path)->Result<Value>{
 #[cfg(test)]mod tests{
  #[test]fn rotating_capture_preserves_sealed_prefix_and_independent_hash_chains(){
   let dir=std::env::temp_dir().join(format!("breadth-rotation-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));std::fs::create_dir(&dir).unwrap();let p=dir.join("capture.jsonl");
-  let mut r=Recorder::new_rotating(&p).unwrap();let f=frame(0,1,0,0.4,0.6,json!([]));r.segment_limit=r.row("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap()).unwrap().len() as u64+10;r.total_limit=r.segment_limit*3;
+  let mut r=Recorder::new_rotating(&p).unwrap();let f=frame(0,1,0,0.4,0.6,json!([]));r.segment_limit=r.row("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap()).unwrap().len() as u64+10;
   r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());let first=std::fs::read(&p).unwrap();
   r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert!(r.error.is_none());assert_eq!(r.segment,1);assert_eq!(std::fs::read(&p).unwrap(),first);assert_eq!(replay(&p).unwrap()["sourceSequence"],1);let next=dir.join("capture-part-0001.jsonl");assert_eq!(replay(&next).unwrap()["sourceSequence"],1);
-  r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert_eq!(r.error.as_deref(),Some("BREADTH_CAPTURE_LIMIT"));drop(r);
+  r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert!(r.error.is_none());assert_eq!(r.segment,2);r.total_limit=r.total_bytes;r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert_eq!(r.error.as_deref(),Some("BREADTH_CAPTURE_LIMIT"));drop(r);
   for name in ["capture.jsonl","capture-part-0001.jsonl","capture-part-0002.jsonl"]{std::fs::remove_file(dir.join(name)).unwrap();}std::fs::remove_dir(dir).unwrap();
  }
  #[test]fn rotation_refuses_existing_segment_without_overwriting_it(){
