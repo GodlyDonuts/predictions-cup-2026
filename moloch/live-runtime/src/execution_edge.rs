@@ -172,7 +172,18 @@ impl Model{
  // log proves closure, matching its ACK and immutable intent to native identity.
  fn refresh_closed_shadow(&mut self,bank:&Session,log:&DispatchLog)->Result<()>{
  let ids:Vec<_>=self.own.keys().filter(|id|log.closed.contains(id)).copied().collect();if ids.is_empty(){return Ok(())}
- let orders: BTreeMap<_,_>=bank.engine().order_records().into_iter().filter_map(|q|q["id"].as_u64().map(|id|(id,q))).collect();for id in ids{let q=orders.get(&id).ok_or("EDGE_CLOSED_QUOTE")?;let ack=log.acknowledgments.get(&id).ok_or("EDGE_CLOSED_ACK")?;let actual=ack.pointer("/data/orderId").or_else(||ack.get("id")).or_else(||ack.get("orderId")).and_then(|v|v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string()))).ok_or("EDGE_CLOSED_ACK_ID")?;let original=&log.intents.get(&id).ok_or("EDGE_CLOSED_INTENT")?["quote"];
+ let orders: BTreeMap<_,_>=bank.engine().order_records().into_iter().filter_map(|q|q["id"].as_u64().map(|id|(id,q))).collect();for id in ids{let q=orders.get(&id).ok_or("EDGE_CLOSED_QUOTE")?;let ack=log.acknowledgments.get(&id).ok_or("EDGE_CLOSED_ACK")?;let original=&log.intents.get(&id).ok_or("EDGE_CLOSED_INTENT")?["quote"];
+ let actual=if let Some(recovery)=log.recovered.get(&id){
+  need(recovery["kind"]=="recovered_ack"&&recovery["qid"]==id&&recovery["order"]==*ack&&log.attempted.contains(&id),"EDGE_CLOSED_RECOVERY_METADATA")?;
+  let actual=recovery["actualOrderId"].as_str().ok_or("EDGE_CLOSED_ACK_ID")?;
+  let order:baal_transport_service::Receipt=serde_json::from_value(ack.clone()).map_err(|_|"EDGE_CLOSED_RECOVERY_RECEIPT")?;
+  let fills:baal_transport_service::Receipt=serde_json::from_value(recovery["fills"].clone()).map_err(|_|"EDGE_CLOSED_RECOVERY_RECEIPT")?;
+  let tournament=order.data["tournamentId"].as_str().ok_or("EDGE_CLOSED_RECOVERY_TOURNAMENT")?;
+  need(self.tournament.as_ref().is_none_or(|t|t==tournament),"EDGE_CLOSED_RECOVERY_TOURNAMENT")?;
+  let processed=recovery["event"]["processedAt"].as_str().ok_or("EDGE_CLOSED_RECOVERY_CLOCK")?;
+  let event=crate::feedback::recovered_acknowledgment(original,actual,tournament,&order,&fills,processed).map_err(|_|"EDGE_CLOSED_RECOVERY_BINDING")?;
+  need(event==recovery["event"],"EDGE_CLOSED_RECOVERY_EVENT")?;actual.to_owned()
+ }else{ack.pointer("/data/orderId").or_else(||ack.get("id")).or_else(||ack.get("orderId")).and_then(|v|v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string()))).ok_or("EDGE_CLOSED_ACK_ID")?};
  need(q["retired"]==true&&bank.engine().live_order_bindings().get(&id)==Some(&actual)&&["id","marketId","exchangeId","side","action","price"].iter().all(|k|q[*k]==original[*k])&&(q["quantity"]==original["quantity"]||ack.pointer("/data/quantity").or_else(||ack.get("quantity")).and_then(Value::as_u64)==q["quantity"].as_u64()&&q["quantity"].as_u64().zip(original["quantity"].as_u64()).is_some_and(|(n,o)|n>0&&n<=o)),"EDGE_CLOSED_DISPATCH_BINDING")?;
  need(self.terminal.contains(&id)||self.terminal.len()<4096,"EDGE_TERMINAL_BOUND")?;self.terminal.insert(id);self.own.remove(&id);
  }Ok(())}
