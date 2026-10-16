@@ -1,0 +1,82 @@
+{
+  "allocationAuthority": false,
+  "baseCoverageCommit": "6a9fb00b6a7c607f98308c5a21e23fb808227bf0",
+  "cases": [
+    {
+      "calibratedLowerBound": false,
+      "candidate": "Joe Lombardo",
+      "contractId": "184",
+      "currentCandidateVsPartyMappingOnlyConditional": true,
+      "exchangeId": "872",
+      "marketId": "183",
+      "officialRootSha256": "2f719ff73551d460ebac7077d3a59f11fa0f102bb17a06ef777b364b680a0541",
+      "primaryOriginalGeneralNomineeRecordFound": true,
+      "publishedCandidateWinModelPoint": "0.783",
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "semanticReviewComplete": false,
+      "side": "YES",
+      "specificLimits": [
+        "Joseph on ballot versus Joe in forecast is explicit identity inference",
+        "Danielle Ford NPP on official ballot absent from captured CTM visible candidate-win table",
+        "None is not a winning candidate under NRS293.269(2)"
+      ],
+      "state": "NV",
+      "status": "official_two_county_general_records_verified_model_full_field_and_alias_review_pending"
+    },
+    {
+      "calibratedLowerBound": false,
+      "candidate": "Michele Tafoya",
+      "contractId": "362",
+      "currentCandidateVsPartyMappingOnlyConditional": true,
+      "exchangeId": "1050",
+      "marketId": "361",
+      "officialRootSha256": "e8c9fac356eb5aae41248dc530e506895008ee643e45d6a869c977de9f445ce8",
+      "primaryOriginalGeneralNomineeRecordFound": false,
+      "publishedCandidateWinModelPoint": "0.332",
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "semanticReviewComplete": false,
+      "side": "YES",
+      "specificLimits": [
+        "raw current ballot capture is SPA shell with no nominee row",
+        "candidate filing list contains primary participants; General heading does not certify nomination",
+        "official indexed general rows support Tafoya Republican but raw original body/crawl availability unavailable",
+        "Other vote share is not published individual win probability"
+      ],
+      "state": "MN",
+      "status": "partial_primary_index_representation_original_general_ballot_witness_missing"
+    },
+    {
+      "calibratedLowerBound": false,
+      "candidate": "Phil Scott",
+      "contractId": "314",
+      "currentCandidateVsPartyMappingOnlyConditional": true,
+      "exchangeId": "1002",
+      "marketId": "313",
+      "officialRootSha256": "fe761ceb0913d18aa2b6c10ae770e2f49cf4c765dd04844bcad3a4aa052b29af",
+      "primaryOriginalGeneralNomineeRecordFound": true,
+      "publishedCandidateWinModelPoint": "0.918",
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "semanticReviewComplete": false,
+      "side": "YES",
+      "specificLimits": [
+        "official current published workbook last updated September23; no clock renewal",
+        "official5-candidate field versus captured2-candidate CTM win table",
+        "constitutional majority or legislative choice among top3 not proven to be modeled",
+        "Janoo DEM/PROG fusion label prevents assumed blanket party complements"
+      ],
+      "state": "VT",
+      "status": "official_workbook_nominee_verified_majority_legislative_full_field_review_pending"
+    }
+  ],
+  "commonLimits": [
+    "No current executable book or new probability/risk allocation/ReviewInput/Control change",
+    "Future replacement/withdrawal/party change and exact resolver exceptions remain unestimated",
+    "Scheduled settlement metadata is not guaranteed certification or cash availability",
+    "No raw candidate addresses/phones/emails or access-challenge cookies are published"
+  ],
+  "executionAuthority": false,
+  "kind": "inactive_nominee_source_dossier_not_approval",
+  "schemaVersion": 1,
+  "sourceExtractCanonicalJsonSha256": "cb694a854034eab6609865acca55ce2d9079808d58fac9f5cfa1d3fe982ef07f",
+  "sourceManifestSha256": "557fc3dbe76e97fe7dd6b63524111ef9a179fe1272a8cc5f042ccde2a9917fd1"
+}

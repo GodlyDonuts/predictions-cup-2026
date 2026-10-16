@@ -1,0 +1,415 @@
+{
+  "approval": false,
+  "exactForecastAndContracts": {
+    "MN": {
+      "contractId": "362",
+      "exchangeId": "1050",
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.332",
+        "name": "Michele Tafoya",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPublishedDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 221893,
+        "file": "senate-minnesota.html",
+        "headersSha256": "f0ef85fc04e4b5385d20c5268242b848736c5c7928cec231fd6a303378694903",
+        "httpDate": "Fri, 16 Oct 2026 22:17:10 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:24.545441+00:00",
+        "requestStartedAt": "2026-10-16T22:51:24.225036+00:00",
+        "sha256": "db65729f0be04f245c9151d293a1307fc7dd9da28dc0bce5f4799b7a56994630",
+        "status": 200,
+        "url": "https://www.callthemap.com/senate/minnesota"
+      },
+      "marketId": "361",
+      "nodeReceipt": {
+        "bytes": 913,
+        "endpoint": "/markets/361/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "path": "nodes/market-361-58ee6d1fc84273c9.json",
+        "receivedAt": "2026-10-16T10:50:19.069Z",
+        "requestStartedAt": "2026-10-16T10:50:18.756Z",
+        "sha256": "58ee6d1fc84273c96efab2c7ef34950b52c65b66dee8fd318092f8366722c36a"
+      },
+      "predicate": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "Federal",
+        "raceId": "62968",
+        "raceName": "U.S. Senate Minnesota",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "98098",
+        "usState": "MN",
+        "winnerName": "Republican Party"
+      },
+      "rootSha256": "e8c9fac356eb5aae41248dc530e506895008ee643e45d6a869c977de9f445ce8",
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "side": "YES"
+    },
+    "NV": {
+      "contractId": "184",
+      "exchangeId": "872",
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.783",
+        "name": "Joe Lombardo",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPublishedDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 191356,
+        "file": "governors-nevada.html",
+        "headersSha256": "d7785f60dd8c30f762f693275682cfeb3da18888b392b338ccc3e25c301515ec",
+        "httpDate": "Fri, 16 Oct 2026 18:34:39 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:15.121401+00:00",
+        "requestStartedAt": "2026-10-16T22:51:14.823130+00:00",
+        "sha256": "a32349a41a5e3db86bb8c4fc7c8e04fb8aa99b9d1264f835429ffb1f938a5980",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/nevada"
+      },
+      "marketId": "183",
+      "nodeReceipt": {
+        "bytes": 908,
+        "endpoint": "/markets/183/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "path": "nodes/market-183-13b18d2b206b4dee.json",
+        "receivedAt": "2026-10-16T18:23:37.746Z",
+        "requestStartedAt": "2026-10-16T18:23:37.466Z",
+        "sha256": "13b18d2b206b4deed547ef4694dd5d261594c0de21889f0f9189d2cc565366eb"
+      },
+      "predicate": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "State",
+        "raceId": "76762",
+        "raceName": "Governor of Nevada",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "118965",
+        "usState": "NV",
+        "winnerName": "Republican Party"
+      },
+      "rootSha256": "2f719ff73551d460ebac7077d3a59f11fa0f102bb17a06ef777b364b680a0541",
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "side": "YES"
+    },
+    "VT": {
+      "contractId": "314",
+      "exchangeId": "1002",
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.918",
+        "name": "Phil Scott",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPublishedDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 167852,
+        "file": "governors-vermont.html",
+        "headersSha256": "d789df20b0f7fc3ed900f52ac7de5fc2e888aacbf0f7d77abb89f8ec3ce44bfd",
+        "httpDate": "Fri, 16 Oct 2026 22:20:23 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:18.547018+00:00",
+        "requestStartedAt": "2026-10-16T22:51:18.203974+00:00",
+        "sha256": "6b40696570d28f9615049eb6f6221dcc327339fd60746a7622e27d5a639e9d89",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/vermont"
+      },
+      "marketId": "313",
+      "nodeReceipt": {
+        "bytes": 910,
+        "endpoint": "/markets/313/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "path": "nodes/market-313-5b6ecc160df02127.json",
+        "receivedAt": "2026-10-16T06:26:22.741Z",
+        "requestStartedAt": "2026-10-16T06:26:22.467Z",
+        "sha256": "5b6ecc160df021276e1854a5d3f1a7c2a2fde320208e77d72573834abeeee012"
+      },
+      "predicate": {
+        "contractType": "Election Outcome",
+        "electionDate": "2026-11-03",
+        "officeLevel": "State",
+        "raceId": "76866",
+        "raceName": "Governor of Vermont",
+        "raceStage": "General",
+        "resolutionType": "Party Winner",
+        "stageId": "119069",
+        "usState": "VT",
+        "winnerName": "Republican Party"
+      },
+      "rootSha256": "fe761ceb0913d18aa2b6c10ae770e2f49cf4c765dd04844bcad3a4aa052b29af",
+      "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+      "side": "YES"
+    }
+  },
+  "executionAuthority": false,
+  "minnesotaOriginalGeneralBallotRowVerified": false,
+  "nevadaOfficialGovernorRows": [
+    {
+      "nameOnBallot": "FORD, AARON D.",
+      "partyOnBallot": "DEM"
+    },
+    {
+      "nameOnBallot": "FORD, DANIELLE",
+      "partyOnBallot": "NPP"
+    },
+    {
+      "nameOnBallot": "LOMBARDO, JOSEPH",
+      "partyOnBallot": "REP"
+    },
+    {
+      "nameOnBallot": "NONE OF THESE CANDIDATES",
+      "partyOnBallot": "--"
+    }
+  ],
+  "originalSourcePins": [
+    {
+      "bytes": 1036,
+      "contentType": "text/html",
+      "exitCode": 0,
+      "file": "nv-election-index.html",
+      "headersSha256": "ad8d690d30288c3b9e79d1cb4e0df84e817e9e4aa67bda9608e0b140f792b72e",
+      "httpDate": null,
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:05:08.653221+00:00",
+      "requestStartedAt": "2026-10-16T23:05:08.475759+00:00",
+      "sha256": "bf092c718fe97a1fc2f10faba10ca4b2a6290fadcda11167b67c8a7b5032476e",
+      "url": "https://www.nvsos.gov/sos/elections/election-information/2026-election-information",
+      "witnessClass": "access_challenge_not_candidate_evidence"
+    },
+    {
+      "bytes": 47218,
+      "contentType": "text/html; charset=utf-8",
+      "exitCode": 0,
+      "file": "mn-candidate-index.html",
+      "headersSha256": "da3feb4c787e04ab30651fa2db4e41245211af5fba6c232cb2d813e20a7c6e1a",
+      "httpDate": "Fri, 16 Oct 2026 23:05:14 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:05:15.708394+00:00",
+      "requestStartedAt": "2026-10-16T23:05:08.671231+00:00",
+      "sha256": "203fa5c3026f860d6a99ad7403d6bf4fc44f3182d16454d48cde7ece0d1328ab",
+      "url": "https://candidates.sos.mn.gov/",
+      "witnessClass": "locator_or_failed_not_economic_evidence"
+    },
+    {
+      "contentType": "text/html",
+      "error": "curl: (22) The requested URL returned error: 403\r\n",
+      "exitCode": 22,
+      "file": "vt-candidate-index.html",
+      "headersSha256": "16db1f7a1ee386684729dbffe128a7ce70fe92e3342db90278001729fb07e4e9",
+      "httpDate": "Fri, 16 Oct 2026 23:05:18 GMT",
+      "httpLastModified": null,
+      "httpStatus": 403,
+      "receivedAt": "2026-10-16T23:05:18.171188+00:00",
+      "requestStartedAt": "2026-10-16T23:05:15.781421+00:00",
+      "url": "https://sos.vermont.gov/elections/election-info-resources/candidates",
+      "witnessClass": "locator_or_failed_not_economic_evidence"
+    },
+    {
+      "bytes": 36279,
+      "contentType": "text/html",
+      "exitCode": 0,
+      "file": "vt-link-locator.html",
+      "headersSha256": "ed65d45fc8ebb1e11ac0dd22fe498dd92e5076f027364714c797025a5c39f735",
+      "httpDate": "Fri, 16 Oct 2026 23:06:38 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:06:38.719483+00:00",
+      "requestStartedAt": "2026-10-16T23:06:38.412872+00:00",
+      "sha256": "199c692c54f706c57dc6e1680409ef79ef58598fe5e145f4fb8534305f62fa89",
+      "url": "https://datacenterrecord.org/races/vt-governor",
+      "witnessClass": "locator_or_failed_not_economic_evidence"
+    },
+    {
+      "bytes": 164026,
+      "contentType": "text/html; charset=utf-8",
+      "exitCode": 0,
+      "file": "nv-douglas-official.html",
+      "headersSha256": "6ec5e43f64d591fcab0dabeb4d86d5a87248b992aa856698e2db8100497d6b79",
+      "httpDate": "Fri, 16 Oct 2026 23:06:41 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:06:41.941786+00:00",
+      "requestStartedAt": "2026-10-16T23:06:38.841941+00:00",
+      "sha256": "b431f8dfcbbb5cfaab259b2021890da6a6e8668f8018574cbefcc118db5146b2",
+      "url": "https://cltr.douglasnv.us/elections/2026-election-information/2026_general_election/who-is-on-my-ballot",
+      "witnessClass": "original_primary_document"
+    },
+    {
+      "bytes": 113956,
+      "contentType": "text/html; charset=UTF-8",
+      "exitCode": 0,
+      "file": "nv-washoe-official.html",
+      "headersSha256": "a29f6547b1171b8c9e39b89f39711f5afb53162ca45a31edadb91b9539d99c9d",
+      "httpDate": "Fri, 16 Oct 2026 23:06:46 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:06:47.405884+00:00",
+      "requestStartedAt": "2026-10-16T23:06:42.099478+00:00",
+      "sha256": "5db3c26ee46fead0e3cbbc07bc7eb6dbbf20ba08b3f70a9b095f356bc6e9a310",
+      "url": "https://www.washoecounty.gov/voters/information/",
+      "witnessClass": "original_primary_document"
+    },
+    {
+      "bytes": 15287,
+      "contentType": "text/html; charset=UTF-8",
+      "exitCode": 0,
+      "file": "mn-public-result.html",
+      "headersSha256": "28e38b2816801179d2ea103b3c4fddf437f2a064090bc9def8690ee0c60376c1",
+      "httpDate": "Fri, 16 Oct 2026 23:06:50 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:06:50.491801+00:00",
+      "requestStartedAt": "2026-10-16T23:06:47.508962+00:00",
+      "sha256": "7279e94c2a489181caa80ab30dad598b8c4c3f4f83dc1a079a3b40e884cfc5b0",
+      "url": "https://candidates.sos.mn.gov/CandidateFilingResults.aspx?candidateid=0&county=0&executive=True&federal=True&judicial=True&level=0&office=0&party=0&representative=True&schooldistrict=0&senate=True",
+      "witnessClass": "access_challenge_not_candidate_evidence"
+    },
+    {
+      "bytes": 103341,
+      "contentType": "text/html; charset=utf-8",
+      "exitCode": 0,
+      "file": "vt-constitution.html",
+      "headersSha256": "deacae6a3957d86dad92178054226258931414753a957ef0fc9e17b430fe6d0e",
+      "httpDate": "Fri, 16 Oct 2026 23:09:43 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:09:43.298863+00:00",
+      "requestStartedAt": "2026-10-16T23:09:38.274635+00:00",
+      "sha256": "e7ba4f42c66291c3bc62cc511c95969cc3acda5ade433d1c998f4dfecfe76cf9",
+      "url": "https://legislature.vermont.gov/statutes/constitution-of-the-state-of-vermont/",
+      "witnessClass": "original_primary_document"
+    },
+    {
+      "bytes": 1031544,
+      "contentType": "text/html",
+      "exitCode": 0,
+      "file": "nv-none-law.html",
+      "headersSha256": "9aa8b79dfae84ff7de0b21533f347fdd962ecb0998c1e6327315d25ee0b35254",
+      "httpDate": "Fri, 16 Oct 2026 23:09:45 GMT",
+      "httpLastModified": "Mon, 21 Sep 2026 20:49:48 GMT",
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:09:45.983709+00:00",
+      "requestStartedAt": "2026-10-16T23:09:43.340279+00:00",
+      "sha256": "4ce9599105f7005e65fec7d73faddc76d11bb692fda4ceedfd11db5cfea977af",
+      "url": "https://www.leg.state.nv.us/nrs/NRS-293.html",
+      "witnessClass": "original_primary_document"
+    },
+    {
+      "contentType": "text/html; charset=utf-8",
+      "error": "curl: (22) The requested URL returned error: 404\r\n",
+      "exitCode": 22,
+      "file": "nv-official-governor.html",
+      "headersSha256": "da963f63cb994ead3258776dba76e1ff2889f76aea0675aa0749b9490561b381",
+      "httpDate": "Fri, 16 Oct 2026 23:09:48 GMT",
+      "httpLastModified": null,
+      "httpStatus": 404,
+      "receivedAt": "2026-10-16T23:09:48.826850+00:00",
+      "requestStartedAt": "2026-10-16T23:09:46.019339+00:00",
+      "url": "https://int.gov.nv.gov/about/governor-joe-lombardo/",
+      "witnessClass": "locator_or_failed_not_economic_evidence"
+    },
+    {
+      "bytes": 1457,
+      "contentType": "text/html",
+      "documentedPublicUiAction": "Candidates in the General Election - Federal, State, and County Offices",
+      "exitCode": 0,
+      "file": "mn-general-candidates.txt",
+      "headersSha256": "78a31fa342c0259466379bb1510158613d4ac92c6690d99e925e9583d068bb18",
+      "httpDate": "Fri, 16 Oct 2026 23:05:54 GMT",
+      "httpLastModified": null,
+      "httpStatus": 302,
+      "method": "POST",
+      "receivedAt": "2026-10-16T23:05:54.081982+00:00",
+      "requestStartedAt": "2026-10-16T23:05:53.759565+00:00",
+      "sha256": "688ca56d2fd713e37bbacc5f943e365840228fac361f33b6467f623c709585d0",
+      "url": "https://candidates.sos.mn.gov/",
+      "witnessClass": "access_challenge_not_candidate_evidence"
+    },
+    {
+      "bytes": 286268,
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "exitCode": 0,
+      "file": "vt-general-candidates.xlsx",
+      "headersSha256": "ff03c70d6f041589d3059047f8b9a8cba5679f1791149e2046c28d6b37fe4f87",
+      "httpDate": "Fri, 16 Oct 2026 23:07:12 GMT",
+      "httpLastModified": "Wed, 23 Sep 2026 19:20:32 GMT",
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:07:12.760665+00:00",
+      "requestStartedAt": "2026-10-16T23:07:12.210345+00:00",
+      "sha256": "f646b3960ea5a305ad24122a6e4023b5a93fcd14eb46400952c8e68e0037e5fc",
+      "url": "https://outside.vermont.gov/dept/sos/Elections_Division/election_info_resources/candidates/2026_general_election_qualified_candidates.xlsx",
+      "witnessClass": "original_primary_document"
+    },
+    {
+      "bytes": 22261,
+      "contentType": "text/html",
+      "exitCode": 0,
+      "file": "mn-official-general-ballot.html",
+      "headersSha256": "17c6c67334f66b16dea26df192f813b6f3470aab21fee5378a40db8a5ac4ea56",
+      "httpDate": "Fri, 16 Oct 2026 23:07:36 GMT",
+      "httpLastModified": null,
+      "httpStatus": 200,
+      "receivedAt": "2026-10-16T23:07:37.053979+00:00",
+      "requestStartedAt": "2026-10-16T23:07:36.538985+00:00",
+      "sha256": "cc852d38d05272a90fd9501a85eb38c9e4badee9fc5efdf6064bd383cfee5f14",
+      "url": "https://pollfinder.sos.mn.gov/results?houseNumber=3026&id=107627",
+      "witnessClass": "original_SPA_shell_not_rendered_ballot"
+    },
+    {
+      "bytes": 26026,
+      "file": "mn-primary-index-representation.json",
+      "receivedAt": "2026-10-16 23:09:57 UTC",
+      "requestStartedAt": "2026-10-16 23:09:55 UTC",
+      "sha256": "5163d9bf260aca9491ea6f6bf1251e5a4f57a5b3ceb18636b2b2fc48726e946a",
+      "url": "https://myballotmn.sos.mn.gov/results?id=239074",
+      "witnessClass": "web_tool_representation_not_original_http_body"
+    }
+  ],
+  "sourceManifestSha256": "557fc3dbe76e97fe7dd6b63524111ef9a179fe1272a8cc5f042ccde2a9917fd1",
+  "vermontOfficialWorkbook": {
+    "governorRows": [
+      {
+        "nameOnBallot": "JUNE GOODBAND",
+        "office": "GOVERNOR",
+        "partyOnBallot": "PEACE AND JUSTICE",
+        "row": 8
+      },
+      {
+        "nameOnBallot": "AMANDA JANOO",
+        "office": "GOVERNOR",
+        "partyOnBallot": "DEM/PROG",
+        "row": 9
+      },
+      {
+        "nameOnBallot": "BRIAN JUDD",
+        "office": "GOVERNOR",
+        "partyOnBallot": "INDEPENDENT",
+        "row": 10
+      },
+      {
+        "nameOnBallot": "DEAN ROY",
+        "office": "GOVERNOR",
+        "partyOnBallot": "FREEDOM AND UNITY",
+        "row": 11
+      },
+      {
+        "nameOnBallot": "PHIL SCOTT",
+        "office": "GOVERNOR",
+        "partyOnBallot": "REPUBLICAN",
+        "row": 12
+      }
+    ],
+    "originalDocumentModified": "2026-09-23T19:19:12Z",
+    "selectionCriteria": "Last Updated: 9/23/2026"
+  }
+}
