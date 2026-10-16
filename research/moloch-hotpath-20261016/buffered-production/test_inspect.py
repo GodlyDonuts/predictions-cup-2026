@@ -68,5 +68,9 @@ class ComparisonTests(unittest.TestCase):
             except OSError:return
             with self.assertRaises(ValueError):m.original_json(link)
 
+    def test_exact_original_aggregate_baseline_is_present(self):
+        original=Path(__file__).resolve().parent.parent/'report.json'
+        self.assertEqual(m.sha(original.read_bytes()),m.BASELINE_SHA256)
+
 
 if __name__=='__main__':unittest.main()

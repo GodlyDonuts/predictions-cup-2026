@@ -10,6 +10,7 @@ import stat
 import time
 
 BASE_SOURCE_SHA256 = '537b7e3e3da0cc4035876fc8232168b9fecd796779e5897ce6fefecd903eba56'
+BASELINE_SHA256 = 'd44c87ab55e83e1308b4d04ac9ad2b0087464fc2e7f515c4bb1c40c1830e0173'
 
 
 def sha(raw):
@@ -79,12 +80,16 @@ def diagnostic(value, boundary, pid, since_ms, captured_ms, base):
 
 
 def diagnostics(root,pid,since_ms,base):
-    captured=datetime.now(timezone.utc).isoformat();values={}
+    values={}
     for name in ['progress.json','status.json','discovery-schedule.json']:
         try:value,boundary=original_json(root/name)
         except FileNotFoundError:values[name]={'accepted':False,'reason':'missing'};continue
-        values[name]=diagnostic(value,boundary,pid,since_ms,base.clock(captured),base)
-    return {'capturedAt':captured,'files':values,'atomicMultiFileSnapshot':False}
+        except ValueError as error:
+            if str(error)!='ORIGINAL_FILE_CHANGED':raise
+            values[name]={'accepted':False,'reason':'concurrent_atomic_replacement'};continue
+        completed=datetime.now(timezone.utc).isoformat()
+        values[name]={**diagnostic(value,boundary,pid,since_ms,base.clock(completed),base),'readCompletedAt':completed}
+    return {'capturedAt':datetime.now(timezone.utc).isoformat(),'files':values,'atomicMultiFileSnapshot':False}
 
 
 def checked_delta(a,b,base):
@@ -134,6 +139,7 @@ def comparison(baseline,current,baseline_sha):
 def capture(root,pid,since,source_commit,binary_sha,source_path,source_sha,baseline_path):
     base=load_base();since_ms=base.clock(since)
     baseline,baseline_boundary=original_json(baseline_path)
+    if baseline_boundary['sha256']!=BASELINE_SHA256:raise ValueError('ORIGINAL_BASELINE_CHANGED')
     source=pinned_source(source_path,source_sha,source_commit)
     initial=base.proc_sample(pid);binary=executable_identity(pid,binary_sha)
     if base.proc_sample(pid)['startTicks']!=initial['startTicks']:raise ValueError('PID_REUSED_DURING_IDENTITY')
