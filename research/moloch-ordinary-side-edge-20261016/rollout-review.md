@@ -1,16 +1,16 @@
 # Ordinary side-edge runtime rollout — private review draft
 
-The private draft `C:/Users/csram/AppData/Local/Moloch/ops/paper6_side_edge_rollout.py` currently hashes to `00cda5952dc4f6362cedcc5ae008407d0c831b25796eb41ceae3e0ff16b3fa82`. **It is unfrozen and refuses every rollout mode.** Candidate commit, exact changed-file hashes, build path and actual check counts remain unset until the execution owner supplies the checked source freeze. No SSH, build, service, queue, account/API or rollout mode was executed by this task.
+The private draft `C:/Users/csram/AppData/Local/Moloch/ops/paper6_side_edge_rollout.py` currently hashes to `6016ec266e6271884b711b1d40f0877b0b3d9391444cb414367d22a31a802e61`. **It refuses every rollout mode while actual check counts remain unfrozen.** Candidate source and exact hashes are now pinned; test/release work is still running under the execution owner. No SSH, build, service, queue, account/API or rollout mode was executed by this task.
 
 The existing inter-read operator is unchanged, SHA256 `4619c47fc7639f18a468bbb3f4fd8d85136cfe5f6dbb4ddf3cd31b4b334e75fd`. This is a separate draft and output namespace. Root remains sole execution owner/publisher; local synthetic guard checks are not operational deployment evidence or a reason to interrupt the healthy worker.
 
 ## Preserved authority and provenance
 
-Linux CLI remains `python3 SCRIPT stage|stop|promote ABS_MANIFEST APPROVED_MANIFEST_SHA256`, without a default action. Before loading the approved manifest or helper, `freeze_ready()` rejects unset source/build/check constants. Import is inert. Explicit exceptions enforce guards even with Python optimization.
+Linux CLI remains `python3 SCRIPT stage|stop|promote ABS_MANIFEST APPROVED_MANIFEST_SHA256`, without a default action. Before loading the approved manifest or helper, `freeze_ready()` rejects unset source/build/check constants. The current exact rejection is `CHECK_COUNTS_NOT_FROZEN`. Import is inert. Explicit exceptions enforce guards even with Python optimization.
 
 Native engine identity must remain `8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754`. There is **no bridge, detached bank copy or prefix-replay operation**. Original twelve bridge entries and bytes are captured and checked unchanged. Bank, actual positions/fills, principal, dispatch/unknown state and original account budgets remain authoritative.
 
-The original245-input R2 source manifest must hash to `2f53e211cd1c5d9476f71f94b596fb75bc1bbcb541789f8750f4d62da25fbefa`. Candidate inputs must be its exact union with the specifically frozen new runtime files; every native/other input remains byte-identical. The provisional allowed path set is:
+The original245-input R2 source manifest must hash to `2f53e211cd1c5d9476f71f94b596fb75bc1bbcb541789f8750f4d62da25fbefa`. Frozen candidate source is `870ce889d51a04c654a93785277c47ea33b52bea`, builder `/tmp/moloch-side-edge-20261016-r1`. Candidate248 inputs must be its exact union with three new runtime files; every native/other input remains byte-identical. The exact six allowed changes are:
 
 - `moloch/live-runtime/src/lib.rs`
 - `moloch/live-runtime/src/worker.rs`
@@ -19,9 +19,22 @@ The original245-input R2 source manifest must hash to `2f53e211cd1c5d9476f71f94b
 - `moloch/live-runtime/tests/stream_token_retry.rs`
 - `moloch/live-runtime/src/ordinary_side_edge.rs`
 
-Any separate ordinary-side-edge test file must be explicitly confirmed and added during final source review; no wildcard path is accepted. Runtime/lib/worker/token module/token tests/side-edge module are required in the frozen map. Hashes cannot be substituted with a purported commit from a message: actual builder bytes, original source manifest, validation evidence, compiled binary and engine identity must agree. Exact required positive passed counts and zero failures are independently frozen for worker, prize utility, token retry and side-edge checks, plus a successful release build. At least the prior81 worker and12 prize checks must remain represented. None are currently asserted passed for a candidate.
+There is no separate ordinary-side-edge test file: its15 tests are inline, with four additional worker tests. Runtime/lib/worker/token module/token tests/side-edge module are required in the frozen map. Hashes cannot be substituted with a purported commit from a message: actual builder bytes, original source manifest, validation evidence, compiled binary and engine identity must agree. Exact required positive passed counts and zero failures are independently frozen for worker, prize utility, token retry and side-edge checks, plus a successful release build. At least the prior81 worker and12 prize checks must remain represented. None are currently asserted passed for a candidate.
+
+| Runtime-relative path | Exact frozen raw SHA256 |
+| --- | --- |
+| `src/lib.rs` | `920e074ac0166bbabeb886c0ad6a67c0fa0cfc96b649e5d3301cf61ad58989c0` |
+| `src/ordinary_side_edge.rs` | `4e7aa70f6a6acef7070fce2affed5b7d2129108961993254e64080ad03ce4715` |
+| `src/prize_utility.rs` | `a5997c6beaf1adfa0f9e9aef6bc1c804d30fb1f0aad9867a3609bd7ed23ee747` |
+| `src/stream_token_retry.rs` | `a305003b39ae1a0433f08fc68adc62f66a807502c1bf1935525fdd21e494906a` |
+| `src/worker.rs` | `520b845af5515467bddcab5238f59e7e51b734344db08cc1d0432d8bfa62d680` |
+| `tests/stream_token_retry.rs` | `8f184abe8faa5c2b6f22200f440c8724941263b22b799cc75208cddc95a4f14f` |
+
+All six hashes independently match the named Git commit's LF bytes locally. This verifies the source pin, not remote builder fidelity or build success. Root independently checked the full native input map unchanged; stage must still check all actual builder bytes.
 
 The prior receipt is exactly `/tmp/moloch-paper6-inter-read-token-recovery-rollout.json`. Its **actual raw hash** must match the execution-owner-approved manifest. It must bindPID510591, source`4ee163561b8018e58d945b38b4f4eea5cd7b09ee`, the unchanged native identity and exact old release/binary/control values. Stage/stop also verify actual `/proc` executable path/hash and exact `release run control` arguments. No abbreviated binary/hash from a message becomes a passing pin.
+
+The script additionally pins original prior receipt SHA`3525d580edea47480c284c4c8d36b477111383a8abc3e9d2d7c6903cfb82c865`, control SHA`7e7cb15ab9dc853887edec5768690fc682f01753d59c9109f102dd6f20641fa2` and unit SHA`edc4bd56a7d307f46db642e869e4c119359740072fce92a118a59bf00270fdfb`. The reviewed manifest and actual files must both match these exact values.
 
 The only accepted restart-directory entries are:
 
@@ -54,4 +67,4 @@ Only that witnessed STOP is archived. Global STOP remains absent. The candidate 
 
 Thirty-four pure guard/import/syntax checks passed: unfrozen refusal, exact binary/enum differences, existing-mode preservation under null, cap/rate/daily/activation tampering, source union/native tampering, wrong/missing source/check counts, priorPID/engine/binary mismatch and independent actual-STOP/status witness changes. Synthetic in-memory frozen values were used only to exercise guard branches; they never populate the on-disk draft or run a mode. The prior operator hash remains exact.
 
-Pending root inputs are the checked candidate commit/build path, exact per-file hashes and possible additional test path, actual test/release evidence and compiled binary hash, plus raw prior receipt/control/unit and release pins for the approved manifest. Until those are supplied and reviewed, this document is an intentionally non-executable rollout review. No additional human authorization flow is introduced: root is the existing execution owner and supplies the actual review witness.
+Pending root inputs are actual test/release results and exact required counts, compiled binary hash, source/build/validation artifact hashes, and full old release/binary/control paths for the approved manifest. Until those are supplied and reviewed, this document is an intentionally non-executable rollout review. No additional human authorization flow is introduced: root is the existing execution owner and supplies the actual review witness.
