@@ -52,9 +52,17 @@ pub struct Metrics{
  pub modeled_sleeve_basis:i128,
 }
 pub struct Plan{head:Value,report_sha:String,dispatch_sha:String,policy_sha:String,model_sha:String,semantic_sha:String,legs:Vec<Leg>,metrics:Metrics,expires:u64,proof:Value}
+/// Genuine original qualification capability. A JSON clone is an audit value,
+/// never a replacement for this non-deserializable immutable factory product.
+pub struct Reservation{event:Value,plan_sha:String}
+impl Reservation{
+ pub fn event(&self)->&Value{&self.event}pub fn plan_sha(&self)->&str{&self.plan_sha}
+ pub fn validate_plan(&self,plan:&Plan)->Result<()>{need(hash(plan.proof())?==self.plan_sha&&self.event["qualification"]["planSha256"]==self.plan_sha&&hash(&self.event["qualification"])?==self.event["proofHash"],"PROB_RESERVATION_PLAN_CHANGED")}
+}
 impl Plan{
  pub fn legs(&self)->&[Leg]{&self.legs}pub fn metrics(&self)->&Metrics{&self.metrics}pub fn proof(&self)->&Value{&self.proof}pub fn expires_at_ms(&self)->u64{self.expires}
  pub fn model_sha256(&self)->&str{&self.model_sha}pub fn semantic_review_sha256(&self)->&str{&self.semantic_sha}
+ pub fn qualified_reservation(&self,bank:&Session,log:&DispatchLog,scope:&Scope,surface:&BoundSurface,c:&Compiled,p:&Policy,now:u64)->Result<Reservation>{let event=self.reserve_event(bank,log,scope,surface,c,p,now)?;let r=Reservation{event,plan_sha:hash(&self.proof)?};r.validate_plan(self)?;Ok(r)}
  /// Native capability is a DIFFERENT event/class from guaranteed-floor
  /// packages. Research surfaces can be optimized offline but cannot mint it.
  /// The immutable model artifact, review and risk allowlists remain runtime
