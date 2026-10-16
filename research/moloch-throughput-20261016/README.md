@@ -6,6 +6,10 @@ The human reported only three completed trades over two hours. Task [#147](https
 
 Sole421878/source5577e984 started07:43:57UTC; fresh trading/realtime at07:53:10, five new ACKs/zero new fills, binary matched, STOP absent. Ten owned-read checks,56 worker checks and optimized build pass. Native accounting identity and ten original bridges unchanged. [Promotion](owned-refresh-production-rollout.json), [dated verification](owned-refresh-live-verification.json). One bounded overdue positive execution-clock lot can nominate a real tape/book refresh without an old SELL;30s cooldown from actual successful reads plus alternating/rotating scheduling preserve normal breadth. Fresh trading is verified; first eligible owned-age nomination and improved sustained turnover remain to be verified. The one-share exit-depth barrier is unchanged. Prior67-share roundtrip realized-.335; ordinary realized now-119.435, no profitability claim. Earlier dated sections are retained.
 
+## Checked follow-up; production remains source5577e984
+
+The unpublished-staging clone candidate passed actual Session/native checks and an original-prefix component benchmark (2.973x median, excluding network/durability/full cycles). [Exact evidence](native-hotpath-audit.md). It has not been promoted; the existing production worker continues while a combined useful upgrade is prepared. SDK canonical fill-tape endpoint corrections are also checked source, not active replacement. Current market-data/fill throughput still needs improvement, and no profitability is claimed.
+
 ## Latest actual production —07:26 UTC
 
 Current sourceea733f6f/PID419050 is fresh and running; original financial history and ten bridges preserved. Nine new ACKs; six fill rows are ONE67-share BUY at.605, cost40.535, still open. Original request68 reflects100% paired best-level sizing (bid68/ask1428), not the10,000-share ceiling. Deeper depth is currently ignored. Earlier tiny inherited sales and unfilled1868-share requests are different cases. [Sizing aggregate](flow-sizing-observation.json), [live observation](flow-live-verification.json).
