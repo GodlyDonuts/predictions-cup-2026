@@ -273,10 +273,23 @@ class PretriggerReplayTests(unittest.TestCase):
     setUp=ReplayTests.setUp
     fixture=ReplayTests.fixture
     # Run only these new methods, not inherited baseline methods a second time.
+    def sampler_fixture(self, producer, **kwargs):
+        S=v.known_sampler(producer)
+        raw=Path(S.__file__).read_bytes()
+        # A checkout may use ONLY its already reviewed finite CRLF variant.
+        # Synthetic capture evidence must still pin the approved LF producer;
+        # this is fixture construction, never capture-admission normalization.
+        self.assertIn(v.sha(raw),v.SAMPLERS[v.PRODUCER_VERSIONS[producer]][1])
+        raw=raw.replace(b'\r\n',b'\n')
+        self.assertEqual(v.sha(raw),producer)
+        captured=self.root/'fixture-reviewed-producer-lf.py'
+        with captured.open('xb') as stream:stream.write(raw)
+        S.__file__=str(captured)
+        return self.fixture(sampler=S,**kwargs)
     def pretrigger(self, producer=None, stage='hook'):
         from test_trade_triggered_observer import envelope
-        S=v.known_sampler(producer or v.PRETRIGGER_LF)
-        f=self.fixture(mode='trade',sampler=S);f.clock=35000;f.sig(35000);f.clock=40010
+        f=self.sampler_fixture(producer or v.PRETRIGGER_LF,mode='trade');S=f.sampler
+        f.clock=35000;f.sig(35000);f.clock=40010
         S.trace_cache_poll(f.study,'/v1/quotes',f.trace,lambda *a,**k:Response(S.compact(external(39000)).encode()))
         def fresh():
             f.clock=40050;f.sig(39950,2,f.tail.previous);f.clock=40060
@@ -323,7 +336,7 @@ class PretriggerReplayTests(unittest.TestCase):
         with self.assertRaisesRegex(v.Rejected,'SIG_DRAIN_READ_BOUND'):f.verify()
     def test_new_predrain_rotation_replays_original_new_segment_book(self):
         from test_trade_triggered_observer import envelope
-        S=v.known_sampler(v.PRETRIGGER_LF);f=self.fixture(mode='trade',format='breadth',sampler=S);f.clock=40010
+        f=self.sampler_fixture(v.PRETRIGGER_LF,mode='trade',format='breadth');S=f.sampler;f.clock=40010
         S.trace_cache_poll(f.study,'/v1/quotes',f.trace,lambda *a,**k:Response(S.compact(external(39000)).encode()))
         next_path=self.root/'source-part-0001.jsonl'
         event={'source':'official_sig_realtime','event':'markets_batch','receivedAt':S.stamp(39950),'payload':{'markets':[{'marketId':'1','batch':{'delivery':{'model':'best-effort-authoritative-resync','revision':1,'previousRevision':0},'books':[{'exchangeId':'101','asOf':{'sequence':1,'at':S.stamp(39950)},'bids':[{'price':'.4','quantity':10}],'asks':[{'price':'.42','quantity':10}]}],'trades':[]}}]}}
