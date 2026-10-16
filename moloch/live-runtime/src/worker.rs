@@ -836,6 +836,39 @@ fn physical_preflight_ready(q:&Value,never_attempted:bool,has_intent:bool,at:u64
  let early=moloch_live_runtime::dispatch_window::may_prefetch(q,never_attempted,has_intent,at);
  q["retired"]==false&&never_attempted&&(early||q["activationAt"].as_u64().is_some_and(|v|v<=at))&&q["expiresAt"].as_u64().is_some_and(|v|v>at.saturating_add(5000))&&!q["cancelEffectiveAt"].is_u64()
 }
+trait OrdinaryPreflightReads{
+ fn now_ms(&self)->u64;
+ fn guarded(&mut self)->Result<bool>;
+ fn read(&mut self,endpoint:Endpoint)->Result<Receipt>;
+}
+/// A stale book is not evidence that a quote is competitive. Refresh only the
+/// original book first; a far floor must not consume six unrelated account
+/// reads. A positive result still obtains the entire independent seven-fact
+/// packet. No earlier book is substituted for its final physical book receipt.
+fn ordinary_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut RestSource,q:&Value,reads:&mut impl OrdinaryPreflightReads)->Result<Option<(Value,SnapshotSet)>>{
+ use moloch_live_runtime::quote_priority::{self,Class};
+ log.require_resolved_attempts()?;let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+ let mut current=quote(bank,id)?;
+ if !physical_preflight_ready(&current,log.never_attempted(id),log.intents.contains_key(&id),reads.now_ms()){return Ok(None)}
+ let initial=quote_priority::from_native(bank,&c.scope,std::slice::from_ref(&current),reads.now_ms(),None)?;
+ let class=initial.assessments.first().ok_or("LIVE_QUOTE_PRIORITY_MISSING")?.decision.class;
+ if matches!(class,Class::Deferred|Class::Inactive){return Ok(None)}
+ if !reads.guarded()?{return Ok(None)}
+ if class==Class::NeedsRefresh{
+  let market=current["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.to_owned();
+  let book=reads.read(Endpoint::OrderBook{market_id:market,depth:20})?;
+  accept_fresh_book(bank,c,&current,&book,source)?;current=quote(bank,id)?;
+  let at=reads.now_ms();
+  if !physical_preflight_ready(&current,log.never_attempted(id),log.intents.contains_key(&id),at){return Ok(None)}
+  let refreshed=quote_priority::from_native(bank,&c.scope,std::slice::from_ref(&current),at,None)?;
+  let class=refreshed.assessments.first().ok_or("LIVE_QUOTE_PRIORITY_MISSING")?.decision.class;
+  if matches!(class,Class::NeedsRefresh|Class::Deferred|Class::Inactive){return Ok(None)}
+  if !reads.guarded()?{return Ok(None)}
+ }
+ let facts=snapshots_for_market(c,current["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,|ep|reads.read(ep))?;
+ accept_fresh_book(bank,c,&current,&facts.book,source)?;
+ Ok(Some((quote(bank,id)?,facts)))
+}
 fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,prior_window:u64)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
  if existing_target_busy(bank,log,ex)?{return Ok(())}
@@ -986,8 +1019,16 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   // same read-only facts. No intent/attempt or HTTP write exists at this stage.
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());
   if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(prefetch_started),"qid":qid,"stage":"started","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"expiryExtended":false}));}
-  let facts=snapshots(t,c,&q)?;accept_fresh_book(bank,c,&q,&facts.book,source)?;
-  let current=quote(bank,qid)?;let final_at=now();
+  struct LiveReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime}
+  impl OrdinaryPreflightReads for LiveReads<'_>{
+   fn now_ms(&self)->u64{now()}
+   fn guarded(&mut self)->Result<bool>{refresh_controls(self.c,self.authority,self.stream)?;Ok(!queue_has_unknown(self.t)?)}
+   fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
+  }
+  let Some((current,facts))=ordinary_preflight(c,bank,log,source,&q,&mut LiveReads{t,c,authority,stream})?else{
+   authority.clear_ready();let assessment=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&[quote(bank,qid)?],now(),None)?;
+   let _=atomic_json(&c.root.join("quote-book-prefilter.json"),&json!({"at":iso(now()),"qid":qid,"assessment":assessment,"stage":"deferred_before_account_packet","physicalAttempted":false,"priceChanged":false,"expiryExtended":false}));return Ok(())
+  };let final_at=now();
   let native_active=current["activationAt"].as_u64().is_some_and(|t|t<=final_at);
   if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(final_at),"qid":qid,"stage":"facts_complete","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"prefetchElapsedMs":final_at.saturating_sub(prefetch_started),"remainingLifetimeMs":current["expiresAt"].as_u64().map(|t|t.saturating_sub(final_at)),"nativeActive":native_active,"retired":current["retired"],"cancelPending":current["cancelEffectiveAt"].is_u64(),"expiryExtended":false}));}
   if current["retired"]==true||current["cancelEffectiveAt"].is_u64()||current["expiresAt"].as_u64().is_none_or(|v|v<=final_at+3000){if current["retired"]==false{retire_never_sent(bank,log,&current)?}continue}
