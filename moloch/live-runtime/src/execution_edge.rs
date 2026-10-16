@@ -148,6 +148,13 @@ impl Model{
  /// cannot enter this ordinary passive-entry training denominator.
  pub fn track_attempt(&mut self,bank:&Session,log:&DispatchLog,qid:u64,now:u64)->Result<bool>{
  self.bind(bank)?;need(self.disabled.is_none()&&now>=self.last,"EDGE_DISABLED_OR_PAST_QUERY")?;
+ // A durable long-horizon strategy tag excludes this original intent from the
+ // ordinary short-horizon denominator, including restored ACKed/closed intents.
+ // This is not a terminal proof: its own resting-liquidity shadow is preserved.
+ if log.intents.get(&qid).is_some_and(|i|!i["fundamental"].is_null()){
+  need(log.attempted.contains(&qid),"EDGE_ORIGINAL_ATTEMPT_REQUIRED")?;
+  self.diagnostics.ignored_nonentry+=1;return Ok(false)
+ }
  need(log.attempted.contains(&qid)&&!log.acknowledgments.contains_key(&qid)&&!log.closed.contains(&qid),"EDGE_ORIGINAL_ATTEMPT_REQUIRED")?;
  if self.pending.contains_key(&qid)||self.unavailable.contains_key(&qid){return Ok(false)}
  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("EDGE_QUOTE")?;
