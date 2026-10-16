@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "studyId": "moloch-trade-trigger-20261016-analysis-v1",
+  "declaredAtUtc": "2026-10-16T14:58:44Z",
+  "status": "PREDECLARED_BEFORE_TRADE_MODE_OUTCOME_INSPECTION",
+  "samplingSourceCommit": "83a122ef9141df9a7be989717d10dfb3ad46a813",
+  "requiredSamplingMode": "first_observed_public_trade_v1",
+  "requiredSamplingPolicySha256": "031edcb2d4d6ca144e89d86b467e6b879113f1e172c3ef19457f2b577996717b",
+  "scope": {
+    "population": "Valid emitted known-direction public-trade-trigger decisions in prospectively named cohorts, not the complete public trade population.",
+    "mappingKind": "direct_party_reference",
+    "candidateAnalogMappingsExcluded": true,
+    "resolutionEquivalenceCertified": false,
+    "cohortManifest": "Before outcomes are opened, freeze all included cohort IDs, original producer bytes/SHA256, sampling-policy hash, source/config/mapping hashes, sealed input file hashes/bytes and UTC cutoff. Never substitute a Git newline-normalized producer hash.",
+    "legacyBookAndV7FlowCompleteCohortsIncluded": false,
+    "outcomesInspectedForThisProtocol": false,
+    "analyzerImplementedByThisDeclaration": false
+  },
+  "identityAndClustering": {
+    "globalEventKey": ["trigger.record.ticker", "trigger.record.tradeId"],
+    "deduplicationScope": "All included scopes, files and cohorts together, before any feature, label, fold or model selection.",
+    "immutableEconomicFields": ["ticker", "tradeId", "sourceTsMs", "quantity", "yesPrice", "noPrice", "direction", "isBlockTrade"],
+    "economicComparison": "Compare quantity/prices by exact decimal value; preserve all original byte representations. Do not mistake equivalent decimal spelling or transport metadata for a different economic event.",
+    "economicConflictPolicy": "Quarantine the entire event key on any conflicting immutable economic field; report counts. Do not choose the apparently better row.",
+    "transportOnlyDifferences": "Keep original provenance for every occurrence. Different receipt/availability, SID, sequence, stream epoch or enclosing body hash alone does not create a new economic event when immutable fields agree.",
+    "representativeAscendingOrder": ["decisionMs", "numeric marketId", "numeric exchangeId", "samplingPolicySha256", "original producer SHA256", "original cohort ID", "original file SHA256", "original line index", "sampleId"],
+    "representativeTiming": "Select the representative before inspecting feature completeness or any horizon label. Incomplete or unlabeled representatives are not replaced by another scope/cohort occurrence.",
+    "sampleIdValidation": "Preserve the original sampleId. Verify the exact producer formula SHA256(compact({policy:samplingPolicySha256,trigger:originalTrigger,bookSampleId:derivedOriginalBookSampleId})); verify bookSampleId from marketId, exchangeId, original SIG row hash, external body/state hash and decisionMs. Do not rewrite trade IDs through the legacy book-only reader.",
+    "minimumTickerSpacingMs": 1000,
+    "perHorizonWindowMs": "max(1000, horizonMs + 3000)",
+    "clusterRule": "For each horizon, sort canonical events by the representative order and greedily retain at most one event per ticker within the full decision-to-horizon-plus-slack window. A retained event consumes its window even if later found feature/label-incomplete; no alternative-event rescue.",
+    "clusterBeforeCompletenessFiltering": true,
+    "randomSubsamplingOrOutcomeBasedThinning": false,
+    "unobservedSkippedIdentityPolicy": "Producer skip counters are reported; skipped identities absent from emitted rows cannot be reconstructed or assigned zero features/outcomes.",
+    "independenceClaim": false
+  },
+  "causalityAndCommonCohort": {
+    "sameTenFeatureCompleteEventsForAllModels": true,
+    "commonCohortPerHorizon": "After global representative selection and deterministic time clustering, require all ten original finite features and both executable-side labels for that horizon. BBO/local/price controls cannot gain coverage by ignoring missing trigger or external columns.",
+    "horizonCohortsMayDiffer": "Report exact per-horizon counts/hashes; never treat unequal horizon sets as a controlled holding-period comparison.",
+    "missingPolicy": "No zero imputation, interpolation, renewed clocks, inferred direction, invented quantity, substitute scope, fabricated labels or feature clipping. Count each missing/rejected category explicitly.",
+    "requiredOriginalClocks": "Preserve execution, receipt, collector availability, source export, first observer availability, decision, SIG source/receipt/observation and label availability clocks. Validate the original sampler's pinned bounds and original causal lag anchors.",
+    "triggerClockOrder": "sourceTsMs <= sourceExportMs <= observerFirstAvailableMs <= firstObservedAtMs == decisionMs; receivedMs <= availableMs <= sourceExportMs. Original source may be <=1000ms ahead of receipt/collector availability under the validated policy, but never ahead of observer availability/decision; no clamping or renewed clocks.",
+    "featureAvailability": "Every feature and lag anchor must have original first availability no later than decision; target/execution-to-observer age is not relabeled as network latency.",
+    "invalidSourceOrIdentity": "Fail closed for malformed provenance/schema; quarantine economic event conflicts; report rejected coverage without fabricating a healthy tape. No replacement receipt is manufactured."
+  },
+  "features": {
+    "existingPriceSeven": ["externalLogitDelta1s", "externalLogitDelta5s", "externalLogitDelta30s", "externalImbalance", "sigImbalance", "sigSpread", "externalSigLogitGap"],
+    "fixedTriggerExtension": [
+      {
+        "name": "triggerDirection",
+        "formula": "Original validated trigger.record.direction: +1 for documented YES taker, -1 for documented NO taker; never infer from price movement or missing values."
+      },
+      {
+        "name": "triggerSignedLogQuantity",
+        "formula": "trigger.record.direction * ln(1 + exact original positive trigger.record.quantity). Preserve original decimal in provenance; only the model transform uses finite floating arithmetic."
+      },
+      {
+        "name": "triggerExecutionToObserverAgeSeconds",
+        "formula": "(trigger.firstObservedAtMs - trigger.record.sourceTsMs) / 1000; require original nonnegative age within the pinned sampling policy."
+      }
+    ],
+    "blockTradePolicy": "Include otherwise eligible known-direction events without post-outcome block-trade filtering; report block/nonblock coverage descriptively. No extra block indicator feature.",
+    "featureSearchOrInteractions": false,
+    "optionalSignedFlowWindowsAdded": false,
+    "terminalProbabilityInterpretation": false
+  },
+  "targetsAndCosts": {
+    "horizonsMs": [1000, 3000, 10000, 30000, 120000],
+    "anchor": "Original decisionMs, not a retrospectively moved trigger/receipt clock.",
+    "labelSlackMs": 3000,
+    "labelRule": "Original first later valid SIG book with source and receipt at or after decision+horizon and at most decision+horizon+3000ms; actual source gaps/invalidity censor rather than synthesize labels. Label observer availability must precede frozen analysis cutoff.",
+    "quantityShares": "1",
+    "requiredDisplayedCapacity": "At least one share at both original entry BBO sides and future exit BBO sides. No full-position top-of-book assumption.",
+    "yesNetReturn": "future YES bid - original YES ask - assumedRoundTripFee - buffer",
+    "noNetReturn": "original YES bid - future YES ask - assumedRoundTripFee - buffer",
+    "assumedRoundTripFee": "0.000000",
+    "bufferPerShare": "0.005000",
+    "accounting": "Compute source prices, costs and selected outcome sums with exact decimals; convert targets to finite floats only for regression. Future labels must reproduce original recorded crossing returns exactly.",
+    "executionCaveat": "Displayed executable-side capacity is a counterfactual without own-volume removal, queue priority, physical latency or assured fills; no actual order/profit is inferred."
+  },
+  "models": [
+    {"id": "unchanged_sig_bbo", "inputs": [], "predictionBothSides": "-(original YES ask - original YES bid) - assumedRoundTripFee - buffer", "fit": false},
+    {"id": "sig_local_ridge", "inputs": ["sigImbalance", "sigSpread"], "fit": true},
+    {"id": "price_seven_ridge", "inputs": "existingPriceSeven", "fit": true},
+    {"id": "price_plus_trigger_ridge", "inputs": "existingPriceSeven + fixedTriggerExtension, exactly ten columns", "fit": true}
+  ],
+  "fittingAndSplits": {
+    "algorithm": "Two separate fixed ridge regressions for YES/NO net crossing returns, never probabilities.",
+    "ridgePenalty": "1",
+    "interceptPenalized": false,
+    "scaling": "Each fold uses training-only means and population standard deviations; scale=max(1e-9,std), unchanged convention. Constant observed columns are not missing-value imputations.",
+    "minimumTrainingClusters": 16,
+    "folds": 3,
+    "calendarBoundaries": "Freeze 25%,50%,75% indices of sorted unique canonical representative decision timestamps before feature/label filters. Use the same calendar boundaries across all four models and horizons; no random split or post-outcome boundary adjustment.",
+    "testIntervals": "Second, third and fourth chronological quarters; inclusive start, exclusive next boundary, final end at frozen cutoff.",
+    "trainingWindow": "Expanding earlier observations only; require decision+horizon+3000ms strictly before test start AND actual label first availability <= test start.",
+    "dedupAcrossTrainAndTest": "An economic event has only one global representative. Its scope/cohort aliases cannot populate another fold. Earlier observations can enter later expanding-fold training only after their original label is available; never the reverse.",
+    "foldFailure": "If fewer than four unique decision times, insufficient training or a numerical fit failure occurs, all models abstain for that fold and report the failure; no fallback feature set or retuned solver.",
+    "noHyperparameterThresholdHorizonOrFeatureSearch": true
+  },
+  "selectionMetricsAndQualification": {
+    "sideRule": "For each OOS event choose the greater predicted net side, with YES on an exact tie; select only if predicted net > 0. No threshold search, execution resizing or simultaneous two-side credit.",
+    "minimumOutOfSampleClusters": 100,
+    "minimumSelectedClusters": 100,
+    "researchEconomicCheck": "Require positive exact selected net sum and improvement over the fold-training side-intercept baseline on both paired-side OOS MSE and selected net economics, in addition to both coverage minima. Report every comparator even when the extension fails.",
+    "primaryContrast": "Fixed price_plus_trigger_ridge versus price_seven_ridge on identical OOS events at every declared horizon; also report SIG-local and unchanged-BBO controls. Do not select a winning horizon/model after results.",
+    "requiredOutputs": ["all source/cohort/policy hashes and cutoff", "dedup aliases/conflicts/representative counts", "spacing/common-feature/missing-label/depth/clock rejection counts", "per-horizon/per-fold training and OOS event counts and hashes", "per-side and paired OOS MSE versus training intercept", "selected events, ticker scopes and nonoverlap windows", "exact selected after-cost crossing sums/means and unselected coverage", "nonzero/missing trigger and price-feature variation", "same-cohort comparator differences", "all abstention reasons and unchanged selection threshold"],
+    "formalSignificanceOrCalibrationClaim": false,
+    "coverageDoesNotGrantFinancialAuthority": true,
+    "modelApproval": false
+  },
+  "interpretation": {
+    "selectionBias": "Fresh-SIG/fresh-external, poll-visible, known-direction, fully evidenced, nontruncated events are a selected subset. Sampling skips, missing lags/labels and dedup representatives may be informative; no unconditional or randomized profitability claim.",
+    "correlation": "Ticker/time nonoverlap and event dedup do not remove shared election/news/factor dependence. Multiple horizons/models are correlated descriptive comparisons, not independent confirmations.",
+    "makerModelSeparate": "A future local after-cost maker model requires original quote exposure, actual owned fill/nonfill/cancel/expiry labels, fees and latency/queue evidence. This event-conditioned taker crossing study supplies neither maker fill probability nor avoided adverse-fill profit.",
+    "actualProfitEstablished": false,
+    "pricingAuthority": false,
+    "executionAuthority": false,
+    "productionChangeAuthorizedByThisFile": false
+  }
+}
