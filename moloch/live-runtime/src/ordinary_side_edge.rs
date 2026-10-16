@@ -265,6 +265,102 @@ pub fn assess_resting(bank:&moloch_replay::session::Session,scope:&Scope,log:&cr
     match resting_checked(bank,scope,log,managed,qid,now){Ok(a)=>a,Err(e)=>resting_result(Class::Unavailable,&e.to_string())}
 }
 
+/// Negative-only selection proof. No receipt, network admission, reservation
+/// release or positive trading authority is created by this native-book check.
+#[derive(Debug)]
+pub struct EarlyNegative {qid:u64,at:u64,until:u64,native_head:Value,dispatch:Value,scope_sha256:String,managed_sha256:String,evidence:Value}
+impl EarlyNegative {
+    pub fn qid(&self)->u64{self.qid}
+    pub fn evidence(&self)->&Value{&self.evidence}
+    pub fn validate_current(&self,bank:&moloch_replay::session::Session,scope:&Scope,log:&crate::dispatch::DispatchLog,managed:&BTreeSet<String>,now:u64)->Checked<()> {
+        need(self.at<=now&&now<self.until,"EARLY_EDGE_EXPIRED")?;
+        log.require_resolved_attempts()?;
+        need(self.native_head==bank.durable_head()&&self.dispatch==log.descriptor_identity()?
+            &&self.scope_sha256==hash(scope)?&&self.managed_sha256==hash(managed)?,"EARLY_EDGE_CONTEXT_CHANGED")
+    }
+}
+#[derive(Debug)]
+pub struct EarlyAssessment {pub class:Class,pub reason:String,negative:Option<EarlyNegative>}
+impl EarlyAssessment {pub fn negative(&self)->Option<&EarlyNegative>{self.negative.as_ref()}}
+fn early_result(class:Class,reason:&str)->EarlyAssessment{EarlyAssessment{class,reason:reason.into(),negative:None}}
+/// Capture history-derived native rows ONCE per read-only pass, not once per
+/// candidate. The sealed head and held dispatch descriptor fence every use.
+pub struct EarlyScreen {orders:Vec<Value>,books:Vec<Value>,packages:Value,native_head:Value,dispatch:Value}
+impl EarlyScreen {
+    pub fn capture(bank:&moloch_replay::session::Session,log:&crate::dispatch::DispatchLog)->Checked<Self>{
+        need(bank.engine().is_live()&&bank.live_account_seed().is_some(),"EARLY_EDGE_LIVE_BANK")?;log.require_resolved_attempts()?;
+        Ok(Self{orders:bank.engine().order_records(),books:bank.engine().live_package_books(),packages:bank.engine().package_records(),native_head:bank.durable_head(),dispatch:log.descriptor_identity()?})
+    }
+    pub fn assess(&self,bank:&moloch_replay::session::Session,scope:&Scope,log:&crate::dispatch::DispatchLog,managed:&BTreeSet<String>,qid:u64,now:u64)->EarlyAssessment{
+        match early_checked(self,bank,scope,log,managed,qid,now){Ok(a)=>a,Err(e)=>early_result(Class::Unavailable,&e.to_string())}
+    }
+}
+fn early_checked(screen:&EarlyScreen,bank:&moloch_replay::session::Session,scope:&Scope,log:&crate::dispatch::DispatchLog,managed:&BTreeSet<String>,qid:u64,now:u64)->Checked<EarlyAssessment>{
+    need(bank.engine().is_live()&&bank.live_account_seed().is_some(),"EARLY_EDGE_LIVE_BANK")?;
+    need(baal_transport_service::relationships::uuid(&scope.tournament_id)&&managed.iter().all(|ex|scope.exchanges.contains_key(ex)),"EARLY_EDGE_SCOPE")?;
+    log.require_resolved_attempts()?;
+    need(screen.native_head==bank.durable_head()&&screen.dispatch==log.descriptor_identity()?,"EARLY_EDGE_CONTEXT_CHANGED")?;
+    let q=screen.orders.iter().find(|q|q["id"].as_u64()==Some(qid)).ok_or("EARLY_EDGE_QID")?;
+    let ex=q["exchangeId"].as_str().ok_or("EARLY_EDGE_SCOPE")?;
+    need(scope.exchanges.get(ex).is_some_and(|m|q["marketId"].as_str()==Some(m.as_str())),"EARLY_EDGE_SCOPE")?;
+    if q["action"]!="buy"||managed.contains(ex)||bank.engine().is_package_order(qid)
+        ||["reviewedFundamentalEntry","reviewedInventoryExit"].iter().any(|k|q.get(*k).is_some_and(|v|!v.is_null())) {
+        return Ok(early_result(Class::NotApplicable,"ordinary_unmanaged_buy_only"))
+    }
+    if !log.never_attempted(qid)||log.intents.contains_key(&qid)||log.closed.contains(&qid)||log.cancel_attempted(qid)
+        ||log.cancel_acknowledged.contains(&qid)||log.recovered.contains_key(&qid)||bank.engine().live_order_bindings().contains_key(&qid){
+        return Ok(early_result(Class::NotApplicable,"untouched_draft_only"))
+    }
+    if screen.orders.iter().any(|other|other["exchangeId"]==ex&&other["id"].as_u64().is_some_and(|id|id!=qid&&!log.closed.contains(&id)&&(!log.never_attempted(id)||bank.engine().live_order_bindings().contains_key(&id)))){
+        return Ok(early_result(Class::NotApplicable,"same_exchange_physical_liability"))
+    }
+    for p in screen.packages.as_array().ok_or("EARLY_EDGE_PACKAGES")?{
+        if p["phase"]=="no_execution"||p["protectionReleased"]==true{continue}
+        if p.get("probabilistic").is_some_and(|v|!v.is_null())
+            ||p["legs"].as_array().ok_or("EARLY_EDGE_PACKAGES")?.iter().any(|l|l["exchangeId"]==ex)
+            ||p["portfolio"]["componentExchanges"].as_array().is_some_and(|xs|xs.iter().any(|v|v==ex)){
+            return Ok(early_result(Class::NotApplicable,"protected_package_inventory"))
+        }
+    }
+    let side=q["side"].as_str().filter(|s|["YES","NO"].contains(s)).ok_or("EARLY_EDGE_SIDE")?;
+    if bank.engine().wallet.quantity(ex,if side=="YES"{moloch_replay::Side::No}else{moloch_replay::Side::Yes})>0{
+        return Ok(early_result(Class::NotApplicable,"any_opposite_inventory_coverage"))
+    }
+    need(q["retired"]==false&&q["filled"].as_u64()==Some(0)&&q["quantity"].as_u64().is_some_and(|n|n>0)
+        &&q.get("cancelEffectiveAt").is_none_or(Value::is_null),"EARLY_EDGE_DRAFT_STATE")?;
+    let created=q["createdAt"].as_u64().ok_or("EARLY_EDGE_CLOCK")?;
+    let activation=q["activationAt"].as_u64().ok_or("EARLY_EDGE_CLOCK")?;
+    let expires=q["expiresAt"].as_u64().ok_or("EARLY_EDGE_CLOCK")?;
+    need(created<=activation&&activation<=now&&now<expires,"EARLY_EDGE_CLOCK")?;
+    let policy=bank.engine().policy();
+    if policy["quoteMode"]!="pairedSpread"{return Ok(early_result(Class::NotApplicable,"paired_spread_only"))}
+    let age=policy["bookAgeMs"].as_u64().filter(|n|*n>0&&*n<=2_147_483_647).ok_or("EARLY_EDGE_AGE")?;
+    let matching:Vec<_>=screen.books.iter().filter(|b|b["exchangeId"]==ex).collect();
+    need(matching.len()==1,"EARLY_EDGE_CURRENT_BOOK_UNAVAILABLE")?;let book=matching[0];
+    need(book["marketId"]==q["marketId"]&&book["tournamentId"]==scope.tournament_id&&book.get("invalid").is_none_or(|v|v==false),"EARLY_EDGE_BOOK_SCOPE")?;
+    let started=clock(book["requestStartedAt"].as_str().ok_or("EARLY_EDGE_BOOK_CLOCK")?)?;
+    let received=clock(book["receivedAt"].as_str().ok_or("EARLY_EDGE_BOOK_CLOCK")?)?;
+    let source=clock(book["sourceAt"].as_str().ok_or("EARLY_EDGE_BOOK_CLOCK")?)?;
+    need(started<=received&&source<=received&&received<=now&&now-started<age&&now-source<age,"EARLY_EDGE_FRESH_BOOK")?;
+    let sequence=book["sequence"].as_str().filter(|s|s.parse::<u128>().is_ok()).ok_or("EARLY_EDGE_BOOK_SEQUENCE")?;
+    let bid=levels(book,"bids")?;let ask=levels(book,"asks")?;need(bid.0<ask.0,"EARLY_EDGE_CROSSED")?;
+    let yes=yes_microprice(bid,ask)?;let value=if side=="YES"{yes}else{SCALE-yes};
+    let limit=decimal(&q["price"])?;need((TICK..=SCALE-TICK).contains(&limit)&&limit%TICK==0,"EARLY_EDGE_LIMIT")?;
+    let minimum=decimal(&policy["minimumEdge"])?;need(minimum>0,"EARLY_EDGE_MINIMUM")?;
+    let charge=fee(limit,1,u32::try_from(policy["feeBps"].as_u64().ok_or("EARLY_EDGE_FEES")?)?,decimal(&policy["feePerShare"])?)?;
+    let edge=value.checked_sub(limit).and_then(|v|v.checked_sub(charge)).ok_or("SIDE_EDGE_ARITHMETIC")?;
+    if edge>=minimum{return Ok(early_result(Class::MeetsMinimum,"no_early_negative"))}
+    let until=started.checked_add(age).and_then(|t|source.checked_add(age).map(|s|t.min(s).min(expires))).ok_or("SIDE_EDGE_ARITHMETIC")?;
+    let descriptor=log.descriptor_identity()?;
+    let evidence=serde_json::json!({"qid":qid,"nativeHead":bank.durable_head(),"quoteSha256":hash(q)?,"policySha256":hash(policy)?,"nativeBookSha256":hash(book)?,"scopeSha256":hash(scope)?,"dispatchDescriptorIdentity":descriptor,"sourceSequence":sequence,"requestStartedAtMs":started,"receivedAtMs":received,"sourceAtMs":source,"assessedAtMs":now,"validUntilMs":until,"yesMicropriceMicros":yes,"sideValueMicros":value,"limitMicros":limit,"feePerShareMicros":charge,"sideEdgeMicros":edge,"minimumEdgeMicros":minimum,"negativeOnly":true,"executionAuthority":false});
+    Ok(EarlyAssessment{class:Class::BelowMinimum,reason:"current_native_side_below_original_minimum".into(),negative:Some(EarlyNegative{qid,at:now,until,native_head:screen.native_head.clone(),dispatch:descriptor,scope_sha256:hash(scope)?,managed_sha256:hash(managed)?,evidence})})
+}
+/// Errors and missing/stale/gapped books NEVER become an early veto. The final
+/// original REST assessment remains mandatory for any selected physical BUY.
+pub fn assess_early(bank:&moloch_replay::session::Session,scope:&Scope,log:&crate::dispatch::DispatchLog,managed:&BTreeSet<String>,qid:u64,now:u64)->EarlyAssessment{
+    match EarlyScreen::capture(bank,log){Ok(screen)=>screen.assess(bank,scope,log,managed,qid,now),Err(e)=>early_result(Class::Unavailable,&e.to_string())}
+}
+
 /// Selection bypass only: actual opposite holdings must cover the WHOLE frozen
 /// remaining BUY after every other potential netting BUY/covered SELL pledge.
 /// The caller supplies current native records and original unresolved attempts.
@@ -348,6 +444,42 @@ mod resting_tests {
         let books=f.bank.engine().live_package_books();let book_hash=|ex:&str|hash(books.iter().find(|b|b["exchangeId"]==ex).unwrap()).unwrap();
         f.put(json!({"type":"live_package_reserve","source":"moloch_live_dispatcher","receivedAt":iso(1),"processedAt":iso(1),"packageId":"resting-protected","proofHash":"a".repeat(64),"bankScope":{"runId":"resting-fixture","bankManifestHash":f.bank.manifest_hash(),"tournamentId":T},"expiresAt":iso(9000),"economics":{"maximumCost":"4.500000","minimumPayout":"5.000000","minimumSurplus":"0.500000","feeTotal":"0.000000"},"legs":[{"marketId":"201","exchangeId":"101","side":"YES","quantity":5,"limitPrice":"0.450000","bookHash":book_hash("101")},{"marketId":"202","exchangeId":"102","side":"YES","quantity":5,"limitPrice":"0.450000","bookHash":book_hash("102")}]}));
         f.qid=f.bank.engine().package_records()[0]["legs"][0]["qid"].as_u64().unwrap();assert!(f.bank.engine().is_package_order(f.qid));assert_eq!(f.assess(1).class,Class::NotApplicable);assert!(f.assess(1).nomination().is_none());
+        assert_eq!(assess_early(&f.bank,&f.scope,&f.log,&BTreeSet::new(),f.qid,BASE+4000).class,Class::NotApplicable);
+    }
+    fn early(f:&F,t:u64)->EarlyAssessment{assess_early(&f.bank,&f.scope,&f.log,&BTreeSet::new(),f.qid,BASE+t)}
+    #[test]fn early_weak_no_uses_same_integer_edge_without_http_or_ledger_mutation(){
+        let mut f=F::make("NO",false);f.weak();let head=f.bank.durable_head();let report=f.bank.engine().report().unwrap();let descriptor=f.log.descriptor_identity().unwrap();
+        let a=early(&f,4000);assert_eq!(a.class,Class::BelowMinimum);let d=a.negative().unwrap();assert_eq!(d.qid(),f.qid);assert_eq!(d.evidence()["sideValueMicros"].as_i64().unwrap(),SCALE as i64-d.evidence()["yesMicropriceMicros"].as_i64().unwrap());d.validate_current(&f.bank,&f.scope,&f.log,&BTreeSet::new(),BASE+4001).unwrap();
+        assert_eq!(head,f.bank.durable_head());assert_eq!(report,f.bank.engine().report().unwrap());assert_eq!(descriptor,f.log.descriptor_identity().unwrap());assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty());
+        let yes=f.bank.engine().order_records().into_iter().find(|q|q["side"]=="YES").unwrap()["id"].as_u64().unwrap();assert_eq!(assess_early(&f.bank,&f.scope,&f.log,&BTreeSet::new(),yes,BASE+4000).class,Class::MeetsMinimum);
+    }
+    #[test]fn early_original_gap_future_and_exact_expiry_never_veto(){
+        let mut f=F::make("NO",false);f.weak();let d=early(&f,4000).negative().unwrap().evidence().clone();let until=d["validUntilMs"].as_u64().unwrap();assert!(early(&f,3999).negative().is_none());assert!(early(&f,until-BASE).negative().is_none());
+        f.put(json!({"type":"gap","exchangeIds":["101"],"receivedAt":iso(4001)}));assert!(early(&f,4001).negative().is_none());
+    }
+    #[test]fn early_head_book_scope_dispatch_and_manager_changes_invalidate(){
+        for change in 0..5{let mut f=F::make("NO",false);f.weak();let a=early(&f,4000);let d=a.negative().unwrap();let mut scope=f.scope.clone();let mut managed=BTreeSet::new();
+            match change{0=>f.put(json!({"type":"tick","receivedAt":iso(4001)})),1=>f.book(4001,1000,100000),2=>f.log.append(json!({"kind":"source","qid":f.qid,"at":iso(4001)})).unwrap(),3=>{scope.exchanges.insert("101".into(),"999".into());},_=>{managed.insert("101".into());}}
+            assert!(d.validate_current(&f.bank,&scope,&f.log,&managed,BASE+4001).is_err());
+        }
+    }
+    #[test]fn early_intent_attempt_ack_and_managed_are_not_selection_vetoes(){
+        let mut f=F::make("NO",false);f.weak();assert_eq!(assess_early(&f.bank,&f.scope,&f.log,&["101".into()].into(),f.qid,BASE+4000).class,Class::NotApplicable);
+        let q=f.q();f.log.append(json!({"kind":"intent","qid":f.qid,"quote":q,"at":iso(4000)})).unwrap();assert!(early(&f,4000).negative().is_none());f.log.append(json!({"kind":"attempt","qid":f.qid,"at":iso(4000)})).unwrap();assert!(early(&f,4000).negative().is_none());
+        let mut f=F::new("NO");f.weak();assert_eq!(early(&f,4000).class,Class::NotApplicable);
+    }
+    #[test]fn early_screen_is_once_captured_and_stale_capture_cannot_veto_new_book(){
+        let mut f=F::make("NO",false);f.weak();let screen=EarlyScreen::capture(&f.bank,&f.log).unwrap();assert!(screen.assess(&f.bank,&f.scope,&f.log,&BTreeSet::new(),f.qid,BASE+4000).negative().is_some());f.book(4001,1000,100000);assert!(screen.assess(&f.bank,&f.scope,&f.log,&BTreeSet::new(),f.qid,BASE+4001).negative().is_none());assert_eq!(early(&f,4001).class,Class::MeetsMinimum);
+    }
+    #[test]fn early_missing_or_malformed_snapshot_is_unavailable_not_negative(){
+        let mut f=F::make("NO",false);f.weak();for change in 0..3{let mut screen=EarlyScreen::capture(&f.bank,&f.log).unwrap();match change{0=>screen.books.clear(),1=>screen.books[0]["bids"][0]["quantity"]=json!(0),_=>screen.books[0]["sourceAt"]=json!(iso(5000))};let a=screen.assess(&f.bank,&f.scope,&f.log,&BTreeSet::new(),f.qid,BASE+4000);assert_eq!(a.class,Class::Unavailable);assert!(a.negative().is_none());}
+    }
+    #[test]fn early_any_real_opposite_partial_fill_and_sell_are_bypassed(){
+        let mut f=F::make("NO",false);let mate=f.bank.engine().order_records().into_iter().find(|q|q["side"]=="YES").unwrap();let id=mate["id"].as_u64().unwrap();
+        f.put(json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"d".repeat(64),"orderId":id,"actualOrderId":"992","marketId":"201","exchangeId":"101","side":"YES","action":"buy","quantity":mate["quantity"],"price":mate["price"],"receivedAt":iso(3500)}));
+        f.put(json!({"type":"actual_fill","source":"official_sig_api_v1","receiptHash":"e".repeat(64),"orderId":id,"actualOrderId":"992","marketId":"201","exchangeId":"101","side":"YES","action":"buy","quantity":1,"price":mate["price"],"fillId":"882","fee":"0.000000","executedAt":iso(3501),"receivedAt":iso(3501)}));f.weak();
+        assert!(f.log.never_attempted(f.qid));assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::Yes),1);assert_eq!(early(&f,4000).class,Class::NotApplicable);
+        let mut screen=EarlyScreen::capture(&f.bank,&f.log).unwrap();screen.orders.iter_mut().find(|q|q["id"].as_u64()==Some(f.qid)).unwrap()["action"]=json!("sell");assert_eq!(screen.assess(&f.bank,&f.scope,&f.log,&BTreeSet::new(),f.qid,BASE+4000).class,Class::NotApplicable);
     }
 }
 

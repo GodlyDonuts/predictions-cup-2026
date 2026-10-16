@@ -1326,6 +1326,22 @@ fn defensive_cancel_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,sour
  if defensive_cancel_window(decision.valid_until_ms(),reads.now_ms(),gap).is_none(){return Ok(None)}
  if !defensive_cancel_current(&decision,bank,&c.scope,log,managed,reads.now_ms())?{return Ok(None)}Ok(Some((decision,facts)))
 }
+// A negative-only native assessment removes untouched drafts from this pass,
+// before bulk prices or seven facts. It never consumes/renews the shared cursor
+// or preflight permit; remaining candidates retain their original fair order.
+fn early_native_side_filter(mode:moloch_live_runtime::ordinary_side_edge::Mode,bank:&Session,scope:&Scope,log:&DispatchLog,managed:&std::collections::BTreeSet<String>,quotes:&[Value],physical:&mut Vec<(String,usize,bool)>,at:u64)->Vec<Value>{
+ use moloch_live_runtime::ordinary_side_edge::{self,Mode};
+ if mode==Mode::Disabled{return Vec::new()}
+ let Ok(screen)=ordinary_side_edge::EarlyScreen::capture(bank,log)else{return Vec::new()};
+ let mut diagnostics=Vec::new();
+ physical.retain(|(_,index,urgent)|{
+  if *urgent{return true}
+  let Some(q)=quotes.get(*index)else{return true};let Some(qid)=q["id"].as_u64()else{return true};
+  let assessment=screen.assess(bank,scope,log,managed,qid,at);
+  let veto=mode==Mode::Enforce&&assessment.negative().is_some_and(|d|d.validate_current(bank,scope,log,managed,at).is_ok());
+  diagnostics.push(json!({"qid":qid,"class":assessment.class,"reason":&assessment.reason,"evidence":assessment.negative().map(|d|d.evidence()),"vetoedThisPass":veto}));!veto
+ });diagnostics
+}
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if allow_new_submissions&&!bank.engine().package_blocks_submissions(){
   let managed=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
@@ -1412,6 +1428,9 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
    }return Ok(())
   }
  }
+ let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
+ let early_at=now();let early=early_native_side_filter(c.ordinary_side_edge,bank,&c.scope,log,&managed,&quotes,&mut physical,early_at);
+ if !early.is_empty(){let _=atomic_json(&c.root.join("ordinary-side-edge-early.json"),&json!({"at":iso(early_at),"mode":c.ordinary_side_edge,"assessments":early,"httpReads":0,"reservationReleased":false,"physicalAttempted":false,"executionAuthority":false}));}
  let mut chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
  if let Some((SharedPreflight::Physical(index),key))=&chosen{
   let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
@@ -1797,6 +1816,22 @@ pub fn main()->Result<()>{
   let(root,c,bank,log,q,mut r)=fixture();assert_eq!(c.ordinary_side_edge,Mode::Disabled);r.data=Value::Null;let head=bank.durable_head();
   assert!(ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));assert!(!root.0.join("ordinary-side-edge.json").exists());assert_eq!(bank.durable_head(),head);assert!(log.intents.is_empty()&&log.attempted.is_empty());
   let mut value=serde_json::to_value(c).unwrap();value["ordinarySideEdge"]=json!("enabled");assert!(serde_json::from_value::<Control>(value).is_err());
+ }
+ #[test]fn early_weak_side_removed_and_strong_side_gets_same_pass_without_http_or_budget(){
+  let(_root,c,bank,log,_,_)=fixture();let at=now();let quotes:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&q["action"]=="buy").collect();assert_eq!(quotes.len(),2);
+  let mut physical:Vec<_>=quotes.iter().enumerate().map(|(i,q)|(format!("101:{}:buy",q["side"].as_str().unwrap()),i,false)).collect();
+  let head=bank.durable_head();let report=bank.engine().report().unwrap();let descriptor=log.descriptor_identity().unwrap();let mut budget=moloch_live_runtime::scheduling::PreflightBudget::default();
+  let diagnostic=early_native_side_filter(Mode::Enforce,&bank,&c.scope,&log,&Default::default(),&quotes,&mut physical,at);
+  assert_eq!(physical.len(),1);assert_eq!(quotes[physical[0].1]["side"],"NO");assert!(diagnostic.iter().any(|a|a["vetoedThisPass"]==true));
+  let Some((SharedPreflight::Physical(i),_))=shared_preflight_rotation(&[],&[],&physical,None)else{panic!("strong side must retain this pass")};assert_eq!(quotes[i]["side"],"NO");assert!(budget.try_start());
+  assert_eq!(head,bank.durable_head());assert_eq!(report,bank.engine().report().unwrap());assert_eq!(descriptor,log.descriptor_identity().unwrap());assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn early_disabled_shadow_urgent_managed_and_unavailable_do_not_remove_candidates(){
+  let(_root,c,bank,log,q,_)=fixture();let physical=vec![("101:YES:buy".into(),0,false)];
+  for mode in [Mode::Disabled,Mode::Shadow]{let mut p=physical.clone();let d=early_native_side_filter(mode,&bank,&c.scope,&log,&Default::default(),std::slice::from_ref(&q),&mut p,now());assert_eq!(p,physical);if mode==Mode::Disabled{assert!(d.is_empty());}}
+  for (managed,urgent,at) in [(std::collections::BTreeSet::from(["101".into()]),false,now()),(Default::default(),true,now()),(Default::default(),false,now()+20000)]{
+   let mut p=vec![("101:YES:buy".into(),0,urgent)];let before=p.clone();early_native_side_filter(Mode::Enforce,&bank,&c.scope,&log,&managed,std::slice::from_ref(&q),&mut p,at);assert_eq!(p,before);
+  }
  }
  #[test]fn actual_native_quote_shadow_records_but_enforce_defers_without_a_financial_event(){
   let(root,mut c,bank,log,q,r)=fixture();let head=bank.durable_head();let report=bank.engine().report().unwrap();let quote_before=q.clone();
