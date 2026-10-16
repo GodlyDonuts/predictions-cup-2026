@@ -1,24 +1,24 @@
 # Moloch research baseline
 
-**As of2026-10-16 05:02:48UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
+**As of2026-10-16 05:39:40UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
 
 ## Exact deployed system
 
 | Item | Verified state |
 | --- | --- |
-| Service |Sole `moloch-live.service`, PID383074, VPS; running, no execution STOP|
-| Deployed source |`bfd51082`|
-| Executable SHA256 |`3f5631c0b69de40478172f22d1881d6234e03da7e55974f0a04a7417e15d33ed`|
+| Service |Sole `moloch-live.service`, PID390439, VPS; running, no execution STOP|
+| Deployed source |`58a578bb`|
+| Executable SHA256 |`d9aadd6f2ffaa4095032edfa9515772761c18a762bfd3e52fb42f0aa85f5adfd`|
 | Native engine identity |`4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98`, nine explicit financial identity bridges|
 | Account/bank |One serialized SDK V1 queue and original funded bank; no second collector/writer|
-| Fresh activity |Healthy realtime/trading;708 total acknowledged orders,119 actual fill rows;8 new ACKs/0 new fills since04:44 source-batching launch|
+| Fresh activity |Healthy realtime/trading;713 total acknowledged orders,119 actual fill rows;0 new ACKs/0 new fills since05:16 terminal-release launch; shared preflight starvation repair in progress|
 | Risk limits |40,000 total commitment;10,000 per market;10,000 shares maximum order; existing holdings separately attributed|
 | Read/write limits |100-read rolling ceiling/600ms completion gap;24-write ceiling/2500ms gap. These are admission ceilings, not measured achieved throughput|
 | Entry schedule |Human-authorized daily windows; current cutoff14:44:34.413UTC October16, fixed campaign end17:00UTC November4; exits continue|
 | Ordinary policy |Paired-spread maker, one-tick minimum spread,.001 minimum edge,.005 fixed-gain exit; execution-clock maximum inventory age **60,000ms**|
 | Optional features OFF |Execution-distribution diagnostic, old execution-model diagnostic, empirical maker-policy gate and collateral accounting|
 
-[Actual immutable rollout and stopped boundary](../research/moloch-live-latency-20261016/production-rollout.json), [latest checked live observation](../research/moloch-live-latency-20261016/live-verification.json). Checked `main` may advance beyond deployed source. A source commit, test or documentation edit does not establish deployment. This observation follows the actual source-batching promotion; the first full22-scope cycle completed04:54:54UTC, and the full status matches the new PID.
+[Actual immutable rollout and stopped boundary](../research/moloch-paper5-20261016/terminal-production-rollout.json), [latest checked live observation](../research/moloch-paper5-20261016/terminal-live-verification.json). Checked `main` may advance beyond deployed source. A source commit, test or documentation edit does not establish deployment. This observation follows the actual terminal-objective promotion; full status matches the new PID. Collection is fresh but repeated unqualified forecast reads have starved ordinary submission candidates. The checked shared preflight rotation repair is not yet deployed. Paper5 candidate source and current integration are described in [the implementation map](MOLOCH_PAPER5_20261016.md).
 
 ## Capabilities that exist now
 

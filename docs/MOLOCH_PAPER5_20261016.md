@@ -2,7 +2,13 @@
 
 Received October16. Original human attachment SHA256 `33c814784629925f2385d8cc8c506c80e2415a0d1d009726144bfb70c62f1440`,43,431 bytes, retained privately. Embedded research citations are source leads, not independently verified evidence or additional human instructions. Parent task [#149](https://github.com/GodlyDonuts/predictions-cup-2026/issues/149).
 
-## Baseline correction
+## Implementation update — October16, 05:40UTC
+
+Production source58a578bb/PID390439 started05:16UTC with V2 terminal/deadline objectives, delayed-settlement management and the reviewed NC terminal cohort. The stopped162313-row financial boundary, nine native bridges, original DE/MA reviews and risk limits are preserved. At05:39:40UTC it is fresh/healthy with713 ACKs/119 fills, **zero new ACKs or fills since launch**. Repeated unqualified forecast preflights were starving ordinary physical candidates; the shared eligible-key rotation fix is being checked for immediate promotion. Healthy collection alone does not prove working execution. [Actual rollout](../research/moloch-paper5-20261016/terminal-production-rollout.json), [fresh observation](../research/moloch-paper5-20261016/terminal-live-verification.json).
+
+Atlas now fits416 actual races/1291 poll observations and exports32 correlated scenarios for five retained race inputs. Held-cycle Brier0.08437988 versus baseline0.08448569 is a tiny change; log loss and RMSE worsen, and the cycle-bootstrap difference interval spans zero. The sample artifact is expired and research-only. [Model, actual validation and reproduction](../research/atlas_model/README.md). Rust source now implements the source-bound value surface, robust bid/ask interval election curve, strategy/horizon router, causal external innovation, cumulative partial-return Bayesian nowcast, semantic state compiler and funded joint probabilistic portfolio search. Runtime wiring, current-source qualification and a separate native probabilistic lifecycle remain in progress; these source modules are not claimed activated or profitable. The nowcast uses synthetic correctness fixtures because genuine as-of partial-return vintages have not yet been obtained.
+
+## Earlier baseline correction — superseded by update above
 
 The paper names main c708598b and production4148fe5d. Production now runs bfd51082/PID383074, including queued-source batching and original proof-archive recovery. Its first full22-scope live cycle completed04:54:54UTC,704 total official ACKs/119 actual fills, four new ACKs and zero new fills since launch. Optional execution diagnostics, empirical maker gate and collateral accounting remain off. No Atlas, election-curve or nowcasting strategy has been activated. [Current baseline](MOLOCH_RESEARCH_BASELINE.md), [actual rollout](../research/moloch-live-latency-20261016/production-rollout.json).
 
@@ -10,14 +16,14 @@ The paper names main c708598b and production4148fe5d. Production now runs bfd510
 
 | Paper component | Actual state and work |
 | --- | --- |
-| Joint election posterior, Atlas | Not implemented. Existing per-race research and operator reviews do not supply national/state covariance or a calibrated joint distribution. |
-| Election-curve factor-neutral relative value | Not implemented. Correlated prices and matching race titles are insufficient evidence of executable relative value. |
+| Joint election posterior, Atlas | Implemented offline empirical-Bayes national/region/state/race/house model, actual held-cycle diagnostics and correlated scenario export; current artifact/live qualification remains separate. See update above. |
+| Election-curve factor-neutral relative value | Rust bid/ask interval factor fit and fully funded depth-limited hedge proposal search implemented; fresh multi-race binding/runtime activation remains in progress. |
 | Independent forecast execution | Deployed join/improve/bounded modes and actual Delaware430-share fill. Mode ordering is reviewed preference, not calibrated fill/toxicity EV. |
 | Valuation horizon | V1 currently combines terminal payout assumptions with an earlier fixed deadline. Child[#150](https://github.com/GodlyDonuts/predictions-cup-2026/issues/150) implements explicit V2 terminal versus deadline-liquidation objectives; current V1 reviews/history/deadlines are preserved. New legacy-review origination requires explicit migration; existing bound holdings remain managed. Delayed terminal settlement permits a fresh source-bound value/revocation review without changing the original acquisition cutoff or schedule. ARM64 focused89/89 and full runtime673/673 pass before the final worker-only liveness helper. Not deployed at this writing. |
 | Entry/exit latency | Batching is deployed. A further repeated-expired-exit processing defect is being repaired under[#147](https://github.com/GodlyDonuts/predictions-cup-2026/issues/147): flat and forecast-held historical drafts now avoid repeated queue inspection/full-ledger fingerprints in checked source32347860. Verified original no-admission aborts also no longer count as future physical exit liabilities in source58a578bb; they remain nonretryable and require restart proof revalidation. No TTL/price/risk relaxation. |
 | Joint fill/toxicity model and economic execution router | Missing calibrated prospective artifact. Checked distribution code is inactive; null execution probability must not be filled with fabricated confidence. |
-| Semantic portfolio optimization | Guaranteed-floor package/scanner infrastructure exists. Probabilistic scenario optimization remains separate and unimplemented; no approved live package certificates. |
-| Public information and election-night nowcasting | Research only. Genuine as-of releases and partial-return vintages are required; final results cannot be replayed as early information. |
+| Semantic portfolio optimization | Exact reviewed state compiler and joint BUY/covered-SELL scenario optimizer implemented in candidate source. Separate native probabilistic reserve/lifecycle is being implemented; a modeled expectation is never a guaranteed-floor certificate. |
+| Public information and election-night nowcasting | Causal revision-aware information innovation and cumulative beta-binomial particle nowcast engines implemented. Original timing/training qualification and genuine partial-return validation remain required before live use. |
 
 ## Current venue capability audit
 

@@ -536,7 +536,14 @@ fn record_original_attempt(bank:&Session,log:&mut DispatchLog,qid:u64,config:Opt
  log.append(event)?;moloch_live_runtime::execution_distribution::track_runtime_attempt(bank,log,qid,at);if config.is_some(){moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);}Ok(())
 }
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+ use moloch_live_runtime::decision_trace::{Trace,Stage};
+ // Only bounded in-memory timestamps precede the physical call. Diagnostic IO
+ // happens after the original ACK and native accounting have committed.
+ let trace_start=now();let mut trace=Trace::new(&c.activation.run_id,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,trace_start)?;
+ trace.candidate_created_at_ms=q["createdAt"].as_u64();trace.book_received_at_ms=moloch_live_runtime::daily_windows::clock(&facts.book.received_at).ok();
+ for receipt in [&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders,&facts.market,&facts.contract,&facts.book]{if let(Ok(start),Ok(end))=(moloch_live_runtime::daily_windows::clock(&receipt.request_started_at),moloch_live_runtime::daily_windows::clock(&receipt.received_at)){let _=trace.record(Stage::PreflightRead,start,end);}}
  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let(mut order,mut request_spec,mut p)=physical_order(c,q)?;
+ trace.permit_issued_at_ms=Some(p.expires_at_ms.saturating_sub(15000));trace.permit_expires_at_ms=Some(p.expires_at_ms);
  let fundamental_decision=if let Some(f)=fundamental.as_mut(){
   f.authority.validate()?;
   if !f.eligible(bank,log,&c.scope,qid,now())?{authority.clear_ready();return Ok(())}
@@ -551,16 +558,19 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision)?;
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
+ let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
  log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid))}))?;
  record_original_attempt(bank,log,qid,if fundamental.is_some(){None}else{c.execution_model.as_ref()},now())?;
  if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}
- let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
+ let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
+ let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{let end=now();let _=trace.record(Stage::TransportCall,transport_start,end);if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"transport_error","diagnosticOnly":true}));}log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
   if let Ok((spec,permit,at,error))=log.pre_admission_originals(qid){
    if let Ok(proof)=t.verify_current_ordinary_pre_admission(&spec,&permit,at,&error){log.append_aborted_before_admission(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
   }
   return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
+ let ack_start=now();let _=trace.record(Stage::TransportCall,transport_start,ack_start);trace.ack_received_at_ms=moloch_live_runtime::daily_windows::clock(&ack.received_at).ok();if let(Ok(start),Ok(end))=(moloch_live_runtime::daily_windows::clock(&ack.request_started_at),moloch_live_runtime::daily_windows::clock(&ack.received_at)){let _=trace.record(Stage::RecordedRequestService,start,end);}
  record_receipt(&c.root,&ack)?;log.append(json!({"kind":"ack","qid":qid,"receipt":ack}))?;
- let event=feedback::acknowledgment(q,&ack,&iso(now()))?;if let Some(f)=fundamental.as_ref(){f.cohorts.validate_acknowledgment(qid,&event)?;}authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();Ok(())
+ let event=feedback::acknowledgment(q,&ack,&iso(now()))?;if let Some(f)=fundamental.as_ref(){f.cohorts.validate_acknowledgment(qid,&event)?;}authority.bind_owned(event["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());accept(bank,&event)?;authority.clear_ready();let end=now();let _=trace.record(Stage::NativeAckApply,ack_start,end);if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"owned_ack_applied","diagnosticOnly":true}));}Ok(())
 }
 fn queue_has_unknown(t:&mut Transport)->Result<bool>{
  queue_unknown_from_state(&t.admission_state()?)

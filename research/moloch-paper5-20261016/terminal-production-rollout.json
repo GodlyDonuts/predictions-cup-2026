@@ -1,0 +1,81 @@
+{
+  "at": "2026-10-16T05:16:14.892348+00:00",
+  "sourceCommit": "58a578bb",
+  "release": "/home/archon/apps/moloch/releases/paper5-terminal-d9aadd6f2ffa/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper5-terminal-20261016.json",
+  "binarySha256": "d9aadd6f2ffaa4095032edfa9515772761c18a762bfd3e52fb42f0aa85f5adfd",
+  "controlSha256": "c35ce0e72a5d6c57c49742e91d5e499eaa27df21739d80fa0ad2c54d70aa3482",
+  "priorControl": "/home/archon/apps/moloch/shared/moloch-live-source-batch-20261016.json",
+  "priorControlSha256": "377ed63f1e4fb2a9bee7c3be4b3a73a56e19e11f665a689fd044f40d8f8975e6",
+  "priorRelease": "/home/archon/apps/moloch/releases/source-batch-3f5631c0b69d/bin/moloch-live-runtime",
+  "oldPid": 383074,
+  "nativeEngineChanged": false,
+  "sourceHashes": {
+    "moloch/live-runtime/tests/fundamental_policy.rs": "fbb1125a975c6488cca14ed84ed2e69e543254c21193c0b4d8bcbc205ee804a1",
+    "moloch/live-runtime/src/fundamental_policy.rs": "2efbc417e9f9b5044e5eaa97b5f2826ceec3b7adb5ef83e092610f80a8d767eb",
+    "moloch/live-runtime/src/worker.rs": "a9fb75325204d75ffcf429fe237ed0bca32cbd16c7a5ddce8787e843bba16dd9"
+  },
+  "checks": {
+    "runtimeBeforeFinalWorkerHelper": 673,
+    "fundamental": 89,
+    "finalWorker": 46
+  },
+  "newNorthCarolinaReview": {
+    "reviewSha256": "86f8b72e6bd5b640cdf96579a32378a4ceb1367a07a19641a1b3f95be9e032ed",
+    "settingsPath": "/home/archon/apps/moloch/shared/fundamental-paper5-terminal-20261016/settings.json",
+    "settingsSha256": "f0390d6e31efdddc024a8a390c52b2535d364f4bd84c06923c005650cf498ce5",
+    "authoritySha256": "5c0ebe0d07dc35eec979e89f08383d360cc93b500605c63784c7cd1e7cf1bf07",
+    "oldReviewHashesUnchanged": true,
+    "modelExpectedPayout": "0.891430",
+    "maximumLimitAfterMarginAndTick": "0.880000",
+    "maximumPrincipal": "400.000000",
+    "activated": false
+  },
+  "controlChanges": [
+    "activation.binarySha256",
+    "fundamentalPolicy: append new NC review and trust; DE/MA unchanged"
+  ],
+  "deployed": true,
+  "newPid": 390439,
+  "boundary": {
+    "at": "2026-10-16T05:15:59.823040+00:00",
+    "stop": {
+      "action": "no automatic write retry or activation renewal",
+      "at": "2026-10-16T05:15:57.892Z",
+      "reason": "STOPPED_OR_OWNER_LOST"
+    },
+    "head": {
+      "hash": "7700b26b2d884b0b4aa041fb14af6be4e1ea8d9c40c3a4cfc1bf13584872faa0",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "4362abceee37ac41538b87ca31b81f93b3bd23644f6797c2b7f3eb81ac2c04f2",
+      "sequence": 162313
+    },
+    "reportHash": "731c8f10cb599a53b1f7b633fac53b21d35d4adcebfb4fdcd37dbd545ae46e0f",
+    "journalSha256": "ee298bf737cf906abc305cab1082127e542baf1b6932edcc5b120b852e60ace7",
+    "bridgeSha256": "6f4b5ef4460ccd80c33a210d2e18e8dcd4600e0a4aa3893a45e24e2f67c1512b",
+    "bridgeEntries": 9,
+    "dispatch": {
+      "sequence": 6702,
+      "hash": "641bf744762615883a69ec7a8fc2323a85b01d16c8154edcdf9b7e082e09005b",
+      "acknowledged": 713,
+      "provedAborted": {
+        "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7"
+      },
+      "unknownOrdinaryAttempts": 0
+    },
+    "queue": {
+      "globalUnknownCount": 0,
+      "hasUnknown": false,
+      "sequence": 129859,
+      "previous": "592708d8b4b03c2741a4380efa5d03252bcf5b2951c63a8cf871b2abe5111a06"
+    },
+    "fundamentalSha256": "07451253715a03e55b97d7b0690efcda4374d8daac483f90f162602e6faff3b1",
+    "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+    "actualFills": 119,
+    "newTradingRealized": "-119.100000",
+    "inheritedRealizedGross": "43.395000",
+    "realized": "-75.705000"
+  },
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false
+}
