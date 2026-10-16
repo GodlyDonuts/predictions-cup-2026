@@ -2,6 +2,7 @@ import copy
 from decimal import Decimal
 import gzip
 import hashlib
+import math
 from pathlib import Path
 import tempfile
 import unittest
@@ -133,6 +134,23 @@ class ToxicityTests(unittest.TestCase):
         self.assertEqual(feature_state(row, 'scoped_v2')[0]['YES'], 'FAVORABLE')
         row['external']['sourceTs'] = BASE-1001
         with self.assertRaisesRegex(ValueError, 'SOURCE_CLOCK_CONFLICT'): feature_state(row, 'scoped_v2')
+
+    def test_new_lag_anchor_exact_delta_and_stream_binding_are_checked(self):
+        row=records()[0];ext=row['external'];ext.update(source='kalshi_official_ws_v2',ticker='RACE',sid=1,sequence=10,wsEpoch=2,streamBoundary=0,features={'midpoint':.55})
+        row['externalLagAnchors']={}
+        for lag in (1000,5000,30000):
+            row['externalLagAnchors'][str(lag)]={'bodySha256':'d'*64,'receivedMs':BASE-lag,'availableMs':BASE-lag,
+                'source':ext['source'],'ticker':'RACE','mappingKind':ext['mappingKind'],'sid':1,'sequence':1,'wsEpoch':2,'streamBoundary':0,'midpoint':.5}
+            row['externalLogitChanges'][str(lag)]=math.log(.55/(1-.55))
+        self.assertEqual(feature_state(row,'scoped_v2')[0]['YES'],'FAVORABLE')
+        for mode in ('epoch','sid','cursor','midpoint','future'):
+            bad=copy.deepcopy(row);a=bad['externalLagAnchors']['1000']
+            if mode=='epoch':a['wsEpoch']=1
+            elif mode=='sid':a['sid']=2
+            elif mode=='cursor':a['sequence']=11
+            elif mode=='midpoint':a['midpoint']=.51
+            else:a['availableMs']=BASE+1
+            with self.assertRaisesRegex(ValueError,'LAG_ANCHOR'):feature_state(bad,'scoped_v2')
 
     def test_label_cannot_leak_early_late_or_fabricated_execution(self):
         for case in ('early', 'late', 'fill', 'value'):

@@ -9,7 +9,31 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at 10:43 UTC
+## Latest operation and qualification at 11:51 UTC
+
+Full-account production is active on sole SIG494293/source`e7bb62d1` with its
+matching immutable binary, healthy realtime and fresh per-scope trading. Seven
+new official ACKs and one post-launch fill row were verified at11:51:16UTC.
+The55,579.915000 owner contribution and explicit daily-mandate revision are
+committed, giving effective initial/commitment95,579.915000. Attributed realized
+remains−74.405000; new capital is not profit. The full stopped-prefix replay
+matched the original financial state before the eleventh bridge was installed.
+[Original deployment and actual observations](../research/moloch-full-account-20261016/README.md).
+
+Bulk negative screening and bounded rotating all-market capture are deployed.
+The updated read-only observer preserves source-specific innovations through
+temporary REST fallback and writes causal lag-anchor evidence. At11:51:14UTC,
+it had378 decisions/487 labels/188 markets. Existing sealed economic studies
+remain unqualified for live alpha; more data alone is not proof of an edge.
+Bounded restart conditions were installed without restarting the SIG process;
+the separate legacy SDK crash-lease limitation remains documented.
+
+The remaining Paper6 work is economic qualification and execution integration
+of cross-venue information/toxicity, genuine semantic completeness certificates,
+deployed tournament-prize utility, and genuine election-night data vintages.
+Full capital availability does not establish completion of those capabilities.
+
+## Historical operation and qualification at 10:43 UTC
 
 The sole SIG worker441490/source`fec81a5e` remains live. At10:39:26UTC its
 binary matched, STOP was absent and trading/realtime were fresh. Since08:55
@@ -71,17 +95,17 @@ silently refresh its clocks.
 | Work | Present state | Economic and operational completion |
 | --- | --- | --- |
 | Authenticated Kalshi shadow stream |237-reference REST and original-clock WebSocket cache live; actual snapshots/deltas/tickers/trades verified | Feed availability is established at dated observations; pricing calibration and execution eligibility remain separate |
-| Prospective SIG/Kalshi observations | Read-only supervised observer live; first200 decisions/291 labels evaluated with purged walk-forward | All five horizons abstained, zero selected trades; collect dense all-market observations after rotating-capture deployment |
+| Prospective SIG/Kalshi observations | Read-only supervised all-market observer live; new378 decisions/487 labels/188 markets at11:51; original200-decision study preserved | Original five horizons abstained; qualify new dense data without rewriting old reports |
 | Maker toxicity and informed execution | Existing source-innovation/router foundations; new paired data collection | Qualify an economic signal, then wire cancel/join/improve/bounded execution into the existing sole worker; no price-copying oracle or unmeasured directional confidence |
 | Semantic guaranteed-floor search | Exhaustive-certificate verifier and solver implemented;13 ARM64 checks pass | No genuine venue completeness certificate exists yet; finite scenarios alone grant no physical trade authority |
-| Full-account capital | Contribution, startup reconciliation and explicit daily migration implemented; final timing fix/build pending | Fresh sole-worker cash/positions/collateral/complete orders, exact original-prefix parity and controlled upgrade before actual contribution |
+| Full-account capital |55,579.915000 contribution and daily migration committed; effective95,579.915000 live | Exact original-prefix parity and fresh sole-worker sources verified; funding credited no profit |
 | Tournament objective | Existing joint-state/CVaR optimizer available; prize objective not yet deployed | Include original existing holdings and liabilities once, current official leaderboard observation and robust threshold distributions; expected value and prize utility remain distinct |
 | Genuine election-night vintages | Existing nowcaster; real first-available historical vintages still missing | Preserve corrections and publication clocks; never label final results as data available earlier |
 
-The deployed optional SIG breadth diagnostic stops at128MiB; its current file reached
-that limit around09:20UTC. The successor rotates128MiB independent chain segments
-within an8GiB run bound, preserving frozen original bytes. The financial bank continues recording current
-canonical books. The new observer reads that journal without a new SIG client,
+The historical optional SIG breadth diagnostic stopped at128MiB around09:20UTC.
+The deployed successor rotates128MiB independent chain segments within an8GiB
+run bound, preserving frozen original bytes. The financial bank continues recording
+current canonical books. The new observer reads the all-market capture without a new SIG client,
 HTTP request, writer lock or mutation. It starts at the present end, verifies
 the subsequent chain, and does not claim a full-history audit. Source and
 receipt ages, local first availability, missing labels and mapping classes
@@ -111,11 +135,11 @@ data surface from independently polled REST books; keep their provenance apart.
 The existing public SIG API capability audit and original parsed specification
 remain in [Paper5 evidence](../research/moloch-paper5-20261016/capability-audit.json).
 
-Current focused checks: Kalshi client/collector/universe/supervisor48 passed,
-WebSocket21 passed, prospective observer14 passed and economic evaluation15
-passed. The full-capital precursor passed265 native,86 runtime and10 breadth
-checks and three optimized builds; the subsequent narrow runtime timing fix
-requires its own checks/build. These verify selected integrity paths, not alpha.
-The combined advanced SIG successor is under separate ARM64 validation and
-remains distinct from the deployed `fec81a5e` binary. Production stays running
-while successors are built and reconciled.
+The deployed full-capital release has14 new reader/copy checks and four optimized
+artifacts, with retained unchanged-source90 runtime/265 native financial/10 breadth
+checks explicitly identified as reference evidence. The actual stopped-bank copy
+also passed full financial parity. New signed-flow source and optional observer
+inputs pass45 Node and67 Python checks; those source changes are separate from
+the presently deployed feed/observer versions until their own live verification.
+These checks verify selected integrity paths, not alpha. Production continues
+while research and later successors are developed.

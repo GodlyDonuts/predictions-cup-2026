@@ -72,6 +72,74 @@ def logit(p):
     return math.log(p / (1 - p))
 
 
+FLOW_FIELDS = ('tradeId', 'ticker', 'bodySha256', 'receivedMs', 'availableMs', 'sourceTsMs',
+               'sid', 'sequence', 'streamEpoch', 'quantity', 'yesPrice', 'noPrice', 'direction', 'isBlockTrade')
+
+
+def validate_trade_flow(flow, ticker, now, epoch=None):
+    """Validate optional original exported evidence, never a complete trade tape."""
+    def need(ok):
+        if not ok:
+            raise ValueError('OBSERVER_TRADE_FLOW')
+    def integer(value):
+        return type(value) is int and 0 <= value <= 9007199254740991
+    def signed(value):
+        need(isinstance(value, str) and bool(re.fullmatch(r'-?\d+(?:\.\d{1,6})?', value)))
+        return Decimal(value)
+    need(isinstance(ticker, str) and bool(ticker) and isinstance(flow, dict) and flow.get('source') == 'kalshi_official_ws_v2_public_trade' and flow.get('ticker') == ticker)
+    at = flow.get('asOfMs')
+    need(integer(at) and at <= now and now-at <= 2000 and flow.get('observing') is True)
+    need(integer(flow.get('streamEpoch')) and flow['streamEpoch'] >= 1 and (epoch is None or epoch == flow['streamEpoch']))
+    need(flow.get('sid') is None or integer(flow['sid']) and flow['sid'] >= 1)
+    need(flow.get('pricingAuthority') is False and flow.get('executionAuthority') is False and flow.get('bookFreshnessRenewed') is False)
+    need(isinstance(flow.get('windows'), dict) and set(flow['windows']) == {'1000', '5000', '30000'})
+    retained_evidence = {}
+    for text_ms, w in flow['windows'].items():
+        ms = int(text_ms)
+        need(isinstance(w, dict) and w.get('completeTradeTape') is False and type(w.get('evidenceComplete')) is bool)
+        count, missing = w.get('observedTradeCount'), w.get('missingExecutionClockCount')
+        need(integer(count) and count <= 4096 and integer(missing) and missing <= 4096)
+        need(integer(w.get('observedSubscriptionDurationMs')) and w['observedSubscriptionDurationMs'] <= at and
+             w.get('windowObservedSinceSubscription') is (w['observedSubscriptionDurationMs'] >= ms))
+        need(isinstance(w.get('evidence'), list) and len(w['evidence']) <= 8 and len(w['evidence']) <= count)
+        need(w['evidenceComplete'] == (len(w['evidence']) == count))
+        evidence, ids = [], set()
+        for r in w['evidence']:
+            need(isinstance(r, dict) and set(r) == set(FLOW_FIELDS))
+            need(r['ticker'] == ticker and r['streamEpoch'] == flow['streamEpoch'] and integer(r['sid']) and r['sid'] >= 1 and r['sid'] == flow.get('sid'))
+            need(r['sequence'] is None or integer(r['sequence']))
+            need(isinstance(r['tradeId'], str) and 0 < len(r['tradeId']) <= 128 and r['tradeId'] not in ids)
+            ids.add(r['tradeId'])
+            need(r['tradeId'] not in retained_evidence or retained_evidence[r['tradeId']] == r)
+            retained_evidence[r['tradeId']] = r
+            need(isinstance(r['bodySha256'], str) and bool(re.fullmatch(r'[0-9a-f]{64}', r['bodySha256'])))
+            need(all(integer(r[k]) for k in ('sourceTsMs', 'receivedMs', 'availableMs')) and
+                 r['receivedMs'] <= r['availableMs'] <= at and at-ms < r['sourceTsMs'] <= at and r['sourceTsMs']-r['receivedMs'] <= 1000)
+            need(r['direction'] is None or type(r['direction']) is int and r['direction'] in (-1, 1))
+            need(r['isBlockTrade'] is None or type(r['isBlockTrade']) is bool)
+            need(decimal(r['quantity']) > 0 and decimal(r['yesPrice'])+decimal(r['noPrice']) == 1)
+            evidence.append({k: r[k] for k in FLOW_FIELDS})
+        need(isinstance(w.get('evidenceSha256'), str) and bool(re.fullmatch(r'[0-9a-f]{64}', w['evidenceSha256'])))
+        if w['evidenceComplete']:
+            original = json.dumps(evidence, separators=(',', ':'), ensure_ascii=False, allow_nan=False)
+            need(hashlib.sha256(original.encode()).hexdigest() == w['evidenceSha256'])
+            total = sum((decimal(r['quantity']) for r in evidence), Decimal(0))
+            unknown = sum((decimal(r['quantity']) for r in evidence if r['direction'] is None), Decimal(0))
+            known = sum((decimal(r['quantity'])*r['direction'] for r in evidence if r['direction'] is not None), Decimal(0))
+            need(decimal(w['observedQuantity']) == total and decimal(w['unknownDirectionQuantity']) == unknown and signed(w['knownSignedQuantity']) == known)
+            need(w.get('signedQuantity') is None if not evidence or unknown or missing else signed(w['signedQuantity']) == known)
+            need(w.get('blockTradeCount') == sum(r['isBlockTrade'] is True for r in evidence) and
+                 w.get('unknownBlockClassificationCount') == sum(r['isBlockTrade'] is None for r in evidence))
+        else:
+            # Full aggregates are original source reports only, never validated
+            # from truncated evidence or promoted to model inputs below.
+            need(abs(signed(w['knownSignedQuantity'])) <= decimal(w['observedQuantity']) and decimal(w['unknownDirectionQuantity']) <= decimal(w['observedQuantity']))
+        need(w.get('signedQuantity') is None if count == 0 or missing or decimal(w['unknownDirectionQuantity']) > 0 else signed(w['signedQuantity']) == signed(w['knownSignedQuantity']))
+        need(integer(w.get('blockTradeCount')) and w['blockTradeCount'] <= count and integer(w.get('unknownBlockClassificationCount')) and w['unknownBlockClassificationCount'] <= count)
+        need(decimal(w['receiptOnlyActivityQuantity']) == 0 if missing == 0 else decimal(w['receiptOnlyActivityQuantity']) > 0)
+    return json.loads(compact(flow))
+
+
 class Tail:
     """Fresh suffix only. A checked suffix chain is not a full-history audit."""
     def __init__(self, path, from_start=False):
@@ -134,6 +202,9 @@ class Study:
         self.external_cache = collections.defaultdict(dict)
         self.external_invalid, self.external_quarantine = set(), set()
         self.external_tickers = set()
+        self.external_market_scopes = set()
+        self.source_histories = {}  # <=237 markets x2 source histories; old epochs discarded.
+        self.external_flow, self.external_flow_seen = {}, {}
         self.pending = collections.defaultdict(collections.deque)
         self.last_sample, self.last_source, self.revisions = {}, {}, {}
         self.counts = collections.Counter()
@@ -153,6 +224,13 @@ class Study:
         for row in envelope["markets"]:
             for market in row["sigMarketIds"]:
                 market = str(market)
+                if market not in self.external_market_scopes:
+                    if len(self.external_market_scopes) >= 237:
+                        self.counts["externalScopeLimit"] += 1
+                        continue
+                    self.external_market_scopes.add(market)
+                if ws:
+                    self._flow_update(market, row, now, ws_epoch)
                 if market not in self.external_cache[source] and len(self.external_cache[source]) >= 237:
                     self.counts["externalScopeLimit"] += 1
                     continue
@@ -165,6 +243,8 @@ class Study:
                     self.external_tickers.add(ticker)
                 if ws and row.get("valid") is not True:
                     self.external_invalid.add(key)
+                    if row.get("invalidReason") not in ("stale", "source_clock_ahead"):
+                        self._invalidate_external_history(market, source)
                     self.counts["externalWsWithdrawn"] += 1
                     self._select_external(market, now)
                     continue
@@ -197,6 +277,7 @@ class Study:
                 except (ValueError, InvalidOperation, KeyError, TypeError):
                     self.counts["externalInvalidOrOneSided"] += 1
                     self.external_invalid.add(key)
+                    self._invalidate_external_history(market, source)
                     self._select_external(market, now)
                     continue
                 prior = self.external_cache[source].get(market)
@@ -224,16 +305,73 @@ class Study:
                     if actual != expected:
                         self.external_quarantine.add(key)
                         self.external.pop(market, None)
-                        self.history[market].clear()
+                        self._invalidate_external_history(market, source)
                         self.counts["externalConflicts"] += 1
                         continue
                     self.counts["externalDuplicates"] += 1
                 else:
                     self.external_cache[source][market] = value
                     self.external_quarantine.discard(key)
+                    self._remember_external(market, value, now)
                 self.external_invalid.discard(key)
                 self._select_external(market, now)
         self.counts["externalPolls"] += 1
+
+    @staticmethod
+    def _external_identity(value):
+        return tuple(value.get(k) for k in ("source", "ticker", "mappingKind", "sid", "wsEpoch", "streamBoundary"))
+
+    def _flow_update(self, market, row, now, epoch):
+        if row.get('tradeFlow') is None:
+            self.external_flow.pop(market, None)
+            return
+        try:
+            flow = validate_trade_flow(row['tradeFlow'], row['ticker'], now, epoch)
+            sha = hashlib.sha256(compact(flow).encode()).hexdigest()
+            prior = self.external_flow_seen.get(market)
+            if prior and flow['asOfMs'] < prior[0]:
+                self.counts['tradeFlowClockRegression'] += 1
+                return
+            if prior and flow['asOfMs'] == prior[0]:
+                if sha != prior[1]:
+                    self.external_flow.pop(market, None)
+                    self.counts['tradeFlowSnapshotConflict'] += 1
+                return  # Original first availability never renewed.
+            self.external_flow_seen[market] = (flow['asOfMs'], sha)
+            self.external_flow[market] = {'sourceSnapshot': flow, 'sourceSnapshotSha256': sha, 'availableMs': now}
+        except (ValueError, KeyError, TypeError, InvalidOperation):
+            self.external_flow.pop(market, None)
+            self.counts['tradeFlowInvalid'] += 1
+
+    def _flow_for_decision(self, market, now):
+        cached = self.external_flow.get(market)
+        if not cached or cached['availableMs'] > now or not 0 <= now-cached['sourceSnapshot']['asOfMs'] <= 2000:
+            return None
+        inputs = {}
+        for text_ms, w in cached['sourceSnapshot']['windows'].items():
+            rows = [r for r in w['evidence'] if now-int(text_ms) < r['sourceTsMs'] <= now]
+            identified = w['evidenceComplete'] and w['missingExecutionClockCount'] == 0 and rows and all(r['direction'] is not None for r in rows)
+            inputs[text_ms] = {'observedSignedQuantity': str(sum((decimal(r['quantity'])*r['direction'] for r in rows), Decimal(0))) if identified else None,
+                               'validatedEvidenceComplete': w['evidenceComplete'], 'observedTradeCount': len(rows) if w['evidenceComplete'] else None,
+                               'completeTradeTape': False}
+        return {**cached, 'decisionMs': now, 'snapshotAgeMs': now-cached['sourceSnapshot']['asOfMs'],
+                'inputs': inputs, 'pricingAuthority': False, 'executionAuthority': False}
+
+    def _invalidate_external_history(self, market, source):
+        entry = self.source_histories.get((market, source))
+        if entry:
+            entry[1].clear()
+
+    def _remember_external(self, market, value, now):
+        key, identity = (market, value["source"]), self._external_identity(value)
+        entry = self.source_histories.get(key)
+        if entry is None or entry[0] != identity:
+            entry = (identity, collections.deque())
+            self.source_histories[key] = entry
+        h = entry[1]
+        h.append(value)
+        while h and (h[0]["receivedMs"] < now-180000 or len(h) > 4096):
+            h.popleft()
 
     def _select_external(self, market, now):
         selected = None
@@ -248,18 +386,14 @@ class Study:
         prior = self.external.get(market)
         if selected is None:
             self.external.pop(market, None)
-            self.history[market].clear()
+            self.history[market] = collections.deque()
             return None
         if selected is prior:
             return selected
-        h = self.history[market]
         if prior and (prior["source"], prior.get("sid"), prior.get("wsEpoch"), prior.get("streamBoundary")) != (selected["source"], selected.get("sid"), selected.get("wsEpoch"), selected.get("streamBoundary")):
-            h.clear()  # Source/SID handover is not a price innovation.
             self.counts["externalSourceChanges"] += 1
         self.external[market] = selected
-        h.append(selected)
-        while h and (h[0]["receivedMs"] < now-180000 or len(h) > 4096):
-            h.popleft()
+        self.history[market] = self.source_histories.get((market, selected["source"]), (None, collections.deque()))[1]
         return selected
 
     def breadth(self, row, now):
@@ -365,14 +499,17 @@ class Study:
             self.counts["noCurrentExternal"] += 1
             return
         sample_id = hashlib.sha256(f"{market}:{exchange}:{row['hash']}:{ext['bodySha256']}:{now}".encode()).hexdigest()
-        changes = {}
+        changes, anchors = {}, {}
         for ms in (1000, 5000, 30000):
-            prior = next((v for v in reversed(self.history[market]) if v["receivedMs"] <= now - ms), None)
-            changes[str(ms)] = (logit(ext["features"]["midpoint"]) - logit(prior["features"]["midpoint"])) if prior and now - ms - prior["receivedMs"] <= self.external_age else None
+            prior = next((v for v in reversed(self.history[market]) if v["receivedMs"] <= now-ms and v["availableMs"] <= now), None)
+            eligible = prior is not None and now-ms-prior["receivedMs"] <= self.external_age
+            changes[str(ms)] = (logit(ext["features"]["midpoint"]) - logit(prior["features"]["midpoint"])) if eligible else None
+            anchors[str(ms)] = ({**{k: prior.get(k) for k in ("bodySha256", "receivedMs", "availableMs", "source", "ticker", "mappingKind", "sid", "sequence", "wsEpoch", "streamBoundary", "sourceTsMs")}, "midpoint": prior["features"]["midpoint"]} if eligible else None)
         sample = {"kind": "decision_features", "sampleId": sample_id, "decisionMs": now, "decisionAt": stamp(now),
                   "marketId": market, "exchangeId": exchange, "sig": {"journalHash": row["hash"], "journalSequence": row["sequence"],
                   "sourceAt": b["sourceAt"], "receivedAt": b["receivedAt"], "features": f},
-                  "external": ext, "externalLogitChanges": changes, "pricingAuthority": False,
+                  "external": ext, "externalLogitChanges": changes, "externalLagAnchors": anchors, "pricingAuthority": False,
+                  "externalTradeFlow": self._flow_for_decision(market, now),
                   "executionAuthority": False, "horizonsMs": list(self.horizons)}
         self.emit(sample)
         waiting.append({**sample, "remaining": set(self.horizons)})

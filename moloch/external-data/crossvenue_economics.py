@@ -113,6 +113,36 @@ def load(paths, as_of, max_rows=MAX_ROWS, max_bytes=MAX_BYTES):
     counts['unmatchedLabels'] = sum(sid not in decisions for sid, _ in labels)
     return decisions, labels, files, counts
 
+def validate_lag_anchors(row):
+    """Optional new producer evidence. Old explicitly pinned producers stay readable."""
+    if 'externalLagAnchors' not in row:
+        return
+    anchors, changes, ext, at = row['externalLagAnchors'], row['externalLogitChanges'], row['external'], row['decisionMs']
+    require(isinstance(anchors, dict) and set(anchors) == {'1000', '5000', '30000'}, 'LAG_ANCHORS')
+    for lag in (1000, 5000, 30000):
+        anchor, change = anchors[str(lag)], changes.get(str(lag))
+        if anchor is None:
+            require(change is None, 'LAG_ANCHOR_MISSING')
+            continue
+        require(isinstance(anchor, dict) and change is not None, 'LAG_ANCHOR_MISSING')
+        require(isinstance(anchor.get('bodySha256'), str) and HEX.fullmatch(anchor['bodySha256']), 'LAG_ANCHOR_HASH')
+        received, available = anchor.get('receivedMs'), anchor.get('availableMs')
+        require(type(received) is int and type(available) is int and 0 <= received <= available <= at and
+                received <= ext['receivedMs'] and received <= at-lag and at-lag-received <= 20000, 'LAG_ANCHOR_CLOCK')
+        require(all(anchor.get(k) == ext.get(k) for k in ('source', 'ticker', 'mappingKind', 'sid', 'wsEpoch', 'streamBoundary')), 'LAG_ANCHOR_IDENTITY')
+        if ext.get('source') == 'kalshi_official_ws_v2':
+            require(type(anchor.get('sequence')) is int and type(ext.get('sequence')) is int and
+                    0 <= anchor['sequence'] <= ext['sequence'], 'LAG_ANCHOR_CURSOR')
+        source = anchor.get('sourceTsMs')
+        require(source is None or type(source) is int and 0 <= source <= available and source-received <= 1000, 'LAG_ANCHOR_CLOCK')
+        before, current = number(anchor.get('midpoint')), number(ext['features'].get('midpoint'))
+        require(0 <= before <= 1 and 0 <= current <= 1, 'LAG_ANCHOR_MIDPOINT')
+        def logit(value):
+            value = min(.999999, max(.000001, value))
+            return math.log(value/(1-value))
+        require(number(change) == logit(current)-logit(before), 'LAG_ANCHOR_DELTA')
+
+
 def feature_vector(row, sample_id_format="scoped_v2"):
     d, sig, ext = row['decisionMs'], row['sig'], row['external']
     require(clock(sig['sourceAt']) <= clock(sig['receivedAt']) <= d, 'FEATURE_LOOKAHEAD')
@@ -122,6 +152,7 @@ def feature_vector(row, sample_id_format="scoped_v2"):
     prefix = f"{row['marketId']}:{row['exchangeId']}:" if sample_id_format == 'scoped_v2' else ''
     expected = hashlib.sha256(f"{prefix}{sig['journalHash']}:{ext['bodySha256']}:{d}".encode()).hexdigest()
     require(row['sampleId'] == expected, 'SAMPLE_BINDING')
+    validate_lag_anchors(row)
     changes = row['externalLogitChanges']
     values = [changes.get(str(h)) for h in (1000, 5000, 30000)]
     values += [ext['features'].get('imbalance'), sig['features'].get('imbalance'), sig['features'].get('spread')]

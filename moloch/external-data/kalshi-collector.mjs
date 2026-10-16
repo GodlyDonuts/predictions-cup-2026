@@ -167,8 +167,9 @@ export async function run(options) {
       shadowTask = shadow.run().catch(() => { stats.websocket.state = 'failed'; stats.websocket.reason = 'KALSHI_WS_FAILED'; });
     }
     const shadowQuotes = () => states.filter(s => s.metadata).map(s => {
-      const view = shadow?.state?.view(s.ticker, Date.now());
-      return view && { ...view, sigMarketIds: s.sigMarketIds, mappingKind: s.mappingKind ?? 'direct_party_reference', ruleMismatch: s.ruleMismatch ?? null, resolutionEquivalenceVerified: false };
+      const at = Date.now(); const view = shadow?.state?.view(s.ticker, at);
+      const tradeFlow = shadow?.state?.flowView(s.ticker, at) ?? null;
+      return view && { ...view, tradeFlow, sigMarketIds: s.sigMarketIds, mappingKind: s.mappingKind ?? 'direct_party_reference', ruleMismatch: s.ruleMismatch ?? null, resolutionEquivalenceVerified: false };
     }).filter(Boolean);
     let sequence = 0;
     const status = () => {

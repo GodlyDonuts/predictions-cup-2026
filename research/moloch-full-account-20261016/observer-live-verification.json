@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-16T11:48:16.607381+00:00",
+  "format": "breadth",
+  "freshSamplesVerified": true,
+  "journal": "breadth-494293-1792151247101.jsonl",
+  "latestObservation": {
+    "at": "2026-10-16T11:51:14.755Z",
+    "captureSegment": 0,
+    "counters": {
+      "externalDuplicates": 56962,
+      "externalInvalidOrOneSided": 772,
+      "externalPolls": 310,
+      "externalSourceChanges": 2445,
+      "externalStaleOrFuture": 9439,
+      "externalWsWithdrawn": 180,
+      "labels": 487,
+      "labelsMissingTimelyBook": 862,
+      "noCurrentExternal": 3,
+      "samples": 378,
+      "sigBooks": 6110
+    },
+    "executionAuthority": false,
+    "format": "breadth",
+    "historyPrefixVerified": false,
+    "journalPosition": 27676915,
+    "journalSequence": 224,
+    "observedMarkets": 188,
+    "originalJournalHash": "769a843c28eb832020f59f7d87c8be28700dc53f0b85326231358d4be861ca1e",
+    "pendingSamples": 174,
+    "pid": 496337,
+    "readOnly": true,
+    "state": "observing"
+  },
+  "newPid": 496337,
+  "oldPid": 487833,
+  "originalDatasetsPreserved": true,
+  "output": "crossvenue-observer-v6",
+  "pricingAuthority": false,
+  "scriptSha256": "0655e7609c50aea7c5ca7e68b1b48c89bb68a300dca2786861f320b16e19b02e",
+  "sigAccountRequests": 0,
+  "sigWorkerRestarted": false,
+  "unitSha256": "1fed9d9c3f2dddf2f5281ce9779cd5c076d1937fc4ca651460c65250986237e6"
+}

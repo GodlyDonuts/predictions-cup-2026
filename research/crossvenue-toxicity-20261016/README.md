@@ -33,3 +33,9 @@ Implementation and synthetic/actual-observer schema tests are separate from the
 parent's sealed real-data result above. Current focused tests:17 passed. This
 is a defensive hypothesis measurement artifact, not an authorization or
 production signal.
+
+## Source-local prospective innovation evidence
+
+Observer histories are separate by market and source, with exact WS SID/epoch/unknown-stream boundary (and ticker/mapping) identity. At most237 registered market scopes, two sources,180seconds and4,096 observations/source-history are retained. Old epochs are discarded. A temporary REST selection does not erase separately observed WS history or splice REST values into it. Actual stream boundaries, malformed WS data and conflicting cursors invalidate only the affected source history; normal age expiry does not claim a structural stream gap. Selected observations still need unchanged original20-second freshness; no original clock is renewed.
+
+New prospective decisions include externalLagAnchors for1/5/30second innovations: original body/state hash, receipt, first availability, source/ticker/mapping/WS identity and midpoint. Anchors use only that same source/stream, original receipt no later than decision-minus-lag, first availability no later than decision, and at most20seconds lag-anchor slack. Missing anchors and innovations remain null. Economics and toxicity readers check exact identities, finite recomputed logit delta, hash shape, WS cursor order, original clocks and slack when this field is present. Older explicitly producer-hash-pinned files without anchors remain supported and are not rewritten. These histories measure causal snapshots, not continuous exchange coverage or execution probability. Financial qualification remains unavailable. This source change has29 observer,16 economics and18 toxicity tests passing; prior sealed-study hashes/results remain historical evidence of their actual original code.

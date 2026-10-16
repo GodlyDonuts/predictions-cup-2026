@@ -3,6 +3,7 @@ from decimal import Decimal
 import gzip
 import hashlib
 import json
+import math
 from pathlib import Path
 import tempfile
 import unittest
@@ -33,6 +34,23 @@ class EconomicsTests(unittest.TestCase):
         with gzip.open(p,'wt',encoding='utf-8') as f:
             for r in rows:f.write(canonical(r)+'\n')
         return p
+    def test_new_optional_lag_anchors_are_source_local_causal_and_exact(self):
+        row=records(1)[0];at=row['decisionMs'];row['external'].update(source='kalshi_official_v2',ticker='RACE')
+        row['externalLagAnchors']={}
+        for lag in (1000,5000,30000):
+            row['externalLagAnchors'][str(lag)]={'bodySha256':'c'*64,'receivedMs':at-lag,'availableMs':at-lag,
+                'source':'kalshi_official_v2','ticker':'RACE','mappingKind':'direct_party_reference','midpoint':.5}
+            current=row['external']['features']['midpoint'];row['externalLogitChanges'][str(lag)]=math.log(current/(1-current))
+        self.assertIsNotNone(feature_vector(row))
+        for mode in ('future','old','source','delta','missing','hash'):
+            bad=copy.deepcopy(row);a=bad['externalLagAnchors']['30000']
+            if mode=='future':a['availableMs']=at+1
+            elif mode=='old':a['receivedMs']=at-50001;a['availableMs']=at-50001
+            elif mode=='source':a['source']='kalshi_official_ws_v2'
+            elif mode=='delta':bad['externalLogitChanges']['30000']+=.000001
+            elif mode=='missing':bad['externalLagAnchors']['30000']=None
+            else:a['bodySha256']='not-a-hash'
+            with self.assertRaisesRegex(ValueError,'LAG_ANCHOR'):feature_vector(bad)
     def test_real_observer_output_schema_is_joined_and_missing_history_stays_missing(self):
         out=[];s=Study(out.append,horizons=(1000,))
         s.external_update({'markets':[{'ticker':'RACE','sigMarketIds':['1'],'mappingKind':'direct_party_reference','receivedAt':stamp(BASE),'bodySha256':'a'*64,'normalized':{'yesBids':[{'price':'0.500000','quantity':'10'}],'yesAsks':[{'price':'0.520000','quantity':'10'}]}}]},BASE)

@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-16T11:49:32.813336+00:00",
+  "automaticQueueLeaseRemoval": false,
+  "automaticStopRemoval": false,
+  "dropinSha256": "ddbe320f3fcd657d719a2ec28f67282ce2eb0c90ff8bf03eff9308871121936e",
+  "durableStopConditions": 2,
+  "osCrashRecoveryQualified": false,
+  "pid": 494293,
+  "pidUnchanged": true,
+  "productionFailureInjected": false,
+  "restart": "on-failure",
+  "restartDelaySeconds": 60,
+  "startLimitBurst": 3,
+  "startLimitIntervalSeconds": 3600,
+  "unitUnchanged": true,
+  "unresolvedAcceptanceBypassed": false,
+  "verification": "systemd-analyze verify and actual effective properties; no service restart"
+}
