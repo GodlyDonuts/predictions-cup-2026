@@ -107,7 +107,9 @@ class Sources:
     def start(self,b):
         self.bookmark(b)
         need(b['bufferedBytes']==0 and b.get('lastSequence') is None and b.get('lastHash') is None and b.get('lastConsumedEndOffset') is None,'SIG_INITIAL_BOOKMARK')
-        need(b['readOffset']==b['fileBytesAtObservation'],'SIG_INITIAL_EOF')
+        # Tail pins its initial EOF at open, then bookmark fstats again. Genuine
+        # appends between those observations do not move the original cursor.
+        need(b['readOffset']<=b['fileBytesAtObservation'],'SIG_INITIAL_OFFSET')
         pin=self.refs[b['path']][1]
         with pin.path.open('rb') as stream:
             if b['readOffset']:

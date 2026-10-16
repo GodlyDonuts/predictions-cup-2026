@@ -65,7 +65,7 @@ The verifier compiles only those checked bytes from the fixed repository source,
 not any manifest-selected file or cached Python bytecode. It performs no HTTP,
 producer main invocation, data acquisition, financial mutation or activation.
 
-Eighteen synthetic original-shaped checks pass locally. They include actual
+Nineteen synthetic original-shaped checks pass locally. They include actual
 book and trade callbacks, duplicate/no-sample polls, genuine failed polls,
 initial partial source lines, unread independent rotations, sealed raw source
 membership, exact sampler arguments/emission ranges, altered outputs and
@@ -79,3 +79,12 @@ not independently attested completeness of unrecorded requests. A fully
 recomputed fraudulent capture cannot self-authenticate its execution merely by
 supplying matching hashes; external source custody and the reviewed producer
 remain explicit trust inputs.
+
+The initial EOF cursor is the original `Tail.__init__` observation. Its later
+run-start bookmark may legitimately observe a larger file because SIG appended
+between those two real fstats. Verification permits `readOffset <=
+fileBytesAtObservation`, validates the original cursor's last byte/partial-line
+flag, and still requires exact first-consumed byte offsets. It does not jump
+to the later EOF or treat the intervening bytes as already consumed. A genuine
+Tail append-race regression covers this producer-shape correction; it changes
+no economic policy, original capture or cohort output.

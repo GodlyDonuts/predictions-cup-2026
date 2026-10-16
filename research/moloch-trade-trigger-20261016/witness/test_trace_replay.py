@@ -26,10 +26,12 @@ def rawline(event,sequence,previous):
     return (O.compact({'event':event,'hash':v.sha(unsigned.encode()),'sequence':sequence,'previous':previous})+'\n').encode()
 
 class Fixture:
-    def __init__(self,root,mode='book',format='native',initial=b''):
+    def __init__(self,root,mode='book',format='native',initial=b'',after_open=b''):
         self.root=root;self.out=root/'capture';self.out.mkdir()
         self.mapping=root/'universe.json';self.mapping.write_text('{"markets":[],"pricingAuthority":false}',encoding='utf-8')
         self.source=root/'source.jsonl';self.source.write_bytes(initial);self.tail=O.Tail(self.source)
+        if after_open:
+            with self.source.open('ab') as out:out.write(after_open)
         self.clock=10000
         self.config={'samplingMode':mode,'format':format,'journal':str(self.source),'durationSeconds':10,
                      'horizonsMs':[1000,3000,10000,30000,120000],'sigMaximumAgeMs':3000,'externalMaximumAgeMs':20000,'labelSlackMs':3000}
@@ -170,6 +172,21 @@ class ReplayTests(unittest.TestCase):
         f.finish();r=f.verify()
         self.assertEqual(r['counts']['rotations'],1);self.assertEqual(len(r['unconsumedSourceObservations']),1)
         self.assertFalse(r['crossSegmentContinuityVerified']);self.assertFalse(r['wholeWitnessVerified'])
+
+    def test_real_append_between_tail_open_and_first_bookmark_preserves_original_cursor(self):
+        original=rawline(row(10000)['event'],1,'')
+        f=self.fixture(after_open=original);f.polls()
+        # The real Tail was opened at EOF0, then a real row arrived before its
+        # first bookmark. It must consume that row at0, never jump to new EOF.
+        for item in f.tail.read():f.trace.consume_sig(f.tail,item,f.study.accept,f.clock)
+        f.finish();r=f.verify()
+        self.assertEqual(r['counts']['sigApplies'],1);self.assertEqual(r['outputRows'],1)
+        self.assertFalse(r['historyPrefixVerified'])
+        trace=[json.loads(x) for x in gzip.decompress(Path(f.manifest['trace']['path']).read_bytes()).splitlines()]
+        bookmark=trace[0]['event']['initialBookmark']
+        self.assertEqual(bookmark['readOffset'],0);self.assertEqual(bookmark['fileBytesAtObservation'],len(original))
+        ref=next(r['event']['input'] for r in trace if r['event'].get('inputKind')=='sig_row')
+        self.assertEqual(ref['offset'],0)
 
     def test_initial_partial_line_skip_matches_original_offset_without_prefix_claim(self):
         f=self.fixture(initial=b'old partial')
