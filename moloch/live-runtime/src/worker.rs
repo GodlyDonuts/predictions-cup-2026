@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -112,7 +112,20 @@ impl QueuedSourceBatch{
  }
  fn finish(&mut self,bank:&mut Session,result:Result<()>)->Result<()>{self.flush(bank)?;result}
 }
-fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}Ok(())}
+thread_local!{static PAPER5_NODE_CACHE:std::cell::RefCell<std::collections::BTreeMap<String,Receipt>>=std::cell::RefCell::new(std::collections::BTreeMap::new());}
+fn cache_original_node(r:&Receipt){
+ if r.status!=200||!r.endpoint.starts_with("/markets/")||!r.endpoint.contains("/nodes?tournamentId="){return}
+ let Some(market)=r.endpoint.strip_prefix("/markets/").and_then(|s|s.split('/').next()).filter(|s|!s.is_empty()&&s.bytes().all(|b|b.is_ascii_digit()))else{return};
+ PAPER5_NODE_CACHE.with(|cache|{let mut cache=cache.borrow_mut();if cache.len()<512||cache.contains_key(market){let replace=cache.get(market).is_none_or(|old|moloch_live_runtime::daily_windows::clock(&r.received_at).ok()>moloch_live_runtime::daily_windows::clock(&old.received_at).ok());if replace{cache.insert(market.into(),r.clone());}}});
+}
+fn paper5_nodes(scope:&Scope)->std::collections::BTreeMap<String,Receipt>{PAPER5_NODE_CACHE.with(|cache|{let cache=cache.borrow();scope.exchanges.iter().filter_map(|(ex,market)|cache.get(market).map(|r|(ex.clone(),r.clone()))).collect()})}
+#[cfg(test)]mod paper5_cache_tests{
+ use super::*;
+ fn receipt(at:&str)->Receipt{Receipt{endpoint:"/markets/277/nodes?tournamentId=cup".into(),request_started_at:at.into(),received_at:at.into(),status:200,data:json!({"original":true})}}
+ #[test]fn original_node_clock_is_not_refreshed_and_foreign_scope_is_not_imported(){PAPER5_NODE_CACHE.with(|c|c.borrow_mut().clear());let original=receipt("2026-10-16T05:00:00Z");cache_original_node(&original);cache_original_node(&receipt("2026-10-16T04:00:00Z"));let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("966".into(),"277".into()),("foreign".into(),"999".into())].into()};let nodes=paper5_nodes(&scope);assert_eq!(nodes.len(),1);assert_eq!(nodes["966"].received_at,original.received_at);assert_eq!(nodes["966"].data,original.data);}
+ #[test]fn receipt_cache_is_bounded_and_failed_or_nonnode_reads_are_ignored(){PAPER5_NODE_CACHE.with(|c|c.borrow_mut().clear());for id in 1..=600{let mut r=receipt("2026-10-16T05:00:00Z");r.endpoint=format!("/markets/{id}/nodes?tournamentId=cup");cache_original_node(&r);}assert_eq!(PAPER5_NODE_CACHE.with(|c|c.borrow().len()),512);let mut r=receipt("2026-10-16T06:00:00Z");r.status=500;cache_original_node(&r);r.status=200;r.endpoint="/markets/277/orderbook?tournamentId=cup&depth=20".into();cache_original_node(&r);assert_eq!(PAPER5_NODE_CACHE.with(|c|c.borrow()["277"].received_at.clone()),"2026-10-16T05:00:00Z");}
+}
+fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}cache_original_node(r);Ok(())}
 fn validate_collateral_accounting(c:&Control)->Result<()>{
  // Ordinary passive partial/late fills require a separately verified native
  // continuation before this mixed worker may enable ALL accounting.
@@ -296,7 +309,7 @@ fn open_worker_fundamental(c:&Control,loaded:fundamental::LoadedSettings,bank:&m
 fn recover_packages(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog)->Result<bool>{
  for p in bank.engine().package_records().as_array().ok_or("LIVE_PACKAGE_RECORDS")?{let id=p["packageId"].as_str().ok_or("LIVE_PACKAGE_ID")?;if packages.record(id).is_none(){return Err("LIVE_PACKAGE_ORIGINAL_JOURNAL_MISSING".into())}}
  let receipts=c.root.join("package-receipts");let mut backend=moloch_live_runtime::package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
- let legacy=moloch_live_runtime::package_worker::recover(bank,packages,&mut backend)?;let portfolio=moloch_live_runtime::package_portfolio_worker::recover(bank,packages,&mut backend)?;Ok(legacy.blocks_new_submissions||portfolio.blocks_new_submissions)
+ let legacy=moloch_live_runtime::package_worker::recover(bank,packages,&mut backend)?;let portfolio=moloch_live_runtime::package_portfolio_worker::recover(bank,packages,&mut backend)?;let probabilistic=moloch_live_runtime::probabilistic_portfolio_worker::recover(bank,packages,&mut backend)?;Ok(legacy.blocks_new_submissions||portfolio.blocks_new_submissions||probabilistic.blocks_new_submissions)
 }
 fn canonical_package_receipt(census:&moloch_live_runtime::relationship_census::Census)->Result<Receipt>{
  let source=census.report.relationships.source.as_ref().ok_or("LIVE_PACKAGE_CANONICAL_UNAVAILABLE")?;
@@ -1173,6 +1186,7 @@ pub fn main()->Result<()>{
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();let mut collateral_last_check=0u64;
+  let paper5_runtime=c.paper5.as_ref().and_then(|settings|match moloch_live_runtime::paper5_runtime::Runtime::load(settings){Ok(runtime)=>Some(runtime),Err(error)=>{let _=atomic_json(&c.root.join("paper5-proposals.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error.to_string(),"executionAuthority":false}));None}});let mut paper5_last_evaluation=0u64;
   loop{
    let cycle_result=(||->Result<()>{
    if stop.exists()||global_stop.exists(){return Err("LIVE_EXECUTION_STOP".into())}
@@ -1201,6 +1215,9 @@ pub fn main()->Result<()>{
     // ordinary reconciliation permission after those paced reads.
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows,maker_review.as_ref(),fundamental.as_mut())?;
+    // Optional bounded inference runs after completed dispatch/accounting, with
+    // no live permit held. Existing original receipts supply all observations.
+    if let Some(runtime)=paper5_runtime.as_ref(){let at=now();if at.saturating_sub(paper5_last_evaluation)>=60_000{paper5_last_evaluation=at;let diagnostic=runtime.evaluate(&bank,&c.scope,&log,&paper5_nodes(&c.scope),&Default::default(),&Default::default(),at);if let Ok(value)=serde_json::to_value(diagnostic){let _=atomic_json(&c.root.join("paper5-proposals.json"),&value);}}}
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
    cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}

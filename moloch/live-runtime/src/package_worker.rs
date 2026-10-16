@@ -125,7 +125,7 @@ fn frozen<B:Backend>(log:&PackageDispatchLog,id:&str,b:&B,bank:&Session)->Result
 /// including a partially mapped package whose remaining acceptance is unknown.
 pub fn recover<B:Backend>(bank:&mut Session,log:&mut PackageDispatchLog,b:&mut B)->Result<Recovery>{
  let mut report=Recovery::default();
- for record in log.records(){if record["admission"]["reserve"].get("portfolio").is_some(){continue}let id=record["admission"]["permit"]["intentId"].as_str().ok_or("PACKAGE_WORKER_ID")?.to_owned();let f=frozen(log,&id,b,bank)?;
+ for record in log.records(){if record["admission"]["reserve"].get("portfolio").is_some()||record["admission"]["reserve"]["type"]=="probabilistic_portfolio_reserve_v1"{continue}let id=record["admission"]["permit"]["intentId"].as_str().ok_or("PACKAGE_WORKER_ID")?.to_owned();let f=frozen(log,&id,b,bank)?;
   let native=bank.engine().package_records();let p=native.as_array().ok_or("PACKAGE_WORKER_RECORDS")?.iter().find(|p|p["packageId"]==id).cloned();
   if matches!(f.row["phase"].as_str(),Some("intent"|"never_attempted")){if p.as_ref().is_none_or(|p|matches!(p["phase"].as_str(),Some("reserved"|"attempted"))){abandon(bank,log,b,&id)?;report.abandoned_unattempted+=1;}else{need(f.row["phase"]=="never_attempted"&&p.as_ref().is_some_and(|p|p["phase"]=="no_execution"),"PACKAGE_WORKER_UNATTEMPTED_NATIVE_CONTRADICTION")?;}continue}
   let p=p.ok_or("PACKAGE_WORKER_MISSING_ATTEMPTED_NATIVE")?;

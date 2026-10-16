@@ -52,3 +52,5 @@ pub mod election_curve;
 pub mod execution_router;
 pub mod semantic_states;
 pub mod probabilistic_portfolio;
+pub mod paper5_runtime;
+pub mod probabilistic_portfolio_worker;
