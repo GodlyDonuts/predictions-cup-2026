@@ -56,7 +56,7 @@ inventory, use SELL receipts as funding, optimize credit, or model dynamic repai
 Existing SDK typed allOrNone execution still requires fresh full account/rules/
 book preflight, a genuine bank-bound reservation, stable durable intent, physical
 authority, exact unchanged limits and unknown-acceptance protection. This module
-is not yet registered or wired; parent integration and checks remain required.
+is registered only for isolated native checks and is not wired to physical execution; parent integration remains required.
 Current SDK/runtime leg bounds may be more conservative than the venue's10leg
 schema; this proposal does not widen those guards.
 
@@ -87,3 +87,12 @@ when ordinary YES+NO payouts total one. No actual exhaustive certificate was
 created from these retained sources, and no current profitable guarantee is
 claimed. The correct current output without additional reviewed official
 completeness evidence is `Uncertified`.
+
+## Isolated ARM64 validation
+
+The initial13focused tests passed on a private copy of the previously checked
+unified source. No Rust compiler fix was needed. Separate follow-ups make
+`AtomicProposal` opaque outside this module (read-only getters, noDeserialize)
+and cap combined solver work. Their final exact-source rerun is recorded in the
+parent handoff; this does not validate any real venue completeness certificate.
+No production bank, service, account client, permission or runtime was changed.
