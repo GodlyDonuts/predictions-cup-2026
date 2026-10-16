@@ -595,6 +595,39 @@ impl Cohorts{
             out.push(EntryHint{exchange_id:ex.clone(),market_id:r.market_id.clone(),contract_id:r.contract_id.clone(),side:r.side.clone(),review_sha256:digest(r)?});
         }need(out.len()<=32,"FUNDAMENTAL_ENTRY_HINT_BOUND")?;Ok(out)
     }
+    /// DIAGNOSTIC ONLY: compares hypothetical execution modes from the exact
+    /// installed review and actually admitted book. This grants no reservation,
+    /// fill probability, request, retry or physical authority. The caller must
+    /// obtain `trusted` from its separately pinned ReviewAuthority; the wrapper
+    /// below additionally verifies that pin here. No transport/account reads.
+    /// Horizon is remaining OPERATOR holding deadline, not promised cash release
+    /// or settlement timing. The model SHA identifies the explicit conditional
+    /// mixture assumptions, not a trained or independently calibrated model.
+    pub fn compare_entry_actions(&self,bank:&Session,scope:&Scope,hint:&EntryHint,trusted:&BTreeSet<String>,now:u64)->Result<Option<crate::alpha_proposal::Comparison>>{
+        need(!self.poisoned&&bank.manifest_hash().as_str()==Some(self.manifest.as_str())&&bank.live_account_seed().is_some_and(|s|s["runId"]==self.run),"FUNDAMENTAL_COMPARISON_BANK")?;
+        self._owner.descriptor_identity()?;self.marker.validate()?;let pin=FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?;
+        let bytes=read_file(&pin.file,pin.maximum)?;let line=bytes.strip_suffix(b"\n").ok_or("FUNDAMENTAL_TORN_TAIL")?.rsplit(|b|*b==b'\n').next().ok_or("FUNDAMENTAL_TAIL")?;
+        let mut row:Value=serde_json::from_slice(line)?;let claimed=row.as_object_mut().ok_or("FUNDAMENTAL_ROW")?.remove("hash").ok_or("FUNDAMENTAL_HASH")?;
+        need(row["sequence"]==self.sequence&&claimed==self.previous&&claimed==digest(&row)?,"FUNDAMENTAL_COMPARISON_POLICY_CHANGED")?;
+        let Some(r)=self.policies.get(&hint.exchange_id)else{return Ok(None)};let review_sha=digest(r)?;
+        need(hint.market_id==r.market_id&&hint.contract_id==r.contract_id&&hint.side==r.side&&hint.review_sha256==review_sha
+            &&scope.tournament_id==r.tournament_id&&scope.exchanges.get(&r.exchange_id)==Some(&r.market_id),"FUNDAMENTAL_COMPARISON_HINT_CHANGED")?;
+        if self.cohorts.contains_key(&r.exchange_id)||r.existing_origin.is_some()||r.revoke_existing||!trusted.contains(&review_sha)||!current(r,now)||now>=r.hold_until_ms
+            ||bank.engine().wallet.quantity(&r.exchange_id,Side::Yes)!=0||bank.engine().wallet.quantity(&r.exchange_id,Side::No)!=0{return Ok(None)}
+        let ceiling=structure(r)?.min(UNIT-5000);if ceiling<5000{return Ok(None)}
+        let mut until=r.expires_at_ms.min(r.hold_until_ms);for source in &r.sources{until=until.min(source.observed_at_ms.checked_add(source.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?);}
+        if let Some(stop)=bank.engine().policy()["entryStopAt"].as_str().map(daily_windows::clock).transpose()?{until=until.min(stop);}
+        if until<=now{return Ok(None)}
+        let model_sha=digest(&json!({"model":"operator_conditional_binary_mixture_v1","ordinaryProbability":r.ordinary_probability,"exceptionalProbabilityAllowance":r.exceptional_probability_allowance,"minimumExceptionalPayout":r.minimum_exceptional_payout,"marginPerShare":r.margin_per_share,"assumptionLabel":r.assumption_label,"payoutMappingIsOperatorAssumption":r.payout_mapping_is_operator_assumption,"horizonBasis":"remaining_operator_holding_deadline_not_cash_release"}))?;
+        let bounds=crate::alpha_proposal::ReviewBounds{exchange_id:r.exchange_id.clone(),market_id:r.market_id.clone(),side:if r.side=="YES"{Side::Yes}else{Side::No},review_sha256:review_sha,
+            model_sha256:model_sha,source_sha256:digest(&r.sources)?,reviewed_at_ms:r.reviewed_at_ms,valid_until_ms:until,horizon_ms:r.hold_until_ms.checked_sub(now).ok_or("FUNDAMENTAL_COMPARISON_HORIZON")?,
+            expected_payout:add(structure(r)?,amount(&r.margin_per_share)?)?,acquisition_ceiling:ceiling,maximum_principal:amount(&r.maximum_principal)?,maximum_quantity:r.maximum_quantity,
+            modes:vec![crate::alpha_proposal::Mode::JoinBid,crate::alpha_proposal::Mode::ImproveOneTick,crate::alpha_proposal::Mode::BoundedLimitMayRest]};
+        let result=crate::alpha_proposal::compare(bank,scope,&bounds,now)?;pin.validate()?;Ok(Some(result))
+    }
+    pub fn compare_entry_actions_with_authority(&self,bank:&Session,scope:&Scope,hint:&EntryHint,authority:&ReviewAuthority,now:u64)->Result<Option<crate::alpha_proposal::Comparison>>{
+        authority.validate()?;let result=self.compare_entry_actions(bank,scope,hint,authority.trusted(),now)?;authority.validate()?;Ok(result)
+    }
     /// Call ONLY after original seven scoped reads, actual source admission, and
     /// retirement of proved never-sent blocking drafts. Quantity is derived by
     /// the native primitive; no ordinary pair or stale quote is repurposed.

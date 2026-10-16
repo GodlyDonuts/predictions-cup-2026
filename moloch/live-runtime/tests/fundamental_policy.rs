@@ -274,6 +274,25 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
         let(mut f,t,account,order,fills,terminal,q)=closed_zero_fixture(false);let old=q["id"].as_u64().unwrap();let hint=f.store.as_ref().unwrap().rearm_hints(&f.bank,&f.log,&f.scope,NOW+3220).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_rearm(&f.bank,&f.log,&t,&f.scope,&hint,&account,&order,&fills,"closed-zero-terminal",1,&terminal,NOW+3220).unwrap();f.store.as_mut().unwrap().apply_rearm(plan,&f.bank,&f.log,&t,NOW+3220).unwrap();let restored=actual_startup_ack(&f,old,NOW+3221);f.log.acknowledgments.get_mut(&old).unwrap()["data"]["orderId"]=json!("902");assert!(f.store.as_ref().unwrap().validate_restored_acknowledgment(&f.bank,&f.log,old,&restored).is_err());
         let(mut f,t,facts,retirement,q)=abandonment_fixture(Some(true));let id=q["id"].as_u64().unwrap();let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).unwrap();f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+40).unwrap();assert!(f.store.as_ref().unwrap().validate_restored_acknowledgment(&f.bank,&f.log,id,&F::base(&q,"actual_order_ack",NOW+41,"901")).is_err());
     }
+    #[test]fn action_comparison_derives_review_caps_sources_and_conditional_model_without_mutation(){
+        let(mut f,_,_)=entry_fixture();let mut review=f.review.clone();review.reviewed_at_ms=NOW+24;review.maximum_quantity=1;review.maximum_principal="1.000000".into();f.install(review.clone(),NOW+24);
+        let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);let authority=f.authority();let head=f.bank.durable_head();let report=f.bank.engine().report().unwrap();
+        let compared=store.compare_entry_actions_with_authority(&f.bank,&f.scope,&hint,&authority,NOW+25).unwrap().unwrap();assert_eq!(compared.candidates.len(),3);let sources=sha(&serde_json::to_vec(&review.sources).unwrap());
+        for candidate in &compared.candidates{assert_eq!(candidate.quantity(),1);assert!(candidate.gross_funding()<=1_000_000);assert!(candidate.limit_price()<=930_500);let p=candidate.provenance();assert_eq!(p["reviewSha256"],review_sha256(&review).unwrap());assert_eq!(p["sourceSha256"],sources);assert_eq!(p["reviewBounds"]["expectedPayout"],940_500);assert_eq!(p["reviewBounds"]["maximumQuantity"],1);assert_eq!(p["reviewBounds"]["maximumPrincipal"],1_000_000);assert_eq!(p["reviewBounds"]["horizonMs"],review.hold_until_ms-(NOW+25));assert!(p["executionProbability"].is_null());assert_eq!(p["modelSha256"].as_str().unwrap().len(),64);}
+        assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),report);
+    }
+    #[test]fn action_comparison_withholds_revoked_expired_untrusted_or_changed_review(){
+        for case in 0..5{let(mut f,_,_)=entry_fixture();let mut review=f.review.clone();review.reviewed_at_ms=NOW+24;if case==0{review.revoke_existing=true;}f.install(review,NOW+24);let store=f.store.as_ref().unwrap();
+            let mut hint=EntryHint{exchange_id:"101".into(),market_id:"201".into(),contract_id:"301".into(),side:"NO".into(),review_sha256:review_sha256(&{let mut r=f.review.clone();r.reviewed_at_ms=NOW+24;if case==0{r.revoke_existing=true;}r}).unwrap()};
+            let trusted=if case==2{BTreeSet::new()}else{f.trust.clone()};let now=if case==1{NOW+120000}else{NOW+25};if case==3{hint.review_sha256="a".repeat(64);}if case==4{hint.side="YES".into();}
+            let result=store.compare_entry_actions(&f.bank,&f.scope,&hint,&trusted,now);if case>=3{assert!(result.is_err());}else{assert!(result.unwrap().is_none());}
+        }
+    }
+    #[test]fn action_comparison_checks_actual_pinned_authority_and_preserves_diagnostic_funding_limits(){
+        let(mut f,_,_)=entry_fixture();let mut review=f.review.clone();review.reviewed_at_ms=NOW+24;review.maximum_principal="0.910000".into();review.maximum_quantity=1;f.install(review,NOW+24);let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);
+        let compared=store.compare_entry_actions_with_authority(&f.bank,&f.scope,&hint,&authority,NOW+25).unwrap().unwrap();assert!(compared.candidates.iter().all(|c|c.gross_funding()<=910_000));assert!(compared.deferred.iter().any(|d|d.mode==moloch_live_runtime::alpha_proposal::Mode::BoundedLimitMayRest&&d.reason=="insufficient_fully_funded_capital"));
+        std::fs::write(f.root.join("review-authority.json"),b"changed pinned review approval").unwrap();assert!(store.compare_entry_actions_with_authority(&f.bank,&f.scope,&hint,&authority,NOW+25).is_err());
+    }
     fn inherited_fixture()->(F,baal_transport_service::Transport,Value){
         use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport};
         let mut f=F::setup(false,"11111111-1111-1111-1111-111111111111");f.retire_drafts(NOW-1);
