@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-16T00:06:26.008903+00:00",
+  "sourceCommit": "2094440c",
+  "runtimeChecks": 473,
+  "runtimeSuites": 32,
+  "lockedOfflineArm64Release": true,
+  "binarySha256": "144616ceb3079a3e7a6457e8511c7b0a6f02221d22516ab06991591c0d6ed920",
+  "priorBinarySha256": "57d1bf257df7d27d93a57a8be337271752fa089030d7e3186d3a4e36892492ab",
+  "release": "/home/archon/apps/moloch/releases/model-recovery-144616ceb307/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-model-recovery-20261016.json",
+  "engineIdentity": "b3c975d3ac37138035728e28aeb6ffe7e99b9b525394f72b3be55e9b01ddf4d2",
+  "nativeReleaseArchiveUnchanged": true,
+  "nativeArchiveSha256": "55c26c5c5608473ef43ce93929507f62133b4bcc4c56fbd2d745f93ce2c342cb",
+  "sourceSha256": {
+    "moloch/live-runtime/src/execution_edge.rs": "774fa400f60372025a8b53f0eb92d2e2c6161139780803e4139971c92cdf1389",
+    "moloch/live-runtime/src/worker.rs": "0e75229844b194bf79d23fddab964d38e5e7c7a14a9d1b3360f20b51e8ea9594",
+    "moloch/live-runtime/tests/execution_edge_observer.rs": "47c9d998ded7af07998fb6c1ef31a10fa100eacf53a48958c3942d3012c395bf",
+    "moloch/live-runtime/tests/execution_edge.rs": "911ab8a27949030cc2e58bd38a718f0daf7acd807321a1631e401c23203677eb",
+    "moloch/live-runtime/src/authority.rs": "4e47ce64c651c7a1643b14753041302fdc2795386b59f1bd1ab42fe3643abdc9"
+  },
+  "logs": {
+    "moloch-model-final-tests.log": {
+      "sha256": "f95fb77462254742856bfb61f425458965db46fc246a20111b0f47846b9f4325"
+    },
+    "moloch-model-final-release.log": {
+      "sha256": "993205a2f20a8896591332d8d61308dbe972461a1fc4df894fbfbf005863ea73"
+    }
+  },
+  "continuityProofGraceMs": 120000,
+  "markoutMs": 60000,
+  "ordinaryInventoryAgeUnchangedMs": 60000,
+  "packageApprovedReviews": 0,
+  "collateralEnabled": false,
+  "modelExecutionAuthority": false,
+  "physicalActivation": false,
+  "productionServiceUnchanged": true,
+  "profitabilityEstablished": false
+}
