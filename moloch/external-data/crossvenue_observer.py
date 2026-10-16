@@ -145,6 +145,11 @@ class Study:
         if source not in ("kalshi_official_v2", "kalshi_official_ws_v2"):
             raise ValueError("OBSERVER_EXTERNAL_SOURCE")
         ws = source == "kalshi_official_ws_v2"
+        ws_status = envelope.get("websocket")
+        ws_coverage = ws_status.get("coverage") if isinstance(ws_status, dict) else None
+        ws_epoch = ws_coverage.get("connections") if ws and isinstance(ws_coverage, dict) else None
+        if ws_epoch is not None and (type(ws_epoch) is not int or ws_epoch < 1):
+            ws_epoch = None  # Absent/unusable epoch never proves continuity.
         for row in envelope["markets"]:
             for market in row["sigMarketIds"]:
                 market = str(market)
@@ -187,17 +192,31 @@ class Study:
                              "availableMs": now, "bodySha256": original_hash, "features": f,
                              "source": source, "hashKind": "state_chain" if ws else "original_body", "pricingAuthority": False}
                     if ws:
-                        value.update(sid=sid, sequence=seq, sourceTsMs=source_ts)
+                        value.update(sid=sid, sequence=seq, sourceTsMs=source_ts, wsEpoch=ws_epoch,
+                                     streamBoundary=0)
                 except (ValueError, InvalidOperation, KeyError, TypeError):
                     self.counts["externalInvalidOrOneSided"] += 1
                     self.external_invalid.add(key)
                     self._select_external(market, now)
                     continue
                 prior = self.external_cache[source].get(market)
-                if prior and (received < prior["receivedMs"] or ws and sid == prior["sid"] and seq < prior["sequence"]):
+                if prior and received < prior["receivedMs"]:
                     self.counts["externalClockRegression"] += 1
                     continue
-                same_cursor = prior and (sid == prior.get("sid") and seq == prior.get("sequence") if ws else received == prior["receivedMs"])
+                same_epoch = prior and (not ws or ws_epoch == prior.get("wsEpoch"))
+                if ws and prior:
+                    value["streamBoundary"] = prior.get("streamBoundary", 0)
+                    if same_epoch and sid == prior["sid"] and seq < prior["sequence"]:
+                        if received <= prior["receivedMs"]:
+                            self.counts["externalClockRegression"] += 1
+                            continue
+                        # The exporter validates actual snapshots/continuity.
+                        # A later original receipt with reset sequence can be a
+                        # collector restart reusing SID/epoch. Never splice it
+                        # into the old innovation path or renew an old receipt.
+                        value["streamBoundary"] += 1
+                        self.counts["externalUnknownNewStreams"] += 1
+                same_cursor = prior and (same_epoch and sid == prior.get("sid") and seq == prior.get("sequence") if ws else received == prior["receivedMs"])
                 if same_cursor:
                     # Compare immutable observation, excluding first availability.
                     expected = {k: v for k, v in prior.items() if k != "availableMs"}
@@ -234,7 +253,7 @@ class Study:
         if selected is prior:
             return selected
         h = self.history[market]
-        if prior and (prior["source"], prior.get("sid")) != (selected["source"], selected.get("sid")):
+        if prior and (prior["source"], prior.get("sid"), prior.get("wsEpoch"), prior.get("streamBoundary")) != (selected["source"], selected.get("sid"), selected.get("wsEpoch"), selected.get("streamBoundary")):
             h.clear()  # Source/SID handover is not a price innovation.
             self.counts["externalSourceChanges"] += 1
         self.external[market] = selected
