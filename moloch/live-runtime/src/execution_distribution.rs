@@ -138,6 +138,24 @@ impl Shadow{
   Ok(OutcomeView{requested_quantity:p.requested,admitted_quantity:p.admitted,observed_filled_quantity:filled,class:if !p.confirmed{"unresolved"}else if filled==0{"confirmed_zero"}else if filled==p.requested{"confirmed_full"}else{"confirmed_partial"}.into(),execution_confirmed:p.confirmed,conditional_gain_units:sample.and_then(|s|s.gain),value_censored_quantity:p.fills.iter().filter(|f|f.mark.as_ref().is_some_and(|m|m.gain.is_none())).map(|f|f.quantity).sum(),first_fill_latency_ms:p.fills.iter().map(|f|f.executed-p.attempt).min(),maximum_receipt_delay_ms:p.fills.iter().map(|f|f.observed-f.executed).max(),reservation_capital_time_unit_ms:sample.map(|s|s.reservation_capital_time),owned_capital_time_observed_unit_ms:owned,owned_capital_remaining_quantity:p.owned_remaining,capital_time_complete:p.confirmed&&p.owned_remaining==0&&!p.capital_clock_unknown,source_sha256:sample.map(|s|s.proof_sha.clone()).unwrap_or_else(||p.proof_sha.clone())})
  }
  pub fn pool_key(&self,qid:u64)->Option<&PoolKey>{self.exposures.get(&qid).and_then(|p|p.key.as_ref())}
+ /// Read-only prospective query of THIS configured, original-source observer.
+ /// This neither creates a trial nor transfers ordinary short-horizon labels to
+ /// a terminal-carry or bounded-aggressive strategy. An unobserved strategy has
+ /// no fitted evidence. Requery at actual submission if age/lifetime changes.
+ pub fn estimate_action(&self,bank:&Session,scope:&baal_transport_service::Scope,action:&Value,strategy_sha:&str,created_at:u64,expiry:u64,horizon:u64,at:u64)->Result<Estimate>{
+  self.bind(bank)?;self.bind_estimate(at)?;
+  need(horizon==self.config.markout_ms,"DIST_QUERY_HORIZON_MISMATCH")?;
+  need(strategy_sha.len()==64&&strategy_sha.bytes().all(|b|b.is_ascii_hexdigit())&&self.exposures.values().any(|p|p.key.as_ref().is_some_and(|k|k.strategy_sha256==strategy_sha)),"DIST_QUERY_STRATEGY_UNOBSERVED")?;
+  let ex=id(&action["exchangeId"])?;let market=id(&action["marketId"])?;let n=action["quantity"].as_u64().filter(|n|*n>0).ok_or("DIST_QUERY_QUANTITY")?;
+  need(action["tournamentId"]==scope.tournament_id&&scope.exchanges.get(&ex)==Some(&market)&&action["action"]=="buy"&&matches!(action["side"].as_str(),Some("yes"|"no")),"DIST_QUERY_SCOPE")?;
+  let p=amount(&action["limitPrice"])?;need((5000..=995000).contains(&p)&&p%5000==0&&n<=bank.engine().policy()["quantity"].as_u64().ok_or("DIST_QUERY_POLICY")?,"DIST_QUERY_PRICE_SIZE")?;
+  need(created_at<=at&&at<expiry&&expiry-at<=bank.engine().policy()["lifetimeMs"].as_u64().ok_or("DIST_QUERY_POLICY")?,"DIST_QUERY_CLOCK")?;
+  let raw=bank.engine().live_package_books().into_iter().find(|r|r["exchangeId"]==ex&&r["marketId"]==market&&r["tournamentId"]==scope.tournament_id).ok_or("DIST_QUERY_NATIVE_BOOK")?;
+  need(self.books.get(&ex).is_some_and(|b|digest(&raw).ok().as_deref()==Some(b.raw_sha.as_str())),"DIST_QUERY_OBSERVER_NOT_CURRENT")?;
+  let report=bank.engine().report().map_err(|_|"DIST_REPORT")?;let report_at=clock(&report["at"])?;need(self.last>=report_at,"DIST_QUERY_OBSERVER_NOT_CURRENT")?;
+  let q=json!({"exchangeId":ex,"marketId":market,"side":if action["side"]=="no"{"NO"}else{"YES"},"price":moloch_replay::money(p),"createdAt":created_at,"expiresAt":expiry});
+  let key=self.features(&q,n,strategy_sha.to_owned(),at)?;self.estimate(&key,&market,at)
+ }
  pub fn estimate(&self,key:&PoolKey,market:&str,at:u64)->Result<Estimate>{self.bind_estimate(at)?;let parent:Vec<_>=self.exposures.values().filter_map(|p|p.sample.as_ref()).filter(|s|s.key.as_ref()==Some(key)).collect();let local:Vec<_>=parent.iter().copied().filter(|s|s.market==market).collect();let counts=|rows:&[&Sample]|{let mut n=[0usize;3];for s in rows{n[if s.filled==0{0}else if s.filled==s.requested{2}else{1}]+=1;}n};let pc=counts(&parent);let lc=counts(&local);let prior:Vec<_>=pc.iter().map(|n|(*n as f64+1.)/(parent.len()as f64+3.)).collect();let strength=f64::from(self.config.shrinkage_strength);let probs=std::array::from_fn(|i|(lc[i]as f64+strength*prior[i])/(local.len()as f64+strength));
   let mean=|rows:&[&Sample],bucket:Option<usize>|->Option<f64>{let values:Vec<_>=rows.iter().filter(|s|bucket.is_none_or(|b|b==if s.filled==0{0}else if s.filled==s.requested{2}else{1})).filter_map(|s|s.gain.map(|g|g as f64/s.requested as f64)).collect();(!values.is_empty()).then(||values.iter().sum::<f64>()/values.len()as f64)};
   let mut joint=Some(0.);for b in 0..3{let pm=if b==0{Some(0.)}else{mean(&parent,Some(b))};let lm=mean(&local,Some(b));let valid=local.iter().filter(|s|s.gain.is_some()&&(if s.filled==0{0}else if s.filled==s.requested{2}else{1})==b).count()as f64;let m=match(pm,lm){(Some(p),Some(l))=>Some((valid*l+strength*p)/(valid+strength)),(p,None)=>p,(None,Some(l))=>Some(l)};joint=joint.zip(m).map(|(sum,m)|sum+probs[b]*m);}
@@ -160,3 +178,5 @@ pub fn observer_diagnostic()->Option<Value>{OBSERVER.with(|s|s.borrow().as_ref()
 /// A query into actual observer labels; no caller may supply fitted means,
 /// counts, losses or prior outcomes. At cold start this deliberately fails.
 pub fn estimate_runtime_attempt(qid:u64,at:u64)->Result<Estimate>{OBSERVER.with(|s|{let s=s.borrow();let m=s.as_ref().ok_or("DIST_RUNTIME_UNAVAILABLE")?;let p=m.exposures.get(&qid).ok_or("DIST_EXPOSURE")?;m.estimate(p.key.as_ref().ok_or("DIST_UNQUALIFIED_FEATURES")?,&p.market,at)})}
+/// No observer initialization, fit import, account reads or lifecycle mutations.
+pub fn estimate_runtime_action(bank:&Session,scope:&baal_transport_service::Scope,action:&Value,strategy_sha:&str,created_at:u64,expiry:u64,horizon:u64,at:u64)->Result<Estimate>{OBSERVER.with(|s|s.borrow().as_ref().ok_or("DIST_RUNTIME_UNAVAILABLE")?.estimate_action(bank,scope,action,strategy_sha,created_at,expiry,horizon,at))}
