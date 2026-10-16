@@ -36,7 +36,8 @@ use std::{collections::{BTreeMap, BTreeSet}, fs::{self, File, OpenOptions},
     io::{BufRead, BufReader, Read, Write}, path::{Path, PathBuf}, sync::Arc};
 
 const UNIT:i128=1_000_000;
-const MAX_ROW:usize=64*1024;
+// One bounded generation may contain all32 original reviewed inputs.
+const MAX_ROW:usize=3*1024*1024;
 const MAX_LOG:u64=16*1024*1024;
 fn need(ok:bool, why:&'static str)->Result<()> {if ok {Ok(())} else {Err(why.into())}}
 fn digest<T:Serialize+?Sized>(v:&T)->Result<String>{Ok(format!("{:x}",Sha256::digest(serde_json::to_vec(v)?)))}
@@ -472,11 +473,20 @@ fn hold(reason:&str)->Decision{Decision::Hold{reason:reason.into()}}
 
 /// The held owner lease and the original root-derived ordinary log remain the
 /// trust boundary. Hash chaining detects corruption, not malicious fabrication.
+fn generation_package_protects(p:&Value,ex:&str)->bool{
+    p["phase"]!="no_execution"&&p.get("protectionReleased")!=Some(&json!(true))&&(
+        p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["exchangeId"]==ex))
+        ||p["portfolio"]["componentExchanges"].as_array().is_some_and(|xs|xs.iter().any(|x|x==ex))
+        // Public native records omit probabilistic nonwire contracts. Until a
+        // getter proves the full scope, ANY protected such package blocks a
+        // new manager; wire-leg absence must never be treated as release.
+        ||p.get("probabilistic").is_some())
+}
 pub struct Cohorts{
     file:File,path:PathBuf,ordinary_path:PathBuf,ordinary_identity:Value,
     marker:FilePin,
     _owner:Arc<ExclusiveLock>,manifest:String,run:String,
-    sequence:u64,previous:String,clock:u64,poisoned:bool,
+    sequence:u64,previous:String,clock:u64,poisoned:bool,generation:Option<Value>,
     policies:BTreeMap<String,ReviewInput>,cohorts:BTreeMap<String,Cohort>,abandoned:BTreeMap<u64,AbandonedCohort>,
 }
 #[cfg(unix)]fn identity(file:&File)->Result<Value>{use std::os::unix::fs::MetadataExt;let m=file.metadata()?;Ok(json!({"device":m.dev(),"inode":m.ino()}))}
@@ -492,19 +502,29 @@ fn read_file(file:&File,maximum:u64)->Result<Vec<u8>>{
     #[cfg(not(unix))]{return Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
     need(file.metadata()?.len()==n,"FUNDAMENTAL_FILE_CHANGED")?;Ok(bytes)
 }
-struct FilePin{file:File,path:PathBuf,identity:Value,bytes:u64,sha:String,maximum:u64}
+#[cfg(unix)]fn file_version(file:&File)->Result<Value>{use std::os::unix::fs::MetadataExt;let m=file.metadata()?;Ok(json!({"device":m.dev(),"inode":m.ino(),"bytes":m.len(),"mtime":m.mtime(),"mtimeNs":m.mtime_nsec(),"ctime":m.ctime(),"ctimeNs":m.ctime_nsec()}))}
+#[cfg(not(unix))]fn file_version(_: &File)->Result<Value>{Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
+struct FilePin{file:File,path:PathBuf,identity:Value,bytes:u64,sha:String,maximum:u64,version:Value}
+/// Full bytes were verified at staging/recovery. Generic read guards only use
+/// immutable held metadata; physical preparation rehashes the original bytes.
+pub(crate) struct GenerationFiles{pins:Vec<FilePin>}
+impl GenerationFiles{
+    pub(crate) fn validate(&self)->Result<()>{for p in &self.pins{p.validate_metadata()?;}Ok(())}
+    pub(crate) fn validate_full(&self)->Result<()>{for p in &self.pins{p.validate()?;}Ok(())}
+}
 impl FilePin{
     fn from_held(file:File,path:PathBuf,maximum:u64,expected:Option<&str>)->Result<Self>{
         let identity=identity(&file)?;path_pin(&path,&identity)?;let bytes=read_file(&file,maximum)?;let sha=bytes_sha(&bytes);
         need(expected.is_none_or(|e|hex(e)&&e==sha),"FUNDAMENTAL_PINNED_FILE_HASH")?;
-        Ok(Self{file,path,identity,bytes:bytes.len() as u64,sha,maximum})
+        let version=file_version(&file)?;Ok(Self{file,path,identity,bytes:bytes.len() as u64,sha,maximum,version})
     }
     fn open(path:&Path,expected:&str,maximum:u64)->Result<Self>{
         need(path.is_absolute(),"FUNDAMENTAL_ABSOLUTE_SOURCE_PATH_REQUIRED")?;
         Self::from_held(File::open(path)?,path.into(),maximum,Some(expected))
     }
-    fn validate(&self)->Result<()>{path_pin(&self.path,&self.identity)?;
-        need(self.file.metadata()?.len()==self.bytes&&bytes_sha(&read_file(&self.file,self.maximum)?)==self.sha,"FUNDAMENTAL_PINNED_FILE_CHANGED")
+    fn validate_metadata(&self)->Result<()>{path_pin(&self.path,&self.identity)?;need(file_version(&self.file)?==self.version,"FUNDAMENTAL_PINNED_FILE_CHANGED")}
+    fn validate(&self)->Result<()>{self.validate_metadata()?;
+        need(self.file.metadata()?.len()==self.bytes&&bytes_sha(&read_file(&self.file,self.maximum)?)==self.sha,"FUNDAMENTAL_PINNED_FILE_CHANGED")?;self.validate_metadata()
     }
     fn duplicate(&self)->Result<Self>{Self::from_held(self.file.try_clone()?,self.path.clone(),self.maximum,Some(&self.sha))}
 }
@@ -536,25 +556,33 @@ pub struct ReviewFile{pub path:PathBuf,pub file_sha256:String,pub source_files:V
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct Settings{pub version:u32,pub authority_path:PathBuf,pub authority_sha256:String,pub reviews:Vec<ReviewFile>,pub allow_initialization:bool}
-pub struct LoadedSettings{authority:ReviewAuthority,reviews:Vec<Reviewed>,initialize:bool}
+pub struct LoadedSettings{authority:ReviewAuthority,reviews:Vec<Reviewed>,initialize:bool,pins:Vec<FilePin>,settings_sha:String}
 impl Settings{
     pub fn load(&self)->Result<LoadedSettings>{
         need(self.version==1&&(1..=32).contains(&self.reviews.len()),"FUNDAMENTAL_SETTINGS")?;
         let authority=ReviewAuthority::load(&self.authority_path,&self.authority_sha256)?;
-        let mut reviews=Vec::new();let mut exchanges=BTreeSet::new();
+        let mut reviews=Vec::new();let mut exchanges=BTreeSet::new();let mut pins=Vec::new();
         for r in &self.reviews{
             let pin=FilePin::open(&r.path,&r.file_sha256,64*1024)?;
             let input:ReviewInput=serde_json::from_slice(&read_file(&pin.file,pin.maximum)?)?;
             need(exchanges.insert(input.exchange_id.clone())&&r.source_files.len()==input.sources.len(),"FUNDAMENTAL_DUPLICATE_SETTING_OR_SOURCES")?;
             let mut data=Vec::new();let mut total=0usize;
             for s in &r.source_files{let p=FilePin::open(&s.path,&s.sha256,8*1024*1024)?;let bytes=read_file(&p.file,p.maximum)?;
-                total=total.checked_add(bytes.len()).ok_or("FUNDAMENTAL_SOURCE_BOUND")?;need(total<=16*1024*1024,"FUNDAMENTAL_SOURCE_BOUND")?;p.validate()?;data.push(bytes);}
+                total=total.checked_add(bytes.len()).ok_or("FUNDAMENTAL_SOURCE_BOUND")?;need(total<=16*1024*1024,"FUNDAMENTAL_SOURCE_BOUND")?;p.validate()?;data.push(bytes);pins.push(p);}
             let sources=r.source_files.iter().zip(&data).map(|(s,b)|SourceBytes{sha256:&s.sha256,bytes:b}).collect::<Vec<_>>();
-            reviews.push(verify_snapshot(input,&sources,authority.trusted())?);pin.validate()?;
-        }authority.validate()?;Ok(LoadedSettings{authority,reviews,initialize:self.allow_initialization})
+            reviews.push(verify_snapshot(input,&sources,authority.trusted())?);pin.validate()?;pins.push(pin);
+        }authority.validate()?;Ok(LoadedSettings{authority,reviews,initialize:self.allow_initialization,pins,settings_sha:digest(self)?})
     }
 }
 impl LoadedSettings{
+    pub(crate) fn retained_files(&self)->Result<GenerationFiles>{
+        self.validate_files()?;let mut pins=self.pins.iter().map(|p|Ok(FilePin{file:p.file.try_clone()?,path:p.path.clone(),identity:p.identity.clone(),bytes:p.bytes,sha:p.sha.clone(),maximum:p.maximum,version:p.version.clone()})).collect::<Result<Vec<_>>>()?;pins.push(self.authority.pin.duplicate()?);
+        Ok(GenerationFiles{pins})
+    }
+    pub fn settings_sha(&self)->&str{&self.settings_sha}
+    pub fn validate_files(&self)->Result<()>{self.authority.validate()?;for pin in &self.pins{pin.validate()?;}Ok(())}
+    pub fn into_authority(self)->ReviewAuthority{self.authority}
+
     /// Verified loaded existing-origin scopes only; this grants no adoption,
     /// retirement or order authority. The caller still proves every draft unsent.
     pub fn existing_exchanges(&self)->BTreeSet<String>{self.reviews.iter().filter(|r|r.input.existing_origin.is_some()).map(|r|r.input.exchange_id.clone()).collect()}
@@ -1022,7 +1050,7 @@ impl Cohorts{
             marker,
             manifest:bank.manifest_hash().as_str().ok_or("FUNDAMENTAL_MANIFEST")?.into(),
             run:bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"].as_str().ok_or("FUNDAMENTAL_RUN")?.into(),
-            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new()};
+            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new()};
         let mut reader=BufReader::new(out.file.try_clone()?);let mut line=Vec::new();
         loop{line.clear();let n=reader.by_ref().take((MAX_ROW+1) as u64).read_until(b'\n',&mut line)?;if n==0{break}
             need(line.len()<=MAX_ROW&&line.last()==Some(&b'\n'),"FUNDAMENTAL_TORN_OR_OVERSIZED_ROW")?;
@@ -1041,6 +1069,26 @@ impl Cohorts{
     }
     fn apply(&mut self,event:&Value)->Result<()>{
         match event["kind"].as_str(){
+            Some("review_generation")=>{
+                let meta=&event["generation"];let request=&meta["request"];
+                let raw=meta["requestBodyText"].as_str().filter(|s|s.len()<16*1024).ok_or("FUNDAMENTAL_GENERATION_ORIGINAL_REQUEST")?;
+                let parsed:crate::fundamental_reload::Request=serde_json::from_str(raw)?;
+                need(bytes_sha(raw.as_bytes())==meta["generationSha256"]&&serde_json::to_value(parsed)?==*request,"FUNDAMENTAL_GENERATION_ORIGINAL_REQUEST")?;
+                need(meta["version"]==1&&hex(meta["generationSha256"].as_str().ok_or("FUNDAMENTAL_GENERATION_HASH")?)
+                    &&request["previousGenerationSha256"]==self.generation_sha()
+                    &&request["bankManifestSha256"]==self.manifest&&request["runId"]==self.run
+                    &&meta["peer"].is_object()&&meta["controlIdentity"].is_object(),"FUNDAMENTAL_GENERATION_CHAIN")?;
+                let rows=event["reviews"].as_array().filter(|r|!r.is_empty()&&r.len()<=32).ok_or("FUNDAMENTAL_GENERATION_REVIEWS")?;
+                let mut exchanges=BTreeSet::new();
+                for row in rows{let r:ReviewInput=serde_json::from_value(row["review"].clone())?;
+                    need(exchanges.insert(r.exchange_id.clone()),"FUNDAMENTAL_GENERATION_DUPLICATE")?;
+                    if self.policies.get(&r.exchange_id).is_some_and(|old|digest(old).ok().as_deref()==row["sha256"].as_str()){
+                        need(row["sha256"]==digest(&r)?,"FUNDAMENTAL_GENERATION_REVIEW_HASH")?;
+                    }else{self.apply(&json!({"kind":"review","review":r,"sha256":row["sha256"]}))?;}
+                }
+                need(self.policies.keys().all(|ex|exchanges.contains(ex)),"FUNDAMENTAL_GENERATION_REMOVAL")?;
+                self.generation=Some(meta.clone());
+            },
             Some("review")=>{let r:ReviewInput=serde_json::from_value(event["review"].clone())?;structure(&r)?;
                 need(event["sha256"]==review_sha256(&r)?&&r.run_id==self.run&&r.bank_manifest_sha256==self.manifest,"FUNDAMENTAL_REVIEW_BANK")?;
                 if let Some(old)=self.policies.get(&r.exchange_id){need(old.market_id==r.market_id&&old.contract_id==r.contract_id&&old.tournament_id==r.tournament_id&&old.side==r.side&&old.existing_origin==r.existing_origin&&r.reviewed_at_ms>old.reviewed_at_ms,"FUNDAMENTAL_REVIEW_REVISION")?;}
@@ -1092,15 +1140,17 @@ impl Cohorts{
             _=>return Err("FUNDAMENTAL_EVENT".into()),
         }Ok(())
     }
-    fn append(&mut self,event:Value,at:u64)->Result<()>{
+    fn append(&mut self,event:Value,at:u64)->Result<()>{self.append_guarded(event,at,||Ok(()))}
+    fn append_guarded(&mut self,event:Value,at:u64,final_boundary:impl FnOnce()->Result<()>)->Result<()>{
         need(!self.poisoned&&at>=self.clock,"FUNDAMENTAL_POISONED_OR_CLOCK")?;
         path_pin(&self.path,&identity(&self.file)?)?;
         // Apply to small metadata maps before writing; no financial state copy.
-        let policies=self.policies.clone();let cohorts=self.cohorts.clone();let abandoned=self.abandoned.clone();
-        let result=self.apply(&event);self.policies=policies;self.cohorts=cohorts;self.abandoned=abandoned;result?;
+        let policies=self.policies.clone();let cohorts=self.cohorts.clone();let abandoned=self.abandoned.clone();let generation=self.generation.clone();
+        let result=self.apply(&event);self.policies=policies;self.cohorts=cohorts;self.abandoned=abandoned;self.generation=generation;result?;
         let mut row=json!({"sequence":self.sequence+1,"previous":self.previous,"manifestHash":self.manifest,"runId":self.run,"atMs":at,"event":event});
         let sha=digest(&row)?;row["hash"]=json!(sha);let mut bytes=serde_json::to_vec(&row)?;bytes.push(b'\n');
         need(bytes.len()<=MAX_ROW&&self.file.metadata()?.len().checked_add(bytes.len() as u64).is_some_and(|n|n<=MAX_LOG),"FUNDAMENTAL_LOG_BOUND")?;
+        final_boundary()?;
         self.poisoned=true;self.file.write_all(&bytes)?;self.file.sync_all()?;
         path_pin(&self.path,&identity(&self.file)?)?;self.apply(&event)?;
         self.sequence+=1;self.previous=sha;self.clock=at;self.poisoned=false;Ok(())
@@ -1239,6 +1289,65 @@ impl Cohorts{
             let mut tag=json!({"version":1,"bankManifestHash":self.manifest,"runId":self.run,"qid":qid,"bindingSha256":digest(b).ok()?});
             if let Some(entry)=c.entry_id(){tag["entryQid"]=json!(entry)}else{tag["originKind"]=json!("reviewed_existing_snapshot");tag["originSha256"]=json!(c.origin_sha().ok()?)}return Some(tag);
         }}None
+    }
+    pub fn generation_poisoned(&self)->bool{self.poisoned}
+    pub fn active_generation(&self)->Option<&Value>{self.generation.as_ref()}
+    pub fn generation_sha(&self)->&str{self.generation.as_ref().and_then(|g|g["generationSha256"].as_str()).unwrap_or(crate::fundamental_reload::ZERO)}
+    pub(crate) fn validate_generation_settings(&self,loaded:&LoadedSettings)->Result<()>{
+        loaded.validate_files()?;
+        let held=self._owner.descriptor_identity()?;
+        need(self.generation.as_ref().is_some_and(|g|g["request"]["ownerLease"]["device"]==held["device"]&&g["request"]["ownerLease"]["inode"]==held["inode"]),"FUNDAMENTAL_GENERATION_OWNER_LEASE_CHANGED")?;
+        need(loaded.reviews.len()==self.policies.len()&&loaded.reviews.iter().all(|r|self.policies.get(&r.input.exchange_id).is_some_and(|p|digest(p).ok().as_deref()==Some(r.sha.as_str()))),"FUNDAMENTAL_GENERATION_SETTINGS_CHANGED")
+    }
+    /// One fsynced append under the ORIGINAL held sidecar lock. Validation and
+    /// trial-application precede the append; no per-review durable partial state.
+    pub fn install_generation(&mut self,approved:&crate::fundamental_reload::Approved,loaded:&LoadedSettings,bank:&Session,log:&DispatchLog,scope:&Scope,f:&crate::authority::CancelSnapshotSet,base:&[u8],now:u64,final_boundary:impl FnOnce()->Result<()>)->Result<()>{
+        let elapsed=std::time::Instant::now();
+        self.check(bank,log)?;approved.validate(bank,log,&self._owner,base,self.generation_sha(),now)?;approved.validate_loaded(loaded,base)?;
+        let incoming:BTreeSet<_>=loaded.reviews.iter().map(|r|r.input.exchange_id.clone()).collect();
+        need(incoming.len()<=32&&self.policies.keys().all(|e|incoming.contains(e)),"FUNDAMENTAL_GENERATION_REMOVAL_OR_COUNT")?;
+        let tid=&scope.tournament_id;let endpoints=[format!("/tournaments/{}",scope.tournament_slug),format!("/tournaments/{}/portfolio/positions",scope.tournament_slug),format!("/orders?status=open&limit=200&tournamentId={tid}"),format!("/account?tournamentId={tid}")];
+        let receipts=[&f.account,&f.positions,&f.open_orders,&f.cash_balance];let mut last=0;
+        for(receipt,endpoint)in receipts.iter().zip(&endpoints){let(start,end)=entry_receipt(receipt,endpoint,now,20000)?;need(start>=last,"FUNDAMENTAL_GENERATION_RECEIPT_ORDER")?;last=end;}
+        need(f.account.data["id"]==*tid&&f.account.data["slug"]==scope.tournament_slug&&f.account.data["status"]=="active"
+            &&f.positions.data.get("pagination").is_none()&&f.open_orders.data["coverage"]["complete"]==true
+            &&f.open_orders.data["pagination"]["hasMore"]==false&&f.open_orders.data["pagination"]["nextCursor"].is_null(),"FUNDAMENTAL_GENERATION_ACCOUNT_COVERAGE")?;
+        need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_GENERATION_CASH")?;
+        let positions=f.positions.data["positions"].as_array().ok_or("FUNDAMENTAL_GENERATION_POSITIONS")?;let open=f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_GENERATION_ORDERS")?;
+        let mut seen=BTreeSet::new();for row in positions{let ex=row["exchangeId"].as_str().ok_or("FUNDAMENTAL_GENERATION_POSITION_SCOPE")?;need(seen.insert(ex)&&row["quantity"].as_i64().is_some(),"FUNDAMENTAL_GENERATION_POSITION_DUPLICATE_OR_QUANTITY")?;}
+        for row in open{need(row["exchangeId"].as_str().is_some(),"FUNDAMENTAL_GENERATION_OPEN_SCOPE")?;}
+        let orders=bank.engine().order_records();let packages=bank.engine().package_records();
+        for r in &loaded.reviews{let ex=&r.input.exchange_id;
+            need(r.input.tournament_id==*tid&&scope.exchanges.get(ex)==Some(&r.input.market_id)&&r.input.bank_manifest_sha256==self.manifest&&r.input.run_id==self.run,"FUNDAMENTAL_GENERATION_SCOPE")?;
+            let changed=self.policies.get(ex).is_none_or(|p|digest(p).ok().as_deref()!=Some(r.sha.as_str()));
+            if !changed{continue}
+            need(current(&r.input,now),"FUNDAMENTAL_INSTALL_REVIEW_EXPIRED")?;
+            let signed=bank.engine().wallet.quantity(ex,Side::Yes) as i128-bank.engine().wallet.quantity(ex,Side::No) as i128;
+            let actual=positions.iter().find(|row|row["exchangeId"]==*ex);
+            need(actual.map_or(Some(0),|row|row["quantity"].as_i64().map(i128::from))==Some(signed)
+                &&actual.is_none_or(|row|row.get("marketId").is_none_or(|m|m==&json!(r.input.market_id))),"FUNDAMENTAL_GENERATION_POSITION_ATTRIBUTION")?;
+            need(!orders.iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id)))
+                &&!open.iter().any(|row|row["exchangeId"].as_str()==Some(ex.as_str())),"FUNDAMENTAL_GENERATION_TARGET_OPEN")?;
+            if !self.policies.contains_key(ex){
+                need(r.input.existing_origin.is_none()&&bank.engine().wallet.quantity(ex,Side::Yes)==0&&bank.engine().wallet.quantity(ex,Side::No)==0&&bank.engine().wallet.market_cost(ex)==0
+                    &&positions.iter().all(|row|row["exchangeId"]!=*ex||row["quantity"].as_i64()==Some(0))
+                    &&!orders.iter().any(|q|q["exchangeId"]==*ex&&q["retired"]!=true)
+                    &&!packages.as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|generation_package_protects(p,ex))),"FUNDAMENTAL_GENERATION_NEW_SCOPE_NOT_FLAT")?;
+            }
+            if let Some(c)=self.cohorts.get(ex){
+                let owned=self.owned(bank,ex,c)?;
+                need(owned<=r.input.maximum_quantity&&bank.engine().wallet.market_cost(ex)<=amount(&r.input.maximum_principal)?,"FUNDAMENTAL_GENERATION_OWNED_CAP")?;
+                if let Some(origin)=&c.existing{need(r.input.existing_origin.as_ref()==Some(&origin.approval),"FUNDAMENTAL_GENERATION_ORIGIN_CHANGED")?;}
+            }
+        }
+        // Both source pins and actual bank/log ownership are rechecked after
+        // all staging. A failed durable append poisons the existing writer.
+        approved.validate_loaded(loaded,base)?;self.check(bank,log)?;
+        let final_now=now.checked_add(u64::try_from(elapsed.elapsed().as_millis())?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?;
+        approved.validate(bank,log,&self._owner,base,self.generation_sha(),final_now)?;
+        for(receipt,endpoint)in receipts.iter().zip(&endpoints){entry_receipt(receipt,endpoint,final_now,20000)?;}
+        for r in &loaded.reviews{if self.policies.get(&r.input.exchange_id).is_none_or(|old|digest(old).ok().as_deref()!=Some(r.sha.as_str())){need(current(&r.input,final_now),"FUNDAMENTAL_INSTALL_REVIEW_EXPIRED")?;}}
+        self.append_guarded(json!({"kind":"review_generation","generation":approved.metadata(),"reviews":loaded.reviews.iter().map(|r|json!({"review":r.input,"sha256":r.sha})).collect::<Vec<_>>(),"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity()?,"factsSha256":digest(&receipts)?}),final_now,final_boundary)
     }
     pub fn install(&mut self,r:Reviewed,bank:&Session,log:&DispatchLog,now:u64)->Result<()>{
         self.check(bank,log)?;need(r.input.run_id==self.run&&r.input.bank_manifest_sha256==self.manifest,"FUNDAMENTAL_REVIEW_BANK")?;
@@ -1449,4 +1558,12 @@ fn request_matches(s:&RequestSpec,q:&Value,run:&str,tournament:&str,planned_quan
         &&decimal_units(&b["price"].to_string())?==amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?
         &&daily_windows::clock(b["expirationDate"].as_str().ok_or("FUNDAMENTAL_EXPIRATION")?)?==q["expiresAt"].as_u64().ok_or("FUNDAMENTAL_EXPIRATION")?,"FUNDAMENTAL_EXACT_NATIVE_REQUEST")?;
     if let Some(raw)=&s.body_json{need(serde_json::from_str::<Value>(raw)?==*b,"FUNDAMENTAL_RAW_BODY_CHANGED")?;}Ok(())
+}
+
+#[cfg(test)]mod generation_package_guard_tests{
+ use super::*;
+ #[test]fn completed_nonwire_portfolio_and_unexposed_probabilistic_components_stay_protected(){
+  let p=json!({"phase":"complete","legs":[{"exchangeId":"101"}],"portfolio":{"componentExchanges":["101","102"]},"protectionReleased":false});assert!(generation_package_protects(&p,"102"));assert!(!generation_package_protects(&p,"103"));
+  let mut p=json!({"phase":"complete","legs":[{"exchangeId":"101"}],"probabilistic":{"kind":"reviewed_probabilistic_portfolio"}});assert!(generation_package_protects(&p,"103"),"hidden nonwire scope cannot be inferred absent");p["protectionReleased"]=json!(true);assert!(!generation_package_protects(&p,"103"));
+ }
 }

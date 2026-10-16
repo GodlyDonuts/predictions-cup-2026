@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default,skip_serializing_if="is_false")]account_realtime:bool,#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default,skip_serializing_if="Option::is_none")]fundamental_acquisition:Option<moloch_live_runtime::execution_distribution::AcquisitionConfig>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default,skip_serializing_if="is_false")]fundamental_reload:bool,#[serde(default,skip_serializing_if="is_false")]account_realtime:bool,#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default,skip_serializing_if="Option::is_none")]fundamental_acquisition:Option<moloch_live_runtime::execution_distribution::AcquisitionConfig>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn is_false(v:&bool)->bool{!*v}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
@@ -433,6 +433,60 @@ fn install_profitable_depth_mode(c:&Control,control_path:&Path,bank:&mut Session
  log.require_resolved_attempts()?;t.package_queue_quiet()?;
  let at=now();let event=json!({"type":"ordinary_profitable_depth_mode_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":c.activation.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":c.scope.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?),"expectedPolicySha256":hash(bank.engine().policy()),"controlSha256":format!("{:x}",Sha256::digest(fs::read(control_path)?)),"enabled":c.profitable_depth_mode,"depthBps":5000,"expectedPreviousModeSha256":bank.engine().profitable_depth_mode_record().map_or(Value::Null,|v|v["sha256"].clone())});
  if !authority.can_read(&c.scope){return Err("LIVE_PROFITABLE_DEPTH_CONTROL_OR_STOP".into())}accept(bank,&event)
+}
+fn fundamental_reload_rejection(error:&Box<dyn std::error::Error>)->bool{
+ if error.downcast_ref::<moloch_live_runtime::account_realtime::AccountGenerationChanged>().is_some(){return true}
+ matches!(error.to_string().as_str(),"RELOAD_REQUEST_BINDING_OR_EXPIRED"|"RELOAD_SETTINGS_NOT_APPROVED"|"RELOAD_CONTROL_CHANGED"|"FUNDAMENTAL_PINNED_FILE_CHANGED"|"FUNDAMENTAL_GENERATION_REMOVAL_OR_COUNT"|"FUNDAMENTAL_GENERATION_RECEIPT_ORDER"|"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE"|"FUNDAMENTAL_GENERATION_ACCOUNT_COVERAGE"|"FUNDAMENTAL_GENERATION_CASH"|"FUNDAMENTAL_GENERATION_POSITIONS"|"FUNDAMENTAL_GENERATION_ORDERS"|"FUNDAMENTAL_GENERATION_POSITION_SCOPE"|"FUNDAMENTAL_GENERATION_POSITION_DUPLICATE_OR_QUANTITY"|"FUNDAMENTAL_GENERATION_OPEN_SCOPE"|"FUNDAMENTAL_GENERATION_SCOPE"|"FUNDAMENTAL_INSTALL_REVIEW_EXPIRED"|"FUNDAMENTAL_GENERATION_POSITION_ATTRIBUTION"|"FUNDAMENTAL_GENERATION_TARGET_OPEN"|"FUNDAMENTAL_GENERATION_NEW_SCOPE_NOT_FLAT"|"FUNDAMENTAL_GENERATION_OWNED_CAP"|"FUNDAMENTAL_GENERATION_ORIGIN_CHANGED"|"FUNDAMENTAL_REVIEW_REVISION"|"FUNDAMENTAL_CANNOT_EXTEND_COHORT"|"FUNDAMENTAL_CANNOT_REINTERPRET_COHORT_OBJECTIVE")
+}
+// Only called between completed serialized actions, never with a live permit.
+// The original immutable Control and continuing Transport/Session are preserved.
+#[allow(clippy::too_many_arguments)]
+fn service_fundamental_reload(channel:Option<&moloch_live_runtime::fundamental_reload::Channel>,c:&Control,base_path:&Path,base:&[u8],t:&mut Transport,bank:&mut Session,log:&mut DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,authority:&ProductionAuthority,lease:&ExclusiveLock,f:Option<&mut FundamentalRuntime>,stream:&Realtime,source_state:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
+ let Some(channel)=channel else{return Ok(())};let f=f.ok_or("LIVE_FUNDAMENTAL_RELOAD_RUNTIME_REQUIRED")?;
+ atomic_json(&c.root.join("fundamental-reload/status.json"),&channel.status(base,bank,f.cohorts.generation_sha())?)?;
+ let mut pending=match channel.poll(){Ok(Some(v))=>v,Ok(None)=>return Ok(()),Err(error)=>{
+  // No generation/financial change occurred. Malformed local owner requests
+  // cannot take down the continuing worker or imply submission permission.
+  atomic_json(&c.root.join("fundamental-reload/last-request.json"),&json!({"at":iso(now()),"state":"rejected_before_staging","reason":error.to_string()}))?;return Ok(())}};
+ let approved=pending.approved.take().ok_or("LIVE_RELOAD_REQUEST_CONSUMED")?;
+ if approved.generation_sha()==f.cohorts.generation_sha(){let _=pending.reply(&json!({"state":"already_active","generationSha256":f.cohorts.generation_sha()}));return Ok(())}
+ refresh_controls(c,authority,stream)?;f.authority.validate()?;
+ moloch_live_runtime::fundamental_reload::quiescent(log)?;t.package_queue_quiet()?;
+ if packages.records().iter().any(|p|!["ack","definitive_zero","first_call_not_sent","not_sent","never_attempted"].iter().any(|phase|p["phase"]==*phase))||bank.engine().package_records().as_array().is_none_or(|ps|ps.iter().any(|p|!["complete","no_execution"].iter().any(|phase|p["phase"]==*phase))){let _=pending.reply(&json!({"state":"deferred_package_unresolved"}));return Ok(())}
+ // Candidate-only file/config errors have no durable effect. Errors in the
+ // continuing worker, actual transport, STOP or original journals remain fatal.
+ let staged=(||->Result<_>{
+  approved.validate(bank,log,lease,base,f.cohorts.generation_sha(),now())?;
+  let control:Control=serde_json::from_slice(&approved.control_bytes()?)?;
+  if !control.fundamental_reload{return Err("LIVE_RELOAD_CANNOT_DISABLE".into())}
+  approved.load(base)
+ })();
+ let loaded=match staged{Ok(v)=>v,Err(error)=>{let _=pending.reply(&json!({"state":"rejected_before_commit","reason":error.to_string()}));return Ok(())}};
+ let facts=cancel_snapshots_with(|endpoint|{
+  refresh_controls(c,authority,stream)?;let receipt=request(t,&c.root,endpoint)?;
+  drain_stream(stream,bank,source_state,breadth,universe)?;refresh_controls(c,authority,stream)?;Ok(receipt)
+ })?;
+ let account_stamp=match moloch_live_runtime::account_realtime::capture(&stream.account_signal(),&[&facts.account,&facts.positions,&facts.open_orders,&facts.cash_balance]){
+  Ok(v)=>v,Err(error)if error.downcast_ref::<moloch_live_runtime::account_realtime::AccountGenerationChanged>().is_some()=>{let _=pending.reply(&json!({"state":"deferred_account_generation_changed"}));return Ok(())},Err(error)=>return Err(error)
+ };
+ t.package_queue_quiet()?;
+ authority.begin_fundamental_generation();
+ if let Err(error)=f.cohorts.install_generation(&approved,&loaded,bank,log,&c.scope,&facts,base,now(),||{
+  refresh_controls(c,authority,stream)?;t.package_queue_quiet()?;
+  moloch_live_runtime::account_realtime::validate(&account_stamp,&stream.account_signal())
+ }){
+  if f.cohorts.generation_poisoned()||!fundamental_reload_rejection(&error){return Err(error)}
+  authority.reject_uncommitted_fundamental_generation();let _=pending.reply(&json!({"state":"rejected_before_commit","reason":error.to_string()}));return Ok(())
+ }
+ // From this durable point every error is fatal, not a failed request/retry.
+ // Startup replays exactly this generation before any dispatch and completes
+ // the original exclusion update idempotently; no pointer file is authority.
+ let active=moloch_live_runtime::fundamental_reload::Active::installed(&f.cohorts,approved,&loaded)?;
+ f.authority=loaded.into_authority();
+ install_managed_entry_exclusions(c,base_path,bank,log,Some(f))?;
+ authority.install_fundamental_generation(active)?;
+ atomic_json(&c.root.join("fundamental-reload/status.json"),&channel.status(base,bank,f.cohorts.generation_sha())?)?;
+ let _=pending.reply(&json!({"state":"committed","generationSha256":f.cohorts.generation_sha(),"nativeHead":bank.durable_head(),"baseFinancialControlUnchanged":true}));Ok(())
 }
 fn install_human_market_breadth(c:&Control,control_path:&Path,bank:&mut Session)->Result<()>{
  if !c.all_markets||bank.engine().fresh_market_limit()>=12{return Ok(())}
@@ -1650,8 +1704,18 @@ fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog
  require_stream(&connected)?;*stream=Some(connected);let connected=stream.as_ref().unwrap();authority.bind_stream(connected.failure_signal(),connected.deadline_ms);authority.bind_account_stream(connected.account_signal())?;Ok(())
 }
 pub fn main()->Result<()>{
- let args:Vec<_>=std::env::args().collect();if args.len()!=3||!["preflight","run","recover-unadmitted"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run|recover-unadmitted /absolute/control.json".into())}
+ let args:Vec<_>=std::env::args().collect();
+ // This branch reads no credentials and constructs no Transport/Session. The
+ // existing OS owner contacts the already-running private control socket.
+ if args.len()==5&&args[1]=="fundamental-reload"{
+  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}
+  let c:Control=serde_json::from_slice(&fs::read(path)?)?;if !c.fundamental_reload{return Err("LIVE_FUNDAMENTAL_RELOAD_DISABLED".into())}
+  let response=moloch_live_runtime::fundamental_reload::send(&c.root,Path::new(&args[3]),&args[4])?;
+  println!("{}",serde_json::to_string(&response)?);return Ok(())
+ }
+ if args.len()!=3||!["preflight","run","recover-unadmitted"].contains(&args[1].as_str()){return Err("usage: moloch-live-runtime preflight|run|recover-unadmitted /absolute/control.json".into())}
  let path=PathBuf::from(&args[2]);if !path.is_absolute(){return Err("LIVE_CONTROL_ABSOLUTE".into())}let original_control_bytes=fs::read(&path)?;let c:Control=serde_json::from_slice(&original_control_bytes)?;
+ if c.fundamental_reload&&c.fundamental_policy.is_none(){return Err("LIVE_FUNDAMENTAL_RELOAD_REQUIRES_BASE_POLICY".into())}
  validate_collateral_accounting(&c)?;
  validate_maker_configuration(&c)?;
  let fundamental_loaded=c.fundamental_policy.as_ref().map(fundamental::Settings::load).transpose()?;
@@ -1697,7 +1761,16 @@ pub fn main()->Result<()>{
   // existing-origin baseline borrows this same transport's real quiet queue;
   // it cannot create an independent account client or infer unknown absence.
   drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
-  let mut fundamental=if let Some(loaded)=fundamental_loaded{
+  // Recover a committed generation BEFORE base review installation or any
+  // dispatch. Never reinstall an older base review over a newer durable cohort.
+  let resumed=if c.fundamental_reload&&c.root.join("fundamental.ndjson").exists(){
+   let store=Cohorts::open(&c.root,&bank,&log,lease.clone())?;
+   if let Some((active,loaded))=moloch_live_runtime::fundamental_reload::Active::recover(&store,&original_control_bytes)?{
+    authority.begin_fundamental_generation();authority.install_fundamental_generation(active)?;
+    Some(FundamentalRuntime{cohorts:store,authority:loaded.into_authority()})
+   }else{drop(store);None}
+  }else{None};
+  let mut fundamental=if let Some(resumed)=resumed{Some(resumed)}else if let Some(loaded)=fundamental_loaded{
    let(cohorts,review_authority,stale,existing)=open_worker_fundamental(&c,loaded,&mut bank,&mut log,lease.clone(),&t)?;
    authority.require_fundamental_exchanges(&cohorts.managed_exchanges())?;atomic_json(&c.root.join("fundamental-policy.json"),&json!({"at":iso(now()),"managedExchanges":cohorts.managed_exchanges(),"existingOriginExchanges":existing,"staleReviews":stale,"initializationDoesNotSubmit":true}))?;Some(FundamentalRuntime{cohorts,authority:review_authority})}else{
    if c.root.join("fundamental.initialized.json").exists()||c.root.join("fundamental.ndjson").exists(){return Err("LIVE_FUNDAMENTAL_SETTINGS_REQUIRED_FOR_EXISTING_COHORT".into())}None
@@ -1744,6 +1817,7 @@ pub fn main()->Result<()>{
   if let Some(r)=&mut breadth{r.observe("stream_reset",&json!({"localBoundary":true,"reason":"confirmed_subscription"}),&joined_at)}
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
+  let reload_channel=if c.fundamental_reload{Some(moloch_live_runtime::fundamental_reload::Channel::bind(&c.root,lease.clone())?)}else{None};
   let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();let mut collateral_last_check=0u64;
   let paper5_runtime=c.paper5.as_ref().and_then(|settings|match moloch_live_runtime::paper5_runtime::Runtime::load(settings){Ok(runtime)=>Some(runtime),Err(error)=>{let _=atomic_json(&c.root.join("paper5-proposals.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error.to_string(),"executionAuthority":false}));None}});let mut paper5_last_evaluation=0u64;let mut paper5_last_opportunity=0u64;
   let mut owned_age_reads=moloch_live_runtime::owned_age_reads::Scheduler::new(&c.scope)?;
@@ -1757,6 +1831,7 @@ pub fn main()->Result<()>{
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
    advance_owner_capital(&mut t,&c,&path,&mut bank,&log,&packages,lease.as_ref(),&mut owner_capital_last_check)?;ensure_entry_window(&c,&mut bank,&authority)?;
    let mut collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
+   service_fundamental_reload(reload_channel.as_ref(),&c,&path,&original_control_bytes,&mut t,&mut bank,&mut log,&packages,&authority,lease.as_ref(),fundamental.as_mut(),stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
    let mut required=bank.engine().required_exchanges();if let Some(f)=fundamental.as_ref(){required.extend(f.cohorts.managed_exchanges());}
    let selected=if let Some(u)=&mut universe{u.select_at(&required,now())?}else{c.scope.exchanges.keys().cloned().collect()};
@@ -1775,6 +1850,7 @@ pub fn main()->Result<()>{
      collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
     }
     ensure_entry_window(&c,&mut bank,&authority)?;
+    service_fundamental_reload(reload_channel.as_ref(),&c,&path,&original_control_bytes,&mut t,&mut bank,&mut log,&packages,&authority,lease.as_ref(),fundamental.as_mut(),stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
     if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      package_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,&mut relationship_census,&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut package_last_scan,&mut package_certificate_cursor,&mut package_allocation_fairness,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
     }
@@ -2580,4 +2656,9 @@ mod profitable_depth_control_tests{
   let mut enabled=original.clone();enabled["profitableDepthMode"]=json!(true);let c:Control=serde_json::from_value(enabled).unwrap();assert!(c.profitable_depth_mode);assert_eq!(serde_json::to_value(c).unwrap()["profitableDepthMode"],true);
   let mut malformed=original;malformed["profitableDepthMode"]=json!("true");assert!(serde_json::from_value::<Control>(malformed).is_err());
  }
+}
+
+#[cfg(test)]mod fundamental_reload_control_tests{
+ use super::*;
+ #[test]fn legacy_control_keeps_reload_off_and_serialization_omits_it(){let raw=json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"});let control:Control=serde_json::from_value(raw.clone()).unwrap();assert!(!control.fundamental_reload);assert!(serde_json::to_value(control).unwrap().get("fundamentalReload").is_none());let mut enabled=raw;enabled["fundamentalReload"]=json!(true);assert!(serde_json::from_value::<Control>(enabled).unwrap().fundamental_reload);}
 }

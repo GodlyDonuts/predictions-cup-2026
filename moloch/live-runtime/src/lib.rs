@@ -69,3 +69,5 @@ pub mod serviced_read;
 pub mod startup_ack;
 
 pub mod account_realtime;
+
+pub mod fundamental_reload;

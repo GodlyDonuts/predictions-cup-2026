@@ -832,4 +832,113 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         let q=f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q["action"]=="sell").unwrap();assert!(q.get("reviewedInventoryExit").is_none());
         assert_eq!(f.assess(&q,NOW+4000),Decision::Hold{reason:"reviewed_existing_exit_reservation_required".into()},"normal unsubmitted proposals must be vetoed without stopping the worker or pretending they have an origin-bound reservation");
     }
+    #[cfg(target_os="linux")]mod generation_reload{
+        use super::*;
+        use moloch_live_runtime::{fundamental_reload as reload,authority::CancelSnapshotSet};
+        fn files(f:&F,r:&ReviewInput)->Settings{
+            let hash=review_sha256(r).unwrap();let path=f.root.join(format!("reload-review-{hash}.json"));
+            let bytes=serde_json::to_vec(r).unwrap();if !path.exists(){std::fs::write(&path,&bytes).unwrap();}
+            let mut trusted=f.trust.clone();trusted.insert(hash.clone());
+            let authority_bytes=serde_json::to_vec(&json!({"version":1,"trustedReviewSha256":trusted})).unwrap();
+            let authority_path=f.root.join(format!("reload-authority-{}.json",sha(&authority_bytes)));if !authority_path.exists(){std::fs::write(&authority_path,&authority_bytes).unwrap();}
+            let source_files=originals_for(r).into_iter().map(|b|{let hash=sha(&b);let path=f.root.join(format!("reload-source-{hash}.bin"));if !path.exists(){std::fs::write(&path,&b).unwrap();}SourceFile{path,sha256:hash}}).collect();
+            Settings{version:1,authority_path,authority_sha256:sha(&authority_bytes),reviews:vec![ReviewFile{path,file_sha256:sha(&bytes),source_files}],allow_initialization:false}
+        }
+        fn base()->Vec<u8>{serde_json::to_vec(&json!({"fundamentalReload":true,"fundamentalPolicy":null,"activation":{"maximumCommitted":"1000.000000"},"accountScope":"fixture"})).unwrap()}
+        fn approved(f:&F,settings:&Settings,at:u64)->reload::Approved{
+            let base=base();let mut control:Value=serde_json::from_slice(&base).unwrap();control["fundamentalPolicy"]=serde_json::to_value(settings).unwrap();
+            let bytes=serde_json::to_vec(&control).unwrap();let control_path=f.root.join(format!("reload-control-{}.json",sha(&bytes)));if !control_path.exists(){std::fs::write(&control_path,&bytes).unwrap();}
+            let channel=reload::Channel::bind(&f.root,f.owner.clone()).unwrap();let status=channel.status(&base,&f.bank,f.store.as_ref().unwrap().generation_sha()).unwrap();
+            let request=json!({"version":1,"requestId":format!("fixture-{}",sha(&bytes)),"workerPid":status["workerPid"],"workerStartTicks":status["workerStartTicks"],"ownerLease":status["ownerLease"],"baseControlSha256":sha(&base),"bankManifestSha256":f.bank.manifest_hash(),"runId":"fundamental-fixture","previousGenerationSha256":f.store.as_ref().unwrap().generation_sha(),"controlPath":control_path,"controlSha256":sha(&bytes),"issuedAtMs":at,"expiresAtMs":at+60000});
+            let bytes=serde_json::to_vec_pretty(&request).unwrap();let path=f.root.join(format!("request-{}.json",sha(&bytes)));std::fs::write(&path,&bytes).unwrap();let hash=sha(&bytes);let root=f.root.clone();
+            let client=std::thread::spawn(move||reload::send(&root,&path,&hash).map_err(|e|e.to_string()));
+            let mut pending=None;for _ in 0..1000{pending=channel.poll().unwrap();if pending.is_some(){break}std::thread::sleep(std::time::Duration::from_millis(1));}
+            let mut pending=pending.expect("actual local owner request");let proof=pending.approved.take().unwrap();pending.reply(&json!({"state":"authenticated_fixture_only"})).unwrap();drop(pending);assert!(client.join().unwrap().is_ok());proof
+        }
+        fn facts(f:&F,at:u64)->CancelSnapshotSet{
+            let r=|endpoint:String,data:Value|baal_transport_service::Receipt{endpoint,request_started_at:iso(at),received_at:iso(at),status:200,data};let tid=&f.scope.tournament_id;
+            let positions=f.scope.exchanges.iter().filter_map(|(ex,market)|{let n=f.bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-f.bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;if n==0{None}else{Some(json!({"exchangeId":ex,"marketId":market,"quantity":n}))}}).collect::<Vec<_>>();
+            CancelSnapshotSet{account:r("/tournaments/cup".into(),json!({"id":tid,"slug":"cup","status":"active"})),positions:r("/tournaments/cup/portfolio/positions".into(),json!({"positions":positions})),open_orders:r(format!("/orders?status=open&limit=200&tournamentId={tid}"),json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null}})),cash_balance:r(format!("/account?tournamentId={tid}"),json!({"balance":serde_json::from_str::<Value>(&moloch_replay::money(moloch_live_runtime::authority::reconciled_expected_cash(&f.bank).unwrap())).unwrap()}))}
+        }
+        fn revised(f:&F)->ReviewInput{let mut r=f.review.clone();r.reviewed_at_ms=NOW+10;r.expires_at_ms=NOW+120000;r}
+        fn commit(f:&mut F,r:&ReviewInput,at:u64)->(Settings,reload::Approved){
+            let settings=files(f,r);let proof=approved(f,&settings,at);let loaded=proof.load(&base()).unwrap();let facts=facts(f,at);
+            f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),at,||Ok(())).unwrap();(settings,proof)
+        }
+        #[test]fn one_real_owner_generation_appends_once_without_financial_event_or_second_lock(){
+            let mut f=F::new();let before_head=f.bank.durable_head();let before_report=f.bank.engine().report().unwrap();let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();let r=revised(&f);
+            let(settings,proof)=commit(&mut f,&r,NOW+10);let loaded=proof.load(&base()).unwrap();let active=reload::Active::installed(f.store.as_ref().unwrap(),proof,&loaded).unwrap();active.validate_full().unwrap();
+            let after=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();assert!(after.starts_with(&before));assert_eq!(after.iter().filter(|b|**b==b'\n').count(),before.iter().filter(|b|**b==b'\n').count()+1);
+            assert_eq!(f.bank.durable_head(),before_head);assert_eq!(f.bank.engine().report().unwrap(),before_report);
+            assert!(Cohorts::open(&f.root,&f.bank,&f.log,f.owner.clone()).is_err(),"original held lock is never opened twice");
+            f.reopen();let(recovered,loaded)=reload::Active::recover(f.store.as_ref().unwrap(),&base()).unwrap().unwrap();assert_eq!(recovered.generation_sha(),f.store.as_ref().unwrap().generation_sha());recovered.validate_full().unwrap();loaded.validate_files().unwrap();assert_eq!(settings.reviews.len(),1);
+        }
+        #[test]fn new_scope_requires_authentic_retired_drafts_and_fresh_flat_original_facts(){
+            let mut f=F::setup(false,"cup");let r=revised(&f);let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);let loaded=proof.load(&base()).unwrap();let facts=facts(&f,NOW+10);let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();
+            assert!(f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+10,||Ok(())).unwrap_err().to_string().contains("NEW_SCOPE_NOT_FLAT"));assert_eq!(std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),before);
+            f.retire_drafts(NOW+1);f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+10,||Ok(())).unwrap();assert!(f.store.as_ref().unwrap().manages("101"));
+        }
+        #[test]fn changed_owned_cohort_preserves_actual_fifo_and_cannot_extend_hold(){
+            let mut f=F::new();f.fill_entry(false);let head=f.bank.durable_head();let lots=f.bank.engine().wallet.positions();let mut r=revised(&f);r.hold_until_ms+=1;set_deadline_cash(&mut r,"0.940500");let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);let loaded=proof.load(&base()).unwrap();let mut facts=facts(&f,NOW+10);facts.positions.data=json!({"positions":[{"exchangeId":"101","quantity":-2}]});
+            let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();assert!(f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+10,||Ok(())).unwrap_err().to_string().contains("CANNOT_EXTEND_COHORT"));assert_eq!(before,std::fs::read(f.root.join("fundamental.ndjson")).unwrap());assert_eq!(head,f.bank.durable_head());assert_eq!(lots,f.bank.engine().wallet.positions());
+        }
+        #[test]fn fresh_account_open_order_and_partial_coverage_never_install(){
+            for bad in 0..4{let mut f=F::setup(false,"cup");f.retire_drafts(NOW+1);let r=revised(&f);let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);let loaded=proof.load(&base()).unwrap();let mut facts=facts(&f,NOW+10);
+                match bad{0=>facts.positions.data=json!({"positions":[{"exchangeId":"101","quantity":1}]}),1=>facts.open_orders.data["data"]=json!([{"exchangeId":"101","id":"999"}]),2=>facts.open_orders.data["coverage"]["complete"]=json!(false),_=>facts.positions.endpoint="/tournaments/foreign/portfolio/positions".into()}
+                let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();assert!(f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+10,||Ok(())).is_err());assert_eq!(before,std::fs::read(f.root.join("fundamental.ndjson")).unwrap());assert_eq!(f.store.as_ref().unwrap().generation_sha(),reload::ZERO);
+            }
+        }
+        #[test]fn changed_source_or_control_and_unapproved_loaded_settings_cannot_commit(){
+            for bad in 0..3{let mut f=F::new();let r=revised(&f);let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);let loaded=proof.load(&base()).unwrap();let facts=facts(&f,NOW+10);let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();
+                let loaded=if bad==2{let mut other=r.clone();other.maximum_quantity=4;files(&f,&other).load().unwrap()}else{if bad==0{std::fs::write(&settings.reviews[0].source_files[0].path,b"changed original source").unwrap();}else{let meta=proof.control_bytes().unwrap();let value:Value=serde_json::from_slice(&meta).unwrap();let hash=sha(&meta);std::fs::write(f.root.join(format!("reload-control-{hash}.json")),serde_json::to_vec(&json!({"changed":value})).unwrap()).unwrap();}loaded};
+                assert!(f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+10,||Ok(())).is_err());assert_eq!(before,std::fs::read(f.root.join("fundamental.ndjson")).unwrap());
+            }
+        }
+        #[test]fn original_attempt_or_unclosed_cancel_cannot_hide_in_generation(){
+            for cancel in [false,true]{let mut f=F::new();let r=revised(&f);let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);
+                f.log.append(json!({"kind":"intent","qid":999})).unwrap();f.log.append(json!({"kind":"attempt","qid":999})).unwrap();
+                if cancel{f.log.append(json!({"kind":"ack","qid":999,"receipt":{"orderId":"999"}})).unwrap();f.log.append(json!({"kind":"cancel_attempt","qid":999})).unwrap();}
+                assert!(proof.validate(&f.bank,&f.log,&f.owner,&base(),reload::ZERO,NOW+10).is_err());assert_eq!(f.store.as_ref().unwrap().generation_sha(),reload::ZERO);
+            }
+        }
+        #[test]fn restart_after_generation_before_native_exclusion_resumes_exact_overlay(){
+            let mut f=F::new();let r=revised(&f);let(_,proof)=commit(&mut f,&r,NOW+10);let wanted=proof.generation_sha().to_owned();let head=f.bank.durable_head();assert!(f.bank.engine().ordinary_entry_exclusions().is_empty());drop(proof);
+            f.reopen();let(active,loaded)=reload::Active::recover(f.store.as_ref().unwrap(),&base()).unwrap().unwrap();assert_eq!(wanted,active.generation_sha());assert_eq!(head,f.bank.durable_head());assert_eq!(loaded.settings_sha().len(),64);
+            let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();drop(active);let _=reload::Active::recover(f.store.as_ref().unwrap(),&base()).unwrap().unwrap();assert_eq!(before,std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),"recovery cannot append/remint or reset history");
+            assert!(reload::Active::recover(f.store.as_ref().unwrap(),b"{}").is_err());
+        }
+        #[test]fn active_pins_detect_mutation_and_financial_control_diff_is_never_reloadable(){
+            let mut f=F::new();let r=revised(&f);let(settings,proof)=commit(&mut f,&r,NOW+10);let loaded=proof.load(&base()).unwrap();let active=reload::Active::installed(f.store.as_ref().unwrap(),proof,&loaded).unwrap();active.validate().unwrap();std::fs::write(&settings.reviews[0].source_files[0].path,b"mutated sourcebytes").unwrap();assert!(active.validate().is_err(),"source mutation changes pinned Unix metadata");
+            let mut next:Value=serde_json::from_slice(&base()).unwrap();next["fundamentalPolicy"]=serde_json::to_value(settings).unwrap();next["activation"]["maximumCommitted"]=json!("1001.000000");assert!(reload::only_fundamental_changed(&base(),&serde_json::to_vec(&next).unwrap()).is_err());
+        }
+        #[test]fn opaque_generation_revokes_old_preparation_but_preserves_known_cancel_path(){
+            use moloch_live_runtime::authority::{ProductionAuthority,Activation};use baal_transport_service::Authority;
+            let mut f=F::new();let id=f.fill_entry(false);let original=f.bank.engine().order_records().into_iter().find(|q|q["id"]==id).unwrap();
+            let binary=f.root.join("fixture-binary");std::fs::write(&binary,b"offline fixture executable bytes").unwrap();let control=f.root.join("base-control.json");std::fs::write(&control,base()).unwrap();
+            let authority=ProductionAuthority::new(Activation{run_id:"fundamental-fixture".into(),entry_until_ms:NOW+3600000,maximum_committed:"1000.000000".into(),maximum_market_cost:"100.000000".into(),maximum_quantity:2,tournament_id:f.scope.tournament_id.clone(),tournament_slug:f.scope.tournament_slug.clone(),binary_sha256:sha(b"offline fixture executable bytes")},f.scope.clone(),vec![],control,binary,f.owner.clone()).unwrap();
+            authority.require_fundamental_exchanges(&f.store.as_ref().unwrap().managed_exchanges()).unwrap();authority.bind_owned("201".into());
+            let spec=RequestSpec{method:"DELETE".into(),endpoint:"/orders/201".into(),body:None,body_json:None};let permit=f.permit(&original,NOW+10);let packet=facts(&f,NOW+10);
+            authority.prepare_cancel(&f.bank,id,spec.clone(),permit.clone(),packet.clone()).unwrap();authority.authorize(&f.scope,&spec,&permit,true,NOW+10).unwrap();
+            let r=revised(&f);let(_,proof)=commit(&mut f,&r,NOW+10);let loaded=proof.load(&base()).unwrap();let active=reload::Active::installed(f.store.as_ref().unwrap(),proof,&loaded).unwrap();
+            authority.begin_fundamental_generation();assert!(authority.authorize(&f.scope,&spec,&permit,true,NOW+10).is_err());authority.install_fundamental_generation(active).unwrap();assert!(authority.authorize(&f.scope,&spec,&permit,true,NOW+10).is_err(),"old prepared capability stays cleared");
+            authority.prepare_cancel(&f.bank,id,spec.clone(),permit.clone(),packet).unwrap();authority.authorize(&f.scope,&spec,&permit,true,NOW+10).unwrap();
+        }
+        #[test]fn final_guard_failure_and_torn_generation_never_publish_partial_review_state(){
+            let mut f=F::new();let r=revised(&f);let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);let loaded=proof.load(&base()).unwrap();let facts=facts(&f,NOW+10);let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();
+            assert!(f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+10,||Err("synthetic final account generation changed".into())).is_err());assert_eq!(before,std::fs::read(f.root.join("fundamental.ndjson")).unwrap());assert!(!f.store.as_ref().unwrap().generation_poisoned());assert_eq!(f.store.as_ref().unwrap().generation_sha(),reload::ZERO);
+            f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+10,||Ok(())).unwrap();let mut committed=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();f.store.take();committed.pop();std::fs::write(f.root.join("fundamental.ndjson"),committed).unwrap();assert!(Cohorts::open(&f.root,&f.bank,&f.log,f.owner.clone()).is_err());
+        }
+        #[test]fn recovery_uses_stable_held_lease_identity_not_original_pid_body_length(){
+            use std::io::Write;let mut f=F::new();let lock_path=f.root.join("owner.lock");std::fs::OpenOptions::new().append(true).open(&lock_path).unwrap().write_all(b"    ").unwrap();
+            let r=revised(&f);let(_,proof)=commit(&mut f,&r,NOW+10);let previous_bytes=f.owner.descriptor_identity().unwrap()["bytes"].clone();drop(proof);f.store.take();
+            let temporary=Arc::new(ExclusiveLock::acquire(&f.root.join("temporary.lock")).unwrap());drop(std::mem::replace(&mut f.owner,temporary));f.owner=Arc::new(ExclusiveLock::acquire(&lock_path).unwrap());assert_ne!(previous_bytes,f.owner.descriptor_identity().unwrap()["bytes"]);
+            f.reopen();assert!(reload::Active::recover(f.store.as_ref().unwrap(),&base()).unwrap().is_some());
+        }
+        #[test]fn expired_request_and_original_account_packet_are_not_extended(){
+            let mut f=F::new();let r=revised(&f);let settings=files(&f,&r);let proof=approved(&f,&settings,NOW+10);let loaded=proof.load(&base()).unwrap();let facts=facts(&f,NOW+10);
+            assert!(proof.validate(&f.bank,&f.log,&f.owner,&base(),reload::ZERO,NOW+60010).is_err());
+            assert!(f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&facts,&base(),NOW+20011,||Ok(())).is_err());assert_eq!(f.store.as_ref().unwrap().generation_sha(),reload::ZERO);
+        }
+    }
+
 }

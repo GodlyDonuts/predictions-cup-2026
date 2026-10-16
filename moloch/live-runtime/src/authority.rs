@@ -16,7 +16,7 @@ pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_comm
 #[derive(Clone)]struct OrderReady {account_stamp:Option<crate::account_realtime::Stamp>,spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>}
 #[derive(Clone)]struct CancelReady {account_stamp:Option<crate::account_realtime::Stamp>,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet}
 #[derive(Clone)]enum Ready {Order(OrderReady),Cancel(CancelReady)}
-pub struct ProductionAuthority {account_required:std::sync::atomic::AtomicBool,account_stream:Mutex<Option<Arc<moloch_replay::realtime::AccountSignal>>>,package_account_stamp:Mutex<Option<crate::account_realtime::Stamp>>,fundamental_exchanges:Mutex<Option<std::collections::BTreeSet<String>>>,maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
+pub struct ProductionAuthority {fundamental_generation:Mutex<Option<crate::fundamental_reload::Active>>,fundamental_transition:std::sync::atomic::AtomicBool,account_required:std::sync::atomic::AtomicBool,account_stream:Mutex<Option<Arc<moloch_replay::realtime::AccountSignal>>>,package_account_stamp:Mutex<Option<crate::account_realtime::Stamp>>,fundamental_exchanges:Mutex<Option<std::collections::BTreeSet<String>>>,maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
 /// Actual attributed cash only. Borrowed principal remains outside unlevered
 /// Wallet sizing; until original fill economics reconcile it cannot authorize
 /// a replacement physical order. Cancellation keeps its separate authority.
@@ -35,7 +35,7 @@ fn fresh(r:&Receipt,now:u64,max_age:u64)->bool{r.status==200&&clock(&r.request_s
 impl ProductionAuthority {
  pub fn new(activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,binary:PathBuf,lease:Arc<ExclusiveLock>)->Result<Self>{
   if activation.run_id.is_empty()||activation.maximum_quantity==0||activation.maximum_quantity>10000||decimal_units(&activation.maximum_committed)?<=0||decimal_units(&activation.maximum_market_cost)?<=0||scope.tournament_id!=activation.tournament_id||scope.tournament_slug!=activation.tournament_slug||hash_bytes(&fs::read(&binary)?)!=activation.binary_sha256{return Err("LIVE_ACTIVATION_BINDING".into())}
-  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{account_required:std::sync::atomic::AtomicBool::new(false),account_stream:Mutex::new(None),package_account_stamp:Mutex::new(None),fundamental_exchanges:Mutex::new(None),maker_review:Mutex::new(None),package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
+  let control_hash=hash_bytes(&fs::read(&control)?);Ok(Self{fundamental_generation:Mutex::new(None),fundamental_transition:std::sync::atomic::AtomicBool::new(false),account_required:std::sync::atomic::AtomicBool::new(false),account_stream:Mutex::new(None),package_account_stamp:Mutex::new(None),fundamental_exchanges:Mutex::new(None),maker_review:Mutex::new(None),package_ready:Mutex::new(None),daily:Mutex::new(None),activation,scope,stops,control,control_hash,binary,_lease:lease,ready:Mutex::new(None),owned:Mutex::new(Default::default()),recovery:Mutex::new(None),stream:Mutex::new(None)})
  }
  pub fn require_maker_review(&self,sha:&str)->Result<()>{
   if sha.len()!=64||!sha.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("LIVE_MAKER_REVIEW_HASH".into())}
@@ -48,6 +48,20 @@ impl ProductionAuthority {
   let mut required=self.fundamental_exchanges.lock().unwrap();
   if required.as_ref().is_some_and(|old|old!=exchanges){return Err("LIVE_FUNDAMENTAL_EXCHANGES_CHANGED".into())}
   *required=Some(exchanges.clone());drop(required);self.clear_ready();Ok(())
+ }
+ /// Only the opaque capability reconstructed from this original locked cohort
+ /// journal can change routing. Financial/base-Control authority stays sealed.
+ pub fn begin_fundamental_generation(&self){self.fundamental_transition.store(true,std::sync::atomic::Ordering::SeqCst);self.clear_ready();}
+ pub fn reject_uncommitted_fundamental_generation(&self){self.clear_ready();self.fundamental_transition.store(false,std::sync::atomic::Ordering::SeqCst);}
+ pub fn install_fundamental_generation(&self,active:crate::fundamental_reload::Active)->Result<()>{
+  active.validate()?;
+  if active.exchanges().len()>32||active.exchanges().iter().any(|e|!self.scope.exchanges.contains_key(e)){return Err("LIVE_FUNDAMENTAL_EXCHANGE_SCOPE".into())}
+  let mut generation=self.fundamental_generation.lock().unwrap();
+  if generation.as_ref().is_some_and(|old|old.generation_sha()!=active.previous_sha()&&old.generation_sha()!=active.generation_sha()){return Err("LIVE_FUNDAMENTAL_GENERATION_CHANGED".into())}
+  let mut exchanges=self.fundamental_exchanges.lock().unwrap();
+  if exchanges.as_ref().is_some_and(|old|!old.is_subset(active.exchanges())){return Err("LIVE_FUNDAMENTAL_GENERATION_REMOVAL".into())}
+  *exchanges=Some(active.exchanges().clone());*generation=Some(active);drop(exchanges);drop(generation);
+  self.clear_ready();self.fundamental_transition.store(false,std::sync::atomic::Ordering::SeqCst);Ok(())
  }
  fn fundamental_required(&self,exchange:&str)->bool{self.fundamental_exchanges.lock().unwrap().as_ref().is_some_and(|e|e.contains(exchange))}
  pub fn entry_until_ms(&self)->u64{self.daily.lock().unwrap().as_ref().map_or(self.activation.entry_until_ms,|(_,end)|*end)}
@@ -62,6 +76,7 @@ impl ProductionAuthority {
   *bound=Some((cfg.clone(),end));Ok(())
  }
  pub fn bind_owned(&self,id:String){self.owned.lock().unwrap().insert(id);}
+ fn validate_generation_sources(&self)->Result<()>{if let Some(g)=self.fundamental_generation.lock().unwrap().as_ref(){g.validate_full()?;}Ok(())}
  pub fn clear_ready(&self){*self.ready.lock().unwrap()=None;*self.package_ready.lock().unwrap()=None;*self.package_account_stamp.lock().unwrap()=None;}
  pub fn bind_account_stream(&self,signal:Option<Arc<moloch_replay::realtime::AccountSignal>>)->Result<()>{
   if signal.is_none()&&self.account_required.load(std::sync::atomic::Ordering::SeqCst){return Err("LIVE_ACCOUNT_REALTIME_CANNOT_DISABLE".into())}
@@ -78,6 +93,7 @@ impl ProductionAuthority {
   self.prepare_with_policies(bank,qid,spec,permit,snapshots,maker,None)
  }
  pub fn prepare_with_policies(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>)->Result<()> {
+  self.validate_generation_sources()?;
   self.clear_ready();
   let account_stamp=self.account_stamp(&[&snapshots.account,&snapshots.cash_balance,&snapshots.positions,&snapshots.open_orders])?;
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
@@ -97,6 +113,7 @@ impl ProductionAuthority {
   *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{account_stamp,spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental}));Ok(())
  }
  pub fn prepare_cancel(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet)->Result<()> {
+  self.validate_generation_sources()?;
   self.clear_ready();
   let account_stamp=self.account_stamp(&[&snapshots.account,&snapshots.cash_balance,&snapshots.positions,&snapshots.open_orders])?;
   if !bank.engine().is_live()||bank.live_account_seed().is_none_or(|s|s["runId"]!=self.activation.run_id){return Err("LIVE_CANCEL_BANK_SCOPE".into())}
@@ -106,6 +123,7 @@ impl ProductionAuthority {
   *self.ready.lock().unwrap()=Some(Ready::Cancel(CancelReady{account_stamp,spec,permit,snapshots}));Ok(())
  }
  pub fn prepare_package(&self,bank:&Session,admission:&crate::package_admission::Admission,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
+  self.validate_generation_sources()?;
   self.clear_ready();let account_stamp=self.account_stamp(&[&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders])?;log.require_resolved_attempts()?;
   if admission.basket().legs.iter().any(|leg|self.fundamental_required(&leg.exchange_id)){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}
   let orders=bank.engine().order_records();
@@ -117,6 +135,7 @@ impl ProductionAuthority {
   *self.package_ready.lock().unwrap()=Some(prepared);*self.package_account_stamp.lock().unwrap()=account_stamp;Ok(())
  }
  pub fn prepare_portfolio(&self,bank:&Session,plan:&crate::package_portfolio::Plan,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
+  self.validate_generation_sources()?;
   use baal_transport_service::{multi_leg,multi_leg_portfolio as wire};
   self.clear_ready();let account_stamp=self.account_stamp(&[&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders])?;log.require_resolved_attempts()?;
   let orders=bank.engine().order_records();let component=plan.proof()["portfolio"]["componentExchanges"].as_array().ok_or("PORTFOLIO_COMPONENTS")?;
@@ -128,6 +147,7 @@ impl ProductionAuthority {
  /// Separate probabilistic lane. Only the original opaque qualified factory
  /// reservation can populate the existing physical SDK/STOP/stream authority.
  pub fn prepare_probabilistic(&self,bank:&Session,plan:&crate::probabilistic_portfolio::Plan,reservation:&crate::probabilistic_portfolio::Reservation,basket:&baal_transport_service::multi_leg_portfolio::Basket,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
+  self.validate_generation_sources()?;
   self.clear_ready();let account_stamp=self.account_stamp(&[&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders])?;log.require_resolved_attempts()?;reservation.validate_plan(plan)?;
   let qualification=&reservation.event()["qualification"];let components=qualification["contracts"].as_array().ok_or("PROB_AUTH_COMPONENTS")?;let mut exchanges=std::collections::BTreeSet::new();
   for c in components{let ex=c["exchangeId"].as_str().ok_or("PROB_AUTH_COMPONENTS")?;if !exchanges.insert(ex)||self.fundamental_required(ex){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}}
@@ -138,6 +158,7 @@ impl ProductionAuthority {
   let prepared=crate::package_authority::Prepared::new_probabilistic(bank,&self.activation,&self.scope,plan,reservation,basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);*self.package_account_stamp.lock().unwrap()=account_stamp;Ok(())
  }
  fn check(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->Result<()> {
+  if self.fundamental_transition.load(std::sync::atomic::Ordering::SeqCst){return Err("LIVE_FUNDAMENTAL_GENERATION_PENDING".into())}
   if !self.can_read(scope)||p.owner!="Codex"||p.run_id!=self.activation.run_id||p.expires_at_ms<=now{return Err("LIVE_OWNER_OR_ACTIVATION".into())}
   if network&&hash_bytes(&fs::read(&self.binary)?)!=self.activation.binary_sha256{return Err("LIVE_BINARY_CHANGED".into())}
   if spec.endpoint=="/orders/multi-leg"{
@@ -211,7 +232,7 @@ impl ProductionAuthority {
  }
 }
 impl Authority for ProductionAuthority {
- fn can_read(&self,scope:&Scope)->bool{scope.tournament_id==self.scope.tournament_id&&scope.tournament_slug==self.scope.tournament_slug&&scope.exchanges==self.scope.exchanges&&!self.stops.iter().any(|p|p.exists())&&fs::read(&self.control).is_ok_and(|b|hash_bytes(&b)==self.control_hash)}
+ fn can_read(&self,scope:&Scope)->bool{scope.tournament_id==self.scope.tournament_id&&scope.tournament_slug==self.scope.tournament_slug&&scope.exchanges==self.scope.exchanges&&!self.stops.iter().any(|p|p.exists())&&self.fundamental_generation.lock().unwrap().as_ref().is_none_or(|g|g.validate().is_ok())&&fs::read(&self.control).is_ok_and(|b|hash_bytes(&b)==self.control_hash)}
  fn authorize(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->std::result::Result<(),TransportError>{self.check(scope,spec,p,network,now).map_err(|e|denied(&e.to_string()))}
  fn owns_order(&self,id:&str)->bool{self.owned.lock().unwrap().contains(id)}
  fn reconcile_unknown(&self,scope:&Scope,binding:&Value,_now:u64)->std::result::Result<(),TransportError>{if self.can_read(scope)&&self.recovery.lock().unwrap().as_ref()==Some(&hash_bytes(&serde_json::to_vec(binding).unwrap())){Ok(())}else{Err(denied("LIVE_RECONCILIATION_PROOF_REQUIRED"))}}
