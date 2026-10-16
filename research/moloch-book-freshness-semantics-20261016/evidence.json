@@ -34,14 +34,19 @@
     },
     {
       "url": "https://sig.thesuper.market/docs/changelog?page=3",
-      "supportedClaims": ["September28: REST and realtime books carry asOf versions"]
+      "supportedClaims": [
+        "September28: REST and realtime books carry asOf versions"
+      ]
     }
   ],
   "unavailablePublicReference": "https://sig.thesuper.market/api/v1/docs",
   "facts": {
     "sequenceMeaning": "last engine event applied to the book",
     "atMeaning": "engine clock when the book was read",
-    "versionOrdering": ["sequence", "original at instant"],
+    "versionOrdering": [
+      "sequence",
+      "original at instant"
+    ],
     "duplicateBatchBooksStillApply": true,
     "omittedMarketIsCurrentWallClockProof": false,
     "clientReceiptMayReplaceEngineClock": false,
@@ -50,17 +55,17 @@
   "measurementReports": [
     {
       "path": "research/moloch-trade-trigger-20261016/source-age-probe/report.json",
-      "rawSha256": "0f1efba2de57eaa1e92609b69d13bf63864de1bac5b1727e1a116c0a81a863d7",
       "acceptedBooks": 777,
       "observedBooks": 777,
-      "sameSequenceNewerSourceObserved": 0
+      "sameSequenceNewerSourceObserved": 0,
+      "gitLfSha256": "4ca724a4f47d1e2721a348eaa71bfcf656de70da5a7f207ebcdc464b55eae0d7"
     },
     {
       "path": "research/moloch-preflight-service-20261016/measurement/age-report.json",
-      "rawSha256": "cbddff4741384c8a8cc672c98eb6f9750ced2f5f4d5cf6a1f6bac2b9119c0714",
       "acceptedBooks": 779,
       "observedBooks": 779,
-      "sameSequenceNewerSourceObserved": 0
+      "sameSequenceNewerSourceObserved": 0,
+      "gitLfSha256": "9c0202d0952df09ff88aba7fb33e0fe56d2fafccd9496d17df00669ae726dcf1"
     }
   ],
   "repair": {
