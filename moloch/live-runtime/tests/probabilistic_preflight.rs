@@ -1,15 +1,15 @@
 #![cfg(unix)]
 //! Actual Session/opaque stage, scripted original reads only; never account HTTP.
-use moloch_live_runtime::{feedback::{self,Result},package_preflight,package_worker as base,probabilistic_portfolio_worker as worker,probabilistic_portfolio as prob,package_authority::{Prepared,PackageSnapshotSet},package_dispatch::PackageDispatchLog,dispatch::DispatchLog,package_not_sent_evidence::VerifiedNotSent};
+use moloch_live_runtime::{feedback::Result,package_preflight,package_worker as base,probabilistic_portfolio_worker as worker,probabilistic_portfolio as prob,package_authority::{Prepared,PackageSnapshotSet},package_dispatch::PackageDispatchLog,dispatch::DispatchLog,package_not_sent_evidence::VerifiedNotSent};
 use baal_transport_service::{Scope,Receipt,Endpoint,Permit,multi_leg,multi_leg_portfolio as wire,admission::{BindingLookup,ImmutableBinding}};
 use moloch_replay::session::Session;
-use std::path::Path;
+use std::path::{Path,PathBuf};
 use serde_json::{Value,json};
 #[path="support/probabilistic_fixture.rs"]mod fixture;
 use fixture::{F,NOW,T,iso};
-struct Reads{scope:Scope,clock:u64,step:u64,facts:PackageSnapshotSet,ordinary:DispatchLog,activation:moloch_live_runtime::authority::Activation,reads:Vec<Receipt>,fail_at:usize,bad_at:usize,bad:&'static str,prepared:bool}
+struct Reads{scope:Scope,clock:u64,step:u64,facts:PackageSnapshotSet,ordinary:DispatchLog,activation:moloch_live_runtime::authority::Activation,dir:PathBuf,reads:Vec<Receipt>,fail_at:usize,bad_at:usize,bad:&'static str,prepared:bool}
 impl base::Backend for Reads{
- fn now_ms(&self)->u64{self.clock}fn scope(&self)->&Scope{&self.scope}fn account_scope(&self)->&str{"fixture-no-account-client"}fn evidence_directory(&self)->&Path{Path::new("unused")}
+ fn now_ms(&self)->u64{self.clock}fn scope(&self)->&Scope{&self.scope}fn account_scope(&self)->&str{"fixture-no-account-client"}fn evidence_directory(&self)->&Path{&self.dir}
  fn quiet(&self)->Result<()>{self.ordinary.require_resolved_attempts()}
  fn lookup(&self,intent:&str)->Result<BindingLookup>{Ok(BindingLookup{lookup_schema_version:1,intent:intent.into(),binding:None,unknown_binding:None,global_unknown_count:0,has_unknown:false})}
  fn prepare(&mut self,_:&Session,_:&moloch_live_runtime::package_admission::Admission,_:Permit,_:PackageSnapshotSet)->Result<()>{panic!("legacy preparation forbidden")}
@@ -41,7 +41,7 @@ fn setup()->(F,Reads,PackageDispatchLog,worker::Staged){
  let ordinary=DispatchLog::open(&f.root.join("preflight-original-ordinary")).unwrap();let surface=f.bound(NOW).unwrap();let semantic=fixture::semantics(&f,&surface);let policy=fixture::policy(&f);let plan=prob::optimize(&f.bank,&ordinary,&f.scope,&surface,&semantic,&policy,NOW).unwrap().unwrap();
  assert!(plan.legs().iter().all(|l|l.exchange_id!="101"),"held fixture must remain absent from wire");
  let activation=moloch_live_runtime::authority::Activation{run_id:"surface-fixture".into(),entry_until_ms:NOW+600000,maximum_committed:"100.000000".into(),maximum_market_cost:"100.000000".into(),maximum_quantity:100,tournament_id:T.into(),tournament_slug:"cup".into(),binary_sha256:"a".repeat(64)};
- let io=Reads{scope:f.scope.clone(),clock:NOW,step:10,facts:fixture::facts(&f,NOW),ordinary,activation,reads:vec![],fail_at:0,bad_at:0,bad:"",prepared:false};
+ let dir=f.root.join("preflight-retained-evidence");std::fs::create_dir_all(&dir).unwrap();let io=Reads{scope:f.scope.clone(),clock:NOW,step:10,facts:fixture::facts(&f,NOW),ordinary,activation,dir,reads:vec![],fail_at:0,bad_at:0,bad:"",prepared:false};
  let mut log=PackageDispatchLog::open(&f.root.join("preflight-original-package")).unwrap();let staged=worker::stage(&mut f.bank,&mut log,&io,plan,&surface,&semantic,&policy,&io.activation).unwrap();(f,io,log,staged)
 }
 #[test]fn unchanged_held_component_gets_original_market_node_and_book_without_a_fake_wire_leg(){
@@ -60,8 +60,8 @@ fn setup()->(F,Reads,PackageDispatchLog,worker::Staged){
 #[test]fn read_failure_has_no_fabricated_callback_and_bad_original_receipts_stop_following_reads(){
  for case in ["transport","endpoint","future","coverage"]{let(f,mut io,_,staged)=setup();let cut=if case=="coverage"{4}else{6};if case=="transport"{io.fail_at=cut;}else{io.bad_at=cut;io.bad=case;}let mut calls=0;assert!(package_preflight::collect_probabilistic_staged(&mut io,&f.scope,&staged,|_|{calls+=1;Ok(())}).is_err(),"{case}");assert_eq!(io.reads.len(),cut);assert_eq!(calls,cut-usize::from(case=="transport"));}
 }
-#[test]fn full_component_cohort_cannot_return_early_rules_older_than_ten_seconds(){
- let(f,mut io,_,staged)=setup();io.step=800;let mut calls=0;assert!(package_preflight::collect_probabilistic_staged(&mut io,&f.scope,&staged,|_|{calls+=1;Ok(())}).is_err());assert_eq!(calls,19);assert!(io.clock-NOW<20000);assert!(f.bank.engine().fills().is_empty());
+#[test]fn complete_qualification_never_renews_original_book_source_clock(){
+ let(f,mut io,_,staged)=setup();io.step=800;let mut calls=0;assert!(package_preflight::collect_probabilistic_staged(&mut io,&f.scope,&staged,|_|{calls+=1;Ok(())}).is_err());assert_eq!(calls,13);assert!(io.clock-NOW>10000&&io.clock-NOW<20000);assert_eq!(io.reads[12].data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["at"],iso(NOW));assert!(f.bank.engine().fills().is_empty());
 }
 #[test]fn genuine_stage_full_preflight_reaches_actual_authority_but_missing_or_changed_held_facts_do_not(){
  for case in ["complete","missing_held","changed_held"]{let(mut f,mut io,mut log,staged)=setup();let mut facts=package_preflight::collect_probabilistic_staged(&mut io,&f.scope,&staged,|_|Ok(())).unwrap();match case{"missing_held"=>{facts.components.remove("101");},"changed_held"=>facts.components.get_mut("101").unwrap().contract.data["root"]["contract_id"]=json!("999"),_=>{}}
