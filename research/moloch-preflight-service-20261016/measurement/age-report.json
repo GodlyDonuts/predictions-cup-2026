@@ -1,0 +1,264 @@
+{
+  "acceptedBookObservations": 779,
+  "accountRequests": 0,
+  "bookObservations": 779,
+  "distinctExchanges": 214,
+  "distinctFrames": 17,
+  "frames": [
+    {
+      "bookCount": 52,
+      "firstProbeObservationMs": 1792166627720,
+      "hash": "01cae7d1a041862f8be29992b7b8e94cb5654fb3a6840af6201726e08f32d819",
+      "lastProbeObservationMs": 1792166627720,
+      "originalReceivedAt": "2026-10-16T16:03:36.573Z",
+      "receiptAgeMsMax": 11147,
+      "receiptAgeMsMin": 11147,
+      "sequence": 36
+    },
+    {
+      "bookCount": 23,
+      "firstProbeObservationMs": 1792166627793,
+      "hash": "51e52a4049b95ba1e0561f04e7d4f2bd74d79bcc3b1e649a30cfd84d5a123510",
+      "lastProbeObservationMs": 1792166627793,
+      "originalReceivedAt": "2026-10-16T16:03:37.068Z",
+      "receiptAgeMsMax": 10725,
+      "receiptAgeMsMin": 10725,
+      "sequence": 37
+    },
+    {
+      "bookCount": 70,
+      "firstProbeObservationMs": 1792166627830,
+      "hash": "91aa9b00a9c099008871873f849f4ac287966c5a34225d8b20c852452a4fabd5",
+      "lastProbeObservationMs": 1792166627830,
+      "originalReceivedAt": "2026-10-16T16:03:39.907Z",
+      "receiptAgeMsMax": 7923,
+      "receiptAgeMsMin": 7923,
+      "sequence": 38
+    },
+    {
+      "bookCount": 73,
+      "firstProbeObservationMs": 1792166627928,
+      "hash": "4b8d607cc1fea72b1497028522c82c7d04caac619a641c82e1049809f2f5eaed",
+      "lastProbeObservationMs": 1792166627928,
+      "originalReceivedAt": "2026-10-16T16:03:43.696Z",
+      "receiptAgeMsMax": 4232,
+      "receiptAgeMsMin": 4232,
+      "sequence": 39
+    },
+    {
+      "bookCount": 106,
+      "firstProbeObservationMs": 1792166628773,
+      "hash": "8ae55be36a09d41510402fae05d674ce82fd64a8b0407d13bc5c6039a28c5f9c",
+      "lastProbeObservationMs": 1792166628773,
+      "originalReceivedAt": "2026-10-16T16:03:46.704Z",
+      "receiptAgeMsMax": 2069,
+      "receiptAgeMsMin": 2069,
+      "sequence": 40
+    },
+    {
+      "bookCount": 101,
+      "firstProbeObservationMs": 1792166629924,
+      "hash": "31ee0af49bd02465eccb8c015d7dcd3fff5dd6495e77ab28e7e9f99a2f63bcb7",
+      "lastProbeObservationMs": 1792166629924,
+      "originalReceivedAt": "2026-10-16T16:03:49.751Z",
+      "receiptAgeMsMax": 173,
+      "receiptAgeMsMin": 173,
+      "sequence": 41
+    },
+    {
+      "bookCount": 33,
+      "firstProbeObservationMs": 1792166631166,
+      "hash": "e7f184f150df376618bdfebe9d34a199580c81b12b5f4dc6c5a939d54f69fd76",
+      "lastProbeObservationMs": 1792166631166,
+      "originalReceivedAt": "2026-10-16T16:03:50.865Z",
+      "receiptAgeMsMax": 301,
+      "receiptAgeMsMin": 301,
+      "sequence": 42
+    },
+    {
+      "bookCount": 25,
+      "firstProbeObservationMs": 1792166637079,
+      "hash": "4e079f21b890084116af062c290ad29fe82c0f3d2d27924369e1d683b118640f",
+      "lastProbeObservationMs": 1792166637079,
+      "originalReceivedAt": "2026-10-16T16:03:51.876Z",
+      "receiptAgeMsMax": 5203,
+      "receiptAgeMsMin": 5203,
+      "sequence": 43
+    },
+    {
+      "bookCount": 7,
+      "firstProbeObservationMs": 1792166637121,
+      "hash": "0825eab40a041f6cce03b320efbc760e760c3a0ac7b92c6aaa8bb80980bf8c82",
+      "lastProbeObservationMs": 1792166637121,
+      "originalReceivedAt": "2026-10-16T16:03:52.382Z",
+      "receiptAgeMsMax": 4739,
+      "receiptAgeMsMin": 4739,
+      "sequence": 44
+    },
+    {
+      "bookCount": 76,
+      "firstProbeObservationMs": 1792166637139,
+      "hash": "76059e7daf5d2549a3975a67f877e52e6bee418c4d6593efbab3fa20c943ad49",
+      "lastProbeObservationMs": 1792166637139,
+      "originalReceivedAt": "2026-10-16T16:03:54.698Z",
+      "receiptAgeMsMax": 2441,
+      "receiptAgeMsMin": 2441,
+      "sequence": 45
+    },
+    {
+      "bookCount": 30,
+      "firstProbeObservationMs": 1792166637245,
+      "hash": "d7fee41a12019382b6068b15a783c84943727a0d79cb66ce4c1e2817b8ef9268",
+      "lastProbeObservationMs": 1792166637245,
+      "originalReceivedAt": "2026-10-16T16:03:55.234Z",
+      "receiptAgeMsMax": 2011,
+      "receiptAgeMsMin": 2011,
+      "sequence": 46
+    },
+    {
+      "bookCount": 19,
+      "firstProbeObservationMs": 1792166637288,
+      "hash": "920e9ac88752a80d21b6e43f0531621b0e3254bc8123708c0eba79bf6d026a77",
+      "lastProbeObservationMs": 1792166637288,
+      "originalReceivedAt": "2026-10-16T16:03:56.029Z",
+      "receiptAgeMsMax": 1259,
+      "receiptAgeMsMin": 1259,
+      "sequence": 47
+    },
+    {
+      "bookCount": 25,
+      "firstProbeObservationMs": 1792166638043,
+      "hash": "966cb967036bd7ea242ab536455769395579cb4c7abf6701838725ecb8bf90c8",
+      "lastProbeObservationMs": 1792166638043,
+      "originalReceivedAt": "2026-10-16T16:03:57.652Z",
+      "receiptAgeMsMax": 391,
+      "receiptAgeMsMin": 391,
+      "sequence": 48
+    },
+    {
+      "bookCount": 65,
+      "firstProbeObservationMs": 1792166640069,
+      "hash": "178125d283e90469f822d8e2157c2ad2137e0d2f41345b2ca0219245a84fdb0d",
+      "lastProbeObservationMs": 1792166640069,
+      "originalReceivedAt": "2026-10-16T16:03:59.417Z",
+      "receiptAgeMsMax": 652,
+      "receiptAgeMsMin": 652,
+      "sequence": 49
+    },
+    {
+      "bookCount": 32,
+      "firstProbeObservationMs": 1792166641151,
+      "hash": "d175ed4e156829b940a48fab1819287b8fb243f9f71052977a0ce2a3fff82294",
+      "lastProbeObservationMs": 1792166641151,
+      "originalReceivedAt": "2026-10-16T16:04:00.161Z",
+      "receiptAgeMsMax": 990,
+      "receiptAgeMsMin": 990,
+      "sequence": 50
+    },
+    {
+      "bookCount": 24,
+      "firstProbeObservationMs": 1792166642476,
+      "hash": "2e3c81d3b4cc5f6665f176896db2a8b83e43658eacacf89060a50a11bdd6b56b",
+      "lastProbeObservationMs": 1792166642476,
+      "originalReceivedAt": "2026-10-16T16:04:01.735Z",
+      "receiptAgeMsMax": 741,
+      "receiptAgeMsMin": 741,
+      "sequence": 51
+    },
+    {
+      "bookCount": 18,
+      "firstProbeObservationMs": 1792166643287,
+      "hash": "55c54cd8a1d2cd340eb638a3d02334af5226c35b58333633eba25a5b7c1fca90",
+      "lastProbeObservationMs": 1792166643287,
+      "originalReceivedAt": "2026-10-16T16:04:02.281Z",
+      "receiptAgeMsMax": 1006,
+      "receiptAgeMsMin": 1006,
+      "sequence": 52
+    }
+  ],
+  "historyPrefixVerified": false,
+  "limitations": [
+    "Fresh suffix only; absent target book is not account-wide or full-history absence.",
+    "Book-weighted lag summaries share frames and are not independent statistical samples.",
+    "Receipt-to-probe lag combines producer queue/append, filesystem/tail scheduling, cache HTTP and probe work; no append clock isolates components.",
+    "No continuous no-change witness, repaired clock, measured future model gain or actual fill inference."
+  ],
+  "matchedTradeBookAges": [
+    {
+      "bookReceiptAgeMs": 2293,
+      "bookSourceAgeMs": 4427,
+      "tradeSourceAgeMs": 1156
+    },
+    {
+      "bookReceiptAgeMs": 4076,
+      "bookSourceAgeMs": 6210,
+      "tradeSourceAgeMs": 639
+    },
+    {
+      "bookReceiptAgeMs": 4408,
+      "bookSourceAgeMs": 5296,
+      "tradeSourceAgeMs": 797
+    }
+  ],
+  "observerNormalizerChanged": false,
+  "originalEndCounters": {
+    "acceptedBooks": 779,
+    "books": 779,
+    "noTargetBookInProbeSuffix": 4,
+    "oldSource": 3
+  },
+  "originalObserverCounters": {
+    "sigBooks": 779
+  },
+  "pricingAuthority": false,
+  "probeDurationSeconds": 30.718029858981026,
+  "publicTradeProbes": 7,
+  "receiptAgeMsQuantiles": {
+    "0": 173,
+    "0.1": 173,
+    "0.25": 652,
+    "0.5": 2069,
+    "0.75": 4232,
+    "0.9": 7923,
+    "1": 11147
+  },
+  "receiptAgeOver3000ms": 250,
+  "reproducerLfSha256": "cef6f40208e128265872c287b00dede97ebee5b19c28f7d6fbcc128e27109fda",
+  "rows": 788,
+  "sameSequenceNewerSourceObserved": 0,
+  "schemaVersion": 1,
+  "sigWorkerAfterSource": "2225b1efba5a16078cea875f5162f96742514d3a",
+  "sigWorkerBeforeSource": "870ce889d51a04c654a93785277c47ea33b52bea",
+  "sigWorkerChanged": true,
+  "source": {
+    "compressedBytes": 11742,
+    "compressedSha256": "9e80400c65cf5ce04a656495c0b9d78deec800d4cee9b3887b686cd3010b02db",
+    "decodedBytes": 481659,
+    "decodedSha256": "e59be25b8e9f14661a8edf02e57075d5cc43a07212b5d19bf730a307866ea0ac",
+    "observerModuleSha256": "4e4649c054a469baed4ba57651fae6c201aed8a479ba6f8551e5d28e0e0d891e"
+  },
+  "sourceAgeMsQuantiles": {
+    "0": 1201,
+    "0.1": 1718,
+    "0.25": 2307,
+    "0.5": 4157,
+    "0.75": 5947,
+    "0.9": 10353,
+    "1": 12404
+  },
+  "sourceAgeOver3000ms": 432,
+  "sourceOldReceiptWithin3000ms": 182,
+  "sourceToReceiptMsQuantiles": {
+    "0": 394,
+    "0.1": 808,
+    "0.25": 908,
+    "0.5": 1715,
+    "0.75": 2134,
+    "0.9": 2511,
+    "1": 2511
+  },
+  "tradeProbeClassifications": {
+    "noTargetBookInProbeSuffix": 4,
+    "oldSource": 3
+  }
+}

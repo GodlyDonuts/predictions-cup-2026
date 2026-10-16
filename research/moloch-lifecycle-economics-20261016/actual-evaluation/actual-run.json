@@ -1,0 +1,11 @@
+{
+  "startedAt": "2026-10-16T16:06:49.735558+00:00",
+  "completedAt": "2026-10-16T16:08:02.250085+00:00",
+  "elapsedSeconds": 72.51457697001752,
+  "exitCode": 0,
+  "manifestSha256": "01db0ab3526f43b71edde6fa145924d852a1b869267c8e0d54ca473cf137bd1a",
+  "sourceCodeSha256": "3c26a36d73098485cf351782eb5c5a7560ef34e4ffb271ea9818f507ca03ad1f",
+  "analysisLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "accountRequests": 0,
+  "financialAuthority": false
+}

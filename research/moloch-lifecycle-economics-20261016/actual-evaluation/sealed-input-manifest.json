@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "sealed": true,
+  "protocolSha256": "ec397295f2fd5bbc6c6773cd627fec15ffc07418fb0e4c014c58646632dcb5a6",
+  "asOfUtc": "2026-10-16T15:47:10.513Z",
+  "events": {
+    "path": "events.jsonl.gz",
+    "bytes": 142439374,
+    "sha256": "648ae3477b910e5c7d754d1481ddf456e976899a394af91844a408ba7a9944d3"
+  },
+  "dispatch": {
+    "path": "dispatch.ndjson.gz",
+    "bytes": 1356443,
+    "sha256": "b43758d63a6f53617aafb1aa615e73cbfe0d58e4846ffcfcd80338d7c98aa315"
+  },
+  "bankManifest": {
+    "path": "bank-manifest.json",
+    "bytes": 16090,
+    "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+  }
+}

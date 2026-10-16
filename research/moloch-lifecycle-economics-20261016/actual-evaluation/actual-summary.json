@@ -1,0 +1,568 @@
+{
+  "actualProfitEstablishedByThisStudy": false,
+  "attemptOutcomes": {
+    "acknowledged_open_or_terminal_unproved": 3,
+    "terminal_full_fill": 12,
+    "terminal_partial_fill": 17,
+    "unknown_no_native_ack": 1,
+    "verified_terminal_zero_fill": 572
+  },
+  "counts": {
+    "acceptedSourceEvents": 281121,
+    "duplicateAcks": 3686,
+    "duplicateFills": 70
+  },
+  "descriptiveTotals": {
+    "actualOrdinaryRealizedGross": {
+      "microDenominator": 1,
+      "microNumerator": -188990000
+    },
+    "actualOrdinaryRealizedNet": {
+      "microDenominator": 1,
+      "microNumerator": -188990000
+    },
+    "hypotheticalNetAfterExitFees": null,
+    "independentSampleCountEstablished": false,
+    "markedGrossLessPrincipal": {
+      "microDenominator": 1,
+      "microNumerator": 0
+    },
+    "markedGrossPerShare": null,
+    "markedShares": 0,
+    "marksAddedToActualRealized": false,
+    "validEpisodeMarks": 0
+  },
+  "dispatchClosedClockCaveat": "Original closed rows have no timestamp: matching paired native terminal receipt hashes plus owner-pinned jointly sealed prefixes establish membership, not an independently observed dispatch-close availability time.",
+  "executionAuthority": false,
+  "fillProbabilityEstimated": false,
+  "manifestSha256": "01db0ab3526f43b71edde6fa145924d852a1b869267c8e0d54ca473cf137bd1a",
+  "markAvailability": {
+    "coverage_unavailable": 6,
+    "fill_observed_after_age_deadline": 2,
+    "first_book_after_slack": 2,
+    "gap_during_exposure": 1,
+    "invalid_book_during_exposure": 1,
+    "late_fill_after_frozen_label": 1,
+    "no_timely_horizon_book": 12,
+    "stale_or_future_horizon_book": 5
+  },
+  "modelApproval": false,
+  "nativeFinancialReplayIndependentlyPerformed": false,
+  "parserSha256": "f1db3b56bf701a0ded0c84486c04f805122deb0342fe196af17113e566e4ba39",
+  "protocolSha256": "ec397295f2fd5bbc6c6773cd627fec15ffc07418fb0e4c014c58646632dcb5a6",
+  "restartMethod": "replay_exact_original_prefixes",
+  "sourceCodeSha256": "3c26a36d73098485cf351782eb5c5a7560ef34e4ffb271ea9818f507ca03ad1f",
+  "sourceManifest": {
+    "asOfUtc": "2026-10-16T15:47:10.513Z",
+    "bankManifest": {
+      "bytes": 16090,
+      "path": "bank-manifest.json",
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    },
+    "dispatch": {
+      "bytes": 1356443,
+      "path": "dispatch.ndjson.gz",
+      "sha256": "b43758d63a6f53617aafb1aa615e73cbfe0d58e4846ffcfcd80338d7c98aa315"
+    },
+    "events": {
+      "bytes": 142439374,
+      "path": "events.jsonl.gz",
+      "sha256": "648ae3477b910e5c7d754d1481ddf456e976899a394af91844a408ba7a9944d3"
+    },
+    "protocolSha256": "ec397295f2fd5bbc6c6773cd627fec15ffc07418fb0e4c014c58646632dcb5a6",
+    "schemaVersion": 1,
+    "sealed": true
+  },
+  "sourceRefContentIndependentlyVerified": false,
+  "status": "UNQUALIFIED_RESEARCH",
+  "underlyingOfficialReceiptsIndependentlyFetched": false,
+  "ordinaryExecutionToObservationNsSummary": {
+    "count": 55,
+    "min": 2733000000,
+    "max": 579292000000,
+    "median": 20816000000
+  },
+  "episodesSummary": [
+    {
+      "id": 1,
+      "exchange": "863",
+      "side": "YES",
+      "markState": "stale_or_future_horizon_book",
+      "closedShares": 22,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -110000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -110000
+      }
+    },
+    {
+      "id": 2,
+      "exchange": "953",
+      "side": "YES",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 12,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 300000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 300000
+      }
+    },
+    {
+      "id": 3,
+      "exchange": "942",
+      "side": "YES",
+      "markState": "fill_observed_after_age_deadline",
+      "closedShares": 351,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -3510000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -3510000
+      }
+    },
+    {
+      "id": 4,
+      "exchange": "1012",
+      "side": "NO",
+      "markState": "stale_or_future_horizon_book",
+      "closedShares": 525,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 5,
+      "exchange": "953",
+      "side": "YES",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 3643,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -67705000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -67705000
+      }
+    },
+    {
+      "id": 6,
+      "exchange": "1045",
+      "side": "NO",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 607,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 7,
+      "exchange": "953",
+      "side": "YES",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 30,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -150000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -150000
+      }
+    },
+    {
+      "id": 8,
+      "exchange": "885",
+      "side": "NO",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 3522,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -41805000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -41805000
+      }
+    },
+    {
+      "id": 9,
+      "exchange": "949",
+      "side": "NO",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 716,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -2425000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -2425000
+      }
+    },
+    {
+      "id": 10,
+      "exchange": "1011",
+      "side": "NO",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 123,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -615000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -615000
+      }
+    },
+    {
+      "id": 11,
+      "exchange": "1034",
+      "side": "YES",
+      "markState": "invalid_book_during_exposure",
+      "closedShares": 588,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -3080000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -3080000
+      }
+    },
+    {
+      "id": 12,
+      "exchange": "1011",
+      "side": "YES",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 229,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 13,
+      "exchange": "1003",
+      "side": "YES",
+      "markState": "stale_or_future_horizon_book",
+      "closedShares": 133,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 14,
+      "exchange": "1042",
+      "side": "YES",
+      "markState": "gap_during_exposure",
+      "closedShares": 0,
+      "mixed": true,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 15,
+      "exchange": "1019",
+      "side": "YES",
+      "markState": "stale_or_future_horizon_book",
+      "closedShares": 67,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -335000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -335000
+      }
+    },
+    {
+      "id": 16,
+      "exchange": "843",
+      "side": "YES",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 431,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 17,
+      "exchange": "843",
+      "side": "NO",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 490,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 18,
+      "exchange": "1033",
+      "side": "NO",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 173,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -100000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -100000
+      }
+    },
+    {
+      "id": 19,
+      "exchange": "934",
+      "side": "NO",
+      "markState": "coverage_unavailable",
+      "closedShares": 966,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 20,
+      "exchange": "843",
+      "side": "NO",
+      "markState": "first_book_after_slack",
+      "closedShares": 1540,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 21,
+      "exchange": "1043",
+      "side": "YES",
+      "markState": "late_fill_after_frozen_label",
+      "closedShares": 1362,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -6810000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -6810000
+      }
+    },
+    {
+      "id": 22,
+      "exchange": "1044",
+      "side": "NO",
+      "markState": "coverage_unavailable",
+      "closedShares": 3435,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -17175000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -17175000
+      }
+    },
+    {
+      "id": 23,
+      "exchange": "874",
+      "side": "YES",
+      "markState": "coverage_unavailable",
+      "closedShares": 30,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -150000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -150000
+      }
+    },
+    {
+      "id": 24,
+      "exchange": "1019",
+      "side": "NO",
+      "markState": "coverage_unavailable",
+      "closedShares": 1433,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -7165000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -7165000
+      }
+    },
+    {
+      "id": 25,
+      "exchange": "1014",
+      "side": "NO",
+      "markState": "no_timely_horizon_book",
+      "closedShares": 156,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -780000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -780000
+      }
+    },
+    {
+      "id": 26,
+      "exchange": "1037",
+      "side": "NO",
+      "markState": "first_book_after_slack",
+      "closedShares": 500,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 27,
+      "exchange": "841",
+      "side": "NO",
+      "markState": "stale_or_future_horizon_book",
+      "closedShares": 329,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 28,
+      "exchange": "1005",
+      "side": "NO",
+      "markState": "fill_observed_after_age_deadline",
+      "closedShares": 300,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": 0
+      }
+    },
+    {
+      "id": 29,
+      "exchange": "1077",
+      "side": "NO",
+      "markState": "coverage_unavailable",
+      "closedShares": 6503,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -33310000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -33310000
+      }
+    },
+    {
+      "id": 30,
+      "exchange": "1028",
+      "side": "YES",
+      "markState": "coverage_unavailable",
+      "closedShares": 813,
+      "mixed": false,
+      "actualRealizedGrossPnl": {
+        "microDenominator": 1,
+        "microNumerator": -4065000
+      },
+      "actualRealizedNetPnl": {
+        "microDenominator": 1,
+        "microNumerator": -4065000
+      }
+    }
+  ],
+  "originalPrivateFullResultSha256": "a87f8a4deef048334ae3da716f12647ee3b3657564ed073f1fa26a0027096758"
+}

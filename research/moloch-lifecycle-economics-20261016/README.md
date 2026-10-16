@@ -131,3 +131,11 @@ No actual new outcome
 files, model fitting, account/network/SSH calls, compiler, live service, production
 control or native/runtime source was used or changed. The source is ready for
 independent review before any separately authorized sealed-cohort evaluation.
+
+## Later root-run actual original-prefix evaluation
+
+The implementation task above did not inspect a cohort. Subsequently root ran
+the frozen reader on separately pinned original sources:281,121 native events,
+605 ordinary BUY attempts, zero eligible full-depth lifecycle marks and actual
+ordinary realized−188.990000. No fitted model or financial authority follows.
+[Actual result, source pins and limitations](actual-evaluation/README.md).

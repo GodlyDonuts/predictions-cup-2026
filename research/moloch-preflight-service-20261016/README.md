@@ -64,3 +64,10 @@ samples/four labels, eight verified gzip/JSON rows at15:49:48, with original clo
 No economic outcomes were inspected; missing original consumption/availability
 witnesses remain unavailable. Successor observer activation requires a separate
 cohort bound to the actual new breadth file. Source/policy remain unchanged.
+
+## Later actual readiness and measurement
+
+Fresh trading was verified16:03:23UTC. At16:16:16 the new worker has14 new
+ACKs, healthy realtime/no STOP and successor full status. The original30s probe
+observes receipt-to-probe median7.924s→2.069s, with explicit observational limits.
+[Actual proof and bounded comparison](measurement/README.md).

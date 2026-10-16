@@ -77,3 +77,10 @@ byte-identical default golden sample output, hash-chain/seal membership,
 partial writes/fsync failure, changed mapping/same-size tampering, limits/free
 space and create-new cohort refusal. Deployment and new-cohort operation remain
 with the parent execution owner.
+
+Deployment byte pins: the author's Windows CRLF source/protocol hashes are
+1f63cf06/0ae3b843. Root verified newline-only equivalence to Git-LF source
+`200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40`
+and Git-LF protocol
+`0192b4ab31f5f278cdc1f5ae341e17234c1f12a9dc0b3af43e742071314bc853`.
+Actual deployment must pin its real bytes; these hashes are not interchangeable.

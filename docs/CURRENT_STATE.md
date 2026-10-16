@@ -1,26 +1,29 @@
-# October 16, 15:50 UTC: upgraded runtime restoring original history
+# October 16, 16:16 UTC: production trading; measured lower processing delay
 
-Runtime-only upgrade started sole518852/source2225b1ef/binaryfb55f739 at
-15:48:53UTC after89/89 ARM64 worker checks and the optimized release passed.
-At15:49:48 the executable matched/no STOP; original-history restoration is still
-pending, so fresh trading and new orders are not yet verified. Original194fills,
-realized−143.860000, cash72,704.540000/owned22,731.515000 remain. Full attributed
-capital95,579.915000, same bank/native engine/twelve bridge bytes remain; the
-only control change is activation.binarySha256. No latency/profit gain claimed.
-[Actual promotion and readiness boundary](../research/moloch-preflight-service-20261016/README.md).
+Sole518852/source2225b1ef/binaryfb55f739 is back in fresh production trading,
+with healthy realtime/no STOP. First fresh proof16:03:23 shows one new ACK;
+at16:16:16 it has14 new official ACKs and successor full status. Original capital95,579.915000 and194fills
+remain, attributed realized−143.860000 (ordinary−188.990000/inherited+45.130000).
+[Actual live proof](../research/moloch-preflight-service-20261016/measurement/fresh-live-verification.json).
 
-The preflight hook services the existing source before logical GETs, retaining
-all seven original receipts and exact quote validity. It targets a measured
-receipt-to-probe delay7.924s median; its actual after-change effect is pending.
-[Source review](../research/moloch-preflight-service-20261016/source-review.md).
+The same30s metadata probe observed receipt-to-probe median7.924s→2.069s and
+p9011.291s→7.923s across777 versus779 books. Different natural windows and
+frame/market mixes prevent causal CPU/whole-loop attribution. Original clocks
+remain; median source age is still4.157s, so coverage remains a limitation.
+[Actual measurement](../research/moloch-preflight-service-20261016/measurement/README.md).
 
-Old read-only trade cohortv1 is sealed15:49:48 with four samples/four labels.
-No economic outcomes have been inspected and no model is qualified. A new
-cohort must bind successor breadth after restoration. The original-body verifier
-passed12 synthetic checks, but missing consumption/availability traces still
-prevent complete witness qualification.
-[Sealed original cohort](../research/moloch-preflight-service-20261016/deployment/prior-trade-cohort-seal.json),
-[witness limitations](../research/moloch-trade-trigger-20261016/witness/README.md).
+The new lifecycle reader passed32 root checks and independent review. Actual
+sealed281,121-event replay completed72.515s and reconstructed ordinary gross/net
+−188.990000, with zero eligible full-depth lifecycle marks. It is descriptive,
+not a positive-EV model or financial authority.
+[Actual original-prefix result](../research/moloch-lifecycle-economics-20261016/actual-evaluation/README.md).
+
+Opt-in original input tracing is checked94 distinct Python tests, independently
+reviewed and awaiting a separate new read-only cohort activation. It records
+actual cache/SIG inputs, clocks and completions under a shared2GiB/no-pruning
+cap and10GiB free-space floor. Sampling choices/age bounds stay fixed; complete
+input recording is separate from provider completeness or model qualification.
+[Trace protocol and limits](../research/moloch-trade-trigger-20261016/witness/input-trace-v1.md).
 
 # Historical October 16, 14:57 UTC: entry filter verified in fresh production
 

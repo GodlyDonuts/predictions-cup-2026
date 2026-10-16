@@ -1,0 +1,37 @@
+{
+  "createdAt": "2026-10-16T15:59:29.445259+00:00",
+  "stoppedBoundaryManifestSha256": "dda556e3fe0ce40542f36557f9c6fbf55e4242c9f9b4e64c489566d185f8f670",
+  "nativeHead": {
+    "hash": "48b2b9f4471706c582d765c438cdf471bce772efc1bcf2ddf09ab8c73a9860aa",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "af9243f21e1e340995beb1bc005b0f37b6533b81606e8eb85bd18e14ed63a25e",
+    "sequence": 281121
+  },
+  "records": {
+    "events": {
+      "originalSource": "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/events.jsonl",
+      "originalBytes": 874114009,
+      "originalSha256": "891851615dcd20a676d388fe10e0ea0b7d33a4a8b85fd4dd73b4754cf16300b5",
+      "path": "events.jsonl.gz",
+      "bytes": 142439374,
+      "sha256": "648ae3477b910e5c7d754d1481ddf456e976899a394af91844a408ba7a9944d3"
+    },
+    "dispatch": {
+      "originalSource": "/home/archon/apps/moloch/shared/live-production-v1/dispatch.ndjson",
+      "originalBytes": 6240944,
+      "originalSha256": "efe6262ddd967cedee83d7159f900896e15a71e1c68dff514a5c09289d86ea2f",
+      "path": "dispatch.ndjson.gz",
+      "bytes": 1356443,
+      "sha256": "b43758d63a6f53617aafb1aa615e73cbfe0d58e4846ffcfcd80338d7c98aa315"
+    },
+    "bankManifest": {
+      "path": "bank-manifest.json",
+      "bytes": 16090,
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    }
+  },
+  "sourceCopyForResearchOnly": true,
+  "liveSessionOpened": false,
+  "financialMigration": false,
+  "economicOutcomesAnalyzed": false
+}
