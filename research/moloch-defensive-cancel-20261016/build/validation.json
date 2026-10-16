@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-16T16:57:53.980231+00:00",
+  "elapsedSeconds": 461.2688519769872,
+  "sourceManifestSha256": "307501836bee4eced8e290edfb0fc0fcc7a913437a01bf4cf783ea6a0ba4797f",
+  "sourceCount": 251,
+  "sourceCommit": "b112c6c1b941bcc3282c754c1883a55b2b9b6cc2",
+  "checks": [
+    {
+      "group": "sdk",
+      "startedAt": "2026-10-16T16:50:12.711448+00:00",
+      "completedAt": "2026-10-16T16:50:42.005382+00:00",
+      "elapsedSeconds": 29.29392749001272,
+      "exitCode": 0,
+      "passedChecks": 231,
+      "logSha256": "5b454f67d8026810adfb5883f4b49385e39d62586f94f99fc4218ad659356914"
+    },
+    {
+      "group": "library",
+      "startedAt": "2026-10-16T16:50:42.029423+00:00",
+      "completedAt": "2026-10-16T16:51:28.400337+00:00",
+      "elapsedSeconds": 46.37091455998598,
+      "exitCode": 0,
+      "passedChecks": 197,
+      "logSha256": "5aba268bfed1dd85efb786609baa251967f2bd9dfbdf66df727fd45773234cac"
+    },
+    {
+      "group": "worker",
+      "startedAt": "2026-10-16T16:51:28.424379+00:00",
+      "completedAt": "2026-10-16T16:52:45.101349+00:00",
+      "elapsedSeconds": 76.67697648698231,
+      "exitCode": 0,
+      "passedChecks": 95,
+      "logSha256": "7191d436fd33f4ca39c2ca4cb0e706218e6805a33033572e6d038bfdf8901125"
+    },
+    {
+      "group": "release",
+      "startedAt": "2026-10-16T16:52:45.125425+00:00",
+      "completedAt": "2026-10-16T16:57:53.956530+00:00",
+      "elapsedSeconds": 308.8310627900064,
+      "exitCode": 0,
+      "passedChecks": null,
+      "logSha256": "7b871fbc11ec6961a1916422edebf543cd9b8a1317eb3df33400b89bea861ab0"
+    }
+  ],
+  "allSucceeded": true,
+  "deployed": false,
+  "binary": {
+    "path": "/home/archon/apps/moloch/buffered-json-target-20261016/release/moloch-live-runtime",
+    "sha256": "3ab6ef7c49c089f19ff90220cd3431ff5ce1c84a5858d6d9fdde060f1b9d6883",
+    "bytes": 13088680
+  },
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "engineIdentityEvidenceSha256": "42c8ecd3c7e3bcbea411b9a7e0dd58464f507e92ba47f96accfabc453d90c7d2"
+}

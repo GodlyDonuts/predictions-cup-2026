@@ -1,0 +1,12 @@
+======================================================================
+ERROR: test_real_trade_trigger_and_duplicate_poll_replay_do_not_add_future_labels (__main__.ReplayTests.test_real_trade_trigger_and_duplicate_poll_replay_do_not_add_future_labels)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/moloch-trace-replay-source-20261016/research/moloch-trade-trigger-20261016/witness/test_trace_replay.py", line 147, in test_real_trade_trigger_and_duplicate_poll_replay_do_not_add_future_labels
+    from test_trade_triggered_observer import envelope
+ModuleNotFoundError: No module named 'test_trade_triggered_observer'
+
+----------------------------------------------------------------------
+Ran 19 tests in 1.607s
+
+FAILED (errors=1)

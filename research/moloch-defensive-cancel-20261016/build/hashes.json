@@ -1,0 +1,42 @@
+{
+  "build/validation.json": {
+    "sha256": "16dc459a92e99bea97bf57153fefcf3cdd49583bff2b03884705eea73c293f61",
+    "bytes": 2045
+  },
+  "build/source-manifest.json": {
+    "sha256": "307501836bee4eced8e290edfb0fc0fcc7a913437a01bf4cf783ea6a0ba4797f",
+    "bytes": 30871
+  },
+  "build/engine-identity-evidence.json": {
+    "sha256": "42c8ecd3c7e3bcbea411b9a7e0dd58464f507e92ba47f96accfabc453d90c7d2",
+    "bytes": 1497
+  },
+  "build/engine-identity-probe.rs": {
+    "sha256": "98469879001615af607b29aadbf343c6db57ce65af7251f2345594b8d471da1e",
+    "bytes": 69
+  },
+  "build/original-first-worker-failure.log": {
+    "sha256": "a63266067128e5019e17a4ed7d12e60c1404c29a0be85ee277ee5928eba09c04",
+    "bytes": 21210
+  },
+  "build/original-library-fixture-compile-failure.log": {
+    "sha256": "650ab2ccf6163ca86055455bba03762487b0046b00e921d4ed9cb751ea64b279",
+    "bytes": 8514
+  },
+  "build/final-sdk.log": {
+    "sha256": "5b454f67d8026810adfb5883f4b49385e39d62586f94f99fc4218ad659356914",
+    "bytes": 24822
+  },
+  "build/final-library.log": {
+    "sha256": "5aba268bfed1dd85efb786609baa251967f2bd9dfbdf66df727fd45773234cac",
+    "bytes": 28881
+  },
+  "build/final-worker.log": {
+    "sha256": "7191d436fd33f4ca39c2ca4cb0e706218e6805a33033572e6d038bfdf8901125",
+    "bytes": 20181
+  },
+  "build/final-release.log": {
+    "sha256": "7b871fbc11ec6961a1916422edebf543cd9b8a1317eb3df33400b89bea861ab0",
+    "bytes": 8988
+  }
+}
