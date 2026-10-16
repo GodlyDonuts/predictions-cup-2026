@@ -101,8 +101,8 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
 }
 
 fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::feedback::Result<Reviewed>{
-    let trusted=[review_sha256(&r)?].into();let hashes=originals.iter().map(|b|sha(b)).collect::<Vec<_>>();
-    let sources=originals.iter().enumerate().map(|(i,b)|SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();Reviewed::verify(r,&sources,&trusted,NOW)
+    let at=r.reviewed_at_ms;let trusted=[review_sha256(&r)?].into();let hashes=originals.iter().map(|b|sha(b)).collect::<Vec<_>>();
+    let sources=originals.iter().enumerate().map(|(i,b)|SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();Reviewed::verify(r,&sources,&trusted,at)
 }
 #[test]fn v2_deadline_cash_is_independent_of_terminal_probability_and_source_bound(){
     let mut r=horizon_input(&"a".repeat(64),NOW);set_deadline_cash(&mut r,"0.400000");
@@ -165,7 +165,7 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
             f.book(NOW-5000,"0.100000","0.120000");f.book(NOW-4000,"0.100000","0.120000");
             f.store=Some(Cohorts::initialize(&f.root,&f.bank,&f.log,f.owner.clone()).unwrap());if install{f.install(f.review.clone(),NOW);}f
         }
-        fn install(&mut self,mut r:ReviewInput,at:u64){if let Some(ValuationObjective::DeadlineLiquidation{expected_cash_per_share,..})=&r.valuation_objective{let cash=expected_cash_per_share.clone();set_deadline_cash(&mut r,&cash);}let reviewed=approve(r,&mut self.trust,at);self.store.as_mut().unwrap().install(reviewed,&self.bank,&self.log,at).unwrap();}
+        fn install(&mut self,r:ReviewInput,at:u64){let reviewed=approve(r,&mut self.trust,at);self.store.as_mut().unwrap().install(reviewed,&self.bank,&self.log,at).unwrap();}
         fn book(&mut self,at:u64,bid:&str,ask:&str){self.seq+=1;self.bank.accept("fixture-books",self.seq,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"201","exchangeId":"101","tournamentId":self.scope.tournament_id,"sequence":self.seq.to_string(),"sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":bid,"quantity":100}],"asks":[{"price":ask,"quantity":100}]}})).unwrap();}
         fn entry(&self)->Value{self.bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["action"]=="buy"&&q["retired"]==false).unwrap()}
         fn spec(&self,q:&Value)->RequestSpec{RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:Some(json!({"idempotencyKey":format!("fundamental-fixture:{}",q["id"].as_u64().unwrap()),"tournamentId":self.scope.tournament_id,"exchangeId":"101","side":if q["side"]=="NO"{"no"}else{"yes"},"action":q["action"],"quantity":q["quantity"],"price":serde_json::from_str::<Value>(q["price"].as_str().unwrap()).unwrap(),"expirationDate":iso(q["expiresAt"].as_u64().unwrap())})),body_json:None}}
@@ -230,6 +230,29 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         let(q,at)=f.age_exit(NOW+600001,"0.100000","0.120000");assert!(matches!(f.assess(&q,at),Decision::Hold{reason}if reason=="terminal_settlement_hold_for_actual_payout"));
         f.reopen();assert!(matches!(f.assess(&q,at),Decision::Hold{..}),"restart cannot turn schedule delay into forced liquidation");
         let mut deadline=F::new();deadline.fill_entry(false);let(q,at)=deadline.age_exit(NOW+600001,"0.100000","0.120000");assert!(matches!(deadline.assess(&q,at),Decision::Exit{reason,..}if reason=="reviewed_holding_deadline"));
+    }
+    fn refreshed_terminal(r:&ReviewInput,at:u64)->(ReviewInput,Vec<Vec<u8>>){
+        let mut r=r.clone();r.reviewed_at_ms=at;r.expires_at_ms=at+120000;
+        for source in &mut r.sources{source.observed_at_ms=at-50;}
+        let mut originals=originals_for(&r);let mut timing:Value=serde_json::from_slice(&originals[3]).unwrap();timing["capturedAt"]=json!(iso(at-50));originals[3]=serde_json::to_vec(&timing).unwrap();let hash=sha(&originals[3]);r.sources[3].sha256=hash.clone();if let Some(ValuationObjective::TerminalSettlement{timing_source_sha256,..})=&mut r.valuation_objective{*timing_source_sha256=hash;}(r,originals)
+    }
+    #[test]fn delayed_terminal_fresh_revocation_still_mints_exact_covered_sell_physical_token(){
+        let mut f=F::setup(false,"cup");let mut initial=f.review.clone();set_terminal(&mut initial);f.install(initial.clone(),NOW);f.fill_entry(false);
+        let mut initial=initial;initial.revoke_existing=true;let(r,originals)=refreshed_terminal(&initial,NOW+620000);let reviewed=verify_originals(r.clone(),&originals).unwrap();f.trust.insert(review_sha256(&r).unwrap());f.store.as_mut().unwrap().install(reviewed,&f.bank,&f.log,NOW+620000).unwrap();
+        assert_eq!(r.hold_until_ms,NOW+600000);assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+620000).unwrap().is_empty());
+        let(q,at)=f.age_exit(NOW+620001,"0.100000","0.120000");let active=at.max(q["activationAt"].as_u64().unwrap());assert!(matches!(f.assess(&q,active),Decision::Exit{reason,..}if reason=="reviewed_source_revocation"));
+        let id=q["id"].as_u64().unwrap();let spec=f.spec(&q);f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,active).unwrap();let permit=f.permit(&q,active);let authority=f.authority();
+        let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&permit,&authority,active).unwrap();assert!(token.expires_at_ms()>active);token.validate_frozen(&q,&f.bank.engine().report().unwrap(),id,active).unwrap();token.authorize(&f.scope,&spec,&permit,active).unwrap();drop(token);drop(authority);f.reopen();assert!(matches!(f.assess(&q,active),Decision::Exit{..}));
+        // Even a newly source-verified schedule cannot renew this cohort.
+        let(mut changed,mut originals)=refreshed_terminal(&r,NOW+620002);if let Some(ValuationObjective::TerminalSettlement{scheduled_settlement_at_ms,..})=&mut changed.valuation_objective{*scheduled_settlement_at_ms+=1;}
+        let mut timing:Value=serde_json::from_slice(&originals[3]).unwrap();timing["scheduledSettlementAt"]=json!(iso(NOW+300001));originals[3]=serde_json::to_vec(&timing).unwrap();let hash=sha(&originals[3]);changed.sources[3].sha256=hash.clone();if let Some(ValuationObjective::TerminalSettlement{timing_source_sha256,..})=&mut changed.valuation_objective{*timing_source_sha256=hash;}
+        let reviewed=verify_originals(changed.clone(),&originals).unwrap();f.trust.insert(review_sha256(&changed).unwrap());assert!(f.store.as_mut().unwrap().install(reviewed,&f.bank,&f.log,NOW+620002).unwrap_err().to_string().contains("CANNOT_REINTERPRET_COHORT_OBJECTIVE"));
+    }
+    #[test]fn inherited_delayed_terminal_current_value_exit_plan_preserves_original_hold_clock(){
+        let(mut f,t,adoption)=inherited_fixture();let snapshot=ExistingSnapshot::capture(&f.bank,&f.log,&t,"fixture-adoption",1,&adoption,"101").unwrap();let mut r=f.review.clone();set_terminal(&mut r);r.existing_origin=Some(snapshot.approval().clone());let reviewed=approve(r.clone(),&mut f.trust,NOW+3001);f.store.as_mut().unwrap().install_existing(reviewed,snapshot,&f.bank,&f.log,&t,NOW+3001).unwrap();
+        r.ordinary_probability="0.600000".into();let(r,originals)=refreshed_terminal(&r,NOW+620000);let reviewed=verify_originals(r.clone(),&originals).unwrap();f.trust.insert(review_sha256(&r).unwrap());f.store.as_mut().unwrap().install(reviewed,&f.bank,&f.log,NOW+620000).unwrap();
+        f.book(NOW+620001,"0.300000","0.320000");f.retire_drafts(NOW+623002);
+        let plan=f.store.as_ref().unwrap().prepare_existing_exit(&f.bank,&f.log,&t,&f.scope,"101",&f.trust,NOW+623002).unwrap().unwrap();assert_eq!(plan.event()["reason"],"refreshed_value_exit");assert_eq!(plan.event()["holdingDeadlineMs"],NOW+600000);assert_eq!(plan.event()["expectedPayout"],"0.594000");assert!(daily_windows::clock(plan.event()["expiresAt"].as_str().unwrap()).unwrap()>NOW+623002);f.bank.accept("delayed-terminal-existing-exit",1,plan.event()).unwrap();
     }
     // A sealed historical fixture represents a V1 sidecar created by the old
     // executable. The NEW product path must not originate such an entry.
@@ -350,7 +373,7 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
     #[test]fn archived_original_intent_tag_survives_a_new_live_cohort_on_restart(){
         let(mut f,t,facts,retirement,q)=abandonment_fixture(Some(true));let old=q["id"].as_u64().unwrap();let old_tag=f.store.as_ref().unwrap().durable_tag(old).unwrap();
         let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,"never-sent-retirement",1,&retirement,NOW+40).unwrap();f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+40).unwrap();
-        let mut book=f.bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(NOW+4000));}f.bank.accept("post-abandon-book",1,&json!({"type":"book","receivedAt":iso(NOW+4000),"book":book})).unwrap();let mut r=horizon_input(f.bank.manifest_hash().as_str().unwrap(),NOW+4051);r.tournament_id=f.scope.tournament_id.clone();f.install(r,NOW+4051);
+        let mut book=f.bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(NOW+4000));}f.bank.accept("post-abandon-book",1,&json!({"type":"book","receivedAt":iso(NOW+4000),"book":book})).unwrap();let mut r=horizon_input(f.bank.manifest_hash().as_str().unwrap(),NOW+4051);r.tournament_id=f.scope.tournament_id.clone();set_deadline_cash(&mut r,"0.940500");f.install(r,NOW+4051);
         let new=f.entry();let spec=f.spec(&new);let new_id=new["id"].as_u64().unwrap();assert_ne!(new_id,old);f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,new_id,&spec,&f.trust,NOW+4051).unwrap();
         f.log.append(json!({"kind":"intent","qid":new_id,"quote":new,"spec":spec,"fundamental":f.store.as_ref().unwrap().durable_tag(new_id).unwrap()})).unwrap();f.reopen();assert_eq!(f.store.as_ref().unwrap().durable_tag(old),Some(old_tag));assert!(f.store.as_ref().unwrap().durable_tag(new_id).is_some());
     }
@@ -407,7 +430,7 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
     }
     #[test]fn rearmed_closed_binding_stays_archived_beside_a_new_cohort_and_rejects_late_ack(){
         let(mut f,t,account,order,fills,terminal,q)=closed_zero_fixture(false);let old=q["id"].as_u64().unwrap();let tag=f.store.as_ref().unwrap().durable_tag(old).unwrap();let hint=f.store.as_ref().unwrap().rearm_hints(&f.bank,&f.log,&f.scope,NOW+3220).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_rearm(&f.bank,&f.log,&t,&f.scope,&hint,&account,&order,&fills,"closed-zero-terminal",1,&terminal,NOW+3220).unwrap();f.store.as_mut().unwrap().apply_rearm(plan,&f.bank,&f.log,&t,NOW+3220).unwrap();
-        let mut book=f.bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(NOW+6000));}f.bank.accept("rearmed-book",1,&json!({"type":"book","receivedAt":iso(NOW+6000),"book":book})).unwrap();let mut review=horizon_input(f.bank.manifest_hash().as_str().unwrap(),NOW+6051);review.tournament_id=f.scope.tournament_id.clone();f.install(review,NOW+6051);
+        let mut book=f.bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(NOW+6000));}f.bank.accept("rearmed-book",1,&json!({"type":"book","receivedAt":iso(NOW+6000),"book":book})).unwrap();let mut review=horizon_input(f.bank.manifest_hash().as_str().unwrap(),NOW+6051);review.tournament_id=f.scope.tournament_id.clone();set_deadline_cash(&mut review,"0.940500");f.install(review,NOW+6051);
         let next=f.entry();let spec=f.spec(&next);let new=next["id"].as_u64().unwrap();assert_ne!(old,new);f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,new,&spec,&f.trust,NOW+6051).unwrap();f.reopen();assert_eq!(f.store.as_ref().unwrap().durable_tag(old),Some(tag));assert!(f.store.as_ref().unwrap().durable_tag(new).is_some());assert!(f.store.as_ref().unwrap().validate_acknowledgment(old,&F::base(&q,"actual_order_ack",NOW+6052,"902")).is_err());
     }
     #[test]fn zero_fill_rearm_is_not_available_for_unknown_or_partial_actual_execution(){
@@ -425,7 +448,7 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
     #[test]fn tagged_archived_original_ack_restores_after_restart_beside_new_cohort_but_new_ack_is_denied(){
         for recovered in [false,true]{let(mut f,t,account,order,fills,terminal,q)=closed_zero_fixture_quantity(recovered,1);let old=q["id"].as_u64().unwrap();let old_tag=f.store.as_ref().unwrap().durable_tag(old).unwrap();
             let hint=f.store.as_ref().unwrap().rearm_hints(&f.bank,&f.log,&f.scope,NOW+3220).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_rearm(&f.bank,&f.log,&t,&f.scope,&hint,&account,&order,&fills,"closed-zero-terminal",1,&terminal,NOW+3220).unwrap();f.store.as_mut().unwrap().apply_rearm(plan,&f.bank,&f.log,&t,NOW+3220).unwrap();f.reopen();
-            let mut book=f.bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(NOW+6000));}f.bank.accept("restart-book",1,&json!({"type":"book","receivedAt":iso(NOW+6000),"book":book})).unwrap();let mut review=horizon_input(f.bank.manifest_hash().as_str().unwrap(),NOW+6051);review.tournament_id=f.scope.tournament_id.clone();f.install(review,NOW+6051);
+            let mut book=f.bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(NOW+6000));}f.bank.accept("restart-book",1,&json!({"type":"book","receivedAt":iso(NOW+6000),"book":book})).unwrap();let mut review=horizon_input(f.bank.manifest_hash().as_str().unwrap(),NOW+6051);review.tournament_id=f.scope.tournament_id.clone();set_deadline_cash(&mut review,"0.940500");f.install(review,NOW+6051);
             let next=f.entry();let spec=f.spec(&next);let new=next["id"].as_u64().unwrap();f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,new,&spec,&f.trust,NOW+6051).unwrap();f.log.append(json!({"kind":"intent","qid":new,"quote":next,"spec":spec,"fundamental":f.store.as_ref().unwrap().durable_tag(new).unwrap()})).unwrap();f.reopen();
             let restored=actual_startup_ack(&f,old,NOW+6052);let store=f.store.as_ref().unwrap();store.validate_restored_acknowledgment(&f.bank,&f.log,old,&restored).unwrap();assert!(store.validate_acknowledgment(old,&restored).is_err(),"live admission cannot use startup exception");
             for case in 0..6{let mut changed=restored.clone();match case{0=>changed["actualOrderId"]=json!("902"),1=>changed["receiptHash"]=json!("a".repeat(64)),2=>changed["quantity"]=json!(2),3=>changed["side"]=json!("YES"),4=>changed["price"]=json!("0.875000"),_=>changed["processedAt"]=json!(iso(NOW+3105))}assert!(store.validate_restored_acknowledgment(&f.bank,&f.log,old,&changed).is_err(),"case {case}");}

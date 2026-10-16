@@ -133,8 +133,12 @@ fn structure(r:&ReviewInput)->Result<i128>{
     let exceptional=amount(&r.minimum_exceptional_payout)?;let margin=amount(&r.margin_per_share)?;
     need(p<=UNIT&&e<=UNIT&&exceptional<=UNIT&&margin<UNIT&&amount(&r.maximum_principal)?>0
         &&r.maximum_quantity>0&&r.maximum_quantity<=10_000,"FUNDAMENTAL_REVIEW_ECONOMICS")?;
-    need(r.reviewed_at_ms<r.expires_at_ms&&r.expires_at_ms<=r.hold_until_ms
-        &&r.hold_until_ms-r.reviewed_at_ms<=366*86_400_000,"FUNDAMENTAL_REVIEW_HORIZON")?;
+    let review_span=r.expires_at_ms.checked_sub(r.reviewed_at_ms).ok_or("FUNDAMENTAL_REVIEW_HORIZON")?;
+    // Terminal's nominal hold clock bounds NEW acquisition, not management of
+    // delayed settlement. Fresh revisions keep the original schedule/cohort hold.
+    let horizon=if terminal_hold(r){r.hold_until_ms>0&&r.hold_until_ms.checked_sub(r.reviewed_at_ms).is_none_or(|d|d<=366*86_400_000)}
+        else{r.expires_at_ms<=r.hold_until_ms&&r.hold_until_ms.checked_sub(r.reviewed_at_ms).is_some_and(|d|d<=366*86_400_000)};
+    need(review_span>0&&review_span<=366*86_400_000&&horizon,"FUNDAMENTAL_REVIEW_HORIZON")?;
     need((3..=8).contains(&r.sources.len()),"FUNDAMENTAL_SOURCES")?;
     let mut kinds=BTreeSet::new();let mut hashes=BTreeSet::new();
     for s in &r.sources{
@@ -151,7 +155,7 @@ fn structure(r:&ReviewInput)->Result<i128>{
         (2,Some(ValuationObjective::TerminalSettlement{timing_source_sha256,timing_json_pointer,scheduled_settlement_at_ms,..}))=>{
             need(hex(timing_source_sha256)&&timing_json_pointer.starts_with('/')&&timing_json_pointer.len()<=256
                 &&matches!(timing_json_pointer.rsplit('/').next(),Some("settlement_date"|"scheduledSettlementAt"|"scheduled_settlement_at"))
-                &&*scheduled_settlement_at_ms>r.reviewed_at_ms&&r.hold_until_ms>=*scheduled_settlement_at_ms
+                &&*scheduled_settlement_at_ms>0&&r.hold_until_ms>=*scheduled_settlement_at_ms
                 &&r.sources.iter().any(|s|&s.sha256==timing_source_sha256&&matches!(s.kind.as_str(),"official_contract_node"|"official_settlement_timing")),"FUNDAMENTAL_TERMINAL_TIMING")?;
             terminal
         },
@@ -181,7 +185,7 @@ fn same_objective_horizon(old:&ReviewInput,new:&ReviewInput)->bool {
     match (&old.valuation_objective,&new.valuation_objective) {
         (None,None)=>true,
         (Some(ValuationObjective::DeadlineLiquidation{deadline_ms:a,..}),Some(ValuationObjective::DeadlineLiquidation{deadline_ms:b,..}))=>a==b,
-        (Some(a@ValuationObjective::TerminalSettlement{..}),Some(b@ValuationObjective::TerminalSettlement{..}))=>a==b,
+        (Some(ValuationObjective::TerminalSettlement{scheduled_settlement_at_ms:a,delay_policy:ap,..}),Some(ValuationObjective::TerminalSettlement{scheduled_settlement_at_ms:b,delay_policy:bp,..}))=>a==b&&ap==bp,
         _=>false,
     }
 }
@@ -862,7 +866,7 @@ impl Cohorts{
         let Some(limit)=limit else{return Ok(None)};need(n>0,"FUNDAMENTAL_EXISTING_DEPTH")?;
         let until=r.sources.iter().try_fold(r.expires_at_ms,|end,s|Ok::<_,Box<dyn std::error::Error>>(end.min(s.observed_at_ms.checked_add(s.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?)))?;
         let mut expires=now.checked_add(policy["lifetimeMs"].as_u64().ok_or("FUNDAMENTAL_LIFETIME")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?;
-        if reason!="reviewed_holding_deadline"{expires=expires.min(until).min(deadline);}
+        if reason!="reviewed_holding_deadline"{expires=expires.min(until);if !terminal_hold(r){expires=expires.min(deadline);}}
         if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
         let event=json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":r.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":digest(&bank.engine().report()?)?,"exchangeId":exchange,"marketId":r.market_id,"side":r.side,"quantity":n,"limitPrice":money(limit),"expiresAt":daily_windows::iso(expires)?,"originSha256":c.origin_sha()?,"reviewSha256":digest(r)?,"adoptionRef":origin.adoption_ref,"adoptionReceiptHash":origin.approval.adoption_receipt_sha256,"expectedPositionSha256":digest(&bank.engine().wallet.positions()[exchange])?,"bookSha256":hashes.get(exchange).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reason":reason,"expectedPayout":money(payout),"reviewCurrentUntilMs":until,"holdingDeadlineMs":deadline,"revoked":r.revoke_existing});
         need(queue_view(transport)?==queue,"FUNDAMENTAL_EXISTING_QUEUE_CHANGED")?;Ok(Some(ExistingExit{event}))
@@ -887,7 +891,8 @@ impl Cohorts{
             matches!(self.assess(bank,log,scope,qid,authority.trusted(),now)?,Decision::Exit{reason,..}if reason=="reviewed_holding_deadline")
         };
         if !deadline_exit{
-            expires=expires.min(r.expires_at_ms).min(r.hold_until_ms);
+            expires=expires.min(r.expires_at_ms);
+            if c.entry_id()==Some(qid)||!terminal_hold(r){expires=expires.min(r.hold_until_ms);}
             for s in &r.sources{expires=expires.min(s.observed_at_ms.checked_add(s.maximum_age_ms).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
         }else{need(liquidation_due(r,c,now),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
         need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
