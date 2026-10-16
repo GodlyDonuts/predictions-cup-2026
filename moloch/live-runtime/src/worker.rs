@@ -334,6 +334,14 @@ fn install_managed_entry_exclusions(c:&Control,control_path:&Path,bank:&mut Sess
  let mut retired=0;for ex in &managed{retired+=retire_existing_drafts(bank,log,ex)?;}
  let _=atomic_json(&c.root.join("ordinary-entry-exclusions.json"),&json!({"at":iso(now()),"record":bank.engine().ordinary_entry_exclusion_record(),"retiredProvedNeverSentDrafts":retired,"doesNotSubmit":true}));Ok(())
 }
+fn install_human_market_breadth(c:&Control,control_path:&Path,bank:&mut Session)->Result<()>{
+ if !c.all_markets||bank.engine().fresh_market_limit()>=12{return Ok(())}
+ let policy=bank.engine().policy();
+ if policy["maximumCommitted"]!=c.activation.maximum_committed||policy["maximumMarketCost"]!=c.activation.maximum_market_cost||policy["quantity"].as_u64()!=Some(u64::from(c.activation.maximum_quantity)){return Err("LIVE_BREADTH_MONETARY_CAP_MISMATCH".into())}
+ let old=bank.engine().fresh_market_limit();let maximum=policy["maximumMarkets"].as_u64().ok_or("LIVE_BREADTH_MARKET_LIMIT")?;let effective=maximum.checked_add(12u64.checked_sub(old as u64).ok_or("LIVE_BREADTH_MARKET_LIMIT")?).ok_or("LIVE_BREADTH_MARKET_LIMIT")?;
+ let at=now();let event=json!({"type":"live_market_capacity_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":c.activation.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":c.scope.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?),"expectedPolicySha256":hash(&policy),"expectedPreviousFreshMarketLimit":old,"expectedPreviousMaximumMarkets":maximum,"freshMarketLimit":12,"effectiveMaximumMarkets":effective,"scopeExchangeIds":c.scope.exchanges.keys().collect::<Vec<_>>(),"controlSha256":format!("{:x}",Sha256::digest(fs::read(control_path)?)),"authorizationId":"human_moloch_breadth_20261016","expectedPreviousCapacitySha256":bank.engine().live_market_capacity_record().map(|v|v["sha256"].clone()).unwrap_or(Value::Null)});
+ accept(bank,&event)?;let _=atomic_json(&c.root.join("ordinary-market-breadth.json"),&json!({"at":iso(now()),"record":bank.engine().live_market_capacity_record(),"monetaryCapsChanged":false,"additionalDiscoveryReadSlots":0}));Ok(())
+}
 fn existing_target_busy(bank:&Session,log:&DispatchLog,exchange:&str)->Result<bool>{
  log.require_resolved_attempts()?;let orders=bank.engine().order_records();
  for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
@@ -1215,6 +1223,7 @@ pub fn main()->Result<()>{
    if c.root.join("fundamental.initialized.json").exists()||c.root.join("fundamental.ndjson").exists(){return Err("LIVE_FUNDAMENTAL_SETTINGS_REQUIRED_FOR_EXISTING_COHORT".into())}None
   };
   install_managed_entry_exclusions(&c,&path,&mut bank,&mut log,fundamental.as_ref())?;
+  install_human_market_breadth(&c,&path,&mut bank)?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
   for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !closed_legacy_ack(&bank,&log,qid,&e){f.cohorts.validate_restored_acknowledgment(&bank,&log,qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());restore_ack(&mut bank,&e)?;}
   // Always recover original liabilities even when new package scanning is off.
