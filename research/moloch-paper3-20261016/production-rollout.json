@@ -1,0 +1,116 @@
+{
+  "at": "2026-10-16T03:28:26.087252+00:00",
+  "oldPid": 354070,
+  "newPid": 374227,
+  "sourceCommit": "b514eede7b9c7a4b1fcd4f6775e803204d5a547a",
+  "binarySha256": "2bba9365a3a342b1185492b231bb89cbe36d6d0f943ee28833928df626de62f2",
+  "release": "/home/archon/apps/moloch/releases/paper3-alpha-2bba9365a3a3/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper3-alpha-20261016.json",
+  "engineIdentity": "4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98",
+  "financialBridgeEntries": 9,
+  "controlChanges": [
+    "activation.binarySha256",
+    "fundamentalPolicy",
+    "executionDistribution"
+  ],
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "boundary": {
+    "at": "2026-10-16T03:24:39.107996+00:00",
+    "stoppedPid": 354070,
+    "stop": {
+      "action": "no automatic write retry or activation renewal",
+      "at": "2026-10-16T03:24:33.806Z",
+      "reason": "STOPPED_OR_OWNER_LOST"
+    },
+    "bankHead": {
+      "hash": "50dc3aeb5c332df19abffa1cd518c61a20368ebf0d7cbea8215daae3a6bb45a4",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "ef829b198bae02e03fcfc084504899f4d063ef7176fe728b1b982d63e05c1b0c",
+      "sequence": 149599
+    },
+    "bankReportHash": "da9dfbca94d7090b07caadeceefb472483b8818a68bc530760cd728d61f83789",
+    "prefixBytes": 430936136,
+    "prefixSha256": "a3c17fc5a275cc05580b3fc41dc19a3b6daf3f6014414011ece4caf511396db8",
+    "priorBridgeSha256": "1e0e0d5ec14f5fd4fb6e3d3cd3704f5a2fc25d4285c1249f11bd44972e664c69",
+    "bridgeEntries": 8,
+    "dispatch": {
+      "sequence": 6163,
+      "hash": "01c984b792d1ed241e032eba633a4e8a535e57388d97891f68685ee445c1456b",
+      "acknowledgedAttempts": 682,
+      "unknownOrdinaryAttempts": 0
+    },
+    "queue": {
+      "summarySchemaVersion": 1,
+      "globalUnknownCount": 0,
+      "hasUnknown": false,
+      "state": {
+        "schema_version": 1,
+        "scope": "sig-midterm-shared-account",
+        "last_clock": 1792121073434,
+        "next": 1792121074034,
+        "cooldown": 1792111209852,
+        "manual_review": false,
+        "reads": [
+          1792121024875,
+          1792121025681,
+          1792121026495,
+          1792121027433,
+          1792121030345,
+          1792121031317,
+          1792121032270,
+          1792121033066,
+          1792121034019,
+          1792121034820,
+          1792121035688,
+          1792121040041,
+          1792121041022,
+          1792121069160,
+          1792121069972,
+          1792121070810,
+          1792121073121
+        ],
+        "writes": [
+          1792121036814
+        ],
+        "active": null,
+        "read_profile": {
+          "cap": 100,
+          "gap_ms": 600
+        }
+      },
+      "immutable_bindings": 1047,
+      "idempotency_keys": 1047,
+      "unknown_acceptances": 0,
+      "sequence": 121900,
+      "previous": "ba205e74c8ddf742ded5c0e563283908454af051086fea25de2c0ae74027cb8c",
+      "active_journal_bytes": 57945473,
+      "schema_version": 1
+    },
+    "offline": "/home/archon/apps/moloch/offline-reviewed-prefix-149599-20261016",
+    "fundamentalSidecarSha256": "68c99021ce67e8db94746ec6cf5c0de264e30a66241ba947bfd940f39d1cb542",
+    "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+    "actualFills": 118,
+    "realized": "-75.705000"
+  },
+  "prefixParity": {
+    "bookState": 23,
+    "contestOrders": 0,
+    "elapsedMs": 119882,
+    "engineIdentity": "4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98",
+    "financialReportEnvelopeByteIdentical": true,
+    "headEnvelopeByteIdentical": true,
+    "nativeHead": {
+      "hash": "50dc3aeb5c332df19abffa1cd518c61a20368ebf0d7cbea8215daae3a6bb45a4",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "ef829b198bae02e03fcfc084504899f4d063ef7176fe728b1b982d63e05c1b0c",
+      "sequence": 149599
+    },
+    "networkRequests": 0,
+    "offlineOnly": true,
+    "originalFillCount": 118,
+    "originalSourceCursorsAndOrdersAndFillsIncluded": true,
+    "profitabilityEstablished": false,
+    "upgrades": 9
+  }
+}

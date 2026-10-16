@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-16T03:23:13.959826+00:00",
+  "sourceCommit": "b514eede7b9c7a4b1fcd4f6775e803204d5a547a",
+  "binarySha256": "2bba9365a3a342b1185492b231bb89cbe36d6d0f943ee28833928df626de62f2",
+  "release": "/home/archon/apps/moloch/releases/paper3-alpha-2bba9365a3a3/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper3-alpha-20261016.json",
+  "controlSha256": "b93f53f68440e33c17576b86d9b1ed2392fa493365c1008b54799fe424ce27af",
+  "priorControl": "/home/archon/apps/moloch/shared/moloch-live-reviewed-value-20261016.json",
+  "priorControlSha256": "2a3ea4cb4052394e8e46fad6a0378e69f980583cc47481314c4ef81c8ec54ef4",
+  "priorRelease": "/home/archon/apps/moloch/releases/reviewed-value-548b5f3d8606/bin/moloch-live-runtime",
+  "priorBinarySha256": "548b5f3d8606974136986775fd200e65ca4c73b7a557423a259507ad13b79c70",
+  "oldPid": 354070,
+  "nativeArchive": "/home/archon/apps/moloch/paper2-fast-restore-target-20261016/release/deps/libmoloch_replay-40f5454df33bfde2.rlib",
+  "nativeArchiveSha256": "dda9b786f453c1f4a29173e3a00d7f8f7e2138408ff0157b4bb02562aefada98",
+  "controlChanges": [
+    "activation.binarySha256",
+    "fundamentalPolicy",
+    "executionDistribution"
+  ],
+  "deployed": false,
+  "profitabilityEstablished": false,
+  "engineIdentity": "4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98",
+  "nativeUnitChecks": 56,
+  "fullRuntimeChecks": 645,
+  "fullRuntimeLogSha256": "3f07d40fd240ffa8d3a564aad379c3722c994e01caea77d5bddc0819f643ef72",
+  "nativeLogSha256": "f71b4d94bc19dc4a8f0d21ffc4c6129c624b95a6a11578a5a14de098d9b05ef6",
+  "releaseLogSha256": "d31a0ad83e6214502fdb1d9b86b3e3fbdda95fbc919c81488430e83a1ece7621",
+  "rolloutScriptSha256": "854f98e12ffa398267309bc61ff50cc87f9cadac8a30bafa9f0095a1db74ca8e"
+}

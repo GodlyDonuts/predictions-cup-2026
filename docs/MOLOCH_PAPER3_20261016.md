@@ -45,6 +45,12 @@ A prospective Delaware review `9523497c40e24eb5c66b2251cb59d1c839b874d15fbdcccee
 
 ## Remaining hypotheses and measurement
 
+## Production boundary, October16 03:28UTC
+
+Source b514eede was promoted as immutable binary2bba9365a3a342b1185492b231bb89cbe36d6d0f943ee28833928df626de62f2, PID374227. The full149599-row original stopped prefix is financially byte-identical under native identity4b50ec49ba7331eb051e7983e33ffa0ce55df19b9a9e4a7d9d5d8d8a5477ff98, with nine explicit bridges and all eight prior entries preserved. Original account queue and risk limits remain. At the initial03:28:46 observation the service is restoring history; fresh trades or use of the new modes have not yet been verified. [Actual rollout](../research/moloch-paper3-20261016/production-rollout.json), [launch verification](../research/moloch-paper3-20261016/live-verification.json). Prospective outcome collection, model qualification and the broader research below remain open.
+
+## Remaining hypotheses and measurement
+
 External-source catch-up and SIG-only dislocation require separate prospective experiments, exact semantic matching, first-available clocks, full-depth/capacity outcomes and negative controls. Joint election baskets are probabilistic scenarios unless an actual reviewed guarantee certificate exists; current relationship registries are empty. Public-results nowcasting requires genuine partial-return vintages rather than hindsight final totals, plus verified open-market and resolution rules. The example .045 minus exception probability sensitivity does not estimate that probability.
 
 Success is attributable net portfolio outcome with capacity and capital-time measured. Positive provisional daily dashboard marks, code volume, acknowledgments and passing tests cannot establish scalable profitability or a precise chance of winning. Paper2 remains open; Paper3 is in progress.
