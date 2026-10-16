@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-16T00:31:25.036353+00:00",
+  "fill": {
+    "action": "sell",
+    "actualOrderId": "41459582",
+    "at": "2026-10-16T00:25:40.906Z",
+    "counterfactual": false,
+    "exchangeId": "948",
+    "executedAt": "2026-10-16T00:25:25.954Z",
+    "fee": "0.000000",
+    "marketId": "259",
+    "orderId": 2673,
+    "price": "0.905000",
+    "quantity": 262,
+    "receiptHash": "9fe4e72b9496acdde202f4c011ed776fb85951ef3d2c93e484d8ba71e8eefc60",
+    "side": "NO",
+    "sourceId": "172956316"
+  },
+  "originalTypedReceiptSha256Verified": true,
+  "officialPaginationComplete": true,
+  "openingBasisClassification": "exact",
+  "originalOpeningLots": [
+    {
+      "entryPrice": "0.880000",
+      "lotId": "18596662",
+      "openedAt": "2026-10-03T07:39:38.3242753+00:00",
+      "quantity": 20,
+      "side": "NO"
+    },
+    {
+      "entryPrice": "0.885000",
+      "lotId": "18596667",
+      "openedAt": "2026-10-03T07:39:38.3242753+00:00",
+      "quantity": 410,
+      "side": "NO"
+    },
+    {
+      "entryPrice": "0.890000",
+      "lotId": "18596673",
+      "openedAt": "2026-10-03T07:39:38.3242753+00:00",
+      "quantity": 36,
+      "side": "NO"
+    },
+    {
+      "entryPrice": "0.895000",
+      "lotId": "18596678",
+      "openedAt": "2026-10-03T07:39:38.3242753+00:00",
+      "quantity": 9534,
+      "side": "NO"
+    }
+  ],
+  "priorSameExchangeClosingFillIds": [
+    "165744774",
+    "168424546"
+  ],
+  "priorInheritedSharesSold": 1993,
+  "attributedCost": "234.490000",
+  "proceeds": "237.110000",
+  "inheritedGrossProfit": "2.620000",
+  "newEntryProfit": "0.000000",
+  "feeBasis": "existing zero-fee competition policy; official owned-fill row has no fee field",
+  "reportSnapshotSha256": "51f1cba3975b9b99b62000033d896726599855b7526289e3d46c221d8905a9cd",
+  "newTradingRealized": "-116.020000",
+  "inheritedRealizedGross": "43.395000",
+  "totalRealized": "-72.625000",
+  "accountRequests": 0,
+  "profitabilityEstablished": false
+}
