@@ -9,7 +9,9 @@ const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const sorted = values => [...new Set(values)].sort((a,b)=>a.localeCompare(b,'en',{numeric:true}));
 const party = value => ({Democratic:'DEM',Republican:'REP',Independent:'IND'}[value] ?? null);
 const district = value => value == null ? null : String(value).replace(/^0+(?=\d)/,'');
-const tickerValid = value => typeof value === 'string' && /^[A-Z0-9][A-Z0-9_-]{0,127}$/.test(value) && /(?:^|-)26(?:-|$)/.test(value) && !/(?:^|-)28(?:-|$)/.test(value);
+// Actual returned election events can carry a month suffix (26NOV). Their
+// explicit catalog election_year must ALSO be2026; no ticker is constructed.
+const tickerValid = value => typeof value === 'string' && /^[A-Z0-9][A-Z0-9_-]{0,127}$/.test(value) && /(?:^|-)26(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)?(?:-|$)/.test(value) && !/(?:^|-)28(?:[A-Z]*)(?:-|$)/.test(value);
 const marketId = value => /^\d+$/.test(String(value)) ? String(value) : null;
 const sameRace = (join,ref) => join.cup_election_year === 2026 && ref.election_year === 2026 &&
   join.cup_office === ref.office && join.cup_state_code === ref.state_code &&
