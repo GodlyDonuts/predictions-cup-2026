@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "studyId": "moloch-causal-state-sampling-20261016-v1",
+  "status": "FROZEN_PROSPECTIVE_OFFLINE_COVERAGE_DESIGN_NOT_EXECUTED",
+  "declaredAtUtc": "2026-10-16T17:47:42Z",
+  "sourceBaseCommit": "bfd1e36842f39d4fedf7c9e87030e297a03d7465",
+  "executionAuthority": false,
+  "pricingAuthority": false,
+  "modelFitPermittedInPilot": false,
+  "resolutionEquivalenceVerified": false,
+  "existingSamplingPolicySha256": "031edcb2d4d6ca144e89d86b467e6b879113f1e172c3ef19457f2b577996717b",
+  "changesExistingExperiment": false,
+  "outcomeRowsInspectedForDesign": false,
+  "activationPrerequisites": [
+    "commit this protocol before 2026-10-16T17:55:00Z, otherwise invalidate this interval and declare a new future one",
+    "V5 normal seal and successful entire-witness exact-input replay using its fixed reviewed producer",
+    "pin original V5 seal, input hashes, mapping and full run-start causal prefix before coverage derivation",
+    "no inspection of actual V5 sample/label economic values for coverage decisions"
+  ],
+  "enrollment": {
+    "maximumEnrollmentMs": 1200000,
+    "maximumValidMappedTradeUnits": 5000,
+    "stopAtFirstBound": true,
+    "maximumDrainAfterEnrollmentMs": 123000,
+    "unit": "original trade identity plus exact mapped SIG exchange; each identity-to-exchange mapping consumed once even when excluded",
+    "parentTradeIdentityRetainedForClustering": true,
+    "completeTradeTape": false,
+    "mappingKind": "direct_party_reference",
+    "maximumTriggerSourceAgeMs": 2000,
+    "maximumTriggerReceiptAgeMs": 2000,
+    "maximumSourceExportAgeMs": 2000,
+    "maximumExternalBookAgeMs": 20000,
+    "requireOriginalKnownDirection": true,
+    "requireOriginalCompleteObservedEvidenceWindow": true,
+    "rejectFutureOrReversedOriginalClocks": true,
+    "requiredClockOrder": "trade.received <= trade.available <= sourceExport.asOf <= export.observerAvailable <= decision; original trade.source <= decision; original external source/receipt/availability causal",
+    "missingStaleOrGappedSigDoesNotExcludeDenominator": true,
+    "denominator": "unique valid mapped units after original external/trigger guards, before SIG state, spacing or label-capacity classification",
+    "allOtherRejectedUnitsCountedByFirstDisjointStage": true,
+    "duplicateCountersSeparateFromDenominator": true,
+    "minimumScopeLabelNominationSpacingMs": 1000,
+    "spacingAndCapacityExclusionsRemainInDenominator": true,
+    "maximumSeenTradeIdentities": 32768,
+    "maximumPendingNominatedUnitsPerScope": 128,
+    "maximumSigScopes": 237,
+    "identityConflictOrIdentityCap": "stop this offline derivation with explicit bounded failure; do not evict identities or retry them",
+    "storageFailure": "existing trace failure or non-normal/incomplete witness forbids a complete-cohort claim; preserve original active limits and files",
+    "additionalAccountRequests": 0,
+    "additionalAccountClients": 0,
+    "startInclusiveUtc": "2026-10-16T17:55:00Z",
+    "endExclusiveUtc": "2026-10-16T18:15:00Z",
+    "maximumMetadataObservationUtc": "2026-10-16T18:17:03Z",
+    "earlySeal": "right censor remaining observations; never extend the active capture"
+  },
+  "stateAtDecision": {
+    "source": "only already observer-available original verified target book; no future cache lookup",
+    "preserve": [
+      "original sequence",
+      "original asOf.at",
+      "original request if present",
+      "original receivedAt",
+      "first observer availability",
+      "book body hash",
+      "original scope and mapping hashes",
+      "coverage boundary and observed gap/conflict metadata"
+    ],
+    "ageFeaturesMs": [
+      "decision minus original source",
+      "decision minus original receipt",
+      "decision minus first observer availability",
+      "original receipt minus original source"
+    ],
+    "sourceAgeBandsMs": [
+      [
+        0,
+        3000
+      ],
+      [
+        3001,
+        10000
+      ],
+      [
+        10001,
+        60000
+      ],
+      [
+        60001,
+        300000
+      ],
+      [
+        300001,
+        null
+      ]
+    ],
+    "ageBoundaryResolution": "compute exact nonnegative original duration; (3000,10000], (10000,60000], (60000,300000], (300000,infinity); array lower bounds denote integer-millisecond presentation only",
+    "missingOrInvalidSeparate": true,
+    "gapHandling": "retain prior verified state only as lagged historical features with explicit gap flag; never current depth or cross-gap labels",
+    "conflictingFutureOrMissingState": "metadata and missingness flags only, no numeric book feature",
+    "realtimeCompletenessClaimed": false,
+    "unchangedDepthOrQuietEngineInferred": false,
+    "clockRenewalOrFreshnessForwardFill": false,
+    "laggedDepthExecutable": false,
+    "oldThreeSecondBookEligibilityFlag": "diagnostic on same prospective inputs only; do not reinterpret prior cohort outputs",
+    "uncertainty": "age and missingness are inputs, not assigned probability/confidence; future sparse strata must abstain under a separate fit protocol",
+    "pilotOutput": "hashes, clocks, ages, state-presence/validity and feature-availability metadata only; no price/return outcome evaluation"
+  },
+  "labels": {
+    "horizonsMs": [
+      1000,
+      3000,
+      10000,
+      30000,
+      120000
+    ],
+    "slackMs": 3000,
+    "timeOrigin": "original observer decision callback at first eligible trade observation",
+    "fixedHorizonRule": "first subsequently available genuine target book with original source, receipt and observer availability all in [decision+horizon, decision+horizon+slack], after applicable continuity boundary; source and receipt ages at availability each <=3000ms",
+    "bookVersion": "original sequence then exact original asOf.at, with original conflicts and rollback refusals",
+    "values": [
+      "no economic values read or reported in pilot; later preregistered model may use original bid/ask/midpoint levels"
+    ],
+    "executablePnLOrFillInference": false,
+    "staleReferenceDifference": "optional descriptive change from lagged state; includes unobserved pre-trigger movement and is not causal trade impact or executable return",
+    "lateBookBackdatesMissedHorizon": false,
+    "missingReasons": [
+      "no timely target book",
+      "gap crossing",
+      "invalid or conflicting book",
+      "pending-capacity exclusion",
+      "spacing exclusion",
+      "capture or storage failure",
+      "terminal right censoring"
+    ],
+    "missingImputedAsZero": false,
+    "secondaryNextObservation": "first original target observation with source and receipt strictly after decision and observer availability later than decision; source/receipt ages at availability <=3000ms; report variable delay and gap flags, right censor at 123000ms, no fixed-horizon return claim",
+    "futureFees": "unknown for execution; no hypothetical trade PnL or assumed fill in this pilot",
+    "pilotOutput": "availability/status and original clocks only; no sample/label price values, returns or fit",
+    "initialMissingStateDoesNotPrecludeFutureAvailabilityMetadata": true
+  },
+  "analysis": {
+    "primary": [
+      "disjoint unique-unit enrollment and exclusion counts on fixed future V5 input interval",
+      "old-three-second book eligibility by age band",
+      "label availability at every fixed horizon by age band, market and time block",
+      "next genuine observation delay and censoring",
+      "source-to-receipt and receipt-to-first-availability distributions with missing components explicit"
+    ],
+    "noAppendClockMeansNoQueueLatencyCausalAttribution": true,
+    "metadataOnlyFirstReport": true,
+    "outcomeSelectedModelTuning": false,
+    "inversePropensityWeightingWithoutKnownDesign": false,
+    "populationInference": "observed poll-visible external trades and observed-label subset only; event-driven target publication is informative missingness",
+    "ifLabelsRemainScarce": "do not extend age/slack after outcomes; separately review exogenous signal-independent scheduled/randomized label reads through the existing sole worker and budget",
+    "laterModelProtocolRequired": [
+      "chronological train/heldout blocks",
+      "race/market/time-block clustering",
+      "shared-trade identities never cross split",
+      "overlap embargo >=123000ms",
+      "stale-state-only and age-only baselines",
+      "missingness and age-stratum support report",
+      "sparse-stratum abstention",
+      "independent execution and financial review"
+    ],
+    "financialOrModelQualificationFromPilot": false,
+    "descriptiveTimeBlockMs": 60000,
+    "economicOutcomeEvaluationInCoveragePilot": false
+  },
+  "laterExecutionBoundary": {
+    "signalOnlyNominatesRefresh": true,
+    "genuineFreshTargetBookAndFullOriginalAccountFactsRequired": true,
+    "originalLiveAgeDepthQuantityFundingOwnershipUnknownAndRateGuardsUnchanged": true,
+    "recordDelayedRefreshAndAbandonedCandidates": true,
+    "reassessValueAtLaterExecutableBook": true,
+    "priceEntryAtStaleReference": false,
+    "conditionOnSuccessfulRefreshAndClaimAllTriggerEV": false
+  },
+  "evidence": {
+    "probeReportsGitLfSha256": {
+      "research/moloch-trade-trigger-20261016/source-age-probe/report.json": "4ca724a4f47d1e2721a348eaa71bfcf656de70da5a7f207ebcdc464b55eae0d7",
+      "research/moloch-preflight-service-20261016/measurement/age-report.json": "9c0202d0952df09ff88aba7fb33e0fe56d2fafccd9496d17df00669ae726dcf1",
+      "research/moloch-defensive-cancel-20261016/measurement/age-report.json": "b8d8e2740ee8d231fd77abd48014cc4e8a84c5095e2b0f82f38a03a727c64cd5"
+    },
+    "probeTradeUnits": {
+      "total": 20,
+      "targetAbsentFromFreshSuffix": 14,
+      "matchedButOriginalSourceOlderThan3000ms": 6,
+      "matchedTradeSourceAgeMsMin": 639,
+      "matchedTradeSourceAgeMsMax": 1334,
+      "matchedSigSourceAgeMsMin": 4427,
+      "matchedSigSourceAgeMsMax": 10511,
+      "matchedSigReceiptAgeMsMin": 2293,
+      "matchedSigReceiptAgeMsMax": 10165
+    },
+    "allProbeBooksAccepted": true,
+    "sameSequenceNewerOriginalAtObservedAcrossProbes": 0,
+    "probesIndependentOrCompleteTradePopulation": false,
+    "v3SealWrapper": {
+      "path": "research/moloch-defensive-cancel-20261016/deployment/prior-trace-v3-seal.json",
+      "gitLfSha256": "838e7daa117c28a5b9aa5bc47891fa630c2fdeaefc9f38fcb66d39ed3d539ef0",
+      "originalSealSha256": "2d24582b78d2183122e5542fdc86bd3a6ee0123ccf6f26cc7b65ed9116ce2946",
+      "sealedOutputRows": 10
+    },
+    "v3FinalCounterObservation": {
+      "originalStatusAtUtc": "2026-10-16T17:05:12.684Z",
+      "originalState": "stopped",
+      "provenance": "root read metadata only from retained original private status.json and supplied counters in task message; artifact hash and full-file bytes not independently verified by this design author",
+      "independentlyHashVerifiedHere": false,
+      "sourcePath": "/home/archon/apps/moloch/shared/crossvenue-observer-trade-trace-v3/status.json",
+      "counters": {
+        "coverageBoundaries": 911,
+        "externalDuplicates": 409558,
+        "externalInvalidOrOneSided": 5831,
+        "externalPolls": 2356,
+        "externalSourceChanges": 26678,
+        "externalStaleOrFuture": 76148,
+        "externalWsWithdrawn": 1121,
+        "labels": 7,
+        "labelsMissingTimelyBook": 7,
+        "samples": 3,
+        "sigBooks": 67280,
+        "tradeAnalogSkip": 1,
+        "tradeDuplicateSkip": 6189,
+        "tradeFlowInvalid": 237,
+        "tradeInvalidEvidenceSkip": 237,
+        "tradeNoCurrentExternalSkip": 2,
+        "tradeNoCurrentSigSkip": 3,
+        "tradeNoValidFlowSkip": 237,
+        "tradeOldSkip": 95,
+        "tradePartialWindowSkip": 85,
+        "tradeSampleSpacingSkip": 1,
+        "tradeStaleSigSkip": 270,
+        "tradeTriggeredSamples": 3
+      },
+      "countersAreDisjointTriggerDenominator": false,
+      "sampleOrLabelValuesReadForThisDesign": false
+    }
+  },
+  "inputPlan": {
+    "kind": "offline_metadata_derivation_from_existing_V5_input_trace_after_normal_seal",
+    "producerLfSha256": "2fa9b142b672f4a9076e185ac91be0b288945b0e1bba6afb0797594ed6678529",
+    "cohortIdentity": "root V5 original input-trace cohort live verified 2026-10-16T17:38:10Z observing sole SIG525450; final original seal hash pinned at normal completion",
+    "startingState": "replay entire original run-start prefix before the fixed enrollment interval, preserving exact callback order/now and first-seen consumed identities",
+    "changeActiveProducerOrProtocol": false,
+    "newCollectorOrProcess": false,
+    "extendActiveCaptureForThisDesign": false,
+    "missingRequiredOriginalWitness": "abstain and report exact missing field; no reconstructed clocks or synthetic source witness",
+    "actualSampleOrLabelValuesInspected": false
+  }
+}
