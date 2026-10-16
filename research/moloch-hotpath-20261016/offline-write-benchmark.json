@@ -1,0 +1,38 @@
+{
+  "binarySha256": "11ec7f3ffca7a2e510db190a9849a373487f16bbc6a2737a03045acc4cda8374",
+  "executedAt": "2026-10-16T12:28:59.451866+00:00",
+  "financialReplayPerformed": false,
+  "limitations": [
+    "One sequential baseline/candidate pair; cache and reduced-priority CPU noise remain.",
+    "Only durable report serialization, not full account-loop timing or alpha."
+  ],
+  "networkRequests": 0,
+  "originalSourceUnchanged": true,
+  "productionModified": false,
+  "results": [
+    {
+      "buffered": false,
+      "byteParity": true,
+      "fileAndDirectorySynced": true,
+      "sha256": "79f03bf77de3db808e6656bd748cebf0f5d8b5a4b1015be2e85e9b70e82de8e9",
+      "wallNs": 682431191,
+      "writeSyscalls": 668119,
+      "writtenBytes": 1878778
+    },
+    {
+      "buffered": true,
+      "byteParity": true,
+      "fileAndDirectorySynced": true,
+      "sha256": "79f03bf77de3db808e6656bd748cebf0f5d8b5a4b1015be2e85e9b70e82de8e9",
+      "wallNs": 13663443,
+      "writeSyscalls": 29,
+      "writtenBytes": 1878778
+    }
+  ],
+  "schemaVersion": 1,
+  "sourceBytes": 1878778,
+  "sourceCommit": "31aefba5c22b529d60acab65659876294f2e0c8d",
+  "sourceSha256": "79f03bf77de3db808e6656bd748cebf0f5d8b5a4b1015be2e85e9b70e82de8e9",
+  "wallSpeedupFactor": 49.94577069630253,
+  "writeSyscallReductionFactor": 23038.58620689655
+}

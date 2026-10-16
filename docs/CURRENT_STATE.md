@@ -1,4 +1,26 @@
-# October16,12:22UTC: full-capital production continues; measured disk bottleneck
+# October16,12:40UTC: buffered writer built; original-history promotion in progress
+
+The narrow writer update `31aefba5` has an actual ARM64 release and 301
+distinct passing Rust checks. Same-original-report writing measured 682.431ms
+to 13.663ms with 668,119 to 29 write calls, identical bytes and unchanged
+syncs. This is a report-writing benchmark, not a whole-loop speed claim.
+[Actual build and benchmark](../research/moloch-hotpath-20261016/buffered-benchmark-README.md).
+
+Original SIG494293 was fresh at12:34:45UTC, with47 new acknowledgments and
+one post-launch fill row. It stopped cooperatively at12:36:21 for the binary
+replacement:247,652 events/766,664,625 original bytes, zero unknown requests,
+no active request/manual review. The detached-copy full-prefix check is in
+progress; replacement trading is not yet verified. Original95,579.915 funding,
+daily windows, bank, liabilities and first eleven bridges are preserved.
+Kalshi collection remains running during the controlled SIG upgrade.
+
+The fixed sealed-data ablation found all available external1s/5s innovations
+zero, and only three nonzero30s innovations. SIG-local inputs beat the full
+model at four of five horizons; all comparators selected zero trades. This
+does not identify incremental Kalshi alpha or validate a toxicity defense.
+[Original cohort and results](../research/moloch-crossvenue-economics-20261016/v6-ablation/README.md).
+
+# Historical October16,12:22UTC: full-capital production continues; measured disk bottleneck
 
 Sole SIG494293/source`e7bb62d1` remains fresh and trading with matching binary,
 healthy realtime and no STOP. At12:22:54UTC it had34 new official acknowledgments
