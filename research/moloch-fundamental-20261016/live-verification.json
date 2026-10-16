@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-16T01:11:12.349099+00:00",
+  "pid": 336006,
+  "running": true,
+  "binarySha256Matches": true,
+  "executionStopPresent": false,
+  "freshTradingVerified": false,
+  "progress": {
+    "state": "restoration_pending",
+    "lastObservedPid": 313333,
+    "lastObservedAt": "2026-10-16T01:08:39.464Z"
+  },
+  "newAcknowledgmentsSinceLaunch": 0,
+  "newFillRowsSinceLaunch": 0,
+  "bankSequence": 131875,
+  "derivedReportSealVerified": true,
+  "actualFills": 114,
+  "lastActualFill": "2026-10-16T01:02:38.472Z",
+  "cash": "17226.770000",
+  "ownedCost": "22700.605000",
+  "newTradingRealized": "-116.020000",
+  "inheritedRealizedGross": "43.395000",
+  "totalRealized": "-72.625000",
+  "profitabilityEstablished": false,
+  "fullStatusMatchesNewPid": false
+}
