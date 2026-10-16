@@ -64,7 +64,10 @@ pub struct Estimate{
 struct UnavailableAttempt{exchange:String,market:String,side:String,quantity:u64,limit:i128,at:u64,reason:&'static str,quote_sha:String,terminal:bool,filled_quantity:u64,fill_ids:BTreeSet<String>,full_fill_at:Option<u64>}
 pub struct Model{config:Config,manifest:Value,run:Value,policy_sha:String,tournament:Option<String>,last:u64,disabled:Option<&'static str>,cursors:BTreeMap<String,(u64,String)>,books:BTreeMap<String,Book>,coverage:BTreeMap<String,Coverage>,own:BTreeMap<u64,Own>,terminal:BTreeSet<u64>,buckets:BTreeMap<Key,Bucket>,cluster_until:BTreeMap<String,u64>,pending:BTreeMap<u64,Exposure>,unavailable:BTreeMap<u64,UnavailableAttempt>,unavailable_reasons:BTreeMap<&'static str,u64>,pub diagnostics:Diagnostics}
 fn levels(v:&Value,descending:bool)->Result<Vec<(i128,u64)>>{
- let rows=v.as_array().ok_or("EDGE_LEVELS")?;need(rows.len()<=64,"EDGE_DEPTH_BOUND")?;let mut out=Vec::with_capacity(rows.len());
+ // Native price() admits every .005 tick from .005 through .995. A real
+ // committed snapshot can therefore exceed64 levels; retain its full depth
+ // rather than disabling the observer or truncating liquidation evidence.
+ let rows=v.as_array().ok_or("EDGE_LEVELS")?;need(rows.len()<=(UNIT/TICK-1) as usize,"EDGE_DEPTH_BOUND")?;let mut out=Vec::with_capacity(rows.len());
  for l in rows{let p=money(&l["price"])?;let q=l["quantity"].as_u64().filter(|n|*n>0).ok_or("EDGE_LEVEL_QUANTITY")?;need((0..=UNIT).contains(&p)&&out.last().is_none_or(|(old,_)|if descending{*old>p}else{*old<p}),"EDGE_LEVEL_ORDER")?;out.push((p,q));}Ok(out)
 }
 fn book(v:&Value,at:u64)->Result<Book>{
