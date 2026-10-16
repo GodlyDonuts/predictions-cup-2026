@@ -80,7 +80,7 @@ def diagnostic(value, boundary, pid, since_ms, captured_ms, base):
 
 
 def diagnostics(root,pid,since_ms,base):
-    values={}
+    values={};selection=None
     for name in ['progress.json','status.json','discovery-schedule.json']:
         try:value,boundary=original_json(root/name)
         except FileNotFoundError:values[name]={'accepted':False,'reason':'missing'};continue
@@ -89,7 +89,31 @@ def diagnostics(root,pid,since_ms,base):
             values[name]={'accepted':False,'reason':'concurrent_atomic_replacement'};continue
         completed=datetime.now(timezone.utc).isoformat()
         values[name]={**diagnostic(value,boundary,pid,since_ms,base.clock(completed),base),'readCompletedAt':completed}
-    return {'capturedAt':datetime.now(timezone.utc).isoformat(),'files':values,'atomicMultiFileSnapshot':False}
+        if name=='discovery-schedule.json' and value.get('pid')==pid and isinstance(value.get('selectedScopes'),list):
+            at=base.clock(value['at'])
+            if at<=base.clock(completed):selection={'at':value['at'],'pid':pid,'selectedScopeCount':len(value['selectedScopes']),
+                'precedesReadiness':at<since_ms,'originalFile':boundary}
+    return {'capturedAt':datetime.now(timezone.utc).isoformat(),'files':values,'samePidSelectionAnchor':selection,'atomicMultiFileSnapshot':False}
+
+
+def completed_passes(samples,base):
+    anchors={};seen=set();out=[]
+    for sample in samples:
+        anchor=sample.get('samePidSelectionAnchor')
+        if anchor:anchors[anchor['at']]=anchor
+        status=sample['files']['status.json']
+        if not status.get('accepted') or not isinstance(status.get('cycles'),int) or status['cycles']<1:continue
+        key=(status['cycles'],status['at'])
+        if key in seen:continue
+        seen.add(key);end=base.clock(status['at'])
+        candidates=[v for k,v in anchors.items() if base.clock(k)<=end]
+        if not candidates:continue
+        selected=max(candidates,key=lambda v:base.clock(v['at']))
+        out.append({'completedCycle':status['cycles'],'selectionAt':selected['at'],'statusAt':status['at'],
+            'selectionToStatusMs':end-base.clock(selected['at']),'selectedScopeCount':selected['selectedScopeCount'],
+            'selectionPrecedesConfirmedReadiness':selected['precedesReadiness'],
+            'limitation':'Matching-PID original discovery selection through original completed status; excludes pre-selection reconciliation and post-status optional census.'})
+    return out
 
 
 def checked_delta(a,b,base):
@@ -136,7 +160,8 @@ def comparison(baseline,current,baseline_sha):
                            'processedAt precedes accept_batch completion. It measures observation-to-processing start, not durable commit latency.']}
 
 
-def capture(root,pid,since,source_commit,binary_sha,source_path,source_sha,baseline_path):
+def capture(root,pid,since,source_commit,binary_sha,source_path,source_sha,baseline_path,observe_seconds=10):
+    if not 10<=observe_seconds<=360:raise ValueError('OBSERVATION_BOUND')
     base=load_base();since_ms=base.clock(since)
     baseline,baseline_boundary=original_json(baseline_path)
     if baseline_boundary['sha256']!=BASELINE_SHA256:raise ValueError('ORIGINAL_BASELINE_CHANGED')
@@ -146,6 +171,16 @@ def capture(root,pid,since,source_commit,binary_sha,source_path,source_sha,basel
     before=diagnostics(root,pid,since_ms,base)
     a=base.proc_sample(pid);time.sleep(5);b=base.proc_sample(pid);time.sleep(5);c=base.proc_sample(pid)
     after=diagnostics(root,pid,since_ms,base)
+    watched=[before,after]
+    initial_status=before['files']['status.json']
+    initial_cycles=initial_status.get('cycles') if initial_status.get('accepted') else None
+    while time.monotonic()<a['monotonic']+observe_seconds:
+        time.sleep(min(10,max(0,a['monotonic']+observe_seconds-time.monotonic())))
+        snap=diagnostics(root,pid,since_ms,base);watched.append(snap)
+        live=base.proc_sample(pid)
+        if live['startTicks']!=initial['startTicks']:raise ValueError('PID_REUSED_DURING_WATCH')
+        status=snap['files']['status.json']
+        if status.get('accepted') and isinstance(status.get('cycles'),int) and status['cycles']>(initial_cycles or 0):break
     cutoff=datetime.now(timezone.utc).isoformat();cutoff_ms=base.clock(cutoff)
     raw,boundary=base.bounded_tail(root/'bank-all-markets-v1/events.jsonl',16*1024*1024)
     journal=base.journal_summary(raw,since_ms,cutoff_ms)
@@ -171,7 +206,8 @@ def capture(root,pid,since,source_commit,binary_sha,source_path,source_sha,basel
     result={'schemaVersion':1,'state':'observed','pid':pid,'notBefore':since,'observedCutoff':cutoff,
             'identity':{'sourceManifest':source,'actualRunningExecutable':binary},
             'sourceBoundary':boundary,'journal':journal,'dispatch':dispatch,
-            'diagnosticSamples':[before,after],'progressChange':progress_change(before,after),
+            'diagnosticSamples':watched,'progressChange':progress_change(before,watched[-1]),
+            'completedPassObservations':completed_passes(watched,base),'maximumObservationSeconds':observe_seconds,
             'processSamples':[a,b,c],'processDeltas':[checked_delta(a,b,base),checked_delta(b,c,base),checked_delta(a,c,base)],
             'receipts':{**base.receipt_summary(receipts,since_ms,cutoff_ms),'selectedFiles':len(receipts),'availableRecentFiles':len(candidates),
                         'selectedOriginalBytes':receipt_bytes,'maximumAggregateOriginalBytes':64*1024*1024,
@@ -193,7 +229,7 @@ if __name__=='__main__':
     p.add_argument('--source-manifest',type=Path,required=True);p.add_argument('--source-manifest-sha256',required=True)
     p.add_argument('--baseline',type=Path,required=True);p.add_argument('--output',type=Path,required=True);args=p.parse_args()
     output_allowed(args.output,args.root,args.baseline,args.source_manifest)
-    result=capture(args.root,args.pid,args.since,args.source_commit,args.binary_sha256,args.source_manifest,args.source_manifest_sha256,args.baseline)
+    result=capture(args.root,args.pid,args.since,args.source_commit,args.binary_sha256,args.source_manifest,args.source_manifest_sha256,args.baseline,360)
     raw=(json.dumps(result,sort_keys=True,indent=2)+'\n').encode()
     with args.output.open('xb') as f:f.write(raw)
     print(json.dumps({'outputBytes':len(raw),'sha256':sha(raw)}))

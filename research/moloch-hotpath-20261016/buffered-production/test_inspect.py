@@ -72,5 +72,15 @@ class ComparisonTests(unittest.TestCase):
         original=Path(__file__).resolve().parent.parent/'report.json'
         self.assertEqual(m.sha(original.read_bytes()),m.BASELINE_SHA256)
 
+    def test_completed_pass_uses_original_matching_selection_not_next_cycle(self):
+        def sample(anchor,status):return {'samePidSelectionAnchor':anchor,'files':{'status.json':status}}
+        first={'at':'2026-10-16T12:00:00Z','selectedScopeCount':30,'precedesReadiness':True}
+        later={'at':'2026-10-16T12:03:10Z','selectedScopeCount':31,'precedesReadiness':False}
+        status={'accepted':True,'cycles':1,'at':'2026-10-16T12:03:00Z'}
+        out=m.completed_passes([sample(first,{'accepted':False}),sample(later,status),sample(later,status)],base)
+        self.assertEqual(len(out),1);self.assertEqual(out[0]['selectionToStatusMs'],180000)
+        self.assertEqual(out[0]['selectedScopeCount'],30);self.assertTrue(out[0]['selectionPrecedesConfirmedReadiness'])
+        self.assertEqual(m.completed_passes([sample(later,status)],base),[])
+
 
 if __name__=='__main__':unittest.main()
