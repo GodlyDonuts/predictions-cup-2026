@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-16T01:38:11.352123+00:00",
+  "sourceCommit": "53bf188598d4dc32b3d089b6d19433cb9c3ad3bd",
+  "binarySha256": "ccfe4213f9c01598c4d66c47807371b894617c595a66c3726a6b6ca3159fd879",
+  "release": "/home/archon/apps/moloch/releases/fast-recovery-ccfe4213f9c0/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-fast-recovery-20261016.json",
+  "controlSha256": "ab20c80886d4511600a87281b78ab7266c85084ce46498174fcd2cc8e8285d46",
+  "priorControl": "/home/archon/apps/moloch/shared/moloch-live-fundamental-20261016.json",
+  "priorBinarySha256": "200f0b8ea4e731d41c16b53973011ec3eaf18f4223c02ab639e678b716d297da",
+  "engineIdentity": "1a8f8fdc77f650661061da98434dd1eeddead3ae98129eb3aed7fa0f6914b3f6",
+  "nativeArchiveSha256": "009b2d1e4fecb11313f98fb687e8677ba6f3da900369d43760f495a8e565cd9a",
+  "nativeUnitChecks": 37,
+  "runtimeChangedScopeChecks": 215,
+  "nativeCheckLogSha256": "fdce174bf6f5e6bd4167acf3cc5a6fc2fdb7c75737c9873aab9bfd48fa4034c2",
+  "runtimeCheckLogSha256": "b390e91716d140c07ef394342d26eee4e4e41994540f4198e1fa93e256c1a3f6",
+  "lockedReleaseLogSha256": "cbf2218e3fba4c7ab28602f162d53cdc3c352b72c5e42a179206b37916a11704",
+  "offlinePrefixParity": {
+    "bookState": 11,
+    "contestOrders": 0,
+    "elapsedMs": 98495,
+    "engineIdentity": "1a8f8fdc77f650661061da98434dd1eeddead3ae98129eb3aed7fa0f6914b3f6",
+    "financialReportEnvelopeByteIdentical": true,
+    "headEnvelopeByteIdentical": true,
+    "nativeHead": {
+      "hash": "af11e24a7cd42cab52373738dd773497382aaf9491c903955d5fa6161d4d5c57",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "b71692c673304d8bb27af70703b9793e6ad886c44431258731b2422b45af9551",
+      "sequence": 131875
+    },
+    "networkRequests": 0,
+    "offlineOnly": true,
+    "originalFillCount": 114,
+    "originalSourceCursorsAndOrdersAndFillsIncluded": true,
+    "profitabilityEstablished": false,
+    "upgrades": 7
+  },
+  "offlinePrefixParityFileSha256": "7571bfaef44597260394f9df21a3727e5e69e476563fb633e0a8b25c7029b93c",
+  "offlineBridge": "/home/archon/apps/moloch/offline-replay-prefix-131875-20261016/engine-upgrade-v1.json",
+  "offlineBridgeSha256": "45392a936b9b108b29e7a549ebccfb1eda596db36e2678f9b24878215f6c70b9",
+  "controlChanges": [
+    "activation.binarySha256"
+  ],
+  "deployed": false,
+  "profitabilityEstablished": false
+}
