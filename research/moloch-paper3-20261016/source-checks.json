@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-16T03:19:57.609285+00:00",
+  "sourceCommit": "264261e3fac45d6ad868cd0bba69561a4bbca3e7",
+  "checkedFileSha256": {
+    "moloch/live-runtime/tests/fundamental_policy.rs": "dbf7654731f101257c38d1b3db1cc5ab39ea0a248f4f409b0dd3d48edea43d99",
+    "moloch/live-runtime/tests/execution_distribution.rs": "953f1030a28fa3851e27ac3a71f4b9edd75607ccaaca621bfacd2bb4c7cefef5",
+    "moloch/live-runtime/src/worker.rs": "5282281f6aaef672efa81db36ebcbdb9d5b4d9568cf0fcd697820a2f88788339",
+    "moloch/live-runtime/src/lib.rs": "010e0c34328dcda8974d523485fe30af14cae5784eec767501239581464c2697",
+    "moloch/live-runtime/src/execution_distribution.rs": "a3e70c362b94295bdd92e443c47513ad54528ce648b3b4600998d93cf063832f",
+    "moloch/native/src/reviewed_fundamental_entry.rs": "2da3db3304c65ed79099e7d4f1a99f60beb52c446ddd0febaf8b017a7258e61c",
+    "moloch/live-runtime/src/fundamental_policy.rs": "24fee6515634e3ce1918afa367fde19bf702824b25e76a6e4e1376fae37ed113",
+    "moloch/live-runtime/tests/alpha_proposal.rs": "c5d63beeed3ede6e5284f10371d52463c34ec9d386906acbc460ab9efde95779",
+    "moloch/live-runtime/src/alpha_proposal.rs": "b56f64d699a34b3b5fe62d904e72ce26aef7c1a3d02fcb314f0595c646f4ef1f",
+    "moloch/live-runtime/src/authority.rs": "be19d29c81c9867006e80e47e4dec37e13d4e0115abc9e710622b0f622581f4b"
+  },
+  "logs": {
+    "moloch-paper3-final-full-checks.log": {
+      "sha256": "3f07d40fd240ffa8d3a564aad379c3722c994e01caea77d5bddc0819f643ef72",
+      "passed": 645
+    },
+    "moloch-paper3-final-native-checks.log": {
+      "sha256": "f71b4d94bc19dc4a8f0d21ffc4c6129c624b95a6a11578a5a14de098d9b05ef6",
+      "passed": 56
+    },
+    "moloch-paper3-final-critical-checks.log": {
+      "sha256": "178e1a58d15ac92b6a8d3ca458fcd4d05309d9e992c150cc793a460041752e1f",
+      "passed": 97
+    }
+  },
+  "deployed": false,
+  "profitabilityEstablished": false
+}

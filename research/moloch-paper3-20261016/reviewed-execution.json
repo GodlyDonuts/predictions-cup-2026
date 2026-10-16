@@ -1,0 +1,27 @@
+{
+  "at": "2026-10-16T03:18:21.462553+00:00",
+  "oldReviewSha256": "3e3a8c1676dc9248edf3c754d8c1eeb40be99bface73aaea2f9ba5577074f292",
+  "reviewSha256": "9523497c40e24eb5c6b2251cb59d1c839b874d15fbdcccee4c8c9ea5b254cef6",
+  "changedReviewFields": [
+    "assumptionLabel",
+    "executionPolicy",
+    "reviewedAtMs"
+  ],
+  "maximumPrincipal": "400.000000",
+  "maximumQuantity": 10000,
+  "expiresAtMs": 1792141200000,
+  "holdingDeadlineMs": 1792429200000,
+  "executionPolicy": {
+    "version": 1,
+    "allowedModes": [
+      "boundedLimitMayRest",
+      "improveOneTick",
+      "joinBid"
+    ]
+  },
+  "sourceClocksUnchanged": true,
+  "otherReviewFilesUnchanged": true,
+  "settingsSha256": "a472f512f4331666f0481ac4ec2491d5a534bbe1fd1263bf45ed4bf76b19b869",
+  "deployed": false,
+  "profitabilityEstablished": false
+}
