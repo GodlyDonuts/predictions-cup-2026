@@ -66,7 +66,7 @@ fn component(bank:&Session,p:&Value,s:&Scope,index:usize)->Result<(Value,String)
  let q=bank.engine().order_records().into_iter().find(|q|q["id"]==id).ok_or("PACKAGE_QUOTE_MISSING")?;
  need(q["exchangeId"]==l["exchangeId"]&&q["marketId"]==l["marketId"]&&q["side"]==l["side"]&&q["action"]==l.get("action").cloned().unwrap_or_else(||json!("buy"))&&q["quantity"]==l["quantity"]&&q["price"]==l["limitPrice"])?;Ok((q,actual.to_owned()))
 }
-fn tape_endpoint(actual:&str,s:&Scope,r:&Receipt)->Result<()>{need(r.endpoint==format!("/orders/{actual}/fills?limit=200&tournamentId={}",s.tournament_id))}
+fn tape_endpoint(actual:&str,_s:&Scope,r:&Receipt)->Result<()>{need(r.endpoint==format!("/orders/{actual}/fills?limit=200"))}
 /// Only independently received, complete official component fill tapes move cash.
 pub fn fills(bank:&Session,p:&Value,s:&Scope,index:usize,r:&Receipt,processed:&str)->Result<Vec<Value>>{
  let(q,actual)=component(bank,p,s,index)?;tape_endpoint(&actual,s,r)?;
