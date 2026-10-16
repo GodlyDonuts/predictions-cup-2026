@@ -1,17 +1,17 @@
 # Moloch research baseline
 
-**As of2026-10-16 07:45UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
+**As of2026-10-16 07:53UTC.** This is the starting point for new papers. It describes the actual deployed bot and separates source-only work. Observations age; consult the newest [CURRENT_STATE](CURRENT_STATE.md) entry and linked evidence before making a current live claim. Older dated documents are historical unless this baseline identifies them as current specifications.
 
 ## Exact deployed system
 
 | Item | Verified state |
 | --- | --- |
-| Service |Sole `moloch-live.service`, PID421878, VPS; restoring after07:43:57UTC replacement; binary verified, no execution STOP; fresh trading pending|
+| Service |Sole `moloch-live.service`, PID421878, VPS; fresh trading/realtime at07:53:10UTC after07:43:57 replacement; binary verified, no execution STOP|
 | Deployed source |`5577e984`|
 | Executable SHA256 |`7ac01023e5673386076e836614b2c0b64808f4764adfca3c79d590c2004e8651`|
 | Native engine identity |`c3731d88e8db875c773350f62559daf9d8636818ec269862c7540d54424e1d82`, ten explicit financial identity bridges|
 | Account/bank |One serialized SDK V1 queue and original funded bank; no second collector/writer|
-| Fresh activity |Replacement restoration pending;132 cumulative fill rows. Prior67YES1019 buy at.605 exited.600, realized-.335, zero fees|
+| Fresh activity |Replacement five new ACKs/zero new fills;132 cumulative fill rows. Prior67YES1019 buy at.605 exited.600, realized-.335, zero fees|
 | Fresh-market breadth |12 ordinary fresh markets after startup durable capacity event; reviewed-managed exchanges excluded from ordinary flat BUY planning; 12 discovery reads from current native capacity, urgent-owned priority then interleaved owned/new scopes; package-specific rules unchanged|
 | Risk limits |40,000 total commitment;10,000 per market;10,000 shares maximum order; existing holdings separately attributed|
 | Read/write limits |100-read rolling ceiling/600ms completion gap;24-write ceiling/2500ms gap. These are admission ceilings, not measured achieved throughput|
@@ -20,7 +20,7 @@
 | Entry sizing |100% paired best-level depth, additionally bounded by available cash/market/order caps; deeper levels ignored. Actual q4510 requested68, filled67 in six partial executions; no sizing increase deployed|
 | Optional features OFF |Execution-distribution diagnostic, old execution-model diagnostic, empirical maker-policy gate and collateral accounting|
 
-[Actual current flow-aware rollout](../research/moloch-throughput-20261016/owned-refresh-production-rollout.json), [dated live observation](../research/moloch-throughput-20261016/owned-refresh-live-verification.json), [original fill/flow audit](../research/moloch-throughput-20261016/fill-throughput-audit.md). Replacement is restoring. It includes bounded source-bound overdue-owned read nomination,30s actual-read cooldown and alternating regular/overdue fairness. Fresh live behavior remains pending;60s is a policy target, not a guaranteed physical-exit deadline. Native engine, original financial bridge, ledger, reviews and monetary limits are preserved. Recent genuine observed prints now nominate fresh-book reads even when missing books/delivery gaps deny strict Study eligibility; they never establish complete tape, execution edge or a fill. Paper5 remains incomplete. The bulk-price negative screen has nine isolated checks but is not wired into production. Ordinary batching is audited, not implemented.
+[Actual current flow-aware rollout](../research/moloch-throughput-20261016/owned-refresh-production-rollout.json), [dated live observation](../research/moloch-throughput-20261016/owned-refresh-live-verification.json), [original fill/flow audit](../research/moloch-throughput-20261016/fill-throughput-audit.md). Replacement is fresh, first38-scope pass9 completed. It includes bounded source-bound overdue-owned read nomination,30s actual-read cooldown and alternating regular/overdue fairness. Fresh trading is verified, but an eligible owned-age nomination has not yet been observed;60s is a policy target, not a guaranteed physical-exit deadline. Native engine, original financial bridge, ledger, reviews and monetary limits are preserved. Recent genuine observed prints now nominate fresh-book reads even when missing books/delivery gaps deny strict Study eligibility; they never establish complete tape, execution edge or a fill. Paper5 remains incomplete. The bulk-price negative screen has nine isolated checks but is not wired into production. Ordinary batching is audited, not implemented.
 ## Capabilities that exist now
 
 - Independent reviewed forecast origination with real native funding, fresh final official facts and exact physical capabilities. Explicit reviews support join bid, improve one tick and bounded marketable limits with a possible resting remainder. Ordinary maker BUYs retain their passive rule.

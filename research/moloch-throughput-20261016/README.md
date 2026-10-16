@@ -2,9 +2,9 @@
 
 The human reported only three completed trades over two hours. Task [#147](https://github.com/GodlyDonuts/predictions-cup-2026/issues/147) prioritizes actual execution throughput before further Paper5 expansion. Checked source is `52116911781177eddacf85662de1a6dd9a6069c4`; deployment and fresh results must be established separately by the dated evidence linked below.
 
-## Current owned-age release —07:45 UTC
+## Current owned-age release —07:53 UTC
 
-Sole421878/source5577e984 started07:43:57UTC; restoring at07:45:02, binary matched, STOP absent. Ten owned-read checks,56 worker checks and optimized build pass. Native accounting identity and ten original bridges unchanged. [Promotion](owned-refresh-production-rollout.json), [dated verification](owned-refresh-live-verification.json). One bounded overdue positive execution-clock lot can nominate a real tape/book refresh without an old SELL;30s cooldown from actual successful reads plus alternating/rotating scheduling preserve normal breadth. First fresh behavior and nomination remain to be verified. The one-share exit-depth barrier is unchanged. Prior67-share roundtrip realized-.335; ordinary realized now-119.435, no profitability claim. Earlier dated sections are retained.
+Sole421878/source5577e984 started07:43:57UTC; fresh trading/realtime at07:53:10, five new ACKs/zero new fills, binary matched, STOP absent. Ten owned-read checks,56 worker checks and optimized build pass. Native accounting identity and ten original bridges unchanged. [Promotion](owned-refresh-production-rollout.json), [dated verification](owned-refresh-live-verification.json). One bounded overdue positive execution-clock lot can nominate a real tape/book refresh without an old SELL;30s cooldown from actual successful reads plus alternating/rotating scheduling preserve normal breadth. Fresh trading is verified; first eligible owned-age nomination and improved sustained turnover remain to be verified. The one-share exit-depth barrier is unchanged. Prior67-share roundtrip realized-.335; ordinary realized now-119.435, no profitability claim. Earlier dated sections are retained.
 
 ## Latest actual production —07:26 UTC
 
