@@ -669,6 +669,12 @@ fn expected_fundamental_entry_denial(reason:&str)->bool{
  matches!(reason,"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE"|"FUNDAMENTAL_ENTRY_RECEIPT_ORDER"|"FUNDAMENTAL_ENTRY_NOT_FLAT"|"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY"|"FUNDAMENTAL_ENTRY_CASH_RECONCILIATION"|"FUNDAMENTAL_ENTRY_MARKET"|"FUNDAMENTAL_REVIEWED_CONTRACT_CHANGED"|"FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED"|"FUNDAMENTAL_ENTRY_NATIVE_BOOK"|"FUNDAMENTAL_ENTRY_PLAN_CHANGED"|"REVIEWED_ENTRY_DEADLINE"|"REVIEWED_ENTRY_EXISTING_EXPOSURE"|"REVIEWED_ENTRY_REVIEW_EXPIRED"|"REVIEWED_ENTRY_CLOCK"|"REVIEWED_ENTRY_BOOK"|"REVIEWED_ENTRY_PASSIVE_PRICE"|"REVIEWED_ENTRY_FUNDING"|"REVIEWED_ENTRY_DEPTH"|"REVIEWED_ENTRY_MARKET_CAP"|"REVIEWED_ENTRY_FRESH_MARKET_CAP"|"REVIEWED_ENTRY_WRITE_BUDGET")
 }
 fn fundamental_entry_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->Result<()>{atomic_json(&c.root.join("fundamental-entry.json"),&json!({"at":iso(now()),"exchangeId":exchange,"stage":stage,"reason":reason,"physicalAttempted":false,"nativeRiskCapsChanged":false}))}
+/// Only evidenced exits preempt new entry. A stale-book-only holding refresh
+/// competes fairly with entry reads using the SAME persistent preflight cursor.
+fn fundamental_read_rotation(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],cursor:Option<&str>)->Option<(bool,usize,String)>{
+ let mut choices:Vec<_>=existing.iter().enumerate().map(|(i,h)|(true,i,format!("{}:{}:sell",h.exchange_id,h.side))).chain(entries.iter().enumerate().map(|(i,h)|(false,i,format!("{}:{}:buy",h.exchange_id,h.side)))).collect();
+ choices.sort_by(|a,b|a.2.cmp(&b.2));let keys:Vec<_>=choices.iter().map(|c|c.2.clone()).collect();moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first().map(|index|choices[*index].clone())
+}
 fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,prior_window:u64)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
  if existing_target_busy(bank,log,ex)?{return Ok(())}
@@ -745,9 +751,10 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  }
  if !allow_new_submissions||bank.engine().package_blocks_submissions(){return Ok(())}
  let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
+ let mut stale_existing_hints=Vec::new();
  if let Some(f)=fundamental.as_deref_mut(){
   f.authority.validate()?;let mut existing_hints=Vec::new();
-  for ex in f.cohorts.managed_exchanges(){if !existing_target_busy(bank,log,&ex)?{if let Some(hint)=f.cohorts.existing_exit_hint(bank,log,&c.scope,&ex,f.authority.trusted(),now())?{existing_hints.push(hint);}}}
+  for ex in f.cohorts.managed_exchanges(){if !existing_target_busy(bank,log,&ex)?{if let Some(hint)=f.cohorts.existing_exit_hint(bank,log,&c.scope,&ex,f.authority.trusted(),now())?{if hint.reason=="reviewed_inventory_book_refresh"{stale_existing_hints.push(hint)}else{existing_hints.push(hint);}}}}
   if !existing_hints.is_empty(){let keys:Vec<_>=existing_hints.iter().map(|h|format!("{}:{}:sell",h.exchange_id,h.side)).collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());let hint=&existing_hints[index];
    reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;return Ok(())
@@ -761,8 +768,9 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
  if let Some(f)=fundamental.as_deref_mut(){f.authority.validate()?;let entry_hints:Vec<_>=f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect();
-  if !entry_hints.is_empty(){let keys:Vec<_>=entry_hints.iter().map(|h|format!("{}:{}:buy",h.exchange_id,h.side)).collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());let hint=&entry_hints[index];
-   reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;return Ok(())
+  if let Some((is_existing,index,key))=fundamental_read_rotation(&stale_existing_hints,&entry_hints,preflight_cursor.as_deref()){if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
+   if is_existing{let hint=&stale_existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}
+   else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;}return Ok(())
   }
  }
  // At most one new physical order per pass; subsequent fills change funding.
