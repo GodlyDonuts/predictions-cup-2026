@@ -274,6 +274,19 @@ fn existing_target_busy(bank:&Session,log:&DispatchLog,exchange:&str)->Result<bo
  }
  Ok(orders.iter().any(|q|q["exchangeId"]==exchange&&q["retired"]==false&&(q.get("reviewedInventoryExit").is_some()||q.get("reviewedFundamentalEntry").is_some()||q["id"].as_u64().is_some_and(|id|bank.engine().is_package_order(id)||!log.never_attempted(id)))))
 }
+/// ONLY a reviewed native FRESH_MARKET_CAP denial calls this fallback. Yield
+/// one entirely flat ordinary proposal market, with no intent/attempt/ACK,
+/// package lease or reviewed origin. Never cancel a physical order to free it.
+fn retire_flat_draft_competitor(bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>)->Result<Option<String>>{
+ log.require_resolved_attempts()?;let orders=bank.engine().order_records();let mut exchanges=std::collections::BTreeSet::new();
+ for q in &orders{if q["retired"]==false{exchanges.insert(q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?.to_owned());}}
+ for ex in exchanges{
+  if managed.contains(&ex)||bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)!=0||bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)!=0||existing_target_busy(bank,log,&ex)?{continue}
+  let target:Vec<_>=orders.iter().filter(|q|q["retired"]==false&&q["exchangeId"]==ex).collect();
+  if target.is_empty()||target.iter().any(|q|q["id"].as_u64().is_none_or(|id|!log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().is_package_order(id))||q.get("reviewedInventoryExit").is_some()||q.get("reviewedFundamentalEntry").is_some())||bank.engine().package_records().as_array().ok_or("LIVE_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true&&(p["legs"].as_array().is_some_and(|a|a.iter().any(|l|l["exchangeId"]==ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|a|a.iter().any(|e|e==&ex)))){continue}
+  if retire_existing_drafts(bank,log,&ex)?>0{return Ok(Some(ex))}
+ }Ok(None)
+}
 fn ordinary_liability_due(bank:&Session,log:&DispatchLog,at:u64)->Result<bool>{
  for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
   if bank.engine().is_package_order(id)||q["retired"]==true{continue}
@@ -670,14 +683,20 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  if ready.checked_add(latency).is_none_or(|end|end>=facts_until){return fundamental_entry_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
  while now()<ready{refresh_controls(c,authority,stream)?;f.authority.validate()?;std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).clamp(1,100)));}
  refresh_controls(c,authority,stream)?;
- let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};
- if let Err(e)=plan.validate_current(bank,log,t,&f.authority,now()){if expected_fundamental_entry_denial(&e.to_string()){return fundamental_entry_deferred(c,ex,"current",&e.to_string())}return Err(e)}
- let before=bank.engine().order_records().iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);let mut event=plan.event().clone();event["processedAt"]=json!(iso(now()));let mut preview=bank.engine().clone();
- if let Err(e)=preview.advance(&event){if expected_fundamental_entry_denial(e){return fundamental_entry_deferred(c,ex,"native",e)}return Err(e.into())}
+ let mut yielded=Vec::new();let(plan,event)=loop{
+  let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};
+  if let Err(e)=plan.validate_current(bank,log,t,&f.authority,now()){if expected_fundamental_entry_denial(&e.to_string()){return fundamental_entry_deferred(c,ex,"current",&e.to_string())}return Err(e)}
+  let mut event=plan.event().clone();event["processedAt"]=json!(iso(now()));let mut preview=bank.engine().clone();
+  match preview.advance(&event){Ok(())=>break(plan,event),Err("REVIEWED_ENTRY_FRESH_MARKET_CAP")if yielded.len()<3=>{
+   if let Some(other)=retire_flat_draft_competitor(bank,log,&f.cohorts.managed_exchanges())?{yielded.push(other);continue}return fundamental_entry_deferred(c,ex,"native","REVIEWED_ENTRY_FRESH_MARKET_CAP_NO_PROVED_FLAT_DRAFT")
+  },Err(e)if expected_fundamental_entry_denial(e)=>return fundamental_entry_deferred(c,ex,"native",e),Err(e)=>return Err(e.into())}
+ };
+ let before=bank.engine().order_records().iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
  // No I/O source or tick can alter the frozen plan before this commit. A
  // native financial/durability failure at actual acceptance remains fatal.
  accept(bank,&event)?;let qs:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|id|id>before)&&q["retired"]==false&&q["exchangeId"]==ex&&q["action"]=="buy"&&q["reviewedFundamentalEntry"]["reviewSha256"]==event["reviewSha256"]&&q["reviewedFundamentalEntry"]["originSha256"]==event["originSha256"]).collect();
  if qs.len()!=1{return Err("LIVE_REVIEWED_ENTRY_NATIVE_RESERVATION_NOT_UNIQUE".into())}let q=&qs[0];let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+ atomic_json(&c.root.join("fundamental-entry.json"),&json!({"at":iso(now()),"exchangeId":ex,"stage":"native_reserved_not_dispatched","qid":id,"quantity":q["quantity"],"yieldedProvedFlatDraftExchanges":yielded,"nativeRiskCapsChanged":false,"physicalAttempted":false}))?;
  loop{refresh_controls(c,authority,stream)?;f.authority.validate()?;let at=now();if at>=facts_until.min(plan.valid_until_ms())||q["expiresAt"].as_u64().is_none_or(|end|end<=at){return fundamental_entry_deferred(c,ex,"activation","RESERVATION_OR_ORIGINAL_PACKET_EXPIRED")}
   if quote(bank,id)?!=*q{return Err("LIVE_REVIEWED_ENTRY_RESERVED_QUOTE_CHANGED".into())}let active=q["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?;if at>=active{break}std::thread::sleep(Duration::from_millis(active.saturating_sub(now()).clamp(1,100)));
  }
