@@ -667,7 +667,7 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  submit_order(t,c,bank,log,authority,&current,facts,None,Some(f))
 }
 fn expected_fundamental_entry_denial(reason:&str)->bool{
- matches!(reason,"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE"|"FUNDAMENTAL_ENTRY_RECEIPT_ORDER"|"FUNDAMENTAL_ENTRY_NOT_FLAT"|"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY"|"FUNDAMENTAL_ENTRY_CASH_RECONCILIATION"|"FUNDAMENTAL_ENTRY_MARKET"|"FUNDAMENTAL_REVIEWED_CONTRACT_CHANGED"|"FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED"|"FUNDAMENTAL_ENTRY_NATIVE_BOOK"|"FUNDAMENTAL_ENTRY_PLAN_CHANGED"|"REVIEWED_ENTRY_DEADLINE"|"REVIEWED_ENTRY_EXISTING_EXPOSURE"|"REVIEWED_ENTRY_REVIEW_EXPIRED"|"REVIEWED_ENTRY_CLOCK"|"REVIEWED_ENTRY_BOOK"|"REVIEWED_ENTRY_PASSIVE_PRICE"|"REVIEWED_ENTRY_FUNDING"|"REVIEWED_ENTRY_DEPTH"|"REVIEWED_ENTRY_MARKET_CAP"|"REVIEWED_ENTRY_FRESH_MARKET_CAP"|"REVIEWED_ENTRY_WRITE_BUDGET")
+ matches!(reason,"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE"|"FUNDAMENTAL_ENTRY_RECEIPT_ORDER"|"FUNDAMENTAL_ENTRY_NOT_FLAT"|"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY"|"FUNDAMENTAL_ENTRY_CASH_RECONCILIATION"|"FUNDAMENTAL_ENTRY_MARKET"|"FUNDAMENTAL_REVIEWED_CONTRACT_CHANGED"|"FUNDAMENTAL_ENTRY_BOOK_NOT_ADMITTED"|"FUNDAMENTAL_ENTRY_NATIVE_BOOK"|"FUNDAMENTAL_ENTRY_PLAN_CHANGED"|"REVIEWED_ENTRY_DEADLINE"|"REVIEWED_ENTRY_EXISTING_EXPOSURE"|"REVIEWED_ENTRY_REVIEW_EXPIRED"|"REVIEWED_ENTRY_CLOCK"|"REVIEWED_ENTRY_BOOK"|"REVIEWED_ENTRY_PASSIVE_PRICE"|"REVIEWED_ENTRY_IMPROVE_PRICE"|"REVIEWED_ENTRY_BOUNDED_PRICE"|"REVIEWED_ENTRY_FUNDING"|"REVIEWED_ENTRY_DEPTH"|"REVIEWED_ENTRY_MARKET_CAP"|"REVIEWED_ENTRY_FRESH_MARKET_CAP"|"REVIEWED_ENTRY_WRITE_BUDGET")
 }
 fn fundamental_entry_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->Result<()>{atomic_json(&c.root.join("fundamental-entry.json"),&json!({"at":iso(now()),"exchangeId":exchange,"stage":stage,"reason":reason,"physicalAttempted":false,"nativeRiskCapsChanged":false}))}
 /// Locate original prepared bytes in the already validated Session journal.
@@ -738,8 +738,8 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // Compare review-bound actions at this genuine fresh prefix. This diagnostic
  // cannot change the currently join-only reservation or physical capability.
  let comparison=match f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,now()){
-  Ok(v)=>json!({"comparison":v,"executionAuthority":false,"activeExecutionMode":"joinBid"}),
-  Err(e)=>json!({"state":"unavailable","reason":e.to_string(),"executionAuthority":false,"activeExecutionMode":"joinBid"}),
+  Ok(v)=>json!({"comparison":v,"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
+  Err(e)=>json!({"state":"unavailable","reason":e.to_string(),"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
  };let _=atomic_json(&c.root.join("fundamental-actions.json"),&json!({"at":iso(now()),"exchangeId":ex,"result":comparison}));
  let mut yielded=Vec::new();let(plan,event)=loop{
   let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};

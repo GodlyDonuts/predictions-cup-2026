@@ -165,7 +165,7 @@ impl ProductionAuthority {
   if expiry<=now||Some(expiry)!=f.quote["expiresAt"].as_u64()||f.quote["cancelEffectiveAt"].as_u64().is_some_and(|t|t<=now)||f.quote["activationAt"].as_u64().is_none_or(|t|t>now)||body["idempotencyKey"].as_str()!=Some(format!("{}:{}",self.activation.run_id,f.quote["id"]).as_str()){return Err("LIVE_INTENT_CLOCK_OR_KEY".into())}
   let b=f.snapshots.book.data["contexts"][0]["orderbook"]["exchanges"].as_array().ok_or("LIVE_BOOK_SCOPE")?.iter().find(|b|b["exchangeId"]==ex).ok_or("LIVE_BOOK_SCOPE")?;
   if !b["asOf"]["sequence"].is_u64()||clock(b["asOf"]["at"].as_str().ok_or("LIVE_BOOK_CLOCK")?).is_none_or(|t|t>now||now-t>10000){return Err("LIVE_BOOK_STALE".into())}
-  if body["action"]=="buy"{let opposite=if body["side"]=="yes"{&b["asks"]}else{&b["bids"]};let level=opposite.as_array().and_then(|a|a.first()).ok_or("LIVE_EMPTY_BOOK")?;let yes=baal_transport_service::prices::official_tick_units(&level["price"])?;let ask=if body["side"]=="yes"{yes}else{1_000_000-yes};if price>=ask{return Err("LIVE_ENTRY_MUST_BE_PASSIVE".into())}}
+  if body["action"]=="buy"{let opposite=if body["side"]=="yes"{&b["asks"]}else{&b["bids"]};let level=opposite.as_array().and_then(|a|a.first()).ok_or("LIVE_EMPTY_BOOK")?;let yes=baal_transport_service::prices::official_tick_units(&level["price"])?;let ask=if body["side"]=="yes"{yes}else{1_000_000-yes};if price>=ask&&!f.fundamental.as_ref().is_some_and(|proof|proof.allows_marketable_reviewed_buy()){return Err("LIVE_ENTRY_MUST_BE_PASSIVE".into())}}
   let native_quantity=f.quote["quantity"].as_u64().ok_or("LIVE_ORDER_QUANTITY")?;
   // A fixed slice is permitted only by an opaque policy token that already
   // authorized this exact spec/permit; ordinary requests remain full native.
