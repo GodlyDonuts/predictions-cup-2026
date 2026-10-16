@@ -150,7 +150,9 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
         assert_eq!(f.bank.engine().wallet.reserved().unwrap(),before-price);assert_eq!(f.bank.engine().order_records().into_iter().find(|x|x["id"]==id).unwrap()["quantity"],1);
         let mut fill=F::base(&q,"actual_fill",NOW+4,"201");fill["quantity"]=json!(1);fill["fillId"]=json!("401");fill["executedAt"]=json!(iso(NOW+3));fill["fee"]=json!("0.000000");f.event(fill);
         let mut terminal=F::base(&q,"actual_order_terminal",NOW+5,"201");terminal["status"]=json!("filled");terminal["fillsComplete"]=json!(true);terminal["filledQuantity"]=json!(1);f.event(terminal);f.log.append(json!({"kind":"closed","qid":id})).unwrap();
-        f.reopen();assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),1);assert_eq!(f.bank.engine().fills().len(),1);
+        // A real process restart drops its opaque capabilities as well as the
+        // store; the held descriptor deliberately keeps its OS writer lock.
+        drop(token);f.reopen();assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),1);assert_eq!(f.bank.engine().fills().len(),1);
         assert!(f.store.as_ref().unwrap().planned_entry_quantity(&f.bank,&f.log,&f.scope,id,&f.trust,NOW+5).unwrap().is_none());
     }
     #[test]fn review_sizing_floors_principal_and_never_changes_native_price(){
