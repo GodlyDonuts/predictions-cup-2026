@@ -12,6 +12,8 @@ After fresh facts and positive retirement of blocking never-sent drafts, native 
 
 Both new native events change the financial engine identity. Deployment requires the explicit stopped-process identity bridge and exact sealed-prefix report/head comparison; code compilation alone is insufficient. Source and tests are integrated in the candidate, with final worker wiring/release pending. Current production activation and actual forecast fills must be verified separately in CURRENT_STATE; this section does not claim the extension deployed or Paper2 complete.
 
+One lifecycle restriction remains: a forecast entry durably bound before preliminary physical authorization consumes its single cohort even if it later expires without a network attempt. Only that same exact still-eligible unattempted quote can resume. Safe abandonment/replacement needs a separate event proving original not-sent status, zero fills/holdings and no physical liability; absence from a snapshot or timeout cannot provide that proof. This may miss trades and is not a completed re-entry strategy.
+
 ## Entry and valuation
 
 An immutable review names the exact tournament, market, exchange, contract, side and original contract-root hash. It records original forecast, official candidate/ballot and official contract-node source bytes, their hashes and availability clocks. The execution owner explicitly supplies an ordinary payout probability, exceptional-event allowance, minimum exceptional payout, margin, principal cap, quantity cap and fixed holding deadline. These are assumptions, not a statistical lower bound or guaranteed arbitrage certificate.
