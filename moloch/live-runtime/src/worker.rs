@@ -1257,7 +1257,7 @@ fn cancel_owned(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  let p=Permit{run_id:c.activation.run_id.clone(),intent_id:format!("{qid}-cancel"),owner:"Codex".into(),expires_at_ms:expires,maximum_quantity:c.activation.maximum_quantity,maximum_cost:c.activation.maximum_committed.clone()};
  let spec=RequestSpec{method:"DELETE".into(),endpoint:format!("/orders/{actual}"),body:None,body_json:None};
  authority.prepare_cancel(bank,qid,spec.clone(),p.clone(),facts)?;
- if let Err(e)=authority.authorize(&c.scope,&spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code,"optionalDefensiveCancel":defense.is_some()}))?;return Ok(())}
+ if let Err(e)=authority.authorize(&c.scope,&spec,&p,false,now()){authority.clear_ready();if defense.is_some()&&!authority.can_read(&c.scope){return Err("LIVE_DEFENSIVE_CANCEL_CONTROL_OR_STOP".into())}atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code,"optionalDefensiveCancel":defense.is_some()}))?;return Ok(())}
  if now()>=expires{authority.clear_ready();return Ok(())}
  log.append(json!({"kind":"cancel_attempt","qid":qid,"spec":spec,"permit":p,"at":iso(now()),"defensive":defense.map(|d|d.evidence())}))?;
  let ack=match t.cancel(actual.clone(),p){Ok(r)=>r,Err(e)=>{
