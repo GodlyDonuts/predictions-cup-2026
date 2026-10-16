@@ -289,22 +289,31 @@ fn recover_unadmitted(c:&Control)->Result<()>{
  }log.require_resolved_attempts()?;
  atomic_json(&c.root.join("pre-admission-recovery.json"),&json!({"at":iso(now()),"recoveredOriginalQids":recovered,"sdkArchiveReverified":true,"dispatchHead":log.descriptor_identity()?,"networkRequests":0,"stopPreserved":stop.exists(),"sameIntentRetryAuthorized":false,"financialStateChanged":false}))?;Ok(())
 }
-fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,cache:&mut Reconciler)->Result<reconciliation::Cycle>{
+/// Service only already queued official source frames BEFORE a physical read.
+/// Once a Receipt returns, reconciliation validates/applies its complete tape
+/// without another hook. Errors cannot discard a tape already handed back.
+fn reconciliation_read_with(bank:&mut Session,endpoint:Endpoint,mut service:impl FnMut(&mut Session)->Result<()>,mut read:impl FnMut(Endpoint)->Result<Receipt>)->Result<Receipt>{
+ service(bank)?;read(endpoint)
+}
+fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,cache:&mut Reconciler,stream:&Realtime,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<reconciliation::Cycle>{
  log.require_resolved_attempts()?;
  let pending:Vec<_>=log.acknowledgments.iter().filter(|(q,_)|!log.closed.contains(q)).map(|(q,_)|*q).collect();
  let mut owned=vec![];
  for qid in pending{let q=quote(bank,qid)?;let actual=bank.engine().live_order_bindings().get(&qid).ok_or("LIVE_ACK_BINDING_MISSING")?;
   owned.push(reconciliation::owned_from_quote(&q,actual,log.cancel_acknowledged.contains(&qid),false)?);
  }
- struct Live<'a>{t:&'a mut Transport,c:&'a Control,bank:&'a mut Session,log:&'a mut DispatchLog}
+ struct Live<'a>{t:&'a mut Transport,c:&'a Control,bank:&'a mut Session,log:&'a mut DispatchLog,stream:&'a Realtime,source:&'a mut RestSource,breadth:&'a mut Option<Recorder>,universe:&'a mut Option<Universe>}
  impl reconciliation::Backend for Live<'_>{
   fn now_ms(&self)->u64{now()}
-  fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{
+   let Self{t,c,bank,stream,source,breadth,universe,..}=self;
+   reconciliation_read_with(bank,ep,|bank|drain_stream(stream,bank,source,breadth,universe),|ep|request(t,&c.root,ep))
+  }
   fn quote(&self,id:u64)->Result<Value>{quote(self.bank,id)}
   fn apply(&mut self,e:&Value)->Result<()>{accept(self.bank,e)}
   fn close(&mut self,id:u64,e:&Value,order:&Receipt,fills:&Receipt)->Result<()>{accept(self.bank,e)?;self.log.append(json!({"kind":"closed","qid":id,"orderReceiptHash":feedback::digest(order)?,"fillReceiptHash":feedback::digest(fills)?}))?;moloch_live_runtime::execution_distribution::confirm_runtime_terminal(self.bank,self.log,id,order,fills,now());Ok(())}
  }
- cache.cycle(&c.scope,&owned,false,&mut Live{t,c,bank,log})
+ cache.cycle(&c.scope,&owned,false,&mut Live{t,c,bank,log,stream,source,breadth,universe})
 }
 fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64)->Result<u64>{
  let from=s.recovery_start_ms(market).map_or(from,|recovery|from.min(recovery));let to=now();let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(to)})?;
@@ -1487,7 +1496,7 @@ pub fn main()->Result<()>{
    ensure_entry_window(&c,&mut bank,&authority)?;
    drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
    let mut package_blocked=recover_packages(&mut t,&c,&mut bank,&log,&authority,&mut packages)?;
-   let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
+   let mut reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
    reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
    advance_owner_capital(&mut t,&c,&path,&mut bank,&log,&packages,lease.as_ref(),&mut owner_capital_last_check)?;ensure_entry_window(&c,&mut bank,&authority)?;
    let mut collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
@@ -1504,7 +1513,7 @@ pub fn main()->Result<()>{
    }else{selected};
    for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let source_started=now();let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;owned_age_reads.record_source_read(ex,source_started,now())?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
-     reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
+     reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
      collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
     }
@@ -1529,7 +1538,7 @@ pub fn main()->Result<()>{
      let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"reason":hint.reason(),"nativeQid":hint.native_qid(),"oldestExecutionMs":execution_clock,"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
      drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
      if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
-      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
+      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
       reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
      }
      ensure_entry_window(&c,&mut bank,&authority)?;
@@ -1898,6 +1907,56 @@ pub fn main()->Result<()>{
   let mut bank=Session::open_live(&path.join("bank"),&policy,&seed).unwrap();
   for i in 0..n{let ex=(101+i).to_string();let stamp=iso(at+i as u64*2500);bank.accept("official-book",i as u64+1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":"cup","marketId":ex,"exchangeId":ex,"sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();}
   (bank,DispatchLog::open(&path.join("dispatch.ndjson")).unwrap(),policy,seed)
+ }
+ struct InterReadFixture{
+  bank:Session,log:DispatchLog,responses:std::collections::VecDeque<Receipt>,
+  hooks:usize,fail_hook:Option<usize>,reads:Vec<String>,trace:std::rc::Rc<std::cell::RefCell<Vec<&'static str>>>,
+ }
+ impl reconciliation::Backend for InterReadFixture{
+  fn now_ms(&self)->u64{now()}
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{
+   let Self{bank,responses,hooks,fail_hook,reads,trace,..}=self;let fail_hook=*fail_hook;let trace=trace.clone();
+   reconciliation_read_with(bank,ep,|bank|{
+    *hooks+=1;trace.borrow_mut().push("service");if fail_hook==Some(*hooks){return Err("INJECTED_STREAM_FAILURE".into())}
+    let at=iso(now());accept_source_events(bank,&[json!({"type":"book","receivedAt":at,"book":{"tournamentId":"cup","marketId":"101","exchangeId":"101","sequence":(*hooks+1).to_string(),"sourceAt":at,"requestStartedAt":at,"receivedAt":at,"transport":"official_sig_realtime","bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})])
+   },|ep|{
+    trace.borrow_mut().push("read");let expected=match ep{Endpoint::Orders{..}=>"aggregate".into(),Endpoint::OwnedOrder{order_id}=>format!("/orders/{order_id}"),Endpoint::OwnedFills{order_id}=>format!("/orders/{order_id}/fills?limit=200"),_=>return Err("INJECTED_UNEXPECTED_READ".into())};reads.push(expected.clone());
+    let original=responses.pop_front().ok_or("INJECTED_MISSING_RECEIPT")?;if expected!="aggregate"{assert_eq!(original.endpoint,expected)}Ok(original)
+   })
+  }
+  fn quote(&self,id:u64)->Result<Value>{quote(&self.bank,id)}
+  fn apply(&mut self,e:&Value)->Result<()>{self.trace.borrow_mut().push("apply");accept(&mut self.bank,e)}
+  fn close(&mut self,id:u64,e:&Value,order:&Receipt,fills:&Receipt)->Result<()>{
+   self.trace.borrow_mut().push("close");assert!(!self.bank.engine().fills().is_empty());assert!(!self.log.closed.contains(&id));
+   accept(&mut self.bank,e)?;self.log.append(json!({"kind":"closed","qid":id,"orderReceiptHash":feedback::digest(order)?,"fillReceiptHash":feedback::digest(fills)?}))
+  }
+ }
+ fn inter_read_fixture(temp:&Temp,two:bool,fail_hook:Option<usize>)->(InterReadFixture,Vec<moloch_live_runtime::reconciliation_plan::OwnedOrder>,Value,Value,String){
+  let(mut bank,mut log,policy,seed)=setup(&temp.0,1);let selected:Vec<_>=bank.engine().order_records().into_iter().take(if two{2}else{1}).collect();assert_eq!(selected.len(),if two{2}else{1});
+  for q in &selected{let id=q["id"].as_u64().unwrap();let actual=format!("9{id}");let at=q["activationAt"].as_u64().unwrap();let side=if q["side"]=="YES"{"yes"}else{"no"};
+   let ack=Receipt{endpoint:"/orders".into(),status:200,request_started_at:iso(at),received_at:iso(at+1),data:json!({"orderId":actual,"exchangeId":q["exchangeId"],"side":side,"action":q["action"],"quantity":q["quantity"],"price":serde_json::from_str::<Value>(q["price"].as_str().unwrap()).unwrap()})};
+   for event in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id,"at":iso(at)}),json!({"kind":"ack","qid":id,"receipt":ack})]{log.append(event).unwrap()}
+   accept(&mut bank,&feedback::acknowledgment(q,&ack,&iso(now())).unwrap()).unwrap();
+  }
+  let owned=selected.iter().map(|q|reconciliation::owned_from_quote(&quote(&bank,q["id"].as_u64().unwrap()).unwrap(),&format!("9{}",q["id"].as_u64().unwrap()),false,false).unwrap()).collect();
+  let first=&selected[0];let id=first["id"].as_u64().unwrap();let actual=format!("9{id}");let at=first["activationAt"].as_u64().unwrap();let side=if first["side"]=="YES"{"yes"}else{"no"};let price=serde_json::from_str::<Value>(first["price"].as_str().unwrap()).unwrap();
+  let order=Receipt{endpoint:format!("/orders/{actual}"),status:200,request_started_at:iso(at+3),received_at:iso(at+4),data:json!({"id":actual,"exchangeId":"101","tournamentId":"cup","side":side,"action":"buy","priceLimit":price,"quantity":first["quantity"],"quantityFilled":2,"open":false,"terminalReasonCode":"Canceled"})};
+  let fills=Receipt{endpoint:format!("/orders/{actual}/fills?limit=200"),status:200,request_started_at:iso(at+5),received_at:iso(at+6),data:json!({"orderId":actual,"exchangeId":"101","tournamentId":"cup","totalQuantityFilled":if side=="no"{-2}else{2},"coverage":{"complete":true,"projectedThroughSequence":100},"pagination":{"limit":200,"hasMore":false,"nextCursor":null},"data":[{"id":(9000+id).to_string(),"quantity":if side=="no"{-2}else{2},"side":side,"price":price,"filledAt":iso(at+2)}]})};let digest=feedback::digest(&fills).unwrap();
+  let mut responses=std::collections::VecDeque::new();if two{responses.push_back(Receipt{endpoint:"/orders?status=open&limit=200&tournamentId=cup".into(),status:200,request_started_at:iso(at+3),received_at:iso(at+4),data:json!({"data":[],"coverage":{"complete":true,"projectedThroughSequence":100},"pagination":{"limit":200,"hasMore":false,"nextCursor":null}})});}responses.push_back(order);responses.push_back(fills);
+  (InterReadFixture{bank,log,responses,hooks:0,fail_hook,reads:Vec::new(),trace:Default::default()},owned,policy,seed,digest)
+ }
+ #[test]fn reconcile_services_source_between_exact_reads_then_applies_original_partial_tape_and_terminal_without_hook(){
+  let temp=Temp::new();let(mut live,owned,policy,seed,digest)=inter_read_fixture(&temp,false,None);let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"101".into())].into()};let mut cache=Reconciler::default();
+  let stats=cache.cycle(&scope,&owned,false,&mut live).unwrap();assert_eq!(stats.exact_order_reads,1);assert_eq!(stats.complete_fill_reads,1);assert_eq!(live.hooks,2);assert_eq!(*live.trace.borrow(),vec!["service","read","service","read","apply","close"]);
+  assert_eq!(live.bank.engine().fills().len(),1);assert_eq!(live.bank.engine().fills()[0]["quantity"],2);assert_eq!(live.bank.engine().fills()[0]["receiptHash"],digest);assert_eq!(live.bank.engine().fills()[0]["executedAt"],iso(quote(&live.bank,owned[0].logical_id).unwrap()["activationAt"].as_u64().unwrap()+2));assert!(live.log.closed.contains(&owned[0].logical_id));
+  let head=live.bank.durable_head();let report=live.bank.engine().report().unwrap();let journal=fs::read(temp.0.join("bank/events.jsonl")).unwrap();let hooks=live.hooks;assert_eq!(cache.cycle(&scope,&[],false,&mut live).unwrap().pending_orders,0);assert_eq!(live.hooks,hooks);drop(live);
+  let bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),journal);assert_eq!(bank.engine().fills().len(),1);assert!(log.closed.contains(&owned[0].logical_id));
+ }
+ #[test]fn reconcile_stream_failure_before_get_keeps_actual_binding_and_does_not_fetch_or_clear_tapes(){
+  for failed in [1,2]{let temp=Temp::new();let(mut live,owned,_,_,_)=inter_read_fixture(&temp,false,Some(failed));let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"101".into())].into()};let error=Reconciler::default().cycle(&scope,&owned,false,&mut live).unwrap_err();assert_eq!(error.to_string(),"INJECTED_STREAM_FAILURE");assert_eq!(live.reads.len(),failed-1);assert!(live.bank.engine().fills().is_empty());assert!(live.log.closed.is_empty());assert!(live.bank.engine().live_order_bindings().contains_key(&owned[0].logical_id));assert!(!live.log.never_attempted(owned[0].logical_id));assert_eq!(quote(&live.bank,owned[0].logical_id).unwrap()["retired"],false);}
+ }
+ #[test]fn later_reconcile_hook_failure_cannot_erase_already_durable_partial_fill_or_terminal(){
+  let temp=Temp::new();let(mut live,owned,_,_,digest)=inter_read_fixture(&temp,true,Some(4));let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"101".into())].into()};let error=Reconciler::default().cycle(&scope,&owned,false,&mut live).unwrap_err();assert_eq!(error.to_string(),"INJECTED_STREAM_FAILURE");assert_eq!(live.reads.len(),3);assert_eq!(live.bank.engine().fills().len(),1);assert_eq!(live.bank.engine().fills()[0]["receiptHash"],digest);assert!(live.log.closed.contains(&owned[0].logical_id));assert!(!live.log.closed.contains(&owned[1].logical_id));assert!(!live.log.never_attempted(owned[1].logical_id));assert_eq!(*live.trace.borrow(),vec!["service","read","service","read","service","read","apply","close","service"]);
  }
  fn stale_fixture(path:&Path,n:usize)->(Control,Session,DispatchLog,Value,Value){
   private_dir(path).unwrap();let at=now()-65_000;let policy=json!({"initialCash":"1000.000000","maximumCommitted":"100.000000","maximumMarketCost":"50.000000","quantity":12,"maximumMarkets":3,"entryStopAt":iso(at+3_600_000),"lifetimeMs":600000});let seed=json!({"runId":"stale-worker-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at)});let mut bank=Session::open_live(&path.join("bank"),&policy,&seed).unwrap();
