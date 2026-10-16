@@ -9,14 +9,21 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at 14:41 UTC
+## Latest operation and qualification at 14:57 UTC
 
-Actual successor516085/source870ce889/d2ad93b5 started14:37:09UTC with
-explicit ordinary-side enforcement and bounded typed token-HTTP recovery.
-At14:41:12 matching executable/no STOP, original history restoration continues;
-fresh trading is pending. All278 distinct ARM64 checks/release passed. Same
-bank, native engine/twelve bridges, capital and daily windows are preserved.
-[Actual deployment](../research/moloch-ordinary-side-edge-20261016/README.md).
+Actual516085/source870ce889/d2ad93b5 is fresh trading, healthy realtime/no STOP:
+eleven new ACKs at14:57:24UTC,173 cumulative fills/−106.485000 realized.
+Explicit side enforcement has actual below-minimum deferral and meets-minimum
+continuation; the transition fill round is flat and includes an old resting entry.
+All278 distinct ARM64 checks/release passed. Same bank, native engine/twelve
+bridges, capital and daily windows remain. [Live evidence](../research/moloch-ordinary-side-edge-20261016/README.md).
+
+The larger frozen v9 price-only comparison still selects zero after-cost trades
+despite22,579 decisions and adequate OOS counts. No qualified cross-venue model
+is inferred. [Actual result](../research/moloch-crossvenue-economics-20261016/v9-price/README.md).
+A separate trade-triggered sampling mode is checked78 Python/staged; it requires
+original trade clocks and a current retained SIG book. Default rows/old cohorts
+remain intact. [Separate prospective protocol](../research/moloch-trade-trigger-20261016/README.md).
 
 Sealed v7 flow evidence was correct:0/5/48 identified1/5/30s inputs exactly
 match receipt-eligible original same-ticker trades. No lost exported trade or

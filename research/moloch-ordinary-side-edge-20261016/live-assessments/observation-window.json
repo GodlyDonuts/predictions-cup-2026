@@ -1,0 +1,11 @@
+{
+  "endedAt": "2026-10-16T14:54:23.350614+00:00",
+  "sigPid": 516085,
+  "classes": [
+    "below_minimum",
+    "meets_minimum"
+  ],
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "diagnosticIsImmutableDecisionHistory": false
+}

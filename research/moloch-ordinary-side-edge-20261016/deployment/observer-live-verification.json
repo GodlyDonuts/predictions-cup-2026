@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-10-16T14:52:18.872563+00:00",
+  "pid": 516305,
+  "running": true,
+  "sourceSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+  "sigPid": 516085,
+  "output": "/home/archon/apps/moloch/shared/crossvenue-observer-v10",
+  "status": {
+    "at": "2026-10-16T14:52:18.266Z",
+    "captureSegment": 0,
+    "counters": {
+      "externalDuplicates": 10534,
+      "externalInvalidOrOneSided": 160,
+      "externalPolls": 58,
+      "externalSourceChanges": 654,
+      "externalStaleOrFuture": 1334,
+      "labels": 310,
+      "labelsMissingTimelyBook": 331,
+      "noCurrentExternal": 5,
+      "samples": 350,
+      "sigBooks": 1658
+    },
+    "executionAuthority": false,
+    "format": "breadth",
+    "historyPrefixVerified": false,
+    "journalPosition": 14858512,
+    "journalSequence": 108,
+    "observedMarkets": 186,
+    "originalJournalHash": "b915ae70d498ff938d2f3b4b03d7345f114a5a7f493839b27ad8f6cac5e1d7a1",
+    "pendingSamples": 350,
+    "pid": 516305,
+    "readOnly": true,
+    "state": "observing"
+  },
+  "freshObserverDataVerified": true,
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "sealedDataset": false
+}

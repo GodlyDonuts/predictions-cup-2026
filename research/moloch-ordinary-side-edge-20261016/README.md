@@ -1,5 +1,13 @@
 # Ordinary paired-spread side criterion
 
+## Fresh production and actual admission, 14:57 UTC
+
+Sole PID516085/source870ce889/d2ad93b5 is **fresh trading with healthy realtime and no STOP**, first confirmed14:51:18 UTC. It had two new ACKs then, five at14:52:58 and eleven at14:57:24. There are173 cumulative credited fill rows. Two post-launch execution rows include an old resting entry filled during restoration and its later flat exit; they are not profit produced by this filter. Cash72,741.915000/owned22,731.515000/attributed realized−106.485000 remain. [First fresh proof](deployment/first-fresh.json), [subsequent actual proof](deployment/current-live-verification.json).
+
+Actual final-book diagnostics show **both** enforced below-minimum deferral and meets-minimum continuation, with original price/quantity unchanged. [Bounded original observations](live-assessments/observation-window.json), [deferred assessment](live-assessments/below_minimum.json), [continuation assessment](live-assessments/meets_minimum.json). This verifies live wiring, not profitable valuation, subsequent dispatch/fill, or an immutable history of all decisions. The read-only observer516305/source674 is separately fresh on v10, with350 decisions/310 labels at14:52:18; [actual observer proof](deployment/observer-live-verification.json).
+
+The later [frozen v9 price-only model comparison](../moloch-crossvenue-economics-20261016/v9-price/README.md) has22,579 decisions and zero selected after-cost trades at all five horizons. [Opposite-hedge equivalence](../moloch-hedge-equivalence-20261016/README.md) establishes no missed economically distinct route in its bounded original prefix. Neither justifies a calibrated cross-venue execution claim.
+
 ## Actual promotion, 14:37 UTC
 
 The sole successor is **PID 516085**, source `870ce889`, executable `d2ad93b5…`, started once at **14:37:09 UTC**. At14:41:12 its actual executable matches and STOP is absent; it is still restoring original history. **Fresh trading, new ACKs/fills and prospective filter results are pending.** Control binds explicit `ordinarySideEdge:"enforce"`. [Promotion aggregate](deployment/production-rollout.json), [initial actual health](deployment/live-verification.json), [selected control](deployment/activation-selection.json).

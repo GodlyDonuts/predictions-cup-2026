@@ -1,5 +1,7 @@
 # Bounded realtime-token HTTP recovery
 
+Update14:57UTC: actual PID516085 is fresh trading with healthy realtime/no STOP and11 new ACKs. This verifies normal startup/integration, not a successful recovery from a genuine provider outage. The original six ARM64 token checks remain part of278 distinct passing checks. [Current deployment evidence](../moloch-ordinary-side-edge-20261016/README.md).
+
 Update14:37UTC: root ran all six ARM64 token regressions as part of278 distinct passing checks and verified the completed optimized release. The feature is now linked into actual sole PID516085/source870ce889/executabled2ad93b5, which is restoring original history. Fresh readiness and a real post-upgrade provider-outage recovery remain unproved; a successful build is not outage evidence. [Actual build, deployment and current limits](../moloch-ordinary-side-edge-20261016/README.md). Source-task-only statements below describe the original handoff before root's execution.
 
 The October16 13:47:15 UTC production stop was an original SDK

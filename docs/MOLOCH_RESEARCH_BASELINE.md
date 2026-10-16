@@ -1,11 +1,18 @@
-# Current research baseline: October 16, 14:41 UTC
+# Current research baseline: October 16, 14:57 UTC
 
-Actual sole516085/source870ce889/executabled2ad93b5 started14:37:09UTC.
-At14:41:12 it is restoring original history with matching executable/no STOP;
-fresh trading remains pending. Explicit ordinary-side enforcement and bounded
-typed token-HTTP recovery are linked, checked278 distinct/release passed.
-No bank/bridge/funding reset;171 existing fills/−106.485000 realized retained.
-[Actual deployment and limits](../research/moloch-ordinary-side-edge-20261016/README.md).
+Actual sole516085/source870ce889/executabled2ad93b5 is fresh trading, healthy
+realtime/no STOP,11 new ACKs at14:57:24UTC;173 cumulative fills/−106.485000
+realized. The transition round is flat and includes an old resting entry.
+Explicit side enforcement shows genuine defer/continue assessments. No bank,
+bridge, funding or capital reset.278 distinct ARM64 checks/release passed.
+[Actual execution and limits](../research/moloch-ordinary-side-edge-20261016/README.md).
+
+Frozen v9 price-only evaluation:22,579 decisions,35,457 labels, all three models
+select zero after-cost trades/all horizons. SIG-local MSE beats full at4/5;
+no qualified incremental Kalshi alpha. [Full result](../research/moloch-crossvenue-economics-20261016/v9-price/README.md).
+Read-only v10 is fresh; separately declared trade-trigger sampling is checked78
+Python/staged, with no prospective results or pricing authority yet.
+[Sampling protocol](../research/moloch-trade-trigger-20261016/README.md).
 
 Original-clock v7 join proves no missing exported trades in3,813 direct decisions.
 Actual identified1/5/30s windows0/5/48 match at-export eligible evidence exactly;
