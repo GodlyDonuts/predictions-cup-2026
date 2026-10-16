@@ -416,6 +416,13 @@ impl Session {
                 ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
                 ||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("PROBABILISTIC_SESSION_PREFIX".into())}
         }
+        if event["type"]=="live_owner_mandate_revision_v1" {
+            let seed=self.live_account_seed().ok_or("CAPITAL_MANDATE_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||event["nativeHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportHash"]!=hash(&engine.report()?)
+                ||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid){return Err("CAPITAL_MANDATE_SESSION_PREFIX".into())}
+        }
         if event["type"]=="live_capital_allocation_v1" {
             let seed=self.live_account_seed().ok_or("CAPITAL_SESSION_NOT_LIVE")?;
             if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]

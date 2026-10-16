@@ -18,12 +18,37 @@ fn receipt(v:&Value,endpoint:&str,at:i64)->Result<(i64,i64)>{
 }
 impl Engine{
  pub fn owner_capital_allocation_record(&self)->Option<Value>{self.capital_allocation.clone()}
+ pub fn daily_entry_mandate(&self)->Option<Value>{self.daily_entry_windows.clone()}
+ pub fn owner_mandate_revision_record(&self)->Option<Value>{self.capital_mandate_revision.clone()}
+ /// A new human mandate, not an edit of a previous approval. The contribution
+ /// must already be durable; only its committed cap may replace the old cap.
+ pub(super)fn apply_owner_mandate_revision(&mut self,e:&Value,at:i64)->Result<()>{
+  need(self.live_mode&&e["source"]=="moloch_live_dispatcher"&&e["authorizationId"]=="human_moloch_full_account_20261016","CAPITAL_MANDATE_AUTHORITY")?;
+  need(ms(&e["processedAt"])?==at&&ms(&e["receivedAt"])?<=at,"CAPITAL_MANDATE_CLOCK")?;
+  let approved=ms(&e["humanReceivedAt"])?;need(approved>=ms(&json!("2026-10-16T09:43:45Z"))?&&approved<=at,"CAPITAL_MANDATE_APPROVAL")?;
+  let original=self.daily_entry_windows.as_ref().ok_or("CAPITAL_PREVIOUS_DAILY_MANDATE_REQUIRED")?;
+  let allocation=self.capital_allocation.as_ref().ok_or("CAPITAL_CONTRIBUTION_REQUIRED")?;
+  need(e["expectedPreviousMandateSha256"]==hash(original)&&e["expectedAllocationSha256"]==allocation["sha256"]&&e["bankScope"]==allocation["bankScope"]&&e["expectedReportHash"]==hash(&self.report()?),"CAPITAL_MANDATE_PREFIX")?;
+  sha(&e["currentControlSha256"])?;sha(&e["approvedAllocationMandateSha256"])?;
+  let contribution=allocation["contributions"].as_array().and_then(|a|a.last()).ok_or("CAPITAL_CONTRIBUTION_REQUIRED")?;
+  need(contribution["authorizationId"]==e["authorizationId"]&&contribution["mandateSha256"]==e["approvedAllocationMandateSha256"]&&contribution["approvedAt"]==e["humanReceivedAt"],"CAPITAL_MANDATE_CONTRIBUTION_AUTHORITY")?;
+  let next=&e["mandate"];let fields=["authorizationId","approvedAt","anchorMs","campaignEndMs","intervalMs","maximumCommitted","maximumMarketCost","maximumQuantity"];
+  need(next.as_object().is_some_and(|m|m.len()==fields.len()&&fields.iter().all(|f|m.contains_key(*f))),"CAPITAL_MANDATE_FIELDS")?;
+  need(next["authorizationId"]==e["authorizationId"]&&next["approvedAt"]==e["humanReceivedAt"]&&next["maximumCommitted"]==self.policy.raw["maximumCommitted"]&&next["maximumCommitted"]==allocation["effectiveMaximumCommitted"]&&next["maximumCommitted"]!=original["maximumCommitted"],"CAPITAL_MANDATE_CAP")?;
+  for k in ["anchorMs","campaignEndMs","intervalMs","maximumMarketCost","maximumQuantity"]{need(next[k]==original[k],"CAPITAL_MANDATE_GEOMETRY_CHANGED")?;}
+  need(e["entryStopAt"]==self.policy.raw["entryStopAt"]&&next["maximumMarketCost"]==self.policy.raw["maximumMarketCost"]&&next["maximumQuantity"]==self.policy.raw["quantity"],"CAPITAL_MANDATE_POLICY_CHANGED")?;
+  need(next["campaignEndMs"].as_i64().is_some_and(|end|at<end),"CAPITAL_MANDATE_CAMPAIGN_EXPIRED")?;
+  let mut record=json!({"schemaVersion":1,"authorizationId":e["authorizationId"],"humanReceivedAt":e["humanReceivedAt"],"previousMandate":original,"previousMandateSha256":hash(original),"mandate":next,"allocationSha256":allocation["sha256"],"approvedAllocationMandateSha256":e["approvedAllocationMandateSha256"],"currentControlSha256":e["currentControlSha256"],"nativeHead":e["nativeHead"],"at":e["processedAt"]});record["sha256"]=json!(hash(&record));
+  self.daily_entry_windows=Some(next.clone());self.capital_mandate_revision=Some(record);Ok(())
+ }
  pub(super)fn audit_owner_capital(&self)->Result<()>{if let Some(r)=&self.capital_allocation{
   let net=dec(&r["netContributions"])?;
   need(net>0&&net<=MAX_EXTRA&&self.policy.initial==40_000*SCALE&&self.wallet.initial==self.policy.initial+net&&r["effectiveInitialCash"]==money(self.wallet.initial)&&r["effectiveMaximumCommitted"]==money(self.policy.committed)&&self.wallet.maximum_committed==self.policy.committed,"CAPITAL_ACCOUNTING_IDENTITY")?;
  }Ok(())}
  pub(super)fn apply_owner_capital(&mut self,e:&Value,at:i64)->Result<()>{
-  need(self.live_mode&&e["source"]=="moloch_live_dispatcher"&&e["authorizationId"]=="human_moloch_additional_cash_20261016","CAPITAL_AUTHORITY")?;
+  let full=e["authorizationId"]=="human_moloch_full_account_20261016";
+  need(self.live_mode&&e["source"]=="moloch_live_dispatcher"&&(full||e["authorizationId"]=="human_moloch_additional_cash_20261016"),"CAPITAL_AUTHORITY")?;
+  if full{sha(&e["currentControlSha256"])?;need(ms(&e["mandateApprovedAt"])? >=ms(&json!("2026-10-16T09:43:45Z"))?&&ms(&e["mandateApprovedAt"])?<=at,"CAPITAL_MANDATE_APPROVAL")?;}
   need(ms(&e["processedAt"])?==at&&ms(&e["receivedAt"])?<=at,"CAPITAL_EVENT_CLOCK")?;
   need(self.collateral.is_none(),"CAPITAL_COLLATERAL_LEDGER_UNSUPPORTED")?;
   let s=&e["bankScope"];let tid=s["tournamentId"].as_str().filter(|s|!s.is_empty()).ok_or("CAPITAL_SCOPE")?;let slug=s["tournamentSlug"].as_str().filter(|s|!s.is_empty()).ok_or("CAPITAL_SCOPE")?;
@@ -60,6 +85,7 @@ impl Engine{
   need(self.wallet.lots.iter().all(|((ex,_),lots)|lots.iter().all(|l|l.quantity==0)||seen.contains(ex)),"CAPITAL_POSITION_MISSING")?;
   let mut raw=self.policy.raw.clone();raw["maximumCommitted"]=json!(money(committed));let policy=Policy::new(&raw)?;
   contributions.push(json!({"allocationId":allocation,"delta":money(delta),"controlSha256":e["controlSha256"],"mandateSha256":e["mandateSha256"],"originalSourceEvidence":evidence,"boundary":b,"at":e["processedAt"],"previousAllocationSha256":prior}));
+  if full{let contribution=contributions.last_mut().ok_or("CAPITAL_RECORD")?;contribution["authorizationId"]=e["authorizationId"].clone();contribution["approvedAt"]=e["mandateApprovedAt"].clone();contribution["currentControlSha256"]=e["currentControlSha256"].clone();}
   let mut record=json!({"schemaVersion":1,"bankScope":s,"originalInitialCash":money(self.policy.initial),"netContributions":money(net),"effectiveInitialCash":money(effective),"effectiveMaximumCommitted":money(committed),"contributions":contributions});record["sha256"]=json!(hash(&record));
   self.wallet.allocate_owner_cash_exact(delta,committed)?;self.policy=policy;self.capital_allocation=Some(record);Ok(())
  }
