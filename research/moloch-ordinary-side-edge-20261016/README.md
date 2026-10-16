@@ -1,5 +1,13 @@
 # Ordinary paired-spread side criterion
 
+## Actual promotion, 14:37 UTC
+
+The sole successor is **PID 516085**, source `870ce889`, executable `d2ad93b5…`, started once at **14:37:09 UTC**. At14:41:12 its actual executable matches and STOP is absent; it is still restoring original history. **Fresh trading, new ACKs/fills and prospective filter results are pending.** Control binds explicit `ordinarySideEdge:"enforce"`. [Promotion aggregate](deployment/production-rollout.json), [initial actual health](deployment/live-verification.json), [selected control](deployment/activation-selection.json).
+
+Old510591 stopped at14:35:48, 0.77seconds after the exact root-controlled upgrade request. Its package ownership check rejects an existing STOP and reported `LIVE_PACKAGE_OWNER_LOST`; root independently matched request/worker STOP/status and unchanged control, canceled queued automatic restarts and verified the genuine queue quiet/zero unknown state. This was the reviewed operator stop, not permission to clear arbitrary owner-loss or human stops. Original evidence is retained. The stopped bank at270095 has171 cumulative fills, cash72,741.915000, owned22,731.515000 and attributed realized−106.485000. The candidate adds no bridge/copy replay, resets no funding or activation, and preserves all twelve original bridge entries. The public receipt summarizes each large original bridge by its identity/hash and canonical entry digest; the untouched original raw rollout SHA is pinned and retained privately.
+
+The old read-only observer510713 stopped only after its SIG source510591 ended. Both v9 gzip segments were fully decompressed/JSON-checked and sealed, preserving58,036 original rows. A separate v10 will start only after genuine successor readiness. [Sealed dataset evidence](deployment/prior-observer-sealed.json). The prior inter-read33-scope pass took765,611ms; only the original selection-count anchor was retained, and its workload differs from earlier30/35-scope passes. [Exact observed completion and limits](deployment/prior-first-cycle.json).
+
 ## Checked release and staged selection, 14:35 UTC
 
 Root ran the actual locked/offline ARM64 suite: **278 distinct checks passed** (175 library, 85 worker, 12 stream-connect retry, six token-HTTP retry). The 15 side-edge library checks, four side-edge worker checks and 13 prize-library checks are subsets, not additional checks. The optimized release completed at 14:27:04 UTC. Source `870ce889d51a04c654a93785277c47ea33b52bea`, 248 input hashes and unchanged native engine `8acc461b…` bind executable `d2ad93b50af64122b626bb197ce79bcfcbdf6f22d8ec0e738b11ebf9b6f6a023`. [Actual source/log/build evidence](build-evidence.json).

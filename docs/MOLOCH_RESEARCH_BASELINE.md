@@ -1,4 +1,19 @@
-# Current research baseline: October 16, 14:35 UTC
+# Current research baseline: October 16, 14:41 UTC
+
+Actual sole516085/source870ce889/executabled2ad93b5 started14:37:09UTC.
+At14:41:12 it is restoring original history with matching executable/no STOP;
+fresh trading remains pending. Explicit ordinary-side enforcement and bounded
+typed token-HTTP recovery are linked, checked278 distinct/release passed.
+No bank/bridge/funding reset;171 existing fills/−106.485000 realized retained.
+[Actual deployment and limits](../research/moloch-ordinary-side-edge-20261016/README.md).
+
+Original-clock v7 join proves no missing exported trades in3,813 direct decisions.
+Actual identified1/5/30s windows0/5/48 match at-export eligible evidence exactly;
+instant delivery upper bound3/8/50 is still insufficient for the frozen study.
+Do not convert sparse/missing inputs into measured zero flow or recalibrate v7.
+[Source-bound audit, five checks and full capture reproduction](../research/moloch-crossvenue-economics-20261016/v7-coverage-audit/README.md).
+
+# Historical research baseline: October 16, 14:35 UTC
 
 Sole current PID510591/source4ee16356 is fresh trading:40 new ACKs/eight new
 fill rows at14:33:40 UTC; realized−106.485000. Candidate870ce889/d2ad93b5 is

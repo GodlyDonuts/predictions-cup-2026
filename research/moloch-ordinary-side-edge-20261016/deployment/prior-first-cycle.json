@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-16T14:26:35.420654+00:00",
+  "pid": 510591,
+  "sourceCommit": "4ee163561b8018e58d945b38b4f4eea5cd7b09ee",
+  "originalSelection": {
+    "at": "2026-10-16T14:02:49.437Z",
+    "originalFile": {
+      "bytes": 717,
+      "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+    },
+    "pid": 510591,
+    "precedesReadiness": true,
+    "selectedScopeCount": 33
+  },
+  "firstCompletedAt": "2026-10-16T14:15:35.048Z",
+  "completedCycles": 1,
+  "completedReadScopeCount": 33,
+  "elapsedMs": 765611,
+  "sameWorkloadAsPrior30Or35ScopeCycle": false,
+  "allScopeIdsCompared": false,
+  "limitation": "Original observed selection-count anchor and first completed same-PID status; original selection IDs were not retained by the inspector."
+}

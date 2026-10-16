@@ -1,4 +1,22 @@
-# October 16, 14:35 UTC: checked entry filter staged; current production trading
+# October 16, 14:41 UTC: checked successor restoring; fresh trading pending
+
+Sole PID516085/source870ce889/executabled2ad93b5 started once14:37:09UTC
+with actual executable verified and STOP absent. At14:41:12 it is still validating
+original history. Fresh trading and new ACKs/fills are pending. Explicit ordinary
+side enforcement and bounded typed token-HTTP recovery are now in the executable;
+278 distinct ARM64 checks and optimized release passed. Original bank at270095,
+171 credited fills, full capital95,579.915000, funding, native engine and all
+twelve bridges remain; no new bridge/copy replay/recredit. Realized−106.485000.
+[Actual promotion, health and strategy qualification](../research/moloch-ordinary-side-edge-20261016/README.md).
+
+Read-only v9 is sealed after old SIG510591 ended; new v10 awaits actual fresh
+readiness. Original v7 trade/decision audit found zero missing exported trades:
+same-ticker activity was sparse, with0/5/48 identified1/5/30s windows. Even
+instant delivery could supply only3/8/50. No source-clock repair or fabricated
+flow is warranted. Five checks and a full original-capture audit passed.
+[Reproducible coverage evidence](../research/moloch-crossvenue-economics-20261016/v7-coverage-audit/README.md).
+
+# Historical October 16, 14:35 UTC: checked entry filter staged; current production trading
 
 Sole production PID 510591/source4ee16356 remains fresh with healthy realtime
 and no STOP. At14:33:40 UTC it had40 new ACKs/eight post-launch fill rows,
