@@ -975,7 +975,30 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // genuine quote/slice, never the read hint or an invented quantity.
  submit_order(t,c,bank,log,authority,&current,final_facts,None,Some(f))
 }
+/// Release only local, never-dispatched reservations. The selector protects
+/// held inventory, pending mates, reviewed managers and all package scopes.
+/// No source/transport work may interleave validation and this serialized batch.
+fn retire_stale_entry_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>)->Result<usize>{
+ let at=now();let selected=moloch_live_runtime::stale_entry_drafts::select(bank,log,&c.scope,managed,at)?;
+ if selected.drafts().is_empty(){return Ok(0)}
+ selected.validate_current(bank,log,&c.scope,managed,now())?;
+ let mut rows=Vec::new();
+ for draft in selected.drafts(){let id=draft.qid();let current=quote(bank,id)?;
+  if current!=*draft.quote()||!log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){return Err("LIVE_STALE_DRAFT_ORIGINAL_CHANGED".into())}
+  let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
+  // Existing native defer flag suppresses immediate replanning. It grants no
+  // package authority and does not cancel or release any physical order.
+  accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))?;
+  rows.push(json!({"qid":id,"releasedLocalReservationUnits":draft.reserved_units().to_string()}));
+ }
+ atomic_json(&c.root.join("stale-entry-drafts.json"),&json!({"at":iso(now()),"pid":std::process::id(),"reason":"stale_unsubmitted_ordinary_buy","originalNativeHead":selected.native_head(),"originalDispatchDescriptor":selected.dispatch_descriptor_identity(),"retired":rows,"nativeHead":bank.durable_head(),"networkRequests":0,"physicalOrdersCanceled":0,"pricesChanged":false}))?;
+ Ok(rows.len())
+}
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+ if allow_new_submissions&&!bank.engine().package_blocks_submissions(){
+  let managed=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
+  retire_stale_entry_drafts(c,bank,log,&managed)?;
+ }
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
  let(hints,refresh_unknown)=if allow_new_submissions{prepare_expired_exit_hints(&orders,flow_started,
@@ -1311,7 +1334,8 @@ pub fn main()->Result<()>{
      let started=now();let from=*windows.get(&target).ok_or("LIVE_OWNED_REFRESH_WINDOW")?;
      let next=source(&mut t,&c,&mut bank,&mut source_state,&target,&market,from)?;
      owned_age_reads.complete_read(&hint,started,now())?;windows.insert(target.clone(),next);
-     let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"oldestExecutionMs":hint.oldest_execution_ms(),"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
+     let execution_clock=if hint.reason()=="new_lot_maximum_age"{Some(hint.oldest_execution_ms())}else{None};
+     let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"reason":hint.reason(),"nativeQid":hint.native_qid(),"oldestExecutionMs":execution_clock,"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
      drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
      if reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
       reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache)?;
