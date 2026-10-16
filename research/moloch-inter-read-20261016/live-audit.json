@@ -1,0 +1,2098 @@
+{
+  "accountRequests": 0,
+  "comparison": {
+    "approximatelyMatchingTenSecondSamples": true,
+    "baseline": {
+      "bytesPerWriteSyscall": 35.229296831116756,
+      "oneCoreCpuPercent": 35.39399592530442,
+      "writeCharsPerSecond": 2445604.5388930948,
+      "writeSyscallsPerSecond": 69419.62397424241
+    },
+    "baselineEventWindow": {
+      "cutoff": "2026-10-16T12:09:14.564608+00:00",
+      "notBefore": "2026-10-16T11:47:44.050Z"
+    },
+    "baselinePid": 494293,
+    "baselineSampleSeconds": 10.001696354011074,
+    "baselineSha256": "d44c87ab55e83e1308b4d04ac9ad2b0087464fc2e7f515c4bb1c40c1830e0173",
+    "current": {
+      "bytesPerWriteSyscall": 163869.18041237115,
+      "oneCoreCpuPercent": 39.99323439655401,
+      "writeCharsPerSecond": 3178524.393162531,
+      "writeSyscallsPerSecond": 19.396718682328697
+    },
+    "currentEventWindow": {
+      "cutoff": "2026-10-16T14:11:47.393037+00:00",
+      "notBefore": "2026-10-16T14:03:28.776952+00:00"
+    },
+    "currentPid": 510591,
+    "currentSampleSeconds": 10.001691686993581,
+    "limitations": [
+      "Different event windows, market activity, pending orders and selected scopes may confound process/latency comparisons.",
+      "CPU samples are bursts, not steady-state throughput. A completed-cycle count is not inferred from a stale status.",
+      "Receipt spans exclude pre-admission waits and include HTTP, validation, durable completion and possibly pagination.",
+      "processedAt precedes accept_batch completion. It measures observation-to-processing start, not durable commit latency."
+    ],
+    "wholeLoopSpeedupEstablished": false
+  },
+  "completedPassObservations": [],
+  "diagnosticSamples": [
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:05:47.390478+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:05:47.390442+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:05:40.764Z",
+          "bytes": 264,
+          "completedReadScopes": 9,
+          "originalClockAgeMs": 6626,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:05:47.389955+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "06cbe189d1eea19eb4e07188e9db360e613044b6b6a6bb9b98e7ec0d208c8ed4",
+          "terminalOrders": 1043
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:05:47.390208+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:05:57.393433+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:05:57.393393+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:05:40.764Z",
+          "bytes": 264,
+          "completedReadScopes": 9,
+          "originalClockAgeMs": 16629,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:05:57.392849+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "06cbe189d1eea19eb4e07188e9db360e613044b6b6a6bb9b98e7ec0d208c8ed4",
+          "terminalOrders": 1043
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:05:57.393112+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:06:07.394943+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:06:07.394909+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:05:58.185Z",
+          "bytes": 265,
+          "completedReadScopes": 10,
+          "originalClockAgeMs": 9209,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:06:07.394286+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "65c2bdc7bdba886048ec9c56b4a1bea544b1da12492376beb6d8021bc0c1787c",
+          "terminalOrders": 1043
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:06:07.394655+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:06:17.396855+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:06:17.396813+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:05:58.185Z",
+          "bytes": 265,
+          "completedReadScopes": 10,
+          "originalClockAgeMs": 19211,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:06:17.396138+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "65c2bdc7bdba886048ec9c56b4a1bea544b1da12492376beb6d8021bc0c1787c",
+          "terminalOrders": 1043
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:06:17.396514+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:06:27.399370+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:06:27.399310+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:06:18.581Z",
+          "bytes": 265,
+          "completedReadScopes": 11,
+          "originalClockAgeMs": 8817,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:06:27.398376+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "ecefbc571866f37f02af9af276a9b4a3a2fccc884bb6093c52c6c22fefc96938",
+          "terminalOrders": 1044
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:06:27.398885+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:06:37.404231+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:06:37.404160+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:06:18.581Z",
+          "bytes": 265,
+          "completedReadScopes": 11,
+          "originalClockAgeMs": 18822,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:06:37.402576+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "ecefbc571866f37f02af9af276a9b4a3a2fccc884bb6093c52c6c22fefc96938",
+          "terminalOrders": 1044
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:06:37.403664+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:06:47.406948+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:06:47.406908+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:06:45.760Z",
+          "bytes": 265,
+          "completedReadScopes": 12,
+          "originalClockAgeMs": 1646,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:06:47.405650+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "59975634663c0d2265a13c0c59a6ef3659b13bdaed3e158ea6e779eae33be60a",
+          "terminalOrders": 1045
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:06:47.406574+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:06:57.410894+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:06:57.410828+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:06:45.760Z",
+          "bytes": 265,
+          "completedReadScopes": 12,
+          "originalClockAgeMs": 11649,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:06:57.408814+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "59975634663c0d2265a13c0c59a6ef3659b13bdaed3e158ea6e779eae33be60a",
+          "terminalOrders": 1045
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:06:57.410289+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:07:07.412878+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:07:07.412847+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:07:03.652Z",
+          "bytes": 265,
+          "completedReadScopes": 13,
+          "originalClockAgeMs": 3760,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:07:07.412326+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "cb6b3e5d662a81686ed14a7b1021ab5570bed18cce4c518695e4fbd4e86bb00e",
+          "terminalOrders": 1045
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:07:07.412620+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:07:17.416724+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:07:17.416664+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:07:03.652Z",
+          "bytes": 265,
+          "completedReadScopes": 13,
+          "originalClockAgeMs": 13763,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:07:17.415147+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "cb6b3e5d662a81686ed14a7b1021ab5570bed18cce4c518695e4fbd4e86bb00e",
+          "terminalOrders": 1045
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:07:17.416189+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:07:27.419327+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:07:27.419269+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1050,
+          "at": "2026-10-16T14:07:03.652Z",
+          "bytes": 265,
+          "completedReadScopes": 13,
+          "originalClockAgeMs": 23766,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:07:27.418313+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "cb6b3e5d662a81686ed14a7b1021ab5570bed18cce4c518695e4fbd4e86bb00e",
+          "terminalOrders": 1045
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:07:27.418844+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:07:37.421474+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:07:37.421435+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1051,
+          "at": "2026-10-16T14:07:29.741Z",
+          "bytes": 265,
+          "completedReadScopes": 14,
+          "originalClockAgeMs": 7680,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:07:37.420746+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "548523a250e1270f1c5aa3c7f947b35644901169ffbee7e45d3e56e205b0b66c",
+          "terminalOrders": 1045
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:07:37.421114+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:07:47.424145+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:07:47.424089+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 164,
+          "actualOrders": 1051,
+          "at": "2026-10-16T14:07:29.741Z",
+          "bytes": 265,
+          "completedReadScopes": 14,
+          "originalClockAgeMs": 17682,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:07:47.423073+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "548523a250e1270f1c5aa3c7f947b35644901169ffbee7e45d3e56e205b0b66c",
+          "terminalOrders": 1045
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:07:47.423666+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:07:57.426575+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:07:57.426522+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1051,
+          "at": "2026-10-16T14:07:49.603Z",
+          "bytes": 265,
+          "completedReadScopes": 15,
+          "originalClockAgeMs": 7823,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:07:57.425676+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "8c761d77689d6670172470083ed9ccd99cc2e569fd424931266b9d61f8672d49",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:07:57.426137+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:08:07.428981+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:08:07.428929+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1052,
+          "at": "2026-10-16T14:08:04.508Z",
+          "bytes": 265,
+          "completedReadScopes": 16,
+          "originalClockAgeMs": 2920,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:08:07.428059+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "d9b8ef254afa689270900bc9025708aa0ef8ffbea43e3f0668e687616265daf1",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:08:07.428543+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:08:17.431403+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:08:17.431350+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1052,
+          "at": "2026-10-16T14:08:04.508Z",
+          "bytes": 265,
+          "completedReadScopes": 16,
+          "originalClockAgeMs": 12923,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:08:17.430507+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "d9b8ef254afa689270900bc9025708aa0ef8ffbea43e3f0668e687616265daf1",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:08:17.430971+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:08:27.434091+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:08:27.434038+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1052,
+          "at": "2026-10-16T14:08:04.508Z",
+          "bytes": 265,
+          "completedReadScopes": 16,
+          "originalClockAgeMs": 22925,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:08:27.433171+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "d9b8ef254afa689270900bc9025708aa0ef8ffbea43e3f0668e687616265daf1",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:08:27.433658+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:08:37.436565+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:08:37.436513+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:08:29.390Z",
+          "bytes": 265,
+          "completedReadScopes": 17,
+          "originalClockAgeMs": 8046,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:08:37.435651+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "3db138faaf15b79e70cf2a770e213009a31c6e1e0f6d8308e697bcb74c1e28e1",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:08:37.436139+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:08:47.439082+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:08:47.439024+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:08:29.390Z",
+          "bytes": 265,
+          "completedReadScopes": 17,
+          "originalClockAgeMs": 18048,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:08:47.438109+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "3db138faaf15b79e70cf2a770e213009a31c6e1e0f6d8308e697bcb74c1e28e1",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:08:47.438611+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:08:57.440971+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:08:57.440940+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:08:50.778Z",
+          "bytes": 265,
+          "completedReadScopes": 18,
+          "originalClockAgeMs": 6662,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:08:57.440431+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "36261e78d26a87a8ff021912ac58d5b196f50831bf82b89cd4c877e35c29bd11",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:08:57.440712+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:09:07.443190+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:09:07.443135+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 166,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:08:50.778Z",
+          "bytes": 265,
+          "completedReadScopes": 18,
+          "originalClockAgeMs": 16664,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:09:07.442281+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "36261e78d26a87a8ff021912ac58d5b196f50831bf82b89cd4c877e35c29bd11",
+          "terminalOrders": 1046
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:09:07.442759+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:09:17.445052+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:09:17.445018+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:09:12.163Z",
+          "bytes": 265,
+          "completedReadScopes": 19,
+          "originalClockAgeMs": 5281,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:09:17.444476+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "b5eafcc04cf6a76c161d024d89e5e9f741b6b00762e365bd632fc668a3dcc489",
+          "terminalOrders": 1047
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:09:17.444770+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:09:27.447234+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:09:27.447181+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:09:12.163Z",
+          "bytes": 265,
+          "completedReadScopes": 19,
+          "originalClockAgeMs": 15283,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:09:27.446366+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "b5eafcc04cf6a76c161d024d89e5e9f741b6b00762e365bd632fc668a3dcc489",
+          "terminalOrders": 1047
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:09:27.446804+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:09:37.449672+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:09:37.449618+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:09:37.362Z",
+          "bytes": 265,
+          "completedReadScopes": 20,
+          "originalClockAgeMs": 87,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:09:37.448707+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "6e2bb547d81c151fe155f360346f86b3b6fe7e8550a3fac1652a7e3ea9449c18",
+          "terminalOrders": 1048
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:09:37.449179+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:09:47.451665+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:09:47.451630+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:09:37.362Z",
+          "bytes": 265,
+          "completedReadScopes": 20,
+          "originalClockAgeMs": 10089,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:09:47.451034+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "6e2bb547d81c151fe155f360346f86b3b6fe7e8550a3fac1652a7e3ea9449c18",
+          "terminalOrders": 1048
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:09:47.451370+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:09:57.453995+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:09:57.453937+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1053,
+          "at": "2026-10-16T14:09:37.362Z",
+          "bytes": 265,
+          "completedReadScopes": 20,
+          "originalClockAgeMs": 20091,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:09:57.452967+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "6e2bb547d81c151fe155f360346f86b3b6fe7e8550a3fac1652a7e3ea9449c18",
+          "terminalOrders": 1048
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:09:57.453537+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:10:07.455919+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:10:07.455886+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1054,
+          "at": "2026-10-16T14:10:02.157Z",
+          "bytes": 265,
+          "completedReadScopes": 21,
+          "originalClockAgeMs": 5298,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:10:07.455379+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "556fb9d5248714bd50ba5ac0a075aa59fa32a8945b1123f6241646070fae31bd",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:10:07.455661+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:10:17.458261+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:10:17.458206+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1054,
+          "at": "2026-10-16T14:10:02.157Z",
+          "bytes": 265,
+          "completedReadScopes": 21,
+          "originalClockAgeMs": 15300,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:10:17.457335+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "556fb9d5248714bd50ba5ac0a075aa59fa32a8945b1123f6241646070fae31bd",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:10:17.457801+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:10:27.460442+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:10:27.460388+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1054,
+          "at": "2026-10-16T14:10:02.157Z",
+          "bytes": 265,
+          "completedReadScopes": 21,
+          "originalClockAgeMs": 25303,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:10:27.459551+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "556fb9d5248714bd50ba5ac0a075aa59fa32a8945b1123f6241646070fae31bd",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:10:27.459981+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:10:37.462387+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:10:37.462354+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1055,
+          "at": "2026-10-16T14:10:32.156Z",
+          "bytes": 265,
+          "completedReadScopes": 22,
+          "originalClockAgeMs": 5306,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:10:37.461835+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "824b240dbbba4cf35969296b2026ae2b9f1ddd19e67af408b6da7a26fc4364b8",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:10:37.462123+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:10:47.464052+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:10:47.464021+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1055,
+          "at": "2026-10-16T14:10:32.156Z",
+          "bytes": 265,
+          "completedReadScopes": 22,
+          "originalClockAgeMs": 15307,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:10:47.463499+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "824b240dbbba4cf35969296b2026ae2b9f1ddd19e67af408b6da7a26fc4364b8",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:10:47.463794+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:10:57.466312+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:10:57.466261+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1055,
+          "at": "2026-10-16T14:10:32.156Z",
+          "bytes": 265,
+          "completedReadScopes": 22,
+          "originalClockAgeMs": 25309,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:10:57.465387+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "824b240dbbba4cf35969296b2026ae2b9f1ddd19e67af408b6da7a26fc4364b8",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:10:57.465873+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:11:07.468233+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:11:07.468203+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1056,
+          "at": "2026-10-16T14:10:59.396Z",
+          "bytes": 265,
+          "completedReadScopes": 23,
+          "originalClockAgeMs": 8072,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:11:07.467650+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "fa2d966c4468b5d75d90c414a793b8fb70b78afbba1c1a4a78e6455c3324045e",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:11:07.467972+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:11:17.470440+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:11:17.470387+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1056,
+          "at": "2026-10-16T14:10:59.396Z",
+          "bytes": 265,
+          "completedReadScopes": 23,
+          "originalClockAgeMs": 18074,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:11:17.469532+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "fa2d966c4468b5d75d90c414a793b8fb70b78afbba1c1a4a78e6455c3324045e",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:11:17.469997+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:11:27.472550+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:11:27.472505+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 167,
+          "actualOrders": 1056,
+          "at": "2026-10-16T14:10:59.396Z",
+          "bytes": 265,
+          "completedReadScopes": 23,
+          "originalClockAgeMs": 28076,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:11:27.471807+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "fa2d966c4468b5d75d90c414a793b8fb70b78afbba1c1a4a78e6455c3324045e",
+          "terminalOrders": 1049
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:11:27.472189+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:11:37.474613+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:11:37.474584+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 168,
+          "actualOrders": 1057,
+          "at": "2026-10-16T14:11:30.307Z",
+          "bytes": 265,
+          "completedReadScopes": 24,
+          "originalClockAgeMs": 7167,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:11:37.474098+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "35df0e488b1cc93e165fce54acc59d7264b3e82f4a84beb217015ee48308b262",
+          "terminalOrders": 1050
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:11:37.474364+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    },
+    {
+      "atomicMultiFileSnapshot": false,
+      "capturedAt": "2026-10-16T14:11:47.392455+00:00",
+      "files": {
+        "discovery-schedule.json": {
+          "accepted": false,
+          "bytes": 717,
+          "readCompletedAt": "2026-10-16T14:11:47.392403+00:00",
+          "reason": "before_readiness",
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "progress.json": {
+          "accepted": true,
+          "actualFills": 168,
+          "actualOrders": 1057,
+          "at": "2026-10-16T14:11:30.307Z",
+          "bytes": 265,
+          "completedReadScopes": 24,
+          "originalClockAgeMs": 17085,
+          "phase": "trading",
+          "pid": 510591,
+          "readCompletedAt": "2026-10-16T14:11:47.391597+00:00",
+          "realtimeHealthy": true,
+          "selectedReadScopeCount": 33,
+          "sha256": "35df0e488b1cc93e165fce54acc59d7264b3e82f4a84beb217015ee48308b262",
+          "terminalOrders": 1050
+        },
+        "status.json": {
+          "accepted": false,
+          "bytes": 131,
+          "readCompletedAt": "2026-10-16T14:11:47.392030+00:00",
+          "reason": "different_or_missing_pid",
+          "sha256": "0efc48db0d0f2ff9aaae2a1fa983d3913da28940663b3869c39d04f352ad4df9"
+        }
+      },
+      "samePidSelectionAnchor": {
+        "at": "2026-10-16T14:02:49.437Z",
+        "originalFile": {
+          "bytes": 717,
+          "sha256": "a37ba985cb9e443725466ddef247be1bdbf01729d6eeb0d2518b840257143005"
+        },
+        "pid": 510591,
+        "precedesReadiness": true,
+        "selectedScopeCount": 33
+      }
+    }
+  ],
+  "dispatch": {
+    "attemptToAckReceivedMs": {
+      "count": 13,
+      "max": 991,
+      "median": 860,
+      "min": 675,
+      "p90": 979
+    },
+    "attemptsWithoutAckInWindow": 0,
+    "datedEventCounts": {
+      "ack": 13,
+      "attempt": 13,
+      "cancel_ack": 5,
+      "cancel_attempt": 5,
+      "intent": 13
+    },
+    "firstRow": {
+      "hash": "e631e40c2ec551c58d308833b070eb43717b7aa188d13dfc47d956a4888a7e7c",
+      "previous": "92aaa1f1a8e85b4d9bace09703388b54d0a3681520a8a615ea6005c995d91e22",
+      "sequence": 7101
+    },
+    "fullPrefixVerified": false,
+    "lastRow": {
+      "hash": "3bf79218502ec3d29b485b1cfa5c46de32802cdf9ebaf4199ccb42fe57e4e757",
+      "previous": "6742e25f6ec180cf76ef36f431ed4ce783b4af19f371b3df1e1ae92dfd27b87a",
+      "sequence": 10965
+    },
+    "limitations": "Undated rows excluded from time-window counts. Unacknowledged suffix attempts are censored, not proof of unknown acceptance. Attempt-to-ACK includes SDK admission, HTTP, validation and completion; it is not provider-only latency.",
+    "sourceBoundary": {
+      "bytes": 2097068,
+      "endByte": 5630445,
+      "incompleteTrailingBytesExcluded": 0,
+      "observedFileBytes": 5630445,
+      "sha256": "285c239fb3801eea0b07911fd54d078b74f1cfc5d4f625f5f110963d3e318f6a",
+      "startByte": 3533377
+    },
+    "suffixRowSealsAndChainVerified": true
+  },
+  "financialReplayPerformed": false,
+  "identity": {
+    "actualRunningExecutable": {
+      "bytes": 12926328,
+      "device": 66305,
+      "inode": 12603121,
+      "sha256": "011ffde0a00a959959acf99ef1824328c9b75f176ac66eda6c8eba6e96832c37"
+    },
+    "sourceManifest": {
+      "bytes": 29869,
+      "sha256": "2f53e211cd1c5d9476f71f94b596fb75bc1bbcb541789f8750f4d62da25fbefa",
+      "sourceCommit": "4ee163561b8018e58d945b38b4f4eea5cd7b09ee"
+    }
+  },
+  "journal": {
+    "clockLimitation": "processedAt is stamped before accept_batch, not a durable completion timestamp; timestamp groups are not guaranteed batch boundaries",
+    "eventCounts": {
+      "actual_fill": 8,
+      "actual_order_ack": 13,
+      "actual_order_terminal": 7,
+      "book": 1513,
+      "coverage": 26,
+      "trade": 81,
+      "unsubmitted_intent_retired": 51
+    },
+    "eventsPerProcessingTimestamp": {
+      "count": 555,
+      "max": 25,
+      "median": 2,
+      "min": 1,
+      "p90": 7
+    },
+    "firstRow": {
+      "hash": "707112d81fe03683827dbb3ce722e4ee958019641ceffcb6026abfd6a92c901b",
+      "previous": "ca5f00fbc404d6f2ef5fd3ff54c634b856026db5796278d26558cbde749dbad1",
+      "sequence": 257470
+    },
+    "fullPrefixVerified": false,
+    "lastRow": {
+      "hash": "c6f098061ba661f9510fe29caf821df69d55502ca58ebc06e5ff82b72018fdb3",
+      "previous": "43759cabbb5f56f4d0bc09a0bfc49cfeee7dce20cac36648e2d8ff74baa4faf0",
+      "sequence": 262713
+    },
+    "processingTimestampGapMs": {
+      "count": 554,
+      "max": 9647,
+      "median": 250,
+      "min": 1,
+      "p90": 1891
+    },
+    "processingTimestampGroups": 555,
+    "receivedToProcessingStartMs": {
+      "actual_fill": {
+        "count": 8,
+        "max": 203,
+        "median": 5,
+        "min": 4,
+        "p90": 203
+      },
+      "actual_order_ack": {
+        "count": 13,
+        "max": 7,
+        "median": 7,
+        "min": 5,
+        "p90": 7
+      },
+      "actual_order_terminal": {
+        "count": 7,
+        "max": 468,
+        "median": 248,
+        "min": 73,
+        "p90": 468
+      },
+      "book": {
+        "count": 67,
+        "max": 298,
+        "median": 66,
+        "min": 45,
+        "p90": 74
+      },
+      "coverage": {
+        "count": 26,
+        "max": 76,
+        "median": 63,
+        "min": 55,
+        "p90": 68
+      },
+      "official_sig_realtime": {
+        "count": 1446,
+        "max": 17782,
+        "median": 2960,
+        "min": 66,
+        "p90": 12304
+      },
+      "trade": {
+        "count": 81,
+        "max": 16610,
+        "median": 922,
+        "min": 55,
+        "p90": 10616
+      },
+      "unsubmitted_intent_retired": {
+        "count": 51,
+        "max": 1,
+        "median": 0,
+        "min": 0,
+        "p90": 0
+      }
+    },
+    "suffixRowSealsAndChainVerified": true
+  },
+  "maximumObservationSeconds": 360,
+  "notBefore": "2026-10-16T14:03:28.776952+00:00",
+  "observedCutoff": "2026-10-16T14:11:47.393037+00:00",
+  "pid": 510591,
+  "processDeltas": [
+    {
+      "bytesPerWriteSyscall": 145773.66379310345,
+      "elapsedSeconds": 5.000878566002939,
+      "oneCoreCpuPercent": 51.390969928192604,
+      "readBytes": 0,
+      "systemCpuSeconds": 0.08,
+      "userCpuSeconds": 2.49,
+      "writeBytes": 17039360,
+      "writeChars": 16909745,
+      "writeSyscalls": 116
+    },
+    {
+      "bytesPerWriteSyscall": 190780.46153846153,
+      "elapsedSeconds": 5.000813120990642,
+      "oneCoreCpuPercent": 28.595349704184155,
+      "readBytes": 0,
+      "systemCpuSeconds": 0.05,
+      "userCpuSeconds": 1.38,
+      "writeBytes": 14991360,
+      "writeChars": 14880876,
+      "writeSyscalls": 78
+    },
+    {
+      "bytesPerWriteSyscall": 163869.18041237115,
+      "elapsedSeconds": 10.001691686993581,
+      "oneCoreCpuPercent": 39.99323439655401,
+      "readBytes": 0,
+      "systemCpuSeconds": 0.13,
+      "userCpuSeconds": 3.87,
+      "writeBytes": 32030720,
+      "writeChars": 31790621,
+      "writeSyscalls": 194
+    }
+  ],
+  "processSamples": [
+    {
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 1484002253,
+        "read_bytes": 4096,
+        "syscr": 116006,
+        "syscw": 5387,
+        "wchar": 634993712,
+        "write_bytes": 640040960
+      },
+      "monotonic": 129201.44152249,
+      "rssBytes": 361775104,
+      "startTicks": 12834298,
+      "systemTicks": 464,
+      "ticksPerSecond": 100,
+      "userTicks": 72013,
+      "utc": "2026-10-16T14:05:47.390731+00:00"
+    },
+    {
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 1551361893,
+        "read_bytes": 4096,
+        "syscr": 117250,
+        "syscw": 5503,
+        "wchar": 651903457,
+        "write_bytes": 657080320
+      },
+      "monotonic": 129206.442401056,
+      "rssBytes": 361775104,
+      "startTicks": 12834298,
+      "systemTicks": 472,
+      "ticksPerSecond": 100,
+      "userTicks": 72262,
+      "utc": "2026-10-16T14:05:52.391583+00:00"
+    },
+    {
+      "io": {
+        "cancelled_write_bytes": 0,
+        "rchar": 1565021731,
+        "read_bytes": 4096,
+        "syscr": 117525,
+        "syscw": 5581,
+        "wchar": 666784333,
+        "write_bytes": 672071680
+      },
+      "monotonic": 129211.443214177,
+      "rssBytes": 361775104,
+      "startTicks": 12834298,
+      "systemTicks": 477,
+      "ticksPerSecond": 100,
+      "userTicks": 72400,
+      "utc": "2026-10-16T14:05:57.392395+00:00"
+    }
+  ],
+  "progressChange": {
+    "completedCycleDelta": null,
+    "completedCyclesAtSampleBoundaries": [
+      null,
+      null
+    ],
+    "scopesCompletedWithinSameSelection": null
+  },
+  "receipts": {
+    "availableRecentFiles": 354,
+    "byEndpointClassMs": {
+      "account": {
+        "count": 20,
+        "max": 747,
+        "median": 342,
+        "min": 318,
+        "p90": 673
+      },
+      "book": {
+        "count": 45,
+        "max": 2636,
+        "median": 374,
+        "min": 311,
+        "p90": 824
+      },
+      "contract": {
+        "count": 16,
+        "max": 664,
+        "median": 304,
+        "min": 251,
+        "p90": 525
+      },
+      "market": {
+        "count": 15,
+        "max": 390,
+        "median": 214,
+        "min": 169,
+        "p90": 343
+      },
+      "open_orders": {
+        "count": 54,
+        "max": 713,
+        "median": 261,
+        "min": 194,
+        "p90": 629
+      },
+      "other": {
+        "count": 3,
+        "max": 1058,
+        "median": 264,
+        "min": 257,
+        "p90": 1058
+      },
+      "owned_fills": {
+        "count": 118,
+        "max": 910,
+        "median": 232,
+        "min": 191,
+        "p90": 340
+      },
+      "owned_order": {
+        "count": 16,
+        "max": 751,
+        "median": 215,
+        "min": 201,
+        "p90": 675
+      },
+      "positions": {
+        "count": 20,
+        "max": 761,
+        "median": 389,
+        "min": 343,
+        "p90": 593
+      },
+      "public_trades": {
+        "count": 26,
+        "max": 1195,
+        "median": 409,
+        "min": 316,
+        "p90": 627
+      },
+      "tournament": {
+        "count": 20,
+        "max": 728,
+        "median": 324,
+        "min": 262,
+        "p90": 423
+      }
+    },
+    "concatenatedRawFileSha256DigestSha256": "2df53fab65b8918ff9d576eb459366d2fefa583f11ae8b912f08389e72f0611c",
+    "firstStartMs": 1792159409374,
+    "invalidClocks": 0,
+    "lastEndMs": 1792159907380,
+    "maximumAggregateOriginalBytes": 67108864,
+    "meaning": "network-start through validation and durable completion; excludes pre-admission wait; aggregate pagination may span multiple calls",
+    "receiptWindowUnionMs": 126871,
+    "selectedFiles": 354,
+    "selectedOriginalBytes": 539626,
+    "selectionWasTruncated": false
+  },
+  "runtimeMutated": false,
+  "schemaVersion": 1,
+  "sourceBoundary": {
+    "bytes": 16774729,
+    "endByte": 818898130,
+    "incompleteTrailingBytesExcluded": 0,
+    "observedFileBytes": 818898130,
+    "sha256": "0e66e92b8fbf33c1bb3dfc7f8045874ccccd5a5123e188b3357be91bb3119032",
+    "startByte": 802123401
+  },
+  "state": "observed"
+}

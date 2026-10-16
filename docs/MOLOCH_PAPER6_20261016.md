@@ -9,7 +9,21 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at14:04UTC
+## Latest operation and qualification at 14:35 UTC
+
+Current sole510591 is fresh trading,40 new ACKs/eight new fill rows at14:33:40;
+realized−106.485000. Checked source870ce889/released2ad93b5 is staged after278
+distinct passing ARM64 checks and a successful optimized build. Explicit
+ordinary-side enforcement screens independent BUYs with the original minimum
+side criterion; covered hedges/exits and existing limits remain. Separately
+typed token-HTTP retry uses the existing durable bounded attempt budget.
+Neither change is yet in the running worker. [Actual build and selected mode](../research/moloch-ordinary-side-edge-20261016/README.md).
+
+Measured realtime processing median12.524s→2.960s/p9024.467s→12.304s is a
+bounded observational result, with no CPU/whole-cycle/profit claim.
+[Actual latency, unique-fill accounting and limitations](../research/moloch-inter-read-20261016/README.md).
+
+## Historical operation and qualification at14:04UTC
 
 Recovered510591/source4ee/executable011ffde0 is genuinely fresh trading at
 14:03:28UTC with healthy realtime/no STOP, one official new ACK; five by14:04:45,

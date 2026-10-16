@@ -1,4 +1,23 @@
-# October16,14:04UTC: inter-read worker trading; actual strategy-cost study
+# October 16, 14:35 UTC: checked entry filter staged; current production trading
+
+Sole production PID 510591/source4ee16356 remains fresh with healthy realtime
+and no STOP. At14:33:40 UTC it had40 new ACKs/eight post-launch fill rows,
+171 cumulative fills, cash72,741.915000 and owned cost22,731.515000. Attributed
+realized remains−106.485000; new completed rounds were flat. The full95,579.915000
+capital mandate remains; contributions are not profit.
+
+Candidate source870ce889/executabled2ad93b5 passed278 distinct ARM64 checks
+and its optimized release build. It is staged with explicit ordinarySideEdge
+enforce for unhedged ordinary BUYs and separately typed bounded token-HTTP
+recovery. Covered hedges, exits, financial limits, funding, daily windows and
+the exact native engine/bank/twelve bridges remain. The candidate is not yet
+the active worker. [Actual build and scope](../research/moloch-ordinary-side-edge-20261016/README.md).
+
+Actual original stream receipt-to-processing median fell12.524s→2.960s and
+p90 24.467s→12.304s in the bounded observed windows. This is not a causal
+whole-cycle/CPU speedup or profit claim. [Measured evidence and limits](../research/moloch-inter-read-20261016/README.md).
+
+# Historical October16,14:04UTC: inter-read worker trading; actual strategy-cost study
 
 Actual sole SIG510591/source4ee16356/executable011ffde0 is fresh trading with
 healthy realtime/no STOP. First verified14:03:28, one new official ACK; five by

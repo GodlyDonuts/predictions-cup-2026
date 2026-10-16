@@ -1,0 +1,118 @@
+{
+  "at": "2026-10-16T14:15:46.296473+00:00",
+  "baselineSha256": "17b0fe5a10d6459bc0f9aef41033dbadef08095318838b54987c0dd9d654e2e1",
+  "currentAuditSha256": "2ae629ac72b833421e2f1c491407448e5f73d42cbcbf8004b46bd4308b8a2f29",
+  "baselinePid": 503120,
+  "currentPid": 510591,
+  "baselineWindow": {
+    "since": "2026-10-16T12:57:36.445203Z",
+    "cutoff": "2026-10-16T13:06:39.223556+00:00"
+  },
+  "currentWindow": {
+    "since": "2026-10-16T14:03:28.776952+00:00",
+    "cutoff": "2026-10-16T14:11:47.393037+00:00"
+  },
+  "realtimeReceiptToProcessingStartMs": {
+    "before": {
+      "count": 1344,
+      "max": 31567,
+      "median": 12524,
+      "min": 140,
+      "p90": 24467
+    },
+    "after": {
+      "count": 1446,
+      "max": 17782,
+      "median": 2960,
+      "min": 66,
+      "p90": 12304
+    },
+    "medianReductionPercent": 76.3653784733312,
+    "p90ReductionPercent": 49.71185678669228
+  },
+  "process10sBefore": {
+    "bytesPerWriteSyscall": 189948.6732026144,
+    "elapsedSeconds": 10.00152779900236,
+    "oneCoreCpuPercent": 34.89466879598258,
+    "readBytes": 0,
+    "systemCpuSeconds": 0.18,
+    "userCpuSeconds": 3.31,
+    "writeBytes": 29282304,
+    "writeChars": 29062147,
+    "writeSyscalls": 153
+  },
+  "process10sAfter": {
+    "bytesPerWriteSyscall": 163869.18041237115,
+    "elapsedSeconds": 10.001691686993581,
+    "oneCoreCpuPercent": 39.99323439655401,
+    "readBytes": 0,
+    "systemCpuSeconds": 0.13,
+    "userCpuSeconds": 3.87,
+    "writeBytes": 32030720,
+    "writeChars": 31790621,
+    "writeSyscalls": 194
+  },
+  "attemptToAckMsBefore": {
+    "count": 16,
+    "max": 1258,
+    "median": 935,
+    "min": 749,
+    "p90": 1163
+  },
+  "attemptToAckMsAfter": {
+    "count": 13,
+    "max": 991,
+    "median": 860,
+    "min": 675,
+    "p90": 979
+  },
+  "nativeAckLagMsBefore": {
+    "count": 16,
+    "max": 10,
+    "median": 7,
+    "min": 5,
+    "p90": 8
+  },
+  "nativeAckLagMsAfter": {
+    "count": 13,
+    "max": 7,
+    "median": 7,
+    "min": 5,
+    "p90": 7
+  },
+  "currentActualFillEventCount": 8,
+  "currentLogicalReceipts": 354,
+  "currentFullFillTapeReceipts": 118,
+  "currentCompletedPasses": [],
+  "accountRequests": 0,
+  "financialReplayPerformed": false,
+  "wholeLoopSpeedupEstablished": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Different naturally occurring windows and pending work; observational comparison, no causal guarantee.",
+    "Current CPU sample began 2m18.6s after confirmed readiness versus approximately3m03s for the earlier sample.",
+    "Current underlying inspector comparison remains pinned to original d44 baseline; this separate comparison explicitly pins buffered17b baseline.",
+    "Original processedAt denotes processing start, not durable completion.",
+    "Complete current pass not observed in the bounded window; no cycle-time gain inferred."
+  ],
+  "uniqueActualFillClocks": {
+    "nativeFillObservations": 8,
+    "uniqueActualFillIds": 5,
+    "duplicateObservationsExcluded": 3,
+    "executionToFirstReceiptMs": {
+      "count": 5,
+      "min": 9520,
+      "median": 15348,
+      "p90": 17798,
+      "max": 17798
+    },
+    "firstReceiptToProcessingStartMs": {
+      "count": 5,
+      "min": 4,
+      "median": 5,
+      "p90": 203,
+      "max": 203
+    },
+    "meaning": "Actual observed fills in the declared bounded processing window; complete repeated tapes do not create new fills."
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-16T14:24:19.311647+00:00",
+  "sourceCommit": "870ce889d51a04c654a93785277c47ea33b52bea",
+  "sourceManifestSha256": "ed95fa74a9d8a7c798b8e66d1f06d87da9cc935dd079e6f75432aa3fbebef0ca",
+  "sourceFileCount": 248,
+  "nativeSourcesByteIdentical": true,
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "logSha256": "d2cf119731c7703dd6af56718229db866dd2bc108e97ea36b56e3a20e4f01336",
+  "exitCode": 0,
+  "testGroups": {
+    "runtimeLibrary": {
+      "passed": 175,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOutNotCredited": 0
+    },
+    "runtimeWorker": {
+      "passed": 85,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOutNotCredited": 0
+    },
+    "streamConnect": {
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOutNotCredited": 0
+    },
+    "streamToken": {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOutNotCredited": 0
+    }
+  },
+  "distinctTestsPassed": 278,
+  "includedSubsetsNotAddedAgain": {
+    "ordinaryLibrary": 15,
+    "prizeLibrary": 13,
+    "ordinaryWorker": 4
+  },
+  "releaseBuildState": "in_progress",
+  "productionChanged": false,
+  "accountRequests": 0
+}

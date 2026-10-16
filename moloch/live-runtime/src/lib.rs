@@ -30,6 +30,7 @@ pub mod exit_refresh;
 pub mod stream_recovery;
 pub mod collateral_reconciliation;
 pub mod stream_connect_retry;
+pub mod stream_token_retry;
 
 pub mod package_first_call;
 
@@ -61,4 +62,5 @@ pub mod stale_entry_drafts;
 pub mod bulk_price_screen;
 
 pub mod capital_allocation;
+pub mod ordinary_side_edge;
 pub mod prize_utility;

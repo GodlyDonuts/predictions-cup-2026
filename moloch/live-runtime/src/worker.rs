@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -1076,6 +1076,29 @@ fn reviewed_book_prefilter(c:&Control,bank:&mut Session,source:&mut RestSource,t
  accept_fresh_book(bank,c,target,&book,source)?;
  eligible(bank,reads.now_ms())
 }
+// Additional reviewed runtime selection only. A shadow/logging failure cannot
+// change the old dispatch flow; Enforce still defers if evidence is unavailable.
+fn ordinary_side_edge_allows(c:&Control,bank:&Session,log:&DispatchLog,q:&Value,book:&Receipt,fundamental_managed:bool,at:u64)->bool{
+ use moloch_live_runtime::ordinary_side_edge::{self,Mode};
+ if c.ordinary_side_edge==Mode::Disabled||fundamental_managed||q["action"]!="buy"||bank.engine().is_package_order(q["id"].as_u64().unwrap_or(0)){return true}
+ let opposite=match q["side"].as_str(){Some("YES")=>Some(moloch_replay::Side::No),Some("NO")=>Some(moloch_replay::Side::Yes),_=>None};
+ if let(Some(side),Some(ex))=(opposite,q["exchangeId"].as_str()){
+  let held=bank.engine().wallet.quantity(ex,side);
+  if held>0{
+   let records=bank.engine().order_records();
+   let unclosed=log.attempted.difference(&log.closed).filter(|id|{
+    // Only the SDK-hydrated capability can clear this encumbrance. A raw
+    // replayed abort is untrusted, and any actual execution evidence wins.
+    !log.proved_no_network(**id)||log.acknowledgments.contains_key(*id)||bank.engine().live_order_bindings().contains_key(*id)||!records.iter().any(|o|o["id"]==**id&&o["retired"]==true&&o["filled"]==0)
+   }).copied().collect();
+   if ordinary_side_edge::fully_covered_opposite_buy(q,held,&records,&unclosed){return true}
+  }
+ }
+ let assessment=ordinary_side_edge::assess_original(bank.engine().policy(),&c.scope,q,book,at);
+ let deferred=c.ordinary_side_edge.defers(&assessment);
+ let _=atomic_json(&c.root.join("ordinary-side-edge.json"),&json!({"at":iso(at),"qid":q["id"],"mode":c.ordinary_side_edge,"assessment":assessment,"nativeHead":bank.durable_head(),"deferred":deferred,"physicalAttempted":false,"priceChanged":false,"quantityChanged":false,"executionAuthority":false}));
+ !deferred
+}
 /// A stale book is not evidence that a quote is competitive. Refresh only the
 /// original book first; a far floor must not consume six unrelated account
 /// reads. A positive result still obtains the entire independent seven-fact
@@ -1306,6 +1329,9 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let refreshed=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,std::slice::from_ref(&current),now(),None)?;
   if refreshed.ordered_indices.is_empty(){authority.clear_ready();let _=atomic_json(&c.root.join("quote-priority-deferred.json"),&json!({"at":iso(now()),"qid":qid,"assessment":refreshed,"physicalAttempted":false,"priceChanged":false}));return Ok(())}
   let fundamental_managed=fundamental.as_ref().is_some_and(|f|f.cohorts.manages(current["exchangeId"].as_str().unwrap_or("")));
+  // Cursor and the one-preflight budget were consumed before these ORIGINAL
+  // seven facts. A veto returns rather than buying another packet this pass.
+  if !ordinary_side_edge_allows(c,bank,log,&current,&facts.book,fundamental_managed,now()){authority.clear_ready();return Ok(())}
   if fundamental_managed&&!fundamental.as_ref().unwrap().eligible(bank,log,&c.scope,qid,now())?{authority.clear_ready();continue}
   let maker=if !fundamental_managed&&current["action"]=="buy"{if let Some(review)=maker_review{
    let decision=match moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,qid,now()){Ok(d)=>Arc::new(d),Err(error)if expected_maker_expiry(error.as_ref())=>{authority.clear_ready();continue},Err(error)=>return Err(error)};
@@ -1319,7 +1345,7 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  let marker=c.root.join("stream-auth-admission.json");let at=now();
  if marker.exists()&&load(&marker)?["atMs"].as_u64().is_none_or(|old|at<old+60000){return Err("LIVE_AUTH_MINT_BACKOFF".into())}
  atomic_json(&marker,&json!({"atMs":at}))?;
- let material=t.realtime_token()?;let auth=Auth::from_official_response(material)?;
+ let material=t.realtime_token().map_err(moloch_live_runtime::stream_token_retry::TokenFailure::from_token_error)?;let auth=Auth::from_official_response(material)?;
  // Only the native connection boundary produces this retryable type. HTTP,
  // credentials, JOIN and durable source errors retain their original types.
  let stream=Realtime::connect(auth,&c.scope.tournament_id).map_err(moloch_live_runtime::stream_connect_retry::ConnectionFailure::from_connect_error)?;
@@ -1358,13 +1384,14 @@ fn recovery_not_before(budget:&RecoveryBudget,at:u64,auth:u64)->Result<u64>{
  Ok(budget.next_allowed(at)?.max(auth.checked_add(60_000).ok_or("LIVE_AUTH_MINT_CLOCK_RANGE")?))
 }
 fn connect_with_budget(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,budget:&mut RecoveryBudget)->Result<(Realtime,String)>{
- use moloch_live_runtime::stream_connect_retry::{self,ConnectionFailure};
+ use moloch_live_runtime::{stream_connect_retry::{self,ConnectionFailure},stream_token_retry::{self,TokenFailure}};
+ let mut token_not_before=0;
  loop{
   log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
   if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
   let marker=c.root.join("stream-auth-admission.json");
   let auth=if marker.exists(){Some(load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?)}else{None};
-  let at=now();let until=stream_connect_retry::next_attempt(budget,at,auth)?;
+  let at=now();let until=stream_connect_retry::next_attempt(budget,at,auth)?.max(token_not_before);
   while now()<until{budget.validate(now())?;if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}std::thread::sleep(Duration::from_millis(until.saturating_sub(now()).min(200)));}
   if !authority.can_read(&c.scope){return Err("LIVE_STREAM_RECOVERY_CONTROL_OR_STOP".into())}
   log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;
@@ -1373,11 +1400,17 @@ fn connect_with_budget(t:&mut Transport,c:&Control,bank:&mut Session,log:&Dispat
   match connect_stream(t,c,bank,source){
    Ok(joined)=>return Ok(joined),
    Err(error)=>{
-    let Some(failure)=error.downcast_ref::<ConnectionFailure>()else{return Err(error)};
-    // Failed setup never updates source coverage or binds a healthy stream.
-    let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
-    let until=stream_connect_retry::after_connect_failure(budget,now(),Some(auth),*failure)?;
-    atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"connection_retry_wait","reason":failure.reason(),"notBefore":iso(until),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
+    // Token HTTP failures remain a distinct type; never classify Auth/JOIN,
+    // source admission, arbitrary error text or financial requests as retries.
+    if let Some(failure)=error.downcast_ref::<TokenFailure>(){
+     let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
+     token_not_before=stream_token_retry::after_token_failure(budget,now(),Some(auth),failure)?;
+     atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"token_retry_wait","reason":failure.reason(),"status":failure.status(),"notBefore":iso(token_not_before),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
+    }else if let Some(failure)=error.downcast_ref::<ConnectionFailure>(){
+     let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
+     let until=stream_connect_retry::after_connect_failure(budget,now(),Some(auth),*failure)?;
+     atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"connection_retry_wait","reason":failure.reason(),"notBefore":iso(until),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
+    }else{return Err(error)}
    }
   }
  }
@@ -1583,6 +1616,50 @@ pub fn main()->Result<()>{
  })();
  if let Err(e)=&result{atomic_json(&stop,&json!({"at":iso(now()),"reason":e.to_string(),"action":"no automatic write retry or activation renewal"}))?;atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"stopped","reason":e.to_string(),"profitabilityEstablished":false}))?;}
  result
+}
+#[cfg(test)]mod ordinary_side_edge_worker_tests{
+ use super::*;
+ use moloch_live_runtime::ordinary_side_edge::Mode;
+ struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ const T:&str="11111111-1111-4111-8111-111111111111";
+ fn fixture()->(Temp,Control,Session,DispatchLog,Value,Receipt){fixture_with_hedge(false)}
+ fn fixture_with_hedge(retain:bool)->(Temp,Control,Session,DispatchLog,Value,Receipt){
+  let at=now();let root=Temp(std::env::temp_dir().join(format!("ordinary-side-edge-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())));private_dir(&root.0).unwrap();
+  let policy=json!({"quantity":2,"entryStopAt":iso(at+600000),"retainProfitableHedge":retain,"maximumHedgeOvershoot":1});let seed=json!({"runId":"side-edge-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-5000)});
+  let mut bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();let stamp=iso(at-4000);
+  bank.accept("original-fixture-book",1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":T,"marketId":"201","exchangeId":"101","sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":10}],"asks":[{"price":"0.410000","quantity":990}]}})).unwrap();
+  let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="buy"&&q["side"]=="YES"&&q["retired"]==false).unwrap();
+  let c:Control=serde_json::from_value(json!({"activation":{"runId":"side-edge-fixture","entryUntilMs":at+600000,"maximumCommitted":"40.000000","maximumMarketCost":"10.000000","maximumQuantity":2,"tournamentId":T,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":T,"tournamentSlug":"cup","exchanges":{"101":"201"}},"policy":policy,"root":root.0,"credentials":"/unused","ownerLock":root.0.join("owner.lock"),"accountScope":"offline-side-edge"})).unwrap();
+  let r=Receipt{endpoint:format!("/markets/201/orderbook?tournamentId={T}&depth=20"),request_started_at:stamp.clone(),received_at:stamp.clone(),status:200,data:json!({"contexts":[{"type":"tournament","tournament":{"id":T},"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":1,"at":stamp},"bids":[{"price":0.4,"quantity":10}],"asks":[{"price":0.41,"quantity":990}]}]}}]})};
+  let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,c,bank,log,q,r)
+ }
+ #[test]fn old_control_disabled_does_not_assess_or_write_a_diagnostic(){
+  let(root,c,bank,log,q,mut r)=fixture();assert_eq!(c.ordinary_side_edge,Mode::Disabled);r.data=Value::Null;let head=bank.durable_head();
+  assert!(ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));assert!(!root.0.join("ordinary-side-edge.json").exists());assert_eq!(bank.durable_head(),head);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+  let mut value=serde_json::to_value(c).unwrap();value["ordinarySideEdge"]=json!("enabled");assert!(serde_json::from_value::<Control>(value).is_err());
+ }
+ #[test]fn actual_native_quote_shadow_records_but_enforce_defers_without_a_financial_event(){
+  let(root,mut c,bank,log,q,r)=fixture();let head=bank.durable_head();let report=bank.engine().report().unwrap();let quote_before=q.clone();
+  c.ordinary_side_edge=Mode::Shadow;assert!(ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));let d=load(&root.0.join("ordinary-side-edge.json")).unwrap();assert_eq!(d["assessment"]["class"],"below_minimum");assert_eq!(d["deferred"],false);assert_eq!(d["assessment"]["evidence"]["sideEdgeMicros"],100);
+  c.ordinary_side_edge=Mode::Enforce;assert!(!ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));let d=load(&root.0.join("ordinary-side-edge.json")).unwrap();assert_eq!(d["deferred"],true);assert_eq!(d["physicalAttempted"],false);
+  assert_eq!(q,quote_before);assert_eq!(quote(&bank,q["id"].as_u64().unwrap()).unwrap(),q);assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn unavailable_is_a_defer_only_in_enforce_and_managed_cohorts_bypass(){
+  let(root,mut c,bank,log,q,mut r)=fixture();r.endpoint.push_str("&forged=1");c.ordinary_side_edge=Mode::Enforce;assert!(!ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));let d=load(&root.0.join("ordinary-side-edge.json")).unwrap();assert_eq!(d["assessment"]["class"],"unavailable");
+  c.ordinary_side_edge=Mode::Shadow;assert!(ordinary_side_edge_allows(&c,&bank,&log,&q,&r,false,now()));fs::remove_file(root.0.join("ordinary-side-edge.json")).unwrap();c.ordinary_side_edge=Mode::Enforce;assert!(ordinary_side_edge_allows(&c,&bank,&log,&q,&r,true,now()));assert!(!root.0.join("ordinary-side-edge.json").exists());assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn genuine_opposite_owned_fills_bypass_only_when_the_entire_buy_is_covered(){
+  for filled in [1u64,2]{let(root,mut c,mut bank,log,q,book)=fixture_with_hedge(true);c.ordinary_side_edge=Mode::Enforce;
+   let mate=bank.engine().order_records().into_iter().find(|q|q["action"]=="buy"&&q["side"]=="NO"&&q["retired"]==false).unwrap();let at=now();
+   let ack=Receipt{endpoint:"/orders".into(),request_started_at:iso(at-2000),received_at:iso(at-1000),status:200,data:json!({"orderId":"9001","exchangeId":"101","side":"no","action":"buy","quantity":2,"price":0.590})};
+   let event=feedback::acknowledgment(&mate,&ack,&iso(at-1000)).unwrap();bank.accept("original-owned-fixture",1,&event).unwrap();
+   let tape=Receipt{endpoint:"/orders/9001/fills?limit=200".into(),request_started_at:iso(at-100),received_at:iso(at),status:200,data:json!({"orderId":"9001","tournamentId":T,"exchangeId":"101","coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null,"limit":200},"totalQuantityFilled":-(filled as i64),"data":[{"id":"8001","side":"no","quantity":-(filled as i64),"price":0.590,"filledAt":iso(at-500)}]})};
+   let events=feedback::fills(&mate,"9001",T,&tape,&iso(at)).unwrap();assert_eq!(events.len(),1);bank.accept("original-owned-fixture",2,&events[0]).unwrap();
+   assert_eq!(bank.engine().wallet.quantity("101",moloch_replay::Side::No),filled);let current=quote(&bank,q["id"].as_u64().unwrap()).unwrap();assert_eq!(current["quantity"],2);assert!(!current["cancelEffectiveAt"].is_u64());let head=bank.durable_head();
+   assert_eq!(ordinary_side_edge_allows(&c,&bank,&log,&current,&book,false,now()),filled==2);assert_eq!(bank.durable_head(),head);
+   if filled==1{assert_eq!(load(&root.0.join("ordinary-side-edge.json")).unwrap()["assessment"]["class"],"below_minimum");}else{assert!(!root.0.join("ordinary-side-edge.json").exists());}
+  }
+ }
 }
 #[cfg(test)]mod discovery_urgent_tests{
  use super::*;
