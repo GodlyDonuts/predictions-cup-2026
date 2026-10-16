@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "awaiting_current_centralized_discovery",
+  "status": "original_initial_inventory_preserved_current_discovery_in_supplement",
   "source": {
     "path": "research/crossvenue_screen_2026-10-02/join_records.json.gz",
     "sha256": "09dc1f23977c14a9c444630837dda764b08ceb84d44f98e49572d56c800ec47a"
@@ -372,5 +372,6 @@
         }
       ]
     }
-  ]
+  ],
+  "currentDiscovery": "research/moloch-kalshi-mapping-20261016/supplement.json"
 }
