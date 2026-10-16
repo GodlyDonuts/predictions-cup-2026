@@ -1,0 +1,35 @@
+# Moloch throughput repair — October 16
+
+The human reported only three completed trades over two hours. Task [#147](https://github.com/GodlyDonuts/predictions-cup-2026/issues/147) prioritizes actual execution throughput before further Paper5 expansion. Checked source is `52116911781177eddacf85662de1a6dd9a6069c4`; deployment and fresh results must be established separately by the dated evidence linked below.
+
+## Confirmed bottlenecks
+
+- Stale ordinary candidates could consume a full seven-fact account packet before their book showed that their price was uncompetitive. The same issue affected reviewed inventory refresh hints and unqualified forecast entries.
+- Flat ordinary NC entry drafts consumed scarce fresh-market slots even though the independent reviewed entry ceiling denied those ordinary prices. Reviewed managers must own their configured markets without ordinary drafts competing for their reservations.
+- The original three-market fresh-entry limit restricted breadth despite the human's all-market instruction. Existing inherited positions remain separately attributed.
+
+## Changes
+
+A negative book screen now refreshes one actual target book before an expensive account packet. It can only reject or defer: any competitive dispatch still obtains its own complete fresh account packet, final book, and physical capability. It does not renew original clocks or loosen prices, fees, freshness, unknown-acceptance handling, or loss limits.
+
+New durable `ordinary_entry_exclusions_v1` records exclude configured reviewed-managed exchanges from ordinary flat BUY planning. Existing owned exits and independent reviewed entries remain supported. Startup retires only drafts positively proved never sent; existing physical liabilities are preserved.
+
+New durable `live_market_capacity_v1` records raise fresh ordinary market capacity from 3 to 12, and effective native maximum markets from 31 to 40, preserving the original bank manifest and every monetary limit. Maximum total commitment stays 40,000, market cost 10,000, and quantity 10,000. This changes eligible breadth, not the three discovery-read slots or shared account limits. Existing package-specific market-count rules are unchanged and may restrict future baskets when ordinary breadth exceeds three; package execution is not claimed active.
+
+One existing account worker remains responsible for reads, reconciliation and writes. The rolling admission ceilings remain 100 reads and 24 writes, with completion gaps of 600ms and 2500ms. These are ceilings, not achieved throughput or fill rates.
+
+## Checks and promotion
+
+ARM64 native exclusion/capacity checks: 17/17. Worker checks: 55/55. Locked optimized release build passed; executable SHA256 `0ba0f6c16a1e88fc7f73b361948b676769fb144c77adc4a6afc37562241e6b75`. The original 174,561-event stopped prefix contains 122 actual fill rows. Promotion requires byte-identical replay of the original report and head and retention of all nine previous identity bridges, dispatch evidence, account queue, reviews and ledger history. No ledger reset or competing collector is used.
+
+The first offline helper invocation failed before changing the live bank because it supplied a hash where the helper required an RFC3339 timestamp. This invocation error was corrected; it is distinct from a financial replay failure.
+
+## Measurement limits
+
+The owner-derived pre-change observation at 06:22:33.494UTC showed 37 read admissions and zero write admissions over the preceding 60 seconds, with 725 total acknowledged orders and 122 fill rows. An acknowledgment is not a completed trade. Compare later windows by exact original receipt time and report orders, fills and attributed realized results separately. Book-screen fixture savings are not measured live improvements.
+
+More activity does not establish profitable execution. Earlier new ordinary trading realized -119.100000; inherited-origin results and the human's differently dated dashboard daily P&L are separate measures. Actual latest results must be read from the sealed, dated live evidence.
+
+## Next work
+
+Measure fresh activity after the controlled release, diagnose remaining admission/decision delays, and resume Paper5 integration once the urgent throughput issue is addressed. A separate uncompiled bulk-price negative screen candidate can potentially replace repeated far-price book probes; it is not included in this release and supplies no positive depth/execution authority.
