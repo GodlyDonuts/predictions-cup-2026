@@ -141,7 +141,7 @@ impl ProductionAuthority {
   if self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&f.fundamental.is_none(){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
   if f.quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if f.fundamental.is_none()&&f.maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   if let Some(maker)=&f.maker{maker.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;maker.authorize(scope,spec,p,now)?;}
-  if let Some(fundamental)=&f.fundamental{fundamental.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;fundamental.authorize(scope,spec,p,now)?;}
+  if let Some(fundamental)=&f.fundamental{fundamental.validate_contract(&f.snapshots.contract)?;fundamental.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;fundamental.authorize(scope,spec,p,now)?;}
   for r in [&f.snapshots.account,&f.snapshots.cash_balance,&f.snapshots.positions,&f.snapshots.open_orders]{if !fresh(r,now,20000){return Err("LIVE_ACCOUNT_STALE".into())}}
   if f.snapshots.account.data["id"]!=scope.tournament_id||f.snapshots.account.data["slug"]!=scope.tournament_slug||f.snapshots.account.data["status"]!="active"||f.snapshots.open_orders.data["pagination"]["hasMore"]!=false{return Err("LIVE_ACCOUNT_SCOPE".into())}
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
