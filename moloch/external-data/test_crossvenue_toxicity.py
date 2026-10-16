@@ -96,6 +96,29 @@ class ToxicityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'FEATURE_LOOKAHEAD'):
             self.run_report(rows)
 
+    def test_original_receipt_age_cannot_be_renewed_by_late_availability(self):
+        row = records()[0]
+        row['external']['receivedMs'] = BASE-100000
+        self.assertEqual(feature_state(row, 'scoped_v2'), (None, 'staleSource'))
+        row['external']['receivedMs'] = BASE-20000
+        self.assertEqual(feature_state(row, 'scoped_v2')[0]['YES'], 'FAVORABLE')
+        row['external']['receivedMs'] = BASE-20001
+        self.assertEqual(feature_state(row, 'scoped_v2'), (None, 'staleSource'))
+        for value in (-1, None):
+            row['external']['receivedMs'] = value
+            with self.assertRaisesRegex(ValueError, 'FEATURE_LOOKAHEAD'): feature_state(row, 'scoped_v2')
+        del row['external']['receivedMs']
+        with self.assertRaisesRegex(ValueError, 'FEATURE_LOOKAHEAD'): feature_state(row, 'scoped_v2')
+
+    def test_optional_original_source_timestamp_is_not_clamped_or_ignored(self):
+        row = records()[0]
+        row['external']['sourceTs'] = BASE+1
+        with self.assertRaisesRegex(ValueError, 'FEATURE_LOOKAHEAD'): feature_state(row, 'scoped_v2')
+        row['external']['sourceTs'] = BASE-20001
+        self.assertEqual(feature_state(row, 'scoped_v2'), (None, 'staleSource'))
+        row['external']['sourceTs'] = BASE-20000
+        self.assertEqual(feature_state(row, 'scoped_v2')[0]['YES'], 'FAVORABLE')
+
     def test_label_cannot_leak_early_late_or_fabricated_execution(self):
         for case in ('early', 'late', 'fill', 'value'):
             rows = records()
@@ -148,6 +171,8 @@ class ToxicityTests(unittest.TestCase):
         late = report([p], BASE+30000)
         self.assertNotEqual(early['cutoffPolicySha256'], late['cutoffPolicySha256'])
         self.assertEqual(early['sources'][0]['sha256'], hashlib.sha256(p.read_bytes()).hexdigest())
+        source = Path(__file__).with_name('crossvenue_toxicity.py')
+        self.assertEqual(early['sourceCodeSha256'], hashlib.sha256(source.read_bytes()).hexdigest())
         self.assertEqual(late['horizons']['30000']['data']['matchedOpportunities'], 1)
         self.assertEqual(early['horizons']['30000']['data']['missingLabel'], 1)
 
