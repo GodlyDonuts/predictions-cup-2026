@@ -1,4 +1,28 @@
-# Current research baseline: October16,21:16UTC
+# Current research baseline: October16,22:09UTC
+
+Actual sole545165/source774f94fe/binary1180882d is healthy/fresh trading with
+55 post-launch ACKs,21 new fill rows/235 cumulative. Cash70,746.200000,
+owned24,680.835000, combined realized−152.880000. New trading lost19.255000
+after the previous−133.625 observation. Six models/full95,579.915000 capital,
+native8acc and twelve bridges remain. ACKs/fills/activity are distinct from profit.
+
+Turnover candidate20543435 has actual ARM64 checks: runtime212, worker106,
+fundamental96 (test fixturea408 against unchanged205 libraries), value8, native76
+plus one old ignored benchmark, depth14. Activation now waits on genuine native
+reservation/review deadlines, followed by NEW final physical facts; it does not
+extend planning/source clocks. Startup ACK indexing, optional cumulative top-ups
+and default-off profitable-depth exits are checked source. Optimized release,
+full-prefix bridge and deployment are still pending. Old failed fixture logs remain.
+[Task155](https://github.com/GodlyDonuts/predictions-cup-2026/issues/155).
+
+[Paper7](MOLOCH_PAPER7_20261016.md) corrects its historical27b4/540259 baseline.
+Future joint-maker handoff remains uncompiled/default-off; account realtime and
+acquisition shadow are being implemented independently. Atlas lacks historical
+availability clocks; no calibrated posterior or qualified maker model is claimed.
+V7 stopped on its free-space floor and remains incomplete, not a completed cohort.
+Paper6/7 and profitability are unfinished. Historical observations follow.
+
+# Historical research baseline: October16,21:16UTC
 
 Sole545165/source774f94fe/binary1180882d is fresh trading/healthy with matching
 full-cycle status.19 post-launch official ACKs, zero new fill rows/214 cumulative,

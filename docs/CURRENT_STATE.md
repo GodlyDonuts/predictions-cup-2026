@@ -1,4 +1,32 @@
-# October16,21:16UTC: six models active; turnover improvements in development
+# October16,22:09UTC: live fills continue; turnover source checks pass
+
+Sole545165/source774f94fe/binary1180882d is fresh trading, healthy and without
+STOP. At22:09:25UTC:55 post-launch official ACKs,21 new fill rows/235 cumulative,
+cash70,746.200000, owned cost24,680.835000 and combined realized**−152.880000**.
+The new round trips lost19.255000; more executions did not establish alpha.
+Six terminal models/full95,579.915000 capital/native8acc/twelve bridges remain.
+
+The actual blocker for AK/ME is obsolete planning-packet expiry during the
+post-reservation activation wait. Candidate20543435 waits on the genuine native
+reservation/review deadlines, then obtains new final seven-receipt physical
+facts. Planning freshness before reservation remains enforced. Startup indexing,
+optional aggregate top-ups and default-off cumulative profitable-depth SELLs are
+also in the checked source. Actual ARM64 runtime212/worker106, fundamental96,
+value-surface8, native76 and depth14 checks pass; one old native benchmark is
+explicitly ignored. Fundamental96 uses corrected fixturea408 against the exact
+unchanged205 production libraries. Original failed fixture logs are retained.
+Optimized release, original-prefix/new native bridge and activation remain
+pending. This source publication does not change production.
+[Live turnover task155](https://github.com/GodlyDonuts/predictions-cup-2026/issues/155).
+
+[Paper7](MOLOCH_PAPER7_20261016.md) is received/tracked in158. Joint maker source
+is an isolated, uncompiled handoff; own-account invalidation and acquisition-only
+shadow work remain separate future source. No model or rank strategy is qualified.
+V7 stopped at its disk floor with an incomplete original seal; captures/history
+are retained. Only disposable build debug caches were reclaimed. Paper6/7 and
+the profitability objective remain open.
+
+# Historical October16,21:16UTC: six models active; turnover source in development
 
 Sole production545165/source774f94fe/binary1180882d is fresh trading, healthy,
 with matching full-cycle status, no STOP and19 new official acknowledgments

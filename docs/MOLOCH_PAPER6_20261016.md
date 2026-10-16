@@ -9,7 +9,21 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation at21:16UTC
+## Latest operation at22:09UTC
+
+Actual545165/source774f94fe/binary1180882d remains fresh trading/no STOP,55 new
+ACKs and21 new fill rows/235 cumulative. Cash70,746.20/owned24,680.835/combined
+realized−152.88. Current turnover candidate20543435 fixes the actual AK/ME
+consumed-planning-packet activation block and adds default-off profitable-depth
+SELLs/optional cumulative top-ups plus startup indexing. Actual ARM64212 runtime,
+106 worker,96 corrected fundamental,8 value,76 native and14 depth checks pass
+(one old benchmark ignored). Release/prefix bridge/production opt-in are pending;
+source publication is not deployment. [Task155](https://github.com/GodlyDonuts/predictions-cup-2026/issues/155).
+V7 stopped at its disk floor with incomplete seal; original evidence retained.
+[Paper7](MOLOCH_PAPER7_20261016.md) is newly received with separate source scopes;
+it does not replace the current entry-repair priority. Profitability remains open.
+
+## Historical operation at21:16UTC
 
 Sole545165/source774f94fe/binary1180882d is healthy and fresh trading, with matching
 full-cycle status,19 post-launch ACKs and zero new fills/214 cumulative. Cash is

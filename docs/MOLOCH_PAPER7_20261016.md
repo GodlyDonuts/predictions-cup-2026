@@ -6,11 +6,11 @@ Received October16,2026. Private attachment SHA256
 The paper is research input. Its embedded source identifiers and schedules are
 not verified API evidence, execution authority or measured deployment results.
 
-## Corrected starting point at22:00UTC
+## Corrected starting point at22:09UTC
 
 The paper audited main27b4ad10 and historical worker540259. Actual production is
 sole545165/source774f94fe/binary1180882d, six managed terminal models, native8acc
-and twelve original bridges. At21:58:03UTC it was healthy/fresh trading with49
+and twelve original bridges. At22:09:25UTC it was healthy/fresh trading with55
 post-launch ACKs,21 new fill rows/235 cumulative, cash70,746.200000 and owned
 cost24,680.835000. Combined realized−152.880000 includes actual trading losses;
 increased order/fill counts are not evidence of a profitable strategy.
@@ -19,9 +19,10 @@ The current priority release, tracked in155, fixes the consumed-planning-packet
 activation gate, indexes already closed startup ACKs, and adds opt-in profitable
 cumulative-depth exits and same-side cumulative-budget top-ups. Source20543435
 passes actual ARM64 runtime212/worker106 tests. Nativeb5 passes76 unit tests,
-with one existing benchmark explicitly ignored. Initial integration runs exposed
-fixture book-version/signed-NO errors; final integration/release/prefix validation
-remain pending. These capabilities are not deployed merely because source exists.
+with one existing benchmark explicitly ignored. Fundamental96, value8 and depth14
+also pass; fundamental uses corrected fixturea408 with the unchanged205 libraries.
+Initial fixture book-version/signed-NO failures are retained. Optimized release,
+prefix validation and deployment remain pending. Source publication is not activation.
 
 ## Paper 7 implementation split
 
