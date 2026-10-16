@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-16T01:34:25.144056+00:00",
+  "source": "official_SIG_API_v1",
+  "pnlPeriod": "day",
+  "periodStart": "2026-10-15T01:33:14.651Z",
+  "periodEnd": "2026-10-16T01:33:14.651Z",
+  "officialRollingPeriodPnl": "743.15",
+  "officialTotalAccountValue": "94485.31",
+  "officialTotalHoldingsValue": "21678.63",
+  "officialTotalCostBasis": "22454.44",
+  "officialUnrealizedPnl": "-775.81",
+  "officialGrossCash": "72806.685",
+  "officialAvailableAdvance": "0",
+  "nativeAttributedRealizedPnl": "-72.625000",
+  "nativeNewTradingRealizedPnl": "-116.020000",
+  "nativeInheritedRealizedGross": "43.395000",
+  "periodPnlIsNotNativeRealizedPnl": true,
+  "earlierHumanDashboardAbove1000": "human_reported_not_independently_time_matched",
+  "accountRequests": 4,
+  "writesEnabled": false,
+  "singleAccountQueue": true,
+  "exclusiveCaptureOwnerLockHeld": true,
+  "privateReceipts": {
+    "pnl": {
+      "receivedAt": "2026-10-16T01:33:14.816Z",
+      "fileSha256": "4c25b2378678ff4dc3e28fa2b7b9fb721463431e9bb53c76548d035ea4b2d06b"
+    },
+    "tournament": {
+      "receivedAt": "2026-10-16T01:33:15.661Z",
+      "fileSha256": "a580c506bab635faee0da88dea1aef3f36cb014c6bb88c3e28d82793de86b2c3"
+    },
+    "positions": {
+      "receivedAt": "2026-10-16T01:33:16.617Z",
+      "fileSha256": "3b09df24d3e6a16ae9383e37183ac72e6851f3e9f761c481d55d85c30d88bd80"
+    },
+    "cash": {
+      "receivedAt": "2026-10-16T01:33:17.537Z",
+      "fileSha256": "99c85b9c719601e29b9df4834fc964414c82c8400d63be2d247603bd3fac44ab"
+    }
+  },
+  "limitations": [
+    "Official rolling-period return, account mark-to-market and native attributed FIFO realized profit have different horizons/bases.",
+    "Four observations are sequential, not an atomic exchange snapshot; displayed cents may vary.",
+    "No attribution of the entire daily gain to current Moloch strategy.",
+    "No earlier +1000 snapshot was independently verified."
+  ]
+}
