@@ -1,4 +1,35 @@
-# Current research baseline: October16,12:40UTC
+# Current research baseline: October16,13:15UTC
+
+Actual production is sole SIG503120/source31aefba5/binary0fa66973, verified
+fresh trading/realtime/noSTOP at13:14:49UTC.26 new ACKs, seven post-launch fill
+rows,154 cumulative fills, attributed realized−81.215000. Full capital95,579.915000
+and original funding/liabilities remain. First30-scope cycle completed13:10:59.
+[Deployment and exact replay evidence](../research/moloch-hotpath-20261016/deployment-README.md).
+
+Buffered report writing is deployed, with exact original-prefix/12-bridge parity.
+The actual49.95times serialization benchmark is not a whole-loop speed result;
+the live comparison found12.524s realtime median lag versus11.383s before,
+essentially unchanged sampled CPU, and no broad latency win. A later30-scope
+pass finished13m41.923s versus the earlier35-scope19m21.122s, with different
+workloads. A source change now targets stream service between synchronous reads.
+Read-only observer503257 records a new
+v8 cohort. Signed public flow remains unqualified for physical pricing.
+
+The sealed v7 cohort has3,883 decisions/5,837 labels but zero three-window
+flow-complete decisions, so all fixed comparators were unfitted.
+[Coverage study](../research/moloch-crossvenue-economics-20261016/v7-flow/README.md).
+The old seed3 does not bind ordinary breadth: actual fresh12/total40 is installed.
+[Capital trace](../research/moloch-capital-utilization-20261016/README.md).
+Same-market netting exists;1+spread acquisition and exceptional refunds do not
+establish positive guaranteed profit. Cross-market resolver completeness remains
+unproved. [Primary semantic evidence](../research/moloch-semantic-floor-20261016/README.md).
+Tournament-prize scoring compiles with12 focused ARM64 checks; its exact
+whole-account accounting/joint opponent scenarios remain an offline conditional
+scorer. No whole-portfolio posterior, complete current holding coverage or
+prize-optimized production policy has been qualified/deployed.
+[Scorer and evidence](../research/moloch-prize-utility-20261016/README.md).
+
+# Historical research baseline: October16,12:40UTC
 
 The buffered report writer has a genuine ARM64 release,301 distinct passing
 Rust checks and exact-byte/fsync parity on an original production report.

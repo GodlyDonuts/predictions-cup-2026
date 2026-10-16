@@ -9,7 +9,37 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation and qualification at12:40UTC
+## Latest operation and qualification at13:15UTC
+
+The buffered writer is now deployed on sole SIG503120/source31aefba5, with
+fresh trading/realtime and26 new official ACKs at13:14:49UTC; seven post-launch
+fill rows. Attributed realized−81.215000; fills are not a profitability claim.
+Full95579.915000 allocation, original funding, daily windows and
+liabilities are preserved. Actual original-prefix/twelfth-bridge replay passed
+455,108ms before promotion. The report-writing benchmark improved49.95times;
+the live comparison found12.524s median realtime backlog versus11.383s before,
+with no broad latency win. The first30-scope cycle completed13:10:59 in13m41.923s;
+the baseline had35 scopes, so workload differences remain explicit. Inter-read
+stream service is the next targeted runtime change; production continues.
+[Actual deployment](../research/moloch-hotpath-20261016/deployment-README.md).
+
+Observer503257 records a separate v8 cohort. Sealed v7 had3,883 decisions and
+5,837 labels but insufficient identified flow to fit the frozen three-window
+comparison. [Coverage evidence](../research/moloch-crossvenue-economics-20261016/v7-flow/README.md).
+Actual ordinary capacity already allows12 fresh/40 total exchanges; no change
+to historical seed3 is justified. [Capital audit](../research/moloch-capital-utilization-20261016/README.md).
+Official netting is usable, but canonical same-market acquisition costs1+spread;
+all-principal refunds prevent a strictly positive minimum terminal gain. No
+profitable certified package was found. [Semantic audit](../research/moloch-semantic-floor-20261016/README.md).
+Whole-portfolio tournament-prize scoring compiles with12 focused ARM64 checks.
+It handles exact full-account cash/FIFO/debt, explicit conditional joint opponent
+atoms, declared prizes/ties, stress cases and same-state do-nothing comparisons.
+It is offline and cannot score the current larger portfolio from a six-contract
+surface; candidate search and physical use still need genuine complete joint-state,
+liability and leaderboard evidence.
+[Scorer and actual checks](../research/moloch-prize-utility-20261016/README.md).
+
+## Historical operation and qualification at12:40UTC
 
 The checked buffered writer has built separately and passed301 distinct Rust
 checks. On the exact original production report it reduced physical write

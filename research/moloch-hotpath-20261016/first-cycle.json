@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-16T13:15:46.815225+00:00",
+  "pid": 503120,
+  "sourceCommit": "31aefba5c22b529d60acab65659876294f2e0c8d",
+  "sourceSelection": {
+    "at": "2026-10-16T12:57:17.247Z",
+    "scopes": 30,
+    "originalFileSha256": "c24b718e71bf050115ea1d379e1610b9f58663f6f593d87c9459c3379d45fc11",
+    "retainedEarlierReportSha256": "17b0fe5a10d6459bc0f9aef41033dbadef08095318838bb54987c0dd9d654e2e1",
+    "precedesConfirmedReadiness": true
+  },
+  "completedStatus": {
+    "at": "2026-10-16T13:10:59.170Z",
+    "cycles": 1,
+    "scopes": 30,
+    "rawSha256": "97bda99cdc1e8163af50e8472a8a301e917d6ddbea4d4d58905d0824e8e331d7"
+  },
+  "selectionToCompletedStatusSeconds": 821.923,
+  "earlierBaseline": {
+    "scopes": 35,
+    "seconds": 1161.122
+  },
+  "workloadsEquivalent": false,
+  "wholeLoopSpeedupEstablished": false,
+  "accountRequests": 0,
+  "productionChanged": false
+}

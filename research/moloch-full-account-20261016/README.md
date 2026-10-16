@@ -1,6 +1,10 @@
 # Full-account production release — October16
 
-Latest follow-up12:22:54UTC: worker494293 remains fresh, with healthy realtime,
+This original funding deployment is now continued by SIG503120/source31aefba5.
+The binary-only writer replacement preserved the funding and liabilities below;
+fresh trading returned12:57UTC. [Current successor evidence](../moloch-hotpath-20261016/deployment-README.md).
+
+Historical follow-up12:22:54UTC: worker494293 remains fresh, with healthy realtime,
 matching binary and no STOP. It has34 new official acknowledgments/one actual
 post-launch fill row, and its complete-cycle status now matches the new PID.
 Capital and attributed realized remain unchanged. The linked live-verification

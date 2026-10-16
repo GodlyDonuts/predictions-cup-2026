@@ -1,0 +1,51 @@
+{
+  "checkedAt": "2026-10-16T12:59:43.215075+00:00",
+  "rollout": {
+    "at": "2026-10-16T12:58:15.846183+00:00",
+    "oldPid": 496491,
+    "newPid": 503257,
+    "sourceSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+    "unitSha256": "e8ebad1bf8cd67ad6d8b5e3886aace87c90c704bb7e58cfe355aefb4475d8000",
+    "priorUnitSha256": "62ddfac568a423c648322facdeb46dba0f80d4129e76f080e5c1616928d0b653",
+    "journal": "/home/archon/apps/moloch/shared/live-production-v1/breadth-503120-1792155419380.jsonl",
+    "output": "/home/archon/apps/moloch/shared/crossvenue-observer-v8",
+    "sigPid": 503120,
+    "sourceUnchanged": true,
+    "originalDatasetsPreserved": true,
+    "accountRequests": 0,
+    "executionAuthority": false,
+    "freshObserverDataVerified": false
+  },
+  "status": {
+    "at": "2026-10-16T12:59:38.185Z",
+    "captureSegment": 0,
+    "counters": {
+      "externalDuplicates": 19290,
+      "externalInvalidOrOneSided": 276,
+      "externalPolls": 108,
+      "externalSourceChanges": 1092,
+      "externalStaleOrFuture": 2969,
+      "externalWsWithdrawn": 6,
+      "labels": 163,
+      "labelsMissingTimelyBook": 330,
+      "noCurrentExternal": 3,
+      "samples": 177,
+      "sigBooks": 3095
+    },
+    "executionAuthority": false,
+    "format": "breadth",
+    "historyPrefixVerified": false,
+    "journalPosition": 19806507,
+    "journalSequence": 156,
+    "observedMarkets": 135,
+    "originalJournalHash": "d3f61b8a52b89f92e3902391cd4b4b31488c58c56cb6820eb634dfc9f09830ed",
+    "pendingSamples": 177,
+    "pid": 503257,
+    "readOnly": true,
+    "state": "observing"
+  },
+  "statusRawSha256": "e8d19d56ddb92535ea7cc6250e125bd29d597da277df62758df2408d06d09c7f",
+  "freshObserverDataVerified": true,
+  "productionPricingActivated": false,
+  "activeGzipSealed": false
+}
