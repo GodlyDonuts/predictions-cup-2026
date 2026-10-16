@@ -116,6 +116,18 @@ impl ProductionAuthority {
   let basket=wire::Basket{idempotency_key:format!("{}:{}",self.activation.run_id,plan.package_id()),tournament_id:self.scope.tournament_id.clone(),maximum_gross_buy_cost:plan.proof()["grossFunding"].as_str().ok_or("PORTFOLIO_FUNDING")?.into(),minimum_gross_sell_proceeds:plan.proof()["minimumCashProceeds"].as_str().ok_or("PORTFOLIO_PROCEEDS")?.into(),relationship_constraint:None,legs:plan.legs().iter().map(|l|Ok(wire::Leg{exchange_id:l.exchange_id.clone(),side:if l.side=="YES"{multi_leg::Side::Yes}else{multi_leg::Side::No},action:if l.action=="buy"{wire::Action::Buy}else{wire::Action::Sell},quantity:u32::try_from(l.quantity)?,limit_price:l.limit_price.clone()})).collect::<Result<_>>()?};
   let prepared=crate::package_authority::Prepared::new_portfolio(bank,&self.activation,&self.scope,plan,&basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);Ok(())
  }
+ /// Separate probabilistic lane. Only the original opaque qualified factory
+ /// reservation can populate the existing physical SDK/STOP/stream authority.
+ pub fn prepare_probabilistic(&self,bank:&Session,plan:&crate::probabilistic_portfolio::Plan,reservation:&crate::probabilistic_portfolio::Reservation,basket:&baal_transport_service::multi_leg_portfolio::Basket,permit:Permit,facts:crate::package_authority::PackageSnapshotSet,log:&crate::dispatch::DispatchLog,at:u64)->Result<()> {
+  self.clear_ready();log.require_resolved_attempts()?;reservation.validate_plan(plan)?;
+  let qualification=&reservation.event()["qualification"];let components=qualification["contracts"].as_array().ok_or("PROB_AUTH_COMPONENTS")?;let mut exchanges=std::collections::BTreeSet::new();
+  for c in components{let ex=c["exchangeId"].as_str().ok_or("PROB_AUTH_COMPONENTS")?;if !exchanges.insert(ex)||self.fundamental_required(ex){return Err("LIVE_FUNDAMENTAL_PACKAGE_COMPONENT_DENIED".into())}}
+  if hash_bytes(&serde_json::to_vec(&log.descriptor_identity()?)?)!=qualification["dispatchSha256"].as_str().ok_or("PROB_AUTH_DISPATCH_BINDING")?{return Err("PROB_AUTH_ORIGINAL_DISPATCH_CHANGED".into())}
+  let orders=bank.engine().order_records();
+  for qid in log.acknowledgments.keys().filter(|qid|!log.closed.contains(qid)){let q=orders.iter().find(|q|q["id"]==*qid).ok_or("PROB_AUTH_PRIOR_ACK_QUOTE_MISSING")?;if q["exchangeId"].as_str().is_some_and(|ex|exchanges.contains(ex)){return Err("PROB_AUTH_PRIOR_ACK_UNRECONCILED".into())}}
+  for qid in bank.engine().live_order_bindings().keys(){let q=orders.iter().find(|q|q["id"]==*qid).ok_or("PROB_AUTH_PRIOR_NATIVE_QUOTE_MISSING")?;if q["exchangeId"].as_str().is_some_and(|ex|exchanges.contains(ex))&&!log.closed.contains(qid){return Err("PROB_AUTH_PRIOR_BINDING_UNRECONCILED".into())}}
+  let prepared=crate::package_authority::Prepared::new_probabilistic(bank,&self.activation,&self.scope,plan,reservation,basket,permit,facts,at,self.entry_until_ms())?;*self.package_ready.lock().unwrap()=Some(prepared);Ok(())
+ }
  fn check(&self,scope:&Scope,spec:&RequestSpec,p:&Permit,network:bool,now:u64)->Result<()> {
   if !self.can_read(scope)||p.owner!="Codex"||p.run_id!=self.activation.run_id||p.expires_at_ms<=now{return Err("LIVE_OWNER_OR_ACTIVATION".into())}
   if network&&hash_bytes(&fs::read(&self.binary)?)!=self.activation.binary_sha256{return Err("LIVE_BINARY_CHANGED".into())}
