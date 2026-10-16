@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-16T20:34:38.081483+00:00",
+  "operator": "paper6_cold_forecast_activation_20261016_v1",
+  "oldPid": 540259,
+  "newPid": 545165,
+  "sourceCommit": "774f94fe6938f55ed447d078965cc583810cb3e7",
+  "binarySha256": "1180882d0a47f1af948258c37b333fb51552c31ef9823a51e1c058cf8558e95f",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper6-cold-six-forecast-20261016.json",
+  "controlSha256": "d27b027d911799b94c7880f7031354b109b781414fda7712a44c8e279a3e5ed5",
+  "release": "/home/archon/apps/moloch/releases/paper6-buy-recovery-1180882d0a47/moloch-live-runtime",
+  "approvedManifestSha256": "558366d971fdbc348bb0245c163b9ff21c7c666e92bb10ea6b03bb0aee6da256",
+  "approvalSha256": "da1120a57608a531cceaf48f3b2fc470f1383e6cff8d4eae509a0ed60c234a51",
+  "boundary": {
+    "manifestSha256": "558366d971fdbc348bb0245c163b9ff21c7c666e92bb10ea6b03bb0aee6da256",
+    "snapshot": {
+      "head": {
+        "hash": "135709284254e6a7e5740eca82f1d949729015cea61a255edb45a93d4c6dd4d6",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "8d50f12a61e75d498e9899a9af61b25d73cd00ba548e932892566d42c761b0b2",
+        "sequence": 318235
+      },
+      "reportSha256": "960d1795250b5b62987e32f9b7f2a02a33d43bc5548f75e4ba2aac3cb588c9d1",
+      "manifestSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+      "prefixBytes": 982662899,
+      "prefixSha256": "558849c690dbceafd52aa8b99e4743b75e2cc46d718dd8457d1d3a66192eedb1",
+      "bridgeSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+      "dispatch": {
+        "sequence": 14455,
+        "hash": "d23df2f9b4bc203e8ff8528976c97c1d11bef765b21b98a1040666f6997464c0",
+        "acknowledged": 1294,
+        "provedAborted": {
+          "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7"
+        },
+        "unknownOrdinaryAttempts": 0
+      },
+      "dispatchSha256": "f7f42c0537bdffa852dc001bb3693c89a45251262a07de20ad99d6eb5c3f9b60",
+      "fundamentalSha256": "4aff8b139837ce3d6238b5be9cb8ea2f74d4ed17a5d3f8ea6767e78714e8e61d",
+      "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+      "packageDispatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "requestSha256": "9fe40be1135a61d944ef631d5f27933e1d7171edec5b29aa4c2e9cb25289d746",
+    "stopSha256": "4f49ae3465b5aed3aee116ae84d9b14171692a46ad03380cfea9df4d4f03c850",
+    "workerStatusSha256": "ef61c10a2d4e063c6e3840c73108f1f0355b2d7ddd53ded2707f95709a22d691",
+    "typedSettings": {
+      "path": "/tmp/moloch-cold-six-staged-settings-typed-20261016.json",
+      "sha256": "0fafaa869a4a542e81ac3362d31f29f8704f3134fdc8d25a86413e62761195ed"
+    }
+  },
+  "settingsCanonicalSha256": "e7714333a9467b6bf69144905f1b74f1143d85e2c682a7a236d723eb936f37f8",
+  "newReviewCanonicalSha256": [
+    "7c1e2bc9d038363a8597cb36a9fa0241ca35ea97091859eb42c046e5515b190d",
+    "a7263405f19eb354c488c99c09ccadda887439ebc8545b5a54abccef1293da37"
+  ],
+  "controlChanges": [
+    "fundamentalPolicy"
+  ],
+  "bridgeWritten": false,
+  "binaryChanged": false,
+  "financialHistoryChangedByOperator": false,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false
+}

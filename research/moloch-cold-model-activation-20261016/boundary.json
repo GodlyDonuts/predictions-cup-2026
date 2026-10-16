@@ -1,0 +1,36 @@
+{
+  "manifestSha256": "558366d971fdbc348bb0245c163b9ff21c7c666e92bb10ea6b03bb0aee6da256",
+  "snapshot": {
+    "head": {
+      "hash": "135709284254e6a7e5740eca82f1d949729015cea61a255edb45a93d4c6dd4d6",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "8d50f12a61e75d498e9899a9af61b25d73cd00ba548e932892566d42c761b0b2",
+      "sequence": 318235
+    },
+    "reportSha256": "960d1795250b5b62987e32f9b7f2a02a33d43bc5548f75e4ba2aac3cb588c9d1",
+    "manifestSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "prefixBytes": 982662899,
+    "prefixSha256": "558849c690dbceafd52aa8b99e4743b75e2cc46d718dd8457d1d3a66192eedb1",
+    "bridgeSha256": "76fab91acccfe26cfb1a80010a7b1fb00df7f92f02dc20d5127192258bcf0723",
+    "dispatch": {
+      "sequence": 14455,
+      "hash": "d23df2f9b4bc203e8ff8528976c97c1d11bef765b21b98a1040666f6997464c0",
+      "acknowledged": 1294,
+      "provedAborted": {
+        "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7"
+      },
+      "unknownOrdinaryAttempts": 0
+    },
+    "dispatchSha256": "f7f42c0537bdffa852dc001bb3693c89a45251262a07de20ad99d6eb5c3f9b60",
+    "fundamentalSha256": "4aff8b139837ce3d6238b5be9cb8ea2f74d4ed17a5d3f8ea6767e78714e8e61d",
+    "fundamentalMarkerSha256": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+    "packageDispatchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "requestSha256": "9fe40be1135a61d944ef631d5f27933e1d7171edec5b29aa4c2e9cb25289d746",
+  "stopSha256": "4f49ae3465b5aed3aee116ae84d9b14171692a46ad03380cfea9df4d4f03c850",
+  "workerStatusSha256": "ef61c10a2d4e063c6e3840c73108f1f0355b2d7ddd53ded2707f95709a22d691",
+  "typedSettings": {
+    "path": "/tmp/moloch-cold-six-staged-settings-typed-20261016.json",
+    "sha256": "0fafaa869a4a542e81ac3362d31f29f8704f3134fdc8d25a86413e62761195ed"
+  }
+}

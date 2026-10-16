@@ -1,0 +1,31 @@
+{
+  "binarySha256": "1180882d0a47f1af948258c37b333fb51552c31ef9823a51e1c058cf8558e95f",
+  "boundarySha256": "c19d25305d50f8bd842756c0db516fd00a25a5e5dcde3c729a0bbd594491128f",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "executionOwnerReviewed": true,
+  "newReviewCanonicalSha256": [
+    "7c1e2bc9d038363a8597cb36a9fa0241ca35ea97091859eb42c046e5515b190d",
+    "a7263405f19eb354c488c99c09ccadda887439ebc8545b5a54abccef1293da37"
+  ],
+  "operator": "paper6_cold_forecast_activation_20261016_v1",
+  "ownedStopWitness": {
+    "executionOwnerReviewed": true,
+    "manifestSha256": "558366d971fdbc348bb0245c163b9ff21c7c666e92bb10ea6b03bb0aee6da256",
+    "oldPid": 540259,
+    "operator": "paper6_cold_forecast_activation_20261016_v1",
+    "reason": "controlled-cold-forecast-stop-only-not-human-stop",
+    "requestSha256": "9fe40be1135a61d944ef631d5f27933e1d7171edec5b29aa4c2e9cb25289d746",
+    "stopSha256": "4f49ae3465b5aed3aee116ae84d9b14171692a46ad03380cfea9df4d4f03c850",
+    "workerStatusSha256": "ef61c10a2d4e063c6e3840c73108f1f0355b2d7ddd53ded2707f95709a22d691"
+  },
+  "reason": "activate-only-reviewed-AK-ME-with-exact-existing-four-no-financial-or-binary-change",
+  "schemaVersion": 1,
+  "settingsCanonicalSha256": "e7714333a9467b6bf69144905f1b74f1143d85e2c682a7a236d723eb936f37f8",
+  "sourceCommit": "774f94fe6938f55ed447d078965cc583810cb3e7",
+  "stagingSha256": "39fddde5f1ad2d623fb1905756c540ba3ea8242d9ca75091b35187f1cf849540",
+  "typedSettings": {
+    "path": "/tmp/moloch-cold-six-staged-settings-typed-20261016.json",
+    "sha256": "0fafaa869a4a542e81ac3362d31f29f8704f3134fdc8d25a86413e62761195ed"
+  }
+}

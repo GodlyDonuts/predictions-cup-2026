@@ -1,0 +1,17 @@
+{
+  "manifestSha256": "558366d971fdbc348bb0245c163b9ff21c7c666e92bb10ea6b03bb0aee6da256",
+  "sourceCommit": "774f94fe6938f55ed447d078965cc583810cb3e7",
+  "binarySha256": "1180882d0a47f1af948258c37b333fb51552c31ef9823a51e1c058cf8558e95f",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper6-cold-six-forecast-20261016.json",
+  "controlSha256": "d27b027d911799b94c7880f7031354b109b781414fda7712a44c8e279a3e5ed5",
+  "unitCandidateSha256": "b798f1e918094a44614c3c6c3a37b28d22c2468e1c9890edef234744c2101c42",
+  "settingsCanonicalSha256": "e7714333a9467b6bf69144905f1b74f1143d85e2c682a7a236d723eb936f37f8",
+  "settingsRawSha256": "2d76def81f2f6efebaa81965534390a2da04ab02f35a973cb5d5c7b0f649281f",
+  "generation": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016",
+  "oldPid": 540259,
+  "oldFourEntriesUnchanged": true,
+  "freshPhysicalFactsStillRequired": true,
+  "binaryChanged": false,
+  "financialHistoryChanged": false
+}

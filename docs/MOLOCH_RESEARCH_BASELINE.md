@@ -1,4 +1,26 @@
-# Current research baseline: October16,20:19UTC
+# Current research baseline: October16,21:16UTC
+
+Sole545165/source774f94fe/binary1180882d is fresh trading/healthy with matching
+full-cycle status.19 post-launch official ACKs, zero new fill rows/214 cumulative,
+cash70,765.455000/owned24,680.835000/combined realized−133.625000. Full95,579.915000
+capital/native8acc/twelve bridges remain. Six terminal models DE/MA/NC/OR/AK/ME
+are actually installed with original source clocks; their probability assumptions
+are uncalibrated. [Actual activation](../research/moloch-cold-model-activation-20261016/README.md).
+
+V7 observer545515/source3d3b runs read-only from21:05 for one hour on actual
+production SIG rows;106 Linux and106 Windows checks pass. No predictive model
+qualified. [Actual evidence](../research/moloch-pretrigger-drain-20261016/README.md).
+Native flow-window b220 passes original-prefix parity but is not promoted:
+830.731→807.772s open, only2.76% in one cache/CPU-confounded pair.
+[Result and owner decision](../research/moloch-native-startup-diagnosis-20261016/README.md).
+
+Runtime-only closed-ACK indexing and default-off profitable cumulative-depth
+SELLs are integrated source, still uncompiled/undeployed. Reviewed same-side
+fundamental top-ups are being implemented with aggregate cost/quantity caps and
+distinct physical intents. Do not treat those features as active strategies.
+Paper6 and overall profitability remain open. Historical observations follow.
+
+# Historical research baseline: October16,20:19UTC
 
 Sole540259/source774f94fe/binary1180882d remains fresh trading; full-cycle status
 matches the actual worker at20:16:19 and progress advances at20:19:11. There are

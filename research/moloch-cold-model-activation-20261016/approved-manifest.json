@@ -1,0 +1,23 @@
+{
+  "bankManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "binarySha256": "1180882d0a47f1af948258c37b333fb51552c31ef9823a51e1c058cf8558e95f",
+  "engineIdentity": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "generation": "/home/archon/apps/moloch/shared/fundamental-paper6-cold-six-forecast-20261016",
+  "oldControlSha256": "bbbfa51b98d783b8eba313291ac66cf4e48e2811ac9e321e2bfb0b87b206bcb8",
+  "oldPid": 540259,
+  "oldUnitSha256": "091797ff9ce24ba6633bfc42db111eaf4a1344452fa1ce81505f68614e87146a",
+  "operator": "paper6_cold_forecast_activation_20261016_v1",
+  "operatorSha256": "1c8d7b73827b68687163a1a07aa9148e5853ce10fe6f4eb43a07a311e9c4afce",
+  "packetDirectory": "/tmp/moloch-cold-approved-candidates-20261016",
+  "packetProof": {
+    "path": "/tmp/moloch-cold-candidate-typed-proof-20261016.zip",
+    "sha256": "506012dda5ae42a6f7f9eb49e777a32600c40da8b2e5200459554efa3dd0a051"
+  },
+  "plannedSettingsCanonicalSha256": "e7714333a9467b6bf69144905f1b74f1143d85e2c682a7a236d723eb936f37f8",
+  "priorRolloutSummary": {
+    "path": "/tmp/moloch-buy-recovery-production-summary-20261016.json",
+    "sha256": "9e5d9ff0241f4bfdeabff3b6c12b38c226ee6abeb78d984f3ef0a0efb8739bc2"
+  },
+  "schemaVersion": 1,
+  "sourceCommit": "774f94fe6938f55ed447d078965cc583810cb3e7"
+}

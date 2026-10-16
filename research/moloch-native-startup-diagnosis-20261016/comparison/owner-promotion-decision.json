@@ -1,0 +1,12 @@
+{
+  "actualOriginalPrefixParityPassed": true,
+  "baselineOpenLiveNs": 830731247602,
+  "candidateOpenLiveNs": 807772361445,
+  "observedAt": "2026-10-16T20:52:23.493000+00:00",
+  "observedWallReductionFraction": 0.027636959875138256,
+  "originalTwelveProductionBridgesUnchanged": true,
+  "productionNativeIdentityUnchanged": "8acc461bc02fb9236100058fe464b203d5da005375632af05c176223c7246754",
+  "promoteToProduction": false,
+  "reason": "Only about2.76percent observed reduction in one baseline-first cache/sharedCPU-confounded pair. Insufficient measured benefit to justify production native identity migration/restart. Root prioritizes allocation and profitable-depth features.",
+  "sourceCandidate": "b2202660acdff64da566977b2b333af334df8b35"
+}

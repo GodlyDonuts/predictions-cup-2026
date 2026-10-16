@@ -1,4 +1,9 @@
-# Source-validated terminal candidates: inactive
+# Source-validated terminal candidates: historical inactive packet
+
+Update21:16UTC: the owner subsequently installed a separate permanent six-model
+generation, verified actual sole545165 fresh trading and preserved these original
+research bytes. [Actual activation evidence](../moloch-cold-model-activation-20261016/README.md).
+The dated19:49 inactive packet and its original proof labels below remain history.
 
 At19:49UTC the actual Rust ReviewInput/Reviewed checks accepted two separately
 owner-reviewed candidates and all six entries of a proposed Settings packet.

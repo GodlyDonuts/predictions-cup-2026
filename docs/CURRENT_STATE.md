@@ -1,4 +1,32 @@
-# October16,20:19UTC: full cycle completes; new round trip closes flat
+# October16,21:16UTC: six models active; turnover improvements in development
+
+Sole production545165/source774f94fe/binary1180882d is fresh trading, healthy,
+with matching full-cycle status, no STOP and19 new official acknowledgments
+since its20:34 restart. There are zero new fill rows after that restart and214
+cumulative. Cash70,765.455000/owned cost24,680.835000 and combined realized
+**−133.625000** remain unchanged. ACKs are not fills or profit. Full95,579.915000
+capital, original bank/native8acc/twelve bridges, daily windows and one queue
+remain. Delaware/MA/NC/Oregon/Alaska/Maine are now managed: only fundamentalPolicy
+changed; original source clocks and old four settings are preserved.
+[Actual activation and earlier21:07 pinned evidence](../research/moloch-cold-model-activation-20261016/README.md).
+
+Read-only V7 observer545515/source3d3b started21:05 on the actual worker journal,
+finite one hour. Original SIG rows are consumed before new external trade
+callbacks; all source-age criteria remain unchanged.106 actual Linux and106
+Windows checks pass. V6 normally sealed with9 rows; no model is qualified.
+[Actual rollout and trace behavior](../research/moloch-pretrigger-drain-20261016/README.md).
+
+The completed native flow-window comparison preserves the entire original
+prefix, but observed only2.76% faster open in one confounded pair. It is **not
+promoted**. Runtime-only startup ACK indexing and default-off profitable
+cumulative-depth exits are source-integrated but not yet compiled/deployed.
+Explicit cumulative-budget fundamental top-ups remain in development. Account
+cash is not the binding cap; one-shot model allocation, profitable depth and
+physical execution opportunities constrain useful turnover.
+[Measured native result](../research/moloch-native-startup-diagnosis-20261016/README.md).
+Paper6 and demonstrated overall profitability remain unfinished.
+
+# Historical October16,20:19UTC: full cycle completes; new round trip closes flat
 
 Sole production540259/source774f94fe/binary1180882d remains fresh trading.
 Full-cycle status now genuinely matches540259 at20:16:19UTC; current progress

@@ -1,0 +1,105 @@
+{
+  "allSourceCodeUnchanged": true,
+  "apiCalls": 0,
+  "checks": [
+    {
+      "logBytes": 8077,
+      "logSha256": "a1447cdd51fdf54fed199c3659a0f1acad0eb1c0c7eb41ea0370cc57ce2da902",
+      "name": "test_crossvenue_observer.py",
+      "originalLog": "test_crossvenue_observer.py.r3.log",
+      "passed": 42,
+      "reportedSeconds": 0.328,
+      "successVerifiedFromActualOriginalLog": true
+    },
+    {
+      "logBytes": 3686,
+      "logSha256": "f29d89e6fd3789708621f2ed59ea14b825f41ea6d5acc24e13f49a94c770a4c9",
+      "name": "test_trade_triggered_observer.py",
+      "originalLog": "test_trade_triggered_observer.py.r3.log",
+      "passed": 17,
+      "reportedSeconds": 0.063,
+      "successVerifiedFromActualOriginalLog": true
+    },
+    {
+      "logBytes": 3183,
+      "logSha256": "786d2fbb82d92add6f9e9bdb0d9ec47fd94c0a629e4a06d237c4f6efce91a508",
+      "name": "test_crossvenue_observer_input_trace.py",
+      "originalLog": "test_crossvenue_observer_input_trace.py.r4.log",
+      "passed": 16,
+      "reportedSeconds": 0.269,
+      "successVerifiedFromActualOriginalLog": true
+    },
+    {
+      "logBytes": 5358,
+      "logSha256": "fba90217ebe22ce60fe8c4c1a79b73ecf6122528f556689c9332d6e0f054730d",
+      "name": "test_trace_replay.py",
+      "originalLog": "test_trace_replay.py.r4.log",
+      "passed": 31,
+      "reportedSeconds": 3.036,
+      "successVerifiedFromActualOriginalLog": true
+    }
+  ],
+  "observedAt": "2026-10-16T20:56:49.976840+00:00",
+  "packagingFailuresRetained": [
+    "original10filesmissing economics",
+    "r2missing toxicity",
+    "r3missing frozeninputprotocol"
+  ],
+  "passed": 106,
+  "productionChanged": false,
+  "sourceCommit": "b387861c9b61a2378b638208f608e447f47bfea5",
+  "sourceFiles": {
+    "moloch/external-data/crossvenue_economics.py": {
+      "bytes": 20828,
+      "sha256": "7207506a561a26a006338679c7d4908c4b4e81817204899063bb1c69778a2542"
+    },
+    "moloch/external-data/crossvenue_observer.py": {
+      "bytes": 66035,
+      "sha256": "3d3b5d43a6c79293d28b424fc4ab31626267acdd1c1b71918d9cdefd94824cd7"
+    },
+    "moloch/external-data/crossvenue_toxicity.py": {
+      "bytes": 12220,
+      "sha256": "542b68ceba8d3ceec102417e36611323f82571cf8be2bf34d271df4b8a42cc57"
+    },
+    "moloch/external-data/test_crossvenue_observer.py": {
+      "bytes": 36801,
+      "sha256": "c173d18612a5fe89ccce4fba1093d46e3e759d4cbf558dab67fea7e4c4437834"
+    },
+    "moloch/external-data/test_crossvenue_observer_input_trace.py": {
+      "bytes": 14351,
+      "sha256": "b284dd3820ef2d0289ce92b2d65a41263017512c94c9fb347802f9a92778dc8d"
+    },
+    "moloch/external-data/test_trade_triggered_observer.py": {
+      "bytes": 12694,
+      "sha256": "e8472841f66e8c0cd42a8610f4114d555b9eb9336442082073f9bf98497adfd0"
+    },
+    "research/moloch-trade-trigger-20261016/protocol.json": {
+      "bytes": 2174,
+      "sha256": "26a9a113f838bd496e5f1a7488086f06d5ae55be57a7bcadc25c29f81cba43ff"
+    },
+    "research/moloch-trade-trigger-20261016/witness/input-trace-protocol-v1.json": {
+      "bytes": 2323,
+      "sha256": "0192b4ab31f5f278cdc1f5ae341e17234c1f12a9dc0b3af43e742071314bc853"
+    },
+    "research/moloch-trade-trigger-20261016/witness/known-samplers/crossvenue_observer_200ab.py": {
+      "bytes": 61865,
+      "sha256": "200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40"
+    },
+    "research/moloch-trade-trigger-20261016/witness/known-samplers/crossvenue_observer_2fa9.py": {
+      "bytes": 63523,
+      "sha256": "2fa9b142b672f4a9076e185ac91be0b288945b0e1bba6afb0797594ed6678529"
+    },
+    "research/moloch-trade-trigger-20261016/witness/known-samplers/crossvenue_observer_pretrigger_v2.py": {
+      "bytes": 66035,
+      "sha256": "3d3b5d43a6c79293d28b424fc4ab31626267acdd1c1b71918d9cdefd94824cd7"
+    },
+    "research/moloch-trade-trigger-20261016/witness/test_trace_replay.py": {
+      "bytes": 24010,
+      "sha256": "0bcc7ef4c0d79519924d72ca03e01a8692104a4ff9ff20251644eb4fd164b713"
+    },
+    "research/moloch-trade-trigger-20261016/witness/trace_replay.py": {
+      "bytes": 23790,
+      "sha256": "3b7895720a06ee52104c9a23cbaf06fd0987e90405fac71673afaa0bdd602bc1"
+    }
+  }
+}

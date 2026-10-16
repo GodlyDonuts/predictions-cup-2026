@@ -1,0 +1,66 @@
+{
+  "approved-manifest.json": {
+    "bytes": 1326,
+    "sha256": "558366d971fdbc348bb0245c163b9ff21c7c666e92bb10ea6b03bb0aee6da256"
+  },
+  "archived-own-stop.json": {
+    "bytes": 137,
+    "sha256": "4f49ae3465b5aed3aee116ae84d9b14171692a46ad03380cfea9df4d4f03c850"
+  },
+  "authority.json": {
+    "bytes": 626,
+    "sha256": "2956246e3d5ce0300f690978738aea420e00f61f16f76c5537de8debf45d6351"
+  },
+  "boundary.json": {
+    "bytes": 1932,
+    "sha256": "c19d25305d50f8bd842756c0db516fd00a25a5e5dcde3c729a0bbd594491128f"
+  },
+  "fresh-verification.json": {
+    "bytes": 1444,
+    "sha256": "bd9b8bc326a7e02b27003e9f5d3c37a5330b8fcf7fa4a8d3f069005ea8f0580f"
+  },
+  "fundamental-policy.json": {
+    "bytes": 315,
+    "sha256": "2a35fe4e2aff69809bab216c238cbad0a373b7fc1cfd7f5c77cee7f36ca56982"
+  },
+  "health.py": {
+    "bytes": 3621,
+    "sha256": "9429f15469068ee66c5d71c3c9c58d0684c4bd4f71b3feb9e9f7c18e99bc468c"
+  },
+  "operator/paper6_cold_forecast_activation_20261016_r2.py": {
+    "bytes": 46558,
+    "sha256": "1c8d7b73827b68687163a1a07aa9148e5853ce10fe6f4eb43a07a311e9c4afce"
+  },
+  "operator/test_paper6_cold_forecast_activation_20261016_r2.py": {
+    "bytes": 10252,
+    "sha256": "e819a72a3b3a20be38b2ba2105fca805501f7a2addbe2d4621031f1b3879e507"
+  },
+  "own-stop-request.json": {
+    "bytes": 272,
+    "sha256": "9fe40be1135a61d944ef631d5f27933e1d7171edec5b29aa4c2e9cb25289d746"
+  },
+  "production-rollout.json": {
+    "bytes": 3370,
+    "sha256": "3f7971c555ce56a7ef0f9372d7107b95c9c0591b201f9061050946b0cde79d79"
+  },
+  "root-approval.json": {
+    "bytes": 1717,
+    "sha256": "da1120a57608a531cceaf48f3b2fc470f1383e6cff8d4eae509a0ed60c234a51"
+  },
+  "settings.json": {
+    "bytes": 4959,
+    "sha256": "2d76def81f2f6efebaa81965534390a2da04ab02f35a973cb5d5c7b0f649281f"
+  },
+  "staging.json": {
+    "bytes": 1051,
+    "sha256": "39fddde5f1ad2d623fb1905756c540ba3ea8242d9ca75091b35187f1cf849540"
+  },
+  "typed-reviews.json": {
+    "bytes": 678,
+    "sha256": "a8c50baa7ab907b59acb3c0b7075a3cc90fb16e28ee6e9e08f0b423f5ff1d937"
+  },
+  "typed-settings.json": {
+    "bytes": 229,
+    "sha256": "0fafaa869a4a542e81ac3362d31f29f8704f3134fdc8d25a86413e62761195ed"
+  }
+}

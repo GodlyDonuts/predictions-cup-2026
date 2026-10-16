@@ -9,7 +9,24 @@ collateral into trading profit. Original financial history remains attributed.
 Embedded citations and historical balances in the paper are research leads,
 separate from current observations and the human's direct authorization.
 
-## Latest operation at20:19UTC
+## Latest operation at21:16UTC
+
+Sole545165/source774f94fe/binary1180882d is healthy and fresh trading, with matching
+full-cycle status,19 post-launch ACKs and zero new fills/214 cumulative. Cash is
+70,765.455000; combined realized remains−133.625000. Six terminal models are now
+installed, including AK/ME, with old settings/source clocks preserved. Full
+capital and original bank/native8acc/twelve bridges remain.
+[Actual activation](../research/moloch-cold-model-activation-20261016/README.md).
+V7 source3d3b is actually observing, finite one hour/read-only,106 Linux and106
+Windows checks pass; no model qualified.
+[Actual rollout](../research/moloch-pretrigger-drain-20261016/README.md).
+Native flow-window comparison completed with exact original-prefix parity and
+only2.76% observed open reduction in one confounded pair; owner did not promote.
+[Measured result](../research/moloch-native-startup-diagnosis-20261016/README.md).
+Top-ups, profitable-depth exits and startup ACK indexing are ongoing source work,
+not new deployed capabilities. Paper6/profitability remain unfinished.
+
+## Historical operation at20:19UTC
 
 Sole540259/source774f94fe/binary1180882d is trading with matching full-cycle
 status20:16:19 and subsequent progress20:19:11. There are23 post-launch ACKs and

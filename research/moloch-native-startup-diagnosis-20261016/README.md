@@ -1,6 +1,23 @@
 # Native startup diagnosis — October 16
 
-## Owner validation at20:19UTC: compiled, original-prefix comparison running
+## Completed original-prefix comparison: no production promotion
+
+The actual308166-event/952440605-byte original prefix passes exact baseline/
+candidate parity, including all twelve original bridges and final public engine
+state. Native open took830.731s baseline and807.772s candidate. The observed2.76%
+reduction is one baseline-first comparison, confounded by cache and shared CPU;
+it does not establish a stable production speedup. The owner declined promotion:
+the small measured benefit does not justify a native migration/restart while
+allocation and profitable-depth improvements are pending. Production retains
+native8acc and its original twelve bridges.
+[Original results](comparison/result.json),
+[explicit owner decision](comparison/owner-promotion-decision.json),
+[raw evidence pins](comparison/artifact-pins.json).
+
+This result supersedes the dated running/uncompiled notes below. Candidate13th
+bridge exists only on an offline copy. No live history was reset or compacted.
+
+## Historical owner validation at20:19UTC: compiled, comparison running
 
 The isolated activity-window candidate now passes actual ARM64 **77 native
 library tests**, including all five new window/identity/parity tests. One existing

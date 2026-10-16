@@ -1,0 +1,42 @@
+{
+  "baseline-replay.execution.json": {
+    "bytes": 545,
+    "sha256": "4b500c79f3fa681a55323abeac95482c1b4ac3bee6334b0b4d7e5fc31d17e66c"
+  },
+  "baseline-replay.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "baseline-replay.stdout": {
+    "bytes": 501,
+    "sha256": "94c86a95d901854633f65e8a4296c7c097ef0fdbd4992aaf7761218b6df4ecb3"
+  },
+  "candidate-offline-proposal.execution.json": {
+    "bytes": 578,
+    "sha256": "d9ddb9e2437c1f71ae5496cca5c3b2e7696220caeb1ca1bdffe8006fa18c6b3e"
+  },
+  "candidate-replay.execution.json": {
+    "bytes": 564,
+    "sha256": "ceb2e568703a9fb7c84f300b8fce8e63e65c49fe36168f7a9e9c1c78589449ae"
+  },
+  "candidate-replay.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "candidate-replay.stdout": {
+    "bytes": 501,
+    "sha256": "f2270c6129df0498172835ab50c315bb34a354560a003f4d5993a66e940b57a6"
+  },
+  "input-pins.json": {
+    "bytes": 10019,
+    "sha256": "ab0738a225b19d54efb7c4d0776d43ba26a9ce6571ef3d2019cb03b02c6c3aa2"
+  },
+  "owner-promotion-decision.json": {
+    "bytes": 746,
+    "sha256": "9a5acca555d03f8260718f3fc0709e64449ef340c53b2ac63e89e57ce9808247"
+  },
+  "result.json": {
+    "bytes": 3650,
+    "sha256": "093d6f018e590e64348251e9485034f0cb704abf8753cfbde6252cb4243c780d"
+  }
+}
