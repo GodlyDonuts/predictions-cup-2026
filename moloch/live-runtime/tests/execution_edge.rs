@@ -1,4 +1,4 @@
-use moloch_live_runtime::dispatch;
+use moloch_live_runtime::{dispatch,feedback};
 #[path="../src/execution_edge.rs"]mod execution_edge;
 use execution_edge::*;
 use moloch_replay::session::Session;
