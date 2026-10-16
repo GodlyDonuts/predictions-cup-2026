@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 1,
+  "status": "inactive_draft_root_validation_required",
+  "executionAuthority": false,
+  "reviewCanonicalSha256": "ded397d206481fb0dbda2aec042bb8083aa9e96927ac499a68ed06bb248272b4",
+  "observedAt": "2026-10-16T19:04:44.385568+00:00",
+  "sourcePins": [
+    {
+      "file": "forecast.html",
+      "url": "https://www.callthemap.com/governors/maine",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T19:01:57.259430+00:00",
+      "receivedAt": "2026-10-16T19:01:57.654209+00:00",
+      "httpDate": "Fri, 16 Oct 2026 19:01:25 GMT",
+      "lastModified": null,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 204839,
+      "sha256": "0b6f1861631f02cc66d07587008a9164bdb97a9d4223a283c083f7c6c9602ce5"
+    },
+    {
+      "file": "scrutinel.html",
+      "url": "https://scrutinel.com/race/me-gov/",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T19:01:57.259430+00:00",
+      "receivedAt": "2026-10-16T19:01:57.593430+00:00",
+      "httpDate": "Fri, 16 Oct 2026 19:01:57 GMT",
+      "lastModified": "Fri, 16 Oct 2026 19:01:57 GMT",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 38733,
+      "sha256": "f6381a9fafdccd1112c0fcd7e2341d7bd194218823ff6876b8090ce0f7258c1e"
+    },
+    {
+      "file": "99chambers.html",
+      "url": "https://99chambers.app/governor/me",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T19:01:57.260428+00:00",
+      "receivedAt": "2026-10-16T19:01:58.078365+00:00",
+      "httpDate": "Fri, 16 Oct 2026 19:01:58 GMT",
+      "lastModified": null,
+      "contentType": "text/html",
+      "bytes": 101310,
+      "sha256": "2f307d12d01c34b675313887491390def0b1188404640bee9508b3b3c909ff35"
+    },
+    {
+      "file": "official-elections.html",
+      "url": "https://www.maine.gov/sos/elections-voting/upcoming-elections",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "file": "methodology.html",
+      "url": "https://www.callthemap.com/methodology",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T19:01:57.260428+00:00",
+      "receivedAt": "2026-10-16T19:01:57.800419+00:00",
+      "httpDate": "Fri, 16 Oct 2026 18:59:18 GMT",
+      "lastModified": null,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 507665,
+      "sha256": "a3ae446efdbc651f3f9e75be45ca3a8462bb18b860cd6c7aed51da3d53c0f81b"
+    },
+    {
+      "file": "official-candidates.xlsx",
+      "url": "https://www.maine.gov/sos/sites/maine.gov.sos/files/inline-files/2026%20General%20Candidate%20List%20-%20posting.xlsx",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "file": "official-elections-alternate.html",
+      "url": "https://www1.maine.gov/sos/elections-voting/upcoming-elections",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T19:02:25.617751+00:00",
+      "receivedAt": "2026-10-16T19:02:29.959433+00:00",
+      "httpDate": "Fri, 16 Oct 2026 19:02:29 GMT",
+      "lastModified": "Fri, 16 Oct 2026 13:20:36 GMT",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 103071,
+      "sha256": "32011e9b0b78f77ca1c60392b93d1e2e012531228e31141c238e0d61b83f8888"
+    },
+    {
+      "file": "official-rules.html",
+      "url": "https://www.maine.gov/sos/elections-voting/ranked-choice-voting-frequently-asked-questions",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "file": "official-candidates-alternate.xlsx",
+      "url": "https://www1.maine.gov/sos/sites/maine.gov.sos/files/inline-files/2026%20General%20Candidate%20List%20-%20posting.xlsx",
+      "error": "HTTP Error 404: Not Found"
+    },
+    {
+      "file": "official-rules-alternate.html",
+      "url": "https://www1.maine.gov/sos/elections-voting/ranked-choice-voting-frequently-asked-questions",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T19:02:43.644272+00:00",
+      "receivedAt": "2026-10-16T19:02:44.304760+00:00",
+      "httpDate": "Fri, 16 Oct 2026 19:02:44 GMT",
+      "lastModified": "Fri, 16 Oct 2026 19:02:43 GMT",
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 104296,
+      "sha256": "e3a21685382609e1e25408bc3982936c91548dcdb50d77cb07d2ce2894cc6a87"
+    },
+    {
+      "file": "official-candidates.xlsx",
+      "url": "https://www1.maine.gov/sos/sites/maine.gov.sos/files/inline-files/2026%20General%20Candidate%20List%20-%20FINAL.xlsx",
+      "status": 200,
+      "requestStartedAt": "2026-10-16T19:03:00.329553+00:00",
+      "receivedAt": "2026-10-16T19:03:00.555849+00:00",
+      "httpDate": "Fri, 16 Oct 2026 19:03:00 GMT",
+      "lastModified": "Wed, 09 Sep 2026 20:51:23 GMT",
+      "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "bytes": 48337,
+      "sha256": "c628e48fa6298b6862e709166adf3145f7bc4a3f60929c3e6ef5a3ea324e03ea"
+    }
+  ],
+  "officialNode": {
+    "originalBytesSha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499",
+    "originalReceivedAt": "2026-10-16T15:04:01.431Z",
+    "canonicalRootSha256": "5e768c0f5224b76620be03b0d08a9eb433c300d329491b1cd058ea47b42801e5",
+    "marketId": "176",
+    "exchangeId": "865",
+    "contractId": "177",
+    "resolutionType": "Party Winner",
+    "winnerName": "Democratic Party",
+    "electionDate": "2026-11-03",
+    "settlementDate": "2026-11-04T17:00:00.000Z",
+    "referenceMaximumAgeMs": 86400000,
+    "freshPhysicalRootRequired": true
+  },
+  "officialCandidates": {
+    "source": "official-candidates.xlsx",
+    "sheet": "xl/worksheets/sheet1.xml",
+    "office": "GOV",
+    "rows": [
+      {
+        "row": 8,
+        "name": "Rick Bennett",
+        "party": "Independent"
+      },
+      {
+        "row": 9,
+        "name": "Robert B. Charles",
+        "party": "R"
+      },
+      {
+        "row": 10,
+        "name": "Hannah M. Pingree",
+        "party": "D"
+      }
+    ],
+    "sourceFileModifiedAt": "2026-09-09T20:49:47Z",
+    "publicationAt": "unknown",
+    "currentOfficialLink": "https://www1.maine.gov/sos/elections-voting/upcoming-elections"
+  },
+  "forecast": {
+    "selected": "Call the Map",
+    "probability": "0.954",
+    "publisherDateModified": "2026-10-16T17:57:26.000Z",
+    "candidateFieldIncludesIndependent": true,
+    "bennettDisplayedWinProbability": "<0.1%",
+    "probabilityIsModelAssumption": true,
+    "scrutinel": "94% is explicitly two-party and excludes independent Bennett; not used as an unconditional probability",
+    "99chambers": "Retained page displays98% and97% in separate sections; no averaging or optimistic selection"
+  },
+  "arithmetic": {
+    "exceptionAllowance": ".03",
+    "minimumExceptionalPayout": "0",
+    "margin": ".01",
+    "expectedTerminalPayout": "0.92538",
+    "marginAdjustedValue": "0.91538",
+    "tickEntryCeiling": ".915",
+    "historicalAsk": ".875",
+    "historicalAskDepth": 2351,
+    "historicalAskSource": "Root retained capture, not a current executable quote",
+    "requiredProbabilityIncludingMargin": "0.9123711340206185567010309278",
+    "maximumPrincipal": "2000.000000",
+    "sensitivity": [
+      {
+        "ordinaryProbability": ".954",
+        "marginAdjustedValue": "0.91538",
+        "tickFloor": "0.915"
+      },
+      {
+        "ordinaryProbability": ".94",
+        "marginAdjustedValue": "0.9018",
+        "tickFloor": "0.901"
+      },
+      {
+        "ordinaryProbability": ".92",
+        "marginAdjustedValue": "0.8824",
+        "tickFloor": "0.882"
+      },
+      {
+        "ordinaryProbability": ".91",
+        "marginAdjustedValue": "0.8727",
+        "tickFloor": "0.872"
+      }
+    ]
+  },
+  "limits": [
+    "No calibrated Maine rare-tail lower confidence bound",
+    "No empirical estimate of exceptional/resolver probability",
+    "Different-state candidates still share national/model/election risk; geographic breadth is not independence",
+    "No current quote, depth, account eligibility or fill claim",
+    "Official candidate workbook/raw HTML remain private; no personal address/creator metadata published",
+    "Root must validate exact typed review and original SourceBytes before activation"
+  ]
+}

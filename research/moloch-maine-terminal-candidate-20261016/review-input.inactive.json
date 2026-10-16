@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "reviewerId": "Rhaegal-Viserion-paper6-20261016",
+  "assumptionLabel": "Inactive Maine candidate proposed for execution-owner review, not activation: Call the Map current published Pingree win probability0.954 is a model point assumption, not a calibrated lower bound. Its candidate-field forecast explicitly includes independent Rick Bennett; a two-party-only probability is not substituted. Official current SOS-linked General Election FINAL candidate file lists GOV Hannah M. Pingree Democratic, Robert B. Charles Republican, Rick Bennett Independent. Maine general gubernatorial election uses plurality, not RCV. Ordinary Pingree victory is mapped to Democratic Party Winner YES under exact structured SIG contract; affiliation/replacement/refund/resolver exceptions remain operator assumptions. Exceptional allowance0.03 is unchanged operator stress, not estimated frequency; minimum exceptional payout0, margin0.01. Models share inputs and are not averaged/multiplied, Kalshi is not fair value. Hold for actual settlement if delayed; source expiry blocks entry not forced liquidation. Official file publication clock unknown uses publishedAtMs0 sentinel, while original HTTP/file-modification clocks are preserved separately. Principal2000 is a research proposal pending root financial/typed-source review and fresh physical facts.",
+  "runId": "moloch-live-20261015-v1",
+  "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "marketId": "176",
+  "exchangeId": "865",
+  "contractId": "177",
+  "officialContractRootSha256": "5e768c0f5224b76620be03b0d08a9eb433c300d329491b1cd058ea47b42801e5",
+  "side": "YES",
+  "ordinaryProbability": "0.954000",
+  "exceptionalProbabilityAllowance": "0.030000",
+  "minimumExceptionalPayout": "0.000000",
+  "marginPerShare": "0.010000",
+  "maximumPrincipal": "2000.000000",
+  "maximumQuantity": 10000,
+  "reviewedAtMs": 1792177484385,
+  "expiresAtMs": 1792249441431,
+  "holdUntilMs": 1793811600000,
+  "payoutMappingIsOperatorAssumption": true,
+  "revokeExisting": false,
+  "sources": [
+    {
+      "kind": "forecast",
+      "url": "https://www.callthemap.com/governors/maine",
+      "sha256": "0b6f1861631f02cc66d07587008a9164bdb97a9d4223a283c083f7c6c9602ce5",
+      "publishedAtMs": 1792173446000,
+      "observedAtMs": 1792177317654,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_ballot",
+      "url": "https://www1.maine.gov/sos/sites/maine.gov.sos/files/inline-files/2026%20General%20Candidate%20List%20-%20FINAL.xlsx",
+      "sha256": "c628e48fa6298b6862e709166adf3145f7bc4a3f60929c3e6ef5a3ea324e03ea",
+      "publishedAtMs": 0,
+      "observedAtMs": 1792177380555,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_contract_node",
+      "url": "https://sig.thesuper.market/api/v1/markets/176/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "sha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499",
+      "publishedAtMs": 1792163041431,
+      "observedAtMs": 1792163041431,
+      "maximumAgeMs": 86400000
+    }
+  ],
+  "executionPolicy": {
+    "version": 1,
+    "allowedModes": [
+      "boundedLimitMayRest",
+      "improveOneTick",
+      "joinBid"
+    ]
+  },
+  "valuationObjective": {
+    "kind": "terminalSettlement",
+    "timingSourceSha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499",
+    "timingJsonPointer": "/data/root/settlement_date",
+    "scheduledSettlementAtMs": 1793811600000,
+    "delayPolicy": "holdForActualSettlement"
+  }
+}
