@@ -166,6 +166,39 @@ fn verify_with_node(mut review:ReviewInput,node:&[u8])->moloch_live_runtime::fee
         let mut f=F::new();let(q,spec)=f.bind_entry();f.log_intent(&q,&spec);assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+1).is_err());
         let mut f=F::new();f.fill_entry(false);assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+5).unwrap().is_empty());
     }
+    #[cfg(target_os="linux")]
+    fn prove_pre_admission_abort(f:&mut F,q:&Value,tagged:bool)->(baal_transport_service::Config,Value){
+        use baal_transport_service::{Config,TransportError,admission::AccountAdmission};
+        let id=q["id"].as_u64().unwrap();let spec=f.spec(q);let mut permit=f.permit(q,NOW);permit.expires_at_ms=NOW-1;
+        let error=TransportError{code:"PERMIT_EXPIRED_OR_INVALID".into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None};
+        let tag=if tagged{f.store.as_ref().unwrap().durable_tag(id)}else{None};
+        f.log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":spec,"permit":permit,"fundamental":tag})).unwrap();
+        f.log.append(json!({"kind":"attempt","qid":id,"at":iso(NOW),"captureAtMs":NOW})).unwrap();f.log.append(json!({"kind":"error","qid":id,"at":iso(NOW+1),"error":error})).unwrap();
+        let dir=f.root.join("frozen-sdk-original");std::fs::create_dir(&dir).unwrap();{let mut queue=AccountAdmission::open(&dir,"synthetic-aborted-account","fixture").unwrap();queue.command(json!({"op":"status","scope":"synthetic-aborted-account","now":NOW-1000})).unwrap();}
+        let config=Config{queue_dir:dir,account_scope:"synthetic-aborted-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false};
+        let proof=baal_transport_service::verify_frozen_ordinary_pre_admission(&config,&spec,&permit,NOW,&error).unwrap();let evidence=proof.evidence().clone();
+        f.log.append_aborted_before_admission(id,&proof,&iso(NOW+2)).unwrap();f.event(json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":sha(&serde_json::to_vec(&evidence).unwrap()),"receivedAt":iso(NOW+3),"deferPlanningForPackage":true}));
+        (config,evidence)
+    }
+    #[cfg(target_os="linux")]
+    #[test]fn verified_ordinary_abort_unblocks_forecast_only_after_original_sdk_restart_verification(){
+        let mut f=F::setup(false,"cup");let ordinary=f.bank.engine().order_records().into_iter().find(|q|q["side"]=="YES"&&q["action"]=="buy"&&q["retired"]==false).unwrap();let old=ordinary["id"].as_u64().unwrap();let(config,evidence)=prove_pre_admission_abort(&mut f,&ordinary,false);
+        let report=f.bank.engine().report().unwrap();let head=f.bank.durable_head();f.log=dispatch::DispatchLog::open(&f.root.join("dispatch.ndjson")).unwrap();assert!(!f.log.proved_no_network(old));assert!(f.log.require_resolved_attempts().is_err());
+        let r=approve(f.review.clone(),&mut f.trust,NOW+4);assert!(f.store.as_mut().unwrap().install(r,&f.bank,&f.log,NOW+4).is_err(),"a rehashed abort row alone cannot waive same-market liability");
+        let(spec,permit,at,error)=f.log.pre_admission_originals(old).unwrap();let proof=baal_transport_service::verify_retained_ordinary_pre_admission(&config,&spec,&permit,at,&error,&evidence).unwrap();f.log.verify_aborted_before_admission(old,&proof).unwrap();f.install(f.review.clone(),NOW+4);
+        assert_eq!(f.bank.engine().report().unwrap(),report);assert_eq!(f.bank.durable_head(),head);assert_eq!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+4).unwrap().len(),1);
+        let q=f.entry();assert!(matches!(f.assess(&q,NOW+4),Decision::Entry{..}));let id=q["id"].as_u64().unwrap();let spec=f.spec(&q);f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW+4).unwrap();let p=f.permit(&q,NOW+4);let a=f.authority();let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW+4).unwrap();token.authorize(&f.scope,&spec,&p,NOW+4).unwrap();drop(token);
+        f.log.append(json!({"kind":"intent","qid":9999})).unwrap();f.log.append(json!({"kind":"attempt","qid":9999})).unwrap();assert!(f.log.require_resolved_attempts().is_err());assert_eq!(f.assess(&q,NOW+5),Decision::Hold{reason:"unknown_physical_acceptance".into()});assert!(f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW+5).is_err());
+        assert!(f.log.attempted.contains(&old)&&!f.log.never_attempted(old)&&!f.log.acknowledgments.contains_key(&old)&&!f.log.closed.contains(&old));assert!(f.bank.engine().fills().is_empty());
+    }
+    #[cfg(target_os="linux")]
+    #[test]fn tagged_aborted_entry_retains_exclusive_cohort_and_cannot_mint_a_retry(){
+        let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();prove_pre_admission_abort(&mut f,&q,true);f.reopen();
+        assert!(f.log.proved_no_network(id));f.log.require_resolved_attempts().unwrap();assert_eq!(f.assess(&q,NOW+4),Decision::Hold{reason:"proved_aborted_intent_cannot_retry".into()});
+        assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+4).unwrap().is_empty(),"physical proof alone does not abandon/rearm the tagged source cohort");
+        let p=f.permit(&q,NOW+4);let a=f.authority();assert!(f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW+4).unwrap_err().to_string().contains("ABORTED_INTENT_CANNOT_RETRY"));assert!(f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW+4).is_err());
+        assert!(!f.log.never_attempted(id)&&!f.log.closed.contains(&id)&&!f.log.acknowledgments.contains_key(&id));assert!(f.bank.engine().fills().is_empty());
+    }
     #[test]fn independent_entry_plan_expires_and_detects_dispatch_or_review_file_change(){
         for case in 0..3{let(mut f,t,facts)=entry_fixture();let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).unwrap().unwrap();
             match case{0=>assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,plan.valid_until_ms()).is_err()),1=>{f.log.append(json!({"kind":"source","qid":999,"diagnostic":"actual local journal advance"})).unwrap();assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+26).is_err());},_=>{std::fs::write(f.root.join("review-authority.json"),b"changed").unwrap();assert!(plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+26).is_err());}}
