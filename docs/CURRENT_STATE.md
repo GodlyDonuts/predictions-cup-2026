@@ -1,4 +1,24 @@
-# October16,13:54UTC: network-token failure reconciled; successor restoring
+# October16,14:04UTC: inter-read worker trading; actual strategy-cost study
+
+Actual sole SIG510591/source4ee16356/executable011ffde0 is fresh trading with
+healthy realtime/no STOP. First verified14:03:28, one new official ACK; five by
+14:04:45 and zero new fill rows.163 cumulative fills and attributed realized
+−106.485000 remain; full95,579.915000 capital is preserved. Read-only observer
+510713/source67426474 now targets its original breadth in a separate v9 cohort.
+The future-start STOP guard was strengthened without restarting the worker.
+[Actual readiness, recovery and guard evidence](../research/moloch-inter-read-20261016/README.md).
+
+The bounded original-fill study has50 ordinary resting-after-ACK BUY observations,
+but only9/8/8/8 full-depth labels at1/5/30/120s. Covered displayed marks are
+negative; historical missing observations remain unavailable and own resting
+depth is not removed. A fixed existing microprice threshold flags two covered
+submission intents accounting for−24.34 of these marks, but retained fills are
+also negative. This is a candidate entry filter, not avoided actual profit or
+qualified alpha. [Actual costs and fixed split](../research/moloch-maker-markout-20261016/README.md).
+Optional explicit-mode runtime assessment and bounded token-HTTP recovery are
+being implemented/checked; the current production binary is unchanged.
+
+# Historical October16,13:54UTC: network-token failure reconciled; successor restoring
 
 First inter-read successor506740 restored history, then stopped13:47:15UTC
 with CONNECTION_UNCONFIRMED during realtime-token HTTP, before stream connection.
