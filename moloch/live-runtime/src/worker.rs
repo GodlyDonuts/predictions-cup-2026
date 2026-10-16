@@ -1268,6 +1268,19 @@ fn ordinary_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut 
   let class=refreshed.assessments.first().ok_or("LIVE_QUOTE_PRIORITY_MISSING")?.decision.class;
   if matches!(class,Class::NeedsRefresh|Class::Deferred|Class::Inactive){return Ok(None)}
   if !reads.guarded()?{return Ok(None)}
+  // The first pass could not veto a stale book. Re-assess only after its
+  // genuine refresh/source drain, using the unchanged negative-only proof.
+  // Native exclusions are installed from the current manager generation;
+  // reviewed/package/any opposite-owned exposure retain their bypasses.
+  use moloch_live_runtime::ordinary_side_edge::{self,Mode};
+  if c.ordinary_side_edge!=Mode::Disabled{
+   let managed=bank.engine().ordinary_entry_exclusions();
+   let assessed_at=reads.now_ms();
+   let assessment=ordinary_side_edge::assess_early(bank,&c.scope,log,&managed,id,assessed_at);
+   let veto=c.ordinary_side_edge==Mode::Enforce&&assessment.negative().is_some_and(|proof|proof.validate_current(bank,&c.scope,log,&managed,reads.now_ms()).is_ok());
+   let _=atomic_json(&c.root.join("ordinary-side-edge-refreshed.json"),&json!({"at":iso(assessed_at),"qid":id,"mode":c.ordinary_side_edge,"class":assessment.class,"reason":&assessment.reason,"evidence":assessment.negative().map(|proof|proof.evidence()),"vetoedThisPass":veto,"accountPacketRead":false,"reservationReleased":false,"physicalAttempted":false,"executionAuthority":false}));
+   if veto{return Ok(None)}
+  }
  }
  let facts=match preflight_snapshots(c,bank,source,current["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,Some(&current),reads){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return Ok(None),Err(e)=>return Err(e)};
  accept_fresh_book(bank,c,&current,&facts.book,source)?;
@@ -2022,8 +2035,9 @@ pub fn main()->Result<()>{
  // network, extra client or fabricated native qid.
  struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  const T:&str="11111111-1111-4111-8111-111111111111";
- fn fixture()->(Temp,Control,Session,DispatchLog,RestSource,Value,Receipt){
-  let at=now();let root=Temp(std::env::temp_dir().join(format!("cooperative-preflight-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())));private_dir(&root.0).unwrap();
+ fn fixture()->(Temp,Control,Session,DispatchLog,RestSource,Value,Receipt){fixture_at(now())}
+ fn fixture_at(at:u64)->(Temp,Control,Session,DispatchLog,RestSource,Value,Receipt){
+  let root=Temp(std::env::temp_dir().join(format!("cooperative-preflight-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())));private_dir(&root.0).unwrap();
   let policy=json!({"quantity":2,"entryStopAt":iso(at+600000)});let seed=json!({"runId":"cooperative-preflight","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-5000)});let stamp=iso(at-4000);
   let book=Receipt{endpoint:format!("/markets/201/orderbook?tournamentId={T}&depth=20"),request_started_at:stamp.clone(),received_at:stamp.clone(),status:200,data:json!({"contexts":[{"type":"tournament","tournament":{"id":T},"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":1,"at":stamp},"bids":[{"price":0.4,"quantity":10}],"asks":[{"price":0.41,"quantity":990}]}]}}]})};
   let mut bank=Session::open_live(&root.0.join("bank"),&policy,&seed).unwrap();bank.accept("original-fixture-book",1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":T,"marketId":"201","exchangeId":"101","sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":10}],"asks":[{"price":"0.410000","quantity":990}]}})).unwrap();
@@ -2071,6 +2085,31 @@ pub fn main()->Result<()>{
   let expected=[Endpoint::Tournament,Endpoint::Positions,Endpoint::Orders{status:"open".into()},Endpoint::Account,Endpoint::Market{market_id:"201".into()},Endpoint::Nodes{market_id:"201".into()},Endpoint::OrderBook{market_id:"201".into(),depth:20}];
   assert_eq!(reads.calls,7);assert_eq!(reads.endpoints,expected.iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>());assert_eq!(reads.trace,["service","get"].repeat(7));assert_eq!(original_read_order(&facts),json!(reads.returned));assert_eq!(current,q);assert_eq!(quote(&bank,q["id"].as_u64().unwrap()).unwrap(),q);assert_ne!(head,bank.durable_head());
   for key in ["cash","ownedCost","realized","fills"]{assert_eq!(before[key],bank.engine().report().unwrap()[key]);}assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn refreshed_weak_no_skips_account_packet_and_strong_yes_remains_available(){
+  use moloch_live_runtime::ordinary_side_edge::Mode;
+  let(root,mut c,mut bank,log,mut source,yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=Mode::Enforce;
+  let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();
+  let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);
+  assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&no,&mut reads).unwrap().is_none());
+  assert_eq!(reads.endpoints.len(),1);assert_eq!(reads.endpoints[0],serde_json::to_value(Endpoint::OrderBook{market_id:"201".into(),depth:20}).unwrap());
+  let diagnostic=load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap();assert_eq!(diagnostic["class"],"below_minimum");assert_eq!(diagnostic["vetoedThisPass"],true);
+  assert_eq!(quote(&bank,no["id"].as_u64().unwrap()).unwrap(),no);
+  // Same pass, no reservation/intent/attempt was consumed by the weak mate.
+  let calls=reads.endpoints.len();assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&yes,&mut reads).unwrap().is_some());assert_eq!(reads.endpoints.len()-calls,7);
+  let after=bank.engine().report().unwrap();for k in ["cash","reservedCash","ownedCost","realized","fills"]{assert_eq!(before[k],after[k],"{k}");}assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn refreshed_negative_disabled_and_shadow_preserve_entire_original_packet(){
+  use moloch_live_runtime::ordinary_side_edge::Mode;
+  for mode in [Mode::Disabled,Mode::Shadow]{let(root,mut c,mut bank,log,mut source,_yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=mode;let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();let mut reads=Reads::new(book);
+   assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&no,&mut reads).unwrap().is_some());assert_eq!(reads.endpoints.len(),8);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+   if mode==Mode::Disabled{assert!(!root.0.join("ordinary-side-edge-refreshed.json").exists());}else{assert_eq!(load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap()["vetoedThisPass"],false);}
+  }
+ }
+ #[test]fn refreshed_negative_never_swallows_stream_or_durable_errors(){
+  use moloch_live_runtime::ordinary_side_edge::Mode;
+  let(_root,mut c,mut bank,log,mut source,_yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=Mode::Enforce;let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();let mut reads=Reads::new(book);reads.fail_at=Some(1);
+  assert_eq!(ordinary_preflight(&c,&mut bank,&log,&mut source,&no,&mut reads).err().unwrap().to_string(),"LIVE_PREFLIGHT_QUOTE_INVALIDATED");assert!(reads.endpoints.is_empty());assert!(log.intents.is_empty());
  }
  #[test]fn hook_failure_before_first_or_later_get_is_fatal_even_with_invalidation_text(){
   for at in [1usize,3]{let(_root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);reads.fail_at=Some(at);let error=ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).err().expect("untyped stream/durable error must propagate");assert_eq!(error.to_string(),"LIVE_PREFLIGHT_QUOTE_INVALIDATED");assert!(!error.is::<PreflightQuoteInvalidated>());assert_eq!(reads.endpoints.len(),at-1);assert_eq!(reads.calls,at);assert_eq!(reads.trace.last(),Some(&"service"));assert!(log.intents.is_empty()&&log.attempted.is_empty());}
