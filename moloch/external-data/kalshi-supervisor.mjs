@@ -7,7 +7,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import { acquire, atomicJson } from './kalshi-collector.mjs';
 
 const CHILD = fileURLToPath(new URL('./kalshi-collector.mjs', import.meta.url));
-const FLAGS = new Set(['cache','repository-root','env-file','port','max-in-flight','duration-seconds','maximum-markets']);
+const FLAGS = new Set(['cache','repository-root','env-file','port','max-in-flight','duration-seconds','maximum-markets','websocket']);
 export function configuration(argv) {
   if (!Array.isArray(argv) || argv.length % 2) throw Error('KALSHI_SUPERVISOR_ARGUMENT');
   const seen = new Set(); let cache;

@@ -50,8 +50,9 @@ impl Batch{
   for row in rows{
    let ex=row["exchangeId"].as_str().ok_or("BULK_SCREEN_ROW_SCOPE")?;let index=ids.iter().position(|x|x==ex).ok_or("BULK_SCREEN_ROW_SCOPE")?;
    need(last.is_none_or(|old|index>old)&&scope.exchanges.get(ex).is_some_and(|m|row["marketId"]==*m)&&!quotes.contains_key(ex),"BULK_SCREEN_ROW_SCOPE")?;last=Some(index);
-   for field in ["latestPrice","bestBid","bestAsk","spread"]{let v=row.get(field).ok_or("BULK_SCREEN_ROW_FIELDS")?;need(v.is_null()||v.is_number(),"BULK_SCREEN_PRICE_TYPE")?;
-    if !v.is_null(){let n=if ["bestBid","bestAsk"].contains(&field){official_tick_units(v)?}else{baal_transport_service::decimal_units(&v.to_string())?};need((0..=UNIT).contains(&n),"BULK_SCREEN_PRICE_RANGE")?;}}
+   // Same exact original-field protocol as the sole SDK read validator. No
+   // serialized spread/BBO value is normalized or replaced with a fake quote.
+   baal_transport_service::validate_bulk_price_fields(row)?;
    let option=row.get("option").ok_or("BULK_SCREEN_ROW_FIELDS")?;need(option.is_null()||option.is_string(),"BULK_SCREEN_OPTION")?;
    // Canonical YES interpretation only. Null/other option labels are unknown,
    // never an implicit permission to complement an already-NO quote twice.

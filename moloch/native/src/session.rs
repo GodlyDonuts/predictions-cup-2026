@@ -108,7 +108,9 @@ pub fn engine_identity() -> String {
         include_bytes!("reviewed_fundamental_entry.rs").as_slice(),
         include_bytes!("ordinary_entry_exclusions.rs").as_slice(),
         include_bytes!("live_market_capacity.rs").as_slice(),
+        include_bytes!("engine_capital.rs").as_slice(),
         include_bytes!("engine_packages.rs").as_slice(),
+        include_bytes!("probabilistic_packages.rs").as_slice(),
         include_bytes!("engine_collateral.rs").as_slice(),
         include_bytes!("lib.rs").as_slice(),
         include_bytes!("legacy.rs").as_slice(),
@@ -408,6 +410,27 @@ impl Session {
     /// Actual sealed current head, not a path-selected or cached projection.
     pub fn durable_head(&self)->Value {sealed(json!({"manifestHash":self.manifest["hash"],"sequence":self.chain.sequence,"previous":self.chain.previous}))}
     fn collateral_scope(&self,event:&Value,sequence:u64,previous:&str,engine:&Engine)->Result<()> {
+        if event["type"]=="probabilistic_portfolio_reserve_v1"{
+            let seed=self.live_account_seed().ok_or("PROBABILISTIC_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("PROBABILISTIC_SESSION_PREFIX".into())}
+        }
+        if event["type"]=="live_capital_allocation_v1" {
+            let seed=self.live_account_seed().ok_or("CAPITAL_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]
+                ||event["boundary"]["nativeHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
+                ||event["expectedReportHash"]!=hash(&engine.report()?)
+                ||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid){return Err("CAPITAL_SESSION_PREFIX".into())}
+            let seed_cash=crate::amount(seed["availableCash"].as_str().ok_or("CAPITAL_SEED_CASH")?)?;
+            let expected=seed_cash.checked_add(engine.wallet.cash).and_then(|n|n.checked_sub(engine.wallet.initial)).and_then(|n|n.checked_add(engine.opening_inventory_cost())).ok_or("CAPITAL_RANGE")?;
+            let raw=&event["receipts"]["account"]["data"]["balance"];
+            let actual=crate::amount(&raw.as_str().map(str::to_owned).unwrap_or_else(||raw.to_string()))?;
+            let delta=crate::amount(event["delta"].as_str().ok_or("CAPITAL_DELTA")?)?;
+            let unused=seed_cash.checked_add(engine.opening_inventory_cost()).and_then(|n|n.checked_sub(engine.wallet.initial)).ok_or("CAPITAL_RANGE")?;
+            if actual!=expected||delta<=0||delta>unused{return Err("CAPITAL_UNALLOCATED_SEED_CASH".into())}
+        }
+
         if event["type"]=="live_market_capacity_v1"{
             let seed=self.live_account_seed().ok_or("LIVE_CAPACITY_SESSION_NOT_LIVE")?;
             if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]

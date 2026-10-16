@@ -20,25 +20,27 @@ fn sync_directory(path:&Path)->Result<()>{#[cfg(unix)]File::open(path)?.sync_all
 /// description, not a reconstituted scanner certificate or dispatch permission.
 #[derive(Clone,Serialize)]
 #[serde(untagged)]
-enum FrozenBasket{Legacy(Basket),Portfolio(signed::Basket)}
+enum FrozenBasket{Legacy(Basket),Portfolio(signed::Basket),Probabilistic(signed::Basket)}
 impl FrozenBasket{
- fn key(&self)->&str{match self{Self::Legacy(v)=>&v.idempotency_key,Self::Portfolio(v)=>&v.idempotency_key}}
- fn len(&self)->usize{match self{Self::Legacy(v)=>v.legs.len(),Self::Portfolio(v)=>v.legs.len()}}
- fn request(&self,s:&Scope,p:&Permit)->Result<RequestSpec>{Ok(match self{Self::Legacy(v)=>multi_leg::request_spec(v,s,p)?,Self::Portfolio(v)=>signed::request_spec(v,s,p)?})}
- fn acknowledgment(&self,r:&Receipt)->Result<()>{match self{Self::Legacy(v)=>{multi_leg::reported_fill(r,v)?;},Self::Portfolio(v)=>{signed::reported_fill(r,v)?;}}Ok(())}
+ fn key(&self)->&str{match self{Self::Legacy(v)=>&v.idempotency_key,Self::Portfolio(v)|Self::Probabilistic(v)=>&v.idempotency_key}}
+ fn len(&self)->usize{match self{Self::Legacy(v)=>v.legs.len(),Self::Portfolio(v)|Self::Probabilistic(v)=>v.legs.len()}}
+ fn request(&self,s:&Scope,p:&Permit)->Result<RequestSpec>{Ok(match self{Self::Legacy(v)=>multi_leg::request_spec(v,s,p)?,Self::Portfolio(v)|Self::Probabilistic(v)=>signed::request_spec(v,s,p)?})}
+ fn acknowledgment(&self,r:&Receipt)->Result<()>{match self{Self::Legacy(v)=>{multi_leg::reported_fill(r,v)?;},Self::Portfolio(v)|Self::Probabilistic(v)=>{signed::reported_fill(r,v)?;}}Ok(())}
 }
 #[derive(Clone,Serialize)]
 pub struct DurableIntent{proof:Value,reserve:Value,basket:FrozenBasket,scope:Scope,permit:Permit,queue_scope:String,spec:RequestSpec,request_hash:String,queue_binding:Value}
 impl DurableIntent{
  pub fn new(proof:Value,reserve:Value,basket:Basket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{Self::build(proof,reserve,FrozenBasket::Legacy(basket),scope,permit,queue_scope)}
  pub fn new_portfolio(proof:Value,reserve:Value,basket:signed::Basket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{Self::build(proof,reserve,FrozenBasket::Portfolio(basket),scope,permit,queue_scope)}
+ pub fn new_probabilistic(proof:Value,reserve:Value,basket:signed::Basket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{Self::build(proof,reserve,FrozenBasket::Probabilistic(basket),scope,permit,queue_scope)}
  fn build(proof:Value,reserve:Value,basket:FrozenBasket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{
+  if let FrozenBasket::Probabilistic(b)=&basket{return Self::build_probabilistic(proof,reserve,b.clone(),scope,permit,queue_scope)}
   let digest=hash(&proof)?;let id=format!("pkg-{digest}");
   need(reserve["type"]=="live_package_reserve"&&reserve["source"]=="moloch_live_dispatcher"&&reserve["proofHash"]==digest&&reserve["packageId"]==id&&permit.intent_id==id,"PACKAGE_INTENT_PROOF")?;
   need(proof["runId"]==permit.run_id&&proof["bankManifestHash"]==reserve["bankScope"]["bankManifestHash"]&&proof["tournamentId"]==scope.tournament_id&&reserve["bankScope"]["runId"]==permit.run_id&&reserve["bankScope"]["tournamentId"]==scope.tournament_id&&hex(reserve["bankScope"]["bankManifestHash"].as_str().ok_or("PACKAGE_INTENT_MANIFEST")?),"PACKAGE_INTENT_SCOPE")?;
   need(!queue_scope.is_empty()&&queue_scope.len()<=512&&!queue_scope.chars().any(char::is_control)&&!permit.run_id.is_empty()&&!permit.owner.is_empty(),"PACKAGE_INTENT_OWNER")?;
   need(basket.key()==format!("{}:{id}",permit.run_id)&&proof["usesFutureCollateral"]==false,"PACKAGE_INTENT_ECONOMICS")?;
-  match &basket{FrozenBasket::Legacy(b)=>need(reserve.get("portfolio").is_none()&&b.maximum_cost==reserve["economics"]["maximumCost"]&&proof["maximumCost"]==b.maximum_cost,"PACKAGE_INTENT_ECONOMICS")?,FrozenBasket::Portfolio(b)=>need(reserve.get("portfolio").is_some()&&proof["portfolio"]==reserve["portfolio"]&&b.maximum_gross_buy_cost==reserve["economics"]["maximumCost"]&&proof["grossFunding"]==b.maximum_gross_buy_cost&&proof["minimumCashProceeds"]==b.minimum_gross_sell_proceeds,"PACKAGE_INTENT_PORTFOLIO_ECONOMICS")?,}
+  match &basket{FrozenBasket::Legacy(b)=>need(reserve.get("portfolio").is_none()&&b.maximum_cost==reserve["economics"]["maximumCost"]&&proof["maximumCost"]==b.maximum_cost,"PACKAGE_INTENT_ECONOMICS")?,FrozenBasket::Portfolio(b)=>need(reserve.get("portfolio").is_some()&&proof["portfolio"]==reserve["portfolio"]&&b.maximum_gross_buy_cost==reserve["economics"]["maximumCost"]&&proof["grossFunding"]==b.maximum_gross_buy_cost&&proof["minimumCashProceeds"]==b.minimum_gross_sell_proceeds,"PACKAGE_INTENT_PORTFOLIO_ECONOMICS")?,FrozenBasket::Probabilistic(_)=>return Err("PACKAGE_INTENT_CLASS".into()),}
   let created=clock(reserve["receivedAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?;let expires=clock(reserve["expiresAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?;
   need(created>=0&&expires>created&&proof["atMs"].as_i64()==Some(created)&&proof["expiresAtMs"].as_i64()==Some(expires)&&permit.expires_at_ms==expires as u64,"PACKAGE_INTENT_CLOCK")?;
   need(proof["wireLegs"]==reserve["legs"],"PACKAGE_INTENT_LEGS")?;
@@ -46,10 +48,23 @@ impl DurableIntent{
   match &basket{
    FrozenBasket::Legacy(b)=>for(l,w)in legs.iter().zip(&b.legs){need(l.get("action").is_none()&&l["exchangeId"]==w.exchange_id&&l["marketId"].as_str()==scope.exchanges.get(&w.exchange_id).map(String::as_str)&&l["side"]==(if w.side==multi_leg::Side::Yes{"YES"}else{"NO"})&&l["quantity"]==w.quantity&&l["limitPrice"]==w.limit_price&&hex(l["bookHash"].as_str().ok_or("PACKAGE_INTENT_BOOK")?),"PACKAGE_INTENT_LEGS")?;},
    FrozenBasket::Portfolio(b)=>for(l,w)in legs.iter().zip(&b.legs){need(l["exchangeId"]==w.exchange_id&&l["marketId"].as_str()==scope.exchanges.get(&w.exchange_id).map(String::as_str)&&l["side"]==(if w.side==multi_leg::Side::Yes{"YES"}else{"NO"})&&l["action"]==(if w.action==signed::Action::Buy{"buy"}else{"sell"})&&l["quantity"]==w.quantity&&l["limitPrice"]==w.limit_price&&hex(l["bookHash"].as_str().ok_or("PACKAGE_INTENT_BOOK")?),"PACKAGE_INTENT_LEGS")?;},
+   FrozenBasket::Probabilistic(_)=>return Err("PACKAGE_INTENT_CLASS".into()),
   }
   let spec=basket.request(&scope,&permit)?;let request_hash=hash(&spec)?;
   let queue_binding=json!({"intent":format!("{}:{}",permit.run_id,permit.intent_id),"key":basket.key(),"payload_hash":hash(&json!({"scope":scope,"spec":spec}))?});
   Ok(Self{proof,reserve,basket,scope,permit,queue_scope:queue_scope.into(),spec,request_hash,queue_binding})
+ }
+ fn build_probabilistic(proof:Value,reserve:Value,basket:signed::Basket,scope:Scope,permit:Permit,queue_scope:&str)->Result<Self>{
+  let digest=hash(&proof)?;let id=format!("prob-{digest}");
+  need(proof["version"]==1&&proof["kind"]=="reviewed_probabilistic_portfolio"&&reserve["type"]=="probabilistic_portfolio_reserve_v1"&&reserve["source"]=="moloch_live_dispatcher"&&reserve["proofHash"]==digest&&reserve["qualification"]==proof&&reserve["packageId"]==id&&permit.intent_id==id&&reserve.get("economics").is_none()&&reserve.get("portfolio").is_none(),"PACKAGE_PROBABILISTIC_PROOF")?;
+  need(reserve["bankScope"]["runId"]==permit.run_id&&reserve["bankScope"]["tournamentId"]==scope.tournament_id&&hex(reserve["bankScope"]["bankManifestHash"].as_str().ok_or("PACKAGE_INTENT_MANIFEST")?)&&!queue_scope.is_empty()&&queue_scope.len()<=512&&!queue_scope.chars().any(char::is_control)&&!permit.run_id.is_empty()&&permit.owner=="Codex","PACKAGE_PROBABILISTIC_SCOPE")?;
+  need(basket.idempotency_key==format!("{}:{id}",permit.run_id)&&basket.maximum_gross_buy_cost==proof["metrics"]["grossBuyFunding"]&&basket.minimum_gross_sell_proceeds==proof["metrics"]["minimumSellProceeds"]&&basket.relationship_constraint.is_none(),"PACKAGE_PROBABILISTIC_ECONOMICS")?;
+  let created=clock(reserve["receivedAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?;let expires=clock(reserve["expiresAt"].as_str().ok_or("PACKAGE_INTENT_CLOCK")?)?;
+  need(created>=0&&expires>created&&proof["validUntilMs"].as_i64().is_some_and(|t|t>=expires)&&permit.expires_at_ms==expires as u64&&proof["wireLegs"]==reserve["legs"],"PACKAGE_PROBABILISTIC_CLOCK")?;
+  let legs=reserve["legs"].as_array().ok_or("PACKAGE_INTENT_LEGS")?;need(legs.len()==basket.legs.len(),"PACKAGE_INTENT_LEGS")?;
+  for(l,w)in legs.iter().zip(&basket.legs){need(l["exchangeId"]==w.exchange_id&&l["marketId"].as_str()==scope.exchanges.get(&w.exchange_id).map(String::as_str)&&l["side"]==(if w.side==multi_leg::Side::Yes{"YES"}else{"NO"})&&l["action"]==(if w.action==signed::Action::Buy{"buy"}else{"sell"})&&l["quantity"]==w.quantity&&l["limitPrice"]==w.limit_price&&hex(l["bookHash"].as_str().ok_or("PACKAGE_INTENT_BOOK")?),"PACKAGE_INTENT_LEGS")?;}
+  let spec=signed::request_spec(&basket,&scope,&permit)?;let request_hash=hash(&spec)?;let queue_binding=json!({"intent":format!("{}:{}",permit.run_id,permit.intent_id),"key":basket.idempotency_key,"payload_hash":hash(&json!({"scope":scope,"spec":spec}))?});
+  Ok(Self{proof,reserve,basket:FrozenBasket::Probabilistic(basket),scope,permit,queue_scope:queue_scope.into(),spec,request_hash,queue_binding})
  }
  pub fn package_id(&self)->&str{self.permit.intent_id.as_str()}
  pub fn request_spec(&self)->&RequestSpec{&self.spec}
@@ -57,8 +72,9 @@ impl DurableIntent{
  pub fn queue_binding(&self)->&Value{&self.queue_binding}
  pub fn basket(&self)->Result<&Basket>{match &self.basket{FrozenBasket::Legacy(v)=>Ok(v),_=>Err("PACKAGE_INTENT_IS_PORTFOLIO".into())}}
  pub fn portfolio_basket(&self)->Option<&signed::Basket>{match &self.basket{FrozenBasket::Portfolio(v)=>Some(v),_=>None}}
+ pub fn probabilistic_basket(&self)->Option<&signed::Basket>{match &self.basket{FrozenBasket::Probabilistic(v)=>Some(v),_=>None}}
  fn restore(v:&Value)->Result<Self>{
-  let basket=if v["reserve"].get("portfolio").is_some(){FrozenBasket::Portfolio(serde_json::from_value(v["basket"].clone())?)}else{FrozenBasket::Legacy(serde_json::from_value(v["basket"].clone())?)};let restored=Self::build(v["proof"].clone(),v["reserve"].clone(),basket,serde_json::from_value(v["scope"].clone())?,serde_json::from_value(v["permit"].clone())?,v["queue_scope"].as_str().ok_or("PACKAGE_INTENT_QUEUE_SCOPE")?)?;
+  let basket=if v["reserve"]["type"]=="probabilistic_portfolio_reserve_v1"{FrozenBasket::Probabilistic(serde_json::from_value(v["basket"].clone())?)}else if v["reserve"].get("portfolio").is_some(){FrozenBasket::Portfolio(serde_json::from_value(v["basket"].clone())?)}else{FrozenBasket::Legacy(serde_json::from_value(v["basket"].clone())?)};let restored=Self::build(v["proof"].clone(),v["reserve"].clone(),basket,serde_json::from_value(v["scope"].clone())?,serde_json::from_value(v["permit"].clone())?,v["queue_scope"].as_str().ok_or("PACKAGE_INTENT_QUEUE_SCOPE")?)?;
   need(serde_json::to_value(&restored)?==*v,"PACKAGE_INTENT_CHANGED")?;Ok(restored)
  }
 }
@@ -94,7 +110,7 @@ fn validate_zero(intent:&DurableIntent,e:&ResponseEvidence)->Result<Value>{
 pub(crate) fn validate_first_call(admission:&Value,error:&Value,proof:&Value,attempted:i64,at:i64)->Result<()>{
  need(attempted>=0&&at>=attempted&&proof["kind"]=="sdk_before_first_admit_no_http","PACKAGE_FIRST_CALL_KIND_OR_CLOCK")?;
  let t=&proof["ticket"];let k=&proof["keyIndex"];let end=&proof["terminal"];
- if admission["reserve"].get("portfolio").is_some(){need(t["operation"]=="portfolio_v1","PACKAGE_FIRST_CALL_OPERATION")?;}
+ if admission["reserve"].get("portfolio").is_some()||admission["reserve"]["type"]=="probabilistic_portfolio_reserve_v1"{need(t["operation"]=="portfolio_v1","PACKAGE_FIRST_CALL_OPERATION")?;}
  for v in [t,k,end]{let mut body=v.clone();let claimed=body.as_object_mut().ok_or("PACKAGE_FIRST_CALL_OBJECT")?.remove("sha256").ok_or("PACKAGE_FIRST_CALL_HASH")?;need(claimed==hash(&body)?,"PACKAGE_FIRST_CALL_HASH")?;}
  need(t["schemaVersion"]==1&&t["kind"]=="sdk_first_logical_invocation"&&t["accountScope"]==admission["queue_scope"]&&t["binding"]==admission["queue_binding"]&&t["scope"]==admission["scope"]&&t["basket"]==admission["basket"]&&t["permit"]==admission["permit"]&&t["request"]==admission["spec"]&&t["requestSha256"]==admission["request_hash"],"PACKAGE_FIRST_CALL_BINDING")?;
  need(k["schemaVersion"]==1&&k["kind"]=="sdk_first_logical_key"&&k["accountScope"]==t["accountScope"]&&k["key"]==t["binding"]["key"]&&k["intent"]==t["binding"]["intent"]&&k["ticketSha256"]==t["sha256"],"PACKAGE_FIRST_CALL_KEY")?;

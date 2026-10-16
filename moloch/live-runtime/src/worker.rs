@@ -13,7 +13,7 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn default_bank()->String{"bank".into()}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -112,7 +112,20 @@ impl QueuedSourceBatch{
  }
  fn finish(&mut self,bank:&mut Session,result:Result<()>)->Result<()>{self.flush(bank)?;result}
 }
-fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}Ok(())}
+thread_local!{static PAPER5_NODE_CACHE:std::cell::RefCell<std::collections::BTreeMap<String,Receipt>>=std::cell::RefCell::new(std::collections::BTreeMap::new());}
+fn cache_original_node(r:&Receipt){
+ if r.status!=200||!r.endpoint.starts_with("/markets/")||!r.endpoint.contains("/nodes?tournamentId="){return}
+ let Some(market)=r.endpoint.strip_prefix("/markets/").and_then(|s|s.split('/').next()).filter(|s|!s.is_empty()&&s.bytes().all(|b|b.is_ascii_digit()))else{return};
+ PAPER5_NODE_CACHE.with(|cache|{let mut cache=cache.borrow_mut();if cache.len()<512||cache.contains_key(market){let replace=cache.get(market).is_none_or(|old|moloch_live_runtime::daily_windows::clock(&r.received_at).ok()>moloch_live_runtime::daily_windows::clock(&old.received_at).ok());if replace{cache.insert(market.into(),r.clone());}}});
+}
+fn paper5_nodes(scope:&Scope)->std::collections::BTreeMap<String,Receipt>{PAPER5_NODE_CACHE.with(|cache|{let cache=cache.borrow();scope.exchanges.iter().filter_map(|(ex,market)|cache.get(market).map(|r|(ex.clone(),r.clone()))).collect()})}
+#[cfg(test)]mod paper5_cache_tests{
+ use super::*;
+ fn receipt(at:&str)->Receipt{Receipt{endpoint:"/markets/277/nodes?tournamentId=cup".into(),request_started_at:at.into(),received_at:at.into(),status:200,data:json!({"original":true})}}
+ #[test]fn original_node_clock_is_not_refreshed_and_foreign_scope_is_not_imported(){PAPER5_NODE_CACHE.with(|c|c.borrow_mut().clear());let original=receipt("2026-10-16T05:00:00Z");cache_original_node(&original);cache_original_node(&receipt("2026-10-16T04:00:00Z"));let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("966".into(),"277".into()),("foreign".into(),"999".into())].into()};let nodes=paper5_nodes(&scope);assert_eq!(nodes.len(),1);assert_eq!(nodes["966"].received_at,original.received_at);assert_eq!(nodes["966"].data,original.data);}
+ #[test]fn receipt_cache_is_bounded_and_failed_or_nonnode_reads_are_ignored(){PAPER5_NODE_CACHE.with(|c|c.borrow_mut().clear());for id in 1..=600{let mut r=receipt("2026-10-16T05:00:00Z");r.endpoint=format!("/markets/{id}/nodes?tournamentId=cup");cache_original_node(&r);}assert_eq!(PAPER5_NODE_CACHE.with(|c|c.borrow().len()),512);let mut r=receipt("2026-10-16T06:00:00Z");r.status=500;cache_original_node(&r);r.status=200;r.endpoint="/markets/277/orderbook?tournamentId=cup&depth=20".into();cache_original_node(&r);assert_eq!(PAPER5_NODE_CACHE.with(|c|c.borrow()["277"].received_at.clone()),"2026-10-16T05:00:00Z");}
+}
+fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}cache_original_node(r);Ok(())}
 fn validate_collateral_accounting(c:&Control)->Result<()>{
  // Ordinary passive partial/late fills require a separately verified native
  // continuation before this mixed worker may enable ALL accounting.
@@ -296,7 +309,7 @@ fn open_worker_fundamental(c:&Control,loaded:fundamental::LoadedSettings,bank:&m
 fn recover_packages(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog)->Result<bool>{
  for p in bank.engine().package_records().as_array().ok_or("LIVE_PACKAGE_RECORDS")?{let id=p["packageId"].as_str().ok_or("LIVE_PACKAGE_ID")?;if packages.record(id).is_none(){return Err("LIVE_PACKAGE_ORIGINAL_JOURNAL_MISSING".into())}}
  let receipts=c.root.join("package-receipts");let mut backend=moloch_live_runtime::package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
- let legacy=moloch_live_runtime::package_worker::recover(bank,packages,&mut backend)?;let portfolio=moloch_live_runtime::package_portfolio_worker::recover(bank,packages,&mut backend)?;Ok(legacy.blocks_new_submissions||portfolio.blocks_new_submissions)
+ let legacy=moloch_live_runtime::package_worker::recover(bank,packages,&mut backend)?;let portfolio=moloch_live_runtime::package_portfolio_worker::recover(bank,packages,&mut backend)?;let probabilistic=moloch_live_runtime::probabilistic_portfolio_worker::recover(bank,packages,&mut backend)?;Ok(legacy.blocks_new_submissions||portfolio.blocks_new_submissions||probabilistic.blocks_new_submissions)
 }
 fn canonical_package_receipt(census:&moloch_live_runtime::relationship_census::Census)->Result<Receipt>{
  let source=census.report.relationships.source.as_ref().ok_or("LIVE_PACKAGE_CANONICAL_UNAVAILABLE")?;
@@ -529,6 +542,66 @@ fn package_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&m
  let result=package_worker::submit_once(bank,packages,&mut backend,staged,facts)?;
  let recovered=package_worker::recover(bank,packages,&mut backend)?;
  atomic_json(&c.root.join("package-status.json"),&json!({"at":iso(now()),"state":format!("{result:?}"),"blocksNewSubmissions":recovered.blocks_new_submissions,"actualFillEvents":recovered.fill_events,"completedPackages":recovered.completed_packages,"profitabilityEstablished":false}))?;Ok(())
+}
+fn paper5_due(last:&mut u64,at:u64)->Result<bool>{if *last>at{return Err("LIVE_P5_SCAN_CLOCK".into())}if *last>0&&at-*last<60_000{return Ok(false)}*last=at;Ok(true)}
+fn paper5_expected_defer(error:&dyn std::error::Error)->bool{matches!(error.to_string().as_str(),
+ "P5_EXECUTION_NOT_CONFIGURED"|"P5_EXECUTION_RESEARCH_MODEL"|"P5_EXECUTION_ORIGINAL_MODEL_CLOCK"|"P5_EXECUTION_REVIEW_EXPIRED"|"P5_EXECUTION_TARGET_BOUND"|"P5_EXECUTION_WORK_BOUND"|"P5_EXECUTION_SCOPE"|"P5_EXECUTION_CURRENT_NODE_MISSING"|"P5_EXECUTION_EXPIRED_OR_RESEARCH"|"P5_EXECUTION_BANK_CHANGED"|
+ "SEMANTIC_REVIEW_STALE"|"SEMANTIC_CURRENT_STALE"|"SEMANTIC_CONTRACT_CHANGED"|"SURFACE_BANK_OR_CLOCK"|"SURFACE_CURRENT_CONTRACT"|"SURFACE_CURRENT_CONTRACT_CHANGED"|"SURFACE_CURRENT_NATIVE_BOOK_REQUIRED"|"SURFACE_TERMINAL_EXPIRED_OR_REVOKED"|"SURFACE_MODEL_REVIEW_PROBABILITY_DRIFT"|"SURFACE_NOT_CURRENT"|"SURFACE_FROZEN_BOUNDARY_CHANGED"|
+ "PROB_CONTEXT"|"PROB_PENDING_COMPONENT"|"PROB_PROTECTED_COMPONENT"|"PROB_OPPOSITE_HELD_NETTING_UNSUPPORTED"|"PROB_FRESH_BOOK_REQUIRED"|"PROB_PLAN_CHANGED_OR_EXPIRED"|"PROB_RESERVATION_WINDOW"|"PROB_MODEL_NOT_EXECUTION_QUALIFIED"|
+ "PACKAGE_PREFLIGHT_RECEIPT_CLOCK_OR_STATUS"|"PACKAGE_PREFLIGHT_BOOK_CLOCK"|"PACKAGE_PREFLIGHT_TOURNAMENT_ENDED")}
+fn paper5_status(c:&Control,runtime:&moloch_live_runtime::paper5_runtime::Runtime,stage:&str,reason:&str){let _=atomic_json(&c.root.join("paper5-execution.json"),&json!({"at":iso(now()),"state":"deferred","stage":stage,"reason":reason,"sourceSha256":runtime.source_sha256(),"physicalAttempted":false,"profitabilityEstablished":false}));}
+/// Only positive original-dispatch never-attempted ordinary drafts can yield.
+/// Closed history is preserved; any known open binding or origin-bound draft
+/// withholds the opportunity instead of canceling or taking its inventory.
+fn paper5_component_drafts(bank:&Session,ordinary:&DispatchLog,exchanges:&std::collections::BTreeSet<String>)->Result<Option<Vec<Value>>>{
+ ordinary.require_resolved_attempts()?;let mut drafts=Vec::new();
+ for q in bank.engine().order_records(){if !q["exchangeId"].as_str().is_some_and(|ex|exchanges.contains(ex)){continue}let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+  if (ordinary.acknowledgments.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id))&&!ordinary.closed.contains(&id){return Ok(None)}
+  if q["retired"]==true{continue}
+  if bank.engine().is_package_order(id)||q.get("reviewedInventoryExit").is_some()||q.get("reviewedFundamentalEntry").is_some()||!ordinary.never_attempted(id)||bank.engine().live_order_bindings().contains_key(&id){return Ok(None)}drafts.push(q);
+ }Ok(Some(drafts))
+}
+/// Optional, bounded opportunity lane using the SAME account worker/limiter.
+/// Cached source approval gates all extra reads; inference precedes any permit.
+/// Research/expired models cannot stage, and restart recovery never resends.
+fn paper5_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&mut DispatchLog,authority:&ProductionAuthority,packages:&mut moloch_live_runtime::package_dispatch::PackageDispatchLog,runtime:Option<&moloch_live_runtime::paper5_runtime::Runtime>,source_state:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&mut std::collections::BTreeMap<String,u64>,last_scan:&mut u64,managed:&std::collections::BTreeSet<String>)->Result<()>{
+ use moloch_live_runtime::{package_worker,probabilistic_portfolio_worker as worker};
+ let Some(runtime)=runtime else{return Ok(())};let at=now();if !paper5_due(last_scan,at)?{return Ok(())}
+ if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
+ if at>=authority.entry_until_ms()||ordinary_liability_due(bank,ordinary,at)?||packages.unresolved()||bank.engine().package_blocks_submissions(){paper5_status(c,runtime,"priority","ENTRY_CLOSED_OR_EXISTING_LIABILITY");return Ok(())}
+ ordinary.require_resolved_attempts()?;match t.package_queue_quiet(){Ok(_)=>{},Err(e)if e.code=="PACKAGE_QUEUE_NOT_QUIET"=>{paper5_status(c,runtime,"queue",&e.code);return Ok(())},Err(e)=>return Err(e.into())}
+ let targets=match runtime.execution_read_targets(bank,&c.scope,ordinary,now()){Ok(v)=>v,Err(e)if paper5_expected_defer(e.as_ref())=>{paper5_status(c,runtime,"sources",&e.to_string());return Ok(())},Err(e)=>return Err(e)};
+ let exchanges=targets.iter().map(|(ex,_)|ex.clone()).collect::<std::collections::BTreeSet<_>>();
+ if exchanges.iter().any(|ex|managed.contains(ex))||paper5_component_drafts(bank,ordinary,&exchanges)?.is_none(){paper5_status(c,runtime,"ownership","MANAGED_OR_PHYSICAL_COMPONENT_BUSY");return Ok(())}
+ for(ex,market)in &targets{
+  request(t,&c.root,Endpoint::Nodes{market_id:market.clone()})?;if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;
+  let from=*windows.get(ex).ok_or("LIVE_PACKAGE_SOURCE_WINDOW")?;let next=source(t,c,bank,source_state,ex,market,from)?;windows.insert(ex.clone(),next);
+  if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;
+ }
+ let nodes=paper5_nodes(&c.scope);
+ // Bind all current source/contract facts BEFORE yielding any ordinary draft.
+ let context=match runtime.execution_context(bank,&c.scope,ordinary,&nodes,now()){Ok(v)=>v,Err(e)if paper5_expected_defer(e.as_ref())=>{paper5_status(c,runtime,"current_context",&e.to_string());return Ok(())},Err(e)=>return Err(e)};context.validate_current(bank,&c.scope,ordinary,now())?;drop(context);
+ let Some(drafts)=paper5_component_drafts(bank,ordinary,&exchanges)?else{paper5_status(c,runtime,"ownership","COMPONENT_BECAME_PHYSICALLY_BUSY");return Ok(())};for q in drafts{retire_for_package(bank,ordinary,&q)?;}
+ // Retirement changes the true head. Rebind and optimize it, never re-use an
+ // earlier Plan or relabel a previously retired/attempted intent.
+ let context=match runtime.execution_context(bank,&c.scope,ordinary,&nodes,now()){Ok(v)=>v,Err(e)if paper5_expected_defer(e.as_ref())=>{paper5_status(c,runtime,"rebind",&e.to_string());return Ok(())},Err(e)=>return Err(e)};
+ let plan=match context.optimize(bank,&c.scope,ordinary,now()){Ok(Some(v))=>v,Ok(None)=>{paper5_status(c,runtime,"value","NO_CURRENT_EXECUTABLE_MODEL_EDGE");return Ok(())},Err(e)if paper5_expected_defer(e.as_ref())=>{paper5_status(c,runtime,"optimize",&e.to_string());return Ok(())},Err(e)=>return Err(e)};
+ let receipts=c.root.join("package-receipts");let mut backend=package_worker::Live{transport:t,authority,ordinary_dispatch:ordinary,receipts:&receipts};
+ let staged=match worker::stage(bank,packages,&backend,plan,context.surface(),context.semantics(),context.policy(),&c.activation){Ok(v)=>v,Err(e)if paper5_expected_defer(e.as_ref())=>{worker::recover(bank,packages,&mut backend)?;paper5_status(c,runtime,"stage",&e.to_string());return Ok(())},Err(e)=>return Err(e)};
+ let native=bank.engine().package_records();let native=native.as_array().ok_or("LIVE_PACKAGE_RECORDS")?.iter().find(|p|p["packageId"]==staged.package_id()).ok_or("LIVE_PACKAGE_ID")?;let orders=bank.engine().order_records();
+ let ready=native["legs"].as_array().ok_or("LIVE_PACKAGE_LEGS")?.iter().map(|leg|orders.iter().find(|q|q["id"]==leg["qid"]).and_then(|q|q["activationAt"].as_u64()).ok_or("LIVE_PACKAGE_ACTIVATION")).collect::<std::result::Result<Vec<_>,_>>()?.into_iter().max().ok_or("LIVE_PACKAGE_ACTIVATION")?;
+ while now()<ready{
+  if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;
+  if now()>=staged.plan().expires_at_ms(){worker::recover(bank,packages,&mut backend)?;paper5_status(c,runtime,"activation","ORIGINAL_PLAN_EXPIRED");return Ok(())}std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).min(100)));
+ }
+ let facts=moloch_live_runtime::package_preflight::collect_probabilistic_staged(&mut backend,&c.scope,&staged,|r|{
+  record_receipt(&c.root,r)?;if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;
+  for(ex,market)in &targets{if r.endpoint==format!("/markets/{market}/orderbook?tournamentId={}&depth=20",c.scope.tournament_id){accept_fresh_book(bank,c,&json!({"marketId":market,"exchangeId":ex}),r,source_state)?;}}
+  drain_stream(stream,bank,source_state,breadth,universe)
+ });
+ let facts=match facts{Ok(v)=>v,Err(e)=>{worker::recover(bank,packages,&mut backend)?;if paper5_expected_defer(e.as_ref()){paper5_status(c,runtime,"physical_packet",&e.to_string());return Ok(())}return Err(e)}};
+ let result=worker::submit_once(bank,packages,&mut backend,staged,facts)?;let recovered=worker::recover(bank,packages,&mut backend)?;
+ let _=atomic_json(&c.root.join("paper5-execution.json"),&json!({"at":iso(now()),"state":format!("{result:?}"),"sourceSha256":runtime.source_sha256(),"blocksNewSubmissions":recovered.blocks_new_submissions,"actualFillEvents":recovered.fill_events,"completedPackages":recovered.completed_packages,"profitabilityEstablished":false}));Ok(())
 }
 fn cancel_snapshots(t:&mut Transport,c:&Control)->Result<CancelSnapshotSet>{
  // Four real reads through the existing sole transport/limiter; no unused
@@ -876,6 +949,51 @@ trait OrdinaryPreflightReads{
  fn guarded(&mut self)->Result<bool>;
  fn read(&mut self,endpoint:Endpoint)->Result<Receipt>;
 }
+fn bulk_ordinary_quote(q:&Value,managed:&std::collections::BTreeSet<String>)->bool{
+ q["exchangeId"].as_str().is_some_and(|ex|!managed.contains(ex))
+  &&q.get("reviewedInventoryExit").is_none_or(Value::is_null)&&q.get("reviewedFundamentalEntry").is_none_or(Value::is_null)
+  &&q["executionStyle"]!="inventoryAON"&&q["inventoryExitReason"]!="maximumAge"
+}
+/// One optional negative-only request per dispatch pass. Only a chosen stale
+/// ordinary quote plus at least one OTHER eligible scope justifies this read.
+/// Positive/unknown/expired observations still need every original book/fact.
+fn bulk_negative_vetoes(c:&Control,quotes:&[Value],physical:&[(String,usize,bool)],selection:&moloch_live_runtime::quote_priority::Selection,managed:&std::collections::BTreeSet<String>,chosen:usize,reads:&mut impl OrdinaryPreflightReads)->Result<Vec<(usize,moloch_live_runtime::bulk_price_screen::Deferral)>>{
+ use moloch_live_runtime::{bulk_price_screen as bulk,quote_priority::Class};
+ if !c.bulk_negative_screen{return Ok(Vec::new())}
+ let eligible=|index:usize,urgent:bool|->Result<bool>{let q=quotes.get(index).ok_or("LIVE_BULK_QUOTE_INDEX")?;
+  let a=selection.assessments.iter().find(|a|a.index==index).ok_or("LIVE_BULK_ASSESSMENT")?;
+  Ok(!urgent&&a.decision.class==Class::NeedsRefresh&&bulk_ordinary_quote(q,managed))};
+ let Some((_,_,urgent))=physical.iter().find(|(_,i,_)|*i==chosen)else{return Err("LIVE_BULK_CHOICE".into())};
+ if !eligible(chosen,*urgent)?{return Ok(Vec::new())}
+ let mut indices=vec![chosen];for(_,index,urgent)in physical{if *index!=chosen&&eligible(*index,*urgent)?{indices.push(*index)}}
+ let mut ids=Vec::new();let mut seen=std::collections::BTreeSet::new();let mut included=Vec::new();
+ for index in indices{let q=&quotes[index];let ex=q["exchangeId"].as_str().ok_or("LIVE_BULK_SCOPE")?;
+  if c.scope.exchanges.get(ex).is_none_or(|m|q["marketId"]!=*m){return Err("LIVE_BULK_SCOPE".into())}
+  if seen.contains(ex){included.push(index);continue}
+  if ids.len()==bulk::MAXIMUM_IDS{continue}seen.insert(ex.to_owned());ids.push(ex.to_owned());included.push(index);
+ }
+ if ids.len()<2{return Ok(Vec::new())}
+ let endpoint=bulk::endpoint(&c.scope,&ids)?;
+ if !reads.guarded()?{return Ok(Vec::new())}
+ let receipt=reads.read(endpoint)?;let parsed=bulk::Batch::from_original(&c.scope,&ids,&receipt,reads.now_ms());
+ let batch=match parsed{Ok(batch)=>batch,Err(error)=>{
+  atomic_json(&c.root.join("bulk-negative-screen.json"),&json!({"at":iso(reads.now_ms()),"state":"unavailable_original_response","reason":error.to_string(),"requestedExchangeCount":ids.len(),"negativeOnly":true,"executionAuthority":false}))?;return Ok(Vec::new())
+ }};
+ if !reads.guarded()?{return Ok(Vec::new())}
+ let mut vetoes=Vec::new();for index in included{if let Some(veto)=batch.defer(&c.scope,&quotes[index],reads.now_ms())?{
+  if veto.matches_quote(&c.scope,&quotes[index],reads.now_ms())?{vetoes.push((index,veto));}
+ }}
+ atomic_json(&c.root.join("bulk-negative-screen.json"),&json!({"at":iso(reads.now_ms()),"state":"original_negative_screen","receiptSha256":batch.receipt_sha256(),"validUntilMs":batch.valid_until_ms(),"requestedExchangeCount":ids.len(),"vetoedQids":vetoes.iter().map(|(i,_)|quotes[*i]["id"].clone()).collect::<Vec<_>>(),"negativeOnly":true,"executionAuthority":false,"pricesChanged":false,"expiryExtended":false}))?;
+ Ok(vetoes)
+}
+/// Recheck original quote binding and receipt TTL at the actual rotation boundary.
+fn apply_bulk_vetoes(scope:&Scope,quotes:&[Value],physical:&mut Vec<(String,usize,bool)>,vetoes:&[(usize,moloch_live_runtime::bulk_price_screen::Deferral)],chosen:usize,at:u64)->Result<bool>{
+ let mut kept=Vec::new();let mut chosen_deferred=false;
+ for item in physical.iter(){let q=quotes.get(item.1).ok_or("LIVE_BULK_QUOTE_INDEX")?;
+  let vetoed=if item.2{false}else{match vetoes.iter().find(|(i,_)|*i==item.1){Some((_,v))=>v.matches_quote(scope,q,at)?,None=>false}};
+  if vetoed{chosen_deferred|=item.1==chosen;}else{kept.push(item.clone());}
+ }*physical=kept;Ok(chosen_deferred)
+}
 struct LivePreflightReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime}
 impl OrdinaryPreflightReads for LivePreflightReads<'_>{
  fn now_ms(&self)->u64{now()}
@@ -1058,7 +1176,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
  let mut ranked=Vec::new();let mut maker_assessments=Vec::new();let mut maker_decisions=Vec::new();
- for index in selection.ordered_indices{
+ for index in selection.ordered_indices.iter().copied(){
   let q=&quotes[index];
   if let Some(f)=fundamental.as_ref(){if f.cohorts.manages(q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?){if f.eligible(bank,log,&c.scope,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now())?{ranked.push((if q["action"]=="sell"{0}else{1},index));}continue}}
   if q["action"]=="buy"{if let Some(review)=maker_review{
@@ -1077,7 +1195,16 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   let urgent=q["action"]=="sell"&&(managed||selection.assessments.iter().any(|a|a.index==*index&&matches!(a.decision.class,moloch_live_runtime::quote_priority::Class::RiskExit|moloch_live_runtime::quote_priority::Class::CoveredMarketable)));
   physical.push((keys[*index].clone(),*index,urgent));
  }
- let Some((chosen,key))=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref())else{return Ok(())};
+ let mut chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
+ if let Some((SharedPreflight::Physical(index),key))=&chosen{
+  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
+  let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{t,c,authority,stream})?;
+  if !vetoes.is_empty(){
+   if apply_bulk_vetoes(&c.scope,&quotes,&mut physical,&vetoes,*index,now())?{*preflight_cursor=Some(key.clone());}
+   chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
+  }
+ }
+ let Some((chosen,key))=chosen else{return Ok(())};
  let chosen_index=match chosen{
   SharedPreflight::Physical(index)=>index,
   SharedPreflight::ExistingRead(index)|SharedPreflight::EntryRead(index)=>{
@@ -1290,6 +1417,7 @@ pub fn main()->Result<()>{
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();let mut collateral_last_check=0u64;
+  let paper5_runtime=c.paper5.as_ref().and_then(|settings|match moloch_live_runtime::paper5_runtime::Runtime::load(settings){Ok(runtime)=>Some(runtime),Err(error)=>{let _=atomic_json(&c.root.join("paper5-proposals.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error.to_string(),"executionAuthority":false}));None}});let mut paper5_last_evaluation=0u64;let mut paper5_last_opportunity=0u64;
   let mut owned_age_reads=moloch_live_runtime::owned_age_reads::Scheduler::new(&c.scope)?;
   loop{
    let cycle_result=(||->Result<()>{
@@ -1347,6 +1475,12 @@ pub fn main()->Result<()>{
     // ordinary reconciliation permission after those paced reads.
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&windows,maker_review.as_ref(),fundamental.as_mut())?;
+    if !package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
+     paper5_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,paper5_runtime.as_ref(),&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut paper5_last_opportunity,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
+    }
+    // Optional bounded inference runs after completed dispatch/accounting, with
+    // no live permit held. Existing original receipts supply all observations.
+    if let Some(runtime)=paper5_runtime.as_ref(){let at=now();if at.saturating_sub(paper5_last_evaluation)>=60_000{paper5_last_evaluation=at;let diagnostic=runtime.evaluate(&bank,&c.scope,&log,&paper5_nodes(&c.scope),&Default::default(),&Default::default(),at);if let Ok(value)=serde_json::to_value(diagnostic){let _=atomic_json(&c.root.join("paper5-proposals.json"),&value);}}}
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
    }
    cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
@@ -1541,6 +1675,38 @@ pub fn main()->Result<()>{
   assert_eq!(moloch_live_runtime::quote_priority::from_native(&bank,&c.scope,&[q.clone()],now(),None).unwrap().assessments[0].decision.class,moloch_live_runtime::quote_priority::Class::NeedsRefresh);
   (root,bank,log,c,source,q)
  }
+ struct BulkReads{inner:PrefilterReads,scope:Scope,mode:&'static str,delay:u64,deny_after:usize}
+ impl OrdinaryPreflightReads for BulkReads{
+  fn now_ms(&self)->u64{self.inner.at}
+  fn guarded(&mut self)->Result<bool>{self.inner.guards+=1;Ok(self.inner.allow&&self.inner.guards<self.deny_after)}
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{
+   if let Endpoint::Prices{exchange_ids}=&ep{
+    self.inner.endpoints.push(ep.clone());if self.mode=="read_error"{return Err("FIXTURE_BULK_READ_ERROR".into())}
+    let started=self.inner.at;self.inner.at+=self.delay;
+    let rows:Vec<_>=exchange_ids.iter().map(|ex|{let bid=if self.mode=="passing"&&ex=="101"{0.095}else{0.4};json!({"exchangeId":ex,"marketId":self.scope.exchanges[ex],"option":if self.mode=="null"{Value::Null}else{json!("YES")},"latestPrice":bid,"bestBid":bid,"bestAsk":if ex=="102"{0.45}else{bid+0.02},"spread":if ex=="102"{0.05}else{0.02}})}).collect();
+    let data=if self.mode=="missing"{json!({"data":[],"missingIds":exchange_ids})}else{json!({"data":rows,"missingIds":[]})};
+    return Ok(Receipt{endpoint:if self.mode=="wrong_scope"{"/exchanges/prices?foreign".into()}else{format!("/exchanges/prices?ids={}&tournamentId={}",exchange_ids.join(","),self.scope.tournament_id)},request_started_at:iso(started),received_at:iso(self.inner.at),status:200,data})
+   }self.inner.read(ep)
+  }
+ }
+ fn bulk_fixture()->(Temp,Session,DispatchLog,Control,RestSource,Vec<Value>,Vec<(String,usize,bool)>,moloch_live_runtime::quote_priority::Selection){
+  let(root,mut bank,log,mut c,source,q)=prefilter_fixture();c.bulk_negative_screen=true;c.scope.exchanges.insert("102".into(),"202".into());let at=now()-15000;
+  bank.accept("bulk-fixture-book",1,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"202","exchangeId":"102","tournamentId":TID,"sequence":"1","sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();
+  let other=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="102"&&q["action"]=="buy"&&q["retired"]==false).unwrap();
+  let quotes=vec![q,other];let physical=quotes.iter().enumerate().map(|(i,q)|(format!("{}:{}:{}",q["exchangeId"].as_str().unwrap(),q["side"].as_str().unwrap(),q["action"].as_str().unwrap()),i,false)).collect();
+  let selection=moloch_live_runtime::quote_priority::from_native(&bank,&c.scope,&quotes,now(),None).unwrap();(root,bank,log,c,source,quotes,physical,selection)
+ }
+ fn bulk_reads(c:&Control,mode:&'static str)->BulkReads{BulkReads{inner:PrefilterReads{at:now(),allow:true,book_price:95000,endpoints:vec![],guards:0,book_reads:0},scope:c.scope.clone(),mode,delay:0,deny_after:usize::MAX}}
+ #[test]fn bulk_default_disabled_and_single_scope_never_add_an_optional_read(){let(_r,_b,_l,mut c,_s,q,p,a)=bulk_fixture();assert!(!control(Path::new("/fixture")).bulk_negative_screen);c.bulk_negative_screen=false;let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty());c.bulk_negative_screen=true;assert!(bulk_negative_vetoes(&c,&q,&p[..1],&a,&Default::default(),0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty());}
+ #[test]fn bulk_urgent_reviewed_and_managed_choices_bypass_the_extra_read(){for kind in ["urgent","reviewed","managed"]{let(_r,_b,_l,c,_s,mut q,mut p,a)=bulk_fixture();let mut managed=std::collections::BTreeSet::new();match kind{"urgent"=>p[0].2=true,"reviewed"=>q[0]["reviewedInventoryExit"]=json!({"source":"actualfixture"}),_=>{managed.insert("101".into());}}let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&managed,0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty(),"{kind}");}}
+ #[test]fn one_original_bulk_veto_bound_to_real_native_quote_changes_no_bank_or_intent(){let(_r,b,l,c,_s,q,p,a)=bulk_fixture();let before=b.engine().report().unwrap();let mut reads=bulk_reads(&c,"far");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert_eq!(reads.inner.endpoints.len(),1);assert!(matches!(&reads.inner.endpoints[0],Endpoint::Prices{exchange_ids}if exchange_ids.len()==2));assert!(vetoes.iter().any(|(i,_)|*i==0));let veto=&vetoes.iter().find(|(i,_)|*i==0).unwrap().1;assert!(veto.matches_quote(&c.scope,&q[0],reads.now_ms()).unwrap());let mut changed=q[0].clone();changed["price"]=json!("0.900000");assert!(!veto.matches_quote(&c.scope,&changed,reads.now_ms()).unwrap());assert_eq!(b.engine().report().unwrap(),before);assert!(l.intents.is_empty()&&l.attempted.is_empty());}
+ #[test]fn original_negative_screen_rotates_to_another_real_native_scope_in_the_same_pass(){let(_r,b,l,c,_s,q,mut p,a)=bulk_fixture();let before=b.engine().report().unwrap();let mut reads=bulk_reads(&c,"far");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert!(apply_bulk_vetoes(&c.scope,&q,&mut p,&vetoes,0,reads.now_ms()).unwrap());assert_eq!(p.len(),1);assert_eq!(p[0].1,1);let cursor=format!("physical:{}",format!("{}:{}:{}",q[0]["exchangeId"].as_str().unwrap(),q[0]["side"].as_str().unwrap(),q[0]["action"].as_str().unwrap()));let next=shared_preflight_rotation(&[],&[],&p,Some(&cursor)).unwrap();assert!(matches!(next.0,SharedPreflight::Physical(1)));assert_eq!(reads.inner.endpoints.len(),1);assert_eq!(b.engine().report().unwrap(),before);assert!(l.intents.is_empty()&&l.attempted.is_empty());}
+ #[test]fn bulk_veto_expiry_at_rotation_preserves_both_original_candidates(){let(_r,_b,_l,c,_s,q,mut p,a)=bulk_fixture();let mut reads=bulk_reads(&c,"far");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert!(!vetoes.is_empty());assert!(!apply_bulk_vetoes(&c.scope,&q,&mut p,&vetoes,0,reads.now_ms()+1500).unwrap());assert_eq!(p.len(),2);}
+ #[test]fn bulk_late_missing_null_or_wrong_endpoint_is_never_positive_authority(){for mode in ["late","missing","null","wrong_scope"]{let(_r,b,l,c,_s,q,p,a)=bulk_fixture();let before=b.engine().report().unwrap();let mut reads=bulk_reads(&c,mode);if mode=="late"{reads.delay=1500;}assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap().is_empty(),"{mode}");assert_eq!(reads.inner.endpoints.len(),1);assert_eq!(b.engine().report().unwrap(),before);assert!(l.attempted.is_empty());}}
+ #[test]fn passing_bulk_still_reads_the_entire_original_seven_facts_and_prefilter_book(){let(_r,mut b,l,c,mut s,q,p,a)=bulk_fixture();let mut reads=bulk_reads(&c,"passing");let vetoes=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap();assert!(!vetoes.iter().any(|(i,_)|*i==0));let(current,facts)=ordinary_preflight(&c,&mut b,&l,&mut s,&q[0],&mut reads).unwrap().unwrap();assert_eq!(current["id"],q[0]["id"]);assert_eq!(reads.inner.endpoints.len(),9);assert!(matches!(reads.inner.endpoints[0],Endpoint::Prices{..}));assert_eq!(reads.inner.book_reads,2);assert_eq!(facts.book.data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["sequence"],3);assert!(l.intents.is_empty());}
+ #[test]fn denied_or_failed_optional_read_preserves_existing_stop_and_read_errors(){for kind in ["before","after","read_error"]{let(_r,_b,_l,c,_s,q,p,a)=bulk_fixture();let mut reads=bulk_reads(&c,kind);if kind=="before"{reads.inner.allow=false;}if kind=="after"{reads.deny_after=2;}let result=bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads);if kind=="read_error"{assert_eq!(result.err().unwrap().to_string(),"FIXTURE_BULK_READ_ERROR");}else{assert!(result.unwrap().is_empty());}assert_eq!(reads.inner.endpoints.len(),usize::from(kind!="before"));}}
+ #[test]fn fresh_ordinary_choice_does_not_pay_bulk_cost_for_other_stale_candidates(){let(_r,_b,_l,c,_s,q,p,mut a)=bulk_fixture();a.assessments[0].decision.class=moloch_live_runtime::quote_priority::Class::Competitive;let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).unwrap().is_empty());assert!(reads.inner.endpoints.is_empty());}
+ #[test]fn foreign_scope_before_optional_read_fails_without_any_request(){let(_r,_b,_l,c,_s,mut q,p,a)=bulk_fixture();q[1]["marketId"]=json!("999");let mut reads=bulk_reads(&c,"far");assert!(bulk_negative_vetoes(&c,&q,&p,&a,&Default::default(),0,&mut reads).is_err());assert!(reads.inner.endpoints.is_empty());}
  #[test]fn stale_far_native_sell_reads_only_original_book_and_never_an_account_packet(){
   let(_root,mut bank,log,c,mut source,q)=prefilter_fixture();let before=bank.engine().report().unwrap();let mut r=PrefilterReads{at:now(),allow:true,book_price:300000,endpoints:vec![],guards:0,book_reads:0};
   assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut r).unwrap().is_none());assert_eq!(r.endpoints.len(),1);assert!(matches!(r.endpoints[0],Endpoint::OrderBook{..}));
@@ -1661,6 +1827,8 @@ pub fn main()->Result<()>{
 
 #[cfg(test)]mod package_hook_tests{
  use super::*;
+ #[test]fn paper5_scan_is_bounded_without_renewing_a_clock_or_allowing_backwards_time(){let mut last=0;assert!(paper5_due(&mut last,1000).unwrap());assert!(!paper5_due(&mut last,60999).unwrap());assert_eq!(last,1000);assert!(paper5_due(&mut last,61000).unwrap());assert!(paper5_due(&mut last,60999).is_err());assert_eq!(last,61000);}
+ #[test]fn optional_paper5_ineligibility_does_not_hide_io_integrity_or_unknown_errors(){for code in ["P5_EXECUTION_RESEARCH_MODEL","P5_EXECUTION_NOT_CONFIGURED","SEMANTIC_CURRENT_STALE","SURFACE_CURRENT_NATIVE_BOOK_REQUIRED","PROB_RESERVATION_WINDOW","PACKAGE_PREFLIGHT_BOOK_CLOCK"]{let e:Box<dyn std::error::Error>=code.into();assert!(paper5_expected_defer(e.as_ref()),"{code}");}for code in ["DISPATCH_CHANGED","SOURCE_REF_CONFLICT","LIVE_EXECUTION_STOP","PACKAGE_QUEUE_UNKNOWN","arbitrary source failure"]{let e:Box<dyn std::error::Error>=code.into();assert!(!paper5_expected_defer(e.as_ref()),"{code}");}assert!(!paper5_expected_defer(&std::io::Error::from(std::io::ErrorKind::NotFound)));}
  struct Temp(PathBuf);impl Temp{fn new()->Self{static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);let serial=NEXT.fetch_add(1,std::sync::atomic::Ordering::Relaxed);Self(std::env::temp_dir().join(format!("moloch-package-hook-{}-{}-{serial}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())))}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  fn setup(path:&Path,n:usize)->(Session,DispatchLog,Value,Value){
   private_dir(path).unwrap();let at=now().saturating_sub(7500);let policy=json!({"initialCash":"1000.000000","maximumCommitted":"100.000000","maximumMarketCost":"50.000000","quantity":12,"maximumMarkets":3,"entryStopAt":iso(at+60_000)});let seed=json!({"runId":"package-hook-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at)});
@@ -1684,6 +1852,8 @@ pub fn main()->Result<()>{
   let temp=Temp::new();let(c,mut bank,mut log,_,_)=stale_fixture(&temp.0,2);let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="101"&&q["side"]=="YES").unwrap();let id=q["id"].as_u64().unwrap();let mut event=ack(&q);event["receivedAt"]=json!(iso(q["activationAt"].as_u64().unwrap()));for row in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id}),json!({"kind":"ack","qid":id,"receipt":{"data":{"orderId":event["actualOrderId"]}}})]{log.append(row).unwrap();}bank.accept("stale-retained-actual-ack",1,&event).unwrap();let protected=bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>();let positions=bank.engine().wallet.positions();let cash=bank.engine().wallet.cash;let actual=bank.engine().live_order_bindings().clone();
   assert_eq!(retire_stale_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),2);assert_eq!(bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>(),protected);assert!(bank.engine().order_records().iter().filter(|q|q["exchangeId"]=="102").all(|q|q["retired"]==true));assert_eq!(bank.engine().live_order_bindings(),&actual);assert_eq!(bank.engine().wallet.positions(),positions);assert_eq!(bank.engine().wallet.cash,cash);assert!(!log.closed.contains(&id));assert!(bank.engine().fills().is_empty());
  }
+ #[test]fn paper5_draft_selection_is_readonly_then_yields_only_positive_original_unsent_components(){let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,2);let exchanges=std::collections::BTreeSet::from(["101".into()]);let head=bank.durable_head();let report=bank.engine().report().unwrap();let drafts=paper5_component_drafts(&bank,&log,&exchanges).unwrap().unwrap();assert!(!drafts.is_empty());assert!(drafts.iter().all(|q|q["exchangeId"]=="101"&&log.never_attempted(q["id"].as_u64().unwrap())));assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);for q in drafts{retire_for_package(&mut bank,&mut log,&q).unwrap();}assert!(paper5_component_drafts(&bank,&log,&exchanges).unwrap().unwrap().is_empty());assert!(bank.engine().order_records().iter().any(|q|q["exchangeId"]=="102"&&q["retired"]==false));assert_eq!(bank.engine().wallet.positions(),json!({}));assert!(bank.engine().fills().is_empty());}
+ #[test]fn paper5_keeps_original_physical_and_unknown_liabilities_without_cancel_or_replacement(){for case in ["ack","native_binding","unknown_other"]{let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,1);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();match case{"ack"=>{log.acknowledgments.insert(id,json!({"data":{"orderId":"901"}}));},"native_binding"=>{restore_ack(&mut bank,&ack(&q)).unwrap();},_=>{log.append(json!({"kind":"intent","qid":999})).unwrap();log.append(json!({"kind":"attempt","qid":999})).unwrap();}}let head=bank.durable_head();let rows=fs::read(temp.0.join("dispatch.ndjson")).unwrap();let selected=paper5_component_drafts(&bank,&log,&["101".into()].into());if case=="unknown_other"{assert!(selected.is_err());}else{assert!(selected.unwrap().is_none());}assert_eq!(bank.durable_head(),head);assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),rows);assert!(bank.engine().fills().is_empty());}}
  #[test]fn execution_observer_sees_only_exact_successfully_committed_prepared_bytes(){
   use moloch_live_runtime::execution_edge::{self,Config};
   let temp=Temp::new();let(mut bank,_,_,_)=setup(&temp.0,1);let cfg=Config{fill_window_ms:1000,markout_ms:1000,post_window_ms:500,embargo_ms:500,maximum_book_age_ms:10_000,maximum_delivery_ms:1000,continuity_proof_grace_ms:0,maximum_training_age_ms:60_000,minimum_samples:2,minimum_coverage_bps:9000,probability_haircut_bps:1000,uncertainty_per_share:5000,exit_fee_per_share:0,fee_policy_source_sha256:"a".repeat(64),maximum_keys:16,maximum_pending:16,retained_samples:8};

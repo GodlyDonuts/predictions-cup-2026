@@ -18,7 +18,8 @@ fn current(bank:&Session,p:&Value,scope:&Scope)->Result<()>{
 }
 fn bound(bank:&Session,p:&Value,b:&Basket,s:&Scope,permit:&Permit)->Result<baal_transport_service::RequestSpec>{
  current(bank,p,s)?;
- need(p["bankScope"]["runId"]==permit.run_id&&p["packageId"]==permit.intent_id&&p["idempotencyKey"]==b.idempotency_key&&p["economics"]["maximumCost"]==b.maximum_gross_buy_cost)?;
+ let cost=if p.get("probabilistic").is_some(){need(p["probabilistic"]["kind"]=="reviewed_probabilistic_portfolio"&&p["economics"]["kind"]=="probabilistic")?;&p["economics"]["grossBuyFunding"]}else{&p["economics"]["maximumCost"]};
+ need(p["bankScope"]["runId"]==permit.run_id&&p["packageId"]==permit.intent_id&&p["idempotencyKey"]==b.idempotency_key&&*cost==b.maximum_gross_buy_cost)?;
  let legs=p["legs"].as_array().ok_or("PACKAGE_LEGS")?;need(legs.len()==b.legs.len())?;
  for (l,w) in legs.iter().zip(&b.legs){
   need(l["exchangeId"]==w.exchange_id&&l["side"]==(if w.side==Side::Yes{"YES"}else{"NO"})&&l["quantity"]==w.quantity&&l["limitPrice"]==w.limit_price&&l["action"]==(if w.action==multi_leg::Action::Buy{"buy"}else{"sell"})&&s.exchanges.get(&w.exchange_id).map(|m|l["marketId"]==*m)==Some(true))?;
@@ -27,6 +28,7 @@ fn bound(bank:&Session,p:&Value,b:&Basket,s:&Scope,permit:&Permit)->Result<baal_
 }
 fn envelope(kind:&str,p:&Value,received:&str,processed:&str)->Result<Value>{
  need(clock(processed)? >= clock(received)?)?;
+ let kind=if p.get("probabilistic").is_some(){match kind{"live_package_ack"=>"probabilistic_portfolio_ack_v1","live_package_no_execution"=>"probabilistic_portfolio_no_execution_v1","live_package_complete"=>"probabilistic_portfolio_complete_v1",_=>return Err("PACKAGE_PROBABILISTIC_EVENT".into())}}else{kind};
  Ok(json!({"type":kind,"source":"moloch_live_dispatcher","packageId":p["packageId"],"proofHash":p["proofHash"],"bankScope":p["bankScope"],"receivedAt":received,"processedAt":processed}))
 }
 /// Map all component ACKs in one native transaction, retaining the full original

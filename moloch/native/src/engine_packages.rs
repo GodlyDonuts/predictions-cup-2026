@@ -24,6 +24,8 @@
 //! component liquidation is implemented. Restart must replay these events; seed
 //! import of package state is explicitly rejected rather than silently dropping it.
 use super::*;
+#[path = "probabilistic_packages.rs"]
+mod probabilistic;
 
 #[derive(Clone,Copy,PartialEq,Eq)]
 enum Phase {Reserved,Attempted,Acknowledged,Unknown,NoExecution,Complete}
@@ -36,12 +38,16 @@ struct Leg {qid:u64,market:String,exchange:String,side:Side,buy:bool,quantity:u6
 #[derive(Clone)]
 pub(super) struct LivePackage {
  id:String,proof:String,scope:Value,economics:Value,created:i64,expires:i64,phase:Phase,
- legs:Vec<Leg>,portfolio:Option<Value>,protection_released:bool,request:Option<String>,key:Option<String>,attempted_at:Option<i64>,zero_evidence:Option<Value>,
+ legs:Vec<Leg>,portfolio:Option<Value>,probabilistic:Option<Value>,protection_released:bool,request:Option<String>,key:Option<String>,attempted_at:Option<i64>,zero_evidence:Option<Value>,
 }
 fn digest(v:&Value)->Result<String>{Ok(v.as_str().filter(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit()&&!b.is_ascii_uppercase())).ok_or("PACKAGE_HASH")?.to_owned())}
 fn package_id(v:&Value)->Result<String>{Ok(v.as_str().filter(|s|!s.is_empty()&&s.len()<=128&&s.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_')).ok_or("PACKAGE_ID")?.to_owned())}
 fn side(v:&Value)->Result<Side>{match v.as_str(){Some("YES")=>Ok(Side::Yes),Some("NO")=>Ok(Side::No),_=>Err("PACKAGE_SIDE")}}
 fn exact_keys(v:&Value,keys:&[&str])->Result<()>{let o=v.as_object().ok_or("PACKAGE_OBJECT")?;if o.len()!=keys.len()||keys.iter().any(|k|!o.contains_key(*k)){return Err("PACKAGE_FIELDS")};Ok(())}
+fn source_reserve_matches(p:&LivePackage,r:&Value)->bool{
+ if let Some(q)=&p.probabilistic{r["type"]=="probabilistic_portfolio_reserve_v1"&&r.get("qualification")==Some(q)&&r.get("economics").is_none()&&r.get("portfolio").is_none()}
+ else{r["type"]=="live_package_reserve"&&r["economics"]==p.economics&&r.get("portfolio")==p.portfolio.as_ref()}
+}
 fn zero_execution(status:u64,v:&Value,count:usize)->bool{
  if v.get("results").is_some()||!v["error"]["message"].is_string(){return false}
  match(status,v["error"]["code"].as_str()){
@@ -55,9 +61,9 @@ impl Engine {
  pub fn is_package_order(&self,id:u64)->bool{self.package_orders.contains_key(&id)}
  pub fn package_blocks_new_submissions(&self)->bool{self.live_packages.values().any(|p|!p.phase.closed())}
  pub fn package_blocks_submissions(&self)->bool{self.package_blocks_new_submissions()}
- pub fn package_records(&self)->Value{json!(self.live_packages.values().map(|p|{let mut v=json!({"packageId":p.id,"proofHash":p.proof,"bankScope":p.scope,"economics":p.economics,"createdAt":p.created,"expiresAt":p.expires,"phase":p.phase.label(),"requestHash":p.request,"idempotencyKey":p.key,"attemptedAt":p.attempted_at,"zeroExecutionEvidence":p.zero_evidence,"legs":p.legs.iter().map(|l|{let mut row=json!({"qid":l.qid,"marketId":l.market,"exchangeId":l.exchange,"side":label(l.side),"quantity":l.quantity,"limitPrice":money(l.limit),"bookHash":l.book_hash,"actualOrderId":self.live_orders.get(&l.qid),"filled":self.orders.iter().find(|q|q.id==l.qid).map(|q|q.filled),"terminalReconciled":l.terminal});if p.portfolio.is_some(){row["action"]=json!(if l.buy{"buy"}else{"sell"});}row}).collect::<Vec<_>>()});if let Some(portfolio)=&p.portfolio{v["portfolio"]=portfolio.clone();v["protectionReleased"]=json!(p.protection_released);}else if p.protection_released{v["protectionReleased"]=json!(true);}v}).collect::<Vec<_>>())}
+ pub fn package_records(&self)->Value{json!(self.live_packages.values().map(|p|{let mut v=json!({"packageId":p.id,"proofHash":p.proof,"bankScope":p.scope,"economics":p.economics,"createdAt":p.created,"expiresAt":p.expires,"phase":p.phase.label(),"requestHash":p.request,"idempotencyKey":p.key,"attemptedAt":p.attempted_at,"zeroExecutionEvidence":p.zero_evidence,"legs":p.legs.iter().map(|l|{let mut row=json!({"qid":l.qid,"marketId":l.market,"exchangeId":l.exchange,"side":label(l.side),"quantity":l.quantity,"limitPrice":money(l.limit),"bookHash":l.book_hash,"actualOrderId":self.live_orders.get(&l.qid),"filled":self.orders.iter().find(|q|q.id==l.qid).map(|q|q.filled),"terminalReconciled":l.terminal});if p.portfolio.is_some()||p.probabilistic.is_some(){row["action"]=json!(if l.buy{"buy"}else{"sell"});}row}).collect::<Vec<_>>()});if let Some(portfolio)=&p.portfolio{v["portfolio"]=portfolio.clone();v["protectionReleased"]=json!(p.protection_released);}else if p.protection_released{v["protectionReleased"]=json!(true);}if let Some(q)=&p.probabilistic{v["probabilistic"]=json!({"kind":q["kind"],"planSha256":q["planSha256"],"modelSha256":q["modelSha256"],"semanticReviewSha256":q["semanticReviewSha256"],"policySha256":q["policySha256"],"risk":q["risk"],"metrics":q["metrics"],"guaranteedArbitrage":false});}v}).collect::<Vec<_>>())}
  pub(super) fn package_protects_exchange(&self,exchange:&str)->bool{
-  self.live_packages.values().any(|p|p.phase!=Phase::NoExecution&&!p.protection_released&&(p.legs.iter().any(|l|l.exchange==exchange)||p.portfolio.as_ref().is_some_and(|v|v["componentExchanges"].as_array().is_some_and(|xs|xs.iter().any(|ex|ex==exchange)))))
+  self.live_packages.values().any(|p|p.phase!=Phase::NoExecution&&!p.protection_released&&(p.legs.iter().any(|l|l.exchange==exchange)||p.probabilistic.as_ref().is_some_and(|v|v["contracts"].as_array().is_some_and(|xs|xs.iter().any(|c|c["exchangeId"]==exchange)))||p.portfolio.as_ref().is_some_and(|v|v["componentExchanges"].as_array().is_some_and(|xs|xs.iter().any(|ex|ex==exchange)))))
  }
  pub(super) fn package_ack_guard(&self,qid:u64,quantity:u64)->Result<()>{
   if let Some(id)=self.package_orders.get(&qid){let p=self.live_packages.get(id).ok_or("PACKAGE_INDEX")?;let l=p.legs.iter().find(|l|l.qid==qid).ok_or("PACKAGE_LEG")?;
@@ -83,10 +89,14 @@ impl Engine {
   }Ok(())
  }
  pub(super) fn apply_package(&mut self,e:&Value,at:i64)->Result<()>{
+  self.apply_package_kind(e,at,false)
+ }
+ fn apply_package_kind(&mut self,e:&Value,at:i64,probabilistic:bool)->Result<()>{
   if !self.live_mode||e["source"]!="moloch_live_dispatcher"{return Err("PACKAGE_LIVE_SOURCE")}
   let id=package_id(&e["packageId"])?;
   if e["type"]=="live_package_reserve"{return self.reserve_package(e,at,id)}
   let snapshot=self.live_packages.get(&id).ok_or("PACKAGE_UNKNOWN_ID")?.clone();
+  if snapshot.probabilistic.is_some()!=probabilistic{return Err("PACKAGE_QUALIFICATION_CLASS")}
   if e["proofHash"]!=snapshot.proof||e["bankScope"]!=snapshot.scope{return Err("PACKAGE_BINDING_CHANGED")}
   match e["type"].as_str(){
    Some("live_package_attempt")=>{
@@ -177,7 +187,7 @@ impl Engine {
    self.orders.push(Order{id:l.qid,market:l.market.clone(),exchange:l.exchange.clone(),tournament:scope["tournamentId"].as_str().unwrap().into(),side:l.side,buy:true,quantity:l.quantity,filled:0,limit:l.limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same:0,better:0,visible_same:0,visible_better:0,touch_remainder:0,aon:false,age_reason:false,through:false,participation:10000,conditional:false,touch_bps:0});
    self.package_orders.insert(l.qid,package_name.clone());
   }
-  self.live_packages.insert(package_name.clone(),LivePackage{id:package_name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,portfolio:None,protection_released:false,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
+  self.live_packages.insert(package_name.clone(),LivePackage{id:package_name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,portfolio:None,probabilistic:None,protection_released:false,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
  }
 }
 
@@ -193,7 +203,7 @@ fn dispatch_never_attempted(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
  let request:Value=serde_json::from_str(text).map_err(|_|"PACKAGE_NEVER_REQUEST")?;
  if format!("{:x}",Sha256::digest(text.as_bytes()))!=p.request.as_deref().ok_or("PACKAGE_NEVER_REQUEST")?||admission["request_hash"].as_str()!=p.request.as_deref()||request!=admission["spec"]||request["method"]!="POST"||request["endpoint"]!="/orders/multi-leg"||request["body"]["executionMode"]!="allOrNone"||request["body"]["idempotencyKey"].as_str()!=p.key.as_deref()||admission["basket"]["idempotencyKey"].as_str()!=p.key.as_deref(){return Err("PACKAGE_NEVER_REQUEST")}
  let reserve=&admission["reserve"];let permit=&admission["permit"];let scope=&admission["scope"];
- if reserve["type"]!="live_package_reserve"||reserve["source"]!="moloch_live_dispatcher"||reserve["packageId"]!=p.id||reserve["proofHash"]!=p.proof||reserve["bankScope"]!=p.scope||reserve["economics"]!=p.economics||reserve.get("portfolio")!=p.portfolio.as_ref()||hash(&admission["proof"])!=p.proof||admission["proof"]["wireLegs"]!=reserve["legs"]||ms(&reserve["receivedAt"])?!=p.created||ms(&reserve["expiresAt"])?!=p.expires||permit["runId"]!=p.scope["runId"]||permit["intentId"]!=p.id||scope["tournamentId"]!=p.scope["tournamentId"]{return Err("PACKAGE_NEVER_ADMISSION")}
+ if !source_reserve_matches(p,reserve)||reserve["source"]!="moloch_live_dispatcher"||reserve["packageId"]!=p.id||reserve["proofHash"]!=p.proof||reserve["bankScope"]!=p.scope||hash(&admission["proof"])!=p.proof||admission["proof"]["wireLegs"]!=reserve["legs"]||ms(&reserve["receivedAt"])?!=p.created||ms(&reserve["expiresAt"])?!=p.expires||permit["runId"]!=p.scope["runId"]||permit["intentId"]!=p.id||scope["tournamentId"]!=p.scope["tournamentId"]{return Err("PACKAGE_NEVER_ADMISSION")}
  let reserved=reserve["legs"].as_array().filter(|xs|xs.len()==p.legs.len()).ok_or("PACKAGE_NEVER_LEGS")?;
  let wire=request["body"]["legs"].as_array().filter(|xs|xs.len()==p.legs.len()).ok_or("PACKAGE_NEVER_LEGS")?;
  for((l,r),w)in p.legs.iter().zip(reserved).zip(wire){
@@ -264,7 +274,7 @@ fn first_call_not_sent(p:&LivePackage,proof:&Value,at:i64)->Result<()>{
  let request:Value=serde_json::from_str(text).map_err(|_|"PACKAGE_FIRST_CALL_REQUEST")?;
  if format!("{:x}",Sha256::digest(text.as_bytes()))!=p.request.as_deref().ok_or("PACKAGE_FIRST_CALL_REQUEST")?||request!=admission["spec"]||admission["request_hash"].as_str()!=p.request.as_deref()||request["method"]!="POST"||request["endpoint"]!="/orders/multi-leg"||request["body"]["executionMode"]!="allOrNone"||request["body"]["idempotencyKey"].as_str()!=p.key.as_deref(){return Err("PACKAGE_FIRST_CALL_REQUEST")}
  let reserve=&admission["reserve"];let scope=&admission["scope"];let permit=&admission["permit"];let binding=&admission["queue_binding"];
- if reserve["packageId"]!=p.id||reserve["proofHash"]!=p.proof||hash(&admission["proof"])!=p.proof||reserve["bankScope"]!=p.scope||reserve["economics"]!=p.economics||reserve.get("portfolio")!=p.portfolio.as_ref()||scope["tournamentId"]!=p.scope["tournamentId"]||permit["runId"]!=p.scope["runId"]||permit["intentId"]!=p.id||admission["basket"]["idempotencyKey"].as_str()!=p.key.as_deref()||binding["intent"]!=format!("{}:{}",p.scope["runId"].as_str().ok_or("PACKAGE_FIRST_CALL_RUN")?,p.id)||binding["key"].as_str()!=p.key.as_deref()||binding["payload_hash"]!=hash(&json!({"scope":scope,"spec":request})){return Err("PACKAGE_FIRST_CALL_ADMISSION")}
+ if !source_reserve_matches(p,reserve)||reserve["packageId"]!=p.id||reserve["proofHash"]!=p.proof||hash(&admission["proof"])!=p.proof||reserve["bankScope"]!=p.scope||scope["tournamentId"]!=p.scope["tournamentId"]||permit["runId"]!=p.scope["runId"]||permit["intentId"]!=p.id||admission["basket"]["idempotencyKey"].as_str()!=p.key.as_deref()||binding["intent"]!=format!("{}:{}",p.scope["runId"].as_str().ok_or("PACKAGE_FIRST_CALL_RUN")?,p.id)||binding["key"].as_str()!=p.key.as_deref()||binding["payload_hash"]!=hash(&json!({"scope":scope,"spec":request})){return Err("PACKAGE_FIRST_CALL_ADMISSION")}
  let legs=request["body"]["legs"].as_array().filter(|xs|xs.len()==p.legs.len()).ok_or("PACKAGE_FIRST_CALL_LEGS")?;
  for(l,w)in p.legs.iter().zip(legs){if w["exchangeId"]!=l.exchange||w["side"]!=(if l.side==Side::Yes{"yes"}else{"no"})||w["action"]!=(if l.buy{"buy"}else{"sell"})||w["quantity"]!=l.quantity||w["tournamentId"]!=p.scope["tournamentId"]||amount(&w["price"].to_string())?!=l.limit||scope["exchanges"][&l.exchange]!=l.market{return Err("PACKAGE_FIRST_CALL_LEGS")}}
  let original=&proof["firstCallProof"];if original["kind"]!="sdk_before_first_admit_no_http"||outcome["firstCallEvidence"]!=*original{return Err("PACKAGE_FIRST_CALL_SOURCE")}
@@ -306,6 +316,6 @@ impl Engine{
   if !unwind&&(statewise< -total||statewise>new_max.checked_sub(total).ok_or("PACKAGE_RANGE")?||!["risk_hedge_locked_vs_liquidation","standalone_statewise_edge"].contains(&portfolio["classification"].as_str().unwrap_or(""))){return Err("PACKAGE_ACQUISITION_CLASSIFICATION")};if unwind{if after!=0||statewise!=proceeds.checked_sub(max_before).ok_or("PACKAGE_RANGE")?||statewise<=0||portfolio["classification"]!="statewise_cash_unwind_edge"{return Err("PACKAGE_UNWIND_STATEWISE_EDGE")}}
   let economics=e["economics"].clone();exact_keys(&economics,&["maximumCost","minimumPayout","minimumSurplus","feeTotal"])?;let payout=proceeds.checked_add(after).and_then(|n|n.checked_sub(before)).ok_or("PACKAGE_RANGE")?;if dec(&economics["maximumCost"])?!=total||dec(&economics["feeTotal"])?!=0||dec(&economics["minimumPayout"])?!=payout||dec(&economics["minimumSurplus"])?!=payout.checked_sub(total).ok_or("PACKAGE_RANGE")?||payout<=total{return Err("PACKAGE_ECONOMICS")}
   for l in &legs{if l.buy{self.wallet.reserve(&l.qid.to_string(),Reservation{exchange:l.exchange.clone(),side:l.side,quantity:l.quantity,limit:l.limit})?;}self.orders.push(Order{id:l.qid,market:l.market.clone(),exchange:l.exchange.clone(),tournament:scope["tournamentId"].as_str().unwrap().into(),side:l.side,buy:l.buy,quantity:l.quantity,filled:0,limit:l.limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same:0,better:0,visible_same:0,visible_better:0,touch_remainder:0,aon:false,age_reason:false,through:false,participation:10000,conditional:false,touch_bps:0});self.package_orders.insert(l.qid,name.clone());}
-  self.live_packages.insert(name.clone(),LivePackage{id:name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,portfolio:Some(portfolio),protection_released:false,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
+  self.live_packages.insert(name.clone(),LivePackage{id:name,proof,scope,economics,created:at,expires,phase:Phase::Reserved,legs,portfolio:Some(portfolio),probabilistic:None,protection_released:false,request:None,key:None,attempted_at:None,zero_evidence:None});Ok(())
  }
 }

@@ -54,6 +54,10 @@ pub mod election_curve;
 pub mod execution_router;
 pub mod semantic_states;
 pub mod probabilistic_portfolio;
-
+pub mod paper5_runtime;
+pub mod probabilistic_portfolio_worker;
 pub mod owned_age_reads;
 pub mod stale_entry_drafts;
+pub mod bulk_price_screen;
+
+pub mod capital_allocation;

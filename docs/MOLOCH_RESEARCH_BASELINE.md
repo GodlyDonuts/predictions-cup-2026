@@ -1,4 +1,12 @@
-# Latest verification: October16,09:04:37UTC
+# Current research baseline: October16,10:08UTC
+
+Production remains SIG441490/fec81a5e: last verified09:55fresh trading/realtime,44newACKs/two actual fill rows since08:55restart,134cumulativefills, attributed realized−74.305. Native identityc3731d88… and ten bridges remain deployed;40k/10k risk limits are still actual controls. The human's new full-account capital authority has not yet been applied to the ledger.
+
+The Kalshi shadow stream is now live across237valid reconstructed books, with original snapshots/deltas/tickers/trades, exact depth, sequence-gap handling and bounded clock quarantine. The20read/sec REST collector remains the discovery/repair data source. [Actual protocol observations](../research/kalshi-websocket-20261016/README.md). Mappings are234direct conditional references plus three candidate analogs, **zero newly certified settlement equivalents**. External availability is not an activated production signal.
+
+Checked source now includes the combined probabilistic physical lifecycle/driver, bulk negative screening and owner-cash contribution foundations (4678385b;324runtime/217SDK/249nativeARM64checks pass). New Paper6 floor verification passed13ARM64 checks; no actual exhaustive certificate exists. Capital startup/daily-mandate migration, full-market prospective capture, calibrated cross-venue execution and tournament utility remain work in progress. Start new research with [the Paper6 implementation ledger](MOLOCH_PAPER6_20261016.md) and newest [CURRENT_STATE](CURRENT_STATE.md). Older dated observations and tables below are historical.
+
+# Historical verification: October16,09:04:37UTC
 
 Sole441490/sourcefec81a5e is fresh trading/realtime, binary verified/STOP absent, three newACKs and zero newfillrows since08:55:43 restart.132cumulativefillrows/attributed realized−74.305 unchanged. No new stale-retirement/owned-read diagnostic observed yet. [Dated evidence](../research/moloch-throughput-20261016/draft-refresh-live-verification.json). Capital allocation, optional bulk screening and the unified advanced Paper5 source are in separate implementation/validation; none is newly activated. These source changes are not evidence of increased returns.
 

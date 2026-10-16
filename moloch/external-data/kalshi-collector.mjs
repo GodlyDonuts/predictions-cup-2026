@@ -109,9 +109,11 @@ export async function run(options) {
   const port = Number(options.port ?? 17841), maxInFlight = Number(options['max-in-flight'] ?? 64);
   const duration = Number(options['duration-seconds'] ?? 0), maximumMarkets = Number(options['maximum-markets'] ?? 1024);
   if (!Number.isSafeInteger(port) || port < 1024 || port > 65535 || !Number.isSafeInteger(maxInFlight) || maxInFlight < 1 || maxInFlight > 128 || !Number.isFinite(duration) || duration < 0) throw Error('KALSHI_CONFIGURATION');
-  const release = await acquire(cache); let server, statusTimer, stopTimer, journal; let stopped = false; let fatal;
+  const useWebsocket = options.websocket === 'true';
+  if (options.websocket !== undefined && !['true', 'false'].includes(options.websocket)) throw Error('KALSHI_WEBSOCKET_CONFIGURATION');
+  const release = await acquire(cache); let server, statusTimer, stopTimer, journal, shadow, shadowTask; let stopped = false; let fatal;
   const tasks = new Set(); const latest = new Map(); const startedAt = new Date().toISOString();
-  const stats = { attempts: 0, successfulBooks: 0, successfulMetadata: 0, errors: 0, throttles: 0, maximumInFlightObserved: 0, lastError: null };
+  const stats = { attempts: 0, successfulBooks: 0, successfulMetadata: 0, errors: 0, throttles: 0, maximumInFlightObserved: 0, lastError: null, websocket: { enabled: useWebsocket, state: useWebsocket ? 'initializing' : 'disabled', frames: 0, snapshots: 0, deltas: 0, trades: 0, tickers: 0, lastReceiptAt: null } };
   let client, universe, states, initialized = false;
   const stop = () => { stopped = true; }; process.once('SIGINT', stop); process.once('SIGTERM', stop);
   try {
@@ -146,11 +148,33 @@ export async function run(options) {
       } catch (error) { if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error; }
     }
     await atomicJson(path.join(cache, 'universe.json'), universe); journal = new Journal(path.join(cache, 'journal'));
+    if (useWebsocket) {
+      const { ShadowFeed } = await import('./kalshi-websocket.mjs');
+      shadow = new ShadowFeed({ auth, tickers: states.map(s => s.ticker),
+        onReceipt: async receipt => {
+          await journal.append({ kind: 'websocket', ...receipt });
+          if (receipt.type === 'invalid_frame') {
+            stats.websocket.lastValidationCode = receipt.validationCode;
+            await atomicJson(path.join(cache, 'websocket-last-rejected.json'), receipt);
+          }
+          const s = stats.websocket; s.frames++; s.lastReceiptAt = receipt.receivedAt; s.state = 'receiving';
+          const name = { orderbook_snapshot: 'snapshots', orderbook_delta: 'deltas', trade: 'trades', ticker: 'tickers' }[receipt.type]; if (name) s[name]++;
+        },
+        onStatus: value => { Object.assign(stats.websocket, { state: value.state, reason: value.reason, reconnectAttempt: value.attempt, delayMs: value.delayMs }); }
+      });
+      // Failure of the extra public data stream does not stop the independently
+      // budgeted REST cache or grant pricing authority. Consumers inspect validity.
+      shadowTask = shadow.run().catch(() => { stats.websocket.state = 'failed'; stats.websocket.reason = 'KALSHI_WS_FAILED'; });
+    }
+    const shadowQuotes = () => states.filter(s => s.metadata).map(s => {
+      const view = shadow?.state?.view(s.ticker, Date.now());
+      return view && { ...view, sigMarketIds: s.sigMarketIds, mappingKind: s.mappingKind ?? 'direct_party_reference', ruleMismatch: s.ruleMismatch ?? null, resolutionEquivalenceVerified: false };
+    }).filter(Boolean);
     let sequence = 0;
     const status = () => {
       const at = Date.now(); const monotonic = performance.now(); const ages = [...latest.values()].map(x => at - Date.parse(x.receivedAt));
       const active = states.filter(s => s.metadata).length;
-      return { schemaVersion: 1, at: new Date(at).toISOString(), pid: process.pid, startedAt, state: fatal ? 'failed' : stopped ? 'stopped' : initialized ? 'collecting' : 'initializing', origin: 'kalshi_official_v2', readOnly: true, targetRequestsPerSecond: 20, targetStartIntervalMs: 50, rollingRequestCeiling: 20, totalMappedTickers: states.length, activeTickers: active, successfullyCachedTickers: latest.size, unmappedSigMarketIds: universe.unmappedSigMarketIds, idealBookRotationSeconds: active / 20, inFlight: tasks.size, observedStartsLastSecond: client.admission.starts.filter(t => t > monotonic - 1000).length, observedStartsLastMinute: client.admission.starts.filter(t => t > monotonic - 60_000).length, oldestCachedReceiptAgeMs: ages.length ? Math.max(...ages) : null, blockedUntil: new Date(at + Math.max(0, client.admission.blockedUntil - monotonic)).toISOString(), ...stats, fatalCode: fatal?.message ?? null };
+      return { schemaVersion: 1, at: new Date(at).toISOString(), pid: process.pid, startedAt, state: fatal ? 'failed' : stopped ? 'stopped' : initialized ? 'collecting' : 'initializing', origin: 'kalshi_official_v2', readOnly: true, targetRequestsPerSecond: 20, targetStartIntervalMs: 50, rollingRequestCeiling: 20, totalMappedTickers: states.length, activeTickers: active, successfullyCachedTickers: latest.size, unmappedSigMarketIds: universe.unmappedSigMarketIds, idealBookRotationSeconds: active / 20, inFlight: tasks.size, observedStartsLastSecond: client.admission.starts.filter(t => t > monotonic - 1000).length, observedStartsLastMinute: client.admission.starts.filter(t => t > monotonic - 60_000).length, oldestCachedReceiptAgeMs: ages.length ? Math.max(...ages) : null, blockedUntil: new Date(at + Math.max(0, client.admission.blockedUntil - monotonic)).toISOString(), ...stats, websocket: { ...stats.websocket, coverage: shadow?.status(at) ?? null }, fatalCode: fatal?.message ?? null };
     };
     let discoveryPending = false;
     server = http.createServer((req, res) => {
@@ -169,6 +193,7 @@ export async function run(options) {
         })().finally(() => tasks.delete(task)); tasks.add(task); return;
       }
       if (url.pathname === '/v1/status') { res.end(JSON.stringify(status())); return; }
+      if (url.pathname === '/v1/ws/quotes') { res.end(JSON.stringify({ at: new Date().toISOString(), source: 'kalshi_official_ws_v2', pricingAuthority: false, websocket: stats.websocket, markets: shadowQuotes() })); return; }
       if (url.pathname === '/v1/quotes') { res.end(JSON.stringify({ at: new Date().toISOString(), source: 'kalshi_official_v2', resolutionEquivalenceVerified: false, mappingStatus: 'conditional', markets: [...latest.values()].map(x => ({ ticker: x.ticker, sigMarketIds: x.sigMarketIds, mappingKind: x.mappingKind, pricingAuthority: false, ruleMismatch: x.ruleMismatch, requestStartedAt: x.requestStartedAt, receivedAt: x.receivedAt, bodySha256: x.bodySha256, normalized: x.normalized })) })); return; }
       if (url.pathname.startsWith('/v1/book/')) { const ticker = url.pathname.slice('/v1/book/'.length); const row = TICKER.test(ticker) && latest.get(ticker); if (row) { res.end(JSON.stringify(row)); return; } }
       res.writeHead(404).end('{}');
@@ -221,11 +246,13 @@ export async function run(options) {
       await sleep(1);
     }
     await Promise.allSettled(tasks); clearInterval(statusTimer); statusTimer = null;
+    shadow?.stop(); if (shadowTask) await shadowTask;
     await journal.close(); journal = null; await atomicJson(path.join(cache, 'status.json'), status());
     if (fatal) throw fatal;
   } finally {
     stopped = true; if (statusTimer) clearInterval(statusTimer); if (stopTimer) clearTimeout(stopTimer);
-    try { await Promise.allSettled(tasks); if (journal) await journal.close(); }
+    shadow?.stop();
+    try { if (shadowTask) await shadowTask; await Promise.allSettled(tasks); if (journal) await journal.close(); }
     finally {
       try { if (server) await new Promise(resolve => server.close(resolve)); }
       finally { process.off('SIGINT', stop); process.off('SIGTERM', stop); await release(); }

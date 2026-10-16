@@ -1,3 +1,15 @@
+# October16,10:08UTC: full Kalshi shadow market live; SIG continues
+
+SIG solePID441490/sourcefec81a5e was verified healthy at09:55:04UTC: fresh trading/realtime, matching binary, STOP absent,44new acknowledgments/two actual fill rows since08:55restart. Cumulative134fillrows; ordinary realized−119.435/inherited gross+45.130/combined−74.305. These are attributed trading results, distinct from daily dashboard marks. The stale-draft repair actually released2,547.20 of local reservations at09:07; it did not credit cash or profit.
+
+Kalshi collector2600/supervisor2700 now runs the integrated authenticated WebSocket plus the existing20read/sec REST queue. At10:08:15UTC all237reconstructed books were valid:237snapshots,191deltas,41ticker events/one public trade, one connection, zero sequence gaps/invalid frames; REST had zero errors/throttles since this restart. Coverage remains234direct party references plus three narrower candidate analogs, all conditional. [Protocol, actual corrections and limitations](../research/kalshi-websocket-20261016/README.md), [mapping evidence](../research/moloch-kalshi-mapping-20261016/README.md).
+
+The human now authorizes all available SUSQies for Moloch. Exact owner-cash contribution and an explicit daily monetary-mandate revision are being wired; **the existing40k allocation has not yet been increased**. Combined advanced Paper5/funding/bulk source4678385b passed ARM64 runtime324/SDK217/native249 checks with one explicitly ignored benchmark and normal-bin checking; this source is not the deployed fec81a5e binary. Paper6's separate exhaustive-floor verifier passed13ARM64 checks but has no genuine venue completeness certificate or physical activation. [Current implementation ledger](MOLOCH_PAPER6_20261016.md).
+
+The read-only prospective observer is running on the VPS without SIG API calls. Its selected-native-book probe produced26samples/23future labels across16markets by10:04:55; samples are sparse and are not profit evidence. The old optional all-market capture reached128MiB at09:20. Bounded append-only segment rotation is being integrated so all-market prospective data can continue under the sole worker. Kalshi-informed physical trading, calibrated maker-toxicity protection and tournament-prize optimization remain unfinished.
+
+Older dated observations below retain their original timestamps.
+
 # October16,09:04UTC: repaired production is fresh and trading
 
 At09:04:37UTC solePID441490/sourcefec81a5e is fresh trading/realtime, binary verified and STOP absent. It has three new official acknowledgments and zero new fill rows since restart; cumulative132actualfillrows and realized−74.305 remain unchanged. First32-scope pass has completed six scopes. No new stale-retirement or owned-read diagnostic has yet been observed, so neither a reservation-release amount nor faster profitable exits is claimed. [Actual rollout](../research/moloch-throughput-20261016/draft-refresh-production-rollout.json), [dated live verification](../research/moloch-throughput-20261016/draft-refresh-live-verification.json).

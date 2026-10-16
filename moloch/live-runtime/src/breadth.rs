@@ -4,24 +4,37 @@ use moloch_replay::{journal::Journal,money};
 use baal_transport_service::prices::official_tick_units;
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
-use std::{collections::{BTreeMap,BTreeSet,VecDeque},fs::{File,OpenOptions},io::{BufRead,BufReader,Write},path::Path};
-pub struct Recorder {file:File,chain:Journal,bytes:u64,pub error:Option<String>}
+use std::{collections::{BTreeMap,BTreeSet,VecDeque},fs::{File,OpenOptions},io::{BufRead,BufReader,Write},path::{Path,PathBuf}};
+pub struct Recorder {file:File,chain:Journal,bytes:u64,total_bytes:u64,segment:u64,path:PathBuf,segment_limit:u64,total_limit:u64,rotating:bool,pub error:Option<String>}
 impl Recorder{
  pub fn new(path:&Path)->Result<Self>{let mut options=OpenOptions::new();options.write(true).create_new(true);
   #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
-  let file=options.open(path)?;file.sync_all()?;File::open(path.parent().ok_or("BREADTH_PARENT")?)?.sync_all()?;Ok(Self{file,chain:Journal::default(),bytes:0,error:None})
+  let file=options.open(path)?;file.sync_all()?;File::open(path.parent().ok_or("BREADTH_PARENT")?)?.sync_all()?;Ok(Self{file,chain:Journal::default(),bytes:0,total_bytes:0,segment:0,path:path.to_owned(),segment_limit:128*1024*1024,total_limit:128*1024*1024,rotating:false,error:None})
+ }
+ /// Separate append-only capture segments; the original frozen file and its
+ /// replay contract are preserved. Bounded8GiB/run; no retention deletion.
+ pub fn new_rotating(path:&Path)->Result<Self>{let mut s=Self::new(path)?;s.rotating=true;s.total_limit=8*1024*1024*1024;Ok(s)}
+ fn next_segment(&mut self)->Result<()>{
+  self.file.sync_all()?;let segment=self.segment.checked_add(1).ok_or("BREADTH_SEGMENT_OVERFLOW")?;
+  let stem=self.path.file_stem().and_then(|s|s.to_str()).ok_or("BREADTH_SEGMENT_PATH")?;
+  let next=self.path.with_file_name(format!("{stem}-part-{segment:04}.jsonl"));
+  let mut new=Self::new(&next)?;new.rotating=self.rotating;new.segment_limit=self.segment_limit;new.total_limit=self.total_limit;new.total_bytes=self.total_bytes;new.path=self.path.clone();new.segment=segment;*self=new;Ok(())
+ }
+ fn row(&self,event:&str,payload:&Value,received:&str)->Result<Vec<u8>>{
+  let mut row=json!({"sequence":self.chain.sequence+1,"previous":self.chain.previous,"event":{"source":"official_sig_realtime","event":event,"payload":payload,"receivedAt":received}});
+  row["hash"]=json!(format!("{:x}",Sha256::digest(serde_json::to_vec(&row)?)));Ok(serde_json::to_vec(&row)?)
  }
  pub fn observe(&mut self,event:&str,payload:&Value,received:&str){
   if self.error.is_some(){return}
   let result=(||->Result<()>{
-   let mut row=json!({"sequence":self.chain.sequence+1,"previous":self.chain.previous,"event":{"source":"official_sig_realtime","event":event,"payload":payload,"receivedAt":received}});
-   row["hash"]=json!(format!("{:x}",Sha256::digest(serde_json::to_vec(&row)?)));
-   let data=serde_json::to_vec(&row)?;
-   if data.len()>8*1024*1024||self.bytes+data.len() as u64>128*1024*1024{return Err("BREADTH_CAPTURE_LIMIT".into())}
-   self.file.write_all(&data)?;self.file.write_all(b"\n")?;self.file.sync_data()?;self.chain.accept(&row)?;self.bytes+=data.len() as u64+1;Ok(())
+   let mut data=self.row(event,payload,received)?;
+   if data.len()>8*1024*1024||self.total_bytes+data.len() as u64+1>self.total_limit{return Err("BREADTH_CAPTURE_LIMIT".into())}
+   if self.bytes+data.len() as u64+1>self.segment_limit{if !self.rotating{return Err("BREADTH_CAPTURE_LIMIT".into())}self.next_segment()?;data=self.row(event,payload,received)?;}
+   if data.len() as u64+1>self.segment_limit{return Err("BREADTH_CAPTURE_LIMIT".into())}
+   let row=serde_json::from_slice(&data)?;self.file.write_all(&data)?;self.file.write_all(b"\n")?;self.file.sync_data()?;self.chain.accept(&row)?;self.bytes+=data.len() as u64+1;self.total_bytes+=data.len() as u64+1;Ok(())
   })();if let Err(e)=result{self.error=Some(e.to_string())}
  }
- pub fn status(&self)->Value{json!({"sequence":self.chain.sequence,"previous":self.chain.previous,"bytes":self.bytes,"error":self.error,"executionAuthority":false})}
+ pub fn status(&self)->Value{json!({"sequence":self.chain.sequence,"previous":self.chain.previous,"bytes":self.bytes,"totalBytes":self.total_bytes,"segment":self.segment,"segmentLimit":self.segment_limit,"totalLimit":self.total_limit,"rotating":self.rotating,"error":self.error,"executionAuthority":false})}
 }
 fn instant(v:&Value)->Result<i64>{chrono::DateTime::parse_from_rfc3339(v.as_str().ok_or("BREADTH_CLOCK")?)?.timestamp_nanos_opt().ok_or("BREADTH_CLOCK_RANGE".into())}
 fn numeric(v:&Value)->Result<String>{let s=v.as_str().map(str::to_owned).or_else(||v.as_u64().map(|n|n.to_string())).ok_or("BREADTH_ID")?;if s.is_empty()||s.starts_with('0')||!s.bytes().all(|b|b.is_ascii_digit()){return Err("BREADTH_ID".into())}Ok(s)}
@@ -90,6 +103,17 @@ pub fn replay(path:&Path)->Result<Value>{
  let mut report=study.report();report["sourceSequence"]=json!(journal.sequence);report["sourcePrevious"]=json!(journal.previous);Ok(report)
 }
 #[cfg(test)]mod tests{
+ #[test]fn rotating_capture_preserves_sealed_prefix_and_independent_hash_chains(){
+  let dir=std::env::temp_dir().join(format!("breadth-rotation-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));std::fs::create_dir(&dir).unwrap();let p=dir.join("capture.jsonl");
+  let mut r=Recorder::new_rotating(&p).unwrap();let f=frame(0,1,0,0.4,0.6,json!([]));r.segment_limit=r.row("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap()).unwrap().len() as u64+10;
+  r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());let first=std::fs::read(&p).unwrap();
+  r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert!(r.error.is_none());assert_eq!(r.segment,1);assert_eq!(std::fs::read(&p).unwrap(),first);assert_eq!(replay(&p).unwrap()["sourceSequence"],1);let next=dir.join("capture-part-0001.jsonl");assert_eq!(replay(&next).unwrap()["sourceSequence"],1);
+  r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert!(r.error.is_none());assert_eq!(r.segment,2);r.total_limit=r.total_bytes;r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert_eq!(r.error.as_deref(),Some("BREADTH_CAPTURE_LIMIT"));drop(r);
+  for name in ["capture.jsonl","capture-part-0001.jsonl","capture-part-0002.jsonl"]{std::fs::remove_file(dir.join(name)).unwrap();}std::fs::remove_dir(dir).unwrap();
+ }
+ #[test]fn rotation_refuses_existing_segment_without_overwriting_it(){
+  let dir=std::env::temp_dir().join(format!("breadth-conflict-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));std::fs::create_dir(&dir).unwrap();let p=dir.join("capture.jsonl");let collision=dir.join("capture-part-0001.jsonl");std::fs::write(&collision,b"original frozen bytes").unwrap();let mut r=Recorder::new_rotating(&p).unwrap();r.bytes=r.segment_limit;r.observe("ping",&json!({}),"2026-10-16T00:00:00Z");assert!(r.error.is_some());assert_eq!(std::fs::read(&collision).unwrap(),b"original frozen bytes");drop(r);std::fs::remove_file(p).unwrap();std::fs::remove_file(collision).unwrap();std::fs::remove_dir(dir).unwrap();
+ }
  use super::*;
  fn frame(sec:u64,revision:u64,previous:u64,bid:f64,ask:f64,trades:Value)->Value{
   json!({"source":"official_sig_realtime","event":"markets_batch","receivedAt":format!("2026-10-15T00:00:{sec:02}Z"),"payload":{"markets":[{"marketId":"1","batch":{"delivery":{"model":"best-effort-authoritative-resync","revision":revision,"previousRevision":previous},"books":[{"exchangeId":"2","asOf":{"sequence":revision*10,"at":format!("2026-10-15T00:00:{sec:02}Z")},"bids":[{"price":bid,"quantity":100}],"asks":[{"price":ask,"quantity":100}]}],"trades":trades}}]}})

@@ -22,10 +22,11 @@ pub fn release(bank:&Session,p:&Value,dispatch:&PackageDispatchLog,processed:&st
  need(p["bankScope"]["runId"]==seed["runId"]&&p["bankScope"]["bankManifestHash"]==*bank.manifest_hash(),"PACKAGE_NEVER_BANK_SCOPE")?;
  let id=p["packageId"].as_str().ok_or("PACKAGE_NEVER_ID")?;
  let original=dispatch.verified_never_attempted(id)?;let proof=original.evidence();let record=&proof["dispatchRecord"];let admission=&record["admission"];
- need(admission["reserve"]["packageId"]==p["packageId"]&&admission["reserve"]["proofHash"]==p["proofHash"]&&hash(&admission["proof"])?==p["proofHash"]&&admission["reserve"]["bankScope"]==p["bankScope"]&&admission["reserve"]["economics"]==p["economics"]&&admission["reserve"]["expiresAt"].as_str().map(clock).transpose()?==p["expiresAt"].as_i64(),"PACKAGE_NEVER_ADMISSION_CHANGED")?;
+ let probabilistic=p.get("probabilistic").is_some();if probabilistic{need(admission["reserve"]["type"]=="probabilistic_portfolio_reserve_v1"&&admission["reserve"]["qualification"]==admission["proof"]&&admission["proof"]["planSha256"]==p["probabilistic"]["planSha256"]&&admission["proof"]["kind"]=="reviewed_probabilistic_portfolio","PACKAGE_NEVER_PROBABILISTIC_CLASS")?;}else{need(admission["reserve"]["economics"]==p["economics"],"PACKAGE_NEVER_ADMISSION_CHANGED")?;}
+ need(admission["reserve"]["packageId"]==p["packageId"]&&admission["reserve"]["proofHash"]==p["proofHash"]&&hash(&admission["proof"])?==p["proofHash"]&&admission["reserve"]["bankScope"]==p["bankScope"]&&admission["reserve"]["expiresAt"].as_str().map(clock).transpose()?==p["expiresAt"].as_i64(),"PACKAGE_NEVER_ADMISSION_CHANGED")?;
  need(admission["proof"]["wireLegs"]==admission["reserve"]["legs"]&&admission["spec"]["method"]=="POST"&&admission["spec"]["endpoint"]=="/orders/multi-leg"&&admission["spec"]["body"]["executionMode"]=="allOrNone","PACKAGE_NEVER_REQUEST")?;
  let legs=p["legs"].as_array().ok_or("PACKAGE_NEVER_LEGS")?;let reserved=admission["reserve"]["legs"].as_array().ok_or("PACKAGE_NEVER_LEGS")?;
- need(legs.len()==reserved.len()&&if p.get("portfolio").is_some_and(|v|!v.is_null()){(1..=6).contains(&legs.len())}else{(2..=3).contains(&legs.len())},"PACKAGE_NEVER_LEGS")?;
+ need(legs.len()==reserved.len()&&if probabilistic||p.get("portfolio").is_some_and(|v|!v.is_null()){(1..=6).contains(&legs.len())}else{(2..=3).contains(&legs.len())},"PACKAGE_NEVER_LEGS")?;
  let orders=bank.engine().order_records();
  for(l,r)in legs.iter().zip(reserved){
   let qid=l["qid"].as_u64().ok_or("PACKAGE_NEVER_QID")?;let q=orders.iter().find(|q|q["id"]==qid).ok_or("PACKAGE_NEVER_ORDER")?;
@@ -39,7 +40,7 @@ pub fn release(bank:&Session,p:&Value,dispatch:&PackageDispatchLog,processed:&st
  let spec:baal_transport_service::RequestSpec=serde_json::from_value(admission["spec"].clone())?;
  let request_json=serde_json::to_string(&spec)?;let request_hash=format!("{:x}",Sha256::digest(request_json.as_bytes()));
  let mut evidence=proof.clone();evidence["kind"]=json!("dispatch_never_attempted_v1");evidence["requestHash"]=admission["request_hash"].clone();evidence["requestJson"]=json!(request_json);
- let mut event=json!({"type":"live_package_no_execution","source":"moloch_live_dispatcher","packageId":p["packageId"],"proofHash":p["proofHash"],"bankScope":p["bankScope"],"receivedAt":record["outcome"]["at"],"processedAt":processed});
+ let mut event=json!({"type":if probabilistic{"probabilistic_portfolio_no_execution_v1"}else{"live_package_no_execution"},"source":"moloch_live_dispatcher","packageId":p["packageId"],"proofHash":p["proofHash"],"bankScope":p["bankScope"],"receivedAt":record["outcome"]["at"],"processedAt":processed});
  if phase=="attempted"{
   need(p["requestHash"]==admission["request_hash"]&&p["requestHash"]==request_hash&&p["idempotencyKey"]==admission["basket"]["idempotencyKey"]&&p["attemptedAt"].as_i64().is_some_and(|t|t<=fence_at),"PACKAGE_NEVER_NATIVE_ATTEMPT_CHANGED")?;
   event["evidence"]=evidence;

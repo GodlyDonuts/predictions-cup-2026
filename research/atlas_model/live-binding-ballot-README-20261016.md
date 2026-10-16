@@ -1,0 +1,11 @@
+# Official general-election ballot source inventory
+
+The JSON inventory retains exact original URLs, status, receipt clocks, raw hashes and private file paths. No raw pages/PDFs, reviews or runtime files were committed.
+
+- Kansas: Sedgwick County official current-candidate table explicitly assigns Adam Hamilton to Democratic / US Senator / 2026 General and Roger Marshall to Republican. Publication time is not printed. Acquired HTTP200 at2026-10-16T05:59:22.717673Z; original SHA256207a97e4d915b505be3e8cce46bdcf7c38866977b8b5a7a5a96c86c5013e01e2. The table is not assumed exhaustive; missing Libertarian row does not establish candidate absence.
+- Iowa: Secretary of State current general-election page links the retained August19 PDF. Page1 explicitly identifies November3 2026 General, Democratic Josh Turek, Republican Ashley Hinson and Libertarian Thomas Laehn. Locally extracted text and rendered first page were checked. HTTP200 received2026-10-16T05:59:21.898137Z; original SHA256df70d066973b16c7b51e5c2a2bbf9f7fdb166bba9404311a945404c83813af38. Printed update8/19/2026 1:36PM is not today; HTTP Last-Modified and PDF metadata are separately retained. The stale May blank candidate template discovered in search was rejected.
+- North Carolina: previously retained official NCSBE October13 candidate PDF, original SHA256378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d, is referenced without re-fetching or changing the existing review.
+
+Named-poll continuity was checked in the original retained publisher HTML: the Kansas Senate poll explicitly measures Democrat Adam Hamilton45% and Republican Roger Marshall43%; the Iowa Senate poll explicitly measures Democrat Josh Turek45% and Republican Ashley Hinson47%. These are the same current general-election nominees, not generic-party or hypothetical pairs. Poll fieldwork/publication/receipt clocks stay those of the existing Atlas input; official-ballot acquisition does not renew poll availability.
+
+These independent ballot sources support candidate-to-party mapping. They do not supply forecast calibration, third-party probability, withdrawal/replacement or refund/settlement rules. The Atlas artifact remains research-only; neither these documents nor Party Winner nodes authorize orders.
