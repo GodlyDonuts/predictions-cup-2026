@@ -1,0 +1,97 @@
+{
+  "asOfUtc": "2026-10-16T18:09:07.237327+00:00",
+  "derivedBeforeGapAnalysis": true,
+  "inputs": [
+    {
+      "artifact": "rest-cache.json",
+      "bytes": 882609,
+      "name": "rest-cache",
+      "newAccountRequest": false,
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\rest-cache.json",
+      "receivedAt": "2026-10-16T18:09:06.011848+00:00",
+      "requestStartedAt": "2026-10-16T18:09:05.335543+00:00",
+      "route": "/v1/quotes",
+      "sha256": "7b2012025aa16f3e52ae918ef2c13199afbff4c3fc6b9442854cf36faf803af0",
+      "source": "existing_readonly_loopback_cache"
+    },
+    {
+      "artifact": "ws-cache.json",
+      "bytes": 1373020,
+      "name": "ws-cache",
+      "newAccountRequest": false,
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\ws-cache.json",
+      "receivedAt": "2026-10-16T18:09:07.150510+00:00",
+      "requestStartedAt": "2026-10-16T18:09:06.015741+00:00",
+      "route": "/v1/ws/quotes",
+      "sha256": "21eaae52d8a23f3d40e40c2c41d52a562786e5382ba7e44997640288b252690e",
+      "source": "existing_readonly_loopback_cache"
+    },
+    {
+      "artifact": "sig-breadth-suffix-0.bin",
+      "bytes": 8388608,
+      "capturedAt": "2026-10-16T18:09:07.199881+00:00",
+      "endOffset": 133967993,
+      "fullHistoryVerified": false,
+      "incompleteBoundaryFragmentsRetained": true,
+      "name": "sig-breadth-suffix-0.bin",
+      "originalDevice": 66305,
+      "originalInode": 12447675,
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/breadth-525450-1792171473904-part-0001.jsonl",
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\sig-breadth-suffix-0.bin",
+      "sha256": "a9ed93093a2d72183df88ec83b2692008b9093136c9d429b9e081e4993291176",
+      "startOffset": 125579385
+    },
+    {
+      "artifact": "sig-breadth-suffix-1.bin",
+      "bytes": 8388608,
+      "capturedAt": "2026-10-16T18:09:07.226815+00:00",
+      "endOffset": 67666470,
+      "fullHistoryVerified": false,
+      "incompleteBoundaryFragmentsRetained": true,
+      "name": "sig-breadth-suffix-1.bin",
+      "originalDevice": 66305,
+      "originalInode": 12448514,
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/breadth-525450-1792171473904-part-0002.jsonl",
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\sig-breadth-suffix-1.bin",
+      "sha256": "ccdffcdee98b4b33fb032cdb70241dc9896361d7b898bdd78cf25ba0e4dba4ad",
+      "startOffset": 59277862
+    },
+    {
+      "artifact": "bank-report.json",
+      "bytes": 2648662,
+      "capturedAt": "2026-10-16T18:09:07.235905+00:00",
+      "name": "bank-report",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/report.json",
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\bank-report.json",
+      "sha256": "26a5142b3e772820b77ef8e3464877cc8395d7e0d0c121760452b9ec569cedad"
+    },
+    {
+      "artifact": "progress.json",
+      "bytes": 264,
+      "capturedAt": "2026-10-16T18:09:07.236389+00:00",
+      "name": "progress",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/progress.json",
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\progress.json",
+      "sha256": "c145922cd3c2ab8e66113cae8607997a4462ec42d404414ed8e55d265965f7d6"
+    },
+    {
+      "artifact": "scope.json",
+      "bytes": 5051,
+      "capturedAt": "2026-10-16T18:09:07.237309+00:00",
+      "name": "scope",
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\scope.json",
+      "sha256": "3d4fac691d3c24f3b3b8659df3827ea313fe862e0deb3489e5018b8661a72255",
+      "source": "exact_current_control_scope_derived_no_credentials"
+    },
+    {
+      "bytes": 326009,
+      "name": "mapping",
+      "path": "C:\\Users\\csram\\AppData\\Local\\Temp\\moloch-shadow-prior-opportunities-20261016\\synchronized-180907\\universe.json",
+      "sha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0"
+    }
+  ],
+  "originalCaptureManifestSha256": "3e2a25ddc46a5aef6fac3fd2fcfcadf8e3081a4c7d818ee9d0d0bf3c1473ee30",
+  "originalCaptureZipSha256": "72352e7b9cb97f7380aa7bd56141e02c43209b48af220d6fb9953437c8601c01",
+  "verifiedAtUtc": "2026-10-16T18:11:26.547971+00:00",
+  "version": 1
+}

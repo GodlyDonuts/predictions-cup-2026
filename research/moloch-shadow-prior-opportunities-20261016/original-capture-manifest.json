@@ -1,0 +1,76 @@
+{
+  "pinnedAt": "2026-10-16T18:09:07.237327+00:00",
+  "sigPid": 525450,
+  "files": [
+    {
+      "artifact": "rest-cache.json",
+      "bytes": 882609,
+      "sha256": "7b2012025aa16f3e52ae918ef2c13199afbff4c3fc6b9442854cf36faf803af0",
+      "source": "existing_readonly_loopback_cache",
+      "route": "/v1/quotes",
+      "requestStartedAt": "2026-10-16T18:09:05.335543+00:00",
+      "receivedAt": "2026-10-16T18:09:06.011848+00:00",
+      "newAccountRequest": false
+    },
+    {
+      "artifact": "ws-cache.json",
+      "bytes": 1373020,
+      "sha256": "21eaae52d8a23f3d40e40c2c41d52a562786e5382ba7e44997640288b252690e",
+      "source": "existing_readonly_loopback_cache",
+      "route": "/v1/ws/quotes",
+      "requestStartedAt": "2026-10-16T18:09:06.015741+00:00",
+      "receivedAt": "2026-10-16T18:09:07.150510+00:00",
+      "newAccountRequest": false
+    },
+    {
+      "artifact": "sig-breadth-suffix-0.bin",
+      "bytes": 8388608,
+      "sha256": "a9ed93093a2d72183df88ec83b2692008b9093136c9d429b9e081e4993291176",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/breadth-525450-1792171473904-part-0001.jsonl",
+      "originalDevice": 66305,
+      "originalInode": 12447675,
+      "startOffset": 125579385,
+      "endOffset": 133967993,
+      "capturedAt": "2026-10-16T18:09:07.199881+00:00",
+      "fullHistoryVerified": false,
+      "incompleteBoundaryFragmentsRetained": true
+    },
+    {
+      "artifact": "sig-breadth-suffix-1.bin",
+      "bytes": 8388608,
+      "sha256": "ccdffcdee98b4b33fb032cdb70241dc9896361d7b898bdd78cf25ba0e4dba4ad",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/breadth-525450-1792171473904-part-0002.jsonl",
+      "originalDevice": 66305,
+      "originalInode": 12448514,
+      "startOffset": 59277862,
+      "endOffset": 67666470,
+      "capturedAt": "2026-10-16T18:09:07.226815+00:00",
+      "fullHistoryVerified": false,
+      "incompleteBoundaryFragmentsRetained": true
+    },
+    {
+      "artifact": "bank-report.json",
+      "bytes": 2648662,
+      "sha256": "26a5142b3e772820b77ef8e3464877cc8395d7e0d0c121760452b9ec569cedad",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/report.json",
+      "capturedAt": "2026-10-16T18:09:07.235905+00:00"
+    },
+    {
+      "artifact": "progress.json",
+      "bytes": 264,
+      "sha256": "c145922cd3c2ab8e66113cae8607997a4462ec42d404414ed8e55d265965f7d6",
+      "originalPath": "/home/archon/apps/moloch/shared/live-production-v1/progress.json",
+      "capturedAt": "2026-10-16T18:09:07.236389+00:00"
+    },
+    {
+      "artifact": "scope.json",
+      "bytes": 5051,
+      "sha256": "3d4fac691d3c24f3b3b8659df3827ea313fe862e0deb3489e5018b8661a72255",
+      "source": "exact_current_control_scope_derived_no_credentials",
+      "capturedAt": "2026-10-16T18:09:07.237309+00:00"
+    }
+  ],
+  "accountRequests": 0,
+  "fullHistoryVerified": false,
+  "financialAuthority": false
+}
