@@ -1,3 +1,9 @@
+# October16,09:04UTC: repaired production is fresh and trading
+
+At09:04:37UTC solePID441490/sourcefec81a5e is fresh trading/realtime, binary verified and STOP absent. It has three new official acknowledgments and zero new fill rows since restart; cumulative132actualfillrows and realized−74.305 remain unchanged. First32-scope pass has completed six scopes. No new stale-retirement or owned-read diagnostic has yet been observed, so neither a reservation-release amount nor faster profitable exits is claimed. [Actual rollout](../research/moloch-throughput-20261016/draft-refresh-production-rollout.json), [dated live verification](../research/moloch-throughput-20261016/draft-refresh-live-verification.json).
+
+GitHub contains the checked runtime repair and [current API/capital capability map](../research/moloch-capabilities-20261016.md). Additional owner-capital allocation and optional bulk-price negative screening have source implementations undergoing ARM64 validation; they are not active. The unified Paper5 physical execution source is also undergoing combined validation, and research models remain outside live execution. Funding, advances, accepted orders and simulated returns are not realized trading profit.
+
 # October16,08:55UTC: stale-reservation repair deployed; restoration pending
 
 Replacement solePID441490/sourcefec81a5e started08:55:43UTC with binarySHAe38a64d6a7394aba3bd32fd2b14ebe7b45352b7314ec20b9d93fb9b85314dfdb. At08:56:09 it is running with matching binary and STOP absent, **restoring original history; fresh trading is not yet verified**. Original205233events/619330732bytes/132actualfillrows and all ten unchanged financial bridges are preserved. Native sources and compiled accounting identityc3731d88… are byte-identical. The stopped SDK queue had zero unknowns, no active operation and no manual review. Only the activation binary hash changed in control.
