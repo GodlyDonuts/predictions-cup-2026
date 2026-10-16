@@ -731,6 +731,13 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
   let scopes=source.scopes();if !scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{return existing_exit_deferred(c,ex,"coverage","COMPLETE_TARGET_TAPE_REQUIRED")}
  }
  refresh_controls(c,authority,stream)?;
+ if hint.reason=="reviewed_inventory_book_refresh"{
+  let target=json!({"marketId":market,"exchangeId":ex});
+  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream},|bank,at|{
+   Ok(f.cohorts.existing_exit_hint(bank,log,&c.scope,ex,f.authority.trusted(),at)?.is_some())
+  })?;
+  if !eligible{return existing_exit_deferred(c,ex,"book_prefilter","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")}
+ }
  let facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;
  let Some(facts_until)=existing_facts_until(&facts,now())?else{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;
@@ -841,6 +848,20 @@ trait OrdinaryPreflightReads{
  fn guarded(&mut self)->Result<bool>;
  fn read(&mut self,endpoint:Endpoint)->Result<Receipt>;
 }
+struct LivePreflightReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime}
+impl OrdinaryPreflightReads for LivePreflightReads<'_>{
+ fn now_ms(&self)->u64{now()}
+ fn guarded(&mut self)->Result<bool>{refresh_controls(self.c,self.authority,self.stream)?;Ok(!queue_has_unknown(self.t)?)}
+ fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
+}
+/// The callback evaluates the genuine newly admitted book and pinned policy.
+/// It can only decline an expensive packet, never replace its physical facts.
+fn reviewed_book_prefilter(c:&Control,bank:&mut Session,source:&mut RestSource,target:&Value,reads:&mut impl OrdinaryPreflightReads,mut eligible:impl FnMut(&Session,u64)->Result<bool>)->Result<bool>{
+ if !reads.guarded()?{return Ok(false)}
+ let book=reads.read(Endpoint::OrderBook{market_id:target["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.into(),depth:20})?;
+ accept_fresh_book(bank,c,target,&book,source)?;
+ eligible(bank,reads.now_ms())
+}
 /// A stale book is not evidence that a quote is competitive. Refresh only the
 /// original book first; a far floor must not consume six unrelated account
 /// reads. A positive result still obtains the entire independent seven-fact
@@ -876,6 +897,13 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
   let wrapped=json!({"source":"official_sig_api_v1","kind":"trades","tournamentId":c.scope.tournament_id,"marketId":market,"exchangeId":ex,"endpoint":tape.endpoint,"status":tape.status,"requestStartedAt":tape.request_started_at,"receivedAt":tape.received_at,"data":tape.data});accept_source_events(bank,&source.accept(&wrapped)?)?;
   let scopes=source.scopes();if !scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{return fundamental_entry_deferred(c,ex,"coverage","COMPLETE_TARGET_TAPE_REQUIRED")}
  }
+ let target=json!({"marketId":market,"exchangeId":ex});
+ let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream},|bank,at|{
+  let(books,_)=moloch_live_runtime::package_admission::native_books(bank,&c.scope,at,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("LIVE_BOOK_POLICY")?)?;
+  if !books.contains_key(ex){return Ok(true)} // Unavailable/legacy comparison is not price evidence.
+  Ok(f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,at)?.is_none_or(|comparison|!comparison.candidates.is_empty()))
+ })?;
+ if !eligible{return fundamental_entry_deferred(c,ex,"book_prefilter","NO_CURRENT_REVIEWED_VALUE_OR_DEPTH")}
  let facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;if existing_target_busy(bank,log,ex)?{return fundamental_entry_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
  retire_existing_drafts(bank,log,ex)?;
@@ -1019,13 +1047,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   // same read-only facts. No intent/attempt or HTTP write exists at this stage.
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());
   if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(prefetch_started),"qid":qid,"stage":"started","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"expiryExtended":false}));}
-  struct LiveReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime}
-  impl OrdinaryPreflightReads for LiveReads<'_>{
-   fn now_ms(&self)->u64{now()}
-   fn guarded(&mut self)->Result<bool>{refresh_controls(self.c,self.authority,self.stream)?;Ok(!queue_has_unknown(self.t)?)}
-   fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
-  }
-  let Some((current,facts))=ordinary_preflight(c,bank,log,source,&q,&mut LiveReads{t,c,authority,stream})?else{
+  let Some((current,facts))=ordinary_preflight(c,bank,log,source,&q,&mut LivePreflightReads{t,c,authority,stream})?else{
    authority.clear_ready();let assessment=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&[quote(bank,qid)?],now(),None)?;
    let _=atomic_json(&c.root.join("quote-book-prefilter.json"),&json!({"at":iso(now()),"qid":qid,"assessment":assessment,"stage":"deferred_before_account_packet","physicalAttempted":false,"priceChanged":false,"expiryExtended":false}));return Ok(())
   };let final_at=now();
