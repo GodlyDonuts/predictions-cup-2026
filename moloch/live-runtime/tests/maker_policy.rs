@@ -1,5 +1,4 @@
-use moloch_live_runtime::{dispatch::DispatchLog,execution_edge as edge};
-#[path="../src/maker_policy.rs"]mod maker_policy;
+use moloch_live_runtime::{dispatch::DispatchLog,execution_edge as edge,maker_policy};
 use maker_policy::*;
 use baal_transport_service::{Scope,Permit,RequestSpec};
 use moloch_replay::session::Session;
@@ -7,7 +6,7 @@ use serde_json::{json,Value};use sha2::{Digest,Sha256};use std::path::PathBuf;
 const BASE:u64=1_792_022_400_000;
 fn iso(t:u64)->String{chrono::DateTime::from_timestamp_millis((BASE+t)as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
-fn config()->edge::Config{edge::Config{fill_window_ms:10_000,markout_ms:60_000,post_window_ms:500,embargo_ms:500,maximum_book_age_ms:10_000,maximum_delivery_ms:1000,maximum_training_age_ms:600_000,minimum_samples:2,minimum_coverage_bps:9000,probability_haircut_bps:0,uncertainty_per_share:1000,exit_fee_per_share:0,fee_policy_source_sha256:"a".repeat(64),maximum_keys:16,maximum_pending:16,retained_samples:8}}
+fn config()->edge::Config{edge::Config{fill_window_ms:10_000,markout_ms:60_000,post_window_ms:500,embargo_ms:500,maximum_book_age_ms:10_000,maximum_delivery_ms:1000,continuity_proof_grace_ms:0,maximum_training_age_ms:600_000,minimum_samples:2,minimum_coverage_bps:9000,probability_haircut_bps:0,uncertainty_per_share:1000,exit_fee_per_share:0,fee_policy_source_sha256:"a".repeat(64),maximum_keys:16,maximum_pending:16,retained_samples:8}}
 struct F{root:PathBuf,bank:Session,log:DispatchLog,scope:Scope,seq:u64,book:u64}
 impl Drop for F{fn drop(&mut self){edge::clear_observer();let _=std::fs::remove_dir_all(&self.root);}}
 impl F{

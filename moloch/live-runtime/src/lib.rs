@@ -38,3 +38,4 @@ pub mod collateral_feedback;
 pub mod package_portfolio_worker;
 pub mod quote_priority;
 pub mod package_allocation;
+pub mod maker_policy;
