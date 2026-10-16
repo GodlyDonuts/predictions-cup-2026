@@ -119,5 +119,3 @@ pub fn decide(bank:&Session,scope:&Scope,log:&DispatchLog,review:&Reviewed,qid:u
  }}
  d.proof=json!({"class":d.class,"reason":d.reason,"qid":qid,"nativeHead":d.head,"dispatchHead":d.dispatch,"reviewedSettingsSha256":d.settings_sha,"expiresAtMs":d.expires,"statisticalConfidenceClaimed":false,"executionAuthority":false,"baselineHistoricalAncestryProven":false,"realizedLossStopIsHardLossBound":false,"maximumOutstandingExploratoryDownside":review.settings.exploration_maximum_deployed_notional,"partialRiskChargeKind":"explicit_full_loss_non_full_trial_policy_not_calibrated_estimate","model":d.model.as_ref().map(|m|m.evaluation())});Ok(d)
 }
-
-
