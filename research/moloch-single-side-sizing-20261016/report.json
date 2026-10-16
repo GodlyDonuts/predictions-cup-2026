@@ -1,0 +1,122 @@
+{
+  "actualSnapshotOrigin": "Finite numerical snapshots supplied by execution owner; no new account reads or raw-receipt membership verification.",
+  "counterfactualFunding": {
+    "cashMicros": 90000000000,
+    "marketRoomMicros": 10000000000,
+    "quantityCap": 10000,
+    "totalRoomMicros": 90000000000
+  },
+  "examples": {
+    "qid8086": {
+      "microprice": {
+        "drafts": {
+          "YES": {
+            "limitMicros": 40000,
+            "quantity": 10000,
+            "reservedMicros": 400000000
+          }
+        },
+        "physicalAfterSameBookSideFilter": {
+          "YES": {
+            "limitMicros": 40000,
+            "quantity": 10000,
+            "reservedMicros": 400000000
+          }
+        },
+        "reservedMicros": 400000000
+      },
+      "micropriceMicros": 44927,
+      "pairSpreadPasses": true,
+      "pairedSpread": {
+        "drafts": {
+          "NO": {
+            "limitMicros": 955000,
+            "quantity": 487,
+            "reservedMicros": 465085000
+          },
+          "YES": {
+            "limitMicros": 40000,
+            "quantity": 487,
+            "reservedMicros": 19480000
+          }
+        },
+        "physicalAfterSameBookSideFilter": {
+          "YES": {
+            "limitMicros": 40000,
+            "quantity": 487,
+            "reservedMicros": 19480000
+          }
+        },
+        "reservedMicros": 484565000
+      },
+      "sideEdgeMicros": {
+        "NO": 73,
+        "YES": 4927
+      },
+      "sidePasses": {
+        "NO": false,
+        "YES": true
+      }
+    },
+    "qid8126": {
+      "microprice": {
+        "drafts": {
+          "YES": {
+            "limitMicros": 695000,
+            "quantity": 4451,
+            "reservedMicros": 3093445000
+          }
+        },
+        "physicalAfterSameBookSideFilter": {
+          "YES": {
+            "limitMicros": 695000,
+            "quantity": 4451,
+            "reservedMicros": 3093445000
+          }
+        },
+        "reservedMicros": 3093445000
+      },
+      "micropriceMicros": 699957,
+      "pairSpreadPasses": true,
+      "pairedSpread": {
+        "drafts": {
+          "NO": {
+            "limitMicros": 300000,
+            "quantity": 38,
+            "reservedMicros": 11400000
+          },
+          "YES": {
+            "limitMicros": 695000,
+            "quantity": 38,
+            "reservedMicros": 26410000
+          }
+        },
+        "physicalAfterSameBookSideFilter": {
+          "YES": {
+            "limitMicros": 695000,
+            "quantity": 38,
+            "reservedMicros": 26410000
+          }
+        },
+        "reservedMicros": 37810000
+      },
+      "sideEdgeMicros": {
+        "NO": 43,
+        "YES": 4957
+      },
+      "sidePasses": {
+        "NO": false,
+        "YES": true
+      }
+    }
+  },
+  "executionAuthority": false,
+  "profitOrFillPrediction": false,
+  "scope": "Flat one exchange, no prior drafts/reservations, same fixed current book, zero fees, inside/backoff0, full synthetic funding room. Exact planner arithmetic excerpt, not full Engine replay.",
+  "sourceBaseCommit": "bfd1e368",
+  "sourceFilesGitBlobSha256": {
+    "moloch/live-runtime/src/ordinary_side_edge.rs": "c08e4443f3286bac68ef075711dc43fe814235095ee94be6df3ba576d4794082",
+    "moloch/native/src/engine.rs": "49ea3970fb1703edd5dc40e1958367bdaa283be458b77c3a856ea149e4a18d9a",
+    "moloch/native/src/lib.rs": "f8781b17c5bdfa8845a313af4e91a108c1897de9bd4ee3c3c245c6b79b97d6af"
+  }
+}
