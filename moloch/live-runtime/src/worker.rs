@@ -1180,6 +1180,18 @@ fn ordinary_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut 
  let final_quote=quote(bank,id)?;if final_quote!=current{return Ok(None)}
  Ok(Some((final_quote,facts)))
 }
+/// Post-commit activation waits on the genuine reservation, not the consumed
+/// planning packet/EntryPlan. HTTP authority is minted only from FINAL fresh
+/// receipts below; this helper grants neither source freshness nor dispatch.
+fn reviewed_entry_activation_stage(q:&Value,original:&Value,at:u64)->Result<Option<u64>>{
+ if q!=original{return Err("LIVE_REVIEWED_ENTRY_RESERVED_QUOTE_CHANGED".into())}
+ if q["action"]!="buy"||!q["reviewedFundamentalEntry"].is_object()||q["retired"]!=false
+  ||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["filled"].as_u64()!=Some(0)
+  ||q["expiresAt"].as_u64().is_none_or(|end|at>=end)
+  ||q["reviewedFundamentalEntry"]["reviewCurrentUntilMs"].as_u64().is_none_or(|end|at>=end){return Err("LIVE_REVIEWED_ENTRY_RESERVATION_EXPIRED".into())}
+ let active=q["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?;
+ Ok((at<active).then_some(active))
+}
 fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
  if existing_target_busy(bank,log,ex)?{return Ok(())}
@@ -1207,11 +1219,11 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
   Ok(v)=>json!({"comparison":v,"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
   Err(e)=>json!({"state":"unavailable","reason":e.to_string(),"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
  };let _=atomic_json(&c.root.join("fundamental-actions.json"),&json!({"at":iso(now()),"exchangeId":ex,"result":comparison}));
- let mut yielded=Vec::new();let(plan,event)=loop{
+ let mut yielded=Vec::new();let event=loop{
   let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};
   if let Err(e)=plan.validate_current(bank,log,t,&f.authority,now()){if expected_fundamental_entry_denial(&e.to_string()){return fundamental_entry_deferred(c,ex,"current",&e.to_string())}return Err(e)}
   let mut event=plan.event().clone();event["processedAt"]=json!(iso(now()));let mut preview=bank.engine().clone();
-  match preview.advance(&event){Ok(())=>break(plan,event),Err("REVIEWED_ENTRY_FRESH_MARKET_CAP")if yielded.len()<3=>{
+  match preview.advance(&event){Ok(())=>break event,Err("REVIEWED_ENTRY_FRESH_MARKET_CAP")if yielded.len()<3=>{
    if let Some(other)=retire_flat_draft_competitor(bank,log,&f.cohorts.managed_exchanges())?{yielded.push(other);continue}return fundamental_entry_deferred(c,ex,"native","REVIEWED_ENTRY_FRESH_MARKET_CAP_NO_PROVED_FLAT_DRAFT")
   },Err(e)if expected_fundamental_entry_denial(e)=>return fundamental_entry_deferred(c,ex,"native",e),Err(e)=>return Err(e.into())}
  };
@@ -1221,8 +1233,11 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  accept(bank,&event)?;let qs:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|id|id>before)&&q["retired"]==false&&q["exchangeId"]==ex&&q["action"]=="buy"&&q["reviewedFundamentalEntry"]["reviewSha256"]==event["reviewSha256"]&&q["reviewedFundamentalEntry"]["originSha256"]==event["originSha256"]).collect();
  if qs.len()!=1{return Err("LIVE_REVIEWED_ENTRY_NATIVE_RESERVATION_NOT_UNIQUE".into())}let q=&qs[0];let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
  atomic_json(&c.root.join("fundamental-entry.json"),&json!({"at":iso(now()),"exchangeId":ex,"stage":"native_reserved_not_dispatched","qid":id,"quantity":q["quantity"],"yieldedProvedFlatDraftExchanges":yielded,"nativeRiskCapsChanged":false,"physicalAttempted":false}))?;
- loop{refresh_controls(c,authority,stream)?;f.authority.validate()?;let at=now();if at>=facts_until.min(plan.valid_until_ms())||q["expiresAt"].as_u64().is_none_or(|end|end<=at){return fundamental_entry_deferred(c,ex,"activation","RESERVATION_OR_ORIGINAL_PACKET_EXPIRED")}
-  if quote(bank,id)?!=*q{return Err("LIVE_REVIEWED_ENTRY_RESERVED_QUOTE_CHANGED".into())}let active=q["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?;if at>=active{break}std::thread::sleep(Duration::from_millis(active.saturating_sub(now()).clamp(1,100)));
+ loop{refresh_controls(c,authority,stream)?;f.authority.validate()?;let current=quote(bank,id)?;
+  match reviewed_entry_activation_stage(&current,q,now()){
+   Ok(None)=>break,Ok(Some(active))=>std::thread::sleep(Duration::from_millis(active.saturating_sub(now()).clamp(1,100))),
+   Err(e)if e.to_string()=="LIVE_REVIEWED_ENTRY_RESERVATION_EXPIRED"=>return fundamental_entry_deferred(c,ex,"activation","RESERVATION_OR_REVIEW_EXPIRED"),Err(e)=>return Err(e),
+  }
  }
  if queue_has_unknown(t)?{return fundamental_entry_deferred(c,ex,"queue","GLOBAL_UNKNOWN_ACCEPTANCE")}
  // Activation and native write pacing intentionally consume time. Obtain a
@@ -2392,6 +2407,26 @@ pub fn main()->Result<()>{
   let mut changed=e.clone();changed["actualOrderId"]=json!("foreign");assert!(!closed_legacy_ack(&bank,&log,id,&changed));
   let old=log.intents[&id].clone();log.intents.get_mut(&id).unwrap()["fundamental"]=json!({"bindingSha256":"a".repeat(64)});assert!(!closed_legacy_ack(&bank,&log,id,&e));log.intents.insert(id,old);
   drop(log);drop(bank);let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();let head=bank.durable_head();assert!(closed_legacy_ack(&bank,&log,id,&e));assert!(!restore_ack(&mut bank,&e).unwrap());assert_eq!(bank.durable_head(),head);
+ }
+ fn genuine_reviewed_entry_reservation(temp:&Temp)->(Session,DispatchLog,Value,Value,Value){
+  let(mut bank,mut log,policy,seed)=setup(&temp.0,1);for q in bank.engine().order_records(){retire_for_package(&mut bank,&mut log,&q).unwrap();}
+  let at=now();let book=bank.engine().live_package_books().into_iter().find(|b|b["exchangeId"]=="101").unwrap();
+  let event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":seed["runId"],"bankManifestHash":bank.manifest_hash(),"tournamentId":"cup"},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report().unwrap()),"marketId":"101","exchangeId":"101","side":"YES","originSha256":"a".repeat(64),"reviewSha256":"b".repeat(64),"bookSha256":hash(&book),"reviewCurrentUntilMs":at+55_000,"reviewMaximumQuantity":2,"reviewMaximumPrincipal":"1.000000","expectedPayout":"0.600000","marginPerShare":"0.010000","limitPrice":"0.400000","expiresAt":iso(at+50_000)});
+  accept(&mut bank,&event).unwrap();let q=bank.engine().order_records().into_iter().find(|q|q["reviewedFundamentalEntry"].is_object()).unwrap();(bank,log,q,policy,seed)
+ }
+ #[test]fn reviewed_entry_activation_outlives_consumed_planning_book_but_grants_no_freshness(){
+  let temp=Temp::new();let(bank,log,q,_,_)=genuine_reviewed_entry_reservation(&temp);let active=q["activationAt"].as_u64().unwrap();let old=bank.engine().live_package_books()[0].clone();let source_ms=moloch_live_runtime::daily_windows::clock(old["sourceAt"].as_str().unwrap()).unwrap();assert!(active>=source_ms+bank.engine().policy()["bookAgeMs"].as_u64().unwrap());
+  let head=bank.durable_head();let report=bank.engine().report().unwrap();let original=fs::read(temp.0.join("bank/events.jsonl")).unwrap();assert_eq!(reviewed_entry_activation_stage(&q,&q,active-1).unwrap(),Some(active));assert_eq!(reviewed_entry_activation_stage(&q,&q,active).unwrap(),None);
+  assert!(moloch_live_runtime::package_admission::native_books(&bank,&Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"101".into())].into()},active,bank.engine().policy()["bookAgeMs"].as_u64().unwrap()).unwrap().0.is_empty());assert!(log.attempted.is_empty());assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),original);
+ }
+ #[test]fn reviewed_entry_activation_still_rejects_expiry_review_boundary_and_changed_quote(){
+  let temp=Temp::new();let(bank,_log,q,_,_)=genuine_reviewed_entry_reservation(&temp);let active=q["activationAt"].as_u64().unwrap();assert!(reviewed_entry_activation_stage(&q,&q,q["expiresAt"].as_u64().unwrap()).is_err());
+  for field in ["reviewCurrentUntilMs"]{let mut ended=q.clone();ended["reviewedFundamentalEntry"][field]=json!(active);assert!(reviewed_entry_activation_stage(&ended,&ended,active).is_err());}
+  for(field,value)in [("quantity",json!(1)),("price",json!("0.405000")),("retired",json!(true)),("filled",json!(1)),("cancelEffectiveAt",json!(active)),("reviewedFundamentalEntry",Value::Null)]{let mut changed=q.clone();changed[field]=value;assert!(reviewed_entry_activation_stage(&changed,&q,active).is_err(),"{field}");}
+  let id=q["id"].as_u64().unwrap();assert!(!bank.engine().live_order_bindings().contains_key(&id));assert!(bank.engine().fills().is_empty());
+ }
+ #[test]fn reviewed_entry_activation_restart_preserves_original_reservation_deadline(){
+  let temp=Temp::new();let(bank,log,q,policy,seed)=genuine_reviewed_entry_reservation(&temp);let id=q["id"].as_u64().unwrap();let head=bank.durable_head();drop(bank);drop(log);let bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let current=quote(&bank,id).unwrap();assert_eq!(current,q);assert_eq!(reviewed_entry_activation_stage(&current,&q,q["activationAt"].as_u64().unwrap()).unwrap(),None);assert_eq!(bank.durable_head(),head);
  }
  fn closed_startup_fixture(temp:&Temp,partial:bool)->(Session,DispatchLog,Value,Value,Value){
   let(mut bank,mut log,policy,seed)=setup(&temp.0,1);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();let stamp=iso(now());
