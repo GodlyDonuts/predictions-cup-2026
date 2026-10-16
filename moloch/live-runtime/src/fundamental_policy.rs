@@ -777,7 +777,7 @@ impl Cohorts{
             let rows=records.get(&b.qid).ok_or("FUNDAMENTAL_TOP_UP_CLOSED_RECORDS")?;let terminal=&rows.last().ok_or("FUNDAMENTAL_TOP_UP_CLOSED_RECORDS")?["event"];
             need(hex(terminal["orderReceiptHash"].as_str().unwrap_or(""))&&hex(terminal["fillReceiptHash"].as_str().unwrap_or("")),"FUNDAMENTAL_TOP_UP_ORIGINAL_TERMINAL_HASHES")?;
             let ack:Receipt=serde_json::from_value(log.acknowledgments[&b.qid].clone())?;
-            let event=if let Some(recovered)=log.recovered.get(&b.qid){let fills:Receipt=serde_json::from_value(recovered["fills"].clone())?;crate::feedback::recovered_acknowledgment(&b.quote,actual,&r.tournament_id,&ack,&fills,&fills.received_at)?}else{crate::feedback::acknowledgment(&b.quote,&ack,&ack.received_at)?};
+            let event=if let Some(recovered)=log.recovered.get(&b.qid){let fills:Receipt=serde_json::from_value(recovered["fills"].clone())?;need(fills.endpoint==format!("/orders/{actual}/fills?limit=200"),"FUNDAMENTAL_TOP_UP_ORIGINAL_ACK_ENDPOINT")?;crate::feedback::recovered_acknowledgment(&b.quote,actual,&r.tournament_id,&ack,&fills,&fills.received_at)?}else{need(ack.endpoint=="/orders","FUNDAMENTAL_TOP_UP_ORIGINAL_ACK_ENDPOINT")?;crate::feedback::acknowledgment(&b.quote,&ack,&ack.received_at)?};
             self.validate_acknowledgment(b.qid,&event)?;need(event["actualOrderId"]==*actual,"FUNDAMENTAL_TOP_UP_ORIGINAL_ACK_CHANGED")?;
             proof.push(json!({"qid":b.qid,"actualOrderId":actual,"filledQuantity":filled,"closedDispatchSha256":digest(rows)?}));
         }
