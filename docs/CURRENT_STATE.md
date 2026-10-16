@@ -1,4 +1,38 @@
-# October16,17:39UTC: fresh production, profitable inventory exit and measured feed delay
+# October16,18:21UTC: fresh actual entry and checked read-saving candidate
+
+Sole production **PID525450/sourceb112c6c1/binary3ab6ef7c** remains fresh trading
+at **18:21:55 UTC**, healthy realtime and no STOP. It has 45 post-launch official
+order acknowledgments and three reconciled fill rows, 201 cumulative. The latest
+actual fill is18:21:12. Cash is72,594.400000 and owned cost22,854.050000; ordinary
+realized−176.595000 plus inherited gross+45.130000 remains **−131.465000** combined.
+The original full95,579.915000 capital mandate and55,579.915000 contributions are
+preserved; contributions are not profit. [Original verification](../research/moloch-early-entry-screen-20261016/pre-upgrade-live-verification.json).
+
+**Checked, not deployed:** source248b11bf/binary6cecf203 rejects fresh negative
+untouched ordinary BUY drafts before spending their REST packet. It cannot
+approve orders or change price/quantity; final physical seven-fact and side
+checks remain. Actual ARM64 **204 library/97 worker checks**, optimized release
+and native-identity probe passed. Exactly two of251 inputs changed, with the
+same native engine8acc and unchanged SDK source. No SDK rerun is claimed.
+[Build, exact source pins and limits](../research/moloch-early-entry-screen-20261016/build/README.md).
+
+The synchronized18:09:07 original-source comparison found three apparent
+SIG/Kalshi level gaps surviving an illustrative.05 absolute basis charge; none
+survives.10. Those historical quotes are not current trading authority or
+calibrated expected value. Six exact SIG market/node receipts confirm ordinary
+same-party election correspondence, but leave replacement, affiliation, refunds
+and finality unresolved against Kalshi's first-seated rules. Classification is
+**predictive reference**, not payout equivalence or arbitrage.
+[Original comparison and contract evidence](../research/moloch-shadow-prior-opportunities-20261016/README.md).
+
+Read-only V5 continues against the existing worker through its finite normal
+end around18:38. A separately frozen17:55–18:15 metadata coverage protocol has
+an implemented offline auditor;29 synthetic checks passed independently. No
+actual V5 result or new fitted model is claimed before its normal seal and exact
+input replay. [Frozen protocol and audit](../research/moloch-causal-state-sampling-20261016/implementation-README.md).
+Paper6 remains in progress; overall profitability is not established.
+
+# Historical October16,17:39UTC: fresh production, profitable inventory exit and measured feed delay
 
 Sole PID **525450**, source `b112c6c1` / binary `3ab6ef7c`, is verified **fresh trading** at17:39:29UTC: healthy realtime, matching executable, no STOP, thirteen post-launch official order acknowledgments and two reconciled fill rows. `defensiveCancel:true` is active. Incremental progress and the completed full-cycle status now both match525450.
 [Actual fresh verification](../research/moloch-book-freshness-semantics-20261016/production/full-cycle-verification.json).
