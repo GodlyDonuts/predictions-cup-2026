@@ -1112,6 +1112,11 @@ fn shared_preflight_rotation(existing:&[fundamental::ExistingExitHint],entries:&
  let mut seen=std::collections::BTreeSet::new();for(key,index,_)in physical{if seen.insert(key){choices.insert(key.clone(),SharedPreflight::Physical(*index));}}
  let keys:Vec<_>=choices.keys().cloned().collect();let index=*moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first()?;let key=keys[index].clone();Some((choices[&key],key))
 }
+/// Selection only: the caller supplies an ACTUAL current reviewed Exit decision,
+/// or the current remaining-FIFO deadline. Style and marketability grant no urgency.
+fn physical_exit_urgent(q:&Value,current_age_due:bool,reviewed_exit:bool)->bool{
+ q["action"]=="sell"&&(reviewed_exit||(q["inventoryExitReason"]=="maximumAge"&&current_age_due))
+}
 fn physical_preflight_ready(q:&Value,never_attempted:bool,has_intent:bool,at:u64)->bool{
  let early=moloch_live_runtime::dispatch_window::may_prefetch(q,never_attempted,has_intent,at);
  q["retired"]==false&&never_attempted&&(early||q["activationAt"].as_u64().is_some_and(|v|v<=at))&&q["expiresAt"].as_u64().is_some_and(|v|v>at.saturating_add(5000))&&!q["cancelEffectiveAt"].is_u64()
@@ -1535,10 +1540,14 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
  let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
- let mut ranked=Vec::new();let mut maker_assessments=Vec::new();let mut maker_decisions=Vec::new();
+ let mut ranked=Vec::new();let mut reviewed_exit_urgency=std::collections::BTreeSet::new();let mut maker_assessments=Vec::new();let mut maker_decisions=Vec::new();
  for index in selection.ordered_indices.iter().copied(){
   let q=&quotes[index];if !owner_capital_buys_allowed(c,bank,&q["action"])?{continue}
-  if let Some(f)=fundamental.as_ref(){if f.cohorts.manages(q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?){if f.eligible(bank,log,&c.scope,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now())?{ranked.push((if q["action"]=="sell"{0}else{1},index));}continue}}
+  if let Some(f)=fundamental.as_ref(){if f.cohorts.manages(q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?){if f.eligible(bank,log,&c.scope,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now())?{
+    // A managed SELL passes eligible only through current Decision::Exit:
+    // exact covered depth plus reviewed deadline, revocation or value breach.
+    if q["action"]=="sell"{reviewed_exit_urgency.insert(q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?);}
+    ranked.push((if q["action"]=="sell"{0}else{1},index));}continue}}
   if q["action"]=="buy"{if let Some(review)=maker_review{
    let decision=match moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now()){Ok(d)=>d,Err(error)if expected_maker_expiry(error.as_ref())=>{continue},Err(error)=>return Err(error)};
    maker_assessments.push(decision.proof().clone());if !decision.allowed(){continue}maker_decisions.push((index,decision));continue;
@@ -1547,12 +1556,21 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  if !maker_decisions.is_empty(){let decisions:Vec<_>=maker_decisions.iter().map(|(_,decision)|decision).collect();for position in moloch_live_runtime::maker_policy::rank(&decisions,now())?{let(index,decision)=&maker_decisions[position];ranked.push((decision.priority(),*index));}}
  if maker_review.is_some(){let _=atomic_json(&c.root.join("maker-policy.json"),&json!({"at":iso(now()),"assessments":maker_assessments,"executionAuthority":false}));}
  ranked.sort_by_key(|(priority,_)|*priority);
- let selection_at=now();let mut physical=Vec::new();
+ let selection_at=now();let mut physical=Vec::new();let mut urgency_positions=None;let mut urgency_inherited=None;
  for(_,index)in &ranked{let q=&quotes[*index];let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
   if !physical_preflight_ready(q,log.never_attempted(qid),log.intents.contains_key(&qid),selection_at){continue}
   if q["action"]=="buy"&&selection_at>=authority.entry_until_ms(){retire_never_sent(bank,log,q)?;continue}
-  let managed=fundamental.as_ref().is_some_and(|f|f.cohorts.manages(q["exchangeId"].as_str().unwrap_or("")));
-  let urgent=q["action"]=="sell"&&(managed||selection.assessments.iter().any(|a|a.index==*index&&matches!(a.decision.class,moloch_live_runtime::quote_priority::Class::RiskExit|moloch_live_runtime::quote_priority::Class::CoveredMarketable)));
+  let reviewed_exit=reviewed_exit_urgency.contains(&qid);
+  let due_age=if q["action"]=="sell"&&q["inventoryExitReason"]=="maximumAge"&&!reviewed_exit{
+   let ex=q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;let side=q["side"].as_str().ok_or("LIVE_SIDE")?;
+   let native_side=match side{"YES"=>moloch_replay::Side::Yes,"NO"=>moloch_replay::Side::No,_=>return Err("LIVE_SIDE".into())};
+   if bank.engine().wallet.quantity(ex,native_side)==0{false}else{
+   if urgency_positions.is_none(){urgency_positions=Some(bank.engine().wallet.positions());}
+   let positions=urgency_positions.as_ref().unwrap();
+   if urgency_inherited.is_none()&&positions.get(ex).and_then(|v|v.get(side)).and_then(Value::as_array).is_some_and(|lots|lots.iter().any(|l|l.get("executedAt").is_none_or(Value::is_null))){urgency_inherited=Some(bank.engine().report()?["inheritedInventory"].clone());}
+   remaining_exit_age_due(bank.engine().policy(),positions,urgency_inherited.as_ref().unwrap_or(&Value::Null),ex,side,selection_at)?}
+  }else{false};
+  let urgent=physical_exit_urgent(q,due_age,reviewed_exit);
   physical.push((keys[*index].clone(),*index,urgent));
  }
  // Mandatory cancels and actual urgent exits above retain priority. One
@@ -2457,6 +2475,22 @@ pub fn main()->Result<()>{
   assert_eq!((ordinary,reads),(4,4));
  }
  #[test]fn no_ready_physical_quote_still_performs_fundamental_refresh(){let entries=vec![entry("966")];assert_eq!(shared_preflight_rotation(&[],&entries,&[],Some("966:YES:buy")),Some((SharedPreflight::EntryRead(0),"966:YES:buy".into())));assert!(shared_preflight_rotation(&[],&[],&[],None).is_none());}
+ #[test]fn profitable_marketable_aon_sells_share_cursor_with_entry_instead_of_preempting_forever(){
+  let entries=vec![entry("966")];let q=json!({"action":"sell","executionStyle":"inventoryAON"});let original=q.clone();
+  let physical=vec![("1010:NO:sell".into(),4,physical_exit_urgent(&q,false,false))];let mut cursor=None;let mut selected=Vec::new();
+  for _ in 0..6{let(choice,key)=shared_preflight_rotation(&[],&entries,&physical,cursor.as_deref()).unwrap();selected.push(choice);cursor=Some(key);}
+  assert_eq!(selected,vec![SharedPreflight::Physical(4),SharedPreflight::EntryRead(0),SharedPreflight::Physical(4),SharedPreflight::EntryRead(0),SharedPreflight::Physical(4),SharedPreflight::EntryRead(0)]);assert_eq!(q,original);
+ }
+ #[test]fn current_fifo_deadline_or_actual_reviewed_exit_still_preempts_profitable_rotation(){
+  let entries=vec![entry("966")];let profit=json!({"action":"sell","executionStyle":"inventoryAON"});let mut age=profit.clone();age["inventoryExitReason"]=json!("maximumAge");
+  assert!(!physical_exit_urgent(&profit,true,false),"available depth/style alone grants no urgency");
+  assert!(!physical_exit_urgent(&age,false,false),"historical age label without current due remaining lot cannot preempt");
+  for(q,due,reviewed)in [(&age,true,false),(&profit,false,true)]{
+   let physical=vec![("1010:NO:sell".into(),4,physical_exit_urgent(q,due,reviewed))];
+   assert_eq!(shared_preflight_rotation(&[],&entries,&physical,Some("1010:NO:sell")).unwrap().0,SharedPreflight::Physical(4));
+  }
+  let buy=json!({"action":"buy","inventoryExitReason":"maximumAge"});assert!(!physical_exit_urgent(&buy,true,true));
+ }
  #[test]fn real_same_key_quote_supersedes_read_hint_and_urgent_exit_preempts_union(){let entries=vec![entry("966")];let physical=vec![("966:YES:buy".into(),9,false)];assert_eq!(shared_preflight_rotation(&[],&entries,&physical,None).unwrap().0,SharedPreflight::Physical(9));let physical=vec![("1000:NO:buy".into(),3,false),("1076:YES:sell".into(),4,true)];assert_eq!(shared_preflight_rotation(&[],&entries,&physical,None).unwrap().0,SharedPreflight::Physical(4));}
  #[test]fn actual_native_activation_cancel_and_expiry_guard_determine_union_membership(){let(_root,bank,log,_,_,_)=fixture();let mut q=bank.engine().order_records()[0].clone();let at=now();q["action"]=json!("buy");q["retired"]=json!(false);q["activationAt"]=json!(at);q["expiresAt"]=json!(at+10000);q["cancelEffectiveAt"]=Value::Null;assert!(physical_preflight_ready(&q,true,false,at));q["activationAt"]=json!(at+1);assert!(!physical_preflight_ready(&q,true,false,at));q["activationAt"]=json!(at);q["expiresAt"]=json!(at+5000);assert!(!physical_preflight_ready(&q,true,false,at));q["expiresAt"]=json!(at+10000);q["cancelEffectiveAt"]=json!(at+100);assert!(!physical_preflight_ready(&q,true,false,at));q["cancelEffectiveAt"]=Value::Null;assert!(!physical_preflight_ready(&q,false,false,at));assert!(log.attempted.is_empty());}
 }

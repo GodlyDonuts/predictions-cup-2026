@@ -29,7 +29,8 @@ pub fn assess(q:&Value,book:Option<&Book>,now:u64,maximum_book_age_ms:u64)->Resu
  let limit=amount(q["price"].as_str().ok_or("QUOTE_PRIORITY_PRICE")?)?;need(limit>0&&limit<SCALE&&limit%TICK==0,"QUOTE_PRIORITY_PRICE")?;
  let quantity=q["quantity"].as_u64().filter(|n|*n>0).ok_or("QUOTE_PRIORITY_QUANTITY")?;let filled=q["filled"].as_u64().ok_or("QUOTE_PRIORITY_QUANTITY")?;let remaining=quantity.checked_sub(filled).ok_or("QUOTE_PRIORITY_QUANTITY")?;
  if remaining==0{return Ok(Decision::empty(Class::Inactive,"no_remaining_quantity"))}
- let urgent=action=="sell"&&(q["inventoryExitReason"]=="maximumAge"||q["executionStyle"]=="inventoryAON");
+ // Execution style/visible bid depth does not itself establish a deadline.
+ let urgent=action=="sell"&&q["inventoryExitReason"]=="maximumAge";
  let Some(b)=book else{return Ok(Decision::empty(if urgent{Class::RiskExit}else{Class::NeedsRefresh},if urgent{"risk_exit_requires_fresh_preflight"}else{"current_book_unavailable"}))};
  need(q["exchangeId"]==b.exchange_id,"QUOTE_PRIORITY_BOOK_SCOPE")?;
  let fresh=b.source.received_ms<=now&&b.observed_ms<=now&&now-b.source.received_ms<=maximum_book_age_ms&&now-b.observed_ms<=maximum_book_age_ms;
