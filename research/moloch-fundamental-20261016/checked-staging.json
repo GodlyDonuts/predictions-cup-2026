@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-16T01:07:32.702590+00:00",
+  "sourceCommit": "6ecda539f2aef80201645cd997a524f55636323a",
+  "priorBinarySha256": "144616ceb3079a3e7a6457e8511c7b0a6f02221d22516ab06991591c0d6ed920",
+  "priorControl": "/home/archon/apps/moloch/shared/moloch-live-model-recovery-20261016.json",
+  "binarySha256": "200f0b8ea4e731d41c16b53973011ec3eaf18f4223c02ab639e678b716d297da",
+  "release": "/home/archon/apps/moloch/releases/fundamental-200f0b8ea4e7/bin/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-fundamental-20261016.json",
+  "controlSha256": "f81e7a567616b4692b0d025e29f3cec5747512c55d7db9d6d1db6fa45e1f2096",
+  "nativeArchiveSha256": "55c26c5c5608473ef43ce93929507f62133b4bcc4c56fbd2d745f93ce2c342cb",
+  "engineIdentity": "b3c975d3ac37138035728e28aeb6ffe7e99b9b525394f72b3be55e9b01ddf4d2",
+  "financialIdentityUnchanged": true,
+  "fullRuntimeBeforeFinalContractBinding": {
+    "passed": 547,
+    "logSha256": "69d25e4cb4b2802a81244a6cfc253ee088f4614800ab16768910e37dd622e891"
+  },
+  "finalChangedScope": {
+    "passed": 244,
+    "logSha256": "32cf47e55c154b8c3cb6f4c86c33118c40e6b3b662a92b093a481f931881ba9c"
+  },
+  "releaseLogSha256": "0bbfda388aa3dddf1f1a3d619d8de8d283e0f338ca9c72b9cd422f303e4ad363",
+  "reviewSha256": "3e3a8c1676dc9248edf3c754d8c1eeb40be99bface73aaea2f9ba5577074f292",
+  "reviewFileSha256": "b80c515ac17707af7ea10d8a7b445d27669bb21506284887d41ab824a784b43e",
+  "reviewSourceHashes": {
+    "forecast": "f45d33e0c3f55884fbbe32f608d87566cb5b786d57e928f146dbb8dc7dda5a54",
+    "official_ballot": "18f8523e0c9317bc88cd09c464164b09ae858c66466a94e4163af65bb1ef82d3",
+    "official_contract_node": "1ffb57719716cb23cfe3538cc0eff223c7c9028845c03d9e3bd63211755259f5"
+  },
+  "entryCeiling": "0.930500",
+  "expectedPayoutBeforeMargin": "0.940500",
+  "maximumNewPrincipal": "400.000000",
+  "marketId": "353",
+  "exchangeId": "1042",
+  "contractId": "354",
+  "nativeManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "makerPolicyEnabled": false,
+  "fundamentalPolicyProspective": true,
+  "deployed": false,
+  "profitabilityEstablished": false
+}
