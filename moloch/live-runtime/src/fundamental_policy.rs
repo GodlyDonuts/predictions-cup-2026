@@ -1332,7 +1332,7 @@ impl Cohorts{
                 need(r.input.existing_origin.is_none()&&bank.engine().wallet.quantity(ex,Side::Yes)==0&&bank.engine().wallet.quantity(ex,Side::No)==0&&bank.engine().wallet.market_cost(ex)==0
                     &&positions.iter().all(|row|row["exchangeId"]!=*ex||row["quantity"].as_i64()==Some(0))
                     &&!orders.iter().any(|q|q["exchangeId"]==*ex&&q["retired"]!=true)
-                    &&!packages.as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|generation_package_protects(p,ex))),"FUNDAMENTAL_GENERATION_NEW_SCOPE_NOT_FLAT")?;
+                    &&!packages.as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|generation_package_protects(p,ex)),"FUNDAMENTAL_GENERATION_NEW_SCOPE_NOT_FLAT")?;
             }
             if let Some(c)=self.cohorts.get(ex){
                 let owned=self.owned(bank,ex,c)?;
