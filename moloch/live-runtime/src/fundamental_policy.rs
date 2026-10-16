@@ -766,13 +766,20 @@ impl Cohorts{
         if owned==0||owned>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
         let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_TOP_UP_FIFO_CHANGED")?;
         let orders=bank.engine().order_records();let mut proof=Vec::new();
+        if prior.iter().any(|b|!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)){return Ok(None)}
+        let wanted=prior.iter().map(|b|b.qid).collect();let records=self.original_closed_records(log,&wanted)?.0;
         for b in prior{if !log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid){return Ok(None)}
             let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{return Ok(None)};
             let q=orders.iter().find(|q|q["id"]==b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
             if q["retired"]!=true{return Ok(None)}
             let filled=bank.engine().fills().iter().filter(|f|f["orderId"]==b.qid).try_fold(0u64,|n,f|n.checked_add(f["quantity"].as_u64().ok_or("FUNDAMENTAL_FILL_QUANTITY")?).ok_or("FUNDAMENTAL_RANGE"))?;
             need(q["filled"]==filled,"FUNDAMENTAL_TOP_UP_FILLED_MISMATCH")?;
-            proof.push(json!({"qid":b.qid,"actualOrderId":actual,"filledQuantity":filled}));
+            let rows=records.get(&b.qid).ok_or("FUNDAMENTAL_TOP_UP_CLOSED_RECORDS")?;let terminal=&rows.last().ok_or("FUNDAMENTAL_TOP_UP_CLOSED_RECORDS")?["event"];
+            need(hex(terminal["orderReceiptHash"].as_str().unwrap_or(""))&&hex(terminal["fillReceiptHash"].as_str().unwrap_or("")),"FUNDAMENTAL_TOP_UP_ORIGINAL_TERMINAL_HASHES")?;
+            let ack:Receipt=serde_json::from_value(log.acknowledgments[&b.qid].clone())?;
+            let event=if let Some(recovered)=log.recovered.get(&b.qid){let fills:Receipt=serde_json::from_value(recovered["fills"].clone())?;crate::feedback::recovered_acknowledgment(&b.quote,actual,&r.tournament_id,&ack,&fills,&fills.received_at)?}else{crate::feedback::acknowledgment(&b.quote,&ack,&ack.received_at)?};
+            self.validate_acknowledgment(b.qid,&event)?;need(event["actualOrderId"]==*actual,"FUNDAMENTAL_TOP_UP_ORIGINAL_ACK_CHANGED")?;
+            proof.push(json!({"qid":b.qid,"actualOrderId":actual,"filledQuantity":filled,"closedDispatchSha256":digest(rows)?}));
         }
         if let Some(id)=current_qid{if log.closed.contains(&id)||log.acknowledgments.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){return Ok(None)}}
         if orders.iter().any(|q|q["exchangeId"]==ex&&q["id"].as_u64()!=current_qid&&q["retired"]==false&&(!allow_drafts||q["id"].as_u64().is_none_or(|id|!log.never_attempted(id)||log.intents.contains_key(&id)))){return Ok(None)}
@@ -861,7 +868,7 @@ impl Cohorts{
             &&f.open_orders.data["pagination"]["nextCursor"].is_null(),"FUNDAMENTAL_ENTRY_ACCOUNT_COVERAGE")?;
         let mut seen=BTreeSet::new();for p in f.positions.data["positions"].as_array().ok_or("FUNDAMENTAL_ENTRY_POSITIONS")?{
             let ex=p["exchangeId"].as_str().ok_or("FUNDAMENTAL_ENTRY_POSITION_SCOPE")?;need(seen.insert(ex),"FUNDAMENTAL_ENTRY_DUPLICATE_POSITION")?;
-            if ex==hint.exchange_id{target_position_seen=true;need(p["quantity"].as_i64()==Some(wanted),"FUNDAMENTAL_ENTRY_POSITION_MISMATCH")?;}}
+            if ex==hint.exchange_id{target_position_seen=true;need(p["quantity"].as_i64()==Some(wanted),if held==0{"FUNDAMENTAL_ENTRY_NOT_FLAT"}else{"FUNDAMENTAL_ENTRY_POSITION_MISMATCH"})?;}}
         need(held==0||target_position_seen,"FUNDAMENTAL_TOP_UP_POSITION_MISSING")?;
         for o in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_ENTRY_OPEN_ORDERS")?{
             need(o["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY")?;}
@@ -1281,7 +1288,8 @@ impl Cohorts{
                 if digest(r)?!=entry.review_sha256{return Ok(hold("bound_entry_review_changed"))}
                 // Continue only this exact sealed draft after a crash/stale
                 // preflight BEFORE original intent/attempt; never replace it.
-            }else if q["action"]=="buy"&&q["side"]==r.side&&c.entry_id()!=Some(qid){
+            }else if q["action"]=="buy"&&q["side"]==r.side&&c.entry_id()!=Some(qid)&&r.same_side_top_ups.is_some()&&c.existing.is_none(){
+                if q["reviewedFundamentalEntry"].get("sameSideTopUp").is_none(){return Ok(hold("explicit_reviewed_top_up_reservation_required"))}
                 let Some(proof)=self.top_up_state(bank,log,ex,Some(qid),false)?else{return Ok(hold("explicit_same_side_top_up_not_eligible"))};
                 need(q["reviewedFundamentalEntry"]["sameSideTopUp"]==proof&&n==native,"FUNDAMENTAL_TOP_UP_NATIVE_PROOF_CHANGED")?;
                 if let Some(b)=c.entry_binding(qid){need(q==b.quote&&n==request_quantity(&b.spec)?&&b.review_sha256==digest(r)?,"FUNDAMENTAL_BOUND_ENTRY_CANNOT_CHANGE")?;}
