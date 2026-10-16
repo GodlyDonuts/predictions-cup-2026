@@ -269,6 +269,9 @@ class LifecycleTests(unittest.TestCase):
             source = p/'manifest.json'; source.write_bytes(canonical(manifest)); digest = m.h(source.read_bytes())
             result = m.analyze(source, digest)
             self.assertEqual(result['descriptiveTotals']['markedShares'], 1)
+            last_native = json.loads(gzip.decompress(files['events'][1]).splitlines()[-1])
+            self.assertEqual(result['episodes'][0]['mark']['readerVerifiedNativeJournalRowSha256'], last_native['hash'])
+            self.assertFalse(result['sourceRefContentIndependentlyVerified'])
             self.assertFalse(result['nativeFinancialReplayIndependentlyPerformed'])
             self.assertFalse(result['executionAuthority'])
             native_first = json.loads(gzip.decompress(files['events'][1]).splitlines()[0])
@@ -320,6 +323,38 @@ class LifecycleTests(unittest.TestCase):
         o.accept(actual(q, 'actual_fill', 60600, executed=60200, n=1, fid='1002'))
         o.accept(book(60000, received=61000))
         self.assertEqual(o.summary()['episodes'][0]['markState'], 'book_predates_known_exposure_change')
+
+    def test_foreign_market_coverage_cannot_certify_same_exchange_book(self):
+        o, q = self.start(); o.accept(actual(q, 'actual_fill', 0, n=1))
+        foreign = coverage(); foreign['marketId'] = '999'
+        with self.assertRaisesRegex(ValueError, 'COVERAGE_MARKET_SCOPE'): o.accept(foreign)
+        with self.assertRaisesRegex(ValueError, 'POISONED'): o.summary()
+
+    def test_coverage_tournament_must_match_original_bound_context(self):
+        o, q = self.start(); o.tournament = 'original-cup'
+        foreign = coverage(); foreign['tournamentId'] = 'another-cup'
+        with self.assertRaisesRegex(ValueError, 'COVERAGE_TOURNAMENT_SCOPE'): o.accept(foreign)
+
+    def test_future_dispatch_attempt_and_original_post_ack_fail_cutoff(self):
+        original = log(quote()); original[1]['at'] = stamp(120000)
+        with self.assertRaisesRegex(ValueError, 'DISPATCH_AFTER_CUTOFF'):
+            m.dispatch_metadata(original, cutoff=m.clock(stamp(61000)))
+        original = log(quote()); original[2]['receipt'].update(requestStartedAt=stamp(60999), receivedAt=stamp(61001))
+        with self.assertRaisesRegex(ValueError, 'POST_ACK_AFTER_CUTOFF'):
+            m.dispatch_metadata(original, cutoff=m.clock(stamp(61000)))
+        original[2]['receipt']['receivedAt'] = stamp(61000)
+        self.assertTrue(m.dispatch_metadata(original, cutoff=m.clock(stamp(61000))))
+
+    def test_recorded_source_reference_is_not_claimed_as_independent_body_proof(self):
+        o, q = self.start(); o.accept(actual(q, 'actual_fill', 0, n=1)); o.accept(coverage())
+        b = book(); b['sourceRef']['hash'] = 'f'*64
+        o.accept(b)
+        mark = o.summary()['episodes'][0]['mark']
+        self.assertEqual(mark['recordedSourceRefSha256'], 'f'*64)
+        self.assertIsNone(mark['readerVerifiedNativeJournalRowSha256'])
+        self.assertEqual(mark['sourceRefVerification'], 'syntax_only_native_accepted_chain_reference')
+        self.assertFalse(mark['underlyingBookBodyIndependentlyVerified'])
+        self.assertNotIn('bookEventSha256', mark)
 
 
 if __name__ == '__main__': unittest.main()

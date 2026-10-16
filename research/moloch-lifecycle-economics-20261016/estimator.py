@@ -57,10 +57,12 @@ def price(x):
     return RAW.units(tick)
 
 
-def dispatch_metadata(events):
+def dispatch_metadata(events, cutoff=None):
     orders = {}
     for e in events:
         qid = ident(e['qid']); kind = e['kind']
+        if cutoff is not None and e.get('at') is not None:
+            need(clock(e['at']) <= cutoff, 'DISPATCH_AFTER_CUTOFF')
         if kind == 'intent':
             need(qid not in orders and isinstance(e.get('quote'), dict), 'DUPLICATE_OR_MISSING_INTENT')
             q = e['quote']; need(ident(q['id']) == qid and q['side'] in ('YES', 'NO') and q['action'] in ('buy', 'sell'), 'INTENT')
@@ -77,6 +79,7 @@ def dispatch_metadata(events):
                 r = e['receipt']; need(r['endpoint'] == '/orders' and r['status'] == 200, 'ORIGINAL_POST_ACK')
                 start, end = clock(r['requestStartedAt']), clock(r['receivedAt'])
                 need(orders[qid]['attempt'] <= start <= end, 'POST_ACK_CLOCK')
+                need(cutoff is None or end <= cutoff, 'POST_ACK_AFTER_CUTOFF')
                 orders[qid]['postAck'] = {'actual': ident(r['data']['orderId']), 'received': end}
         elif kind == 'closed':
             need(qid in orders and not orders[qid]['closed'] and (orders[qid]['postAck'] is not None or orders[qid]['recovered']), 'CLOSED_WITHOUT_ACK')
@@ -94,6 +97,7 @@ class Observer:
         self.orders, self.actual, self.fills, self.positions = {}, {}, {}, defaultdict(list)
         self.episodes, self.current, self.coverage = [], {}, {}
         self.last, self.failed, self.counts, self.adopted = None, None, Counter(), False
+        self.row_sha, self.tournament = None, None
         self.scope = {}
         self.metadata_by_exchange, self.orders_by_exchange = defaultdict(dict), defaultdict(set)
         for qid, m in self.metadata.items():
@@ -101,8 +105,10 @@ class Observer:
             need(ex not in self.scope or self.scope[ex] == market, 'ORIGINAL_SCOPE_CONFLICT'); self.scope[ex] = market
             self.metadata_by_exchange[ex][qid] = m
 
-    def accept(self, e):
+    def accept(self, e, journal_row_sha=None):
         need(self.failed is None, 'POISONED_OBSERVER')
+        need(journal_row_sha is None or re.fullmatch('[0-9a-f]{64}', journal_row_sha), 'NATIVE_ROW_HASH_FORMAT')
+        self.row_sha = journal_row_sha
         try: self._accept(e)
         except Exception as err:
             self.failed = type(err).__name__+':'+str(err)
@@ -211,6 +217,9 @@ class Observer:
     def _mark(self, e, observed):
         b = e['book']; ex, market = ident(b['exchangeId']), ident(b['marketId'])
         need(ex not in self.scope or self.scope[ex] == market, 'BOOK_MARKET_SCOPE')
+        if b.get('tournamentId') is not None:
+            need(self.tournament is None or self.tournament == b['tournamentId'], 'BOOK_TOURNAMENT_SCOPE')
+            self.tournament = b['tournamentId']
         ref = e.get('sourceRef', {})
         need(isinstance(ref.get('id'), str) and ref['id'] and type(ref.get('sequence')) is int and ref['sequence'] > 0 and re.fullmatch('[0-9a-f]{64}', ref.get('hash', '')), 'BOOK_SOURCE_REFERENCE')
         source, received = clock(b['sourceAt']), clock(b['receivedAt'])
@@ -291,7 +300,11 @@ class Observer:
                           'remainingPrincipalMicros': basis, 'entryFees': exact(entry_fee) if entry_fee is not None else None,
                           'grossMarkLessPrincipalMicros': proceeds-basis if not remaining else None,
                           'markLessEntryFees': exact(Fraction(proceeds-basis)-entry_fee) if not remaining and entry_fee is not None else None,
-                          'futureExitFeesKnown': False, 'netHypotheticalProfit': None, 'bookEventSha256': e.get('sourceRef', {}).get('hash'),
+                          'futureExitFeesKnown': False, 'netHypotheticalProfit': None,
+                          'readerVerifiedNativeJournalRowSha256': self.row_sha,
+                          'recordedSourceRefSha256': e.get('sourceRef', {}).get('hash'),
+                          'sourceRefVerification': 'syntax_only_native_accepted_chain_reference',
+                          'underlyingBookBodyIndependentlyVerified': False,
                           'invalidated': state is not None}
 
     def _accept(self, e):
@@ -339,7 +352,12 @@ class Observer:
         elif kind == 'coverage':
             if e.get('complete') is True:
                 start, end = clock(e['from']), clock(e['to']); need(start < end <= observed, 'COVERAGE_CLOCK')
-                ex = ident(e['exchangeId']); self.coverage[ex] = (start, end)
+                ex, market = ident(e['exchangeId']), ident(e['marketId'])
+                need(ex not in self.scope or self.scope[ex] == market, 'COVERAGE_MARKET_SCOPE')
+                if e.get('tournamentId') is not None:
+                    need(self.tournament is None or self.tournament == e['tournamentId'], 'COVERAGE_TOURNAMENT_SCOPE')
+                    self.tournament = e['tournamentId']
+                self.scope[ex] = market; self.coverage[ex] = (start, end)
         elif kind in ('gap', 'stream_reset'):
             affected = [key for key in self.current if e.get('exchangeId') is None or key[0] == str(e['exchangeId'])]
             for key in affected:
@@ -397,7 +415,7 @@ def pinned(base, spec):
     return p, (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns)
 
 
-def journal(path, signature, initial_previous):
+def journal(path, signature, initial_previous, with_row_hash=False):
     need(initial_previous in ('', '0'*64), 'GENESIS_REQUIRED')
     previous, size, count = initial_previous, 0, 0
     with gzip.open(path, 'rb') if path.suffix == '.gz' else path.open('rb') as f:
@@ -406,7 +424,7 @@ def journal(path, signature, initial_previous):
             need(len(raw) <= MAX_ROW and size <= MAX_BYTES and count <= MAX_ROWS, 'JOURNAL_BOUND')
             row = RAW.native_row(raw)
             need(row['sequence'] == count and row['previous'] == previous, 'ORIGINAL_CHAIN')
-            previous = row['hash']; yield row['event']
+            previous = row['hash']; yield (row['event'], row['hash']) if with_row_hash else row['event']
     s = path.stat(); need((s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns) == signature, 'INPUT_CHANGED')
 
 
@@ -419,15 +437,19 @@ def analyze(path, expected):
     bank = inputs['bankManifest'][0].read_bytes(); need(h(bank) == m['bankManifest']['sha256'], 'BANK_MANIFEST_CHANGED')
     bank = RAW.native_sealed_object(bank if bank.endswith(b'\n') else bank+b'\n')
     need(bank['mode'] == 'rust_live_session' and bank['seed']['kind'] == 'actual_account_allocation', 'ORIGINAL_LIVE_SEED')
-    dispatch = dispatch_metadata(journal(*inputs['dispatch'], initial_previous='0'*64))
-    observer = Observer(bank['policy'], dispatch); cutoff = clock(m['asOfUtc'])
-    for event in journal(*inputs['events'], initial_previous=''):
+    cutoff = clock(m['asOfUtc'])
+    dispatch = dispatch_metadata(journal(*inputs['dispatch'], initial_previous='0'*64), cutoff=cutoff)
+    observer = Observer(bank['policy'], dispatch)
+    observer.tournament = bank['seed'].get('evidence', {}).get('tournamentId')
+    for event, row_sha in journal(*inputs['events'], initial_previous='', with_row_hash=True):
         need(clock(event.get('processedAt', event['receivedAt'])) <= cutoff, 'EVENT_AFTER_CUTOFF')
-        observer.accept(event)
+        observer.accept(event, journal_row_sha=row_sha)
     result = observer.summary()
     return {**result, 'protocolSha256': PROTOCOL_SHA, 'sourceCodeSha256': h(Path(__file__).read_bytes()),
             'parserSha256': h(PARSER_PATH.read_bytes()), 'manifestSha256': expected, 'sourceManifest': m,
             'nativeFinancialReplayIndependentlyPerformed': False, 'underlyingOfficialReceiptsIndependentlyFetched': False,
+            'sourceRefContentIndependentlyVerified': False,
+            'dispatchClosedClockCaveat': 'Original closed rows have no timestamp: matching paired native terminal receipt hashes plus owner-pinned jointly sealed prefixes establish membership, not an independently observed dispatch-close availability time.',
             'restartMethod': 'replay_exact_original_prefixes', 'actualProfitEstablishedByThisStudy': False}
 
 

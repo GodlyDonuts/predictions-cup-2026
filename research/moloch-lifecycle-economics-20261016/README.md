@@ -90,6 +90,12 @@ must begin at sequence1, with native previous empty and dispatch previous64 zero
 each exact row seal/hash chain is validated
 through the existing original-byte parser, whose hash is retained in output.
 All three inputs are pinned before replay. No suffix is treated as an empty wallet.
+Dispatch rows with an available `at` clock, and original POST request/receipt clocks,
+must not exceed the manifest cutoff. Original dispatch `closed` rows have no
+timestamp: matching paired native terminal receipt hashes plus the owner's jointly
+sealed prefix pins establish membership, not an independently observed dispatch-
+close availability time. Complete coverage must match the known exchange/market
+and tournament context when bound/available; foreign coverage rejects the observer.
 
 Each input and decoded journal is bounded to2GiB, each journal to1million rows,
 each row to16MiB; orders, fills and remaining lots each have100,000-item bounds.
@@ -99,7 +105,13 @@ Original timestamps are exact integer nanoseconds; JavaScript consumers must not
 round them through floating-point JSON numbers. Restart replays the same original
 prefixes; there is no loadable state snapshot that can erase unresolved attempts.
 
-Original source-row integrity and embedded references are checked; no official
+Original native row seals/chains are verified by the byte parser; labels retain
+that reader-verified native row hash when supplied by the original-journal CLI.
+Embedded `sourceRef` fields are only format-checked and reported as native accepted-
+chain references: **their original source body/content hash is not independently
+recomputed**. `recordedSourceRefSha256` is not a book-body authenticity certificate;
+pure programmatic fixtures without a verified journal row report its hash as null.
+No official
 receipt is fetched, account reconciliation performed or native financial replay
 independently executed. The output records these limits. Original settlement or
 package-reservation inventory boundaries are unsupported and stop the analysis,
@@ -107,7 +119,7 @@ rather than treating inventory disappearance as realized profit. Other native
 cash/capital updates do not become trading gains. This reader is not a replacement
 for the financial ledger or a claim that all historical branches are implemented.
 
-Twenty-eight synthetic checks pass, including an end-to-end sealed/gzip native+
+Thirty-two synthetic checks pass, including an end-to-end sealed/gzip native+
 dispatch fixture, partial0/full59/native60, persistent partials, FIFO retargeting,
 actual netting/SELL cash, rational fees, inherited/mixed ownership, duplicate/conflict,
 restart, terminal receipt-pair proof, unknown/own depth, NO complement, stale/gap/
