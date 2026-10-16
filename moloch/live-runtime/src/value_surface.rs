@@ -71,6 +71,24 @@ pub struct FactorLoading{pub factor_id:String,/// Change in micro-payout per uni
 pub struct MappingReview{pub version:u32,pub model_source_sha256:String,pub review_sha256:String,pub race_id:String,pub party:RaceOutcome,pub maximum_model_deviation_micros:u32,pub loadings:Vec<FactorLoading>,pub assumption_label:String}
 pub fn mapping_sha256(m:&MappingReview)->Result<String>{digest(m)}
 pub struct ContractReview<'a>{pub input:ReviewInput,pub originals:&'a [SourceBytes<'a>],pub current_receipt:&'a Receipt,pub mapping:MappingReview}
+/// Opaque immutable source cache. Original bytes and separate approval hashes
+/// are verified ONCE; live binding still checks time, scope, exact current node,
+/// fresh admitted depth and actual bank/report boundary. No trading authority.
+pub struct PreparedReview{input:ReviewInput,mapping:MappingReview,review_sha:String,settlement:u64}
+impl PreparedReview{
+ pub fn verify(surface:&Surface,input:ReviewInput,originals:&[SourceBytes<'_>],mapping:MappingReview,trusted_reviews:&BTreeSet<String>,trusted_mappings:&BTreeSet<String>,at:u64)->Result<Self>{
+  let review_sha=fundamental_policy::review_sha256(&input)?;
+  need(surface.observed<=input.reviewed_at_ms&&mapping.version==1&&mapping.model_source_sha256==surface.source_sha&&mapping.review_sha256==review_sha&&trusted_mappings.contains(&mapping_sha256(&mapping)?),"SURFACE_MAPPING_NOT_APPROVED")?;
+  need(input.sources.iter().any(|s|s.kind=="forecast"&&s.sha256==surface.source_sha),"SURFACE_MODEL_NOT_REVIEWED_SOURCE")?;
+  let verified=Reviewed::verify(input.clone(),originals,trusted_reviews,at)?;
+  let settlement=match verified.valuation_objective(){Some(ValuationObjective::TerminalSettlement{scheduled_settlement_at_ms,..})=>*scheduled_settlement_at_ms,_=>return Err("SURFACE_TERMINAL_OBJECTIVE_REQUIRED".into())};
+  Ok(Self{input,mapping,review_sha,settlement})
+ }
+ pub fn exchange_id(&self)->&str{&self.input.exchange_id}
+ pub fn market_id(&self)->&str{&self.input.market_id}
+ pub fn review_sha256(&self)->&str{&self.review_sha}
+ pub fn is_current(&self,now:u64)->bool{self.input.reviewed_at_ms<=now&&now<self.input.expires_at_ms&&!self.input.revoke_existing&&self.settlement>now&&self.input.sources.iter().all(|s|s.observed_at_ms<=now&&now-s.observed_at_ms<=s.maximum_age_ms)}
+}
 #[derive(Clone,Debug)]
 pub struct BoundContract{
  pub market_id:String,pub exchange_id:String,pub contract_id:String,pub side:Side,
@@ -95,19 +113,22 @@ fn plus(a:i128,b:i128)->Result<i128>{a.checked_add(b).ok_or("SURFACE_RANGE".into
 fn modes(r:&ReviewInput)->Vec<crate::alpha_proposal::Mode>{use fundamental_policy::ExecutionMode as E;use crate::alpha_proposal::Mode as A;r.execution_policy.as_ref().map(|p|p.allowed_modes.iter().map(|m|match m{E::JoinBid=>A::JoinBid,E::ImproveOneTick=>A::ImproveOneTick,E::BoundedLimitMayRest=>A::BoundedLimitMayRest}).collect()).unwrap_or_else(||vec![A::JoinBid])}
 impl BoundSurface{
  pub fn bind(surface:Surface,bank:&Session,scope:&Scope,reviews:Vec<ContractReview<'_>>,trusted_reviews:&BTreeSet<String>,trusted_mappings:&BTreeSet<String>,now:u64)->Result<Self>{
+  let mut prepared=Vec::new();let mut receipts=Vec::new();for r in reviews{prepared.push(PreparedReview::verify(&surface,r.input,r.originals,r.mapping,trusted_reviews,trusted_mappings,now)?);receipts.push(r.current_receipt);}
+  let rows=prepared.iter().zip(receipts).collect::<Vec<_>>();Self::bind_prepared(surface,bank,scope,&rows,now)
+ }
+ pub fn bind_prepared(surface:Surface,bank:&Session,scope:&Scope,reviews:&[(&PreparedReview,&Receipt)],now:u64)->Result<Self>{
   need(bank.engine().is_live()&&now>=surface.observed&&now<surface.expires&&(1..=128).contains(&reviews.len()),"SURFACE_BANK_OR_CLOCK")?;
   let age=bank.engine().policy()["bookAgeMs"].as_u64().ok_or("SURFACE_POLICY")?.min(10_000);let(available,_)=package_admission::native_books(bank,scope,now,age)?;
   let mut contracts=Vec::new();let mut books=BTreeMap::new();let mut seen=BTreeSet::new();let mut until=surface.expires;let mut horizon=0;
-  for r in reviews{
-   let input=r.input;let review=fundamental_policy::review_sha256(&input)?;let map_hash=mapping_sha256(&r.mapping)?;
-   need(r.mapping.version==1&&r.mapping.model_source_sha256==surface.source_sha&&r.mapping.review_sha256==review&&trusted_mappings.contains(&map_hash)&&atom(&r.mapping.assumption_label)&&r.mapping.maximum_model_deviation_micros<=1_000_000&&r.mapping.loadings.len()<=16,"SURFACE_MAPPING_NOT_APPROVED")?;
+  for (r,receipt) in reviews{
+   let input=&r.input;let review=r.review_sha.clone();let map_hash=mapping_sha256(&r.mapping)?;
+   need(r.is_current(now)&&r.mapping.version==1&&r.mapping.model_source_sha256==surface.source_sha&&r.mapping.review_sha256==review&&atom(&r.mapping.assumption_label)&&r.mapping.maximum_model_deviation_micros<=1_000_000&&r.mapping.loadings.len()<=16,"SURFACE_MAPPING_NOT_APPROVED")?;
    let mut factors=BTreeSet::new();for f in &r.mapping.loadings{need(atom(&f.factor_id)&&factors.insert(&f.factor_id)&&f.loading_micros!=0&&(-10*UNIT..=10*UNIT).contains(&f.loading_micros),"SURFACE_FACTOR_LOADING")?;}
    need(input.tournament_id==scope.tournament_id&&scope.exchanges.get(&input.exchange_id)==Some(&input.market_id)&&seen.insert(input.exchange_id.clone())&&input.bank_manifest_sha256==bank.manifest_hash().as_str().ok_or("SURFACE_BANK")?&&bank.live_account_seed().is_some_and(|s|s["runId"]==input.run_id),"SURFACE_CONTRACT_SCOPE")?;
    need(input.sources.iter().any(|s|s.kind=="forecast"&&s.sha256==surface.source_sha),"SURFACE_MODEL_NOT_REVIEWED_SOURCE")?;
-   let verified=Reviewed::verify(input.clone(),r.originals,trusted_reviews,now)?;
-   let settlement=match verified.valuation_objective(){Some(ValuationObjective::TerminalSettlement{scheduled_settlement_at_ms,..})=>*scheduled_settlement_at_ms,_=>return Err("SURFACE_TERMINAL_OBJECTIVE_REQUIRED".into())};
+   let settlement=r.settlement;
    need(settlement>now&&!input.revoke_existing,"SURFACE_TERMINAL_EXPIRED_OR_REVOKED")?;
-   let receipt=r.current_receipt;let start=daily_windows::clock(&receipt.request_started_at)?;let received=daily_windows::clock(&receipt.received_at)?;
+   let start=daily_windows::clock(&receipt.request_started_at)?;let received=daily_windows::clock(&receipt.received_at)?;
    need(receipt.status==200&&receipt.endpoint==format!("/markets/{}/nodes?tournamentId={}",input.market_id,scope.tournament_id)&&start<=received&&received<=now&&now-start<=age,"SURFACE_CURRENT_CONTRACT")?;
    need(receipt.data["market_id"]==input.market_id&&receipt.data["root"]["node_type"]=="contract"&&receipt.data["root"]["node_id"]==input.contract_id&&receipt.data["root"]["contract_id"]==input.contract_id&&fundamental_policy::official_contract_root_sha256(&receipt.data)?==input.official_contract_root_sha256,"SURFACE_CURRENT_CONTRACT_CHANGED")?;
    // An operator mapping cannot override contradictory structured primary
@@ -123,7 +144,7 @@ impl BoundSurface{
    let b=available.get(&input.exchange_id).ok_or("SURFACE_CURRENT_NATIVE_BOOK_REQUIRED")?.clone();
    until=until.min(input.expires_at_ms).min(start.checked_add(age).ok_or("SURFACE_RANGE")?).min(b.source.received_ms.checked_add(age).ok_or("SURFACE_RANGE")?).min(b.observed_ms.checked_add(age).ok_or("SURFACE_RANGE")?);horizon=horizon.max(settlement-now);
    books.insert(input.exchange_id.clone(),b);
-   contracts.push(BoundContract{market_id:input.market_id.clone(),exchange_id:input.exchange_id.clone(),contract_id:input.contract_id.clone(),side,official_root_sha256:input.official_contract_root_sha256.clone(),race_id:r.mapping.race_id,party:r.mapping.party,expected_payout_micros:expected,ordinary_payout_micros:mean,exceptional_allowance_micros:exceptional,minimum_exceptional_payout_micros:floor,review_sha256:review,mapping_sha256:map_hash,loadings:r.mapping.loadings,maximum_principal:decimal_units(&input.maximum_principal)?,maximum_quantity:input.maximum_quantity,margin_per_share:decimal_units(&input.margin_per_share)?,scheduled_settlement_at_ms:settlement,reviewed_at_ms:input.reviewed_at_ms,valid_until_ms:input.expires_at_ms,allowed_modes:modes(&input)});
+   contracts.push(BoundContract{market_id:input.market_id.clone(),exchange_id:input.exchange_id.clone(),contract_id:input.contract_id.clone(),side,official_root_sha256:input.official_contract_root_sha256.clone(),race_id:r.mapping.race_id.clone(),party:r.mapping.party,expected_payout_micros:expected,ordinary_payout_micros:mean,exceptional_allowance_micros:exceptional,minimum_exceptional_payout_micros:floor,review_sha256:review,mapping_sha256:map_hash,loadings:r.mapping.loadings.clone(),maximum_principal:decimal_units(&input.maximum_principal)?,maximum_quantity:input.maximum_quantity,margin_per_share:decimal_units(&input.margin_per_share)?,scheduled_settlement_at_ms:settlement,reviewed_at_ms:input.reviewed_at_ms,valid_until_ms:input.expires_at_ms,allowed_modes:modes(input)});
   }
   need(now<until,"SURFACE_NOT_CURRENT")?;
   let scenarios:Vec<_>=surface.scenarios.iter().map(|s|BoundScenario{id:s.id.clone(),weight_ppm:s.weight_ppm,payout_micros:contracts.iter().map(|c|{let i=surface.races.iter().position(|r|r.race_id==c.race_id).expect("validated race");if(s.race_outcomes[i]==c.party)==(c.side==Side::Yes){UNIT}else{0}}).collect()}).collect();

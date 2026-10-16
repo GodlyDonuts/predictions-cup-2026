@@ -4,14 +4,15 @@
 use crate::{alpha_proposal::{self,Mode,ReviewBounds},execution_distribution,feedback::Result,source_innovation::{Kind,Signal},value_surface::{BoundSurface,UNIT}};
 use baal_transport_service::Scope;
 use moloch_replay::session::Session;
-use serde::Serialize;
+use serde::{Deserialize,Serialize};
 use serde_json::{json,Value};
 use std::collections::BTreeSet;
 fn need(b:bool,e:&'static str)->Result<()>{if b{Ok(())}else{Err(e.into())}}
 #[derive(Clone,Copy,Debug,Serialize,PartialEq,Eq)]
 #[serde(rename_all="snake_case")]
 pub enum Lane{TerminalValue,RelativeValue,InformationShock}
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct Policy{
  /// Exact learned policy/strategy identity, not a generic calibration claim.
  pub strategy_sha256:String,pub order_expiry_ms:u64,
