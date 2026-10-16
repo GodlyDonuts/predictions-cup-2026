@@ -190,13 +190,42 @@ fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&st
  accept_source_events(bank,&s.accept(&wrap(&book,"book"))?)?;Ok(to.saturating_sub(2000))
 }
 fn snapshots(t:&mut Transport,c:&Control,q:&Value)->Result<SnapshotSet>{
- let (account,positions,open_orders)=account(t,&c.root)?;
- let cash_balance=request(t,&c.root,Endpoint::Account)?;
- let market_id=q["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.to_owned();
- let market=request(t,&c.root,Endpoint::Market{market_id:market_id.clone()})?;
- let contract=request(t,&c.root,Endpoint::Nodes{market_id:market_id.clone()})?;
- let book=request(t,&c.root,Endpoint::OrderBook{market_id,depth:20})?;
+ snapshots_for_market(c,q["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,|ep|request(t,&c.root,ep))
+}
+/// A read-only target is not a native quote. In particular, inherited value
+/// exits obtain all seven original facts BEFORE creating a genuine SELL qid.
+fn snapshots_for_market(c:&Control,market_id:&str,mut read:impl FnMut(Endpoint)->Result<Receipt>)->Result<SnapshotSet>{
+ if !c.scope.exchanges.values().any(|id|id==market_id){return Err("LIVE_MARKET_OUTSIDE_SCOPE".into())}
+ let account=read(Endpoint::Tournament)?;let positions=read(Endpoint::Positions)?;let open_orders=read(Endpoint::Orders{status:"open".into()})?;
+ if account.data["status"]!="active"||open_orders.data["coverage"]["complete"]!=true||open_orders.data["pagination"]["hasMore"]!=false{return Err("LIVE_ACCOUNT_INCOMPLETE_OR_INACTIVE".into())}
+ let cash_balance=read(Endpoint::Account)?;let market_id=market_id.to_owned();
+ let market=read(Endpoint::Market{market_id:market_id.clone()})?;
+ let contract=read(Endpoint::Nodes{market_id:market_id.clone()})?;
+ let book=read(Endpoint::OrderBook{market_id,depth:20})?;
  Ok(SnapshotSet{account,cash_balance,positions,open_orders,market,contract,book})
+}
+/// Session already verified this bank's journal on open. Recover the ORIGINAL
+/// adoption, not the derived transfer JSON, and verify its exact committed
+/// source membership against that actual Session. Never load the whole journal.
+fn committed_adoption(bank:&Session,path:&Path)->Result<(String,u64,Value)>{
+ use std::io::BufReader;
+ let metadata=fs::symlink_metadata(path)?;if !metadata.is_file()||metadata.file_type().is_symlink(){return Err("LIVE_ADOPTION_ORIGINAL_JOURNAL_REQUIRED".into())}
+ committed_adoption_from(bank,BufReader::new(fs::File::open(path)?))
+}
+fn committed_adoption_from(bank:&Session,mut reader:impl std::io::BufRead)->Result<(String,u64,Value)>{
+ use std::io::{Read,BufRead};
+ const MAX_ADOPTION_ROW:usize=8*1024*1024;
+ let report=bank.engine().report()?;let inherited=&report["inheritedInventory"];
+ if inherited["receiptHash"].as_str().is_none()||!inherited["sourcePositions"].is_array(){return Err("LIVE_COMMITTED_ADOPTION_REQUIRED".into())}
+ let mut line=Vec::new();loop{
+  line.clear();let n=reader.by_ref().take((MAX_ADOPTION_ROW+1) as u64).read_until(b'\n',&mut line)?;if n==0{break}
+  if line.len()>MAX_ADOPTION_ROW||line.last()!=Some(&b'\n'){return Err("LIVE_ADOPTION_JOURNAL_ROW_BOUND_OR_TORN".into())}
+  let row:Value=serde_json::from_slice(&line)?;let event=&row["event"];if event["type"]!="actual_position_adoption"{continue}
+  let reference=&event["sourceRef"];let id=reference["id"].as_str().ok_or("LIVE_ADOPTION_SOURCE_REF")?;let sequence=reference["sequence"].as_u64().filter(|n|*n>0).ok_or("LIVE_ADOPTION_SOURCE_REF")?;
+  let mut original=event.clone();original.as_object_mut().ok_or("LIVE_ADOPTION_EVENT")?.remove("sourceRef");let sha=hash(&original);
+  if reference["hash"]!=sha||bank.committed_source_hash(id,sequence)!=Some(sha.as_str())||event["receiptHash"]!=inherited["receiptHash"]||event["positions"]!=inherited["sourcePositions"]||event["authority"]!="human_moloch_inherited_management_20261015"{return Err("LIVE_COMMITTED_ADOPTION_MISMATCH".into())}
+  return Ok((id.into(),sequence,event.clone()))
+ }Err("LIVE_COMMITTED_ADOPTION_REQUIRED".into())
 }
 /// Recovery is unconditional: removing new-entry configuration never drops
 /// already durable package liabilities or opens a second transport.
@@ -215,6 +244,24 @@ fn retire_for_package(bank:&mut Session,log:&mut DispatchLog,q:&Value)->Result<(
  let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if !log.never_attempted(id){return Err("LIVE_PACKAGE_COMPONENT_ALREADY_ATTEMPTED".into())}
  let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
  accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))
+}
+/// Keep physical liabilities and origin-bound reservations intact. This is the
+/// SAME positive original-dispatch proof used by package preparation; absence
+/// from an account snapshot is never proof that a draft was not submitted.
+fn retire_existing_drafts(bank:&mut Session,log:&mut DispatchLog,exchange:&str)->Result<usize>{
+ log.require_resolved_attempts()?;let mut retired=0;
+ for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+  if q["exchangeId"]!=exchange||q["retired"]!=false||bank.engine().is_package_order(id)||q.get("reviewedInventoryExit").is_some(){continue}
+  if !log.never_attempted(id)||bank.engine().live_order_bindings().contains_key(&id){continue}
+  retire_for_package(bank,log,&q)?;retired+=1;
+ }Ok(retired)
+}
+fn existing_target_busy(bank:&Session,log:&DispatchLog,exchange:&str)->Result<bool>{
+ log.require_resolved_attempts()?;let orders=bank.engine().order_records();
+ for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
+  let q=orders.iter().find(|q|q["id"]==*id).ok_or("LIVE_ACK_QUOTE_MISSING")?;if q["exchangeId"]==exchange{return Ok(true)}
+ }
+ Ok(orders.iter().any(|q|q["exchangeId"]==exchange&&q["retired"]==false&&(q.get("reviewedInventoryExit").is_some()||q["id"].as_u64().is_some_and(|id|bank.engine().is_package_order(id)||!log.never_attempted(id)))))
 }
 fn ordinary_liability_due(bank:&Session,log:&DispatchLog,at:u64)->Result<bool>{
  for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
@@ -523,6 +570,77 @@ fn latest_refresh_hints(orders:&[Value],at:u64,eligible:impl Fn(u64)->bool)->Res
   if latest.get(&key).is_none_or(|old|old["id"].as_u64().unwrap()<id){latest.insert(key,q.clone());}
  }Ok(latest)
 }
+fn existing_exit_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->Result<()>{
+ atomic_json(&c.root.join("reviewed-existing-exit.json"),&json!({"at":iso(now()),"exchangeId":exchange,"stage":stage,"reason":reason,"physicalAttempted":false,"costFloorChanged":false}))
+}
+/// Conservative pre-creation clock check. ProductionAuthority rechecks these
+/// same original receipts and exact economics at the physical boundary.
+fn existing_facts_until(f:&SnapshotSet,at:u64)->Result<Option<u64>>{
+ let mut until=u64::MAX;
+ for(r,age)in [(&f.account,20_000),(&f.positions,20_000),(&f.open_orders,20_000),(&f.cash_balance,20_000),(&f.market,10_000),(&f.contract,10_000),(&f.book,10_000)]{
+  let start=moloch_live_runtime::daily_windows::clock(&r.request_started_at)?;let end=moloch_live_runtime::daily_windows::clock(&r.received_at)?;
+  if r.status!=200||start>end||end>at{return Ok(None)}
+  until=until.min(start.checked_add(age).ok_or("LIVE_EXISTING_FACT_CLOCK_RANGE")?).min(end.checked_add(age).ok_or("LIVE_EXISTING_FACT_CLOCK_RANGE")?);
+ }Ok((at<until).then_some(until))
+}
+fn existing_reservation_stage(q:&Value,original:&Value,at:u64,facts_until:u64)->Result<Option<u64>>{
+ if q!=original{return Err("LIVE_EXISTING_RESERVED_QUOTE_CHANGED".into())}
+ if q["reviewedInventoryExit"].is_null()||q["action"]!="sell"||q["retired"]!=false||q["cancelEffectiveAt"].is_u64()||q["expiresAt"].as_u64().is_none_or(|end|end<=at)||at>=facts_until{return Err("LIVE_EXISTING_RESERVATION_OR_FACTS_EXPIRED".into())}
+ let activation=q["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?;Ok((activation>at).then_some(activation))
+}
+/// No physical authority is minted here. Only a successful original Session
+/// commit may expose the genuine new qid to bind/intent/attempt/SDK execution.
+fn commit_existing_reservation(bank:&mut Session,event:&Value)->Result<Option<Value>>{
+ let before=bank.engine().order_records().iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
+ let mut event=event.clone();event["processedAt"]=json!(iso(now()));let mut preview=bank.engine().clone();
+ if let Err(error)=preview.advance(&event){if matches!(error,"REVIEWED_EXIT_WRITE_BUDGET"|"REVIEWED_EXIT_BOOK"|"REVIEWED_EXIT_CLOCK"){return Ok(None)}return Err(error.into())}
+ accept(bank,&event)?;
+ let candidates:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|n|n>before)&&q["retired"]==false&&q["exchangeId"]==event["exchangeId"]&&q["action"]=="sell"&&q["reviewedInventoryExit"]["originSha256"]==event["originSha256"]&&q["reviewedInventoryExit"]["reviewSha256"]==event["reviewSha256"]).collect();
+ if candidates.len()!=1{return Err("LIVE_EXISTING_NATIVE_RESERVATION_NOT_UNIQUE".into())}Ok(candidates.into_iter().next())
+}
+fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::ExistingExitHint,prior_window:u64)->Result<()>{
+ let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
+ if existing_target_busy(bank,log,ex)?{return Ok(())}
+ // A REST book cannot heal an unobserved tape interval by itself.
+ if let Some(from)=exit_recovery_from(source,market,prior_window){
+  let through=now();let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(through)})?;
+  let wrapped=json!({"source":"official_sig_api_v1","kind":"trades","tournamentId":c.scope.tournament_id,"marketId":market,"exchangeId":ex,"endpoint":tape.endpoint,"status":tape.status,"requestStartedAt":tape.request_started_at,"receivedAt":tape.received_at,"data":tape.data});
+  accept_source_events(bank,&source.accept(&wrapped)?)?;
+  let scopes=source.scopes();if !scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{return existing_exit_deferred(c,ex,"coverage","COMPLETE_TARGET_TAPE_REQUIRED")}
+ }
+ refresh_controls(c,authority,stream)?;
+ let facts=snapshots_for_market(c,market,|ep|request(t,&c.root,ep))?;
+ let Some(facts_until)=existing_facts_until(&facts,now())?else{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
+ let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;
+ if existing_target_busy(bank,log,ex)?{return existing_exit_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
+ // This positive not-sent retirement suppresses planning for this event only;
+ // no tick/source event may run between it and the covered native reservation.
+ retire_existing_drafts(bank,log,ex)?;
+ // Fresh source admission may itself create ordinary quotes and consume the
+ // existing native write gap. Wait, never bypass the financial write budget.
+ let gap=bank.engine().policy()["writeGapMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_WRITE_GAP")?;
+ let activation=bank.engine().policy()["latencyMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_ACTIVATION")?;
+ let ready=now().checked_add(gap).ok_or("LIVE_EXISTING_CLOCK_RANGE")?;
+ if ready.checked_add(activation).is_none_or(|end|end>=facts_until){return existing_exit_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
+ while now()<ready{refresh_controls(c,authority,stream)?;f.authority.validate()?;std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).clamp(1,100)));}
+ refresh_controls(c,authority,stream)?;f.authority.validate()?;
+ if now()>=facts_until{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")}
+ let Some(plan)=f.cohorts.prepare_existing_exit(bank,log,t,&c.scope,ex,f.authority.trusted(),now())?else{return existing_exit_deferred(c,ex,"value","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")};
+ // Preview exactly the financial transition, without creating a qid or
+ // weakening a native denial. A full minute write cap is ordinary deferral.
+ let Some(original)=commit_existing_reservation(bank,plan.event())?else{return existing_exit_deferred(c,ex,"native","ORIGINAL_NATIVE_BUDGET_OR_WINDOW_DENIED")};let qid=original["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+ loop{refresh_controls(c,authority,stream)?;f.authority.validate()?;
+  let current=quote(bank,qid)?;match existing_reservation_stage(&current,&original,now(),facts_until){
+   Ok(Some(at))=>std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100))),Ok(None)=>break,
+   Err(e)if e.to_string()=="LIVE_EXISTING_RESERVATION_OR_FACTS_EXPIRED"=>return existing_exit_deferred(c,ex,"activation","RESERVATION_OR_ORIGINAL_PACKET_EXPIRED"),Err(e)=>return Err(e),
+  }
+ }
+ // Same sole Transport and original global queue. The capability and physical
+ // authority retain all original unknown, receipt, source and depth guards.
+ if queue_has_unknown(t)?{return existing_exit_deferred(c,ex,"queue","GLOBAL_UNKNOWN_ACCEPTANCE")}
+ let current=quote(bank,qid)?;if !f.eligible(bank,log,&c.scope,qid,now())?{return existing_exit_deferred(c,ex,"value","CURRENT_REVIEWED_EXIT_INELIGIBLE")}
+ submit_order(t,c,bank,log,authority,&current,facts,None,Some(f))
+}
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
@@ -538,7 +656,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   }
  }
  // Cancellations and reconciliation take priority over new purchases.
- let fundamental_cancels=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_cancellations(bank,log,f.authority.trusted(),now())?}else{Vec::new()};
+ let fundamental_cancels=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;let mut ids=f.cohorts.entry_cancellations(bank,log,f.authority.trusted(),now())?;ids.extend(f.cohorts.existing_exit_cancellations(bank,log,f.authority.trusted(),now())?);ids}else{Vec::new()};
  for old in &orders {
   let qid=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if bank.engine().is_package_order(qid)||old["retired"]==true{continue}
   let expired=old["expiresAt"].as_u64().is_none_or(|t|t<=now());let canceled=old["cancelEffectiveAt"].as_u64().is_some_and(|t|t<=now());
@@ -562,6 +680,14 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  }
  if !allow_new_submissions||bank.engine().package_blocks_submissions(){return Ok(())}
  let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
+ if let Some(f)=fundamental.as_deref_mut(){
+  f.authority.validate()?;let mut existing_hints=Vec::new();
+  for ex in f.cohorts.managed_exchanges(){if !existing_target_busy(bank,log,&ex)?{if let Some(hint)=f.cohorts.existing_exit_hint(bank,log,&c.scope,&ex,f.authority.trusted(),now())?{existing_hints.push(hint);}}}
+  if !existing_hints.is_empty(){let keys:Vec<_>=existing_hints.iter().map(|h|format!("{}:{}:sell",h.exchange_id,h.side)).collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];
+   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());let hint=&existing_hints[index];
+   reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?)?;return Ok(())
+  }
+ }
  if !hints.is_empty(){
   let keys:Vec<_>=hints.keys().cloned().collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];let key=&keys[index];
   let(old,hint)=hints.get(key).ok_or("LIVE_EXIT_REFRESH_HINT")?;
@@ -734,12 +860,26 @@ pub fn main()->Result<()>{
   let maker_review=c.maker_policy.as_ref().map(|settings|moloch_live_runtime::maker_policy::Reviewed::load(settings.clone(),&bank)).transpose()?;
   if let Some(review)=&maker_review{review.validate_model(c.execution_model.as_ref().ok_or("LIVE_MAKER_MODEL_REQUIRED")?)?;authority.require_maker_review(review.sha256())?;}
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;log.require_resolved_attempts()?;
-  let mut fundamental=if let Some(loaded)=fundamental_loaded{let(cohorts,review_authority,stale)=loaded.open(&c.root,&bank,&log,lease.clone(),now())?;authority.require_fundamental_exchanges(&cohorts.managed_exchanges())?;atomic_json(&c.root.join("fundamental-policy.json"),&json!({"at":iso(now()),"managedExchanges":cohorts.managed_exchanges(),"staleReviews":stale,"initializationDoesNotSubmit":true}))?;Some(FundamentalRuntime{cohorts,authority:review_authority})}else{
+  // End the startup reader before constructing the ONE continuing worker. The
+  // existing-origin baseline borrows this same transport's real quiet queue;
+  // it cannot create an independent account client or infer unknown absence.
+  drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
+  let mut fundamental=if let Some(loaded)=fundamental_loaded{
+   let existing=loaded.existing_exchanges();
+   let(cohorts,review_authority,stale)=if existing.is_empty(){loaded.open(&c.root,&bank,&log,lease.clone(),now())?}else{
+    let(id,sequence,event)=committed_adoption(&bank,&c.root.join(&c.bank_name).join("events.jsonl"))?;
+    // Approved scope selection is not adoption authority. Original source,
+    // actual inherited FIFO, queue, lease, report and policy are independently
+    // checked by open_with_existing after only proven never-sent cleanup.
+    t.package_queue_quiet()?;
+    for ex in &existing{retire_existing_drafts(&mut bank,&mut log,ex)?;}
+    loaded.open_with_existing(&c.root,&bank,&log,lease.clone(),now(),&t,&id,sequence,&event)?
+   };
+   authority.require_fundamental_exchanges(&cohorts.managed_exchanges())?;atomic_json(&c.root.join("fundamental-policy.json"),&json!({"at":iso(now()),"managedExchanges":cohorts.managed_exchanges(),"existingOriginExchanges":existing,"staleReviews":stale,"initializationDoesNotSubmit":true}))?;Some(FundamentalRuntime{cohorts,authority:review_authority})}else{
    if c.root.join("fundamental.initialized.json").exists()||c.root.join("fundamental.ndjson").exists(){return Err("LIVE_FUNDAMENTAL_SETTINGS_REQUIRED_FOR_EXISTING_COHORT".into())}None
   };
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
   for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=quote(&bank,qid)?;let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !closed_legacy_ack(&bank,&log,qid,&e){f.cohorts.validate_acknowledgment(qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());restore_ack(&mut bank,&e)?;}
-  drop(read);let mut t=transport(&c,Box::new(SharedAuthority(authority.clone())),true)?;
   // Always recover original liabilities even when new package scanning is off.
   // Recovery never recreates a Staged capability or retries a physical send.
   let mut packages=moloch_live_runtime::package_dispatch::PackageDispatchLog::open(&c.root.join("package-dispatch"))?;
