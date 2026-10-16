@@ -1,0 +1,144 @@
+{
+  "collectorFrameCounts": {
+    "book:": 64643,
+    "websocket:orderbook_delta": 57252,
+    "websocket:orderbook_snapshot": 25833,
+    "websocket:subscribed": 3,
+    "websocket:ticker": 6984,
+    "websocket:trade": 537
+  },
+  "collectorTradeTickers": 63,
+  "collectorTradeTickersDuringDecisionInterval": 48,
+  "collectorTradesReceivedDuringDecisionInterval": 257,
+  "collectorUniqueTrades": 537,
+  "completeTradeTape": false,
+  "counts": {
+    "1000:actualIdentifiedDecisions": 0,
+    "1000:atExportReceiptCandidatesAbsentFromEvidence": 0,
+    "1000:originalSnapshotNonemptyDecisions": 0,
+    "1000:receiptEligibleAtOriginalExportDecisions": 0,
+    "1000:receiptEligibleUpperBoundDecisions": 3,
+    "30000:actualIdentifiedDecisions": 48,
+    "30000:atExportReceiptCandidatesAbsentFromEvidence": 0,
+    "30000:originalSnapshotNonemptyDecisions": 48,
+    "30000:receiptEligibleAtOriginalExportDecisions": 48,
+    "30000:receiptEligibleUpperBoundDecisions": 50,
+    "5000:actualIdentifiedDecisions": 5,
+    "5000:atExportReceiptCandidatesAbsentFromEvidence": 0,
+    "5000:originalSnapshotNonemptyDecisions": 7,
+    "5000:receiptEligibleAtOriginalExportDecisions": 5,
+    "5000:receiptEligibleUpperBoundDecisions": 8,
+    "allThreeIdentified": 0,
+    "directDecisions": 3813,
+    "excludedOtherMapping": 70,
+    "snapshotAgeAtLeast1000ms": 996
+  },
+  "decisionIntervalMs": [
+    1792152097211,
+    1792154167245
+  ],
+  "directDecisionTickers": 231,
+  "executionAuthority": false,
+  "finding": "NO_MISSING_EXPORTED_TRADE_EVIDENCE_OBSERVED",
+  "limitations": [
+    "Wire-receipt eligibility is an optimistic upper bound, not proof of processing availability.",
+    "Public flow and market mapping do not prove SIG resolution equivalence or maker fills.",
+    "No change to the sealed v7 features, thresholds, clock boundaries or outcomes."
+  ],
+  "modelApproved": false,
+  "observerAvailabilityToDecisionMsQuantiles": {
+    "0": 105,
+    "0.1": 148,
+    "0.25": 198,
+    "0.5": 260,
+    "0.75": 371,
+    "0.9": 472,
+    "1": 712
+  },
+  "oneSecondReceiptEligibleCases": [
+    {
+      "actuallyIdentified": false,
+      "decisionMs": 1792152459748,
+      "receiptEligibleTrades": [
+        {
+          "bodySha256": "41673f10a3180b7e4f37bd38e28bf8e319a214fd939a9237588ca573148d63d7",
+          "id": "072429d6-6c09-b47b-91d0-f8df008ef97a",
+          "receivedMs": 1792152459063,
+          "sourceMs": 1792152459067
+        }
+      ],
+      "sampleId": "9168b6f2081e3fb75a8a32e0ae41a014ae2866c1b50310fa80e78c0555900fce",
+      "snapshotAgeMs": 757,
+      "sourceExportMs": 1792152458991,
+      "ticker": "CONTROLH-2026-D"
+    },
+    {
+      "actuallyIdentified": false,
+      "decisionMs": 1792152962785,
+      "receiptEligibleTrades": [
+        {
+          "bodySha256": "900c2ea42f8e93c8933727e6f0cceed4e07ed00a32e03d56633ba638da90da37",
+          "id": "072424f6-72a9-8617-3e17-1588a7a87c7c",
+          "receivedMs": 1792152962618,
+          "sourceMs": 1792152962623
+        }
+      ],
+      "sampleId": "eae67b3f84c9f8515d7f7743a3c19084cc1d3ee88ad2a2f8b9c8cb8f1f976d5a",
+      "snapshotAgeMs": 971,
+      "sourceExportMs": 1792152961814,
+      "ticker": "KXHOUSERACE-SC01-26-R"
+    },
+    {
+      "actuallyIdentified": false,
+      "decisionMs": 1792153895775,
+      "receiptEligibleTrades": [
+        {
+          "bodySha256": "079cd4c0f133481fcde14ccfb1d360deccbcbc95083019e26aa4b726ab23e031",
+          "id": "07245303-7329-8de3-e3ce-69bcc8b0d38a",
+          "receivedMs": 1792153895364,
+          "sourceMs": 1792153895372
+        }
+      ],
+      "sampleId": "63dd27c983aca4117bb43092a0940784c2be868f6cfcfe08b4d76ad5b65d0d28",
+      "snapshotAgeMs": 797,
+      "sourceExportMs": 1792153894978,
+      "ticker": "SENATETX-26-R"
+    }
+  ],
+  "originalFrozenAnalysisLfSha256": "12b185a9dd4efd0f6e72583d4274c240256416818a351018a27543525d4bb06c",
+  "originalFrozenAnalysisRawSha256": "ea31a56f356afeecc3b50605421cfc4df653112de0d4e46145a72f9cc2279c0e",
+  "producerSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+  "schemaVersion": 1,
+  "sourceCodeSha256": "062eaee3959825218054751d5d3df3357fe2aea4a570b83c70793cee10c126e5",
+  "sourceExportToDecisionMsQuantiles": {
+    "0": 662,
+    "0.1": 755,
+    "0.25": 833,
+    "0.5": 917,
+    "0.75": 1004,
+    "0.9": 1242,
+    "1": 1461
+  },
+  "sourceExportToObserverAvailabilityMsQuantiles": {
+    "0": 538,
+    "0.1": 558,
+    "0.25": 592,
+    "0.5": 625,
+    "0.75": 680,
+    "0.9": 726,
+    "1": 1022
+  },
+  "sources": [
+    {
+      "bytes": 2598985,
+      "name": "v7-sealed-20261016T12.jsonl.gz",
+      "sha256": "3fd8f87f38a93e180d572b5f6f41f672032611fdf5c689737e0f9ad02ce6af0b"
+    },
+    {
+      "bytes": 67109548,
+      "name": "20261016T12-9cf547e9-b91c-46ae-a184-2a7ec5caf071.ndjson.gz",
+      "sha256": "f1e93c7c8e708d5205eea208dba1f5c0e5cca3515323bc61dd5cc29b60930308"
+    }
+  ],
+  "uniqueActualRetained30sTradeIds": 57
+}
