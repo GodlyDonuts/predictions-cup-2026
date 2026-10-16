@@ -65,7 +65,7 @@ impl CredentialProvider for NoCredentialLoad{fn load(&self)->Result<zeroize::Zer
  let dir=temp();let c=config(&dir);let clock=Arc::new(AtomicU64::new(1000));let loads=Arc::new(AtomicU64::new(0));
  let mut t=Transport::new_for_mock(c.clone(),Box::new(NoCredentialLoad(loads.clone())),Box::new(TestClock(clock.clone())),Box::new(StaleAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();
  t.admission_state().unwrap();clock.store(2001,Ordering::SeqCst);let mut p=permit();p.expires_at_ms=10000;
- let e=t.place(Order{idempotency_key:"fixture:3411".into(),exchange_id:"1009".into(),side:"no".into(),action:"buy".into(),quantity:5196,price:"0.620000".into(),expiration_date:"2030-01-01T00:00:00.000Z".into(),tournament_id:scope().tournament_id},p.clone()).unwrap_err();
+ let e=t.place(Order{idempotency_key:"fixture:3411".into(),exchange_id:"1009".into(),side:"no".into(),action:"buy".into(),quantity:5196,price:"0.620000".into(),expiration_date:"2030-01-01T00:00:00.000Z".into(),tournament_id:scope().tournament_id},p.clone()).err().unwrap();
  assert_eq!(e.code,"LIVE_CONTRACT_OR_BOOK_STALE");assert!(!e.may_have_executed);assert_eq!(loads.load(Ordering::SeqCst),0);
  let proof=t.verify_current_ordinary_pre_admission(&spec(),&p,2000,&e).unwrap();proof.validate_binding(&spec(),&p,2000,&e).unwrap();
  assert_eq!(proof.evidence()["originalHead"]["lastClock"],1000);let retained=proof.evidence().clone();drop(t);
