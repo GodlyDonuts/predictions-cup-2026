@@ -149,6 +149,49 @@ class ObserverTests(unittest.TestCase):
             finally:
                 tail.close()
 
+    def test_tail_preserves_original_nested_number_bytes_for_hash_verification(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "journal"
+            p.write_bytes(b"")
+            tail = Tail(p)
+            try:
+                unsigned = b'{"event":{"type":"book","p":0.30000000000000004,"q":1e-6},"previous":"","sequence":1}'
+                digest = hashlib.sha256(unsigned).hexdigest().encode()
+                encoded = unsigned.replace(b',"previous":', b',"hash":"' + digest + b'","previous":')
+                with p.open("ab") as f:
+                    f.write(encoded + b"\n")
+                self.assertEqual(len(list(tail.read())), 1)
+            finally:
+                tail.close()
+
+    def test_breadth_converts_only_official_tick_roundoff_and_preserves_revision_gaps(self):
+        out = []
+        s = Study(out.append, horizons=(1000,))
+        s.external_update(external(9000), 10000)
+        def frame(at, revision, previous, price=.30000000000000004):
+            return {"hash": "b" * 64, "sequence": revision, "event": {"source": "official_sig_realtime", "event": "markets_batch", "receivedAt": stamp(at),
+                    "payload": {"markets": [{"marketId": "1", "batch": {"delivery": {"model": "best-effort-authoritative-resync", "revision": revision, "previousRevision": previous},
+                    "books": [{"exchangeId": 101, "asOf": {"sequence": revision, "at": stamp(at)}, "bids": [{"price": price, "quantity": 2}], "asks": [{"price": .32, "quantity": 2}]}]}}]}}}
+        s.breadth(frame(10000, 1, 0), 10000)
+        self.assertEqual(out[0]["sig"]["features"]["bid"], "0.300000")
+        s.breadth(frame(11000, 3, 2), 11000)
+        self.assertFalse(any(v["kind"] == "horizon_label" for v in out))
+        with self.assertRaisesRegex(ValueError, "OFFICIAL_TICK"):
+            s.breadth(frame(12000, 4, 3, .30001), 12000)
+
+    def test_invalid_websocket_state_is_never_treated_as_current_external_book(self):
+        s = Study(lambda v: None)
+        e = external(9000)
+        e["source"] = "kalshi_official_ws_v2"
+        e["markets"][0]["valid"] = False
+        s.external_update(e, 10000)
+        self.assertEqual(s.external, {})
+        e["markets"][0]["valid"] = True
+        e["markets"][0]["stateChainSha256"] = "c" * 64
+        s.external_update(e, 10000)
+        self.assertEqual(s.external["1"]["hashKind"], "state_chain")
+        self.assertEqual(s.external["1"]["bodySha256"], "c" * 64)
+
 
 if __name__ == "__main__":
     unittest.main()

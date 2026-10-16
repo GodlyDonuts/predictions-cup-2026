@@ -73,19 +73,19 @@ def logit(p):
 
 class Tail:
     """Fresh suffix only. A checked suffix chain is not a full-history audit."""
-    def __init__(self, path):
+    def __init__(self, path, from_start=False):
         flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
         self.fd = os.open(path, flags)
         info = os.fstat(self.fd)
         if not stat.S_ISREG(info.st_mode):
             raise ValueError("OBSERVER_NOT_REGULAR")
         self.identity = (info.st_dev, info.st_ino)
-        self.path, self.position, self.buffer = Path(path), info.st_size, b""
-        self.skip = bool(info.st_size and os.pread(self.fd, 1, info.st_size - 1) != b"\n") if hasattr(os, "pread") else False
-        if info.st_size and not hasattr(os, "pread"):
+        self.path, self.position, self.buffer = Path(path), 0 if from_start else info.st_size, b""
+        self.skip = bool(not from_start and info.st_size and os.pread(self.fd, 1, info.st_size - 1) != b"\n") if hasattr(os, "pread") else False
+        if not from_start and info.st_size and not hasattr(os, "pread"):
             os.lseek(self.fd, info.st_size - 1, os.SEEK_SET)
             self.skip = os.read(self.fd, 1) != b"\n"
-        os.lseek(self.fd, info.st_size, os.SEEK_SET)
+        os.lseek(self.fd, self.position, os.SEEK_SET)
         self.previous, self.sequence = None, None
 
     def read(self):
@@ -106,8 +106,15 @@ class Tail:
             if len(line) > 8 * 1024 * 1024:
                 raise ValueError("OBSERVER_LINE_LIMIT")
             row = json.loads(line)
-            unsigned = {k: v for k, v in row.items() if k != "hash"}
-            if hashlib.sha256(compact(unsigned).encode()).hexdigest() != row.get("hash"):
+            # Preserve original numeric bytes, including official JSON float
+            # rendering. The producer serializes sorted root keys; remove its
+            # final top-level hash field without re-encoding nested numbers.
+            if list(row) != ["event", "hash", "previous", "sequence"] or not re.fullmatch(r"[0-9a-f]{64}", row.get("hash", "")):
+                raise ValueError("OBSERVER_JOURNAL_FIELDS")
+            field = b',"hash":"' + row["hash"].encode() + b'"'
+            position = line.rfind(field)
+            unsigned = line[:position] + line[position + len(field):]
+            if position < 0 or hashlib.sha256(unsigned).hexdigest() != row.get("hash"):
                 raise ValueError("OBSERVER_JOURNAL_HASH")
             if self.previous is not None and (row["previous"] != self.previous or row["sequence"] != self.sequence + 1):
                 raise ValueError("OBSERVER_JOURNAL_GAP")
@@ -124,18 +131,21 @@ class Study:
         self.sig_age, self.external_age, self.label_slack = sig_age, external_age, label_slack
         self.external, self.history = {}, collections.defaultdict(collections.deque)
         self.pending = collections.defaultdict(collections.deque)
-        self.last_sample, self.last_source = {}, {}
+        self.last_sample, self.last_source, self.revisions = {}, {}, {}
         self.counts = collections.Counter()
         self.markets = set()
 
     def external_update(self, envelope, now):
         # Fetch completion is when this observer first has these features.
         for row in envelope["markets"]:
+            if envelope.get("source") == "kalshi_official_ws_v2" and not row.get("valid"):
+                continue
             received = millis(row["receivedAt"])
             if received > now or now - received > self.external_age:
                 self.counts["externalStaleOrFuture"] += 1
                 continue
-            if not isinstance(row.get("bodySha256"), str) or len(row["bodySha256"]) != 64:
+            original_hash = row.get("stateChainSha256", row.get("bodySha256"))
+            if not isinstance(original_hash, str) or len(original_hash) != 64:
                 raise ValueError("OBSERVER_EXTERNAL_PROVENANCE")
             n = row["normalized"]
             try:
@@ -144,7 +154,9 @@ class Study:
                 self.counts["externalInvalidOrOneSided"] += 1
                 continue
             value = {"ticker": row["ticker"], "mappingKind": row["mappingKind"], "receivedMs": received,
-                     "availableMs": now, "bodySha256": row["bodySha256"], "features": f,
+                     "availableMs": now, "bodySha256": original_hash, "features": f,
+                     "source": envelope.get("source", "kalshi_official_v2"),
+                     "hashKind": "state_chain" if "stateChainSha256" in row else "original_body",
                      "pricingAuthority": False}
             for market in row["sigMarketIds"]:
                 market = str(market)
@@ -158,10 +170,51 @@ class Study:
                     continue  # Retain first local availability; no renewed clock.
                 self.external[market] = value
                 h = self.history[market]
+                if prior and prior["source"] != value["source"]:
+                    h.clear()  # A source handover is not a price innovation.
                 h.append(value)
                 while h and h[0]["receivedMs"] < now - 180000:
                     h.popleft()
         self.counts["externalPolls"] += 1
+
+    def breadth(self, row, now):
+        frame = row["event"]
+        if frame.get("source") != "official_sig_realtime":
+            raise ValueError("OBSERVER_BREADTH_SOURCE")
+        if frame.get("event") == "stream_reset":
+            self.accept({"event": {"type": "gap"}}, now)
+            self.revisions.clear()
+            return
+        if frame.get("event") != "markets_batch":
+            return
+        received = frame["receivedAt"]
+        for scope in frame["payload"]["markets"]:
+            market, batch = str(scope["marketId"]), scope["batch"]
+            delivery = batch["delivery"]
+            revision, previous = delivery["revision"], delivery["previousRevision"]
+            if delivery["model"] != "best-effort-authoritative-resync" or revision <= previous:
+                raise ValueError("OBSERVER_BREADTH_REVISION")
+            old = self.revisions.get(market)
+            if old is not None and revision <= old:
+                continue
+            if (old is not None and previous != old) or batch.get("resyncRequired") or batch.get("marketSettled"):
+                self.accept({"event": {"type": "gap", "marketId": market}}, now)
+            self.revisions[market] = revision
+            for b in batch.get("books", []):
+                def exact(rows):
+                    result = []
+                    for level in rows:
+                        p = Decimal(str(level["price"]))
+                        tick = Decimal("0.005000")
+                        canonical = (p / tick).quantize(Decimal(1)) * tick
+                        if abs(p - canonical) > Decimal("0.000000000001"):
+                            raise ValueError("OBSERVER_OFFICIAL_TICK")
+                        result.append({"price": format(canonical, ".6f"), "quantity": level["quantity"]})
+                    return result
+                self.accept({"hash": row["hash"], "sequence": row["sequence"], "event": {"type": "book", "book": {
+                    "marketId": market, "exchangeId": str(b["exchangeId"]), "sequence": str(b["asOf"]["sequence"]),
+                    "sourceAt": b["asOf"]["at"], "receivedAt": received,
+                    "bids": exact(b["bids"]), "asks": exact(b["asks"])}}}, now)
 
     def accept(self, row, now):
         event = row["event"]
@@ -226,7 +279,7 @@ class Study:
         if not ext or now - ext["receivedMs"] > self.external_age or ext["availableMs"] > now:
             self.counts["noCurrentExternal"] += 1
             return
-        sample_id = hashlib.sha256(f"{row['hash']}:{ext['bodySha256']}:{now}".encode()).hexdigest()
+        sample_id = hashlib.sha256(f"{market}:{exchange}:{row['hash']}:{ext['bodySha256']}:{now}".encode()).hexdigest()
         changes = {}
         for ms in (1000, 5000, 30000):
             prior = next((v for v in reversed(self.history[market]) if v["receivedMs"] <= now - ms), None)
@@ -291,13 +344,20 @@ def main():
     parser.add_argument("--journal", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--duration-seconds", type=int, default=0)
+    parser.add_argument("--format", choices=["native", "breadth"], default="native")
     args = parser.parse_args()
     # Unix VPS read-only sidecar, advisory lock kept on the same inode.
     import fcntl
     args.output.mkdir(parents=True, exist_ok=True, mode=0o700)
     lock = (args.output / "observer.lock").open("a+")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    tail, output = Tail(args.journal), Output(args.output)
+    base = args.journal
+    segment = 0
+    if args.format == "breadth":
+        while base.with_name(f"{base.stem}-part-{segment + 1:04}.jsonl").exists():
+            segment += 1
+    current = base.with_name(f"{base.stem}-part-{segment:04}.jsonl") if segment else base
+    tail, output = Tail(current), Output(args.output)
     study = Study(output.emit)
     started, last_poll, last_status = time.monotonic(), 0, 0
     try:
@@ -307,22 +367,29 @@ def main():
             if time.monotonic() - last_poll >= 1:
                 last_poll = time.monotonic()
                 try:
-                    request = urllib.request.Request("http://127.0.0.1:17841/v1/quotes")
-                    with urllib.request.urlopen(request, timeout=2) as response:
-                        raw = response.read(16 * 1024 * 1024 + 1)
-                    if len(raw) > 16 * 1024 * 1024:
-                        raise ValueError("OBSERVER_CACHE_LIMIT")
-                    study.external_update(json.loads(raw), int(time.time() * 1000))
+                    for route in ["/v1/quotes", "/v1/ws/quotes"]:
+                        request = urllib.request.Request("http://127.0.0.1:17841" + route)
+                        with urllib.request.urlopen(request, timeout=2) as response:
+                            raw = response.read(16 * 1024 * 1024 + 1)
+                        if len(raw) > 16 * 1024 * 1024:
+                            raise ValueError("OBSERVER_CACHE_LIMIT")
+                        study.external_update(json.loads(raw), int(time.time() * 1000))
                 except (OSError, TimeoutError):
                     study.counts["externalUnavailable"] += 1
             for row in tail.read():
-                study.accept(row, int(time.time() * 1000))
+                (study.breadth if args.format == "breadth" else study.accept)(row, int(time.time() * 1000))
+            if args.format == "breadth" and not tail.buffer:
+                next_file = base.with_name(f"{base.stem}-part-{segment + 1:04}.jsonl")
+                if next_file.exists():
+                    tail.close()
+                    segment += 1
+                    tail = Tail(next_file, from_start=True)
             if time.monotonic() - last_status >= 5:
                 last_status = time.monotonic()
                 status = {"at": stamp(int(time.time() * 1000)), "state": "observing", "pid": os.getpid(),
                           "counters": dict(study.counts), "observedMarkets": len(study.markets),
                           "pendingSamples": sum(map(len, study.pending.values())), "journalPosition": tail.position,
-                          "journalSequence": tail.sequence, "originalJournalHash": tail.previous,
+                          "journalSequence": tail.sequence, "originalJournalHash": tail.previous, "format": args.format, "captureSegment": segment,
                           "readOnly": True, "executionAuthority": False, "historyPrefixVerified": False}
                 temp = args.output / "status.json.tmp"
                 temp.write_text(compact(status) + "\n", encoding="utf-8")
