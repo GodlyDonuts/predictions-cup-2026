@@ -18,16 +18,20 @@ MAX_BODY=16*1024**2
 HISTORICAL_LF='200abfd0701f56f43183b1b7b60cd1cdf11525f0fb9daea72e9bf6f08d90bc40'
 HISTORICAL_CRLF='1f63cf06d05b68e46d2febe57607125d9eb95d6e87db3f4d29b401d39d8e700b'
 BOOK_VERSION_LF='2fa9b142b672f4a9076e185ac91be0b288945b0e1bba6afb0797594ed6678529'
+PRETRIGGER_LF='3d3b5d43a6c79293d28b424fc4ab31626267acdd1c1b71918d9cdefd94824cd7'
 # Capture producer hashes select a fixed reviewed version, NEVER a code path.
-PRODUCER_VERSIONS={HISTORICAL_LF:'historical_200ab',HISTORICAL_CRLF:'historical_200ab',BOOK_VERSION_LF:'book_version_2fa9'}
+PRODUCER_VERSIONS={HISTORICAL_LF:'historical_200ab',HISTORICAL_CRLF:'historical_200ab',BOOK_VERSION_LF:'book_version_2fa9',PRETRIGGER_LF:'pretrigger_v2'}
 KNOWN_PRODUCERS=set(PRODUCER_VERSIONS)
 SAMPLERS={
     'historical_200ab':(
         'research/moloch-trade-trigger-20261016/witness/known-samplers/crossvenue_observer_200ab.py',
         frozenset({HISTORICAL_LF,HISTORICAL_CRLF})),
     'book_version_2fa9':(
-        'moloch/external-data/crossvenue_observer.py',
+        'research/moloch-trade-trigger-20261016/witness/known-samplers/crossvenue_observer_2fa9.py',
         frozenset({BOOK_VERSION_LF,'4a2d585d9b2ce81add31cc2a6a8ba99fb6df6bcd019dbf167535e4e1910f3471'})),
+    'pretrigger_v2':(
+        'research/moloch-trade-trigger-20261016/witness/known-samplers/crossvenue_observer_pretrigger_v2.py',
+        frozenset({PRETRIGGER_LF,'83733121085c962c32dadeb12a08eba6dbf8562e1e9e188d91607176534017b5'})),
 }
 
 class Rejected(ValueError): pass
@@ -195,7 +199,7 @@ def verify(manifest_path,manifest_sha256):
         need(len(refs)==1 and (refs[0].get('sha256'),refs[0].get('bytes'))==(pins[name].sha,pins[name].bytes),'SEAL_FILE_PIN')
     for name,key in [('producer','producer'),('mapping','mappingFileReference')]:
         need((seal[key].get('sha256'),seal[key].get('bytes'))==(pins[name].sha,pins[name].bytes),'SEAL_REFERENCE_PIN')
-    module=known_sampler(pins['producer'].sha);sources=Sources(manifest.get('sigSources'))
+    module=known_sampler(pins['producer'].sha);pretrigger=pins['producer'].sha==PRETRIGGER_LF;sources=Sources(manifest.get('sigSources'))
     expected=iter(lines(pins['samples']));outputs=0;horizon_labels=0;counts={'polls':0,'failedPolls':0,'cacheApplies':0,'sigApplies':0,'rotations':0}
     def emit(value):
         nonlocal outputs,horizon_labels
@@ -221,6 +225,7 @@ def verify(manifest_path,manifest_sha256):
             need(set(config)=={'samplingMode','format','journal','durationSeconds','horizonsMs','sigMaximumAgeMs','externalMaximumAgeMs','labelSlackMs'} and isinstance(config.get('journal'),str) and integer(config.get('durationSeconds')),'CONFIG_FIELDS')
             need(config.get('samplingMode') in ('book','trade') and config.get('format') in ('native','breadth'),'CONFIG_MODE')
             need(config.get('horizonsMs')==[1000,3000,10000,30000,120000] and config.get('sigMaximumAgeMs')==3000 and config.get('externalMaximumAgeMs')==20000 and config.get('labelSlackMs')==3000,'CONFIG_BOUNDS')
+            need((e.get('sigDrainPolicy')==(module.SIG_DRAIN_POLICY if config['samplingMode']=='trade' else None)) if pretrigger else 'sigDrainPolicy' not in e,'SIG_DRAIN_VERSION_BINDING')
             need(e.get('samplingPolicy')==(module.TRADE_SAMPLING_POLICY if config['samplingMode']=='trade' else None) and e.get('samplingPolicySha256')==(module.TRADE_SAMPLING_POLICY_SHA256 if config['samplingMode']=='trade' else None),'SAMPLING_POLICY')
             sources.start(e['initialBookmark']);study=module.Study(emit,sampling_mode=config['samplingMode'])
         elif kind=='poll_begin':
@@ -233,7 +238,7 @@ def verify(manifest_path,manifest_sha256):
             raw=base64.b64decode(e['bodyBytesBase64'],validate=True)
             need(len(raw)==e['bodyBytes'] and sha(raw)==e.get('bodySha256'),'CACHE_BODY_HASH')
             need(integer(e.get('readCompletedAtMs')) and e['readCompletedAtMs']>=poll['request'] and e.get('status') in (200,None),'CACHE_READ_CLOCK_OR_STATUS')
-            poll['body']=(sequence,raw,e['readCompletedAtMs']);del raw
+            poll['body']=(sequence,raw,e['readCompletedAtMs']);poll['drainBytes']=0;poll['drainRotations']=0;del raw
         elif kind=='apply_begin':
             need(study is not None and apply is None and integer(e.get('samplerNowMs')) and integer(e.get('recordedAtMs')) and e['recordedAtMs']>=e['samplerNowMs'],'APPLY_CLOCK_OR_ORDER')
             now=e['samplerNowMs'];need(prior_capture is None or now>=prior_capture,'SAMPLER_PRECEDES_CAPTURE');need(last_now is None or now>=last_now,'SAMPLER_CLOCK_REVERSED');last_now=now
@@ -242,7 +247,13 @@ def verify(manifest_path,manifest_sha256):
                 need(poll is not None and poll['body'] is not None and not poll['applied'] and ref=={'bodySequence':poll['body'][0],'route':poll['route']} and now>=poll['body'][2],'CACHE_APPLY_BINDING')
                 study.external_update(loads(poll['body'][1]),now);poll['body']=None;poll['applied']=True;counts['cacheApplies']+=1
             elif e.get('inputKind')=='sig_row':
-                need(poll is None and next_route=='/v1/quotes','SIG_POLL_INTERLEAVE')
+                predrain=pretrigger and config['samplingMode']=='trade' and poll is not None and poll['route']=='/v1/ws/quotes' and poll['body'] is not None and not poll['applied']
+                need((poll is None and next_route=='/v1/quotes') or predrain,'SIG_POLL_INTERLEAVE')
+                if predrain:
+                    need(isinstance(ref.get('bookmark'),dict) and integer(ref['bookmark'].get('readOffset')),'SIG_DRAIN_READ_BOUND')
+                    delta=ref['bookmark']['readOffset']-sources.current['readOffset']
+                    need(delta>=0 and poll['drainBytes']+delta<=module.SIG_DRAIN_POLICY['maximumReadBytesPerDrain'],'SIG_DRAIN_READ_BOUND')
+                    poll['drainBytes']+=delta
                 row=sources.consume(ref);(study.breadth if run['effectiveSamplerConfig']['format']=='breadth' else study.accept)(row,now);counts['sigApplies']+=1
             else:raise Rejected('UNKNOWN_INPUT_KIND')
             need(not study.trigger_disabled,'SAMPLER_TRIGGER_DISABLED')
@@ -257,7 +268,12 @@ def verify(manifest_path,manifest_sha256):
             need(poll is not None and apply is None and poll['body'] is None and not poll['applied'] and e.get('beginSequence')==poll['sequence'] and e.get('failureKind')=='transport' and e.get('bodyAvailable') is False and e.get('errorTextRetained') is False,'FAILED_POLL_PROOF')
             need(integer(e.get('completedAtMs')) and e['completedAtMs']>=poll['request'],'FAILED_POLL_CLOCK');counts['failedPolls']+=1;poll=None;next_route='/v1/quotes'
         elif kind=='sig_rotation':
-            need(study is not None and poll is None and apply is None and next_route=='/v1/quotes' and run['effectiveSamplerConfig']['format']=='breadth','ROTATION_ORDER')
+            predrain=pretrigger and config['samplingMode']=='trade' and poll is not None and poll['route']=='/v1/ws/quotes' and poll['body'] is not None and not poll['applied']
+            need(study is not None and apply is None and ((poll is None and next_route=='/v1/quotes') or predrain) and run['effectiveSamplerConfig']['format']=='breadth','ROTATION_ORDER')
+            if predrain:
+                old=e['previousBookmark']
+                need(poll['drainRotations']<module.SIG_DRAIN_POLICY['maximumRotationsPerDrain'] and old['readOffset']==old['fileBytesAtObservation'] and old['bufferedBytes']==0 and old['skipPartialLine'] is False,'SIG_DRAIN_ROTATION_BOUND')
+                poll['drainRotations']+=1
             sources.rotate(e);counts['rotations']+=1
         else:raise Rejected('UNKNOWN_OR_FAILED_TRACE_EVENT')
     need(study is not None and poll is None and apply is None and next_route=='/v1/quotes','PENDING_TRACE_INPUT')

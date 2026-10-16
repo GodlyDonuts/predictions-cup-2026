@@ -1,9 +1,14 @@
 import hashlib
+import io
+import contextlib
+import gzip
 import copy
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
+import crossvenue_observer as observer
 from crossvenue_observer import Study, Tail, compact, stamp, decimal, FLOW_FIELDS, validate_trade_flow
 
 
@@ -516,6 +521,84 @@ class ObserverTests(unittest.TestCase):
         self.assertEqual(cached['sourceSnapshotSha256'],hashlib.sha256(compact(flow).encode()).hexdigest())
         flow['observing']=False;s.external_update(e,40001)
         self.assertIsNone(s._flow_for_decision('1',40001))
+
+
+class PretriggerDrainTests(unittest.TestCase):
+    @staticmethod
+    def encoded(event, seq=1, previous=''):
+        body={'event':event,'previous':previous,'sequence':seq}
+        digest=hashlib.sha256(compact(body).encode()).hexdigest()
+        return (compact({**body,'hash':digest})+'\n').encode(),digest
+    def test_completed_ws_body_drains_original_sig_before_trade_and_uses_actual_later_clock(self):
+        with tempfile.TemporaryDirectory() as d, contextlib.ExitStack() as stack, patch.object(observer.shutil,'disk_usage',return_value=type('D',(),{'free':40*1024**3})()):
+            root=Path(d);journal=root/'sig.jsonl';journal.write_bytes(b'');tail=Tail(journal);stack.callback(tail.close)
+            raw,_=self.encoded(row(39950,2)['event']);journal.write_bytes(raw)
+            mapping=root/'map.json';mapping.write_bytes(b'{}');output=root/'capture';output.mkdir();clock=[40010]
+            trace=observer.InputTrace(output,mapping,{'samplingMode':'trade'},tail.bookmark(),clock=lambda:clock[0]);stack.callback(trace.close)
+            out=[];study=Study(out.append,sampling_mode='trade');study.accept(row(35000),35000)
+            body=websocket(40000);body['markets'][0]['tradeFlow']=public_flow(40000);original=compact(body).encode()
+            class Response(io.BytesIO):status=200
+            def drain():
+                events=[json.loads(x)['event'] for x in gzip.decompress((output/'input-trace-v1.jsonl.gz').read_bytes()).splitlines()]
+                self.assertEqual(events[-1]['kind'],'poll_body');self.assertEqual(events[-1]['readCompletedAtMs'],clock[0])
+                clock[0]+=40;observer.drain_sig_once(tail,study.accept,trace=trace,clock=lambda:clock[0]);clock[0]+=10
+            observer.trace_cache_poll(study,'/v1/ws/quotes',trace,lambda *a,**k:Response(original),before_trade_apply=drain)
+            self.assertEqual(len(out),1);sample=out[0];self.assertEqual(sample['decisionMs'],40060);self.assertEqual(sample['trigger']['sigBookObservedMs'],40050)
+            self.assertEqual(sample['sig']['receivedAt'],stamp(39950));self.assertEqual(sample['trigger']['record']['sourceTsMs'],39900);self.assertEqual(sample['trigger']['sourceExportMs'],40000)
+            self.assertEqual(sample['trigger']['observerFirstAvailableMs'],40060);self.assertEqual(len(study.trigger_seen),1)
+            events=[json.loads(x)['event'] for x in gzip.decompress((output/'input-trace-v1.jsonl.gz').read_bytes()).splitlines()]
+            self.assertEqual([e['inputKind'] for e in events if e['kind']=='apply_begin'],['sig_row','cache_body'])
+            self.assertEqual(events[0]['sigDrainPolicy'],observer.SIG_DRAIN_POLICY)
+            observer.trace_cache_poll(study,'/v1/ws/quotes',trace,lambda *a,**k:Response(original),before_trade_apply=drain)
+            self.assertEqual(len(out),1);self.assertGreater(study.counts['tradeDuplicateSkip'],0)
+    def test_drain_delay_cannot_backdate_decision_or_rescue_expired_trade(self):
+        with tempfile.TemporaryDirectory() as d, contextlib.ExitStack() as stack, patch.object(observer.shutil,'disk_usage',return_value=type('D',(),{'free':40*1024**3})()):
+            root=Path(d);journal=root/'sig';journal.write_bytes(b'');tail=Tail(journal);stack.callback(tail.close)
+            raw,_=self.encoded(row(41850)['event']);journal.write_bytes(raw);mapping=root/'map';mapping.write_bytes(b'{}');output=root/'out';output.mkdir();clock=[40010]
+            trace=observer.InputTrace(output,mapping,{'samplingMode':'trade'},tail.bookmark(),clock=lambda:clock[0]);stack.callback(trace.close)
+            out=[];study=Study(out.append,sampling_mode='trade');body=websocket(40000);body['markets'][0]['tradeFlow']=public_flow(40000)
+            class Response(io.BytesIO):status=200
+            def drain():clock[0]=41901;observer.drain_sig_once(tail,study.accept,trace=trace,clock=lambda:clock[0])
+            observer.trace_cache_poll(study,'/v1/ws/quotes',trace,lambda *a,**k:Response(compact(body).encode()),before_trade_apply=drain)
+            self.assertEqual(out,[]);self.assertEqual(study.counts['tradeOldSkip'],1);self.assertEqual(len(study.trigger_seen),1)
+    def test_invalid_body_and_book_mode_never_invoke_trade_drain(self):
+        with tempfile.TemporaryDirectory() as d, contextlib.ExitStack() as stack, patch.object(observer.shutil,'disk_usage',return_value=type('D',(),{'free':40*1024**3})()):
+            root=Path(d);mapping=root/'map';mapping.write_bytes(b'{}');output=root/'out';output.mkdir();trace=observer.InputTrace(output,mapping,{'samplingMode':'book'},{},clock=lambda:40000);stack.callback(trace.close)
+            calls=[]
+            class Response(io.BytesIO):status=200
+            with self.assertRaises(json.JSONDecodeError):observer.trace_cache_poll(Study(lambda _:None,sampling_mode='trade'),'/v1/ws/quotes',trace,lambda *a,**k:Response(b'{'),before_trade_apply=lambda:calls.append(1))
+            self.assertEqual(calls,[])
+            observer.trace_cache_poll(Study(lambda _:None),'/v1/ws/quotes',trace,lambda *a,**k:Response(compact(websocket(40000)).encode()),before_trade_apply=lambda:calls.append(1))
+            self.assertEqual(calls,[])
+    def test_bounded_drain_does_not_skip_whole_lines_before_existing_rotation(self):
+        with tempfile.TemporaryDirectory() as d, contextlib.ExitStack() as stack:
+            base=Path(d)/'breadth.jsonl';base.write_bytes(b'');tail=Tail(base);stack.callback(lambda:tail.close());previous='';rows=[]
+            for seq in range(1,1026):
+                event={'type':'tick','receivedAt':stamp(0),'padding':''};encoded,_=self.encoded(event,seq,previous)
+                event['padding']='x'*(4096-len(encoded));encoded,previous=self.encoded(event,seq,previous);self.assertEqual(len(encoded),4096);rows.append(encoded)
+            base.write_bytes(b''.join(rows));next_path=base.with_name('breadth-part-0001.jsonl');next_path.write_bytes(self.encoded({'type':'tick'},1)[0]);seen=[];segment=0
+            tail,segment=observer.drain_sig_once(tail,lambda r,now:seen.append((segment,r['sequence'])),base=base,clock=lambda:10000)
+            self.assertEqual(segment,0);self.assertEqual(len(seen),1024);self.assertEqual(tail.position,4*1024*1024);self.assertEqual(tail.buffer,b'')
+            tail,segment=observer.drain_sig_once(tail,lambda r,now:seen.append((0,r['sequence'])),base=base,segment=segment,clock=lambda:10001)
+            self.assertEqual(segment,1);self.assertEqual(len(seen),1026);self.assertEqual([n for _,n in seen[:1025]],list(range(1,1026)));self.assertEqual(seen[-1][1],1)
+    def test_rotated_callback_failure_closes_new_tail_and_retains_original_for_failure_seal(self):
+        with tempfile.TemporaryDirectory() as d:
+            base=Path(d)/'breadth.jsonl';base.write_bytes(b'');tail=Tail(base)
+            try:
+                next_path=base.with_name('breadth-part-0001.jsonl');next_path.write_bytes(self.encoded({'type':'tick'},1)[0])
+                def fail(*args):raise ValueError('test callback failure')
+                with self.assertRaisesRegex(ValueError,'test callback failure'):observer.drain_sig_once(tail,fail,base=base,clock=lambda:10000)
+                self.assertEqual(tail.bookmark()['readOffset'],0)
+                next_path.unlink()  # Windows also proves the newly opened file was closed.
+            finally:tail.close()
+    def test_tail_read_bound_refuses_zero_bool_or_excess_without_moving_cursor(self):
+        with tempfile.TemporaryDirectory() as d, contextlib.ExitStack() as stack:
+            p=Path(d)/'sig';p.write_bytes(b'');tail=Tail(p)
+            try:
+                for value in (0,True,4*1024*1024+1):
+                    with self.subTest(value=value),self.assertRaisesRegex(ValueError,'OBSERVER_READ_BOUND'):list(tail.read(value))
+                    self.assertEqual(tail.position,0)
+            finally:tail.close()
 
 
 if __name__ == "__main__":

@@ -183,11 +183,13 @@ class Tail:
                 "lastConsumedEndOffset": self.last_row_offset+len(self.last_row_bytes) if self.last_row_bytes is not None else None,
                 "historyPrefixVerified": False}
 
-    def read(self):
+    def read(self, maximum_bytes=4 * 1024 * 1024):
+        if type(maximum_bytes) is not int or not 1 <= maximum_bytes <= 4 * 1024 * 1024:
+            raise ValueError("OBSERVER_READ_BOUND")
         info = self.path.lstat()
         if not stat.S_ISREG(info.st_mode) or (info.st_dev, info.st_ino) != self.identity or info.st_size < self.position:
             raise ValueError("OBSERVER_JOURNAL_CHANGED")
-        chunk = os.read(self.fd, 4 * 1024 * 1024)
+        chunk = os.read(self.fd, maximum_bytes)
         self.position += len(chunk)
         self.buffer += chunk
         if len(self.buffer) > 12 * 1024 * 1024:
@@ -757,6 +759,13 @@ class Output:
             self.stream = None
 
 
+SIG_DRAIN_POLICY = {
+    "version": 2, "stage": "complete_ws_body_before_trade_apply",
+    "maximumReadBytesPerDrain": 4 * 1024 * 1024, "maximumRotationsPerDrain": 1,
+    "decisionClock": "actual_after_sig_and_cache_consumption",
+    "sourceClocksRenewed": False, "retryConsumedTriggers": False,
+}
+
 INPUT_TRACE_PROTOCOL = {
     "version": 1, "captureCondition": "original_input_consumption_trace_v1",
     "maximumCompressedBytes": 2 * 1024 ** 3, "minimumFreeBytes": 10 * 1024 ** 3,
@@ -821,6 +830,7 @@ class InputTrace:
             self.record({"kind": "run_start", "protocol": INPUT_TRACE_PROTOCOL,
                          "producer": self.producer, "mappingFileReference": self.mapping,
                          "effectiveCacheMappingsWitnessedBy": "original_cache_response_bodies",
+                         "sigDrainPolicy": SIG_DRAIN_POLICY if config.get("samplingMode") == "trade" else None,
                          "effectiveSamplerConfig": config,
                          "effectiveSamplerConfigSha256": hashlib.sha256(compact(config).encode()).hexdigest(),
                          "samplingPolicy": TRADE_SAMPLING_POLICY if config['samplingMode'] == 'trade' else None,
@@ -940,7 +950,7 @@ class InputTrace:
         return seal
 
 
-def trace_cache_poll(study, route, trace, fetch=None):
+def trace_cache_poll(study, route, trace, fetch=None, before_trade_apply=None):
     if route not in ('/v1/quotes', '/v1/ws/quotes'):
         raise InputTraceError('TRACE_ROUTE')
     begin = trace.record({"kind": "poll_begin", "route": route, "requestStartedAtMs": trace.clock()})
@@ -960,6 +970,10 @@ def trace_cache_poll(study, route, trace, fetch=None):
         if len(raw) > maximum:
             raise ValueError('OBSERVER_CACHE_LIMIT')
         value = json.loads(raw)
+        if route == '/v1/ws/quotes' and getattr(study, 'sampling_mode', None) == 'trade' and before_trade_apply is not None:
+            before_trade_apply()
+        # Never backdate a decision to HTTP completion: SIG consumption can take
+        # time, and both observations must really precede the decision clock.
         now = trace.clock()  # Exactly the argument subsequently given to the sampler.
         trace.apply('cache_body', {"bodySequence": body_sequence, "route": route}, study.external_update, value, now)
         trace.record({"kind": "poll_complete", "beginSequence": begin, "completedAtMs": trace.clock()})
@@ -974,6 +988,50 @@ def trace_cache_poll(study, route, trace, fetch=None):
         if isinstance(exc, (OSError, TimeoutError)):
             trace.pending.remove(('poll', begin))
         raise
+
+
+def drain_sig_once(tail, callback, *, base=None, segment=0, trace=None, clock=None):
+    """Consume bounded ORIGINAL bytes, including at most one actual rotation.
+
+    Never break a Tail.read generator midway: that would discard parsed lines
+    after its file cursor has advanced. A read's rows are all consumed in order.
+    Retain the caller's old descriptor until success so failure sealing can
+    still identify the last owned cursor; close a newly opened tail on failure.
+    """
+    clock = clock or (lambda: int(time.time() * 1000))
+    original = tail
+    remaining = SIG_DRAIN_POLICY['maximumReadBytesPerDrain']
+    try:
+        for rotation in range(SIG_DRAIN_POLICY['maximumRotationsPerDrain'] + 1):
+            before = tail.position
+            for row in tail.read(remaining):
+                now = clock()
+                if trace:
+                    trace.consume_sig(tail, row, callback, now)
+                else:
+                    callback(row, now)
+            remaining -= tail.position - before
+            # A whole-line boundary is not EOF. Never skip unread old-segment bytes.
+            if base is None or tail.buffer or tail.position != os.fstat(tail.fd).st_size:
+                break
+            next_file = base.with_name(f"{base.stem}-part-{segment + 1:04}.jsonl")
+            if not next_file.exists() or rotation == SIG_DRAIN_POLICY['maximumRotationsPerDrain']:
+                break
+            old_bookmark = tail.bookmark() if trace else None
+            segment += 1
+            tail = Tail(next_file, from_start=True)
+            if trace:
+                trace.record({"kind": "sig_rotation", "previousBookmark": old_bookmark,
+                              "nextBookmark": tail.bookmark(), "observedAtMs": clock(), "crossSegmentContinuityVerified": False})
+            if remaining == 0:
+                break
+    except Exception:
+        if tail is not original:
+            tail.close()
+        raise
+    if tail is not original:
+        original.close()
+    return tail, segment
 
 
 def main():
@@ -1025,6 +1083,11 @@ def main():
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
     completed_normally = False
+    def drain_sig():
+        nonlocal tail, segment
+        callback = study.breadth if args.format == "breadth" else study.accept
+        tail, segment = drain_sig_once(tail, callback, base=base if args.format == "breadth" else None,
+                                       segment=segment, trace=trace)
     try:
         while not stopping[0] and not (args.output / "STOP").exists():
             if args.duration_seconds and time.monotonic() - started >= args.duration_seconds:
@@ -1034,33 +1097,20 @@ def main():
                 try:
                     for route in ["/v1/quotes", "/v1/ws/quotes"]:
                         if trace:
-                            trace_cache_poll(study, route, trace)
+                            trace_cache_poll(study, route, trace, before_trade_apply=drain_sig)
                             continue
                         request = urllib.request.Request("http://127.0.0.1:17841" + route)
                         with urllib.request.urlopen(request, timeout=2) as response:
                             raw = response.read(16 * 1024 * 1024 + 1)
                         if len(raw) > 16 * 1024 * 1024:
                             raise ValueError("OBSERVER_CACHE_LIMIT")
-                        study.external_update(json.loads(raw), int(time.time() * 1000))
+                        value = json.loads(raw)
+                        if args.sampling_mode == "trade" and route == "/v1/ws/quotes":
+                            drain_sig()
+                        study.external_update(value, int(time.time() * 1000))
                 except (OSError, TimeoutError):
                     study.counts["externalUnavailable"] += 1
-            for row in tail.read():
-                callback = study.breadth if args.format == "breadth" else study.accept
-                now = int(time.time() * 1000)
-                if trace:
-                    trace.consume_sig(tail, row, callback, now)
-                else:
-                    callback(row, now)
-            if args.format == "breadth" and not tail.buffer:
-                next_file = base.with_name(f"{base.stem}-part-{segment + 1:04}.jsonl")
-                if next_file.exists():
-                    old_bookmark = tail.bookmark() if trace else None
-                    tail.close()
-                    segment += 1
-                    tail = Tail(next_file, from_start=True)
-                    if trace:
-                        trace.record({"kind": "sig_rotation", "previousBookmark": old_bookmark,
-                            "nextBookmark": tail.bookmark(), "observedAtMs": trace.clock(), "crossSegmentContinuityVerified": False})
+            drain_sig()
             if time.monotonic() - last_status >= 5:
                 last_status = time.monotonic()
                 status = {"at": stamp(int(time.time() * 1000)), "state": "observing", "pid": os.getpid(),

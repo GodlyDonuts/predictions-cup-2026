@@ -269,4 +269,69 @@ class ReplayTests(unittest.TestCase):
         with self.assertRaisesRegex(v.Rejected,'UNREVIEWED_CAPTURE_PRODUCER'):v.known_sampler('0'*64)
         with self.assertRaisesRegex(v.Rejected,'UNREVIEWED_CAPTURE_PRODUCER'):v.known_sampler(str(self.root/'unreviewed.py'))
 
+class PretriggerReplayTests(unittest.TestCase):
+    setUp=ReplayTests.setUp
+    fixture=ReplayTests.fixture
+    # Run only these new methods, not inherited baseline methods a second time.
+    def pretrigger(self, producer=None, stage='hook'):
+        from test_trade_triggered_observer import envelope
+        S=v.known_sampler(producer or v.PRETRIGGER_LF)
+        f=self.fixture(mode='trade',sampler=S);f.clock=35000;f.sig(35000);f.clock=40010
+        S.trace_cache_poll(f.study,'/v1/quotes',f.trace,lambda *a,**k:Response(S.compact(external(39000)).encode()))
+        def fresh():
+            f.clock=40050;f.sig(39950,2,f.tail.previous);f.clock=40060
+        body=S.compact(envelope()).encode()
+        if stage=='hook':
+            S.trace_cache_poll(f.study,'/v1/ws/quotes',f.trace,lambda *a,**k:Response(body),before_trade_apply=fresh)
+        elif stage=='before_body':
+            def fetch(*a,**k):fresh();return Response(body)
+            S.trace_cache_poll(f.study,'/v1/ws/quotes',f.trace,fetch)
+        else:
+            original=f.trace.record;fired=[False]
+            def record(event):
+                n=original(event)
+                wanted='poll_body' if stage=='old_interleave' else 'apply_complete'
+                if event['kind']==wanted and not fired[0]:fired[0]=True;fresh()
+                return n
+            with patch.object(f.trace,'record',side_effect=record):S.trace_cache_poll(f.study,'/v1/ws/quotes',f.trace,lambda *a,**k:Response(body))
+        f.finish();return f
+    def test_new_completed_body_pretrigger_replays_original_membership_and_actual_clock(self):
+        f=self.pretrigger();r=f.verify();self.assertEqual(r['outputRows'],1);self.assertEqual(r['counts']['sigApplies'],2);self.assertEqual(r['producerSha256'],v.PRETRIGGER_LF)
+        rows=[json.loads(x) for x in gzip.decompress(Path(f.manifest['samples']['path']).read_bytes()).splitlines()]
+        self.assertEqual(rows[0]['decisionMs'],40060);self.assertEqual(rows[0]['trigger']['sigBookObservedMs'],40050);self.assertEqual(rows[0]['sig']['receivedAt'],O.stamp(39950));self.assertFalse(r['wholeWitnessVerified'])
+    def test_old_2fa_producer_still_refuses_same_completed_body_interleave(self):
+        f=self.pretrigger(v.BOOK_VERSION_LF,'old_interleave')
+        with self.assertRaisesRegex(v.Rejected,'SIG_POLL_INTERLEAVE'):f.verify()
+    def test_new_producer_refuses_sig_before_complete_body(self):
+        f=self.pretrigger(stage='before_body')
+        with self.assertRaisesRegex(v.Rejected,'SIG_POLL_INTERLEAVE'):f.verify()
+    def test_new_producer_refuses_sig_after_cache_apply(self):
+        f=self.pretrigger(stage='after_apply')
+        with self.assertRaisesRegex(v.Rejected,'SIG_POLL_INTERLEAVE'):f.verify()
+    def test_new_producer_requires_exact_source_bound_ordering_marker(self):
+        f=self.pretrigger();f.mutate_trace(lambda rows:rows[0]['event']['sigDrainPolicy'].update(version=1))
+        with self.assertRaisesRegex(v.Rejected,'SIG_DRAIN_VERSION_BINDING'):f.verify()
+    def test_new_predrain_rejects_excess_original_read_offset_delta(self):
+        f=self.pretrigger()
+        def mutate(rows):
+            body=False
+            for r in rows:
+                e=r['event']
+                if e['kind']=='poll_body' and e['route']=='/v1/ws/quotes':body=True
+                if body and e['kind']=='apply_begin' and e['inputKind']=='sig_row':e['input']['bookmark']['readOffset']+=4*1024**2+1;break
+        f.mutate_trace(mutate)
+        with self.assertRaisesRegex(v.Rejected,'SIG_DRAIN_READ_BOUND'):f.verify()
+    def test_new_predrain_rotation_replays_original_new_segment_book(self):
+        from test_trade_triggered_observer import envelope
+        S=v.known_sampler(v.PRETRIGGER_LF);f=self.fixture(mode='trade',format='breadth',sampler=S);f.clock=40010
+        S.trace_cache_poll(f.study,'/v1/quotes',f.trace,lambda *a,**k:Response(S.compact(external(39000)).encode()))
+        next_path=self.root/'source-part-0001.jsonl'
+        event={'source':'official_sig_realtime','event':'markets_batch','receivedAt':S.stamp(39950),'payload':{'markets':[{'marketId':'1','batch':{'delivery':{'model':'best-effort-authoritative-resync','revision':1,'previousRevision':0},'books':[{'exchangeId':'101','asOf':{'sequence':1,'at':S.stamp(39950)},'bids':[{'price':'.4','quantity':10}],'asks':[{'price':'.42','quantity':10}]}],'trades':[]}}]}}
+        next_path.write_bytes(rawline(event,1,''));f.source_paths.append(next_path)
+        def drain():
+            f.clock=40050;f.tail,segment=S.drain_sig_once(f.tail,f.study.breadth,base=f.source,trace=f.trace,clock=lambda:f.clock);self.assertEqual(segment,1);f.source=f.tail.path;f.identities[str(f.source)]=f.tail.identity;f.clock=40060
+        S.trace_cache_poll(f.study,'/v1/ws/quotes',f.trace,lambda *a,**k:Response(S.compact(envelope()).encode()),before_trade_apply=drain)
+        f.finish();r=f.verify();self.assertEqual(r['counts']['rotations'],1);self.assertEqual(r['counts']['sigApplies'],1);self.assertEqual(r['outputRows'],1);self.assertFalse(r['crossSegmentContinuityVerified'])
+
+
 if __name__=='__main__':unittest.main()
