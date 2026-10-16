@@ -1,0 +1,1848 @@
+{
+  "actualFillsUsed": false,
+  "analysis": "unchanged_frozen_v6_price_protocol_applied_to_sealed_v9",
+  "asOfUtc": "2026-10-16T14:38:21.271728+00:00",
+  "executionAuthority": false,
+  "fixedAblation": {
+    "asOfMs": 1792161501271,
+    "caveats": [
+      "Same complete-case cluster cohort and causal purged folds for all comparators.",
+      "SIG spread mechanically predicts negative crossing cost absent any price movement.",
+      "External full-model MSE improvement does not identify causal Kalshi price discovery.",
+      "Missing labels/features may be selective; market/time clusters remain cross-market correlated.",
+      "No maker fills, fill probability or account PnL; no tuning or prospective approval."
+    ],
+    "decisions": 22579,
+    "executionAuthority": false,
+    "horizons": {
+      "1000": {
+        "actualFill": false,
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 5888,
+          "missingFeature": 4141,
+          "missingLabel": 11045,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1133
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159989464,
+            "testClusters": 1406,
+            "testEndExclusiveMs": 1792160501936,
+            "testStartMs": 1792159989464,
+            "trained": true,
+            "trainingClusters": 1395,
+            "trainingSampleIdsSha256": "07f1c4cb92cb0dfca672a9ef26eeb3984e9337c215f2ad874e649ba59f5cfd99"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160501897,
+            "testClusters": 1540,
+            "testEndExclusiveMs": 1792160925459,
+            "testStartMs": 1792160501936,
+            "trained": true,
+            "trainingClusters": 2827,
+            "trainingSampleIdsSha256": "ff42724635a5770c23d4b956373835447fc9cbc6608db12eda797a25f2eaeeed"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160922099,
+            "testClusters": 1498,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160925459,
+            "trained": true,
+            "trainingClusters": 4381,
+            "trainingSampleIdsSha256": "add9e1ff33668d3d7db0260451ce346a2fcc8cee568514315b54ccfd86c093db"
+          }
+        ],
+        "fullMseMinusSigLocalMse": 1.8167599261833536e-09,
+        "fullMseMinusUnchangedBboMse": -2.810283574528075e-07,
+        "fullRidge": {
+          "abstain": true,
+          "interceptMse": 4.2199571158153605e-06,
+          "mse": 1.4713343788208194e-06,
+          "outOfSampleClusters": 4444,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "outOfSampleSampleIdsSha256": "ede798f03d0cf775bd1fa2d7e33709de702cf517ac10800f18e946984d8a2051",
+        "sigLocalRidge": {
+          "abstain": true,
+          "interceptMse": 4.2199571158153605e-06,
+          "mse": 1.469517618894636e-06,
+          "outOfSampleClusters": 4444,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchangedSigBbo": {
+          "mse": 1.7523627362736269e-06,
+          "outOfSampleClusters": 4444,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0"
+        }
+      },
+      "10000": {
+        "actualFill": false,
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 4732,
+          "missingFeature": 4141,
+          "missingLabel": 11602,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1732
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159956727,
+            "testClusters": 1085,
+            "testEndExclusiveMs": 1792160501897,
+            "testStartMs": 1792159965647,
+            "trained": true,
+            "trainingClusters": 1168,
+            "trainingSampleIdsSha256": "bf31a56e3d98bca92dae050184d3be35ac285c3038248a1a4a12fe3b1e4cc105"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160492988,
+            "testClusters": 1206,
+            "testEndExclusiveMs": 1792160898706,
+            "testStartMs": 1792160501897,
+            "trained": true,
+            "trainingClusters": 2233,
+            "trainingSampleIdsSha256": "13b69318b7788bce1cbd28fcc18076ac3c59eec16cf7013f3ab46b63bc12a0c2"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160893881,
+            "testClusters": 1198,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160898706,
+            "trained": true,
+            "trainingClusters": 3450,
+            "trainingSampleIdsSha256": "83a8eea3e85f691dd2f17662dede0d364c39dd0abb75b7fc03a576fd17a75faa"
+          }
+        ],
+        "fullMseMinusSigLocalMse": 4.202047853086068e-09,
+        "fullMseMinusUnchangedBboMse": -5.727063978669245e-07,
+        "fullRidge": {
+          "abstain": true,
+          "interceptMse": 4.424035296238931e-06,
+          "mse": 2.2432867233712516e-06,
+          "outOfSampleClusters": 3489,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "outOfSampleSampleIdsSha256": "d8b36850450973308dc432b46a4d65a2273e617289db61c513ad40e5214022f3",
+        "sigLocalRidge": {
+          "abstain": true,
+          "interceptMse": 4.424035296238931e-06,
+          "mse": 2.2390846755181655e-06,
+          "outOfSampleClusters": 3489,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchangedSigBbo": {
+          "mse": 2.815993121238176e-06,
+          "outOfSampleClusters": 3489,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0"
+        }
+      },
+      "120000": {
+        "actualFill": false,
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 1101,
+          "missingFeature": 4141,
+          "missingLabel": 15922,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1043
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159954983,
+            "testClusters": 256,
+            "testEndExclusiveMs": 1792160470658,
+            "testStartMs": 1792159962762,
+            "trained": true,
+            "trainingClusters": 217,
+            "trainingSampleIdsSha256": "491fb59e4c6f27b6cb076a69dbf585c9c26eeec0c9121bfc27d7f6859c5861fa"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160470582,
+            "testClusters": 259,
+            "testEndExclusiveMs": 1792160752861,
+            "testStartMs": 1792160470658,
+            "trained": true,
+            "trainingClusters": 451,
+            "trainingSampleIdsSha256": "76b270f5e14712a7deae2ade2df6e5268153cb3105535c7678ee482503c88cad"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160752749,
+            "testClusters": 302,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160752861,
+            "trained": true,
+            "trainingClusters": 715,
+            "trainingSampleIdsSha256": "697dce039d3090e3e991475d5cee5faafd48292805fba95f8bd48219d8c92ccc"
+          }
+        ],
+        "fullMseMinusSigLocalMse": 2.9739550166214978e-08,
+        "fullMseMinusUnchangedBboMse": -3.4786257659051354e-07,
+        "fullRidge": {
+          "abstain": true,
+          "interceptMse": 5.119659886215872e-06,
+          "mse": 2.6356135556004286e-06,
+          "outOfSampleClusters": 817,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "outOfSampleSampleIdsSha256": "d8eabdc4747663250a7d5780de0b1a3488ff31cf6d4ef8c6db121564a6d07311",
+        "sigLocalRidge": {
+          "abstain": true,
+          "interceptMse": 5.119659886215872e-06,
+          "mse": 2.6058740054342136e-06,
+          "outOfSampleClusters": 817,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchangedSigBbo": {
+          "mse": 2.983476132190942e-06,
+          "outOfSampleClusters": 817,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0"
+        }
+      },
+      "3000": {
+        "actualFill": false,
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 5051,
+          "missingFeature": 4141,
+          "missingLabel": 11584,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1431
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159983328,
+            "testClusters": 1173,
+            "testEndExclusiveMs": 1792160522408,
+            "testStartMs": 1792159986643,
+            "trained": true,
+            "trainingClusters": 1210,
+            "trainingSampleIdsSha256": "fae470a7e00d3664159f43e965e5efee3c2d28770c41a590c0de393863703192"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160520239,
+            "testClusters": 1456,
+            "testEndExclusiveMs": 1792160901509,
+            "testStartMs": 1792160522408,
+            "trained": true,
+            "trainingClusters": 2393,
+            "trainingSampleIdsSha256": "db10e07fdb82fde166c65960374f7db891034bf1cb2d1e9d2fedfcfc8c07db95"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160899980,
+            "testClusters": 1202,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160901509,
+            "trained": true,
+            "trainingClusters": 3763,
+            "trainingSampleIdsSha256": "60a94ff4db06083efe11201925a604254682ff284ea5fc1ae4b588a96f38eb80"
+          }
+        ],
+        "fullMseMinusSigLocalMse": -4.6221871416872675e-09,
+        "fullMseMinusUnchangedBboMse": -3.882847913449931e-07,
+        "fullRidge": {
+          "abstain": true,
+          "interceptMse": 4.343862771096608e-06,
+          "mse": 1.7619370828392926e-06,
+          "outOfSampleClusters": 3831,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "outOfSampleSampleIdsSha256": "12071978e7ee399565b86064d4e5f79436fc394d90588c12d86e37343dff82fd",
+        "sigLocalRidge": {
+          "abstain": true,
+          "interceptMse": 4.343862771096608e-06,
+          "mse": 1.7665592699809799e-06,
+          "outOfSampleClusters": 3831,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchangedSigBbo": {
+          "mse": 2.1502218741842857e-06,
+          "outOfSampleClusters": 3831,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0"
+        }
+      },
+      "30000": {
+        "actualFill": false,
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 3417,
+          "missingFeature": 4141,
+          "missingLabel": 12037,
+          "otherMapping": 372,
+          "overlappingClusterRows": 2612
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159964194,
+            "testClusters": 873,
+            "testEndExclusiveMs": 1792160528283,
+            "testStartMs": 1792159964274,
+            "trained": true,
+            "trainingClusters": 805,
+            "trainingSampleIdsSha256": "de0b569665c66cab2f4f93475e310129f521ee639ca043843c4b7b360ff3f70e"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160528283,
+            "testClusters": 843,
+            "testEndExclusiveMs": 1792160897452,
+            "testStartMs": 1792160528283,
+            "trained": true,
+            "trainingClusters": 1670,
+            "trainingSampleIdsSha256": "40467fd67bc888d96013e1642a8bea78166f6267f7559371dc16168d6f415328"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160889032,
+            "testClusters": 814,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160897452,
+            "trained": true,
+            "trainingClusters": 2495,
+            "trainingSampleIdsSha256": "c1fe389fef21bbc7295bceef8bad951dab43d86bd3a9578810b45ac03217fe7c"
+          }
+        ],
+        "fullMseMinusSigLocalMse": 6.5088562117906385e-09,
+        "fullMseMinusUnchangedBboMse": -3.6463204533641264e-07,
+        "fullRidge": {
+          "abstain": true,
+          "interceptMse": 4.489920475116267e-06,
+          "mse": 2.1156051088137844e-06,
+          "outOfSampleClusters": 2530,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "outOfSampleSampleIdsSha256": "4151296957cf476985e3592a5b33b27867d8866f66907d8699466819f7ea5b40",
+        "sigLocalRidge": {
+          "abstain": true,
+          "interceptMse": 4.489920475116267e-06,
+          "mse": 2.1090962526019937e-06,
+          "outOfSampleClusters": 2530,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0",
+          "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "unchangedSigBbo": {
+          "mse": 2.480237154150197e-06,
+          "outOfSampleClusters": 2530,
+          "selectedClusters": 0,
+          "selectedNetCrossingReturnSumExact": "0"
+        }
+      }
+    },
+    "innovationDiagnostics": {
+      "fixedJointThresholdStates": {
+        "NO_FAVORABLE": 1,
+        "NO_QUIET": 18064,
+        "NO_TOXIC": 1,
+        "YES_FAVORABLE": 1,
+        "YES_QUIET": 18064,
+        "YES_TOXIC": 1,
+        "missingInnovation": 4141
+      },
+      "lags": {
+        "1000": {
+          "available": 21900,
+          "maxAbsolute": "0.0405858684775626",
+          "maximum": "0.0405858684775626",
+          "meanAbsolute": "0.000002179339346776676552511415525",
+          "minimum": "-0.0071416632168466165",
+          "missing": 307,
+          "nonzero": 2,
+          "sumAbsolute": "0.0477275316944092165",
+          "zero": 21898
+        },
+        "30000": {
+          "available": 20789,
+          "maxAbsolute": "0.1401797658643078",
+          "maximum": "0.12616562869640857",
+          "meanAbsolute": "0.0003312920454884877389725335514",
+          "minimum": "-0.1401797658643078",
+          "missing": 1418,
+          "nonzero": 209,
+          "sumAbsolute": "6.8872303336601716055",
+          "zero": 20580
+        },
+        "5000": {
+          "available": 19387,
+          "maxAbsolute": "0.11945936390485423",
+          "maximum": "0.059929152334131874",
+          "meanAbsolute": "0.00006830999356774361066694176510",
+          "minimum": "-0.11945936390485423",
+          "missing": 2820,
+          "nonzero": 58,
+          "sumAbsolute": "1.3243258452978453800",
+          "zero": 19329
+        }
+      },
+      "sources": {
+        "kalshi_official_v2": 7739,
+        "kalshi_official_ws_v2": 14468
+      }
+    },
+    "input": {
+      "rows": 58036,
+      "unmatchedLabels": 0
+    },
+    "labels": 35457,
+    "modelApproval": false,
+    "policy": {
+      "buffer": "0.005",
+      "comparison": [
+        "unchanged_SIG_BBO",
+        "SIG_local_imbalance_spread_ridge",
+        "original_seven_feature_ridge"
+      ],
+      "fee": "0",
+      "fitOrThresholdTuning": false,
+      "folds": 3,
+      "labelSlackMs": 3000,
+      "minimumClusters": 100,
+      "ridgePenalty": 1,
+      "status": "EXPLORATORY_AFTER_PRIOR_V6_RESULTS"
+    },
+    "policySha256": "e10d621cf87e49fe89286b0bbc8a9406df7eb50439fa01484e03f53fbee03b39",
+    "producerSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+    "profitEstablished": false,
+    "readerSha256": {
+      "crossvenue_economics.py": "b4177b791f79a8f2dd8b6e62732a5bbd7b58854360a07bb3a9aa04bd7d623772",
+      "crossvenue_toxicity.py": "4ebc183e34b4ee8aa015fd33b9d8b7197fe17018b0474d53d2a7d8fc4e97aa66"
+    },
+    "sampleIdFormat": "scoped_v2",
+    "schemaVersion": 1,
+    "sourceBundleSha256": "ade2aae3f93e7e8409aa1f30cae27db2244314f8be1ed486f440cec025710d09",
+    "sourceCodeSha256": "7bba298c2120bfe66fd62cecf5eb61cc9ae7dda66492710e6555dfd1b9f0e1dd",
+    "sources": [
+      {
+        "bytes": 7753039,
+        "name": "20261016T14-1792159499583772195.jsonl.gz",
+        "sha256": "cce246edfe4ccee8b9ae294f1d68aef0cf6a9232eb57ac5b91228c88950b53df"
+      },
+      {
+        "bytes": 7281644,
+        "name": "20261016T14-1792160558379312407.jsonl.gz",
+        "sha256": "9af61d80b70c30c9892261e687866e6d00aff4cf45d6df08b748f23c4c3b5a3b"
+      }
+    ],
+    "status": "EXPLORATORY_AFTER_PRIOR_V6_RESULTS"
+  },
+  "fullModelAblationParity": true,
+  "modelApproval": false,
+  "originalProducerBytesSha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d",
+  "policyRetuned": false,
+  "priceOnly": {
+    "asOfMs": 1792161501271,
+    "cutoffPolicySha256": "42e1ad51107323ce160c925cb67ff097b73e88dee8356e61932fe77c6d73c838",
+    "executionAuthority": false,
+    "horizons": {
+      "1000": {
+        "abstain": true,
+        "actualFill": false,
+        "allCrossingBySide": {
+          "no": {
+            "allCrossingNetReturnMean": -0.010901215121512152,
+            "allCrossingNetReturnSum": -48.445,
+            "allCrossingNetReturnSumExact": "-48.445000"
+          },
+          "yes": {
+            "allCrossingNetReturnMean": -0.010936093609360936,
+            "allCrossingNetReturnSum": -48.6,
+            "allCrossingNetReturnSumExact": "-48.600000"
+          }
+        },
+        "beatsInterceptOnMseAndSelectedEconomics": false,
+        "clusterCaveat": "Nonoverlapping market/time windows do not prove cross-market statistical independence.",
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 5888,
+          "missingFeature": 4141,
+          "missingLabel": 11045,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1133
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159989464,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011093189964157707,
+                "coefficients": [
+                  -0.011093189964157707,
+                  0.0,
+                  0.0,
+                  -5.122938929427458e-06,
+                  -9.040112052775769e-05,
+                  -0.0001387004102439693,
+                  -0.0018983374781781314,
+                  -6.279256166669086e-05
+                ],
+                "means": [
+                  0.0,
+                  0.0,
+                  -8.673165102782562e-06,
+                  -0.13780037420263133,
+                  -0.005910505275912831,
+                  0.006250896057347671,
+                  -0.03196091043120259
+                ],
+                "scales": [
+                  1e-09,
+                  1e-09,
+                  0.004333291748215491,
+                  0.8009988191585509,
+                  0.6508747195159819,
+                  0.002363429010594703,
+                  0.8247081781531003
+                ]
+              },
+              "yes": {
+                "baseline": -0.011197132616487455,
+                "coefficients": [
+                  -0.011197132616487455,
+                  0.0,
+                  0.0,
+                  2.9395269121319097e-05,
+                  5.5984673427807453e-05,
+                  0.00027049396160679356,
+                  -0.001846931645815125,
+                  7.608706727256514e-05
+                ],
+                "means": [
+                  0.0,
+                  0.0,
+                  -8.673165102782562e-06,
+                  -0.13780037420263133,
+                  -0.005910505275912831,
+                  0.006250896057347671,
+                  -0.03196091043120259
+                ],
+                "scales": [
+                  1e-09,
+                  1e-09,
+                  0.004333291748215491,
+                  0.8009988191585509,
+                  0.6508747195159819,
+                  0.002363429010594703,
+                  0.8247081781531003
+                ]
+              }
+            },
+            "testClusters": 1406,
+            "testEndExclusiveMs": 1792160501936,
+            "testStartMs": 1792159989464,
+            "trained": true,
+            "trainingClusters": 1395,
+            "trainingSampleIdsSha256": "07f1c4cb92cb0dfca672a9ef26eeb3984e9337c215f2ad874e649ba59f5cfd99"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160501897,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011101874778917581,
+                "coefficients": [
+                  -0.011101874778917581,
+                  0.0,
+                  1.4258170163770928e-05,
+                  1.2874410580576736e-06,
+                  -3.76148413232034e-05,
+                  -0.00018733623580492414,
+                  -0.0018547009042811956,
+                  -3.09495113285797e-05
+                ],
+                "means": [
+                  0.0,
+                  2.981371173058077e-06,
+                  -9.701303401989247e-05,
+                  -0.10859825687030265,
+                  -0.004523291782537763,
+                  0.006227449593208348,
+                  -0.05403394999455113
+                ],
+                "scales": [
+                  1e-09,
+                  0.0005234490895223578,
+                  0.003948088566700326,
+                  0.8014000832538157,
+                  0.6641481653359528,
+                  0.00232568819468688,
+                  0.8265943069744836
+                ]
+              },
+              "yes": {
+                "baseline": -0.011149628581535197,
+                "coefficients": [
+                  -0.011149628581535197,
+                  0.0,
+                  9.786428372720987e-06,
+                  2.7881967880823322e-05,
+                  1.916407753690363e-05,
+                  0.00025845081016511557,
+                  -0.0018312978835971997,
+                  8.807092585766272e-05
+                ],
+                "means": [
+                  0.0,
+                  2.981371173058077e-06,
+                  -9.701303401989247e-05,
+                  -0.10859825687030265,
+                  -0.004523291782537763,
+                  0.006227449593208348,
+                  -0.05403394999455113
+                ],
+                "scales": [
+                  1e-09,
+                  0.0005234490895223578,
+                  0.003948088566700326,
+                  0.8014000832538157,
+                  0.6641481653359528,
+                  0.00232568819468688,
+                  0.8265943069744836
+                ]
+              }
+            },
+            "testClusters": 1540,
+            "testEndExclusiveMs": 1792160925459,
+            "testStartMs": 1792160501936,
+            "trained": true,
+            "trainingClusters": 2827,
+            "trainingSampleIdsSha256": "ff42724635a5770c23d4b956373835447fc9cbc6608db12eda797a25f2eaeeed"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160922099,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.010975804610819448,
+                "coefficients": [
+                  -0.010975804610819448,
+                  0.0,
+                  2.0709310002047776e-06,
+                  3.858364702185091e-06,
+                  -1.5771122972940863e-05,
+                  -0.0001860479177811529,
+                  -0.0017127447219627834,
+                  -3.689898105149532e-05
+                ],
+                "means": [
+                  0.0,
+                  -2.2104438406094824e-05,
+                  -0.00021864303807674542,
+                  -0.09295835150901668,
+                  -0.01394305048040793,
+                  0.006095640264779731,
+                  -0.07182466089547375
+                ],
+                "scales": [
+                  1e-09,
+                  0.0020441109130748267,
+                  0.005065423248382556,
+                  0.8061564932433768,
+                  0.6579403918404546,
+                  0.0022174077707720406,
+                  0.8332951368894033
+                ]
+              },
+              "yes": {
+                "baseline": -0.011026021456288518,
+                "coefficients": [
+                  -0.011026021456288518,
+                  0.0,
+                  -1.1634103002748387e-05,
+                  1.717352149505089e-05,
+                  -1.0508032189198452e-05,
+                  0.00022318935175330242,
+                  -0.0017488956107802325,
+                  9.144413102965677e-05
+                ],
+                "means": [
+                  0.0,
+                  -2.2104438406094824e-05,
+                  -0.00021864303807674542,
+                  -0.09295835150901668,
+                  -0.01394305048040793,
+                  0.006095640264779731,
+                  -0.07182466089547375
+                ],
+                "scales": [
+                  1e-09,
+                  0.0020441109130748267,
+                  0.005065423248382556,
+                  0.8061564932433768,
+                  0.6579403918404546,
+                  0.0022174077707720406,
+                  0.8332951368894033
+                ]
+              }
+            },
+            "testClusters": 1498,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160925459,
+            "trained": true,
+            "trainingClusters": 4381,
+            "trainingSampleIdsSha256": "add9e1ff33668d3d7db0260451ce346a2fcc8cee568514315b54ccfd86c093db"
+          }
+        ],
+        "interceptBaselineMseNetReturn": 4.2199571158153605e-06,
+        "interceptBaselineNetReturnSum": 0.0,
+        "interceptBaselineNetReturnSumExact": "0",
+        "interceptBaselineSelectedClusters": 0,
+        "minimumClusters": 100,
+        "modelMseNetReturn": 1.4713343788208194e-06,
+        "outOfSampleClusters": 4444,
+        "outOfSampleSampleIdsSha256": "ede798f03d0cf775bd1fa2d7e33709de702cf517ac10800f18e946984d8a2051",
+        "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+        "selectedClusters": 0,
+        "selectedNetCrossingReturnMean": null,
+        "selectedNetCrossingReturnSum": 0.0,
+        "selectedNetCrossingReturnSumExact": "0",
+        "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "status": "UNQUALIFIED_RESEARCH"
+      },
+      "10000": {
+        "abstain": true,
+        "actualFill": false,
+        "allCrossingBySide": {
+          "no": {
+            "allCrossingNetReturnMean": -0.010941530524505588,
+            "allCrossingNetReturnSum": -38.175,
+            "allCrossingNetReturnSumExact": "-38.175000"
+          },
+          "yes": {
+            "allCrossingNetReturnMean": -0.010981656635139008,
+            "allCrossingNetReturnSum": -38.315,
+            "allCrossingNetReturnSumExact": "-38.315000"
+          }
+        },
+        "beatsInterceptOnMseAndSelectedEconomics": false,
+        "clusterCaveat": "Nonoverlapping market/time windows do not prove cross-market statistical independence.",
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 4732,
+          "missingFeature": 4141,
+          "missingLabel": 11602,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1732
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159956727,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011142979452054795,
+                "coefficients": [
+                  -0.011142979452054795,
+                  0.0,
+                  -1.3963749480372294e-05,
+                  -1.8117785066524813e-05,
+                  1.3951562752710063e-05,
+                  -0.00037915914611326657,
+                  -0.0016681028728097592,
+                  1.2281585525530349e-05
+                ],
+                "means": [
+                  0.0,
+                  -2.9529205115168363e-06,
+                  -7.008612211943863e-05,
+                  -0.15971542629686886,
+                  -0.024977545284045197,
+                  0.006117294520547946,
+                  -0.0469010242305173
+                ],
+                "scales": [
+                  1e-09,
+                  0.0003110770662797219,
+                  0.004022190291815482,
+                  0.7794422269008474,
+                  0.6747171939891295,
+                  0.0022316471147483187,
+                  0.7924916090782911
+                ]
+              },
+              "yes": {
+                "baseline": -0.011275684931506848,
+                "coefficients": [
+                  -0.011275684931506848,
+                  0.0,
+                  8.565774750991894e-06,
+                  3.370972044063549e-05,
+                  8.441575660578467e-05,
+                  0.0004923831784979501,
+                  -0.0015817707836019725,
+                  0.00011589711820736513
+                ],
+                "means": [
+                  0.0,
+                  -2.9529205115168363e-06,
+                  -7.008612211943863e-05,
+                  -0.15971542629686886,
+                  -0.024977545284045197,
+                  0.006117294520547946,
+                  -0.0469010242305173
+                ],
+                "scales": [
+                  1e-09,
+                  0.0003110770662797219,
+                  0.004022190291815482,
+                  0.7794422269008474,
+                  0.6747171939891295,
+                  0.0022316471147483187,
+                  0.7924916090782911
+                ]
+              }
+            },
+            "testClusters": 1085,
+            "testEndExclusiveMs": 1792160501897,
+            "testStartMs": 1792159965647,
+            "trained": true,
+            "trainingClusters": 1168,
+            "trainingSampleIdsSha256": "bf31a56e3d98bca92dae050184d3be35ac285c3038248a1a4a12fe3b1e4cc105"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160492988,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011079265562024182,
+                "coefficients": [
+                  -0.011079265562024182,
+                  0.0,
+                  -7.118275820863387e-07,
+                  -7.99621441244076e-06,
+                  2.8215359676035944e-05,
+                  -0.00040068567700170455,
+                  -0.0015958156417744862,
+                  2.950705928620223e-05
+                ],
+                "means": [
+                  0.0,
+                  -1.4065315212786843e-05,
+                  -7.289114797420173e-05,
+                  -0.12772498258312528,
+                  -0.00791537048619538,
+                  0.006018808777429467,
+                  -0.07813080183655767
+                ],
+                "scales": [
+                  1e-09,
+                  0.0007398297870466766,
+                  0.00365759266156275,
+                  0.7924780004193546,
+                  0.6855005428482747,
+                  0.0021432373184092158,
+                  0.8242821237632386
+                ]
+              },
+              "yes": {
+                "baseline": -0.011137483206448725,
+                "coefficients": [
+                  -0.011137483206448725,
+                  0.0,
+                  -3.598674923890251e-05,
+                  1.3416087814661857e-05,
+                  4.9987384469228394e-05,
+                  0.0004890409174906004,
+                  -0.0014644223055137616,
+                  0.00011140386837928842
+                ],
+                "means": [
+                  0.0,
+                  -1.4065315212786843e-05,
+                  -7.289114797420173e-05,
+                  -0.12772498258312528,
+                  -0.00791537048619538,
+                  0.006018808777429467,
+                  -0.07813080183655767
+                ],
+                "scales": [
+                  1e-09,
+                  0.0007398297870466766,
+                  0.00365759266156275,
+                  0.7924780004193546,
+                  0.6855005428482747,
+                  0.0021432373184092158,
+                  0.8242821237632386
+                ]
+              }
+            },
+            "testClusters": 1206,
+            "testEndExclusiveMs": 1792160898706,
+            "testStartMs": 1792160501897,
+            "trained": true,
+            "trainingClusters": 2233,
+            "trainingSampleIdsSha256": "13b69318b7788bce1cbd28fcc18076ac3c59eec16cf7013f3ab46b63bc12a0c2"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160893881,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.010994202898550725,
+                "coefficients": [
+                  -0.010994202898550725,
+                  1.9351409605197472e-05,
+                  -2.6513804330468604e-05,
+                  3.058061269986986e-06,
+                  3.706146943771992e-05,
+                  -0.0004682825565667149,
+                  -0.0014449742335502884,
+                  3.315871310822835e-05
+                ],
+                "means": [
+                  9.693972539337966e-06,
+                  -3.14364098618998e-06,
+                  -8.542392033179585e-05,
+                  -0.11095794480768308,
+                  -0.013668513463242727,
+                  0.005907246376811594,
+                  -0.09121841329318173
+                ],
+                "scales": [
+                  0.0007015287378028966,
+                  0.0015964651488929401,
+                  0.004128837175713715,
+                  0.800123024670825,
+                  0.6836331456048833,
+                  0.0020437475411024314,
+                  0.8291608921398406
+                ]
+              },
+              "yes": {
+                "baseline": -0.011047826086956522,
+                "coefficients": [
+                  -0.011047826086956522,
+                  1.3850565850417417e-05,
+                  -2.4149490459313982e-05,
+                  6.769190641329176e-07,
+                  1.140735221972491e-05,
+                  0.000476458643610373,
+                  -0.0014136546532625082,
+                  6.863801923486465e-05
+                ],
+                "means": [
+                  9.693972539337966e-06,
+                  -3.14364098618998e-06,
+                  -8.542392033179585e-05,
+                  -0.11095794480768308,
+                  -0.013668513463242727,
+                  0.005907246376811594,
+                  -0.09121841329318173
+                ],
+                "scales": [
+                  0.0007015287378028966,
+                  0.0015964651488929401,
+                  0.004128837175713715,
+                  0.800123024670825,
+                  0.6836331456048833,
+                  0.0020437475411024314,
+                  0.8291608921398406
+                ]
+              }
+            },
+            "testClusters": 1198,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160898706,
+            "trained": true,
+            "trainingClusters": 3450,
+            "trainingSampleIdsSha256": "83a8eea3e85f691dd2f17662dede0d364c39dd0abb75b7fc03a576fd17a75faa"
+          }
+        ],
+        "interceptBaselineMseNetReturn": 4.424035296238931e-06,
+        "interceptBaselineNetReturnSum": 0.0,
+        "interceptBaselineNetReturnSumExact": "0",
+        "interceptBaselineSelectedClusters": 0,
+        "minimumClusters": 100,
+        "modelMseNetReturn": 2.2432867233712516e-06,
+        "outOfSampleClusters": 3489,
+        "outOfSampleSampleIdsSha256": "d8b36850450973308dc432b46a4d65a2273e617289db61c513ad40e5214022f3",
+        "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+        "selectedClusters": 0,
+        "selectedNetCrossingReturnMean": null,
+        "selectedNetCrossingReturnSum": 0.0,
+        "selectedNetCrossingReturnSumExact": "0",
+        "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "status": "UNQUALIFIED_RESEARCH"
+      },
+      "120000": {
+        "abstain": true,
+        "actualFill": false,
+        "allCrossingBySide": {
+          "no": {
+            "allCrossingNetReturnMean": -0.010936352509179927,
+            "allCrossingNetReturnSum": -8.935,
+            "allCrossingNetReturnSumExact": "-8.935000"
+          },
+          "yes": {
+            "allCrossingNetReturnMean": -0.0109547123623011,
+            "allCrossingNetReturnSum": -8.95,
+            "allCrossingNetReturnSumExact": "-8.950000"
+          }
+        },
+        "beatsInterceptOnMseAndSelectedEconomics": false,
+        "clusterCaveat": "Nonoverlapping market/time windows do not prove cross-market statistical independence.",
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 1101,
+          "missingFeature": 4141,
+          "missingLabel": 15922,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1043
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159954983,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011036866359447004,
+                "coefficients": [
+                  -0.011036866359447004,
+                  0.0,
+                  0.0,
+                  -8.561219782535194e-06,
+                  -0.00018375445481193435,
+                  -0.00018591287779700212,
+                  -0.0016897637658122337,
+                  -9.810792266383719e-05
+                ],
+                "means": [
+                  0.0,
+                  0.0,
+                  -7.723784127903041e-05,
+                  -0.1231368186546421,
+                  -0.03365000650089289,
+                  0.006290322580645161,
+                  -0.06781346583456398
+                ],
+                "scales": [
+                  1e-09,
+                  1e-09,
+                  0.007785010589177879,
+                  0.7845875109879148,
+                  0.65194446773327,
+                  0.002290744427951441,
+                  0.7294299271846343
+                ]
+              },
+              "yes": {
+                "baseline": -0.01117511520737327,
+                "coefficients": [
+                  -0.01117511520737327,
+                  0.0,
+                  0.0,
+                  8.86953715426095e-06,
+                  0.0001706635687222336,
+                  0.00032926215724297155,
+                  -0.0017474825746442468,
+                  0.00012532751679050733
+                ],
+                "means": [
+                  0.0,
+                  0.0,
+                  -7.723784127903041e-05,
+                  -0.1231368186546421,
+                  -0.03365000650089289,
+                  0.006290322580645161,
+                  -0.06781346583456398
+                ],
+                "scales": [
+                  1e-09,
+                  1e-09,
+                  0.007785010589177879,
+                  0.7845875109879148,
+                  0.65194446773327,
+                  0.002290744427951441,
+                  0.7294299271846343
+                ]
+              }
+            },
+            "testClusters": 256,
+            "testEndExclusiveMs": 1792160470658,
+            "testStartMs": 1792159962762,
+            "trained": true,
+            "trainingClusters": 217,
+            "trainingSampleIdsSha256": "491fb59e4c6f27b6cb076a69dbf585c9c26eeec0c9121bfc27d7f6859c5861fa"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160470582,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011097560975609756,
+                "coefficients": [
+                  -0.011097560975609756,
+                  0.0,
+                  8.46189925947996e-06,
+                  -7.509345870158579e-06,
+                  -7.473887417315785e-05,
+                  -0.00016336462516990867,
+                  -0.001641305137462982,
+                  -6.894556778625018e-05
+                ],
+                "means": [
+                  0.0,
+                  1.2401079872026851e-05,
+                  -8.584208718667331e-05,
+                  -0.13479383993962812,
+                  -0.017936631539959967,
+                  0.00623059866962306,
+                  -0.09932746552955075
+                ],
+                "scales": [
+                  1e-09,
+                  0.00026306663014638565,
+                  0.005494033794620946,
+                  0.7929127878978605,
+                  0.6463970873238564,
+                  0.002326945095509316,
+                  0.7737448980291187
+                ]
+              },
+              "yes": {
+                "baseline": -0.011164079822616408,
+                "coefficients": [
+                  -0.011164079822616408,
+                  0.0,
+                  9.624935436844273e-06,
+                  3.7379145366913875e-05,
+                  6.485549799929004e-05,
+                  0.0003416103043059317,
+                  -0.0017206441142692628,
+                  9.008703246675199e-05
+                ],
+                "means": [
+                  0.0,
+                  1.2401079872026851e-05,
+                  -8.584208718667331e-05,
+                  -0.13479383993962812,
+                  -0.017936631539959967,
+                  0.00623059866962306,
+                  -0.09932746552955075
+                ],
+                "scales": [
+                  1e-09,
+                  0.00026306663014638565,
+                  0.005494033794620946,
+                  0.7929127878978605,
+                  0.6463970873238564,
+                  0.002326945095509316,
+                  0.7737448980291187
+                ]
+              }
+            },
+            "testClusters": 259,
+            "testEndExclusiveMs": 1792160752861,
+            "testStartMs": 1792160470658,
+            "trained": true,
+            "trainingClusters": 451,
+            "trainingSampleIdsSha256": "76b270f5e14712a7deae2ade2df6e5268153cb3105535c7678ee482503c88cad"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160752749,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.010979020979020978,
+                "coefficients": [
+                  -0.010979020979020978,
+                  0.0,
+                  -1.3306036053369076e-05,
+                  8.61437541109961e-06,
+                  6.457851291273718e-06,
+                  -0.00027321625665882024,
+                  -0.0015419936607222995,
+                  -3.5573628831468125e-05
+                ],
+                "means": [
+                  0.0,
+                  -4.823791828603727e-06,
+                  5.134154362305598e-05,
+                  -0.11662043946226104,
+                  0.003515955452984815,
+                  0.006083916083916083,
+                  -0.07920732207426566
+                ],
+                "scales": [
+                  1e-09,
+                  0.00039757951331206897,
+                  0.005195934919168184,
+                  0.7974642390601985,
+                  0.6566926456487928,
+                  0.002207731182000895,
+                  0.7878424845892674
+                ]
+              },
+              "yes": {
+                "baseline": -0.011076923076923076,
+                "coefficients": [
+                  -0.011076923076923076,
+                  0.0,
+                  1.1022497501859739e-05,
+                  2.14960750335934e-05,
+                  4.225661543405965e-06,
+                  0.00039981340246695907,
+                  -0.0016010381468089775,
+                  9.083903539121297e-05
+                ],
+                "means": [
+                  0.0,
+                  -4.823791828603727e-06,
+                  5.134154362305598e-05,
+                  -0.11662043946226104,
+                  0.003515955452984815,
+                  0.006083916083916083,
+                  -0.07920732207426566
+                ],
+                "scales": [
+                  1e-09,
+                  0.00039757951331206897,
+                  0.005195934919168184,
+                  0.7974642390601985,
+                  0.6566926456487928,
+                  0.002207731182000895,
+                  0.7878424845892674
+                ]
+              }
+            },
+            "testClusters": 302,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160752861,
+            "trained": true,
+            "trainingClusters": 715,
+            "trainingSampleIdsSha256": "697dce039d3090e3e991475d5cee5faafd48292805fba95f8bd48219d8c92ccc"
+          }
+        ],
+        "interceptBaselineMseNetReturn": 5.119659886215872e-06,
+        "interceptBaselineNetReturnSum": 0.0,
+        "interceptBaselineNetReturnSumExact": "0",
+        "interceptBaselineSelectedClusters": 0,
+        "minimumClusters": 100,
+        "modelMseNetReturn": 2.6356135556004286e-06,
+        "outOfSampleClusters": 817,
+        "outOfSampleSampleIdsSha256": "d8eabdc4747663250a7d5780de0b1a3488ff31cf6d4ef8c6db121564a6d07311",
+        "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+        "selectedClusters": 0,
+        "selectedNetCrossingReturnMean": null,
+        "selectedNetCrossingReturnSum": 0.0,
+        "selectedNetCrossingReturnSumExact": "0",
+        "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "status": "UNQUALIFIED_RESEARCH"
+      },
+      "3000": {
+        "abstain": true,
+        "actualFill": false,
+        "allCrossingBySide": {
+          "no": {
+            "allCrossingNetReturnMean": -0.010925345862699033,
+            "allCrossingNetReturnSum": -41.855,
+            "allCrossingNetReturnSumExact": "-41.855000"
+          },
+          "yes": {
+            "allCrossingNetReturnMean": -0.010947533281127643,
+            "allCrossingNetReturnSum": -41.94,
+            "allCrossingNetReturnSumExact": "-41.940000"
+          }
+        },
+        "beatsInterceptOnMseAndSelectedEconomics": false,
+        "clusterCaveat": "Nonoverlapping market/time windows do not prove cross-market statistical independence.",
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 5051,
+          "missingFeature": 4141,
+          "missingLabel": 11584,
+          "otherMapping": 372,
+          "overlappingClusterRows": 1431
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159983328,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011057851239669422,
+                "coefficients": [
+                  -0.011057851239669422,
+                  0.0,
+                  0.0,
+                  -1.4220393331291983e-05,
+                  -5.88456019181999e-05,
+                  -0.00016863452542580597,
+                  -0.001753023657158087,
+                  -6.940490269016814e-05
+                ],
+                "means": [
+                  0.0,
+                  0.0,
+                  -2.6524816453591274e-05,
+                  -0.141584883738618,
+                  -0.009928107468822113,
+                  0.006252066115702479,
+                  -0.05849595059842586
+                ],
+                "scales": [
+                  1e-09,
+                  1e-09,
+                  0.0034386754712961557,
+                  0.7845977523263636,
+                  0.6569419202028636,
+                  0.002358056321520634,
+                  0.8129607632059497
+                ]
+              },
+              "yes": {
+                "baseline": -0.01121900826446281,
+                "coefficients": [
+                  -0.01121900826446281,
+                  0.0,
+                  0.0,
+                  3.6228027809882116e-05,
+                  7.862547129890279e-05,
+                  0.00035737784268615944,
+                  -0.0017294724345980992,
+                  0.000135184951906532
+                ],
+                "means": [
+                  0.0,
+                  0.0,
+                  -2.6524816453591274e-05,
+                  -0.141584883738618,
+                  -0.009928107468822113,
+                  0.006252066115702479,
+                  -0.05849595059842586
+                ],
+                "scales": [
+                  1e-09,
+                  1e-09,
+                  0.0034386754712961557,
+                  0.7845977523263636,
+                  0.6569419202028636,
+                  0.002358056321520634,
+                  0.8129607632059497
+                ]
+              }
+            },
+            "testClusters": 1173,
+            "testEndExclusiveMs": 1792160522408,
+            "testStartMs": 1792159986643,
+            "trained": true,
+            "trainingClusters": 1210,
+            "trainingSampleIdsSha256": "fae470a7e00d3664159f43e965e5efee3c2d28770c41a590c0de393863703192"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160520239,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.01104471374843293,
+                "coefficients": [
+                  -0.01104471374843293,
+                  0.0,
+                  5.169586479247489e-06,
+                  -6.176890254038926e-06,
+                  -2.9342822491160325e-05,
+                  -0.00024134935150635288,
+                  -0.001734151543385395,
+                  -7.797269049788979e-05
+                ],
+                "means": [
+                  0.0,
+                  -1.5492481355306604e-05,
+                  -8.032482185855686e-05,
+                  -0.12255803956407438,
+                  -0.008005158246549435,
+                  0.006197241955704137,
+                  -0.0669514790155286
+                ],
+                "scales": [
+                  1e-09,
+                  0.0005989537271322737,
+                  0.0031936932418528837,
+                  0.79455554062823,
+                  0.67019247958736,
+                  0.002303261899327588,
+                  0.8214088011168735
+                ]
+              },
+              "yes": {
+                "baseline": -0.011117843710823234,
+                "coefficients": [
+                  -0.011117843710823234,
+                  0.0,
+                  -4.4013106140808565e-05,
+                  1.5980816459601807e-05,
+                  3.476785678794123e-05,
+                  0.0003509024005440291,
+                  -0.0016685032902442067,
+                  0.00017691911841825894
+                ],
+                "means": [
+                  0.0,
+                  -1.5492481355306604e-05,
+                  -8.032482185855686e-05,
+                  -0.12255803956407438,
+                  -0.008005158246549435,
+                  0.006197241955704137,
+                  -0.0669514790155286
+                ],
+                "scales": [
+                  1e-09,
+                  0.0005989537271322737,
+                  0.0031936932418528837,
+                  0.79455554062823,
+                  0.67019247958736,
+                  0.002303261899327588,
+                  0.8214088011168735
+                ]
+              }
+            },
+            "testClusters": 1456,
+            "testEndExclusiveMs": 1792160901509,
+            "testStartMs": 1792160522408,
+            "trained": true,
+            "trainingClusters": 2393,
+            "trainingSampleIdsSha256": "db10e07fdb82fde166c65960374f7db891034bf1cb2d1e9d2fedfcfc8c07db95"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160899980,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.0109526973159713,
+                "coefficients": [
+                  -0.0109526973159713,
+                  0.0,
+                  -1.4311624058899387e-05,
+                  -7.917160681164274e-06,
+                  -1.8499763375298392e-05,
+                  -0.00027487211813864834,
+                  -0.0015847890040431908,
+                  -8.007230806313318e-05
+                ],
+                "means": [
+                  0.0,
+                  -6.532154729266245e-07,
+                  -9.202977147196213e-05,
+                  -0.11102159443728257,
+                  -0.011568397579124302,
+                  0.006076268934360883,
+                  -0.08080935517206711
+                ],
+                "scales": [
+                  1e-09,
+                  0.0013638998200162823,
+                  0.004526589854935286,
+                  0.7991258868786444,
+                  0.667134879436151,
+                  0.002195658679870382,
+                  0.8269965457197389
+                ]
+              },
+              "yes": {
+                "baseline": -0.011019133669944194,
+                "coefficients": [
+                  -0.011019133669944194,
+                  0.0,
+                  -2.4768815122275884e-05,
+                  6.028639024539048e-06,
+                  2.407461435724314e-05,
+                  0.00030132930763861855,
+                  -0.0016353384890195782,
+                  0.00015442588686896238
+                ],
+                "means": [
+                  0.0,
+                  -6.532154729266245e-07,
+                  -9.202977147196213e-05,
+                  -0.11102159443728257,
+                  -0.011568397579124302,
+                  0.006076268934360883,
+                  -0.08080935517206711
+                ],
+                "scales": [
+                  1e-09,
+                  0.0013638998200162823,
+                  0.004526589854935286,
+                  0.7991258868786444,
+                  0.667134879436151,
+                  0.002195658679870382,
+                  0.8269965457197389
+                ]
+              }
+            },
+            "testClusters": 1202,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160901509,
+            "trained": true,
+            "trainingClusters": 3763,
+            "trainingSampleIdsSha256": "60a94ff4db06083efe11201925a604254682ff284ea5fc1ae4b588a96f38eb80"
+          }
+        ],
+        "interceptBaselineMseNetReturn": 4.343862771096608e-06,
+        "interceptBaselineNetReturnSum": 0.0,
+        "interceptBaselineNetReturnSumExact": "0",
+        "interceptBaselineSelectedClusters": 0,
+        "minimumClusters": 100,
+        "modelMseNetReturn": 1.7619370828392926e-06,
+        "outOfSampleClusters": 3831,
+        "outOfSampleSampleIdsSha256": "12071978e7ee399565b86064d4e5f79436fc394d90588c12d86e37343dff82fd",
+        "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+        "selectedClusters": 0,
+        "selectedNetCrossingReturnMean": null,
+        "selectedNetCrossingReturnSum": 0.0,
+        "selectedNetCrossingReturnSumExact": "0",
+        "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "status": "UNQUALIFIED_RESEARCH"
+      },
+      "30000": {
+        "abstain": true,
+        "actualFill": false,
+        "allCrossingBySide": {
+          "no": {
+            "allCrossingNetReturnMean": -0.01091106719367589,
+            "allCrossingNetReturnSum": -27.605,
+            "allCrossingNetReturnSumExact": "-27.605000"
+          },
+          "yes": {
+            "allCrossingNetReturnMean": -0.010954545454545455,
+            "allCrossingNetReturnSum": -27.715,
+            "allCrossingNetReturnSumExact": "-27.715000"
+          }
+        },
+        "beatsInterceptOnMseAndSelectedEconomics": false,
+        "clusterCaveat": "Nonoverlapping market/time windows do not prove cross-market statistical independence.",
+        "data": {
+          "decisions": 22579,
+          "independentClusters": 3417,
+          "missingFeature": 4141,
+          "missingLabel": 12037,
+          "otherMapping": 372,
+          "overlappingClusterRows": 2612
+        },
+        "executionAuthority": false,
+        "folds": [
+          {
+            "latestTrainingLabelAvailableMs": 1792159964194,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.011062111801242235,
+                "coefficients": [
+                  -0.011062111801242235,
+                  0.0,
+                  2.956117781981491e-05,
+                  -3.1202290543521056e-05,
+                  -5.1325697481883096e-05,
+                  -0.00028656809401614677,
+                  -0.0017155514198323308,
+                  -2.3936954981403705e-05
+                ],
+                "means": [
+                  0.0,
+                  2.255474329227717e-05,
+                  -9.676607237014289e-05,
+                  -0.12433007672357756,
+                  -0.0392423664612664,
+                  0.006043478260869565,
+                  -0.019633122298414178
+                ],
+                "scales": [
+                  1e-09,
+                  0.00045194351633057964,
+                  0.003177772744334963,
+                  0.7933553267437745,
+                  0.662779624901407,
+                  0.0021361945211370863,
+                  0.806694139093553
+                ]
+              },
+              "yes": {
+                "baseline": -0.011180124223602485,
+                "coefficients": [
+                  -0.011180124223602485,
+                  0.0,
+                  -2.1739323857914656e-06,
+                  8.499319964194257e-06,
+                  0.00013737454589479134,
+                  0.00038224647452360843,
+                  -0.0016831776726663685,
+                  8.303753905945704e-05
+                ],
+                "means": [
+                  0.0,
+                  2.255474329227717e-05,
+                  -9.676607237014289e-05,
+                  -0.12433007672357756,
+                  -0.0392423664612664,
+                  0.006043478260869565,
+                  -0.019633122298414178
+                ],
+                "scales": [
+                  1e-09,
+                  0.00045194351633057964,
+                  0.003177772744334963,
+                  0.7933553267437745,
+                  0.662779624901407,
+                  0.0021361945211370863,
+                  0.806694139093553
+                ]
+              }
+            },
+            "testClusters": 873,
+            "testEndExclusiveMs": 1792160528283,
+            "testStartMs": 1792159964274,
+            "trained": true,
+            "trainingClusters": 805,
+            "trainingSampleIdsSha256": "de0b569665c66cab2f4f93475e310129f521ee639ca043843c4b7b360ff3f70e"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160528283,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.01105688622754491,
+                "coefficients": [
+                  -0.01105688622754491,
+                  0.0,
+                  9.698886000009674e-06,
+                  4.027748793944882e-05,
+                  -3.6214049662750816e-05,
+                  -0.0003428943117002759,
+                  -0.0016851999378990896,
+                  -2.718041675756259e-05
+                ],
+                "means": [
+                  0.0,
+                  4.864824983617913e-06,
+                  -0.00011154135993837316,
+                  -0.1039545579844839,
+                  -0.02371572382268432,
+                  0.006020958083832335,
+                  -0.06557133992748682
+                ],
+                "scales": [
+                  1e-09,
+                  0.0007527875045301483,
+                  0.0029777604595326774,
+                  0.7957961535127548,
+                  0.6695817532940879,
+                  0.002116978197069065,
+                  0.8245574944072899
+                ]
+              },
+              "yes": {
+                "baseline": -0.011098802395209582,
+                "coefficients": [
+                  -0.011098802395209582,
+                  0.0,
+                  -5.771370522587668e-05,
+                  1.6325403373693182e-05,
+                  8.049044215911684e-05,
+                  0.00039875834713596974,
+                  -0.0015503695031043492,
+                  5.33675263836875e-05
+                ],
+                "means": [
+                  0.0,
+                  4.864824983617913e-06,
+                  -0.00011154135993837316,
+                  -0.1039545579844839,
+                  -0.02371572382268432,
+                  0.006020958083832335,
+                  -0.06557133992748682
+                ],
+                "scales": [
+                  1e-09,
+                  0.0007527875045301483,
+                  0.0029777604595326774,
+                  0.7957961535127548,
+                  0.6695817532940879,
+                  0.002116978197069065,
+                  0.8245574944072899
+                ]
+              }
+            },
+            "testClusters": 843,
+            "testEndExclusiveMs": 1792160897452,
+            "testStartMs": 1792160528283,
+            "trained": true,
+            "trainingClusters": 1670,
+            "trainingSampleIdsSha256": "40467fd67bc888d96013e1642a8bea78166f6267f7559371dc16168d6f415328"
+          },
+          {
+            "latestTrainingLabelAvailableMs": 1792160889032,
+            "modelsResearchOnly": {
+              "no": {
+                "baseline": -0.010961923847695391,
+                "coefficients": [
+                  -0.010961923847695391,
+                  0.0,
+                  1.7375822871088816e-05,
+                  1.2098746689030624e-05,
+                  -1.6492517902059082e-05,
+                  -0.0003678717104823755,
+                  -0.0015491764026953727,
+                  -1.9327997142643083e-05
+                ],
+                "means": [
+                  0.0,
+                  3.2562155200969597e-06,
+                  -0.0001024290075334298,
+                  -0.09692633400255966,
+                  -0.021956338229932745,
+                  0.005927855711422846,
+                  -0.08576081073321556
+                ],
+                "scales": [
+                  1e-09,
+                  0.0006158832046477086,
+                  0.0030805774134420633,
+                  0.80048699019512,
+                  0.668886545423661,
+                  0.0020295427314101283,
+                  0.8271559942718417
+                ]
+              },
+              "yes": {
+                "baseline": -0.010995991983967935,
+                "coefficients": [
+                  -0.010995991983967935,
+                  0.0,
+                  -5.016026769504311e-05,
+                  2.110878221847576e-05,
+                  4.3768558113112913e-05,
+                  0.0003825692293787025,
+                  -0.0014963307483904776,
+                  4.798235658640411e-05
+                ],
+                "means": [
+                  0.0,
+                  3.2562155200969597e-06,
+                  -0.0001024290075334298,
+                  -0.09692633400255966,
+                  -0.021956338229932745,
+                  0.005927855711422846,
+                  -0.08576081073321556
+                ],
+                "scales": [
+                  1e-09,
+                  0.0006158832046477086,
+                  0.0030805774134420633,
+                  0.80048699019512,
+                  0.668886545423661,
+                  0.0020295427314101283,
+                  0.8271559942718417
+                ]
+              }
+            },
+            "testClusters": 814,
+            "testEndExclusiveMs": null,
+            "testStartMs": 1792160897452,
+            "trained": true,
+            "trainingClusters": 2495,
+            "trainingSampleIdsSha256": "c1fe389fef21bbc7295bceef8bad951dab43d86bd3a9578810b45ac03217fe7c"
+          }
+        ],
+        "interceptBaselineMseNetReturn": 4.489920475116267e-06,
+        "interceptBaselineNetReturnSum": 0.0,
+        "interceptBaselineNetReturnSumExact": "0",
+        "interceptBaselineSelectedClusters": 0,
+        "minimumClusters": 100,
+        "modelMseNetReturn": 2.1156051088137844e-06,
+        "outOfSampleClusters": 2530,
+        "outOfSampleSampleIdsSha256": "4151296957cf476985e3592a5b33b27867d8866f66907d8699466819f7ea5b40",
+        "reason": "INSUFFICIENT_INDEPENDENT_CLUSTERS",
+        "selectedClusters": 0,
+        "selectedNetCrossingReturnMean": null,
+        "selectedNetCrossingReturnSum": 0.0,
+        "selectedNetCrossingReturnSumExact": "0",
+        "selectedSampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "status": "UNQUALIFIED_RESEARCH"
+      }
+    },
+    "input": {
+      "rows": 58036,
+      "unmatchedLabels": 0
+    },
+    "modelApproval": false,
+    "policy": {
+      "algorithm": "two-fixed-ridge-return-regressions",
+      "bufferPerShare": "0.005",
+      "counterfactualQuantityShares": 1,
+      "features": [
+        "externalLogitDelta1s",
+        "externalLogitDelta5s",
+        "externalLogitDelta30s",
+        "externalImbalance",
+        "sigImbalance",
+        "sigSpread",
+        "externalSigLogitGap"
+      ],
+      "feePerShareRoundTrip": "0",
+      "folds": 3,
+      "labelSlackMs": 3000,
+      "mappingKind": "direct_party_reference",
+      "minimumClusters": 100,
+      "noCrossingConvention": "original SIG bid minus future SIG ask",
+      "predictionThresholdNet": 0,
+      "ridgePenalty": 1.0,
+      "sampleIdFormat": "scoped_v2",
+      "yesCrossingConvention": "future SIG bid minus original SIG ask"
+    },
+    "producerSource": {
+      "name": "observer-source-67426474.py",
+      "sampleIdFormat": "scoped_v2",
+      "sha256": "674264745ced43b053881ad7408a5031a6e389c8652ff950b23bca0e1448b34d"
+    },
+    "producerSourceVerified": true,
+    "profitEstablished": false,
+    "schemaVersion": 1,
+    "sourceBundleSha256": "ade2aae3f93e7e8409aa1f30cae27db2244314f8be1ed486f440cec025710d09",
+    "sourceCodeSha256": "b4177b791f79a8f2dd8b6e62732a5bbd7b58854360a07bb3a9aa04bd7d623772",
+    "sources": [
+      {
+        "bytes": 7753039,
+        "name": "20261016T14-1792159499583772195.jsonl.gz",
+        "sha256": "cce246edfe4ccee8b9ae294f1d68aef0cf6a9232eb57ac5b91228c88950b53df"
+      },
+      {
+        "bytes": 7281644,
+        "name": "20261016T14-1792160558379312407.jsonl.gz",
+        "sha256": "9af61d80b70c30c9892261e687866e6d00aff4cf45d6df08b748f23c4c3b5a3b"
+      }
+    ],
+    "status": "UNQUALIFIED_RESEARCH"
+  },
+  "producerGitLfBlobSubstituted": false,
+  "profitEstablished": false,
+  "schemaVersion": 1,
+  "scopeDiagnostics": {
+    "decisionMarketScopes": 234,
+    "directMarketScopes": 231,
+    "firstDecisionUtc": "2026-10-16T14:04:59.581+00:00",
+    "flowCompleteRequirementApplied": false,
+    "lastDecisionUtc": "2026-10-16T14:35:46.570+00:00",
+    "mappingClassDecisions": {
+      "candidate_reference_analog": 372,
+      "direct_party_reference": 22207
+    },
+    "selectedClusterThresholdMet": false
+  }
+}
