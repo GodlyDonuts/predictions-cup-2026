@@ -476,8 +476,9 @@ impl Session {
         self.collateral_scope(event,self.chain.sequence,&self.chain.previous,&self.engine)?;
         let mut event = event.clone();
         event["sourceRef"] = json!({"id":source_id,"sequence":sequence,"hash":digest});
-        let mut next = self.engine.clone();
-        next.advance(&event)?;
+        // This staging owner is unpublished. Consuming it retains every
+        // apply/audit check without Engine::advance cloning it a second time.
+        let next = self.engine.clone().advance_replay_unpublished(&event)?;
         let body =
             json!({"sequence":self.chain.sequence+1,"previous":self.chain.previous,"event":event});
         let row = sealed(body);
@@ -513,7 +514,7 @@ impl Session {
         let mut accepted=Vec::with_capacity(entries.len());let mut rows=Vec::new();
         let mut staged_refs:BTreeMap<(String,u64),String>=BTreeMap::new();
         let mut staged_cursors:BTreeMap<String,u64>=BTreeMap::new();
-        let mut staged_events=Vec::new();let mut next=None;let mut chain=self.chain.clone();let mut input_bytes=0usize;
+        let mut staged_events=Vec::new();let mut next:Option<Engine>=None;let mut chain=self.chain.clone();let mut input_bytes=0usize;
         for input in entries{
             let(source_id,sequence,event)=(input.source_id,input.sequence,input.event);
             if !event.is_object(){return Err("PAPER_EVENT".into())}
@@ -532,7 +533,9 @@ impl Session {
             if previous.checked_add(1)!=Some(sequence){return Err("PAPER_SOURCE_SEQUENCE_GAP".into())}
             self.collateral_scope(event,chain.sequence,&chain.previous,next.as_ref().unwrap_or(&self.engine))?;
             let mut event=event.clone();event["sourceRef"]=json!({"id":source_id,"sequence":sequence,"hash":digest});
-            next.get_or_insert_with(||self.engine.clone()).advance(&event)?;
+            // On rejection, the consumed candidate drops; published self and
+            // the original durable prefix remain untouched by validation.
+            next=Some(next.take().unwrap_or_else(||self.engine.clone()).advance_replay_unpublished(&event)?);
             let number=chain.sequence.checked_add(1).ok_or("PAPER_BATCH_SEQUENCE_RANGE")?;
             let row=sealed(json!({"sequence":number,"previous":chain.previous,"event":event}));
             chain.accept(&row)?;
