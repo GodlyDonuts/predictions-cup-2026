@@ -3,13 +3,45 @@
 //! Runtime must prove original physical attempt closure from its durable log.
 use super::*;
 impl Engine{
+ // Positive native ownership evidence, not queue absence. Runtime must also
+ // prove original ACK+complete terminal closure and the approved review/cohort.
+ fn reviewed_top_up_state(&self,p:&Value,ex:&str,market:&str,side:Side)->Result<(u64,i128,u64)>{
+  if p.as_object().is_none_or(|o|o.len()!=8)||p["version"]!=1{return Err("REVIEWED_ENTRY_TOP_UP_SCHEMA")}
+  for k in ["cohortSha256","positionsSha256"]{if p[k].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_ENTRY_TOP_UP_PROOF")}}
+  let entries=p["priorEntries"].as_array().ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;
+  let cap=p["maximumEntries"].as_u64().filter(|n|(2..=16).contains(n)).ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;
+  if entries.is_empty()||entries.len()>=cap as usize{return Err("REVIEWED_ENTRY_TOP_UP_ENTRIES")}
+  let total=p["maximumTotalQuantity"].as_u64().filter(|n|*n>0&&*n<=10000).ok_or("REVIEWED_ENTRY_TOP_UP_CAP")?;
+  let mut ids=BTreeSet::new();let mut previous=0;
+  for row in entries{let id=row["qid"].as_u64().filter(|n|*n>previous).ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;previous=id;
+   if row.as_object().is_none_or(|o|o.len()!=3)||!ids.insert(id){return Err("REVIEWED_ENTRY_TOP_UP_ENTRIES")}
+   let q=self.orders.iter().find(|q|q.id==id).ok_or("REVIEWED_ENTRY_TOP_UP_ORDER")?;
+   if q.exchange!=ex||q.market!=market||q.side!=side||!q.buy||!q.retired||self.is_package_order(id)
+    ||self.live_orders.get(&id).is_none_or(|actual|row["actualOrderId"]!=*actual)||row["filledQuantity"].as_u64()!=Some(q.filled){return Err("REVIEWED_ENTRY_TOP_UP_ORDER")}
+  }
+  let mut lots=Vec::new();let mut held=0u64;let mut cost=0i128;let mut quantities:BTreeMap<u64,u64>=BTreeMap::new();
+  for f in &self.fills{let Some(id)=f["orderId"].as_u64().filter(|id|ids.contains(id))else{continue};
+   let n=f["quantity"].as_u64().filter(|n|*n>0).ok_or("REVIEWED_ENTRY_TOP_UP_FILL")?;let price=dec(&f["price"])?;
+   if f["counterfactual"]!=false||f["exchangeId"]!=ex||f["marketId"]!=market||f["side"]!=label(side)||f["action"]!="buy"||!f["executedAt"].is_string()
+    ||self.live_orders.get(&id).is_none_or(|actual|f["actualOrderId"]!=*actual){return Err("REVIEWED_ENTRY_TOP_UP_FILL")}
+   held=held.checked_add(n).ok_or("REVIEWED_ENTRY_RANGE")?;cost=cost.checked_add(price.checked_mul(n as i128).ok_or("REVIEWED_ENTRY_RANGE")?).ok_or("REVIEWED_ENTRY_RANGE")?;
+   let q=quantities.entry(id).or_default();*q=q.checked_add(n).ok_or("REVIEWED_ENTRY_RANGE")?;
+   lots.push(json!({"quantity":n,"price":f["price"],"executedAt":f["executedAt"]}));
+  }
+  for row in entries{let id=row["qid"].as_u64().ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;if row["filledQuantity"].as_u64()!=Some(quantities.get(&id).copied().unwrap_or(0)){return Err("REVIEWED_ENTRY_TOP_UP_FILL")}}
+  let positions=&self.wallet.positions()[ex];
+  if held==0||held>=total||self.wallet.quantity(ex,side.other())!=0||self.wallet.quantity(ex,side)!=held||self.wallet.market_cost(ex)!=cost
+   ||positions[label(side)]!=json!(lots)||hash(positions)!=p["positionsSha256"]||p["heldQuantity"].as_u64()!=Some(held)||dec(&p["heldCost"])?!=cost{return Err("REVIEWED_ENTRY_TOP_UP_OWNERSHIP")}
+  Ok((held,cost,total))
+ }
  pub(super) fn reserve_reviewed_fundamental_entry(&mut self,e:&Value,at:i64)->Result<()>{
   if !self.live_mode||e["source"]!="moloch_live_dispatcher"{return Err("REVIEWED_ENTRY_SOURCE")}
   let ex=id(&e["exchangeId"])?;let market=id(&e["marketId"])?;let tournament=string(&e["bankScope"]["tournamentId"])?;
   let side=match e["side"].as_str(){Some("YES")=>Side::Yes,Some("NO")=>Side::No,_=>return Err("REVIEWED_ENTRY_SIDE")};
   for key in ["originSha256","reviewSha256","bookSha256"]{if e[key].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_ENTRY_PROOF")}}
   if !self.policy.entry(&ex,at){return Err("REVIEWED_ENTRY_DEADLINE")}
-  if self.wallet.quantity(&ex,Side::Yes)!=0||self.wallet.quantity(&ex,Side::No)!=0||self.package_protects_exchange(&ex)||self.package_blocks_submissions()
+  let top_up=match e.get("sameSideTopUp"){None=>None,Some(proof)=>Some(self.reviewed_top_up_state(proof,&ex,&market,side)?)};
+  if (top_up.is_none()&&(self.wallet.quantity(&ex,Side::Yes)!=0||self.wallet.quantity(&ex,Side::No)!=0))||self.package_protects_exchange(&ex)||self.package_blocks_submissions()
    ||self.orders.iter().any(|q|q.exchange==ex&&!q.retired)||self.inherited.as_ref().is_some_and(|i|i.remaining.iter().any(|((x,_),lots)|x==&ex&&!lots.is_empty())){return Err("REVIEWED_ENTRY_EXISTING_EXPOSURE")}
   let limit=price(dec(&e["limitPrice"])?)?;let payout=dec(&e["expectedPayout"])?;let margin=dec(&e["marginPerShare"])?;
   let principal=dec(&e["reviewMaximumPrincipal"])?;let maximum=e["reviewMaximumQuantity"].as_u64().filter(|n|*n>0&&*n<=9_007_199_254_740_991).ok_or("REVIEWED_ENTRY_REVIEW_CAP")?;
@@ -52,16 +84,18 @@ impl Engine{
   let committed=self.policy.committed.checked_sub(self.wallet.owned_cost()).and_then(|n|n.checked_sub(reserved)).ok_or("REVIEWED_ENTRY_RANGE")?;
   let mut market_used=self.wallet.market_cost(&ex);for q in self.orders.iter().filter(|q|q.exchange==ex&&!q.retired&&q.buy){market_used=market_used.checked_add(self.policy.unit(q.limit)?.checked_mul(q.remaining()as i128).ok_or("REVIEWED_ENTRY_RANGE")?).ok_or("REVIEWED_ENTRY_RANGE")?;}
   let market_left=self.policy.market.checked_sub(market_used).ok_or("REVIEWED_ENTRY_RANGE")?;
+  let (principal,maximum)=if let Some((held,cost,total))=top_up{(principal.checked_sub(cost).ok_or("REVIEWED_ENTRY_TOP_UP_CAP")?,maximum.min(total.checked_sub(held).ok_or("REVIEWED_ENTRY_TOP_UP_CAP")?))}else{(principal,maximum)};
   let unit=self.policy.unit(limit)?;let available=principal.min(cash).min(committed).min(market_left);if available<unit{return Err("REVIEWED_ENTRY_FUNDING")}
   let n=maximum.min(self.policy.quantity).min(depth).min(u64::try_from((available/unit).min(u64::MAX as i128)).map_err(|_|"REVIEWED_ENTRY_RANGE")?);if n==0{return Err("REVIEWED_ENTRY_DEPTH")}
   let mut markets=BTreeSet::new();for((exchange,_),lots)in &self.wallet.lots{if !lots.is_empty(){markets.insert(exchange.clone());}}for q in self.orders.iter().filter(|q|!q.retired){markets.insert(q.exchange.clone());}
   if !markets.contains(&ex)&&markets.len()>=self.policy.markets{return Err("REVIEWED_ENTRY_MARKET_CAP")}
-  if let Some(i)=&self.inherited{let inherited=|exchange:&String|i.remaining.iter().any(|((x,_),lots)|x==exchange&&!lots.is_empty());if !inherited(&ex)&&markets.iter().filter(|x|!inherited(x)).count()>=i.fresh_market_limit{return Err("REVIEWED_ENTRY_FRESH_MARKET_CAP")}}
+  if let Some(i)=&self.inherited{let inherited=|exchange:&String|i.remaining.iter().any(|((x,_),lots)|x==exchange&&!lots.is_empty());if !(top_up.is_some()&&markets.contains(&ex))&&!inherited(&ex)&&markets.iter().filter(|x|!inherited(x)).count()>=i.fresh_market_limit{return Err("REVIEWED_ENTRY_FRESH_MARKET_CAP")}}
   self.writes.retain(|t|at-*t<60000);if self.writes.len()>=self.policy.writes||self.writes.last().is_some_and(|t|at-*t<self.policy.write_gap){return Err("REVIEWED_ENTRY_WRITE_BUDGET")}
   let qid=self.prior_orders+self.orders.len()as u64+1;let(same,better)=Self::visible(b,side,true,limit);
   self.wallet.reserve(&qid.to_string(),Reservation{exchange:ex.clone(),side,quantity:n,limit})?;
   self.orders.push(Order{id:qid,market,exchange:ex,tournament,side,buy:true,quantity:n,filled:0,limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same,better,visible_same:same,visible_better:better,touch_remainder:0,aon:false,age_reason:false,through:false,participation:100,conditional:false,touch_bps:0});
-  self.reviewed_fundamental_entries.insert(qid,json!({"originSha256":e["originSha256"],"reviewSha256":e["reviewSha256"],"bookSha256":e["bookSha256"],"reviewMaximumQuantity":maximum,"reviewMaximumPrincipal":money(principal),"expectedPayout":money(payout),"marginPerShare":money(margin),"reviewCurrentUntilMs":review_until,"reservedQuantity":n,"grossLimitPrincipal":money(limit*n as i128)}));
+  self.reviewed_fundamental_entries.insert(qid,json!({"originSha256":e["originSha256"],"reviewSha256":e["reviewSha256"],"bookSha256":e["bookSha256"],"reviewMaximumQuantity":maximum,"reviewMaximumPrincipal":money(dec(&e["reviewMaximumPrincipal"])?),"expectedPayout":money(payout),"marginPerShare":money(margin),"reviewCurrentUntilMs":review_until,"reservedQuantity":n,"grossLimitPrincipal":money(limit*n as i128)}));
+  if top_up.is_some(){self.reviewed_fundamental_entries.get_mut(&qid).ok_or("REVIEWED_ENTRY_TOP_UP_METADATA")?["sameSideTopUp"]=e["sameSideTopUp"].clone();}
   if extended{let metadata=self.reviewed_fundamental_entries.get_mut(&qid).ok_or("REVIEWED_ENTRY_EXECUTION_METADATA")?;
    metadata["executionMode"]=json!(mode);metadata["modelSha256"]=e["modelSha256"].clone();metadata["sourceSha256"]=e["sourceSha256"].clone();metadata["acquisitionCeiling"]=json!(money(ceiling.ok_or("REVIEWED_ENTRY_EXECUTION_METADATA")?));
    metadata["actionSpec"]=json!({"marketId":e["marketId"],"exchangeId":e["exchangeId"],"tournamentId":e["bankScope"]["tournamentId"],"side":label(side),"action":"buy","quantity":n,"limitPrice":money(limit)});

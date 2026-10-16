@@ -92,6 +92,11 @@ pub struct DeadlineLiquidationEvidence {
     pub expected_cash_per_share:String, pub model_sha256:String, pub model:Value,
     pub assumption_label:String,
 }
+/// Explicit cumulative same-cohort acquisition permission. This is an operator
+/// risk limit, not a probability/model qualification or retry capability.
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct SameSideTopUps {pub version:u32,pub maximum_entries:u32}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct ReviewInput {
@@ -103,6 +108,10 @@ pub struct ReviewInput {
     pub official_contract_root_sha256:String,
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub existing_origin:Option<ExistingApproval>,
+    /// Omitted legacy reviews retain exactly their original bytes/hash. When
+    /// present, principal/quantity cap ALL held cohort lots plus the new order.
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub same_side_top_ups:Option<SameSideTopUps>,
     /// Separately operator-approved execution choices. Omission preserves the
     /// exact historical canonical review bytes/hash and join-only behavior.
     #[serde(default,skip_serializing_if="Option::is_none")]
@@ -121,6 +130,7 @@ pub struct ReviewInput {
 }
 pub fn review_sha256(input:&ReviewInput)->Result<String>{digest(input)}
 fn structure(r:&ReviewInput)->Result<i128>{
+    if let Some(p)=&r.same_side_top_ups{need(p.version==1&&(2..=16).contains(&p.maximum_entries)&&r.version==2&&r.existing_origin.is_none(),"FUNDAMENTAL_TOP_UP_POLICY")?;}
     if let Some(p)=&r.execution_policy{need(p.version==1&&!p.allowed_modes.is_empty()&&p.allowed_modes.len()<=3,"FUNDAMENTAL_EXECUTION_POLICY")?;
         for(i,m)in p.allowed_modes.iter().enumerate(){need(!p.allowed_modes[..i].contains(m),"FUNDAMENTAL_DUPLICATE_EXECUTION_MODE")?;}}
 
@@ -281,18 +291,24 @@ impl Reviewed{
 struct Binding{qid:u64,spec:RequestSpec,spec_sha256:String,quote:Value,review_sha256:String,bound_at_ms:u64}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Cohort{#[serde(default,skip_serializing_if="Option::is_none")]entry:Option<Binding>,#[serde(default,skip_serializing_if="Option::is_none")]existing:Option<ExistingOrigin>,first_fill_index:usize,prior_fills_sha256:String,bank_head_at_entry:Value,hold_until_ms:u64,exits:BTreeMap<u64,Binding>}
+struct Cohort{#[serde(default,skip_serializing_if="Option::is_none")]entry:Option<Binding>,#[serde(default,skip_serializing_if="BTreeMap::is_empty")]top_ups:BTreeMap<u64,Binding>,#[serde(default,skip_serializing_if="BTreeMap::is_empty")]retired_top_ups:BTreeMap<u64,RetiredTopUp>,#[serde(default,skip_serializing_if="Option::is_none")]existing:Option<ExistingOrigin>,first_fill_index:usize,prior_fills_sha256:String,bank_head_at_entry:Value,hold_until_ms:u64,exits:BTreeMap<u64,Binding>}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 struct ExistingOrigin{approval:ExistingApproval,adoption_ref:Value,adopted_position:Value,lots:Value,quantity:u64,principal:String,review_sha256:String}
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+struct RetiredTopUp{not_sent:Value,retirement:Value}
 /// Historical zero-exposure entry retained independently of future policies.
 /// Its original quote/side/spec and immutable fill prefix are never reinterpreted.
 #[derive(Clone)]
 struct AbandonedCohort{exchange:String,cohort:Cohort,not_sent:Value,retirement:Value,closed_zero:Option<Value>}
 impl Cohort{
     fn entry_id(&self)->Option<u64>{self.entry.as_ref().map(|b|b.qid)}
-    fn binding(&self,qid:u64)->Option<&Binding>{self.entry.as_ref().filter(|b|b.qid==qid).or_else(||self.exits.get(&qid))}
-    fn pending_entry(&self,log:&DispatchLog)->bool{self.entry_id().is_some_and(|id|!log.closed.contains(&id))}
+    fn entries(&self)->impl Iterator<Item=&Binding>{self.entry.iter().chain(self.top_ups.values())}
+    fn entry_binding(&self,qid:u64)->Option<&Binding>{self.entries().find(|b|b.qid==qid)}
+    fn is_entry(&self,qid:u64)->bool{self.entry_binding(qid).is_some()}
+    fn binding(&self,qid:u64)->Option<&Binding>{self.entry_binding(qid).or_else(||self.exits.get(&qid))}
+    fn pending_entry(&self,log:&DispatchLog)->bool{self.entries().any(|b|!self.retired_top_ups.contains_key(&b.qid)&&!log.closed.contains(&b.qid))}
     fn origin_sha(&self)->Result<String>{digest(&json!({"existing":self.existing,"firstFillIndex":self.first_fill_index,"fillPrefixSha256":self.prior_fills_sha256,"nativeHead":self.bank_head_at_entry}))}
 }
 /// Captured from the actual loaded bank and sole existing Transport, never from
@@ -373,7 +389,10 @@ impl EntryPlan{
             &&bank.durable_head()==self.head&&digest(&bank.engine().report()?)?==self.report_sha
             &&log.descriptor_identity()?==self.dispatch&&queue_view(transport)?==self.queue,"FUNDAMENTAL_ENTRY_PLAN_CHANGED")?;
         no_existing_liability(bank,log,&self.review.exchange_id)?;
-        need(bank.engine().wallet.quantity(&self.review.exchange_id,Side::Yes)==0&&bank.engine().wallet.quantity(&self.review.exchange_id,Side::No)==0,"FUNDAMENTAL_ENTRY_NOT_FLAT")
+        if let Some(p)=self.event.get("sameSideTopUp"){
+            need(digest(&bank.engine().wallet.positions()[&self.review.exchange_id])?==p["positionsSha256"]
+                &&p["heldQuantity"].as_u64().is_some_and(|n|n>0)&&bank.engine().wallet.quantity(&self.review.exchange_id,if self.review.side=="YES"{Side::Yes}else{Side::No})==p["heldQuantity"].as_u64().unwrap(),"FUNDAMENTAL_TOP_UP_POSITION_CHANGED")
+        }else{need(bank.engine().wallet.quantity(&self.review.exchange_id,Side::Yes)==0&&bank.engine().wallet.quantity(&self.review.exchange_id,Side::No)==0,"FUNDAMENTAL_ENTRY_NOT_FLAT")}
     }
 }
 /// Read hint only; a timeout or absent open order does not prove non-execution.
@@ -609,13 +628,17 @@ impl Cohorts{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
         for(ex,c)in &self.cohorts{let Some(b)=&c.entry else{continue};
             need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_ABANDON_SCOPE")?;
-            if c.existing.is_some()||!c.exits.is_empty()||!log.never_attempted(b.qid)||bank.engine().live_order_bindings().contains_key(&b.qid)
+            if c.existing.is_some()||!c.top_ups.is_empty()||!c.exits.is_empty()||!log.never_attempted(b.qid)||bank.engine().live_order_bindings().contains_key(&b.qid)
                 ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
             out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});
-        }Ok(out)
+        }
+        for(ex,c)in &self.cohorts{if c.existing.is_some()||!c.exits.is_empty(){continue}for b in c.top_ups.values(){
+            if !c.retired_top_ups.contains_key(&b.qid)&&log.never_attempted(b.qid)&&!bank.engine().live_order_bindings().contains_key(&b.qid)
+                &&!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid){out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});}
+        }}Ok(out)
     }
     fn original_not_sent_records(&self,log:&DispatchLog,wanted:&BTreeSet<u64>)->Result<(BTreeMap<u64,Value>,FilePin)>{
-        need(wanted.len()<=128&&wanted.iter().all(|qid|log.never_attempted(*qid)),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
+        need(wanted.len()<=4096&&wanted.iter().all(|qid|log.never_attempted(*qid)),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
         let before=log.descriptor_identity()?;let pin=FilePin::from_held(File::open(&self.ordinary_path)?,self.ordinary_path.clone(),64*1024*1024,None)?;
         need(pin.identity==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
         let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_ABANDON_DISPATCH_TORN")?;
@@ -639,7 +662,8 @@ impl Cohorts{
     pub fn prepare_abandon(&self,bank:&Session,log:&DispatchLog,transport:&Transport,scope:&Scope,hint:&AbandonHint,f:&crate::authority::CancelSnapshotSet,source_id:&str,sequence:u64,retirement:&Value,now:u64)->Result<AbandonPlan>{
         need(self.abandonment_hints(bank,log,scope,now)?.iter().any(|h|h==hint)&&digest(scope)?==digest(transport.scope())?,"FUNDAMENTAL_ABANDON_HINT_CHANGED")?;
         no_existing_liability(bank,log,&hint.exchange_id)?;let queue=queue_view(transport)?;
-        let c=&self.cohorts[&hint.exchange_id];let b=c.entry.as_ref().ok_or("FUNDAMENTAL_ABANDON_ORIGIN")?;
+        let c=&self.cohorts[&hint.exchange_id];let top_up=c.top_ups.contains_key(&hint.qid);let b=c.binding(hint.qid).ok_or("FUNDAMENTAL_ABANDON_ORIGIN")?;
+        let owned=if top_up{self.owned(bank,&hint.exchange_id,c)?}else{0};let wanted=if self.policies[&hint.exchange_id].side=="YES"{owned as i64}else{-(owned as i64)};let mut position_seen=false;
         let q=bank.engine().order_records().into_iter().find(|q|q["id"]==hint.qid).ok_or("FUNDAMENTAL_ABANDON_QUOTE")?;
         need(q["retired"]==true&&q["filled"]==0,"FUNDAMENTAL_ABANDON_NATIVE_RETIREMENT_REQUIRED")?;
         let(mut not_sents,ordinary)=self.original_not_sent_records(log,&[hint.qid].into())?;let not_sent=not_sents.remove(&hint.qid).ok_or("FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED")?;
@@ -654,10 +678,11 @@ impl Cohorts{
         need(f.account.data["id"]==*tid&&f.account.data["slug"]==scope.tournament_slug&&f.account.data["status"]=="active"&&f.positions.data.get("pagination").is_none()
             &&f.open_orders.data["coverage"]["complete"]==true&&f.open_orders.data["pagination"]["hasMore"]==false&&f.open_orders.data["pagination"]["nextCursor"].is_null(),"FUNDAMENTAL_ABANDON_ACCOUNT_COVERAGE")?;
         let mut seen=BTreeSet::new();for row in f.positions.data["positions"].as_array().ok_or("FUNDAMENTAL_ABANDON_POSITIONS")?{let ex=row["exchangeId"].as_str().ok_or("FUNDAMENTAL_ABANDON_POSITION_SCOPE")?;
-            need(seen.insert(ex),"FUNDAMENTAL_ABANDON_DUPLICATE_POSITION")?;if ex==hint.exchange_id{need(row["quantity"].as_i64()==Some(0),"FUNDAMENTAL_ABANDON_NOT_FLAT")?;}}
+            need(seen.insert(ex),"FUNDAMENTAL_ABANDON_DUPLICATE_POSITION")?;if ex==hint.exchange_id{position_seen=true;need(row["quantity"].as_i64()==Some(wanted),"FUNDAMENTAL_ABANDON_NOT_FLAT")?;}}
+        need(owned==0||position_seen,"FUNDAMENTAL_TOP_UP_POSITION_MISSING")?;
         for row in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_ABANDON_ORDERS")?{need(row["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_ABANDON_OPEN_ORDER")?;}
         need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_ABANDON_CASH")?;
-        let plan=AbandonPlan{event:json!({"kind":"abandon_never_sent","exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"originalNotSent":not_sent,"committedRetirement":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
+        let plan=AbandonPlan{event:json!({"kind":if top_up{"abandon_top_up_never_sent"}else{"abandon_never_sent"},"exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"originalNotSent":not_sent,"committedRetirement":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
             head:bank.durable_head(),report_sha:digest(&bank.engine().report()?)?,dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,_owner:self._owner.clone()};
         plan.validate(bank,log,transport,now)?;Ok(plan)
@@ -666,7 +691,7 @@ impl Cohorts{
     /// bank financial state. The next entry still requires a fresh approved plan.
     pub fn apply_abandon(&mut self,plan:AbandonPlan,bank:&Session,log:&DispatchLog,transport:&Transport,now:u64)->Result<()>{
         self.check(bank,log)?;plan.validate(bank,log,transport,now)?;
-        need(self.cohorts.get(plan.exchange_id()).is_some_and(|c|c.entry_id()==Some(plan.qid())&&digest(c).ok().as_ref()==plan.event["cohortSha256"].as_str().map(str::to_owned).as_ref()),"FUNDAMENTAL_ABANDON_COHORT_CHANGED")?;
+        need(self.cohorts.get(plan.exchange_id()).is_some_and(|c|c.binding(plan.qid()).is_some()&&digest(c).ok().as_ref()==plan.event["cohortSha256"].as_str().map(str::to_owned).as_ref()),"FUNDAMENTAL_ABANDON_COHORT_CHANGED")?;
         self.append(plan.event,now)?;self.check(bank,log)
     }
     /// Known closure is essential: retired/native-filled/open-list absence is
@@ -674,7 +699,7 @@ impl Cohorts{
     pub fn rearm_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,_now:u64)->Result<Vec<RearmHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
         for(ex,c)in &self.cohorts{let Some(b)=&c.entry else{continue};need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_REARM_SCOPE")?;
-            if c.existing.is_some()||!c.exits.is_empty()||!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)
+            if c.existing.is_some()||!c.top_ups.is_empty()||!c.exits.is_empty()||!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)
                 ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
             let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{continue};let Some(q)=bank.engine().order_records().into_iter().find(|q|q["id"]==b.qid)else{return Err("FUNDAMENTAL_REARM_NATIVE_QUOTE".into())};
             if q["retired"]!=true||q["filled"]!=0{continue}out.push(RearmHint{exchange_id:ex.clone(),qid:b.qid,actual_id:actual.clone(),binding_sha256:digest(b)?});
@@ -719,14 +744,53 @@ impl Cohorts{
         need(self.cohorts.get(plan.exchange_id()).is_some_and(|c|c.entry_id()==Some(plan.qid())&&digest(c).ok().as_ref()==plan.inner.event["cohortSha256"].as_str().map(str::to_owned).as_ref()),"FUNDAMENTAL_REARM_COHORT_CHANGED")?;
         self.append(plan.inner.event,now)?;self.check(bank,log)
     }
+    // Exact FIFO attribution is required for new cumulative acquisitions. The
+    // original single-entry verifier and all old serialized prefixes stay intact.
+    fn cohort_lots(&self,bank:&Session,ex:&str,c:&Cohort)->Result<Value>{
+        need(c.existing.is_none(),"FUNDAMENTAL_TOP_UP_INHERITED_ORIGIN")?;let mut lots:Vec<Value>=Vec::new();
+        for f in &bank.engine().fills()[c.first_fill_index..]{if f["exchangeId"]!=ex{continue}
+            let id=f["orderId"].as_u64().ok_or("FUNDAMENTAL_FILL_ID")?;let mut n=f["quantity"].as_u64().filter(|n|*n>0).ok_or("FUNDAMENTAL_FILL_QUANTITY")?;
+            if c.is_entry(id)&&f["action"]=="buy"{need(f["executedAt"].is_string(),"FUNDAMENTAL_TOP_UP_EXECUTION_CLOCK")?;lots.push(json!({"quantity":n,"price":f["price"],"executedAt":f["executedAt"]}));}
+            else if c.exits.contains_key(&id)&&f["action"]=="sell"{while n>0{let first=lots.first_mut().ok_or("FUNDAMENTAL_EXIT_EXCEEDS_COHORT")?;let q=first["quantity"].as_u64().ok_or("FUNDAMENTAL_FIFO_QUANTITY")?;let take=n.min(q);n-=take;if take==q{lots.remove(0);}else{first["quantity"]=json!(q-take);}}}
+            else{return Err("FUNDAMENTAL_FOREIGN_FILL".into())}
+        }Ok(json!(lots))
+    }
+    /// No HTTP or new authority: exact current ownership and prior durable
+    /// closures, used before nomination and again around the native reservation.
+    /// allow_drafts is read-hint only; a plan/bind requires no other reservation.
+    fn top_up_state(&self,bank:&Session,log:&DispatchLog,ex:&str,current_qid:Option<u64>,allow_drafts:bool)->Result<Option<Value>>{
+        let r=&self.policies[ex];let Some(p)=&r.same_side_top_ups else{return Ok(None)};let Some(c)=self.cohorts.get(ex)else{return Ok(None)};
+        if c.existing.is_some()||c.entry.is_none()||!c.exits.is_empty()||current_qid==c.entry_id(){return Ok(None)}
+        let prior:Vec<_>=c.entries().filter(|b|Some(b.qid)!=current_qid&&!c.retired_top_ups.contains_key(&b.qid)).collect();if prior.is_empty()||prior.len()>=p.maximum_entries as usize||(c.top_ups.len()>=128&&!current_qid.is_some_and(|id|c.top_ups.contains_key(&id))){return Ok(None)}
+        let owned=self.owned(bank,ex,c)?;let cost=bank.engine().wallet.market_cost(ex);
+        if owned==0||owned>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
+        let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_TOP_UP_FIFO_CHANGED")?;
+        let orders=bank.engine().order_records();let mut proof=Vec::new();
+        for b in prior{if !log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid){return Ok(None)}
+            let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{return Ok(None)};
+            let q=orders.iter().find(|q|q["id"]==b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
+            if q["retired"]!=true{return Ok(None)}
+            let filled=bank.engine().fills().iter().filter(|f|f["orderId"]==b.qid).try_fold(0u64,|n,f|n.checked_add(f["quantity"].as_u64().ok_or("FUNDAMENTAL_FILL_QUANTITY")?).ok_or("FUNDAMENTAL_RANGE"))?;
+            need(q["filled"]==filled,"FUNDAMENTAL_TOP_UP_FILLED_MISMATCH")?;
+            proof.push(json!({"qid":b.qid,"actualOrderId":actual,"filledQuantity":filled}));
+        }
+        if let Some(id)=current_qid{if log.closed.contains(&id)||log.acknowledgments.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){return Ok(None)}}
+        if orders.iter().any(|q|q["exchangeId"]==ex&&q["id"].as_u64()!=current_qid&&q["retired"]==false&&(!allow_drafts||q["id"].as_u64().is_none_or(|id|!log.never_attempted(id)||log.intents.contains_key(&id)))){return Ok(None)}
+        if orders.iter().any(|q|q["exchangeId"]==ex&&q["id"].as_u64()!=current_qid&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){return Ok(None)}
+        if bank.engine().package_blocks_submissions()||bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true&&(p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["exchangeId"]==ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|ls|ls.iter().any(|l|l==ex)))){return Ok(None)}
+        let mut original=c.clone();if let Some(id)=current_qid{original.top_ups.remove(&id);}
+        Ok(Some(json!({"version":1,"cohortSha256":digest(&original)?,"positionsSha256":digest(&bank.engine().wallet.positions()[ex])?,"heldQuantity":owned,"heldCost":money(cost),"priorEntries":proof,"maximumEntries":p.maximum_entries,"maximumTotalQuantity":r.maximum_quantity})))
+    }
     /// Stale/missing books and missing ordinary quotes do not suppress reads.
     /// Physical/unknown liabilities and already-owned cohorts still suppress nomination.
     pub fn entry_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,trusted:&BTreeSet<String>,now:u64)->Result<Vec<EntryHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
         for (ex,r) in &self.policies{
-            if r.version!=2||r.existing_origin.is_some()||self.cohorts.contains_key(ex)||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
+            if r.version!=2||r.existing_origin.is_some()||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id),"FUNDAMENTAL_ENTRY_SCOPE")?;
-            if bank.engine().wallet.quantity(ex,Side::Yes)>0||bank.engine().wallet.quantity(ex,Side::No)>0{continue}
+            let top_up=self.cohorts.contains_key(ex);
+            if top_up&&self.top_up_state(bank,log,ex,None,true)?.is_none(){continue}
+            if !top_up&&(bank.engine().wallet.quantity(ex,Side::Yes)>0||bank.engine().wallet.quantity(ex,Side::No)>0){continue}
             if bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){continue}
             if bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true
                 &&(p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["exchangeId"]==*ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|ls|ls.iter().any(|l|l==ex)))){continue}
@@ -751,8 +815,17 @@ impl Cohorts{
         let Some(r)=self.policies.get(&hint.exchange_id)else{return Ok(None)};let review_sha=digest(r)?;
         need(hint.market_id==r.market_id&&hint.contract_id==r.contract_id&&hint.side==r.side&&hint.review_sha256==review_sha
             &&scope.tournament_id==r.tournament_id&&scope.exchanges.get(&r.exchange_id)==Some(&r.market_id),"FUNDAMENTAL_COMPARISON_HINT_CHANGED")?;
-        if r.version!=2||self.cohorts.contains_key(&r.exchange_id)||r.existing_origin.is_some()||r.revoke_existing||!trusted.contains(&review_sha)||!current(r,now)||now>=r.hold_until_ms
-            ||bank.engine().wallet.quantity(&r.exchange_id,Side::Yes)!=0||bank.engine().wallet.quantity(&r.exchange_id,Side::No)!=0{return Ok(None)}
+        if r.version!=2||r.existing_origin.is_some()||r.revoke_existing||!trusted.contains(&review_sha)||!current(r,now)||now>=r.hold_until_ms
+            {return Ok(None)}
+        // Diagnostic comparison has no DispatchLog argument and grants no
+        // plan/closure authority. prepare_entry independently proves closures.
+        let (held,held_cost)=if let Some(c)=self.cohorts.get(&r.exchange_id){
+            let Some(p)=&r.same_side_top_ups else{return Ok(None)};
+            if c.existing.is_some()||!c.exits.is_empty()||c.entries().filter(|b|!c.retired_top_ups.contains_key(&b.qid)).count()>=p.maximum_entries as usize||c.top_ups.len()>=128{return Ok(None)}
+            let held=self.owned(bank,&r.exchange_id,c)?;let cost=bank.engine().wallet.market_cost(&r.exchange_id);
+            if held==0||held>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
+            (held,cost)
+        }else{if bank.engine().wallet.quantity(&r.exchange_id,Side::Yes)!=0||bank.engine().wallet.quantity(&r.exchange_id,Side::No)!=0{return Ok(None)}(0,0)};
         let ceiling=structure(r)?.min(UNIT-5000);if ceiling<5000{return Ok(None)}
         let mut until=r.expires_at_ms.min(r.hold_until_ms);for source in &r.sources{until=until.min(source.observed_at_ms.checked_add(source.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?);}
         if let Some(stop)=bank.engine().policy()["entryStopAt"].as_str().map(daily_windows::clock).transpose()?{until=until.min(stop);}
@@ -760,7 +833,7 @@ impl Cohorts{
         let model_sha=execution_model_sha(r)?;
         let bounds=crate::alpha_proposal::ReviewBounds{exchange_id:r.exchange_id.clone(),market_id:r.market_id.clone(),side:if r.side=="YES"{Side::Yes}else{Side::No},review_sha256:review_sha,
             model_sha256:model_sha,source_sha256:digest(&r.sources)?,reviewed_at_ms:r.reviewed_at_ms,valid_until_ms:until,horizon_ms:r.hold_until_ms.checked_sub(now).ok_or("FUNDAMENTAL_COMPARISON_HORIZON")?,
-            expected_payout:add(structure(r)?,amount(&r.margin_per_share)?)?,acquisition_ceiling:ceiling,maximum_principal:amount(&r.maximum_principal)?,maximum_quantity:r.maximum_quantity,
+            expected_payout:add(structure(r)?,amount(&r.margin_per_share)?)?,acquisition_ceiling:ceiling,maximum_principal:amount(&r.maximum_principal)?.checked_sub(held_cost).ok_or("FUNDAMENTAL_RANGE")?,maximum_quantity:r.maximum_quantity.checked_sub(held).ok_or("FUNDAMENTAL_RANGE")?,
             modes:vec![crate::alpha_proposal::Mode::JoinBid,crate::alpha_proposal::Mode::ImproveOneTick,crate::alpha_proposal::Mode::BoundedLimitMayRest]};
         let result=crate::alpha_proposal::compare(bank,scope,&bounds,now)?;pin.validate()?;Ok(Some(result))
     }
@@ -775,6 +848,9 @@ impl Cohorts{
         if !hints.iter().any(|h|h==hint){return Ok(None)}
         need(digest(scope)?==digest(transport.scope())?,"FUNDAMENTAL_ENTRY_TRANSPORT_SCOPE")?;
         no_existing_liability(bank,log,&hint.exchange_id)?;let queue=queue_view(transport)?;let r=&self.policies[&hint.exchange_id];
+        let top_up=if self.cohorts.contains_key(&hint.exchange_id){let Some(v)=self.top_up_state(bank,log,&hint.exchange_id,None,false)?else{return Ok(None)};Some(v)}else{None};
+        let held=top_up.as_ref().and_then(|v|v["heldQuantity"].as_u64()).unwrap_or(0);
+        let wanted=if r.side=="YES"{held as i64}else{-(held as i64)};let mut target_position_seen=false;
         let tid=&scope.tournament_id;let market=&hint.market_id;
         let endpoints=[format!("/tournaments/{}",scope.tournament_slug),format!("/tournaments/{}/portfolio/positions",scope.tournament_slug),format!("/orders?status=open&limit=200&tournamentId={tid}"),format!("/account?tournamentId={tid}"),format!("/markets/{market}?tournamentId={tid}"),format!("/markets/{market}/nodes?tournamentId={tid}"),format!("/markets/{market}/orderbook?tournamentId={tid}&depth=20")];
         let receipts=[&f.account,&f.positions,&f.open_orders,&f.cash_balance,&f.market,&f.contract,&f.book];let mut last=0;let mut fact_until=u64::MAX;
@@ -785,7 +861,8 @@ impl Cohorts{
             &&f.open_orders.data["pagination"]["nextCursor"].is_null(),"FUNDAMENTAL_ENTRY_ACCOUNT_COVERAGE")?;
         let mut seen=BTreeSet::new();for p in f.positions.data["positions"].as_array().ok_or("FUNDAMENTAL_ENTRY_POSITIONS")?{
             let ex=p["exchangeId"].as_str().ok_or("FUNDAMENTAL_ENTRY_POSITION_SCOPE")?;need(seen.insert(ex),"FUNDAMENTAL_ENTRY_DUPLICATE_POSITION")?;
-            if ex==hint.exchange_id{need(p["quantity"].as_i64()==Some(0),"FUNDAMENTAL_ENTRY_NOT_FLAT")?;}}
+            if ex==hint.exchange_id{target_position_seen=true;need(p["quantity"].as_i64()==Some(wanted),"FUNDAMENTAL_ENTRY_POSITION_MISMATCH")?;}}
+        need(held==0||target_position_seen,"FUNDAMENTAL_TOP_UP_POSITION_MISSING")?;
         for o in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_ENTRY_OPEN_ORDERS")?{
             need(o["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_ENTRY_PHYSICAL_LIABILITY")?;}
         let cash=baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?;
@@ -819,6 +896,7 @@ impl Cohorts{
         let origin=digest(&json!({"review":r,"receipts":receipts,"scope":scope,"bankHead":head,"dispatch":dispatch,"queue":queue}))?;
         let mut event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":tid},"bankHead":head,"expectedReportSha256":report_sha,
             "marketId":market,"exchangeId":hint.exchange_id,"side":hint.side,"originSha256":origin,"reviewSha256":hint.review_sha256,"bookSha256":hashes.get(&hint.exchange_id).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reviewCurrentUntilMs":until,"reviewMaximumQuantity":selected_maximum,"reviewMaximumPrincipal":r.maximum_principal,"expectedPayout":money(add(structure(r)?,amount(&r.margin_per_share)?)?),"marginPerShare":r.margin_per_share,"limitPrice":money(selected_limit),"expiresAt":daily_windows::iso(expires)?});
+        if let Some(proof)=top_up{event["sameSideTopUp"]=proof;}
         if selected_mode!=ExecutionMode::JoinBid{event["executionMode"]=json!(selected_mode.wire());event["modelSha256"]=json!(execution_model_sha(r)?);event["sourceSha256"]=json!(digest(&r.sources)?);event["acquisitionCeiling"]=json!(money(execution_ceiling(r)?));}
         let plan=EntryPlan{event,scope_sha:digest(scope)?,head,report_sha,dispatch,queue,account_sha:bytes_sha(transport.account_scope().as_bytes()),review:r.clone(),minted:now,until:fact_until.min(until).min(expires).min(book.observed_ms.checked_add(age).ok_or("FUNDAMENTAL_CLOCK_RANGE")?).min(book.source.received_ms.checked_add(age).ok_or("FUNDAMENTAL_CLOCK_RANGE")?),
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,authority:authority.pin.duplicate()?,_owner:self._owner.clone()};
@@ -847,7 +925,7 @@ impl Cohorts{
             &&snapshot.origin.adopted_position["exchangeId"]==*ex&&snapshot.origin.adopted_position["marketId"]==r.input.market_id&&transport.scope().tournament_id==r.input.tournament_id
             &&snapshot.origin.adopted_position["quantity"].as_i64().is_some_and(|n|if n<0{r.input.side=="NO"}else{r.input.side=="YES"})
             &&snapshot.origin.quantity<=r.input.maximum_quantity&&amount(&snapshot.origin.principal)?<=amount(&r.input.maximum_principal)?,"FUNDAMENTAL_EXISTING_SNAPSHOT_OR_REVIEW_CHANGED")?;
-        snapshot.origin.review_sha256=r.sha.clone();let c=Cohort{entry:None,existing:Some(snapshot.origin),first_fill_index:snapshot.fill_count,prior_fills_sha256:snapshot.fill_sha,bank_head_at_entry:snapshot.head,hold_until_ms:r.input.hold_until_ms,exits:BTreeMap::new()};
+        snapshot.origin.review_sha256=r.sha.clone();let c=Cohort{entry:None,top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:Some(snapshot.origin),first_fill_index:snapshot.fill_count,prior_fills_sha256:snapshot.fill_sha,bank_head_at_entry:snapshot.head,hold_until_ms:r.input.hold_until_ms,exits:BTreeMap::new()};
         self.append(json!({"kind":"existing_origin","review":r.input,"sha256":r.sha,"cohort":c}),now)
     }
     /// Proposes a genuine covered native SELL; this is not an API request or an
@@ -887,12 +965,12 @@ impl Cohorts{
         let mut expires=q["expiresAt"].as_u64().ok_or("FUNDAMENTAL_EXPIRATION")?.min(permit.expires_at_ms)
             .min(book.observed_ms.checked_add(age).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?)
             .min(book.source.received_ms.checked_add(age).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);
-        let deadline_exit=if c.entry_id()==Some(qid){false}else{
+        let deadline_exit=if c.is_entry(qid){false}else{
             matches!(self.assess(bank,log,scope,qid,authority.trusted(),now)?,Decision::Exit{reason,..}if reason=="reviewed_holding_deadline")
         };
         if !deadline_exit{
             expires=expires.min(r.expires_at_ms);
-            if c.entry_id()==Some(qid)||!terminal_hold(r){expires=expires.min(r.hold_until_ms);}
+            if c.is_entry(qid)||!terminal_hold(r){expires=expires.min(r.hold_until_ms);}
             for s in &r.sources{expires=expires.min(s.observed_at_ms.checked_add(s.maximum_age_ms).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);}
         }else{need(liquidation_due(r,c,now),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
         need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
@@ -965,24 +1043,40 @@ impl Cohorts{
                 self.policies.insert(r.exchange_id.clone(),r);
             },
             Some("entry")=>{let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let c:Cohort=serde_json::from_value(event["cohort"].clone())?;
-                need(self.policies.contains_key(ex)&&!self.cohorts.contains_key(ex)&&c.exits.is_empty()&&c.entry.is_some()&&c.existing.is_none(),"FUNDAMENTAL_EXCLUSIVE_COHORT")?;self.cohorts.insert(ex.into(),c);},
+                need(self.policies.contains_key(ex)&&!self.cohorts.contains_key(ex)&&c.exits.is_empty()&&c.top_ups.is_empty()&&c.entry.is_some()&&c.existing.is_none(),"FUNDAMENTAL_EXCLUSIVE_COHORT")?;self.cohorts.insert(ex.into(),c);},
+            Some("top_up")=>{
+                let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let r=self.policies.get(ex).ok_or("FUNDAMENTAL_REVIEW_MISSING")?;
+                let p=r.same_side_top_ups.as_ref().ok_or("FUNDAMENTAL_TOP_UP_NOT_APPROVED")?;let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
+                let b:Binding=serde_json::from_value(event["binding"].clone())?;
+                need(c.entry.is_some()&&c.existing.is_none()&&c.exits.is_empty()&&c.entries().filter(|b|!c.retired_top_ups.contains_key(&b.qid)).count()<p.maximum_entries as usize&&c.top_ups.len()<128&&!c.is_entry(b.qid)
+                    &&event["cohortSha256"]==digest(c)?&&event["proof"]["cohortSha256"]==digest(c)?&&b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]==event["proof"]
+                    &&b.review_sha256==digest(r)?&&b.quote["action"]=="buy"&&b.quote["exchangeId"]==ex&&b.quote["side"]==r.side,"FUNDAMENTAL_TOP_UP_EVENT")?;
+                self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?.top_ups.insert(b.qid,b);
+            },
             Some("existing_origin")=>{
                 let r:ReviewInput=serde_json::from_value(event["review"].clone())?;structure(&r)?;let ex=r.exchange_id.clone();let c:Cohort=serde_json::from_value(event["cohort"].clone())?;
                 need(r.run_id==self.run&&r.bank_manifest_sha256==self.manifest&&event["sha256"]==digest(&r)?&&!self.policies.contains_key(&ex)&&!self.cohorts.contains_key(&ex)
-                    &&c.entry.is_none()&&c.exits.is_empty()&&c.existing.as_ref().is_some_and(|o|r.existing_origin.as_ref()==Some(&o.approval)),"FUNDAMENTAL_EXISTING_ORIGIN_EVENT")?;
+                    &&c.entry.is_none()&&c.top_ups.is_empty()&&c.exits.is_empty()&&c.existing.as_ref().is_some_and(|o|r.existing_origin.as_ref()==Some(&o.approval)),"FUNDAMENTAL_EXISTING_ORIGIN_EVENT")?;
                 self.policies.insert(ex.clone(),r);self.cohorts.insert(ex,c);
+            },
+            Some("abandon_top_up_never_sent")=>{
+                let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let id=event["qid"].as_u64().ok_or("FUNDAMENTAL_QID")?;let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
+                let b=c.top_ups.get(&id).ok_or("FUNDAMENTAL_TOP_UP_BINDING")?;
+                need(c.existing.is_none()&&c.exits.is_empty()&&!c.retired_top_ups.contains_key(&id)&&event["cohortSha256"]==digest(c)?&&event["originalBindingSha256"]==digest(b)?
+                    &&event["originalNotSent"].is_object()&&event["committedRetirement"].is_object(),"FUNDAMENTAL_TOP_UP_ABANDON_EVENT")?;
+                self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?.retired_top_ups.insert(id,RetiredTopUp{not_sent:event["originalNotSent"].clone(),retirement:event["committedRetirement"].clone()});
             },
             Some("abandon_never_sent")=>{
                 let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let id=event["qid"].as_u64().ok_or("FUNDAMENTAL_QID")?;
                 let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
-                need(c.entry_id()==Some(id)&&c.existing.is_none()&&c.exits.is_empty()&&event["cohortSha256"]==digest(c)?
+                need(c.entry_id()==Some(id)&&c.existing.is_none()&&c.top_ups.is_empty()&&c.exits.is_empty()&&event["cohortSha256"]==digest(c)?
                     &&!self.abandoned.contains_key(&id)&&self.abandoned.len()<128&&event["originalNotSent"].is_object()&&event["committedRetirement"].is_object()
                     &&hex(event["factsSha256"].as_str().ok_or("FUNDAMENTAL_ABANDON_FACTS")?),"FUNDAMENTAL_ABANDON_EVENT")?;
                 let c=self.cohorts.remove(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;self.abandoned.insert(id,AbandonedCohort{exchange:ex.into(),cohort:c,not_sent:event["originalNotSent"].clone(),retirement:event["committedRetirement"].clone(),closed_zero:None});
             },
             Some("rearm_closed_zero")=>{
                 let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let id=event["qid"].as_u64().ok_or("FUNDAMENTAL_QID")?;let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
-                need(c.entry_id()==Some(id)&&c.existing.is_none()&&c.exits.is_empty()&&event["cohortSha256"]==digest(c)?&&!self.abandoned.contains_key(&id)&&self.abandoned.len()<128
+                need(c.entry_id()==Some(id)&&c.existing.is_none()&&c.top_ups.is_empty()&&c.exits.is_empty()&&event["cohortSha256"]==digest(c)?&&!self.abandoned.contains_key(&id)&&self.abandoned.len()<128
                     &&event["closedZeroEvidence"].is_object()&&event["committedTerminal"].is_object()&&hex(event["factsSha256"].as_str().ok_or("FUNDAMENTAL_REARM_FACTS")?),"FUNDAMENTAL_REARM_EVENT")?;
                 let c=self.cohorts.remove(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;self.abandoned.insert(id,AbandonedCohort{exchange:ex.into(),cohort:c,not_sent:Value::Null,retirement:event["committedTerminal"].clone(),closed_zero:Some(event["closedZeroEvidence"].clone())});
             },
@@ -1028,7 +1122,7 @@ impl Cohorts{
                 need(retirement["event"]["type"]=="unsubmitted_intent_retired"&&retirement["event"]["receiptHash"]==digest(&a.not_sent["event"]["proof"])? ,"FUNDAMENTAL_ABANDONED_SOURCE_CHANGED")?;
                 log.never_attempted(*id)&&!bank.engine().live_order_bindings().contains_key(id)
             };
-            need(b.qid==*id&&a.cohort.existing.is_none()&&a.cohort.exits.is_empty()&&physical
+            need(b.qid==*id&&a.cohort.existing.is_none()&&a.cohort.top_ups.is_empty()&&a.cohort.exits.is_empty()&&physical
                 &&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_ABANDONED_LATE_PHYSICAL_EVENT")?;
             need(a.cohort.first_fill_index<=bank.engine().fills().len()&&digest(&bank.engine().fills()[..a.cohort.first_fill_index])?==a.cohort.prior_fills_sha256
                 &&digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_ABANDONED_PREFIX_CHANGED")?;
@@ -1037,9 +1131,19 @@ impl Cohorts{
                 &&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(if a.closed_zero.is_some(){request_quantity(&b.spec)?}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?}),"FUNDAMENTAL_ABANDONED_NATIVE_CHANGED")?;
             if let Some(original)=log.intents.get(id){let spec:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&spec)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(*id).as_ref(),"FUNDAMENTAL_ABANDONED_ORIGINAL_CHANGED")?;}
         }
+        let retired:BTreeSet<_>=self.cohorts.values().flat_map(|c|c.retired_top_ups.keys().copied()).collect();
+        let records=if retired.is_empty(){BTreeMap::new()}else{self.original_not_sent_records(log,&retired)?.0};
         for(ex,c)in &self.cohorts{
             need(c.entry.is_some()!=c.existing.is_some(),"FUNDAMENTAL_ORIGIN_VARIANT")?;
-            for b in c.entry.iter().chain(c.exits.values()){
+            for(id,p)in &c.retired_top_ups{
+                need(c.top_ups.contains_key(id)&&records.get(id)==Some(&p.not_sent)&&log.never_attempted(*id)&&!bank.engine().live_order_bindings().contains_key(id)
+                    &&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_TOP_UP_ABANDON_PHYSICAL")?;
+                let e=&p.retirement["event"];let source=p.retirement["id"].as_str().ok_or("FUNDAMENTAL_ADOPTION_REF")?;let seq=p.retirement["sequence"].as_u64().ok_or("FUNDAMENTAL_ADOPTION_REF")?;
+                need(bank.committed_source_hash(source,seq)==p.retirement["sha256"].as_str()&&p.retirement["sha256"]==digest(e)?&&e["type"]=="unsubmitted_intent_retired"
+                    &&e["orderId"]==*id&&e["confirmedNetworkAttempts"]==0&&e["receiptHash"]==digest(&p.not_sent["event"]["proof"])?
+                    &&bank.engine().order_records().iter().any(|q|q["id"]==*id&&q["retired"]==true&&q["filled"]==0),"FUNDAMENTAL_TOP_UP_ABANDON_SOURCE_CHANGED")?;
+            }
+            for b in c.entries().chain(c.exits.values()){
                 need(digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_BINDING_HASH")?;
                 let n=request_quantity(&b.spec)?;request_matches(&b.spec,&b.quote,&self.run,&self.policies[ex].tournament_id,n)?;
                 if let Some(original)=log.intents.get(&b.qid){let s:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&s)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(b.qid).as_ref(),"FUNDAMENTAL_DISPATCH_REQUEST_OR_TAG_CHANGED")?;}
@@ -1059,12 +1163,13 @@ impl Cohorts{
         for f in &bank.engine().fills()[c.first_fill_index..]{if f["exchangeId"]!=ex{continue}
             let id=f["orderId"].as_u64().ok_or("FUNDAMENTAL_FILL_ID")?;let n=f["quantity"].as_u64().ok_or("FUNDAMENTAL_FILL_QUANTITY")?;
             need(f["side"]==r.side&&f["counterfactual"]==false,"FUNDAMENTAL_FOREIGN_FILL")?;
-            if c.entry_id()==Some(id)&&f["action"]=="buy"{held=held.checked_add(n).ok_or("FUNDAMENTAL_RANGE")?;}
+            if c.is_entry(id)&&f["action"]=="buy"{held=held.checked_add(n).ok_or("FUNDAMENTAL_RANGE")?;}
             else if c.exits.contains_key(&id)&&f["action"]=="sell"{held=held.checked_sub(n).ok_or("FUNDAMENTAL_EXIT_EXCEEDS_COHORT")?;}
             else{return Err("FUNDAMENTAL_FOREIGN_FILL".into())}
         }
         let side=if r.side=="YES"{Side::Yes}else{Side::No};let opposite=if r.side=="YES"{Side::No}else{Side::Yes};
         need(bank.engine().wallet.quantity(ex,side)==held&&bank.engine().wallet.quantity(ex,opposite)==0,"FUNDAMENTAL_UNATTRIBUTED_HOLDING")?;
+        if !c.top_ups.is_empty(){need(c.existing.is_none()&&bank.engine().wallet.positions()[ex][&r.side]==self.cohort_lots(bank,ex,c)?,"FUNDAMENTAL_TOP_UP_FIFO_CHANGED")?;}
         if let Some(origin)=&c.existing{let remaining=fifo_remaining(&origin.lots,origin.quantity-held)?;
             need(r.existing_origin.as_ref()==Some(&origin.approval)&&digest(&origin.adopted_position)?==origin.approval.adopted_position_sha256
                 &&bank.committed_source_hash(origin.adoption_ref["id"].as_str().ok_or("FUNDAMENTAL_ADOPTION_REF")?,origin.adoption_ref["sequence"].as_u64().ok_or("FUNDAMENTAL_ADOPTION_REF")?)==origin.adoption_ref["sha256"].as_str()
@@ -1095,7 +1200,7 @@ impl Cohorts{
     /// Original POST and recovered-GET events pass here BEFORE native accept.
     /// The original quote's larger reservation is not proof of slice size.
     pub fn validate_acknowledgment(&self,qid:u64,event:&Value)->Result<()>{
-        need(!self.abandoned.contains_key(&qid),"FUNDAMENTAL_ABANDONED_ACK")?;
+        need(!self.abandoned.contains_key(&qid)&&!self.cohorts.values().any(|c|c.retired_top_ups.contains_key(&qid)),"FUNDAMENTAL_ABANDONED_ACK")?;
         let binding=self.cohorts.values().find_map(|c|c.binding(qid));
         let Some(b)=binding else{return need(event["exchangeId"].as_str().is_none_or(|ex|!self.manages(ex)),"FUNDAMENTAL_ACK_WITHOUT_BINDING")};
         need(event["type"]=="actual_order_ack"&&event["source"]=="official_sig_api_v1"&&event["orderId"]==qid
@@ -1168,6 +1273,7 @@ impl Cohorts{
         let Some(book)=books.get(ex)else{return Ok(hold("fresh_official_book_required"))};
         let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;let native=q["quantity"].as_u64().filter(|n|*n>0).ok_or("FUNDAMENTAL_QUANTITY")?;
         need(planned_quantity>0&&planned_quantity<=native,"FUNDAMENTAL_PLANNED_QUANTITY")?;let n=planned_quantity;
+        let mut top_up=None;
         if let Some(c)=self.cohorts.get(ex){
             let owned=self.owned(bank,ex,c)?;
             if c.entry_id()==Some(qid)&&log.never_attempted(qid)&&!log.intents.contains_key(&qid)&&owned==0{
@@ -1175,6 +1281,11 @@ impl Cohorts{
                 if digest(r)?!=entry.review_sha256{return Ok(hold("bound_entry_review_changed"))}
                 // Continue only this exact sealed draft after a crash/stale
                 // preflight BEFORE original intent/attempt; never replace it.
+            }else if q["action"]=="buy"&&q["side"]==r.side&&c.entry_id()!=Some(qid){
+                let Some(proof)=self.top_up_state(bank,log,ex,Some(qid),false)?else{return Ok(hold("explicit_same_side_top_up_not_eligible"))};
+                need(q["reviewedFundamentalEntry"]["sameSideTopUp"]==proof&&n==native,"FUNDAMENTAL_TOP_UP_NATIVE_PROOF_CHANGED")?;
+                if let Some(b)=c.entry_binding(qid){need(q==b.quote&&n==request_quantity(&b.spec)?&&b.review_sha256==digest(r)?,"FUNDAMENTAL_BOUND_ENTRY_CANNOT_CHANGE")?;}
+                top_up=Some(proof);
             }else{
             if q["action"]!="sell"||q["side"]!=r.side||owned==0{return Ok(hold("exclusive_cohort_no_additional_or_opposite_entry"))}
             if c.existing.is_some()&&q.get("reviewedInventoryExit").is_none(){return Ok(hold("reviewed_existing_exit_reservation_required"))}
@@ -1201,7 +1312,9 @@ impl Cohorts{
         if r.version==1&&!self.cohorts.get(ex).is_some_and(|c|c.entry_id()==Some(qid)){return Ok(hold("legacy_review_requires_explicit_valuation_objective_for_new_cohort"))}
         if !approved||r.revoke_existing||now>=r.hold_until_ms{return Ok(hold("current_review_required_for_entry"))}
         if q["action"]!="buy"||q["side"]!=r.side{return Ok(hold("reviewed_entry_side_only"))}
-        if bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{return Ok(hold("existing_inventory_cannot_be_adopted"))}
+        if top_up.is_none()&&(bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0){return Ok(hold("existing_inventory_cannot_be_adopted"))}
+        if let Some(proof)=&top_up{let held=proof["heldQuantity"].as_u64().ok_or("FUNDAMENTAL_TOP_UP_QUANTITY")?;let cost=amount(proof["heldCost"].as_str().ok_or("FUNDAMENTAL_TOP_UP_COST")?)?;
+            need(held.checked_add(n).is_some_and(|n|n<=r.maximum_quantity)&&add(cost,mul(price,n as i128)?)?<=amount(&r.maximum_principal)?,"FUNDAMENTAL_TOP_UP_TOTAL_CAP")?;}
         if log.attempted.iter().any(|id|!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id)){return Ok(hold("unknown_physical_acceptance"))}
         if bank.engine().order_records().iter().any(|other|other["exchangeId"]==ex
             &&other["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){return Ok(hold("same_exchange_physical_order_open"))}
@@ -1224,14 +1337,17 @@ impl Cohorts{
         let ex=q["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;
         let Some(r)=self.policies.get(ex)else{return Ok(None)};
         if q["action"]!="buy"||q["side"]!=r.side{return Ok(None)}
-        if let Some(c)=self.cohorts.get(ex){
-            if c.entry_id()!=Some(qid)||!log.never_attempted(qid)||log.intents.contains_key(&qid){return Ok(None)}
-            let n=request_quantity(&c.entry.as_ref().unwrap().spec)?;
+        if let Some(b)=self.cohorts.get(ex).and_then(|c|c.entry_binding(qid)){
+            if !log.never_attempted(qid)||log.intents.contains_key(&qid){return Ok(None)}
+            let n=request_quantity(&b.spec)?;
             return Ok(if matches!(self.assess_quantity(bank,log,scope,qid,n,trusted,now)?,Decision::Entry{..}){Some(n)}else{None})
         }
+        let top_up=if self.cohorts.contains_key(ex){let Some(v)=self.top_up_state(bank,log,ex,Some(qid),false)?else{return Ok(None)};Some(v)}else{None};
+        let held=top_up.as_ref().and_then(|v|v["heldQuantity"].as_u64()).unwrap_or(0);
+        let cost=top_up.as_ref().map(|v|amount(v["heldCost"].as_str().ok_or("FUNDAMENTAL_TOP_UP_COST")?)).transpose()?.unwrap_or(0);
         let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
-        let mut n=q["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?.min(r.maximum_quantity);
-        if price>0{n=n.min(u64::try_from((amount(&r.maximum_principal)?/price).min(u64::MAX as i128))?);}
+        let mut n=q["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?.min(r.maximum_quantity.checked_sub(held).ok_or("FUNDAMENTAL_RANGE")?);
+        if price>0{n=n.min(u64::try_from((amount(&r.maximum_principal)?.checked_sub(cost).ok_or("FUNDAMENTAL_RANGE")?/price).min(u64::MAX as i128))?);}
         if n==0{return Ok(None)}
         Ok(if matches!(self.assess_quantity(bank,log,scope,qid,n,trusted,now)?,Decision::Entry{..}){Some(n)}else{None})
     }
@@ -1239,14 +1355,13 @@ impl Cohorts{
     /// their original recovery path; never invent an actual ID to cancel.
     pub fn entry_cancellations(&self,bank:&Session,log:&DispatchLog,trusted:&BTreeSet<String>,now:u64)->Result<Vec<u64>>{
         self.check(bank,log)?;let mut out=Vec::new();
-        for(ex,c)in &self.cohorts{let r=&self.policies[ex];
-            let Some(entry)=&c.entry else{continue};
+        for(ex,c)in &self.cohorts{let r=&self.policies[ex];for entry in c.entries(){
             if !log.closed.contains(&entry.qid)&&log.acknowledgments.contains_key(&entry.qid)
                 &&bank.engine().order_records().iter().any(|q|q["id"]==entry.qid&&q["retired"]==false)
                 &&(!current(r,now)||r.revoke_existing||!trusted.contains(&digest(r)?)||digest(r)?!=entry.review_sha256||liquidation_due(r,c,now)){
                 out.push(entry.qid);
             }
-        }Ok(out)
+        }}Ok(out)
     }
     /// Revised/stale value assumptions also retire known still-open covered
     /// SELLs through the original cancel path; never invent unknown actual IDs.
@@ -1275,7 +1390,10 @@ impl Cohorts{
             return Ok(decision)
         }
         let b=Binding{qid,spec:spec.clone(),spec_sha256:digest(spec)?,quote:q.clone(),review_sha256:digest(r)?,bound_at_ms:now};
-        if matches!(decision,Decision::Entry{..}){let c=Cohort{entry:Some(b),existing:None,first_fill_index:bank.engine().fills().len(),prior_fills_sha256:digest(&bank.engine().fills())?,bank_head_at_entry:bank.durable_head(),hold_until_ms:r.hold_until_ms,exits:BTreeMap::new()};self.append(json!({"kind":"entry","exchangeId":ex,"cohort":c}),now)?;}
+        if matches!(decision,Decision::Entry{..}){if let Some(c)=self.cohorts.get(ex){
+            need(q["reviewedFundamentalEntry"]["sameSideTopUp"]["cohortSha256"]==digest(c)?,"FUNDAMENTAL_TOP_UP_COHORT_CHANGED")?;
+            self.append(json!({"kind":"top_up","exchangeId":ex,"cohortSha256":digest(c)?,"binding":b,"proof":q["reviewedFundamentalEntry"]["sameSideTopUp"]}),now)?;
+        }else{let c=Cohort{entry:Some(b),top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:None,first_fill_index:bank.engine().fills().len(),prior_fills_sha256:digest(&bank.engine().fills())?,bank_head_at_entry:bank.durable_head(),hold_until_ms:r.hold_until_ms,exits:BTreeMap::new()};self.append(json!({"kind":"entry","exchangeId":ex,"cohort":c}),now)?;}}
         else{self.append(json!({"kind":"exit","exchangeId":ex,"binding":b}),now)?;}
         Ok(decision)
     }
@@ -1283,12 +1401,18 @@ impl Cohorts{
     /// The SDK/original dispatch retain unknown-acceptance and rate controls.
     pub fn check_bound(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<()>{
         self.check(bank,log)?;
-        need(!log.proved_no_network(qid),"FUNDAMENTAL_ABORTED_INTENT_CANNOT_RETRY")?;
+        need(!log.proved_no_network(qid)&&!self.cohorts.values().any(|c|c.retired_top_ups.contains_key(&qid)),"FUNDAMENTAL_ABORTED_INTENT_CANNOT_RETRY")?;
         let(ex,c)=self.cohorts.iter().find(|(_,c)|c.binding(qid).is_some()).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
         let b=c.binding(qid).unwrap();need(digest(spec)?==b.spec_sha256,"FUNDAMENTAL_PHYSICAL_REQUEST_CHANGED")?;
-        if c.entry_id()==Some(qid){
+        if c.is_entry(qid){
             let r=&self.policies[ex];need(trusted.contains(&digest(r)?)&&digest(r)?==b.review_sha256&&current(r,now)&&!r.revoke_existing&&now<c.hold_until_ms,"FUNDAMENTAL_PHYSICAL_REVIEW_CHANGED")?;
-            need(self.owned(bank,ex,c)?==0&&log.attempted.iter().all(|id|*id==qid||log.acknowledgments.contains_key(id)||log.proved_no_network(*id)),"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;
+            if c.top_ups.contains_key(&qid){let proof=self.top_up_state(bank,log,ex,Some(qid),false)?.ok_or("FUNDAMENTAL_TOP_UP_PHYSICAL_OWNERSHIP")?;
+                need(b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]==proof,"FUNDAMENTAL_TOP_UP_NATIVE_PROOF_CHANGED")?;
+                let held=proof["heldQuantity"].as_u64().ok_or("FUNDAMENTAL_TOP_UP_QUANTITY")?;let n=request_quantity(spec)?;
+                let cost=amount(proof["heldCost"].as_str().ok_or("FUNDAMENTAL_TOP_UP_COST")?)?;
+                need(held.checked_add(n).is_some_and(|n|n<=r.maximum_quantity)&&add(cost,mul(amount(b.quote["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?,n as i128)?)?<=amount(&r.maximum_principal)?,"FUNDAMENTAL_TOP_UP_TOTAL_CAP")?;
+            }else{need(self.owned(bank,ex,c)?==0,"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;}
+            need(log.attempted.iter().all(|id|*id==qid||log.acknowledgments.contains_key(id)||log.proved_no_network(*id)),"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id)
                 &&now<daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("FUNDAMENTAL_ENTRY_DEADLINE")?)?,"FUNDAMENTAL_PHYSICAL_SCOPE_OR_DEADLINE")?;
             let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
