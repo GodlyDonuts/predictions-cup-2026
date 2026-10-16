@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "reviewerId": "Rhaegal-Viserion-paper6-20261016",
+  "assumptionLabel": "INACTIVE Alaska candidate for execution-owner review, not activated/financial approval: primary Call the Map published incumbent Dan S. Sullivan win chance0.507 includes ranked-choice transfers, not first-choice vote share. Only that registered Republican incumbent victory is valued as an ordinary subset of exact SIG Republican Party Winner YES. Other Republican candidates are not added: official ballot lists Daniel J. Sullivan Jr Republican while CTM marks him O, an explicit classification/transfer-model uncertainty. Scrutinel70% and99chambers44%-46% disagree and are not averaged or independent calibration. The0.507 point is an operator-model assumption, not a lower confidence bound. Exceptional allowance0.03 is unchanged proposed operator stress, not empirical exception frequency; minimum exceptional payout0 and margin0.01. Party affiliation/replacement/refund/resolver/finality and national-correlation/model risks remain. Proposed48h historical-node reference TTL is pending owner approval, original Oct15 receipt clock unchanged, current physical exactroot verification mandatory. Official ballot publication unknown uses documented publishedAtMs0 sentinel. Hold for actual settlement if delayed, source expiry blocks entry not forced sale. Principal2000 is an inactive candidate comparison budget; no prize-EV or whole-account-convexity claim.",
+  "runId": "moloch-live-20261015-v1",
+  "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "marketId": "378",
+  "exchangeId": "1067",
+  "contractId": "379",
+  "officialContractRootSha256": "8fe67c16b16544d7f71c3c955e40adaaa0baaa6b19e7ac29d6aafe931ae84c8a",
+  "side": "YES",
+  "ordinaryProbability": "0.507000",
+  "exceptionalProbabilityAllowance": "0.030000",
+  "minimumExceptionalPayout": "0.000000",
+  "marginPerShare": "0.010000",
+  "maximumPrincipal": "2000.000000",
+  "maximumQuantity": 10000,
+  "reviewedAtMs": 1792178901424,
+  "expiresAtMs": 1792263776239,
+  "holdUntilMs": 1793811600000,
+  "payoutMappingIsOperatorAssumption": true,
+  "revokeExisting": false,
+  "sources": [
+    {
+      "kind": "forecast",
+      "url": "https://www.callthemap.com/senate/alaska",
+      "sha256": "955c9d1d819ffc6e1194aa0027d378dfb5d6eeabd9dd04345433ffe0dcd7aaf8",
+      "publishedAtMs": 1792173446000,
+      "observedAtMs": 1792178407889,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_ballot",
+      "url": "https://www.elections.alaska.gov/candidates/?election=26genr",
+      "sha256": "a5676ae3baa845a4cb618fe97fa7551d786103df0f7c5a02bc55898450dd26f2",
+      "publishedAtMs": 0,
+      "observedAtMs": 1792178515989,
+      "maximumAgeMs": 86400000
+    },
+    {
+      "kind": "official_contract_node",
+      "url": "https://sig.thesuper.market/api/v1/markets/378/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "sha256": "38ad364b1d91ae1825a38e3e8c135ba49d2a79554fd46210e835772ef40b19c0",
+      "publishedAtMs": 1792090976239,
+      "observedAtMs": 1792090976239,
+      "maximumAgeMs": 172800000
+    }
+  ],
+  "executionPolicy": {
+    "version": 1,
+    "allowedModes": [
+      "boundedLimitMayRest",
+      "improveOneTick",
+      "joinBid"
+    ]
+  },
+  "valuationObjective": {
+    "kind": "terminalSettlement",
+    "timingSourceSha256": "38ad364b1d91ae1825a38e3e8c135ba49d2a79554fd46210e835772ef40b19c0",
+    "timingJsonPointer": "/data/root/settlement_date",
+    "scheduledSettlementAtMs": 1793811600000,
+    "delayPolicy": "holdForActualSettlement"
+  }
+}
