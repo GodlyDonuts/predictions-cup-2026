@@ -53,3 +53,38 @@ fn original_error(dir:&std::path::Path)->TransportError{
   let damaged=fs::read(&path).unwrap();assert!(verify_frozen_ordinary_pre_admission(&c,&spec(),&permit(),2000,&error).is_err(),"mode{mode}");assert_eq!(fs::read(&path).unwrap(),damaged);if mode==4{assert!(fs::symlink_metadata(&path).unwrap().file_type().is_symlink());}fs::remove_dir_all(p).unwrap();
  }
 }
+
+struct StaleAuthority;
+impl Authority for StaleAuthority{ fn owns_order(&self,_:&str)->bool{false}
+ fn can_read(&self,_:&Scope)->bool{true}
+ fn authorize(&self,_:&Scope,_:&RequestSpec,_:&Permit,_:bool,_:u64)->Result<()>{Err(fail("LIVE_CONTRACT_OR_BOOK_STALE"))}
+}
+struct NoCredentialLoad(Arc<AtomicU64>);
+impl CredentialProvider for NoCredentialLoad{fn load(&self)->Result<zeroize::Zeroizing<String>>{self.0.fetch_add(1,Ordering::SeqCst);Err(fail("UNEXPECTED_CREDENTIAL_LOAD"))}}
+#[test]fn genuine_stale_authority_before_admit_seals_original_no_http_proof_and_survives_restart(){
+ let dir=temp();let c=config(&dir);let clock=Arc::new(AtomicU64::new(1000));let loads=Arc::new(AtomicU64::new(0));
+ let mut t=Transport::new_for_mock(c.clone(),Box::new(NoCredentialLoad(loads.clone())),Box::new(TestClock(clock.clone())),Box::new(StaleAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();
+ t.admission_state().unwrap();clock.store(2001,Ordering::SeqCst);let mut p=permit();p.expires_at_ms=10000;
+ let e=t.place(Order{idempotency_key:"fixture:3411".into(),exchange_id:"1009".into(),side:"no".into(),action:"buy".into(),quantity:5196,price:"0.620000".into(),expiration_date:"2030-01-01T00:00:00.000Z".into(),tournament_id:scope().tournament_id},p.clone()).unwrap_err();
+ assert_eq!(e.code,"LIVE_CONTRACT_OR_BOOK_STALE");assert!(!e.may_have_executed);assert_eq!(loads.load(Ordering::SeqCst),0);
+ let proof=t.verify_current_ordinary_pre_admission(&spec(),&p,2000,&e).unwrap();proof.validate_binding(&spec(),&p,2000,&e).unwrap();
+ assert_eq!(proof.evidence()["originalHead"]["lastClock"],1000);let retained=proof.evidence().clone();drop(t);
+ let rebuilt=verify_retained_ordinary_pre_admission(&c,&spec(),&p,2000,&e,&retained).unwrap();assert_eq!(rebuilt.evidence(),&retained);
+ let mut changed=e.clone();changed.code="PERMIT_EXPIRED_OR_INVALID".into();assert!(verify_retained_ordinary_pre_admission(&c,&spec(),&p,2000,&changed,&retained).is_err());
+ for mode in 0..5{let mut bad=e.clone();match mode{0=>bad.code="ARBITRARY_LOCAL_GUARD".into(),1=>bad.may_have_executed=true,2=>bad.status=Some(503),3=>bad.api_code=Some("LOCAL".into()),_=>bad.order_id=Some("999".into())}assert!(verify_frozen_ordinary_pre_admission(&c,&spec(),&p,2000,&bad).is_err());}
+ fs::remove_dir_all(dir).unwrap();
+}
+#[test]fn stale_error_cannot_turn_admission_or_global_uncertainty_into_no_network(){
+ for mode in 0..5{let dir=temp();let _=original_error(&dir);let c=config(&dir);let mut p=permit();p.expires_at_ms=10000;
+  let error=TransportError{code:"LIVE_CONTRACT_OR_BOOK_STALE".into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None};
+  {let mut q=admission::AccountAdmission::open(&dir,&c.account_scope,"stale-negative").unwrap();
+   if mode==0{q.command(json!({"op":"status","scope":c.account_scope,"now":2000})).unwrap();}
+   else{let binding=json!({"intent":if mode==1{"fixture:3411"}else{"other"},"key":if mode==2{"fixture:3411"}else{"other-key"},"payload_hash":"a".repeat(64)});
+    q.command(json!({"op":"admit","scope":c.account_scope,"now":1500,"request":"admitted","write":true,"authorized":true,"lease_valid":true,"permit_valid":true,"binding":binding})).unwrap();
+    if mode<3{q.command(json!({"op":"complete","scope":c.account_scope,"now":1501,"request":"admitted","outcome":"not_sent"})).unwrap();}
+    else if mode==4{q.command(json!({"op":"network","scope":c.account_scope,"now":1501,"request":"admitted","write":true,"authorized":true,"lease_valid":true,"permit_valid":true,"binding":binding})).unwrap();q.command(json!({"op":"complete","scope":c.account_scope,"now":1502,"request":"admitted","outcome":"unknown"})).unwrap();}
+   }
+  }
+  assert!(verify_frozen_ordinary_pre_admission(&c,&spec(),&p,2000,&error).is_err(),"mode{mode}");fs::remove_dir_all(dir).unwrap();
+ }
+}
