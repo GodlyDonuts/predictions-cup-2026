@@ -11,6 +11,7 @@ HORIZONS = (1000, 3000, 10000, 30000)
 POLICY = {
     'version': 1, 'innovationThresholds': {'1000': '0.002', '5000': '0.005', '30000': '0.010'},
     'maximumSigSourceAgeMs': 10000, 'maximumExternalAvailabilityAgeMs': 30000,
+    'maximumExternalOriginalAgeMs': 20000,
     'maximumSpread': '0.050000', 'minimumClusters': 100,
     'rule': 'all three signed innovations meet thresholds: favorable; opposite: toxic; otherwise quiet',
     'quote': 'YES BUY at original bid; NO BUY at one minus original ask',
@@ -24,8 +25,13 @@ def feature_state(row, sample_id_format):
     at, sig, ext = row['decisionMs'], row['sig'], row['external']
     source, received = clock(sig['sourceAt']), clock(sig['receivedAt'])
     require(source <= received <= at, 'FEATURE_LOOKAHEAD')
-    require(type(ext['receivedMs']) is int and type(ext['availableMs']) is int and
-            ext['receivedMs'] <= ext['availableMs'] <= at, 'FEATURE_LOOKAHEAD')
+    require(type(ext.get('receivedMs')) is int and type(ext.get('availableMs')) is int and
+            0 <= ext['receivedMs'] <= ext['availableMs'] <= at, 'FEATURE_LOOKAHEAD')
+    # Existing producer emits receipt/availability only. If a later original
+    # producer retains sourceTs, it must also remain causal and independently old.
+    source_ts = ext.get('sourceTs')
+    if source_ts is not None:
+        require(type(source_ts) is int and 0 <= source_ts <= ext['receivedMs'], 'FEATURE_LOOKAHEAD')
     require(all(isinstance(h, str) and HEX.fullmatch(h) for h in (sig['journalHash'], ext['bodySha256'])), 'FEATURE_SOURCE_HASH')
     prefix = f"{row['marketId']}:{row['exchangeId']}:" if sample_id_format == 'scoped_v2' else ''
     require(row['sampleId'] == hashlib.sha256(f"{prefix}{sig['journalHash']}:{ext['bodySha256']}:{at}".encode()).hexdigest(), 'SAMPLE_BINDING')
@@ -33,6 +39,8 @@ def feature_state(row, sample_id_format):
     bid, ask = money(before['bid']), money(before['ask'])
     require(0 <= bid <= ask <= 1, 'BOOK_PRICES')
     if (at-source > POLICY['maximumSigSourceAgeMs'] or
+            at-ext['receivedMs'] > POLICY['maximumExternalOriginalAgeMs'] or
+            (source_ts is not None and at-source_ts > POLICY['maximumExternalOriginalAgeMs']) or
             at-ext['availableMs'] > POLICY['maximumExternalAvailabilityAgeMs']):
         return None, 'staleSource'
     if not Decimal(0) < ask-bid <= Decimal(POLICY['maximumSpread']):
@@ -142,6 +150,7 @@ def report(paths, as_of, *, sample_id_format='scoped_v2', producer_source=None, 
                             'abstain': True, 'researchCoverageSufficient': enough,
                             'reason': 'MAKER_FILL_QUALIFICATION_UNAVAILABLE' if enough else 'INSUFFICIENT_MARKET_TIME_CLUSTERS'}
     return {'schemaVersion': 1, 'status': 'UNQUALIFIED_SHADOW_RESEARCH', 'asOfMs': as_of,
+            'sourceCodeSha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             'makerFillQualificationAvailable': False, 'modelApproval': False, 'profitEstablished': False,
             'producerSourceVerified': producer is not None, 'producerSource': producer,
             'input': dict(counts), 'sources': files, 'sourceBundleSha256': digest(files),
