@@ -467,9 +467,12 @@ impl Cohorts{
             let mut left=n;let mut proceeds=0i128;
             for l in levels{if l.price<price{break}let take=left.min(l.quantity);proceeds=add(proceeds,mul(l.price,take as i128)?)?;left-=take;if left==0{break}}
             if left!=0{return Ok(hold("covered_exit_not_executable_at_native_limit"))}
+            // Depth is an observation, not a guaranteed execution price. A
+            // value exit must retain that value in its physical native limit.
+            let payout=add(ceiling,amount(&r.margin_per_share)?)?.max(0);
             let reason=if now>=c.hold_until_ms.min(r.hold_until_ms){Some("reviewed_holding_deadline")}
                 else if approved&&r.revoke_existing{Some("reviewed_source_revocation")}
-                else if approved&&proceeds>=mul(add(ceiling,amount(&r.margin_per_share)?)?.max(0),n as i128)?{Some("refreshed_value_exit")}
+                else if approved&&price>=payout&&proceeds>=mul(payout,n as i128)?{Some("refreshed_value_exit")}
                 else{None};
             return Ok(reason.map_or_else(||hold(if approved{"terminal_value_hold_not_native_age_exit"}else{"stale_review_hold_until_deadline"}),|s|Decision::Exit{reason:s.into(),owned_quantity:owned}))
         }

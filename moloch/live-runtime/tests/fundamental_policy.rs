@@ -98,6 +98,21 @@ fn approve(r:ReviewInput,trust:&mut BTreeSet<String>,now:u64)->Reviewed{
     #[test]fn stale_review_cannot_buy_but_deadline_still_manages_existing_cohort(){let mut f=F::new();f.fill_entry(false);let(q,at)=f.age_exit(NOW+130000,"0.300000","0.320000");assert_eq!(f.assess(&q,at),Decision::Hold{reason:"stale_review_hold_until_deadline".into()});let(q,at)=f.age_exit(NOW+600001,"0.300000","0.320000");assert!(matches!(f.assess(&q,at),Decision::Exit{reason,..}if reason=="reviewed_holding_deadline"));}
     #[test]fn explicit_reviewed_revocation_allows_only_covered_actual_cohort_exit(){let mut f=F::new();f.fill_entry(false);let(q,at)=f.age_exit(NOW+61003,"0.300000","0.320000");let mut r=input(f.bank.manifest_hash().as_str().unwrap(),at+1);r.revoke_existing=true;f.install(r,at+1);assert!(matches!(f.assess(&q,at+1),Decision::Exit{reason,owned_quantity:2}if reason=="reviewed_source_revocation"));}
     #[test]fn refreshed_value_exit_compares_payout_before_entry_buffer(){let mut f=F::new();f.fill_entry(false);let(q,at)=f.age_exit(NOW+61003,"0.040000","0.060000");assert!(matches!(f.assess(&q,at),Decision::Hold{..}),"NO bid.94 remains below conditional expected payout.9405, even though above entry ceiling.9305");let(q,at)=f.age_exit(at+4000,"0.035000","0.055000");assert!(matches!(f.assess(&q,at),Decision::Exit{reason,..}if reason=="refreshed_value_exit"));}
+    #[test]fn better_observed_bid_cannot_authorize_an_old_below_value_sell_limit(){
+        let mut f=F::new();f.fill_entry(false);
+        let(q,at)=f.age_exit(NOW+61003,"0.080000","0.100000");
+        assert_eq!(q["price"],"0.900000");
+        // The next genuine book is inside the native write gap, leaving the
+        // original limit intact despite current executable NO bids at.945.
+        f.book(at+1,"0.035000","0.055000");
+        let current=f.bank.engine().order_records().into_iter().find(|x|x["id"]==q["id"]).unwrap();
+        assert_eq!(current["price"],q["price"]);assert!(current["cancelEffectiveAt"].is_null());
+        assert!(matches!(f.assess(&q,at+1),Decision::Hold{..}));
+        assert!(f.store.as_ref().unwrap().exit_refresh_needed(&f.bank,&f.log,&f.scope,"101",&f.trust,at+1).unwrap(),"value now justifies refreshing the actual native limit, not selling under it");
+        let(repriced,now)=f.age_exit(at+4000,"0.035000","0.055000");
+        assert_eq!(repriced["price"],"0.945000");
+        assert!(matches!(f.assess(&repriced,now),Decision::Exit{reason,..}if reason=="refreshed_value_exit"));
+    }
     #[test]fn partial_late_fill_requires_original_entry_terminal_before_an_exit(){let mut f=F::new();f.fill_entry(true);let(q,at)=f.age_exit(NOW+61003,"0.300000","0.320000");assert_eq!(f.assess(&q,at),Decision::Hold{reason:"prior_owned_order_reconciliation_required".into()});assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),1);}
     #[test]fn restart_unknown_preserves_binding_and_never_grants_a_retry(){let mut f=F::new();let(q,spec)=f.bind_entry();f.log_intent(&q,&spec);assert!(f.log.require_resolved_attempts().is_err());f.reopen();assert!(f.log.require_resolved_attempts().is_err());assert!(matches!(f.assess(&q,NOW+1),Decision::Hold{..}));assert!(f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,q["id"].as_u64().unwrap(),&spec,&f.trust,NOW+1).is_err());}
     #[test]fn physical_gate_rechecks_source_request_book_and_original_activation(){let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW).unwrap();let mut altered=spec.clone();altered.body_json=Some("{}".into());assert!(f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&altered,&f.trust,NOW).is_err());assert!(f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&BTreeSet::new(),NOW).is_err());assert!(f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW+20000).is_err());}
