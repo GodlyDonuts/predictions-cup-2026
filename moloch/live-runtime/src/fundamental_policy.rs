@@ -305,6 +305,9 @@ impl Settings{
     }
 }
 impl LoadedSettings{
+    /// Verified loaded existing-origin scopes only; this grants no adoption,
+    /// retirement or order authority. The caller still proves every draft unsent.
+    pub fn existing_exchanges(&self)->BTreeSet<String>{self.reviews.iter().filter(|r|r.input.existing_origin.is_some()).map(|r|r.input.exchange_id.clone()).collect()}
     /// An expired snapshot may recover an already managed cohort; it cannot
     /// initialize a new policy or silently extend an old cohort's horizon.
     pub fn open(self,root:&Path,bank:&Session,log:&DispatchLog,owner:Arc<ExclusiveLock>,now:u64)->Result<(Cohorts,ReviewAuthority,Vec<String>)>{
