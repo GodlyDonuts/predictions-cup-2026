@@ -1,0 +1,300 @@
+warning: unnecessary parentheses around function argument
+  --> /tmp/moloch-paper7-generation-live-r5-20261016/backend-rust/transport-service/src/multi_leg_portfolio.rs:84:63
+   |
+84 | ...&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIM...
+   |                           ^                                                                                ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+84 -   let last=prices::official_tick_units(&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIMIT")?;
+84 +   let last=prices::official_tick_units(&d["fillPrice"])?;need(if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000},"PORTFOLIO_ACK_FILL_LIMIT")?;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /tmp/moloch-paper7-generation-live-r5-20261016/moloch/native/src/engine_collateral.rs:90:254
+   |
+90 | ...before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{1...
+   |                     ^                                                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+90 -   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+90 +   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint" {86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |
+
+warning: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+  --> /tmp/moloch-paper7-generation-live-r5-20261016/moloch/native/src/realtime.rs:98:25
+   |
+98 | ...   self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;O...
+   |                       ^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+   |
+98 -         self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+98 +         self.generation.try_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+   |
+
+warning: value assigned to `duplicate` is never read
+   --> /tmp/moloch-paper7-generation-live-r5-20261016/moloch/native/src/realtime.rs:124:97
+    |
+124 |         let mut scopes=std::collections::BTreeSet::new();let mut global=false;let mut duplicate=false;
+    |                                                                                                 ^^^^^ this value is reassigned later and never used
+...
+160 |             duplicate=self.standalone.contains(&digest);
+    |             ------------------------------------------- `duplicate` is overwritten here before the previous value is read
+    |
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /tmp/moloch-paper7-generation-live-r5-20261016/moloch/native/src/realtime.rs:417:9
+    |
+417 |         mut socket: WebSocket<MaybeTlsStream<TcpStream>>,
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `accept` is never used
+   --> /tmp/moloch-paper7-generation-live-r5-20261016/moloch/native/src/realtime.rs:273:8
+    |
+253 | impl Protocol {
+    | ------------- method in this implementation
+...
+273 |     fn accept(&mut self, v: &Value) -> Result<Option<Incoming>> {self.accept_original(v,&v.to_string())}
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `start` is never used
+   --> /tmp/moloch-paper7-generation-live-r5-20261016/moloch/native/src/realtime.rs:416:8
+    |
+374 | impl Realtime {
+    | ------------- associated function in this implementation
+...
+416 |     fn start(
+    |        ^^^^^
+
+warning: `baal-transport-service` (lib) generated 1 warning (run `cargo fix --lib -p baal-transport-service` to apply 1 suggestion)
+warning: `moloch-replay` (lib) generated 6 warnings (run `cargo fix --lib -p moloch-replay` to apply 3 suggestions)
+warning: unused import: `self`
+ --> src/package_worker.rs:5:77
+  |
+5 | use crate::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_admission::Admission,package_authori...
+  |                                                                             ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `UNIT`
+ --> src/package_portfolio.rs:6:75
+  |
+6 | use moloch_relationship_arbitrage::{Instrument,Side,Book,Level,depth_cost,UNIT};
+  |                                                                           ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `dispatch::DispatchLog`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/package_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_portfolio::Plan,package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^            ^^^^                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `BindingLookup` and `Transport`
+ --> src/package_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                                                          ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/package_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: unused import: `UNIT`
+ --> src/package_allocation.rs:6:49
+  |
+6 | use moloch_relationship_arbitrage::{Limits,Side,UNIT};
+  |                                                 ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/probabilistic_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},probabilistic_portfolio::{Plan,Reservation,Policy},package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                  ^^^^                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Action`, `BindingLookup`, `Leg`, and `Transport`
+ --> src/probabilistic_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                 ^^^^^^ ^^^                               ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/probabilistic_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> src/package_preflight.rs:24:90
+   |
+24 | pub fn collect<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,basket:&Basket,mut after:F)->Result<PackageSnapshotSet>{
+   |                                                                                          ----^^^^^
+   |                                                                                          |
+   |                                                                                          help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `completed` is never read
+  --> src/execution_distribution.rs:51:77
+   |
+51 | #[derive(Clone)]struct Sample{key:Option<PoolKey>,market:String,attempt:u64,completed:u64,requested:u64,filled:u64,gain:Option<i128>...
+   |                        ------ field in this struct                          ^^^^^^^^^
+   |
+   = note: `Sample` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `moloch-live-runtime` (lib) generated 11 warnings (run `cargo fix --lib -p moloch-live-runtime` to apply 10 suggestions)
+warning: function `closed_legacy_ack` is never used
+  --> src/worker.rs:61:4
+   |
+61 | fn closed_legacy_ack(bank:&Session,log:&DispatchLog,qid:u64,event:&Value)->bool{
+   |    ^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `recovery_not_before` is never used
+    --> src/worker.rs:1655:4
+     |
+1655 | fn recovery_not_before(budget:&RecoveryBudget,at:u64,auth:u64)->Result<u64>{
+     |    ^^^^^^^^^^^^^^^^^^^
+
+warning: `moloch-live-runtime` (bin "moloch-live-runtime") generated 2 warnings
+   Compiling moloch-live-runtime v0.1.0 (/tmp/moloch-paper7-generation-live-r5-20261016/moloch/live-runtime)
+warning: unused variable: `authority`
+   --> tests/fundamental_policy.rs:664:37
+    |
+664 |     fn settings(f:&F)->Settings{let authority=f.authority();let review=f.root.join("review-input.json");let bytes=serde_json::to_ve...
+    |                                     ^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_authority`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `moloch-live-runtime` (test "fundamental_policy") generated 1 warning (run `cargo fix --test "fundamental_policy" -p moloch-live-runtime` to apply 1 suggestion)
+    Finished `test` profile [unoptimized] target(s) in 7.22s
+     Running tests/fundamental_policy.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/fundamental_policy-b94cde94988ea47a)
+
+running 110 tests
+test actual_session::abandonment_plan_rejects_prefix_or_original_journal_drift ... ok
+test actual_session::action_comparison_checks_actual_pinned_authority_and_preserves_diagnostic_funding_limits ... ok
+test actual_session::action_comparison_derives_review_caps_sources_and_conditional_model_without_mutation ... ok
+test actual_session::abandonment_requires_exact_committed_retirement_and_fresh_complete_flat_account ... ok
+test actual_session::actual_ack_requires_the_fixed_slice_even_when_native_would_accept_more ... ok
+test actual_session::action_comparison_withholds_revoked_expired_untrusted_or_changed_review ... ok
+test actual_session::an_executable_ordinary_inherited_sell_is_a_policy_hold_until_reviewed_native_reservation ... ok
+test actual_session::archived_original_intent_tag_survives_a_new_live_cohort_on_restart ... ok
+test actual_session::better_observed_bid_cannot_authorize_an_old_below_value_sell_limit ... ok
+test actual_session::attempted_partial_filled_and_late_archived_attempt_cannot_reset_eligibility ... ok
+test actual_session::cap_only_revision_does_not_permanently_prioritize_historical_age_exit ... ok
+test actual_session::changed_review_value_requires_actual_current_executable_value ... ok
+test actual_session::changed_review_requests_cancellation_of_known_partial_entry_without_inventing_unknown_id ... ok
+test actual_session::clean_prefix_truncation_is_detected_by_original_dispatch_tag ... ok
+test actual_session::cohort_horizon_cannot_be_renewed_by_an_ordinary_source_refresh ... ok
+test actual_session::consumed_initialization_marker_blocks_recreation_after_sidecar_loss ... ok
+test actual_session::covered_value_exit_below_opening_cost_uses_actual_fifo_and_preserves_inherited_attribution ... ok
+test actual_session::delayed_terminal_fresh_revocation_still_mints_exact_covered_sell_physical_token ... ok
+test actual_session::exact_unattempted_binding_continues_after_restart_without_another_sidecar_append ... ok
+test actual_session::existing_exit_hint_precedes_preflight_and_blocking_draft_retirement_without_creating_an_order ... ok
+test actual_session::existing_origin_binds_real_adoption_fifo_without_fabricating_entry_or_changing_money ... ok
+test actual_session::existing_snapshot_rejects_uncommitted_adoption_stale_head_and_insufficient_baseline_cap ... ok
+test actual_session::expired_exit_read_hint_is_not_permanently_blocked_by_inactive_quote_gate ... ok
+test actual_session::closed_zero_rearm_rejects_mutated_or_incomplete_original_receipts_and_terminal_reference ... ok
+test actual_session::explicit_reviewed_revocation_allows_only_covered_actual_cohort_exit ... ok
+test actual_session::explicit_slice_keeps_native_quote_and_reservation_until_actual_smaller_ack ... ok
+test actual_session::explicit_slice_rejects_zero_increase_and_unsealed_body_quantity ... ok
+test actual_session::explicit_top_up_genuine_seven_facts_bind_new_qid_and_preserve_original_tags_and_cash ... ok
+test actual_session::fixture_venue_watermark_survives_gap_without_skipping_session_cursor ... ok
+test actual_session::generation_reload::active_pins_detect_mutation_and_financial_control_diff_is_never_reloadable ... ok
+test actual_session::generation_reload::changed_owned_cohort_preserves_actual_fifo_and_cannot_extend_hold ... ok
+test actual_session::generation_reload::expired_request_and_original_account_packet_are_not_extended ... ok
+test actual_session::generation_reload::final_guard_failure_and_torn_generation_never_publish_partial_review_state ... ok
+test actual_session::generation_reload::changed_source_or_control_and_unapproved_loaded_settings_cannot_commit ... ok
+test actual_session::generation_reload::new_scope_requires_authentic_retired_drafts_and_fresh_flat_original_facts ... ok
+test actual_session::generation_reload::one_real_owner_generation_appends_once_without_financial_event_or_second_lock ... ok
+test actual_session::generation_reload::fresh_account_open_order_and_partial_coverage_never_install ... ok
+test actual_session::generation_reload::opaque_generation_revokes_old_preparation_but_preserves_known_cancel_path ... ok
+test actual_session::generation_reload::recovery_uses_stable_held_lease_identity_not_original_pid_body_length ... ok
+test actual_session::generation_reload::original_attempt_or_unclosed_cancel_cannot_hide_in_generation ... ok
+test actual_session::generation_reload::restart_after_generation_before_native_exclusion_resumes_exact_overlay ... ok
+test actual_session::genuine_native_quote_binds_whole_quantity_and_cannot_be_resized_on_wire ... ok
+test actual_session::genuine_review_sized_capability_authorizes_production_and_rejects_changed_quantity ... ok
+test actual_session::high_terminal_probability_cannot_originate_above_independently_reviewed_deadline_cash ... ok
+test actual_session::independent_entry_hint_never_clears_unknown_acceptance_or_reuses_existing_cohort ... ok
+test actual_session::genuinely_closed_zero_fill_post_and_recovered_orders_rearm_with_preserved_original_binding ... ok
+test actual_session::independent_entry_hint_survives_missing_book_and_no_live_native_quote ... ok
+test actual_session::independent_entry_plan_expires_and_detects_dispatch_or_review_file_change ... ok
+test actual_session::independent_entry_uses_original_seven_facts_and_real_native_derived_quantity ... ok
+test actual_session::inherited_deadline_allows_fresh_covered_loss_exit_without_a_current_forecast ... ok
+test actual_session::inherited_delayed_terminal_current_value_exit_plan_preserves_original_hold_clock ... ok
+test actual_session::inherited_origin_never_uses_a_synthetic_entry_or_an_unknown_order_as_authority ... ok
+test actual_session::independent_entry_rejects_changed_rules_cash_positions_scope_and_unadmitted_book ... ok
+test actual_session::intent_or_unknown_attempt_cannot_resume_or_mint_replacement_slices ... ok
+test actual_session::missing_sidecar_or_second_writer_is_not_automatic_initialization ... ok
+test actual_session::native_covered_exit_rejects_mutated_economics_depth_scope_and_prefix_atomically ... ok
+test actual_session::never_sent_abandonment_archives_original_tag_and_reopens_without_financial_mutation ... ok
+test actual_session::multi_entry_partial_fifo_exits_never_reset_basis_or_enable_global_rearm ... ok
+test actual_session::new_legacy_cohort_is_withheld_but_v2_requires_separate_explicit_approval ... ok
+test actual_session::only_actual_deadline_exit_can_mint_without_fresh_forecast ... ok
+test actual_session::opaque_contract_gate_rechecks_the_reviewed_root_before_any_physical_authorization ... ok
+test actual_session::opaque_token_expires_at_original_official_book_clock_not_permit_only ... ok
+test actual_session::opaque_token_mints_before_attempt_and_survives_only_its_original_tagged_append ... ok
+test actual_session::opaque_token_rejects_changed_frozen_economics_scope_permit_and_raw_body ... ok
+test actual_session::opaque_token_rejects_replaced_original_dispatch_inode_and_new_review_tail ... ok
+test actual_session::opaque_token_rejects_same_inode_sidecar_prefix_edit_and_trust_file_mutation ... ok
+test actual_session::original_dispatch_mutation_and_torn_sidecar_are_not_safe_restarts ... ok
+test actual_session::original_seven_receipt_entry_plan_uses_reviewed_deadline_cash_not_terminal_payout ... ok
+test actual_session::original_v1_bound_history_resumes_manages_and_keeps_its_exact_deadline ... ok
+test actual_session::physical_gate_rechecks_source_request_book_and_original_activation ... ok
+test actual_session::partial_late_fill_requires_original_entry_terminal_before_an_exit ... ok
+test actual_session::policy_principal_cap_rejects_whole_quote_instead_of_silently_downsizing ... ok
+test actual_session::rearmed_closed_binding_stays_archived_beside_a_new_cohort_and_rejects_late_ack ... ok
+test actual_session::production_authority_crossing_requires_exact_real_reviewed_bounded_token_and_fresh_original_facts ... ok
+test actual_session::restart_unknown_preserves_binding_and_never_grants_a_retry ... ok
+test actual_session::refreshed_value_exit_compares_payout_before_entry_buffer ... ok
+test actual_session::review_sizing_floors_principal_and_never_changes_native_price ... ok
+test actual_session::reviewed_execution_order_is_explicit_and_unmarked_ordinary_draft_has_no_crossing_authority ... ok
+test actual_session::reviewed_action_hashes_and_later_review_change_cannot_be_substituted_at_physical_boundary ... ok
+test actual_session::reviewed_revocation_exits_below_cost_and_revised_value_cancels_only_known_open_exit ... ok
+test actual_session::settings_hashes_reject_mutated_source_and_initialization_flag_cannot_reset ... ok
+test actual_session::settings_loads_exact_immutable_files_and_recovers_stale_cohort_without_extending_it ... ok
+test actual_session::sixty_one_second_native_loss_exit_is_vetoed_without_changing_financial_engine ... ok
+test actual_session::separately_reviewed_modes_reserve_real_whole_actions_and_only_bounded_token_can_cross ... ok
+test actual_session::stale_review_cannot_buy_but_deadline_still_manages_existing_cohort ... ok
+test actual_session::tagged_aborted_entry_retains_exclusive_cohort_and_cannot_mint_a_retry ... ok
+test actual_session::startup_restore_requires_actual_original_closed_log_and_never_allows_never_sent_archive ... ok
+test actual_session::terminal_objective_survives_schedule_delay_without_extending_an_existing_legacy_cohort ... ok
+test actual_session::tagged_archived_original_ack_restores_after_restart_beside_new_cohort_but_new_ack_is_denied ... ok
+test actual_session::timeout_or_absence_or_forged_not_sent_never_proves_abandonment ... ok
+test actual_session::top_up_full_packet_rejects_wrong_or_missing_signed_position_and_stale_plan ... ok
+test actual_session::unattempted_top_up_positive_retirement_keeps_holdings_and_releases_only_policy_pending ... ok
+test actual_session::unrelated_actual_holding_cannot_become_a_tagged_forecast_position ... ok
+test actual_session::verified_ordinary_abort_unblocks_forecast_only_after_original_sdk_restart_verification ... ok
+test actual_session::zero_fill_rearm_is_not_available_for_unknown_or_partial_actual_execution ... ok
+test actual_session::top_up_original_closure_and_attribution_fail_closed_on_mutated_maps_or_unknown ... ok
+test actual_session::zero_fill_rearm_preserves_original_larger_draft_and_exact_smaller_physical_slice ... ok
+test approved_original_node_bytes_must_match_exact_contract_scope_and_root_semantics ... ok
+test conditional_exception_payoff_and_entry_buffer_use_exact_conservative_arithmetic ... ok
+test explicit_execution_policy_rejects_empty_duplicate_unknown_or_bad_version_modes ... ok
+test future_stale_and_out_of_range_model_inputs_are_rejected ... ok
+test input_cannot_approve_itself_replace_source_bytes_or_claim_guaranteed_mapping ... ok
+test objective_version_omission_and_legacy_bytes_remain_unambiguous ... ok
+test omitted_execution_policy_preserves_pre_extension_review_hash_and_explicit_modes_need_new_approval ... ok
+test original_node_receipt_envelope_is_accepted_only_for_the_exact_official_scope ... ok
+test terminal_can_bind_original_node_timing_without_an_extra_source ... ok
+test terminal_requires_original_exact_official_timing_and_explicit_delayed_payout_policy ... ok
+test top_up_permission_is_explicit_omitted_by_default_and_bounded ... ok
+test v2_deadline_cash_is_independent_of_terminal_probability_and_source_bound ... ok
+test actual_session::zero_fill_rearm_plan_withholds_on_bank_prefix_or_original_log_advance ... ok
+
+test result: ok. 110 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 17.51s
+

@@ -1,0 +1,92 @@
+{
+  "at": "2026-10-16T23:53:42.213819+00:00",
+  "operator": "moloch-paper7-generation-resolved-10701-20261016-r4",
+  "oldPid": 565108,
+  "newPid": 577770,
+  "sourceCommit": "b3a2bd86f9d02067b3bc2fe5c1c3a646a2d1b965",
+  "binarySha256": "21d628ffd437d53b3628d8b1aee2d15df7943fb96c070c718fff52f66c184916",
+  "engineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "release": "/home/archon/apps/moloch/releases/paper7-generation-21d628ffd437/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-paper7-generation-20261016.json",
+  "controlSha256": "3317d016966cfd3455b2e541b75d20af12cf6922d5a4826113e5856dbb5795e0",
+  "stagingSha256": "3e9fda7c83bb64d0127f68351216cc3bf4b4935bedbd0259f56061a8eb52d67a",
+  "approvalSha256": "35f9d977edb99db9604eb6f7c39556a0066882d91e900962b0efd8ef93afa6c4",
+  "bridgeSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "financialBridgeEntries": 13,
+  "boundary": {
+    "at": "2026-10-16T23:52:29.431763+00:00",
+    "operator": "moloch-paper7-generation-resolved-10701-20261016-r4",
+    "stagingSha256": "3e9fda7c83bb64d0127f68351216cc3bf4b4935bedbd0259f56061a8eb52d67a",
+    "snapshot": {
+      "head": {
+        "hash": "306fc15901ea096dbad0294af189daf98152e8dd51f511a2e65768f183a3b21e",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "6c3021e12f8e8f3b30e0410c07a790cd62c82cadb580f8f72be5fef9eb668350",
+        "sequence": 359996
+      },
+      "reportSha256": "bbf7fcee7b3f4dce9587a1b23db87b83442de34247cbad85414e1acd5611a2d7",
+      "prefixBytes": 1124813357,
+      "prefixSha256": "f8e6c8159119aad7f396eada612974cb5a02a370fd4b14045ffa76644043ba01",
+      "dispatch": {
+        "sequence": 16279,
+        "hash": "5aa3d04eed36a6f38225219166228792a61afcbf54a6b80ccc9e1914bd6d2dc2",
+        "acknowledged": 1372,
+        "provedAborted": {
+          "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7",
+          "10701": "0f8e3dead33ceabb887af2ac321a2e295c83d7cf2e1d16eb70e62882b168f41c"
+        },
+        "unknownOrdinaryAttempts": 0,
+        "nativeRetirementPending": [
+          10701
+        ],
+        "noRetryAuthorized": true,
+        "firstPositiveSdkRecoveryReceiptSha256": "0fbb2c8865942319ce39fbd81b9d138b6469932fef4f37932d4434711d62fc16",
+        "retainedSdkReverificationSha256": "fb73673e64b98b09c15a8862180859cc3bd51340961d29ec55b364bd8d09c035",
+        "initialProcessExitCode": null,
+        "retainedProcessExitCode": 0,
+        "recoveryManifestSha256": "2bbfb2883ced3d1947cbd4218b957a0ecfb14a266f6f8da785af4a4f5a03d85a"
+      },
+      "pins": {
+        "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/manifest.json": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+        "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/engine-upgrade-v1.json": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+        "/home/archon/apps/moloch/shared/live-production-v1/dispatch.ndjson": "65476657f43f61ae4dddbf175d16dcc69b5a9906ba005a188337b825c48523ea",
+        "/home/archon/apps/moloch/shared/live-production-v1/fundamental.ndjson": "9e0088749c6225b8e9480a8297c2fb4739d2b59b74c4a077c95cd65969ca9609",
+        "/home/archon/apps/moloch/shared/live-production-v1/fundamental.initialized.json": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+        "/home/archon/apps/moloch/shared/live-production-v1/package-dispatch/package-dispatch.ndjson": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "fills": 241,
+      "reportRealized": "-136.230000"
+    },
+    "requestSha256": "7b9fd97205aa7986cfc66ba0d31771b6c4c07564c2fcc6f7db8984acb2a23838",
+    "stopSha256": "c99f7128c2508949f3e6612221df988771878043d3d13a3c646d199bbf54ec74",
+    "workerStatusSha256": "b55b48734030b6ad4d8d2d49f40a6b87415940e5977026b516462e3d006d3267",
+    "workerStatus": {
+      "at": "2026-10-16T23:27:35.404Z",
+      "mode": "stopped",
+      "pid": 565108,
+      "profitabilityEstablished": false,
+      "reason": "LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"
+    },
+    "recoveryManifestSha256": "2bbfb2883ced3d1947cbd4218b957a0ecfb14a266f6f8da785af4a4f5a03d85a",
+    "queueQuiet": {
+      "globalUnknownCount": 0,
+      "active": null,
+      "manualReview": false
+    }
+  },
+  "controlChanges": [
+    "activation.binarySha256",
+    "accountRealtime",
+    "fundamentalReload",
+    "fundamentalAcquisition"
+  ],
+  "resolvedAutomaticIncidentQid": 10701,
+  "recoveryManifestSha256": "2bbfb2883ced3d1947cbd4218b957a0ecfb14a266f6f8da785af4a4f5a03d85a",
+  "nativeRetirementPending": [
+    10701
+  ],
+  "sameIntentRetryAuthorized": false,
+  "financialHistoryChangedByOperator": false,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false
+}

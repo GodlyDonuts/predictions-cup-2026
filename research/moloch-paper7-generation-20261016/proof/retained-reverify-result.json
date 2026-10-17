@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-16T23:49:20.094802+00:00",
+  "exitCode": 0,
+  "binarySha256": "fa9d1077d00e537de7bdf38c26473662d4cf09707eb2d43b17cdd8082371b96c",
+  "proofLogSha256": "94c889485e41493fae877005373eaed1e3a07a15c6460e5e3c9c8b632406629c",
+  "proofLogBytes": 67,
+  "dispatchUnchanged": true,
+  "originalStopUnchanged": true,
+  "initialProcessExitCode": null
+}

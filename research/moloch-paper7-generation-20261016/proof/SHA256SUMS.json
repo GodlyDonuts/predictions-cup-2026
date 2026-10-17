@@ -1,0 +1,102 @@
+{
+  "maker_policy.log": {
+    "sha256": "e616cad0c38fc2ab592351b2bd7b728bf22d6fb50b4cbbad074358c95fd07f3b",
+    "bytes": 13897
+  },
+  "execution_distribution.log": {
+    "sha256": "512870c11e2441bec5fca4aaa831772722e64222536115fc8d7c68f5fe1e6812",
+    "bytes": 13546
+  },
+  "engine-probe-run.log": {
+    "sha256": "80f79583bc1ba42e61d5826b6f17a05bfd04f0a9a42eaef7c51fa56b48b5f2ca",
+    "bytes": 65
+  },
+  "runtime-library.log": {
+    "sha256": "47fdc9b5b887c46de081de56f59340e3ebbd281b33e2c30229fe32d448e4c9e0",
+    "bytes": 34301
+  },
+  "release.log": {
+    "sha256": "5e2f442225c103794e0be084092c9e5d6b9762ccb3d88c363ac638b05dd19d82",
+    "bytes": 188767
+  },
+  "sdk-library.log": {
+    "sha256": "3ccf703aeeea43dc09701510666423a84d0df71cccb16718ff066a67f2c1837d",
+    "bytes": 26511
+  },
+  "fundamental_policy.log": {
+    "sha256": "2519ae6ae943f821f1ae5f85d95646c86e911a9f4085aee044bfb41b1290f970",
+    "bytes": 23356
+  },
+  "worker.log": {
+    "sha256": "b834f915d13290cb5f1b8a920d25cf1a174128d1082f87ef0ed7ef2f351bf41e",
+    "bytes": 24509
+  },
+  "fundamental_acquisition.log": {
+    "sha256": "47a5568eb3e079cbe6f39633fbb3bb3550825e2bb57c3ad490fc7b307bc35b5f",
+    "bytes": 12565
+  },
+  "recovery-cli-build.log": {
+    "sha256": "80473916efc80d59942d3cdeb9e65e7d5622f6d3f83f7c8e21d4828341e75c75",
+    "bytes": 11427
+  },
+  "native-library.log": {
+    "sha256": "dc1cd687e48abfb3109e86246fb035e2a3a1f6bb37303b7c4ec336c9ad7fa14a",
+    "bytes": 12267
+  },
+  "engine-probe-build.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "validation.json": {
+    "sha256": "c7b45990bafea8566c0fc18d71416e26d45634a0f74c4d2509a2a30ca16c3b92",
+    "bytes": 4486
+  },
+  "integrated-source-manifest.json": {
+    "sha256": "eddb5a618f0e07f879615e5f957ba3d03e9d8c51e97f194501d1ed5311cd707e",
+    "bytes": 31503
+  },
+  "recovery-cli.json": {
+    "sha256": "a8da049759d592492a8c8910a903e177c82deca29fd81bc74d59f306f10efc00",
+    "bytes": 292
+  },
+  "first-positive-recovery.json": {
+    "sha256": "0fbb2c8865942319ce39fbd81b9d138b6469932fef4f37932d4434711d62fc16",
+    "bytes": 377
+  },
+  "retained-reverify.log": {
+    "sha256": "94c889485e41493fae877005373eaed1e3a07a15c6460e5e3c9c8b632406629c",
+    "bytes": 67
+  },
+  "retained-reverify-result.json": {
+    "sha256": "8bdff8d57d6157bba206b66a6bc587d6bffd9e7b63a39175f8c4cca6b446b206",
+    "bytes": 357
+  },
+  "retained-reverification.json": {
+    "sha256": "fb73673e64b98b09c15a8862180859cc3bd51340961d29ec55b364bd8d09c035",
+    "bytes": 372
+  },
+  "rollout.json": {
+    "sha256": "889c0a47f311c71bfa3e18830c4f706761579fcf6eaef528664550afd4b2a0b8",
+    "bytes": 4868
+  },
+  "owner-freeze.json": {
+    "sha256": "ea31924ebb1fc49809666944f77328ff00a49e2e0595da6c1ec4d8c472dda3c3",
+    "bytes": 648
+  },
+  "stage.log": {
+    "sha256": "d7d526979087301953dc1350481f13719bf08da84d71dde336b8321688ba866f",
+    "bytes": 190
+  },
+  "boundary.log": {
+    "sha256": "7d93033eb3cebc8bb0628314f1cfdc8d5f4060c5304b9b27f5451ce1d2d5b5c0",
+    "bytes": 175
+  },
+  "promote.log": {
+    "sha256": "1a2cafb37f49c9ac44f79019b0616c16aaa07721520a7566a7ff486120922498",
+    "bytes": 215
+  },
+  "recovery-summary.json": {
+    "sha256": "9bb301438578dd93afcbe50c77f990eda8bd0bbeadcd7b58afa15b36f63e7089",
+    "bytes": 1444
+  }
+}

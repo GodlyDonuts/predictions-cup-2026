@@ -1,0 +1,11 @@
+{
+  "operatorPath": "/tmp/moloch-paper7-generation-rollout-owner-r5-20261016.py",
+  "operatorSha256": "3238640fb8c204c3597a12a2b18a9db51b5ad4bbc8b9d8e03a0678c39e19b8c5",
+  "sourceCommit": "b3a2bd86f9d02067b3bc2fe5c1c3a646a2d1b965",
+  "validationSha256": "c7b45990bafea8566c0fc18d71416e26d45634a0f74c4d2509a2a30ca16c3b92",
+  "recoveryManifestSha256": "2bbfb2883ced3d1947cbd4218b957a0ecfb14a266f6f8da785af4a4f5a03d85a",
+  "testsPassed": 842,
+  "ignoredExistingBenchmark": 1,
+  "nativeIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "binarySha256": "21d628ffd437d53b3628d8b1aee2d15df7943fb96c070c718fff52f66c184916"
+}

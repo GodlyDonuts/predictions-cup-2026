@@ -1,0 +1,34 @@
+{
+  "sourceCommit": "b3a2bd86f9d02067b3bc2fe5c1c3a646a2d1b965",
+  "qid": 10701,
+  "oldPid": 565108,
+  "originalStopAt": "2026-10-16T23:27:35.382Z",
+  "recoveryManifestSha256": "2bbfb2883ced3d1947cbd4218b957a0ecfb14a266f6f8da785af4a4f5a03d85a",
+  "originalBank": {
+    "headSha256": "9e0dd83d9043fb9556e9db4f31a91915bfe250c54da15fa6d8324c50edeabbbf",
+    "reportSha256": "bbf7fcee7b3f4dce9587a1b23db87b83442de34247cbad85414e1acd5611a2d7",
+    "manifestSha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "bridgeSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+    "eventsBytes": 1124813357,
+    "eventsSha256": "f8e6c8159119aad7f396eada612974cb5a02a370fd4b14045ffa76644043ba01"
+  },
+  "originalError": {
+    "apiCode": null,
+    "code": "LIVE_CONTRACT_OR_BOOK_STALE",
+    "mayHaveExecuted": false,
+    "orderId": null,
+    "retryAfterMs": 0,
+    "status": null
+  },
+  "originalSdkArchiveSha256": "0f8e3dead33ceabb887af2ac321a2e295c83d7cf2e1d16eb70e62882b168f41c",
+  "initialProcessExitCode": null,
+  "retainedProcessExitCode": 0,
+  "networkRequests": 0,
+  "sameIntentRetryAuthorized": false,
+  "nativeRetirementPending": [
+    10701
+  ],
+  "financialHistoryChangedByOperator": false,
+  "firstPositiveRecoverySha256": "0fbb2c8865942319ce39fbd81b9d138b6469932fef4f37932d4434711d62fc16",
+  "retainedReverificationSha256": "fb73673e64b98b09c15a8862180859cc3bd51340961d29ec55b364bd8d09c035"
+}
