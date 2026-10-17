@@ -14,9 +14,83 @@ use sha2::{Digest,Sha256};
 use std::{fs,path::{Path,PathBuf},sync::Arc,time::{SystemTime,UNIX_EPOCH,Duration}};
 #[derive(Clone,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Control{#[serde(default,skip_serializing_if="is_false")]managed_inventory_planning:bool,#[serde(default,skip_serializing_if="is_false")]fundamental_reload:bool,#[serde(default,skip_serializing_if="is_false")]account_realtime:bool,#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default,skip_serializing_if="Option::is_none")]fundamental_acquisition:Option<moloch_live_runtime::execution_distribution::AcquisitionConfig>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
+struct Control{#[serde(default,skip_serializing_if="Option::is_none")]rank_campaign:Option<RankCampaignSettings>,#[serde(default,skip_serializing_if="is_false")]managed_inventory_planning:bool,#[serde(default,skip_serializing_if="is_false")]fundamental_reload:bool,#[serde(default,skip_serializing_if="is_false")]account_realtime:bool,#[serde(default,skip_serializing_if="is_false")]profitable_depth_mode:bool,#[serde(default)]defensive_cancel:bool,#[serde(default)]ordinary_side_edge:moloch_live_runtime::ordinary_side_edge::Mode,#[serde(default)]owner_capital_allocation:Option<moloch_live_runtime::capital_allocation::Settings>,#[serde(default)]bulk_negative_screen:bool,#[serde(default)]paper5:Option<moloch_live_runtime::paper5_runtime::Settings>,#[serde(default)]execution_distribution:Option<moloch_live_runtime::execution_distribution::Config>,#[serde(default,skip_serializing_if="Option::is_none")]fundamental_acquisition:Option<moloch_live_runtime::execution_distribution::AcquisitionConfig>,#[serde(default)]fundamental_policy:Option<fundamental::Settings>,#[serde(default)]maker_policy:Option<moloch_live_runtime::maker_policy::Settings>,#[serde(default)]package_allocation:Option<moloch_live_runtime::package_allocation::Settings>,#[serde(default)]collateral_accounting:bool,#[serde(default)]execution_model:Option<moloch_live_runtime::execution_edge::Config>,#[serde(default)]packages:Option<moloch_live_runtime::package_settings::Settings>,#[serde(default)]daily_entry_windows:Option<moloch_live_runtime::daily_windows::DailyEntryWindows>,activation:Activation,scope:Scope,policy:Value,root:PathBuf,credentials:PathBuf,owner_lock:PathBuf,account_scope:String,#[serde(default)]all_markets:bool,#[serde(default="default_bank")]bank_name:String,#[serde(default)]predecessor_bank:Option<String>,#[serde(default)]manage_existing_positions:bool}
 fn is_false(v:&bool)->bool{!*v}
 fn default_bank()->String{"bank".into()}
+#[derive(Clone,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+struct RankCampaignSettings{nomination_path:PathBuf,owner_approval_path:PathBuf,originals_directory:PathBuf}
+struct RankDispatch{order:Order,spec:RequestSpec,permit:Permit,decision:Arc<moloch_live_runtime::rank_campaign::PhysicalDecision>,owner:Arc<moloch_live_runtime::authority::RankOwnerPins>,raw_sha:String,campaign_sha:String}
+fn rank_private_bytes(path:&Path)->Result<Vec<u8>>{
+ use std::{io::Read,os::unix::fs::MetadataExt};
+ if !path.is_absolute(){return Err("RANK_PRIVATE_ABSOLUTE_PATH".into())}for p in path.ancestors(){if fs::symlink_metadata(p)?.file_type().is_symlink(){return Err("RANK_PRIVATE_SYMLINK".into())}}
+ let mut f=fs::File::open(path)?;let m=f.metadata()?;if !m.is_file()||m.nlink()!=1||m.uid()!=unsafe{libc::geteuid()}||m.mode()&0o077!=0||m.len()>8*1024*1024{return Err("RANK_PRIVATE_SOURCE_REQUIRED".into())}
+ let mut raw=Vec::new();Read::by_ref(&mut f).take(8*1024*1024+1).read_to_end(&mut raw)?;if raw.len()as u64!=m.len(){return Err("RANK_PRIVATE_SOURCE_CHANGED".into())}Ok(raw)
+}
+fn load_rank_campaign(c:&Control,settings:&RankCampaignSettings)->Result<(moloch_live_runtime::rank_campaign::Reviewed,Arc<moloch_live_runtime::authority::RankOwnerPins>)>{
+ let private=c.root.join("rank-campaign-owner");
+ for path in [&settings.nomination_path,&settings.owner_approval_path,&settings.originals_directory]{if !path.is_absolute()||!path.starts_with(&private){return Err("RANK_CONFIGURED_OWNER_ROOT_REQUIRED".into())}}
+ let raw=rank_private_bytes(&settings.nomination_path)?;let approval_raw=rank_private_bytes(&settings.owner_approval_path)?;let sha=format!("{:x}",Sha256::digest(&raw));let approval_sha=format!("{:x}",Sha256::digest(&approval_raw));let approval:Value=serde_json::from_slice(&approval_raw)?;let at=now();
+ if approval["schemaVersion"]!=1||approval["runId"]!=c.activation.run_id||approval["accountScope"]!=c.account_scope{return Err("RANK_OWNER_APPROVAL_SCOPE".into())}
+ let rows=approval["approvedCampaigns"].as_array().filter(|v|!v.is_empty()&&v.len()<=128).ok_or("RANK_OWNER_APPROVAL_SET")?;let mut approved=std::collections::BTreeSet::new();
+ for row in rows{let h=row["rawSha256"].as_str().filter(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))).ok_or("RANK_OWNER_APPROVAL_SHA")?;let start=row["approvedAtMs"].as_u64().ok_or("RANK_OWNER_APPROVAL_CLOCK")?;let end=row["validUntilMs"].as_u64().ok_or("RANK_OWNER_APPROVAL_CLOCK")?;if start<=at&&at<end&&!approved.insert(h.to_owned()){return Err("RANK_OWNER_DUPLICATE_APPROVAL".into())}}
+ if !approved.contains(&sha){return Err("RANK_CAMPAIGN_NOT_OWNER_APPROVED".into())}
+ let nomination:Value=serde_json::from_slice(&raw)?;let sources=nomination["sources"].as_array().filter(|a|!a.is_empty()&&a.len()<=64).ok_or("RANK_SOURCES")?;let mut originals=Vec::new();let mut total=0usize;
+ for source in sources{let h=source["sha256"].as_str().filter(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))).ok_or("RANK_SOURCE_SHA")?;let b=rank_private_bytes(&settings.originals_directory.join(format!("{h}.bin")))?;total=total.checked_add(b.len()).ok_or("RANK_SOURCE_BOUND")?;if total>16*1024*1024{return Err("RANK_SOURCE_BOUND".into())}originals.push((h.to_owned(),b));}
+ let inputs:Vec<_>=originals.iter().map(|(sha,bytes)|moloch_live_runtime::rank_campaign::Original{sha256:sha,bytes}).collect();let review=moloch_live_runtime::rank_campaign::Reviewed::load(&raw,&sha,&approved,&inputs,at)?;
+ let deadline=rows.iter().filter(|r|r["rawSha256"]==sha&&r["approvedAtMs"].as_u64().is_some_and(|v|v<=at)&&r["validUntilMs"].as_u64().is_some_and(|v|at<v)).filter_map(|r|r["validUntilMs"].as_u64()).min().ok_or("RANK_OWNER_APPROVAL_CLOCK")?;
+ let pins=moloch_live_runtime::authority::RankOwnerPins::capture(&[(settings.nomination_path.clone(),sha),(settings.owner_approval_path.clone(),approval_sha)],deadline)?;Ok((review,Arc::new(pins)))
+}
+fn rank_deferred(c:&Control,stage:&str,why:&str)->Result<()>{atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"stage":stage,"state":"deferred","reason":why,"physicalAttempted":false,"profitabilityEstablished":false}))}
+fn rank_quote(q:&Value)->bool{q.get("reviewedRankCampaign").is_some_and(Value::is_object)}
+fn rank_can_resume(bank:&Session,log:&DispatchLog,q:&Value)->bool{
+ q["id"].as_u64().is_some_and(|id|rank_quote(q)&&q["retired"]==false&&q["filled"]==0&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))
+}
+fn rank_activation(q:&Value,original:&Value,at:u64)->Result<Option<u64>>{
+ if q!=original||!rank_quote(q)||q["retired"]!=false||q["filled"]!=0||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|at>=t){return Err("RANK_RESERVATION_EXPIRED_OR_CHANGED".into())}
+ let active=q["activationAt"].as_u64().ok_or("RANK_ACTIVATION")?;Ok((at<active).then_some(active))
+}
+fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&Arc<ProductionAuthority>,stream:&Realtime,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,managed:&std::collections::BTreeSet<String>)->Result<()>{
+ let Some(settings)=&c.rank_campaign else{return Ok(())};
+ let(review,pins)=match load_rank_campaign(c,settings){Ok(v)=>v,Err(e)=>return rank_deferred(c,"owner_review",&e.to_string())};let ex=review.exchange_id().to_owned();
+ if managed.contains(&ex){return rank_deferred(c,"scope","FUNDAMENTAL_COHORT_REQUIRES_EXPLICIT_DELEGATION")}
+ let existing:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).collect();
+ if existing.len()>1{return Err("RANK_CAMPAIGN_RESERVATION_NOT_UNIQUE".into())}
+ if existing.first().is_some_and(|q|!rank_can_resume(bank,log,q)){return Ok(())}
+ let market=c.scope.exchanges.get(&ex).ok_or("RANK_TARGET_OUTSIDE_CONTROL")?.clone();let target=json!({"exchangeId":ex,"marketId":market});
+ refresh_controls(c,authority,stream)?;t.package_queue_quiet()?;
+ let(qid,original)=if let Some(q)=existing.into_iter().next(){(q["id"].as_u64().ok_or("RANK_QUOTE_ID")?,q)}else{
+ if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_ALREADY_HAS_PHYSICAL_LIABILITY")}
+ retire_existing_drafts(bank,log,&ex)?;
+ let collateral=request(t,&c.root,Endpoint::Collateral)?;
+ let facts=preflight_snapshots(c,bank,source,&market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
+ accept_fresh_book(bank,c,&target,&facts.book,source)?;
+ if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_CHANGED_DURING_READS")}
+ retire_existing_drafts(bank,log,&ex)?;pins.validate()?;
+ let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
+ let plan={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
+  match moloch_live_runtime::rank_campaign::prepare(bank,&b,&review,&facts,&retained,now()){Ok(p)=>{p.validate_current(bank,&b,now())?;p},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"evaluation",&e.to_string()),Err(e)=>return Err(e)}
+ };
+ let qid=plan.expected_qid();accept(bank,plan.event())?;let original=quote(bank,qid)?;(qid,original)};
+ if !rank_quote(&original)||original["reviewedRankCampaign"]["campaignSha256"]!=review.campaign_sha256(){return Err("RANK_REAL_RESERVATION_MISMATCH".into())}
+ atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"state":"native_reserved_not_submitted","qid":qid,"campaignSha256":review.campaign_sha256(),"physicalAttempted":false,"profitabilityEstablished":false}))?;
+ loop{refresh_controls(c,authority,stream)?;pins.validate()?;let q=quote(bank,qid)?;match rank_activation(&q,&original,now()){
+  Ok(None)=>break,Ok(Some(at))=>std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100))),
+  Err(e)=>{if log.never_attempted(qid)&&q["retired"]==false{retire_never_sent(bank,log,&q)?;}return rank_deferred(c,"activation",&e.to_string())}
+ }}
+ let collateral=request(t,&c.root,Endpoint::Collateral)?;
+ let facts=match preflight_snapshots(c,bank,source,&market,Some(&original),&mut LivePreflightReads{t,c,authority,stream,breadth,universe}){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
+ accept_fresh_book(bank,c,&target,&facts.book,source)?;let current=quote(bank,qid)?;
+ if current!=original||!log.never_attempted(qid){return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_CHANGED")}
+ pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
+ let(order,spec,permit)=physical_order(c,&current)?;
+ let decision={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
+  match moloch_live_runtime::rank_campaign::mint(bank,&b,&review,qid,&facts,&retained,&spec,&permit,now()){Ok(d)=>d,Err(e)if e.to_string().starts_with("RANK_")=>{retire_never_sent(bank,log,&current)?;return rank_deferred(c,"physical_review",&e.to_string())},Err(e)=>return Err(e)}
+ };
+ let evaluation=decision.evaluation().clone();let rank=RankDispatch{order,spec,permit,decision:Arc::new(decision),owner:pins,raw_sha:review.raw_sha256().into(),campaign_sha:review.campaign_sha256().into()};
+ submit_order_with_rank(t,c,bank,log,authority,&current,facts,None,None,Some(rank))?;
+ atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid),"evaluation":evaluation,"profitabilityEstablished":false}))?;Ok(())
+}
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
  fn eligible(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,at:u64)->Result<bool>{
@@ -1122,6 +1196,10 @@ fn fundamental_preintent(f:&mut FundamentalRuntime,bank:&Session,log:&DispatchLo
  }
 }
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+ submit_order_with_rank(t,c,bank,log,authority,q,facts,maker,fundamental,None)
+}
+fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>,rank:Option<RankDispatch>)->Result<()>{
+ if rank.is_some()&&(maker.is_some()||fundamental.is_some()){return Err("LIVE_EXCLUSIVE_ORDER_OBJECTIVE".into())}
  if !owner_capital_buys_allowed(c,bank,&q["action"])?{return Ok(())}
  use moloch_live_runtime::decision_trace::{Trace,Stage};
  // Only bounded in-memory timestamps precede the physical call. Diagnostic IO
@@ -1129,7 +1207,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  let trace_start=now();let mut trace=Trace::new(&c.activation.run_id,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,trace_start)?;
  trace.candidate_created_at_ms=q["createdAt"].as_u64();trace.book_received_at_ms=moloch_live_runtime::daily_windows::clock(&facts.book.received_at).ok();
  for receipt in [&facts.account,&facts.cash_balance,&facts.positions,&facts.open_orders,&facts.market,&facts.contract,&facts.book]{if let(Ok(start),Ok(end))=(moloch_live_runtime::daily_windows::clock(&receipt.request_started_at),moloch_live_runtime::daily_windows::clock(&receipt.received_at)){let _=trace.record(Stage::PreflightRead,start,end);}}
- let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let(mut order,mut request_spec,mut p)=physical_order(c,q)?;
+ let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let(mut order,mut request_spec,mut p)=if let Some(r)=&rank{(r.order.clone(),r.spec.clone(),r.permit.clone())}else{physical_order(c,q)?};
  trace.permit_issued_at_ms=Some(p.expires_at_ms.saturating_sub(15000));trace.permit_expires_at_ms=Some(p.expires_at_ms);
  let fundamental_decision=if let Some(f)=fundamental.as_mut(){
   f.authority.validate()?;
@@ -1148,15 +1226,16 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  }}
  // Configuration or a marker is not an entry capability. Recompute covered
  // opposite inventory against the final fresh state before any durable intent.
- if q["action"]=="buy"&&fundamental_decision.is_none()&&maker.is_none()&&!unreviewed_inventory_reduction(c,bank,log,q)?{
+ if q["action"]=="buy"&&rank.is_none()&&fundamental_decision.is_none()&&maker.is_none()&&!unreviewed_inventory_reduction(c,bank,log,q)?{
   authority.clear_ready();atomic_json(&c.root.join("ordinary-entry-quarantine-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":"unreviewed_new_exposure","physicalAttempted":false}))?;return Ok(())
  }
- if let Err(error)=authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision){if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
+ let prepared=if let Some(r)=&rank{authority.prepare_with_rank(bank,qid,request_spec.clone(),p.clone(),facts,r.decision.clone(),r.owner.clone())}else{authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision)};
+ if let Err(error)=prepared{if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
- log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid))}))?;
- record_original_attempt(bank,log,qid,if fundamental.is_some(){None}else{c.execution_model.as_ref()},now())?;
+ log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"rankCampaign":rank.as_ref().map(|r|json!({"objective":"declared_first_place_rank_risk","rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluation":r.decision.evaluation()}))}))?;
+ record_original_attempt(bank,log,qid,if fundamental.is_some()||rank.is_some(){None}else{c.execution_model.as_ref()},now())?;
  if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}
  let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{let end=now();let _=trace.record(Stage::TransportCall,transport_start,end);if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"transport_error","diagnosticOnly":true}));}log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
@@ -2183,7 +2262,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  // At most one new physical order per pass; subsequent fills change funding.
  // Retired history and already-physical orders have separate reconciliation
  // paths above; they cannot become a new submission or consume its ranking.
- let quotes:Vec<_>=moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!bank.engine().is_package_order(id))).cloned().collect();
+ let quotes:Vec<_>=moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false&&!rank_quote(q)&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!bank.engine().is_package_order(id))).cloned().collect();
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
  let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
@@ -2558,6 +2637,9 @@ pub fn main()->Result<()>{
    let mut collateral_blocked=collateral_accounting(&mut t,&c,&mut bank,&log,&packages,lease.as_ref(),&mut collateral_last_check)?;
    service_fundamental_reload(reload_channel.as_ref(),&c,&path,&original_control_bytes,&mut t,&mut bank,&mut log,&packages,&authority,lease.as_ref(),fundamental.as_mut(),stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
    accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
+   if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
+    rank_opportunity(&mut t,&c,&mut bank,&mut log,&packages,lease.as_ref(),&authority,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
+   }
    let mut required=bank.engine().required_exchanges();if let Some(f)=fundamental.as_ref(){required.extend(f.cohorts.managed_exchanges());}
    let selected=if let Some(u)=&mut universe{u.select_at(&required,now())?}else{c.scope.exchanges.keys().cloned().collect()};
    let selected=if universe.is_some(){
@@ -3891,4 +3973,9 @@ mod local_final_guard_recovery_tests{
  #[test]fn exact_recovery_keeps_permanent_key_before_and_after_clear(){assert!(local_guard_recovery_state(&state(true),&binding()).unwrap());assert!(!local_guard_recovery_state(&state(false),&binding()).unwrap());}
  #[test]fn other_unknown_active_poison_or_missing_permanent_binding_blocks_recovery(){let original=state(true);for(field,value)in [("active",json!({"request":"different"})),("manual_review",json!(true)),("schema_version",json!(2)),("intents",json!({})),("keys",json!({}))]{let mut s=original.clone();s["state"][field]=value;assert!(local_guard_recovery_state(&s,&binding()).is_err(),"{field}");}let mut s=original;s["state"]["unknown"]["other"]=binding();assert!(local_guard_recovery_state(&s,&binding()).is_err());let mut s=state(true);s["state"]["unknown"]["original:17811"]["payload_hash"]=json!("0".repeat(64));assert!(local_guard_recovery_state(&s,&binding()).is_err());}
  #[test]fn recovery_authority_can_only_reconcile_exact_original_binding_and_scope(){let scope=Scope{tournament_id:"fixture".into(),tournament_slug:"cup".into(),exchanges:[("885".into(),"196".into())].into()};let authority=LocalGuardRecoveryAuthority{scope:serde_json::to_value(&scope).unwrap(),binding:binding()};assert!(!authority.can_read(&scope));assert!(!authority.owns_order("1"));assert!(authority.reconcile_unknown(&scope,&binding(),1).is_ok());let mut changed=binding();changed["key"]=json!("replacement");assert!(authority.reconcile_unknown(&scope,&changed,1).is_err());let mut other=scope.clone();other.tournament_id="other".into();assert!(authority.reconcile_unknown(&other,&binding(),1).is_err());let spec=RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:None,body_json:None};let permit=Permit{run_id:"original".into(),intent_id:"17811".into(),owner:"Codex".into(),expires_at_ms:1000,maximum_quantity:10000,maximum_cost:"7100".into()};for network in [false,true]{assert!(authority.authorize(&scope,&spec,&permit,network,1).is_err());}}
+}
+#[cfg(test)]mod rank_worker_tests{
+ use super::*;
+ #[test]fn rank_activation_preserves_exact_quote_and_handles_both_actions(){for action in ["buy","sell"]{let q=json!({"id":10,"action":action,"reviewedRankCampaign":{"campaignSha256":"a".repeat(64)},"retired":false,"filled":0,"activationAt":3000,"expiresAt":10000});assert_eq!(rank_activation(&q,&q,2000).unwrap(),Some(3000));assert_eq!(rank_activation(&q,&q,3000).unwrap(),None);assert!(rank_activation(&q,&q,10000).is_err());let mut changed=q.clone();changed["filled"]=json!(1);assert!(rank_activation(&changed,&q,3000).is_err());let mut ordinary=q.clone();ordinary.as_object_mut().unwrap().remove("reviewedRankCampaign");assert!(!rank_quote(&ordinary));assert!(rank_activation(&ordinary,&ordinary,3000).is_err());}}
+ #[test]fn historical_control_omits_optional_tartarus_owner_paths(){let raw=json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"});let c:Control=serde_json::from_value(raw).unwrap();assert!(c.rank_campaign.is_none());assert!(serde_json::to_value(c).unwrap().get("rankCampaign").is_none());}
 }

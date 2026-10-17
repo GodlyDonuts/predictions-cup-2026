@@ -13,7 +13,32 @@ pub struct Activation {pub run_id:String,pub entry_until_ms:u64,pub maximum_comm
 /// Cancellation never consumes a contract/book observation. Keep its actual
 /// four official account receipts distinct rather than inventing unused facts.
 #[derive(Clone)]pub struct CancelSnapshotSet {pub account:Receipt,pub cash_balance:Receipt,pub positions:Receipt,pub open_orders:Receipt}
-#[derive(Clone)]struct OrderReady {account_stamp:Option<crate::account_realtime::Stamp>,spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>}
+/// Independent OS-owner files authenticate campaign approval. A nomination's
+/// own JSON fields cannot create this capability. Both files remain pinned at
+/// physical authorization so replacing or revoking approval invalidates it.
+pub struct RankOwnerPins{files:Vec<(PathBuf,String,(u64,u64,u64))>,valid_until_ms:u64}
+fn rank_owner_file(path:&std::path::Path)->Result<(Vec<u8>,(u64,u64,u64))>{
+ #[cfg(target_os="linux")]{
+  use std::{io::Read,os::unix::fs::MetadataExt};
+  if !path.is_absolute(){return Err("RANK_OWNER_ABSOLUTE_PATH".into())}
+  for p in path.ancestors(){if fs::symlink_metadata(p)?.file_type().is_symlink(){return Err("RANK_OWNER_SYMLINK".into())}}
+  let mut file=fs::File::open(path)?;let m=file.metadata()?;
+  if !m.is_file()||m.len()>8*1024*1024||m.nlink()!=1||m.uid()!=unsafe{libc::geteuid()}||m.mode()&0o077!=0{return Err("RANK_OWNER_PRIVATE_FILE_REQUIRED".into())}
+  let mut raw=Vec::new();Read::by_ref(&mut file).take(8*1024*1024+1).read_to_end(&mut raw)?;let after=file.metadata()?;let named=fs::symlink_metadata(path)?;
+  let id=|m:&fs::Metadata|(m.dev(),m.ino(),m.len());
+  if raw.len()as u64!=m.len()||id(&m)!=id(&after)||id(&m)!=id(&named)||named.file_type().is_symlink()||m.mtime_nsec()!=after.mtime_nsec()||m.ctime_nsec()!=after.ctime_nsec(){return Err("RANK_OWNER_FILE_CHANGED".into())}
+  Ok((raw,id(&m)))
+ }
+ #[cfg(not(target_os="linux"))]{let _=path;Err("RANK_OWNER_LINUX_REQUIRED".into())}
+}
+impl RankOwnerPins{
+ pub fn capture(files:&[(PathBuf,String)],valid_until_ms:u64)->Result<Self>{
+  if files.len()!=2||files[0].0==files[1].0{return Err("RANK_SEPARATE_NOMINATION_AND_OWNER_APPROVAL".into())}
+  let mut pins=Vec::new();for(path,sha)in files{let(raw,id)=rank_owner_file(path)?;if hash_bytes(&raw)!=*sha{return Err("RANK_OWNER_FILE_HASH".into())}pins.push((path.clone(),sha.clone(),id));}let result=Self{files:pins,valid_until_ms};result.validate()?;Ok(result)
+ }
+ pub fn validate(&self)->Result<()>{let now=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_millis();if now>=u128::from(self.valid_until_ms){return Err("RANK_OWNER_APPROVAL_EXPIRED".into())}for(path,sha,id)in &self.files{let(raw,current)=rank_owner_file(path)?;if current!=*id||hash_bytes(&raw)!=*sha{return Err("RANK_OWNER_APPROVAL_REVOKED_OR_CHANGED".into())}}Ok(())}
+}
+#[derive(Clone)]struct OrderReady {account_stamp:Option<crate::account_realtime::Stamp>,spec:RequestSpec,permit:Permit,quote:Value,ledger:Value,snapshots:SnapshotSet,owned:u64,expected_signed:i128,market_cost:i128,expected_cash:i128,entry_until:u64,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>,rank:Option<Arc<crate::rank_campaign::PhysicalDecision>>,rank_owner:Option<Arc<RankOwnerPins>>}
 #[derive(Clone)]struct CancelReady {account_stamp:Option<crate::account_realtime::Stamp>,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet}
 #[derive(Clone)]enum Ready {Order(OrderReady),Cancel(CancelReady)}
 pub struct ProductionAuthority {fundamental_generation:Mutex<Option<crate::fundamental_reload::Active>>,fundamental_transition:std::sync::atomic::AtomicBool,account_required:std::sync::atomic::AtomicBool,account_stream:Mutex<Option<Arc<moloch_replay::realtime::AccountSignal>>>,package_account_stamp:Mutex<Option<crate::account_realtime::Stamp>>,fundamental_exchanges:Mutex<Option<std::collections::BTreeSet<String>>>,maker_review:Mutex<Option<String>>,package_ready:Mutex<Option<crate::package_authority::Prepared>>,daily:Mutex<Option<(DailyEntryWindows,u64)>>,activation:Activation,scope:Scope,stops:Vec<PathBuf>,control:PathBuf,control_hash:String,binary:PathBuf,_lease:Arc<ExclusiveLock>,ready:Mutex<Option<Ready>>,owned:Mutex<std::collections::BTreeSet<String>>,recovery:Mutex<Option<String>>,stream:Mutex<Option<(Arc<std::sync::atomic::AtomicBool>,u64)>>}
@@ -93,6 +118,12 @@ impl ProductionAuthority {
   self.prepare_with_policies(bank,qid,spec,permit,snapshots,maker,None)
  }
  pub fn prepare_with_policies(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>)->Result<()> {
+  self.prepare_with_decisions(bank,qid,spec,permit,snapshots,maker,fundamental,None,None)
+ }
+ pub fn prepare_with_rank(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,rank:Arc<crate::rank_campaign::PhysicalDecision>,rank_owner:Arc<RankOwnerPins>)->Result<()> {
+  self.prepare_with_decisions(bank,qid,spec,permit,snapshots,None,None,Some(rank),Some(rank_owner))
+ }
+ fn prepare_with_decisions(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:SnapshotSet,maker:Option<Arc<crate::maker_policy::Decision>>,fundamental:Option<Arc<crate::fundamental_policy::PhysicalDecision>>,rank:Option<Arc<crate::rank_campaign::PhysicalDecision>>,rank_owner:Option<Arc<RankOwnerPins>>)->Result<()> {
   self.validate_generation_sources()?;
   self.clear_ready();
   let account_stamp=self.account_stamp(&[&snapshots.account,&snapshots.cash_balance,&snapshots.positions,&snapshots.open_orders])?;
@@ -103,15 +134,19 @@ impl ProductionAuthority {
   let orders=crate::order_snapshot::snapshot(bank);
   let quote=orders.records().iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).cloned().ok_or("LIVE_INTENT_NOT_FUNDED")?;
   let exchange=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
+  if usize::from(maker.is_some())+usize::from(fundamental.is_some())+usize::from(rank.is_some())>1{return Err("LIVE_EXCLUSIVE_ORDER_OBJECTIVE".into())}
+  if rank.is_some()!=rank_owner.is_some(){return Err("LIVE_RANK_OWNER_APPROVAL_REQUIRED".into())}if let Some(pins)=&rank_owner{pins.validate()?;}
+  if quote.get("reviewedRankCampaign").is_some_and(|v|!v.is_null())!=rank.is_some(){return Err("LIVE_RANK_DECISION_REQUIRED".into())}
+  if rank.as_ref().is_some_and(|proof|self.fundamental_required(exchange)||proof.native_head()!=&bank.durable_head()){return Err("LIVE_RANK_SCOPE_OR_NATIVE_HEAD".into())}
   if self.fundamental_required(exchange)&&fundamental.is_none(){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
   if fundamental.as_ref().is_some_and(|proof|proof.native_head()!=&bank.durable_head()){return Err("LIVE_FUNDAMENTAL_NATIVE_HEAD_CHANGED".into())}
-  if quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if fundamental.is_none()&&maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
+  if quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if rank.is_none()&&fundamental.is_none()&&maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   let owned=bank.engine().wallet.quantity(quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?,if quote["side"]=="YES"{moloch_replay::Side::Yes}else{moloch_replay::Side::No});
   let ex=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+orders.records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
   let expected_cash=reconciled_expected_cash(bank)?;
-  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{account_stamp,spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental}));Ok(())
+  *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{account_stamp,spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental,rank,rank_owner}));Ok(())
  }
  pub fn prepare_cancel(&self,bank:&Session,qid:u64,spec:RequestSpec,permit:Permit,snapshots:CancelSnapshotSet)->Result<()> {
   self.validate_generation_sources()?;
@@ -185,9 +220,13 @@ impl ProductionAuthority {
   }};
   if serde_json::to_value(spec)?!=serde_json::to_value(&f.spec)?||serde_json::to_value(p)?!=serde_json::to_value(&f.permit)?{return Err("LIVE_REQUEST_CHANGED".into())}
   if self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&f.fundamental.is_none(){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
-  if f.quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if f.fundamental.is_none()&&f.maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
+  if f.quote.get("reviewedRankCampaign").is_some_and(|v|!v.is_null())!=f.rank.is_some(){return Err("LIVE_RANK_DECISION_REQUIRED".into())}
+  if f.rank.is_some()!=f.rank_owner.is_some(){return Err("LIVE_RANK_OWNER_APPROVAL_REQUIRED".into())}if let Some(pins)=&f.rank_owner{pins.validate()?;}
+  if f.rank.is_some()&&(f.maker.is_some()||f.fundamental.is_some()||self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)){return Err("LIVE_RANK_SCOPE_OR_OBJECTIVE".into())}
+  if f.quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if f.rank.is_none()&&f.fundamental.is_none()&&f.maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   if let Some(maker)=&f.maker{maker.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;maker.authorize(scope,spec,p,now)?;}
   if let Some(fundamental)=&f.fundamental{fundamental.validate_contract(&f.snapshots.contract)?;fundamental.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;fundamental.authorize(scope,spec,p,now)?;}
+  if let Some(rank)=&f.rank{rank.validate_contract(scope,&f.snapshots.contract)?;rank.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;rank.authorize(scope,spec,p,now)?;}
   for r in [&f.snapshots.account,&f.snapshots.cash_balance,&f.snapshots.positions,&f.snapshots.open_orders]{if !fresh(r,now,20000){return Err("LIVE_ACCOUNT_STALE".into())}}
   if f.snapshots.account.data["id"]!=scope.tournament_id||f.snapshots.account.data["slug"]!=scope.tournament_slug||f.snapshots.account.data["status"]!="active"||f.snapshots.open_orders.data["pagination"]["hasMore"]!=false{return Err("LIVE_ACCOUNT_SCOPE".into())}
   if spec.method=="DELETE"{return Err("LIVE_CANCEL_REQUIRES_ACCOUNT_FACTS".into())}
@@ -211,7 +250,7 @@ impl ProductionAuthority {
   if expiry<=now||Some(expiry)!=f.quote["expiresAt"].as_u64()||f.quote["cancelEffectiveAt"].as_u64().is_some_and(|t|t<=now)||f.quote["activationAt"].as_u64().is_none_or(|t|t>now)||body["idempotencyKey"].as_str()!=Some(format!("{}:{}",self.activation.run_id,f.quote["id"]).as_str()){return Err("LIVE_INTENT_CLOCK_OR_KEY".into())}
   let b=f.snapshots.book.data["contexts"][0]["orderbook"]["exchanges"].as_array().ok_or("LIVE_BOOK_SCOPE")?.iter().find(|b|b["exchangeId"]==ex).ok_or("LIVE_BOOK_SCOPE")?;
   if !b["asOf"]["sequence"].is_u64()||clock(b["asOf"]["at"].as_str().ok_or("LIVE_BOOK_CLOCK")?).is_none_or(|t|t>now||now-t>10000){return Err("LIVE_BOOK_STALE".into())}
-  if body["action"]=="buy"{let opposite=if body["side"]=="yes"{&b["asks"]}else{&b["bids"]};let level=opposite.as_array().and_then(|a|a.first()).ok_or("LIVE_EMPTY_BOOK")?;let yes=baal_transport_service::prices::official_tick_units(&level["price"])?;let ask=if body["side"]=="yes"{yes}else{1_000_000-yes};if price>=ask&&!f.fundamental.as_ref().is_some_and(|proof|proof.allows_marketable_reviewed_buy()){return Err("LIVE_ENTRY_MUST_BE_PASSIVE".into())}}
+  if body["action"]=="buy"{let opposite=if body["side"]=="yes"{&b["asks"]}else{&b["bids"]};let level=opposite.as_array().and_then(|a|a.first()).ok_or("LIVE_EMPTY_BOOK")?;let yes=baal_transport_service::prices::official_tick_units(&level["price"])?;let ask=if body["side"]=="yes"{yes}else{1_000_000-yes};if price>=ask&&f.rank.is_none()&&!f.fundamental.as_ref().is_some_and(|proof|proof.allows_marketable_reviewed_buy()){return Err("LIVE_ENTRY_MUST_BE_PASSIVE".into())}}
   let native_quantity=f.quote["quantity"].as_u64().ok_or("LIVE_ORDER_QUANTITY")?;
   // A fixed slice is permitted only by an opaque policy token that already
   // authorized this exact spec/permit; ordinary requests remain full native.
@@ -219,7 +258,7 @@ impl ProductionAuthority {
   if body["tournamentId"]!=scope.tournament_id||body["exchangeId"]!=ex||body["side"].as_str()!=f.quote["side"].as_str().map(|s|if s=="YES"{"yes"}else{"no"})||body["action"]!=f.quote["action"]||!quantity_matches||price!=decimal_units(f.quote["price"].as_str().ok_or("LIVE_ORDER_PRICE")?)?||n>p.maximum_quantity as u64||price*n as i128>decimal_units(&p.maximum_cost)?{return Err("LIVE_ORDER_INTENT_MISMATCH".into())}
   if body["action"]=="buy" {if now>=self.entry_until_ms()||f.entry_until!=self.entry_until_ms()||self.daily.lock().unwrap().as_ref().is_some_and(|(cfg,end)|cfg.end_at(now).ok()!=Some(*end)||f.snapshots.account.data["endDate"].as_str().and_then(clock).is_none_or(|t|t<*end))||cash_economics.gross_cash_units.ok_or("LIVE_ACCOUNT_CASH_REQUIRED")?<price*n as i128{return Err("LIVE_ENTRY_OR_ACCOUNT_CASH".into())}}
   else if body["action"]!="sell"||n>f.owned{return Err("LIVE_SELL_NOT_COVERED".into())}
-  self.validate_account_stamp(&f.account_stamp)
+  if let Some(pins)=&f.rank_owner{pins.validate()?;}self.validate_account_stamp(&f.account_stamp)
 
  }
  fn check_cancel_facts(&self,s:&Scope,f:&CancelSnapshotSet,now:u64)->Result<()> {
@@ -360,4 +399,14 @@ impl Authority for SharedAuthority {
  use super::*;
  #[test]fn enabling_account_watch_clears_old_prepared_authority_and_has_no_none_bypass(){let(root,a,bank,scope,spec,permit,facts,at)=super::tests::fixture();a.prepare(&bank,permit.intent_id.parse().unwrap(),spec.clone(),permit.clone(),facts.clone()).unwrap();a.authorize(&scope,&spec,&permit,true,at).unwrap();let signal=Arc::new(moloch_replay::realtime::AccountSignal::default());a.bind_account_stream(Some(signal.clone())).unwrap();assert!(a.bind_account_stream(None).is_err());assert!(a.ready.lock().unwrap().is_none());assert!(a.authorize(&scope,&spec,&permit,true,at).is_err());signal.invalidate_for_resync().unwrap();let error=a.prepare(&bank,permit.intent_id.parse().unwrap(),spec,permit,facts).unwrap_err();assert!(error.is::<crate::account_realtime::AccountGenerationChanged>());assert!(a.ready.lock().unwrap().is_none());drop(bank);drop(a);fs::remove_dir_all(root).unwrap();}
  #[test]fn changed_account_after_prepare_blocks_physical_even_when_old_ready_has_no_stamp(){let(root,a,bank,scope,spec,permit,facts,at)=super::tests::fixture();a.prepare(&bank,permit.intent_id.parse().unwrap(),spec.clone(),permit.clone(),facts).unwrap();*a.account_stream.lock().unwrap()=Some(Arc::new(moloch_replay::realtime::AccountSignal::default()));assert_eq!(a.authorize(&scope,&spec,&permit,true,at).unwrap_err().code,"LIVE_ACCOUNT_REALTIME_CHANGED");drop(bank);drop(a);fs::remove_dir_all(root).unwrap();}
+}
+#[cfg(all(test,target_os="linux"))]
+mod rank_owner_pin_tests{
+ use super::*;
+ use std::os::unix::fs::PermissionsExt;
+ fn fixture()->(PathBuf,Vec<(PathBuf,String)>){let root=std::env::temp_dir().join(format!("rank-owner-pin-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&root).unwrap();fs::set_permissions(&root,fs::Permissions::from_mode(0o700)).unwrap();let files=[("nomination",b"reviewed model".as_slice()),("owner-approval",b"independent owner authorization".as_slice())].into_iter().map(|(n,b)|{let p=root.join(n);fs::write(&p,b).unwrap();fs::set_permissions(&p,fs::Permissions::from_mode(0o600)).unwrap();(p,hash_bytes(b))}).collect();(root,files)}
+ fn until()->u64{(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_millis()+60000)as u64}
+ #[test]fn actual_owner_approval_replacement_revokes_existing_physical_pin(){let(root,files)=fixture();let pins=RankOwnerPins::capture(&files,until()).unwrap();pins.validate().unwrap();fs::write(&files[1].0,b"revoked approval").unwrap();assert!(pins.validate().is_err());fs::remove_dir_all(root).unwrap();}
+ #[test]fn nomination_cannot_self_authorize_and_public_or_symlink_files_reject(){let(root,mut files)=fixture();assert!(RankOwnerPins::capture(&[files[0].clone(),files[0].clone()],until()).is_err());fs::set_permissions(&files[1].0,fs::Permissions::from_mode(0o644)).unwrap();assert!(RankOwnerPins::capture(&files,until()).is_err());fs::set_permissions(&files[1].0,fs::Permissions::from_mode(0o600)).unwrap();let link=root.join("link");std::os::unix::fs::symlink(&files[1].0,&link).unwrap();files[1].0=link;assert!(RankOwnerPins::capture(&files,until()).is_err());fs::remove_dir_all(root).unwrap();}
+ #[test]fn expired_owner_approval_cannot_become_a_physical_capability(){let(root,files)=fixture();assert!(RankOwnerPins::capture(&files,0).is_err());fs::remove_dir_all(root).unwrap();}
 }
