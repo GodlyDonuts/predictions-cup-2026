@@ -46,6 +46,15 @@ fn rank_quote(q:&Value)->bool{q.get("reviewedRankCampaign").is_some_and(Value::i
 fn rank_can_resume(bank:&Session,log:&DispatchLog,q:&Value)->bool{
  q["id"].as_u64().is_some_and(|id|rank_quote(q)&&q["retired"]==false&&q["filled"]==0&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))
 }
+fn rank_yield_unsubmitted_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>)->Result<usize>{
+ let drafts:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&q["action"]=="buy"&&!rank_quote(q)&&q.get("reviewedFundamentalEntry").is_none_or(Value::is_null)&&q.get("reviewedInventoryExit").is_none_or(Value::is_null)&&q["exchangeId"].as_str().is_some_and(|ex|c.scope.exchanges.contains_key(ex)&&!managed.contains(ex))).collect();let mut yielded=0;
+ for original in drafts{let id=original["id"].as_u64().ok_or("RANK_YIELD_QUOTE")?;
+  if !log.never_attempted(id)||log.intents.contains_key(&id)||log.acknowledgments.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){continue}
+  let current=quote(bank,id)?;if current!=original||current["filled"]!=0{return Err("RANK_YIELD_ORIGINAL_CHANGED".into())}
+  let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
+  accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))?;yielded+=1;
+ }Ok(yielded)
+}
 fn rank_activation(q:&Value,original:&Value,at:u64)->Result<Option<u64>>{
  if q!=original||!rank_quote(q)||q["retired"]!=false||q["filled"]!=0||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|at>=t){return Err("RANK_RESERVATION_EXPIRED_OR_CHANGED".into())}
  let active=q["activationAt"].as_u64().ok_or("RANK_ACTIVATION")?;Ok((at<active).then_some(active))
@@ -59,6 +68,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  if existing.first().is_some_and(|q|!rank_can_resume(bank,log,q)){return Ok(())}
  let market=c.scope.exchanges.get(&ex).ok_or("RANK_TARGET_OUTSIDE_CONTROL")?.clone();let target=json!({"exchangeId":ex,"marketId":market});
  refresh_controls(c,authority,stream)?;t.package_queue_quiet()?;
+ rank_yield_unsubmitted_drafts(c,bank,log,managed)?;
  let(qid,original)=if let Some(q)=existing.into_iter().next(){(q["id"].as_u64().ok_or("RANK_QUOTE_ID")?,q)}else{
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_ALREADY_HAS_PHYSICAL_LIABILITY")}
  retire_existing_drafts(bank,log,&ex)?;
@@ -66,7 +76,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  let facts=preflight_snapshots(c,bank,source,&market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
  accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_CHANGED_DURING_READS")}
- retire_existing_drafts(bank,log,&ex)?;pins.validate()?;
+ retire_existing_drafts(bank,log,&ex)?;rank_yield_unsubmitted_drafts(c,bank,log,managed)?;pins.validate()?;
  let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
  let plan={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
   match moloch_live_runtime::rank_campaign::prepare(bank,&b,&review,&facts,&retained,now()){Ok(p)=>{p.validate_current(bank,&b,now())?;p},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"evaluation",&e.to_string()),Err(e)=>return Err(e)}
@@ -80,7 +90,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  }}
  let collateral=request(t,&c.root,Endpoint::Collateral)?;
  let facts=match preflight_snapshots(c,bank,source,&market,Some(&original),&mut LivePreflightReads{t,c,authority,stream,breadth,universe}){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
- accept_fresh_book(bank,c,&target,&facts.book,source)?;let current=quote(bank,qid)?;
+ accept_fresh_book(bank,c,&target,&facts.book,source)?;rank_yield_unsubmitted_drafts(c,bank,log,managed)?;let current=quote(bank,qid)?;
  if current!=original||!log.never_attempted(qid){return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_CHANGED")}
  pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
  let(order,spec,permit)=physical_order(c,&current)?;
