@@ -917,8 +917,22 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  submit_order(t,c,bank,log,authority,plan.quote(),facts,None,fundamental)
 }
 fn profit_hint_scope_allowed(q:&Value,managed:&std::collections::BTreeSet<String>,protected:&std::collections::BTreeSet<String>)->bool{
+ // This extra conservative exclusion is profit-only; preserve the original
+ // age path's separate native/package/review authority checks.
+ if q["inventoryExitReason"]=="maximumAge"{return true}
  let Some(ex)=q["exchangeId"].as_str()else{return false};
- !protected.contains(ex)&&(q["inventoryExitReason"]=="maximumAge"||!managed.contains(ex))
+ !protected.contains(ex)&&!managed.contains(ex)
+}
+fn profit_refresh_protected(scope:&Scope,packages:&Value)->Result<std::collections::BTreeSet<String>>{
+ let mut protected=std::collections::BTreeSet::new();
+ for p in packages.as_array().ok_or("LIVE_EXIT_REFRESH_PACKAGES")?{
+  if p["phase"]=="no_execution"||p["protectionReleased"]==true{continue}
+  // Public probabilistic summaries omit some non-wire held components. No
+  // profit nomination or priority may infer those components are unprotected.
+  if p.get("probabilistic").is_some_and(|v|!v.is_null()){protected.extend(scope.exchanges.keys().cloned());}
+  if let Some(legs)=p["legs"].as_array(){for leg in legs{if let Some(ex)=leg["exchangeId"].as_str(){protected.insert(ex.to_owned());}}}
+  if let Some(xs)=p["portfolio"]["componentExchanges"].as_array(){for ex in xs{if let Some(ex)=ex.as_str(){protected.insert(ex.to_owned());}}}
+ }Ok(protected)
 }
 fn latest_refresh_hints(orders:&[Value],at:u64,eligible:impl Fn(u64)->bool)->Result<std::collections::BTreeMap<String,Value>>{
  let mut latest=std::collections::BTreeMap::<String,Value>::new();
@@ -1523,12 +1537,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
  let managed_refresh=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
- let mut protected_refresh=std::collections::BTreeSet::new();
- let refresh_packages=bank.engine().package_records();
- for p in refresh_packages.as_array().ok_or("LIVE_EXIT_REFRESH_PACKAGES")?{if p["phase"]=="no_execution"||p["protectionReleased"]==true{continue}
-  if let Some(legs)=p["legs"].as_array(){for leg in legs{if let Some(ex)=leg["exchangeId"].as_str(){protected_refresh.insert(ex.to_owned());}}}
-  if let Some(xs)=p["portfolio"]["componentExchanges"].as_array(){for ex in xs{if let Some(ex)=ex.as_str(){protected_refresh.insert(ex.to_owned());}}}
- }
+ let protected_refresh=profit_refresh_protected(&c.scope,&bank.engine().package_records())?;
  let refresh_eligible:std::collections::BTreeSet<_>=orders.iter().filter_map(|q|{
   let id=q["id"].as_u64()?;
   (log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().is_package_order(id)&&profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh)).then_some(id)
@@ -1620,7 +1629,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
    remaining_exit_age_due(bank.engine().policy(),positions,urgency_inherited.as_ref().unwrap_or(&Value::Null),ex,side,selection_at)?}
   }else{false};
   let urgent=physical_exit_urgent(q,due_age,reviewed_exit);
-  if !urgent&&!managed_refresh.contains(q["exchangeId"].as_str().unwrap_or(""))
+  if !urgent&&profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh)
    &&moloch_live_runtime::exit_refresh::ReadKind::from_quote(q)==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit)
    &&selection.assessments.iter().any(|a|a.index==*index&&a.decision.class==moloch_live_runtime::quote_priority::Class::CoveredMarketable)
    &&moloch_live_runtime::exit_refresh::current_profit_qualified(bank,q)?{covered_profit.insert(*index);}
@@ -2288,6 +2297,14 @@ pub fn main()->Result<()>{
    let(hints,_)=prepare_expired_exit_hints(&[old],20000,|_|case!="attempt",|_,_|Ok(if case=="held"{0}else{300}),|_|Ok(true),|_,_|Ok(false),||Ok(case=="unknown"),|_,u|Ok(moloch_live_runtime::exit_refresh::Safety{has_intent:case=="intent",same_exchange_pending_physical_order:case=="pending",..hint_safety(u)})).unwrap();assert!(hints.is_empty(),"{case}");
   }
   let managed=["1012".to_owned()].into();assert!(!profit_hint_scope_allowed(&q,&managed,&Default::default()));assert!(!profit_hint_scope_allowed(&q,&Default::default(),&managed));
+ }
+ #[test]fn active_probabilistic_lease_blocks_all_profit_scopes_but_not_existing_age_path(){
+  let scope=baal_transport_service::Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("1012".into(),"525".into()),("1013".into(),"526".into())].into()};
+  let lease=json!({"phase":"unknown","probabilistic":{"qualificationSha256":"a".repeat(64)},"legs":[{"exchangeId":"1012"}]});
+  let protected=profit_refresh_protected(&scope,&json!([lease.clone()])).unwrap();assert_eq!(protected.len(),2,"unexposed held component cannot be inferred absent");
+  let mut q=expired_hint_quote(1,"1013");q.as_object_mut().unwrap().remove("inventoryExitReason");assert!(!profit_hint_scope_allowed(&q,&Default::default(),&protected));
+  q["inventoryExitReason"]=json!("maximumAge");assert!(profit_hint_scope_allowed(&q,&["1013".into()].into(),&protected),"extra profit exclusion does not alter original maximum-age checks");
+  for field in ["released","no_execution"]{let mut ended=lease.clone();if field=="released"{ended["protectionReleased"]=json!(true)}else{ended["phase"]=json!("no_execution")};assert!(profit_refresh_protected(&scope,&json!([ended])).unwrap().is_empty());}
  }
  #[test]fn profit_history_cannot_mask_a_current_due_risk_hint(){
   let age=expired_hint_quote(1,"1012");let mut profit=age.clone();profit["id"]=json!(2);profit.as_object_mut().unwrap().remove("inventoryExitReason");
