@@ -1,0 +1,62 @@
+{
+  "result": "PASS_PINNED_SIXTH_GENERATION_COMMITTED_PROOF",
+  "privateLivePacketSha256": "19e964fb2168bee447600a23e14cdb83a1dd5ead24be04a0c43cd0f824ba0774",
+  "candidatePacketSha256": "b34e2a40aaacd606feb824bcf8a0de9a3dd6a79b45c8d10b1af3e544a7ba8785",
+  "previousIncidentPacketSha256": "8c09fd1aaa589dd0e4e55da09188b5b5aa7f19c9ea3378c779155da534dc02d3",
+  "originalLiveMembersVerified": 55,
+  "originalFiveGenerationPrefixByteIdentical": true,
+  "generationCount": 6,
+  "generationSha256": "813f85a7a6da473c52152d7acbdd0b88102f288380c95199bd5d23360b0ff12a",
+  "baseControlSha256": "916e8ca33b837a1846db27458adf8daac29f3910746bc2bf9da773aef094488f",
+  "changedReviewCanonicalHashesFromRetainedTypedValidator": {
+    "865": "2f3acf006fdba3149342bd031b92459d5552fa048373a18bb389556d22c1227d",
+    "1067": "5de3e94596b6e93f8a39caeb7da529c7694b5a897e117058d5e56aa25b183c2a"
+  },
+  "unchangedOtherReviews": 9,
+  "all27PreviousTrustedHashesRetained": true,
+  "trustedHashCount": 29,
+  "forecastBallotClocksEconomicsUnchanged": true,
+  "nativeSuffixFirstSequence": 489339,
+  "nativeSuffixLastSequence": 490753,
+  "generationCapturedNativeSequence": 490341,
+  "committedCliNativeSequence": 490342,
+  "fourOriginalReceiptTokenFactsSha256": "ab6dc4e1824ce6d1192389f971c2d847f019732285d50b0f4f45b9d14e4402d7",
+  "factRequestAgesAtCommitMs": [
+    5564,
+    4605,
+    3523,
+    2672
+  ],
+  "scopeReconciliation": {
+    "865": {
+      "side": "YES",
+      "quantity": 11521,
+      "remainingFifoPrincipal": "9999.960000",
+      "maximumPrincipal": "10000.000000",
+      "reviewExpiresAtMs": 1792263717654,
+      "originalLotPriceQuantityMillisecondGroupsMatch": true
+    },
+    "1067": {
+      "side": "YES",
+      "quantity": 31217,
+      "remainingFifoPrincipal": "9999.845000",
+      "maximumPrincipal": "10000.000000",
+      "reviewExpiresAtMs": 1792264807889,
+      "originalLotPriceQuantityMillisecondGroupsMatch": true
+    }
+  },
+  "noTargetOpenOrUnresolvedRecordedPhysicalAtGeneration": true,
+  "capturedPid": 654706,
+  "capturedProgressAt": "2026-10-17T14:10:58.384Z",
+  "captureObservedAt": "2026-10-17T14:11:10.690978+00:00",
+  "notCurrentHealthClaim": true,
+  "committedCliResponseAndNativeBoundaryVerified": true,
+  "cliProcessExitIndependentlyCaptured": false,
+  "financialSessionReplayPerformed": false,
+  "sdkNoNetworkArchivesIndependentlyReverified": false,
+  "rawProviderAuthenticationIndependentlyReperformed": false,
+  "newAccountRequests": 0,
+  "workerRestartRequiredForThisGeneration": false,
+  "executionAuthority": false,
+  "profitabilityEstablished": false
+}
