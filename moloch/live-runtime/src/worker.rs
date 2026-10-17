@@ -2435,7 +2435,9 @@ pub fn main()->Result<()>{
    if matches!(case,"attempt"|"ack"){log.append(json!({"kind":"attempt","qid":qid})).unwrap();}
    if case=="ack"{log.append(json!({"kind":"ack","qid":qid,"receipt":{"data":{"orderId":"902"}}})).unwrap();}
    if case=="binding"{accept(&mut bank,&json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":qid,"actualOrderId":"902","exchangeId":"101","marketId":"201","side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(now())})).unwrap();}
-   let head=bank.durable_head();let descriptor=log.descriptor_identity().unwrap();assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).is_err(),"{case}");assert_eq!(bank.durable_head(),head);assert_eq!(log.descriptor_identity().unwrap(),descriptor);
+   let head=bank.durable_head();let descriptor=log.descriptor_identity().unwrap();assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).is_err(),"{case}");
+   let denied:Box<dyn std::error::Error>="FUNDAMENTAL_NOT_ELIGIBLE".into();assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at+60000).is_err(),"{case}");
+   assert_eq!(bank.durable_head(),head);assert_eq!(log.descriptor_identity().unwrap(),descriptor);
   }
  }
  struct PeriodicReads{at:u64,tape:Receipt,book:Receipt,journal:PathBuf,initial_sequence:u64,services:usize,fail_service:Option<usize>,book_failure:bool,queued_gap:bool,trace:Vec<&'static str>}
