@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-17T00:38:27.308937+00:00",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "preparedOnly": true,
+  "runtimeActivated": false,
+  "rows": [
+    {
+      "exchangeId": "1042",
+      "canonicalSha256": "08184c725897810271f3278e60043cf3f3ffc58c409aa1fe2647daa96295d6d9",
+      "newCohortNotAdopted": true,
+      "sameFinancialRiskAndObjectiveAsOriginal": true,
+      "originalSourceExpiryMs": 1792277480939
+    },
+    {
+      "exchangeId": "1068",
+      "canonicalSha256": "d4d74cacf8e72b90ea4243fbec38dc45c152368a01cb81a52f2132b43406fab6",
+      "newCohortNotAdopted": true,
+      "sameFinancialRiskAndObjectiveAsOriginal": true,
+      "originalSourceExpiryMs": 1792277483996
+    },
+    {
+      "exchangeId": "966",
+      "canonicalSha256": "4d0e35813dfc0129b8c07538dbb37be26b25a2965e49b7016f2cc9fca9616363",
+      "newCohortNotAdopted": true,
+      "sameFinancialRiskAndObjectiveAsOriginal": true,
+      "originalSourceExpiryMs": 1792277486285
+    }
+  ],
+  "sameNineManagedScopes": true,
+  "noCapitalOrObjectiveExtension": true,
+  "MAOfficialPrimaryReplacedByActualGeneralEvidence": true,
+  "sourceClocksPreserved": true,
+  "typedVerificationExitCodes": [
+    0,
+    0
+  ]
+}

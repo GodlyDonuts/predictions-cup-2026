@@ -1,0 +1,80 @@
+{
+  "observedAt": "2026-10-17T01:01:40.874542+00:00",
+  "pid": 584167,
+  "sourceCommit": "027abb60eef2c1c5e03f077b9eb9d0778aa53b9b",
+  "binarySha256": "33005b4569fe62ef76d4170a02d04eadc0be903b15806408d8865c925425d537",
+  "nativeEngineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "currentStop": false,
+  "freshTradingVerified": true,
+  "originalNineMarketGenerationRecovered": true,
+  "newSourceRefreshCommitted": true,
+  "sourceRefreshGenerationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+  "originalBaseControlUnchanged": true,
+  "progress": {
+    "actualFills": 251,
+    "actualOrders": 1387,
+    "at": "2026-10-17T01:01:37.681Z",
+    "completedReadScopes": 4,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 584167,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 36,
+    "terminalOrders": 1386
+  },
+  "cumulativeLedgerFills": 251,
+  "newOfficialFillRowsSinceLaunch": 10,
+  "newFilledOrderGroups": [
+    {
+      "nativeQid": 10787,
+      "exchangeId": "865",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 3278,
+      "principal": "2849.240000",
+      "fillRows": 4,
+      "receiptHashes": [
+        "167cfc8050d840aa6004bac23ff98d7a725f84530cde9c4b0403a505a1746ea5"
+      ]
+    },
+    {
+      "nativeQid": 10790,
+      "exchangeId": "872",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 5607,
+      "principal": "2579.220000",
+      "fillRows": 4,
+      "receiptHashes": [
+        "05c082919a2c3ce342d8b7f6359e1e9dcf897408b914a94ce3babcc5d9f84439"
+      ]
+    },
+    {
+      "nativeQid": 10795,
+      "exchangeId": "885",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 10000,
+      "principal": "7050.000000",
+      "fillRows": 2,
+      "receiptHashes": [
+        "03baf14b43a3f4a5be7647a4df2092a1c43c49659db6e851c3293115081c78c9"
+      ]
+    }
+  ],
+  "ledgerSequence": 362821,
+  "ledgerSummary": {
+    "cash": "58284.390000",
+    "reservedCash": "10968.200000",
+    "ownedCost": "37159.295000",
+    "realized": "-136.230000",
+    "newTradingRealized": "-181.360000",
+    "inheritedRealizedGross": "45.130000"
+  },
+  "localReservesIncludeUnsubmittedDrafts": true,
+  "newPositionProfitabilityEstablished": false,
+  "paper7Complete": false,
+  "financialHistoryReset": false,
+  "financialBridgeEntries": 13
+}

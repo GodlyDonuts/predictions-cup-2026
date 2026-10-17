@@ -1,0 +1,10 @@
+{
+  "requestPath": "/home/archon/apps/moloch/shared/fundamental-paper7-stale-refresh-20261017/owner-request-001.json",
+  "requestSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+  "exitCode": 0,
+  "logSha256": "4bc2e847b55d7b292a4090c471fcb7b2f4d5c6902fd3991424c2ccca60d76e61",
+  "logBytes": 412,
+  "sourceWorkerPid": 584167,
+  "baseControlUnchanged": true,
+  "notExchangeOrderRetry": true
+}

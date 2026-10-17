@@ -1,3 +1,19 @@
+# Actual restored trading and new fills — October17,01:02UTC
+
+[Live proof](live-proof/live-verification.json) binds the actual new worker,
+source/binary/native, healthy trading, recovered original generation, committed
+source refresh and new official fill groups. Three filled BUY orders total
+12,478.46 principal/18,885 shares/10 fill rows. Cash58,284.39, owned cost37,159.295,
+combined attributed realized−136.23. These new holdings are not realized profit.
+[Raw pins](live-proof/SHA256SUMS.json), [actual hot-reload CLI](live-proof/reload-001.log)
+and [observed exit](live-proof/reload-001-result.json) retain original evidence.
+
+[Latest decision trace](live-proof/decision-trace-latest.json) is one observation:
+managed q10790 risk/policy493ms, intent98ms, first-preflight-to-applied-ACK8575ms,
+book age atACK2159ms. It is not a controlled speed benchmark or maximum rate.
+The native bank can advance ahead of the periodically published progress file;
+use the timestamped ledger fill groups, not stale progress counts, for this proof.
+
 # Actual R11 rollout — October17,00:35UTC
 
 [Production receipt](deployment/production-rollout.json) verifies sole584167

@@ -1,3 +1,37 @@
+# October17,01:02UTC: live fills and capital deployed
+
+Sole **584167/source027abb60/binary33005b45/nativeb5** recovered the original
+nine-market strategy and is trading with healthy realtime and no STOP. Since
+restoration, three reviewed BUY orders have filled: ex865 YES3278 shares for
+2849.24, ex872 YES5607 for2579.22, and ex885 YES10000 for7050.00. These are
+**10 original official fill rows in3 logical orders,12,478.46 new principal**.
+The frozen proof and receipt hashes distinguish fills from acknowledgments.
+
+Ledger cash is58,284.39, owned cost37,159.295, combined attributed realized
+−136.23. Existing new-trading realized remains−181.36 and inherited realized
+gross45.13. No realized profit from the new positions or whole-account/rank
+profitability is established. Local reserves include unsent drafts.
+[Actual fill proof](../research/moloch-throughput-capital-20261017/live-proof/live-verification.json).
+
+The DE/MA/NC source refresh committed through the running worker with exit0,
+generation1bda14d8. It keeps the same nine scopes, probabilities, risk caps,
+objectives, deadlines and origins; the base financial Control is unchanged.
+The original generation9b2c1dc6/request/sources remain intact in its chain.
+Current-source MA evidence is an actual General ballot; its >99.9% forecast
+is censored and is not relabeled as an exact point.
+
+A further capital/CPU candidate is **not deployed**. It lifts the10,000-share
+cumulative position ceiling while retaining10,000 per order, actual cash,
+principal/market/global/depth/FIFO and closed-entry checks. It also indexes
+active pledge sums for the existing native audit, preserves attempted-but-proved
+never-admitted histories, and accepts complete originals up to16MiB while
+keeping the same16MiB aggregate per review. Actual892 checks pass; optimized
+build, genuine full-prefix parity and an explicit14th native bridge are pending.
+Earlier fixture failures remain retained and are not counted as passes.
+Prospective new flat TN1051/CA851 scopes and larger V2 position budgets remain
+inactive; SC979 is withheld because47 existing NO shares cannot be relabeled
+as a new flat cohort. Trading continues on the current checked release.
+
 # October17,00:40UTC: speed release started; original ledger restoring
 
 Root deployed the checked throughput release as sole **584167**, source027abb60
