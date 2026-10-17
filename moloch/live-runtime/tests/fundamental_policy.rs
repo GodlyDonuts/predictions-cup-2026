@@ -421,7 +421,7 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         // Use the EXACT event bytes accepted by Session, including processedAt.
         let original=std::fs::read_to_string(f.root.join("bank/events.jsonl")).unwrap();let retirement=original.lines().map(|l|serde_json::from_str::<Value>(l).unwrap()["event"].clone()).find(|e|e["type"]=="unsubmitted_intent_retired"&&e["orderId"]==id).unwrap();
         let t=Transport::new_for_mock(config.clone(),Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();
-        let receipt=|endpoint:String,data:Value,i:u64|Receipt{endpoint,request_started_at:iso(NOW+31+i*2),received_at:iso(NOW+32+i*2),status:200,data};
+        let receipt=|endpoint:String,data:Value,i:u64|baal_transport_service::Receipt{endpoint,request_started_at:iso(NOW+31+i*2),received_at:iso(NOW+32+i*2),status:200,data};
         let facts=moloch_live_runtime::authority::CancelSnapshotSet{
             account:receipt("/tournaments/cup".into(),json!({"id":f.scope.tournament_id,"slug":"cup","status":"active"}),0),
             positions:receipt("/tournaments/cup/portfolio/positions".into(),json!({"positions":[]}),1),
