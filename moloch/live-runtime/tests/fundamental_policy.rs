@@ -358,6 +358,41 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         f.retire_drafts(NOW+24);
         let transport=Transport::new_for_mock(Config{queue_dir:f.root.join("original-account-queue"),account_scope:"synthetic-entry-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false},Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();(f,transport,facts)
     }
+    // A second independently source-bound review and genuine normalized book,
+    // sharing this exact Session/dispatch/SDK queue. No network is contacted.
+    fn other_entry_packet(f:&mut F,mut facts:moloch_live_runtime::authority::SnapshotSet,at:u64)->(baal_transport_service::Transport,moloch_live_runtime::authority::SnapshotSet){
+        use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport};
+        let mut r=f.review.clone();r.exchange_id="102".into();r.market_id="202".into();r.contract_id="302".into();r.reviewed_at_ms=at;
+        let mut node:Value=serde_json::from_slice(ORIGINALS[2]).unwrap();node["market_id"]=json!("202");node["root"]["node_id"]=json!("302");node["root"]["contract_id"]=json!("302");
+        let node_bytes=serde_json::to_vec(&node).unwrap();r.official_contract_root_sha256=official_contract_root_sha256(&node).unwrap();r.sources[2].sha256=sha(&node_bytes);set_deadline_cash(&mut r,"0.940500");
+        let mut originals=originals_for(&r);originals[2]=node_bytes;let hashes=originals.iter().map(|b|sha(b)).collect::<Vec<_>>();let sources=originals.iter().enumerate().map(|(i,b)|SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();f.trust.insert(review_sha256(&r).unwrap());
+        let reviewed=Reviewed::verify(r,&sources,&f.trust,at).unwrap();f.store.as_mut().unwrap().install(reviewed,&f.bank,&f.log,at).unwrap();f.scope.exchanges.insert("102".into(),"202".into());
+        for(i,r)in [&mut facts.account,&mut facts.positions,&mut facts.open_orders,&mut facts.cash_balance,&mut facts.market,&mut facts.contract,&mut facts.book].into_iter().enumerate(){r.request_started_at=iso(at+10+i as u64*2);r.received_at=iso(at+11+i as u64*2);}
+        let tid=&f.scope.tournament_id;facts.market.endpoint=format!("/markets/202?tournamentId={tid}");facts.market.data["id"]=json!("202");facts.contract.endpoint=format!("/markets/202/nodes?tournamentId={tid}");facts.contract.data=node;
+        facts.book.endpoint=format!("/markets/202/orderbook?tournamentId={tid}&depth=20");let raw=&mut facts.book.data["contexts"][0]["orderbook"]["exchanges"][0];raw["exchangeId"]=json!("102");raw["asOf"]=json!({"sequence":1,"at":iso(at+23)});raw["bids"][0]["price"]=json!(0.10);raw["asks"][0]["price"]=json!(0.12);
+        let b=&facts.book;let events=moloch_replay::source::receipt_events(&json!({"source":"official_sig_api_v1","kind":"book","tournamentId":tid,"marketId":"202","exchangeId":"102","endpoint":b.endpoint,"status":b.status,"requestStartedAt":b.request_started_at,"receivedAt":b.received_at,"data":b.data})).unwrap();for(i,e)in events.iter().enumerate(){f.bank.accept("other-original-preflight-book",i as u64+1,e).unwrap();}f.retire_drafts(at+24);
+        let t=Transport::new_for_mock(Config{queue_dir:f.root.join("original-account-queue"),account_scope:"synthetic-entry-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false},Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();(t,facts)
+    }
+    #[test]fn target_hint_prepare_matches_public_eligibility_without_rebuilding_unselected_top_up(){
+        let(mut f,t,facts,_)=top_up_fixture();drop(t);let(t,facts)=other_entry_packet(&mut f,facts,NOW+8500);let authority=f.authority();let store=f.store.as_ref().unwrap();
+        let hints=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+8525).unwrap();assert_eq!(hints.iter().map(|h|h.exchange_id.as_str()).collect::<Vec<_>>(),vec!["101","102"]);let hint=hints.into_iter().find(|h|h.exchange_id=="102").unwrap();
+        let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+8525).unwrap().unwrap();let expected=plan.event().clone();drop(plan);
+        let old=f.log.acknowledgments.keys().copied().next().unwrap();f.log.acknowledgments.get_mut(&old).unwrap()["endpoint"]=json!("/not-original-orders");
+        assert!(store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+8525).is_err(),"public enumeration still reconstructs every eligible top-up");
+        let head=f.bank.durable_head();let report=f.bank.engine().report().unwrap();let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+8525).unwrap().unwrap();assert_eq!(plan.event(),&expected);plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+8525).unwrap();assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),report);assert!(!f.log.intents.values().any(|i|i["quote"]["exchangeId"]=="102"));
+    }
+    #[test]fn target_hint_prepare_preserves_all_eligible_review_scope_checks(){
+        let(mut f,t,facts)=entry_fixture();drop(t);let(t,facts)=other_entry_packet(&mut f,facts,NOW+30);let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+55).unwrap().into_iter().find(|h|h.exchange_id=="102").unwrap();let mut scope=f.scope.clone();scope.exchanges.remove("101");
+        let error=store.prepare_entry(&f.bank,&f.log,&t,&scope,&hint,&facts,&authority,NOW+55).err().expect("unselected eligible review still requires exact scope");assert_eq!(error.to_string(),"FUNDAMENTAL_ENTRY_SCOPE");
+    }
+    #[test]fn target_hint_prepare_still_blocks_global_unknown_before_target_packet(){
+        let(mut f,t,facts)=entry_fixture();let authority=f.authority();let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);f.log.append(json!({"kind":"intent","qid":9999})).unwrap();f.log.append(json!({"kind":"attempt","qid":9999})).unwrap();let head=f.bank.durable_head();let bytes=std::fs::read(f.root.join("dispatch.ndjson")).unwrap();
+        assert!(f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).is_err());assert_eq!(f.bank.durable_head(),head);assert_eq!(std::fs::read(f.root.join("dispatch.ndjson")).unwrap(),bytes);assert!(f.log.attempted.contains(&9999));assert!(!f.log.closed.contains(&9999));
+    }
+    #[test]fn target_hint_prepare_still_requires_selected_top_up_original_closure(){
+        let(mut f,t,facts,first)=top_up_fixture();let authority=f.authority();let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+8525).unwrap().remove(0);let id=first["id"].as_u64().unwrap();f.log.closed.remove(&id);let head=f.bank.durable_head();let count=f.log.intents.len();
+        assert!(f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+8525).unwrap().is_none());assert_eq!(f.bank.durable_head(),head);assert_eq!(f.log.intents.len(),count);assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),2);
+    }
     #[test]fn independent_entry_hint_survives_missing_book_and_no_live_native_quote(){
         let mut f=F::new();f.retire_drafts(NOW);f.event(json!({"type":"gap","exchangeId":"101","receivedAt":iso(NOW+1)}));
         let hints=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+1).unwrap();assert_eq!(hints.len(),1);assert_eq!(hints[0].contract_id,"301");assert!(!f.bank.engine().order_records().iter().any(|q|q["retired"]==false));
