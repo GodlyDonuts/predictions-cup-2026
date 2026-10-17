@@ -138,6 +138,9 @@ pub fn engine_identity() -> String {
 /// Private, bounded approvals bridge exact source identities without rewriting
 /// the immutable manifest or accepting different historical financial results.
 struct UpgradeChain { entries: Vec<Value>, checked: usize }
+// Keep every original approval and prefix check as the live lineage grows.
+const MAX_UPGRADE_ENTRIES:usize=32;
+const MAX_UPGRADE_BYTES:u64=128*1024*1024;
 fn digest_text(value:&Value)->bool{value.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit()))}
 fn verify_value(mut value:Value)->Result<Value>{
     let claimed=value.as_object_mut().ok_or("UPGRADE_OBJECT")?.remove("hash").ok_or("UPGRADE_HASH")?;
@@ -146,14 +149,14 @@ fn verify_value(mut value:Value)->Result<Value>{
 }
 fn upgrade_document(root:&Path)->Result<Value>{
     let path=root.join("engine-upgrade-v1.json");let metadata=fs::symlink_metadata(&path)?;
-    if !metadata.is_file()||metadata.len()>32*1024*1024{return Err("UPGRADE_FILE_BOUND".into())}
+    if !metadata.is_file()||metadata.len()>MAX_UPGRADE_BYTES{return Err("UPGRADE_FILE_BOUND".into())}
     verify_value(serde_json::from_slice(&fs::read(path)?)?)
 }
 impl UpgradeChain {
     fn load(root:&Path,manifest:&Value,target:&str,head_sequence:u64)->Result<Self>{
         let document=upgrade_document(root)?;
         if document["schemaVersion"]!=1||document["kind"]!="moloch_live_engine_upgrade_chain_v1"||document["manifestHash"]!=manifest["hash"]{return Err("UPGRADE_SCOPE".into())}
-        let entries=document["upgrades"].as_array().filter(|xs|!xs.is_empty()&&xs.len()<=16).ok_or("UPGRADE_CHAIN_BOUND")?.clone();
+        let entries=document["upgrades"].as_array().filter(|xs|!xs.is_empty()&&xs.len()<=MAX_UPGRADE_ENTRIES).ok_or("UPGRADE_CHAIN_BOUND")?.clone();
         if !digest_text(&manifest["engineIdentity"]){return Err("UPGRADE_IDENTITY".into())}
         let mut identity=manifest["engineIdentity"].as_str().ok_or("UPGRADE_IDENTITY")?.to_owned();let mut previous=Value::String(String::new());let mut bytes=0;let mut sequence=0;
         for entry in &entries {
@@ -190,7 +193,7 @@ pub fn propose_live_engine_upgrade(root:&Path,old_binary_sha256:&str,approved_at
     if manifest["mode"]!="rust_live_session"||head["manifestHash"]!=manifest["hash"]||report["manifestHash"]!=manifest["hash"]||head["sequence"]!=report["sequence"]||head["previous"]!=report["previous"]{return Err("UPGRADE_SOURCE_SNAPSHOT".into())}
     let mut entries=Vec::new();let mut from=manifest["engineIdentity"].as_str().ok_or("UPGRADE_SOURCE_IDENTITY")?.to_owned();let mut previous=json!("");
     if root.join("engine-upgrade-v1.json").exists(){let document=upgrade_document(root)?;from=document["upgrades"].as_array().and_then(|xs|xs.last()).and_then(|last|last["toEngineIdentity"].as_str()).ok_or("UPGRADE_CHAIN_BOUND")?.into();let prior=UpgradeChain::load(root,&manifest,&from,head["sequence"].as_u64().ok_or("UPGRADE_PREFIX_SEQUENCE")?)?;entries=prior.entries;previous=entries.last().ok_or("UPGRADE_CHAIN_BOUND")?["hash"].clone();}
-    if entries.len()>=16||from==engine_identity(){return Err("UPGRADE_CHAIN_BOUND_OR_NO_CHANGE".into())}
+    if entries.len()>=MAX_UPGRADE_ENTRIES||from==engine_identity(){return Err("UPGRADE_CHAIN_BOUND_OR_NO_CHANGE".into())}
     let mut input=BufReader::new(File::open(root.join("events.jsonl"))?);let mut line=Vec::new();let mut bytes=0u64;let mut digest=Sha256::new();let mut chain=Journal::default();
     while input.read_until(b'\n',&mut line)?>0{if !line.ends_with(b"\n")||line.len()>16*1024*1024{return Err("UPGRADE_SOURCE_TAIL".into())}bytes=bytes.checked_add(line.len() as u64).ok_or("UPGRADE_PREFIX_BYTES")?;digest.update(&line);chain.accept(&serde_json::from_slice(&line)?)?;line.clear();}
     if head["sequence"].as_u64()!=Some(chain.sequence)||head["previous"].as_str()!=Some(chain.previous.as_str()){return Err("UPGRADE_SOURCE_HEAD".into())}
@@ -846,6 +849,57 @@ mod tests {
         let before=exact_engine_state(&bank.engine);let head=fs::read(root.join("head.json")).unwrap();let report=fs::read(root.join("report.json")).unwrap();let journal=fs::read(root.join("events.jsonl")).unwrap();let refs=bank.refs.clone();let cursors=bank.cursors.clone();
         assert!(bank.accept("fixture",2,&json!({"type":"tick","receivedAt":"2026-10-12T23:59:59Z"})).is_err());
         assert_eq!(exact_engine_state(&bank.engine),before);assert_eq!(bank.refs,refs);assert_eq!(bank.cursors,cursors);assert_eq!(fs::read(root.join("head.json")).unwrap(),head);assert_eq!(fs::read(root.join("report.json")).unwrap(),report);assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),journal);assert!(!bank.poisoned);
+    }
+}
+
+#[cfg(test)]
+mod upgrade_capacity_tests {
+    use super::*;
+    struct Temp(PathBuf);
+    impl Temp {
+        fn new()->Self {
+            let path=std::env::temp_dir().join(format!("moloch-upgrade-capacity-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+            fs::create_dir(&path).unwrap();Self(path)
+        }
+    }
+    impl Drop for Temp {fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+    fn fixture(count:usize)->(Value,Value,String) {
+        let manifest=json!({"hash":"1".repeat(64),"engineIdentity":format!("{:064x}",0)});
+        let mut entries=Vec::new();let mut previous=json!("");
+        for i in 0..count {
+            let head=sealed(json!({"manifestHash":manifest["hash"],"sequence":i+1,"previous":"2".repeat(64)}));
+            let report=sealed(json!({"manifestHash":manifest["hash"],"sequence":i+1,"previous":head["previous"]}));
+            let entry=sealed(json!({"schemaVersion":1,"manifestHash":manifest["hash"],"fromEngineIdentity":format!("{i:064x}"),"toEngineIdentity":format!("{:064x}",i+1),"previousUpgradeHash":previous,"approval":{"role":"human_authorized_execution_owner","previousProcessStopped":true,"oldBinarySha256":"3".repeat(64),"approvedAt":"2026-10-17T22:00:00Z"},"journalPrefix":{"bytes":i+1,"sha256":"4".repeat(64)},"oldHead":head,"oldReportEnvelope":report}));
+            previous=entry["hash"].clone();entries.push(entry);
+        }
+        let document=sealed(json!({"schemaVersion":1,"kind":"moloch_live_engine_upgrade_chain_v1","manifestHash":manifest["hash"],"upgrades":entries}));
+        (manifest,document,format!("{count:064x}"))
+    }
+    fn put(root:&Path,value:&Value){fs::write(root.join("engine-upgrade-v1.json"),serde_json::to_vec(value).unwrap()).unwrap();}
+    #[test]
+    fn seventeenth_and_bounded_later_approvals_preserve_every_prior_entry() {
+        for count in [17,32] {
+            let t=Temp::new();let (manifest,document,target)=fixture(count);put(&t.0,&document);
+            let raw=fs::read(t.0.join("engine-upgrade-v1.json")).unwrap();
+            let chain=UpgradeChain::load(&t.0,&manifest,&target,count as u64).unwrap();
+            assert_eq!(json!(chain.entries),document["upgrades"]);assert_eq!(chain.checked,0);
+            assert_eq!(chain.complete().unwrap_err().to_string(),"UPGRADE_PREFIX_NOT_FOUND");
+            assert_eq!(fs::read(t.0.join("engine-upgrade-v1.json")).unwrap(),raw);
+        }
+    }
+    #[test]
+    fn overflow_and_resealed_history_mutation_are_still_rejected() {
+        let t=Temp::new();let (manifest,document,target)=fixture(33);put(&t.0,&document);
+        assert_eq!(UpgradeChain::load(&t.0,&manifest,&target,33).err().unwrap().to_string(),"UPGRADE_CHAIN_BOUND");
+        let (manifest,mut document,target)=fixture(17);document["upgrades"][0]["approval"]["previousProcessStopped"]=json!(false);
+        // Re-sealing the container cannot repair a changed historical approval.
+        document.as_object_mut().unwrap().remove("hash");put(&t.0,&sealed(document));
+        assert_eq!(UpgradeChain::load(&t.0,&manifest,&target,17).err().unwrap().to_string(),"UPGRADE_HASH_MISMATCH");
+    }
+    #[test]
+    fn oversized_bridge_is_rejected_before_json_allocation() {
+        let t=Temp::new();let f=File::create(t.0.join("engine-upgrade-v1.json")).unwrap();f.set_len(MAX_UPGRADE_BYTES+1).unwrap();
+        assert_eq!(upgrade_document(&t.0).unwrap_err().to_string(),"UPGRADE_FILE_BOUND");
     }
 }
 
