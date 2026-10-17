@@ -1,13 +1,13 @@
 //! Physical network attempts are recorded independently of strategy projections.
 use crate::feedback::Result;
-use baal_transport_service::{OrdinaryPreAdmissionProof,RequestSpec,Permit,TransportError};
+use baal_transport_service::{OrdinaryPreAdmissionProof,OrdinaryLocalGuardNoHttpProof,RequestSpec,Permit,TransportError};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
 use std::{fs::{self,File,OpenOptions},io::{BufRead,BufReader,Write},path::Path,collections::{BTreeMap,BTreeSet}};
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
 fn clock(v:&Value)->Result<u64>{Ok(chrono::DateTime::parse_from_rfc3339(v.as_str().ok_or("DISPATCH_ABORT_CLOCK")?)?.timestamp_millis().try_into().map_err(|_|"DISPATCH_ABORT_CLOCK")?)}
 fn stored_error(v:&Value)->Result<TransportError>{let e=TransportError{code:v["code"].as_str().ok_or("DISPATCH_ABORT_ERROR")?.into(),status:serde_json::from_value(v["status"].clone())?,may_have_executed:v["mayHaveExecuted"].as_bool().ok_or("DISPATCH_ABORT_ERROR")?,retry_after_ms:v["retryAfterMs"].as_u64().ok_or("DISPATCH_ABORT_ERROR")?,order_id:serde_json::from_value(v["orderId"].clone())?,api_code:serde_json::from_value(v["apiCode"].clone())?};if serde_json::to_value(&e)?!=*v{return Err("DISPATCH_ABORT_ERROR".into())}Ok(e)}
-pub struct DispatchLog {file:File,sequence:u64,previous:String,pub intents:BTreeMap<u64,Value>,pub acknowledgments:BTreeMap<u64,Value>,pub recovered:BTreeMap<u64,Value>,pub attempted:BTreeSet<u64>,pub closed:BTreeSet<u64>,pub cancel_acknowledged:BTreeSet<u64>,cancel_attempts:BTreeSet<u64>,attempts:BTreeMap<u64,Value>,errors:BTreeMap<u64,Value>,aborted_records:BTreeMap<u64,Value>,proved_no_network:BTreeSet<u64>}
+pub struct DispatchLog {file:File,sequence:u64,previous:String,pub intents:BTreeMap<u64,Value>,pub acknowledgments:BTreeMap<u64,Value>,pub recovered:BTreeMap<u64,Value>,pub attempted:BTreeSet<u64>,pub closed:BTreeSet<u64>,pub cancel_acknowledged:BTreeSet<u64>,cancel_attempts:BTreeSet<u64>,attempts:BTreeMap<u64,Value>,errors:BTreeMap<u64,Value>,aborted_records:BTreeMap<u64,Value>,local_final_guard_records:BTreeMap<u64,Value>,proved_no_network:BTreeSet<u64>}
 impl DispatchLog {
  pub fn descriptor_identity(&self)->Result<Value>{
   #[cfg(unix)]{use std::os::unix::fs::MetadataExt;let m=self.file.metadata()?;Ok(json!({"schemaVersion":1,"device":m.dev(),"inode":m.ino(),"bytes":m.len(),"sequence":self.sequence,"previous":self.previous}))}
@@ -18,7 +18,7 @@ impl DispatchLog {
   #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
   let file=options.open(path)?;file.sync_all()?;File::open(path.parent().ok_or("DISPATCH_PARENT")?)?.sync_all()?;
   let bytes=fs::read(path)?;if !bytes.is_empty()&&bytes.last()!=Some(&b'\n'){return Err("DISPATCH_TORN_TAIL".into())}
-  let mut log=Self{file,sequence:0,previous:"0".repeat(64),intents:Default::default(),acknowledgments:Default::default(),recovered:Default::default(),attempted:Default::default(),closed:Default::default(),cancel_acknowledged:Default::default(),cancel_attempts:Default::default(),attempts:Default::default(),errors:Default::default(),aborted_records:Default::default(),proved_no_network:Default::default()};
+  let mut log=Self{file,sequence:0,previous:"0".repeat(64),intents:Default::default(),acknowledgments:Default::default(),recovered:Default::default(),attempted:Default::default(),closed:Default::default(),cancel_acknowledged:Default::default(),cancel_attempts:Default::default(),attempts:Default::default(),errors:Default::default(),aborted_records:Default::default(),local_final_guard_records:Default::default(),proved_no_network:Default::default()};
   for line in BufReader::new(File::open(path)?).lines(){let mut row:Value=serde_json::from_str(&line?)?;let claimed=row.as_object_mut().ok_or("DISPATCH_ROW")?.remove("hash").ok_or("DISPATCH_HASH")?;if row["sequence"]!=log.sequence+1||row["previous"]!=log.previous||claimed!=hash(&row){return Err("DISPATCH_CHAIN".into())}log.apply(&row["event"])?;log.sequence+=1;log.previous=claimed.as_str().ok_or("DISPATCH_HASH")?.into();}
   Ok(log)
  }
@@ -27,19 +27,20 @@ impl DispatchLog {
   match e["kind"].as_str(){
    Some("intent")=>{if self.intents.contains_key(&id){return Err("DISPATCH_DUPLICATE_INTENT".into())}self.intents.insert(id,e.clone());},
    Some("attempt")=>{if !self.intents.contains_key(&id)||!self.attempted.insert(id){return Err("DISPATCH_REPEAT_ATTEMPT".into())}self.attempts.insert(id,e.clone());},
-   Some("ack")=>{if self.aborted_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["receipt"].clone()).is_some(){return Err("DISPATCH_ACK_WITHOUT_ATTEMPT".into())}},
-   Some("recovered_ack")=>{if self.aborted_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["order"].clone()).is_some()||self.recovered.insert(id,e.clone()).is_some(){return Err("DISPATCH_RECOVERY_WITHOUT_ATTEMPT".into())}},
+   Some("ack")=>{if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["receipt"].clone()).is_some(){return Err("DISPATCH_ACK_WITHOUT_ATTEMPT".into())}},
+   Some("recovered_ack")=>{if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["order"].clone()).is_some()||self.recovered.insert(id,e.clone()).is_some(){return Err("DISPATCH_RECOVERY_WITHOUT_ATTEMPT".into())}},
+   Some("local_final_guard_no_http")=>{self.validate_local_final_guard_record(e)?;self.local_final_guard_records.insert(id,e.clone());},
    Some("aborted_before_admission")=>{self.validate_abort_record(e)?;self.aborted_records.insert(id,e.clone());},
    Some("closed")=>{if !self.acknowledgments.contains_key(&id)||!self.closed.insert(id){return Err("DISPATCH_TERMINAL_WITHOUT_ACK".into())}},
    Some("cancel_ack")=>{if !self.acknowledgments.contains_key(&id)||!self.cancel_acknowledged.insert(id){return Err("DISPATCH_CANCEL_ACK_WITHOUT_ORDER_OR_DUPLICATE".into())}},
-   Some("error")=>{if e["operation"].is_null()&&self.attempted.contains(&id)&&!self.acknowledgments.contains_key(&id){if self.aborted_records.contains_key(&id){return Err("DISPATCH_ERROR_AFTER_ABORT".into())}self.errors.insert(id,e.clone());}},
+   Some("error")=>{if e["operation"].is_null()&&self.attempted.contains(&id)&&!self.acknowledgments.contains_key(&id){if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id){return Err("DISPATCH_ERROR_AFTER_ABORT".into())}self.errors.insert(id,e.clone());}},
    Some("cancel_attempt")=>{self.cancel_attempts.insert(id);},
    Some("source")|Some("not_sent")=>{},
    _=>return Err("DISPATCH_EVENT".into())
   }Ok(())
  }
  pub fn append(&mut self,event:Value)->Result<()>{
-  if event["kind"]=="aborted_before_admission"{return Err("DISPATCH_TYPED_ABORT_REQUIRED".into())}self.append_inner(event)
+  if event["kind"]=="aborted_before_admission"||event["kind"]=="local_final_guard_no_http"{return Err("DISPATCH_TYPED_ABORT_REQUIRED".into())}self.append_inner(event)
  }
  fn append_inner(&mut self,event:Value)->Result<()>{
   let mut next=json!({"sequence":self.sequence+1,"previous":self.previous,"event":event});let digest=hash(&next);next["hash"]=json!(digest);
@@ -81,7 +82,37 @@ impl DispatchLog {
   let id=e["qid"].as_u64().ok_or("DISPATCH_QID")?;
   let intent=self.intents.get(&id).ok_or("DISPATCH_ABORT_INTENT")?;let attempt=self.attempts.get(&id).ok_or("DISPATCH_ABORT_ATTEMPT")?;
   let error=self.errors.get(&id).ok_or("DISPATCH_ABORT_ORIGINAL_ERROR")?;self.abort_context(id)?;
-  if e["kind"]!="aborted_before_admission"||self.aborted_records.contains_key(&id)||self.acknowledgments.contains_key(&id)||self.closed.contains(&id)||e["originalIntentSha256"]!=hash(intent)||e["originalAttemptSha256"]!=hash(attempt)||e["originalErrorSha256"]!=hash(error)||!e["proof"].is_object()||clock(&e["at"])?<clock(&error["at"])?{return Err("DISPATCH_ABORT_BINDING".into())}Ok(())
+  if e["kind"]!="aborted_before_admission"||self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.acknowledgments.contains_key(&id)||self.closed.contains(&id)||e["originalIntentSha256"]!=hash(intent)||e["originalAttemptSha256"]!=hash(attempt)||e["originalErrorSha256"]!=hash(error)||!e["proof"].is_object()||clock(&e["at"])?<clock(&error["at"])?{return Err("DISPATCH_ABORT_BINDING".into())}Ok(())
+ }
+ /// Separate from pre-admission aborts: original errors may honestly retain
+ /// mayHaveExecuted=true. Only the SDK's opaque local-final-guard proof can
+ /// resolve them, and serialized records never restore process-local trust.
+ pub fn local_final_guard_records(&self)->&BTreeMap<u64,Value>{&self.local_final_guard_records}
+ pub fn local_final_guard_originals(&self,qid:u64)->Result<(RequestSpec,Permit,u64,TransportError)>{
+  let intent=self.intents.get(&qid).ok_or("DISPATCH_LOCAL_GUARD_INTENT")?;
+  let attempt=self.attempts.get(&qid).ok_or("DISPATCH_LOCAL_GUARD_ATTEMPT")?;
+  let error=self.errors.get(&qid).ok_or("DISPATCH_LOCAL_GUARD_ORIGINAL_ERROR")?;
+  let at=clock(&attempt["at"])?;
+  if attempt.get("captureAtMs").is_some()&&attempt["captureAtMs"].as_u64()!=Some(at){return Err("DISPATCH_LOCAL_GUARD_ATTEMPT_CLOCK".into())}
+  if clock(&error["at"])?<at{return Err("DISPATCH_LOCAL_GUARD_ERROR_CLOCK".into())}
+  Ok((serde_json::from_value(intent["spec"].clone())?,serde_json::from_value(intent["permit"].clone())?,at,stored_error(&error["error"])?))
+ }
+ pub fn append_local_final_guard_no_http(&mut self,qid:u64,proof:&OrdinaryLocalGuardNoHttpProof,at:&str)->Result<()>{
+  let(spec,permit,attempt,error)=self.local_final_guard_originals(qid)?;
+  proof.validate_binding(&spec,&permit,attempt,&error)?;
+  let event=json!({"kind":"local_final_guard_no_http","qid":qid,"at":at,"originalIntentSha256":hash(&self.intents[&qid]),"originalAttemptSha256":hash(&self.attempts[&qid]),"originalErrorSha256":hash(&self.errors[&qid]),"proof":proof.evidence()?});
+  self.validate_local_final_guard_record(&event)?;self.append_inner(event)?;self.proved_no_network.insert(qid);Ok(())
+ }
+ pub fn verify_local_final_guard_no_http(&mut self,qid:u64,proof:&OrdinaryLocalGuardNoHttpProof)->Result<()>{
+  let e=self.local_final_guard_records.get(&qid).ok_or("DISPATCH_LOCAL_GUARD_RECORD_REQUIRED")?;
+  if e["proof"]!=proof.evidence()?{return Err("DISPATCH_LOCAL_GUARD_ORIGINAL_PROOF_CHANGED".into())}
+  let(spec,permit,attempt,error)=self.local_final_guard_originals(qid)?;
+  proof.validate_binding(&spec,&permit,attempt,&error)?;self.proved_no_network.insert(qid);Ok(())
+ }
+ fn validate_local_final_guard_record(&self,e:&Value)->Result<()>{
+  let id=e["qid"].as_u64().ok_or("DISPATCH_QID")?;
+  self.local_final_guard_originals(id)?;
+  if e["kind"]!="local_final_guard_no_http"||self.local_final_guard_records.contains_key(&id)||self.aborted_records.contains_key(&id)||self.acknowledgments.contains_key(&id)||self.closed.contains(&id)||e["originalIntentSha256"]!=hash(&self.intents[&id])||e["originalAttemptSha256"]!=hash(&self.attempts[&id])||e["originalErrorSha256"]!=hash(&self.errors[&id])||e["proof"]["kind"]!="sdk_ordinary_final_guard_no_http_v1"||clock(&e["at"])?<clock(&self.errors[&id]["at"])?{return Err("DISPATCH_LOCAL_GUARD_BINDING".into())}Ok(())
  }
  pub fn require_resolved_attempts(&self)->Result<()>{if self.attempted.iter().any(|q|!self.acknowledgments.contains_key(q)&&!self.proved_no_network.contains(q)){return Err("DISPATCH_UNKNOWN_ACCEPTANCE_MANUAL_RECONCILIATION".into())}Ok(())}
  pub fn never_attempted(&self,qid:u64)->bool{!self.attempted.contains(&qid)&&!self.acknowledgments.contains_key(&qid)}
@@ -102,6 +133,29 @@ impl DispatchLog {
  #[test]fn rehashed_abort_json_replays_as_untrusted_and_never_makes_retryable(){let p=path();let mut l=DispatchLog::open(&p).unwrap();pending(&mut l,1);let prefix=fs::read(&p).unwrap();l.append_inner(untrusted_abort(&l,1)).unwrap();assert!(fs::read(&p).unwrap().starts_with(&prefix));drop(l);let l=DispatchLog::open(&p).unwrap();assert_eq!(l.aborted_records().len(),1);assert!(!l.proved_no_network(1));assert!(!l.never_attempted(1));assert!(l.require_resolved_attempts().is_err());assert!(l.acknowledgments.is_empty()&&l.closed.is_empty());assert_eq!(l.proof(1)["networkAttempts"],1);drop(l);fs::remove_dir_all(p.parent().unwrap()).unwrap();}
  #[test]fn abort_record_requires_exact_prior_error_attempt_and_intent(){let p=path();let mut l=DispatchLog::open(&p).unwrap();pending(&mut l,1);for field in ["originalIntentSha256","originalAttemptSha256","originalErrorSha256"]{let mut e=untrusted_abort(&l,1);e[field]=json!("0".repeat(64));assert!(l.validate_abort_record(&e).is_err());}let mut e=untrusted_abort(&l,1);e["at"]=json!("1970-01-01T00:00:02.000Z");assert!(l.validate_abort_record(&e).is_err());let e=untrusted_abort(&l,1);l.errors.remove(&1);assert!(l.validate_abort_record(&e).is_err());drop(l);fs::remove_dir_all(p.parent().unwrap()).unwrap();}
  #[test]fn serialized_abort_never_authorizes_ack_terminal_or_second_attempt(){let p=path();let mut l=DispatchLog::open(&p).unwrap();pending(&mut l,1);l.append_inner(untrusted_abort(&l,1)).unwrap();for e in [json!({"kind":"attempt","qid":1}),json!({"kind":"ack","qid":1,"receipt":{"orderId":77}}),json!({"kind":"recovered_ack","qid":1,"order":{"id":77}}),json!({"kind":"closed","qid":1})]{assert!(l.apply(&e).is_err());}assert!(l.acknowledgments.is_empty()&&l.closed.is_empty());assert!(!l.never_attempted(1));drop(l);fs::remove_dir_all(p.parent().unwrap()).unwrap();}
+ fn local_pending(l:&mut DispatchLog,qid:u64){pending(l,qid);l.append(json!({"kind":"error","qid":qid,"at":"1970-01-01T00:00:02.001Z","error":TransportError{code:"FINAL_LOCAL_GUARD_DENIED".into(),status:None,may_have_executed:true,retry_after_ms:0,order_id:None,api_code:None}})).unwrap();}
+ fn untrusted_local(l:&DispatchLog,qid:u64)->Value{json!({"kind":"local_final_guard_no_http","qid":qid,"at":"1970-01-01T00:00:02.002Z","originalIntentSha256":hash(&l.intents[&qid]),"originalAttemptSha256":hash(&l.attempts[&qid]),"originalErrorSha256":hash(&l.errors[&qid]),"proof":{"kind":"sdk_ordinary_final_guard_no_http_v1","callerClaim":true}})}
+ #[test]fn local_guard_json_is_not_capability_and_does_not_weaken_pre_admission_unknown_guard(){
+  let p=path();let mut l=DispatchLog::open(&p).unwrap();local_pending(&mut l,1);let before=fs::read(&p).unwrap();
+  assert!(l.pre_admission_originals(1).is_err());assert!(l.local_final_guard_originals(1).unwrap().3.may_have_executed);
+  assert!(l.append(untrusted_local(&l,1)).is_err());assert_eq!(before,fs::read(&p).unwrap());assert!(l.local_final_guard_records().is_empty());assert!(!l.proved_no_network(1));assert!(l.require_resolved_attempts().is_err());drop(l);fs::remove_dir_all(p.parent().unwrap()).unwrap();
+ }
+ #[test]fn local_guard_replay_keeps_original_unknown_and_permanent_intent_without_trusting_json(){
+  let p=path();let mut l=DispatchLog::open(&p).unwrap();local_pending(&mut l,1);let prefix=fs::read(&p).unwrap();l.append_inner(untrusted_local(&l,1)).unwrap();drop(l);
+  let mut l=DispatchLog::open(&p).unwrap();assert!(fs::read(&p).unwrap().starts_with(&prefix));assert_eq!(l.local_final_guard_records().len(),1);assert!(l.aborted_records().is_empty());assert!(l.original_error(1).unwrap()["error"]["mayHaveExecuted"].as_bool().unwrap());assert!(!l.proved_no_network(1)&&!l.never_attempted(1));assert!(l.require_resolved_attempts().is_err());
+  for e in [json!({"kind":"intent","qid":1}),json!({"kind":"attempt","qid":1}),json!({"kind":"ack","qid":1,"receipt":{"orderId":77}}),json!({"kind":"recovered_ack","qid":1,"order":{"id":77}}),json!({"kind":"closed","qid":1}),json!({"kind":"error","qid":1,"error":{"mayHaveExecuted":false}})]{assert!(l.apply(&e).is_err());}
+  assert!(l.validate_abort_record(&untrusted_abort(&l,1)).is_err());assert!(l.acknowledgments.is_empty()&&l.closed.is_empty());assert_eq!(l.proof(1)["networkAttempts"],1);drop(l);fs::remove_dir_all(p.parent().unwrap()).unwrap();
+ }
+ #[test]fn local_guard_record_binds_exact_originals_and_clock_without_serialized_resolution(){
+  let p=path();let mut l=DispatchLog::open(&p).unwrap();local_pending(&mut l,1);
+  for field in ["originalIntentSha256","originalAttemptSha256","originalErrorSha256"]{let mut e=untrusted_local(&l,1);e[field]=json!("0".repeat(64));assert!(l.validate_local_final_guard_record(&e).is_err());}
+  let mut e=untrusted_local(&l,1);e["at"]=json!("1970-01-01T00:00:02.000Z");assert!(l.validate_local_final_guard_record(&e).is_err());
+  let mut e=untrusted_local(&l,1);e["proof"]["kind"]=json!("sdk_stopped_v1_before_admit_no_http");assert!(l.validate_local_final_guard_record(&e).is_err());
+  l.attempts.get_mut(&1).unwrap()["captureAtMs"]=json!(2001);assert!(l.validate_local_final_guard_record(&untrusted_local(&l,1)).is_err());drop(l);fs::remove_dir_all(p.parent().unwrap()).unwrap();
+ }
+ #[test]fn pre_admission_and_local_final_guard_outcomes_cannot_both_bind_one_attempt(){
+  let p=path();let mut l=DispatchLog::open(&p).unwrap();pending(&mut l,1);l.append_inner(untrusted_abort(&l,1)).unwrap();assert!(l.validate_local_final_guard_record(&untrusted_local(&l,1)).is_err());assert!(l.local_final_guard_records().is_empty());assert!(l.require_resolved_attempts().is_err());drop(l);fs::remove_dir_all(p.parent().unwrap()).unwrap();
+ }
  #[cfg(target_os="linux")]
  fn frozen_sdk(p:&Path)->baal_transport_service::Config{
   let dir=p.parent().unwrap().join("sdk-original");fs::create_dir(&dir).unwrap();
