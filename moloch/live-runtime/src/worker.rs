@@ -497,6 +497,17 @@ fn retire_existing_drafts(bank:&mut Session,log:&mut DispatchLog,exchange:&str)-
   retire_for_package(bank,log,&q)?;retired+=1;
  }Ok(retired)
 }
+// One snapshot boundary for every NEW inherited manager. Retire only positively
+// never-sent ordinary drafts first; taking snapshots between retirements would
+// bind different native heads in a multi-scope generation. This makes no GET.
+fn capture_reload_existing(bank:&mut Session,log:&mut DispatchLog,t:&Transport,journal:&Path,exchanges:&std::collections::BTreeSet<String>)->Result<Vec<fundamental::ExistingSnapshot>>{
+ if exchanges.is_empty(){return Ok(Vec::new())}
+ if bank.engine().report()?["inheritedInventory"]["receiptHash"].as_str().is_none(){return Err("FUNDAMENTAL_GENERATION_EXISTING_NOT_AVAILABLE".into())}
+ let(id,sequence,event)=committed_adoption(bank,journal)?;
+ t.package_queue_quiet()?;
+ for ex in exchanges{retire_existing_drafts(bank,log,ex)?;}
+ exchanges.iter().map(|ex|fundamental::ExistingSnapshot::capture(bank,log,t,&id,sequence,&event,ex)).collect()
+}
 /// Configured reviewed managers own these markets. Ordinary planning must not
 /// reserve their flat-entry slots, even when current forecast prices deny entry.
 /// This never retires an intent/attempt/ACK, reviewed reservation or package.
@@ -538,6 +549,7 @@ fn install_profitable_depth_mode(c:&Control,control_path:&Path,bank:&mut Session
 }
 fn fundamental_reload_rejection(error:&Box<dyn std::error::Error>)->bool{
  if error.downcast_ref::<moloch_live_runtime::account_realtime::AccountGenerationChanged>().is_some(){return true}
+ if matches!(error.to_string().as_str(),"FUNDAMENTAL_GENERATION_EXISTING_NOT_AVAILABLE"|"FUNDAMENTAL_GENERATION_EXISTING_REVIEW"|"FUNDAMENTAL_GENERATION_EXISTING_DUPLICATE"|"FUNDAMENTAL_EXISTING_SNAPSHOT_OR_REVIEW_CHANGED"|"FUNDAMENTAL_ADOPTED_POSITION"|"FUNDAMENTAL_EXISTING_SCOPE"|"FUNDAMENTAL_EXISTING_QUANTITY"|"FUNDAMENTAL_EXISTING_FIFO_MISMATCH"){return true}
  matches!(error.to_string().as_str(),"RELOAD_REQUEST_BINDING_OR_EXPIRED"|"RELOAD_SETTINGS_NOT_APPROVED"|"RELOAD_CONTROL_CHANGED"|"FUNDAMENTAL_PINNED_FILE_CHANGED"|"FUNDAMENTAL_GENERATION_REMOVAL_OR_COUNT"|"FUNDAMENTAL_GENERATION_RECEIPT_ORDER"|"FUNDAMENTAL_ENTRY_RECEIPT_SCOPE_OR_STALE"|"FUNDAMENTAL_GENERATION_ACCOUNT_COVERAGE"|"FUNDAMENTAL_GENERATION_CASH"|"FUNDAMENTAL_GENERATION_POSITIONS"|"FUNDAMENTAL_GENERATION_ORDERS"|"FUNDAMENTAL_GENERATION_POSITION_SCOPE"|"FUNDAMENTAL_GENERATION_POSITION_DUPLICATE_OR_QUANTITY"|"FUNDAMENTAL_GENERATION_OPEN_SCOPE"|"FUNDAMENTAL_GENERATION_SCOPE"|"FUNDAMENTAL_INSTALL_REVIEW_EXPIRED"|"FUNDAMENTAL_GENERATION_POSITION_ATTRIBUTION"|"FUNDAMENTAL_GENERATION_TARGET_OPEN"|"FUNDAMENTAL_GENERATION_NEW_SCOPE_NOT_FLAT"|"FUNDAMENTAL_GENERATION_OWNED_CAP"|"FUNDAMENTAL_GENERATION_ORIGIN_CHANGED"|"FUNDAMENTAL_REVIEW_REVISION"|"FUNDAMENTAL_CANNOT_EXTEND_COHORT"|"FUNDAMENTAL_CANNOT_REINTERPRET_COHORT_OBJECTIVE")
 }
 // Only called between completed serialized actions, never with a live permit.
@@ -572,8 +584,13 @@ fn service_fundamental_reload(channel:Option<&moloch_live_runtime::fundamental_r
   Ok(v)=>v,Err(error)if error.downcast_ref::<moloch_live_runtime::account_realtime::AccountGenerationChanged>().is_some()=>{let _=pending.reply(&json!({"state":"deferred_account_generation_changed"}));return Ok(())},Err(error)=>return Err(error)
  };
  t.package_queue_quiet()?;
+ let new_existing:std::collections::BTreeSet<_>=loaded.existing_exchanges().into_iter().filter(|ex|!f.cohorts.manages(ex)).collect();
+ for ex in &new_existing{if existing_target_busy(bank,log,ex)?{let _=pending.reply(&json!({"state":"deferred_existing_target_busy","exchangeId":ex}));return Ok(())}}
+ let existing=match capture_reload_existing(bank,log,t,&c.root.join(&c.bank_name).join("events.jsonl"),&new_existing){
+  Ok(v)=>v,Err(error)if fundamental_reload_rejection(&error)=>{let _=pending.reply(&json!({"state":"rejected_before_commit","reason":error.to_string()}));return Ok(())},Err(error)=>return Err(error)
+ };
  authority.begin_fundamental_generation();
- if let Err(error)=f.cohorts.install_generation(&approved,&loaded,bank,log,&c.scope,&facts,base,now(),||{
+ if let Err(error)=f.cohorts.install_generation_with_existing(&approved,&loaded,bank,log,&c.scope,&facts,base,now(),t,existing,||{
   refresh_controls(c,authority,stream)?;t.package_queue_quiet()?;
   moloch_live_runtime::account_realtime::validate(&account_stamp,&stream.account_signal())
  }){
@@ -2977,6 +2994,23 @@ pub fn main()->Result<()>{
  use super::*;
  mod fixture{include!(concat!(env!("CARGO_MANIFEST_DIR"),"/tests/support/fundamental_passive_fixture.rs"));}
  use fixture::F;
+ #[test]fn inherited_reload_uses_original_adoption_and_no_extra_account_reads(){
+  let mut f=F::new_at(None,"0.990000",0,"0.000000",true,now()-12000);let head=f.bank.durable_head();let bytes=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();
+  let targets=["101".to_owned()].into();let snapshots=capture_reload_existing(&mut f.bank,&mut f.log,&f.transport,&f.root.0.join("bank/events.jsonl"),&targets).unwrap();
+  assert_eq!(snapshots.len(),1);assert_eq!(Some(snapshots[0].approval()),f.review.existing_origin.as_ref());assert_eq!(head,f.bank.durable_head());assert_eq!(bytes,fs::read(f.root.0.join("dispatch.ndjson")).unwrap());
+ }
+ #[test]fn inherited_reload_empty_scope_never_reads_an_adoption_path(){
+  let mut f=F::new_at(None,"0.990000",0,"0.000000",true,now()-12000);let head=f.bank.durable_head();
+  assert!(capture_reload_existing(&mut f.bank,&mut f.log,&f.transport,Path::new("/does-not-exist"),&Default::default()).unwrap().is_empty());assert_eq!(head,f.bank.durable_head());
+ }
+ #[test]fn inherited_reload_unknown_attempt_keeps_original_native_and_dispatch(){
+  let mut f=F::new_at(None,"0.990000",0,"0.000000",true,now()-12000);f.log.append(json!({"kind":"intent","qid":999})).unwrap();f.log.append(json!({"kind":"attempt","qid":999})).unwrap();let head=f.bank.durable_head();let bytes=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();
+  assert!(capture_reload_existing(&mut f.bank,&mut f.log,&f.transport,&f.root.0.join("bank/events.jsonl"),&["101".to_owned()].into()).is_err());assert_eq!(head,f.bank.durable_head());assert_eq!(bytes,fs::read(f.root.0.join("dispatch.ndjson")).unwrap());
+ }
+ #[test]fn inherited_reload_candidate_errors_do_not_hide_original_integrity_failures(){
+  for code in ["FUNDAMENTAL_GENERATION_EXISTING_NOT_AVAILABLE","FUNDAMENTAL_EXISTING_SNAPSHOT_OR_REVIEW_CHANGED","FUNDAMENTAL_EXISTING_FIFO_MISMATCH"]{assert!(fundamental_reload_rejection(&Box::<dyn std::error::Error>::from(code)));}
+  for code in ["LIVE_COMMITTED_ADOPTION_MISMATCH","FUNDAMENTAL_POISONED","DISPATCH_UNRESOLVED_ATTEMPT"]{assert!(!fundamental_reload_rejection(&Box::<dyn std::error::Error>::from(code)));}
+ }
  fn setup()->(F,FundamentalRuntime,Control,RestSource,Value){setup_at(now()-12000)}
  fn setup_at(base:u64)->(F,FundamentalRuntime,Control,RestSource,Value){
   let mut f=F::new_at(Some(2),"0.990000",0,"0.000000",true,base);let q=f.reserve_at(base+7001);
