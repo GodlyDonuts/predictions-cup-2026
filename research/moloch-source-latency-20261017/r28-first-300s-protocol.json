@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "task": 167,
+  "declaredAtUtc": "2026-10-17T15:18:28.266608+00:00",
+  "oldProcess": "R27/654706",
+  "oldPacketSha256": "d988c4042c34299a3e31fc28c8915590184b4fa681ba02d9d79e11bd8fd5419d",
+  "oldWindowStartUtc": "2026-10-17T13:59:43.091Z",
+  "oldOutcomeAlreadyInspected": true,
+  "confirmatory": false,
+  "incidentPacketSha256": "7ee0a95b75500d732e2568a1962eb1491cd525125284a495f39bc14d38666af4",
+  "newProcess": "R28/661886",
+  "newSourceCommit": "069a85a478942eb8148c354df368e369e940eb7e",
+  "newBinarySha256": "203462d82692c9a68c3303546271bc8b7fc60e3945b36fe4224a5252be779dfe",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "newControlSha256": "64dcee5feb31449d4862f801986f2edac68106e428691529525b70a45bd865d8",
+  "windowMs": 300000,
+  "policyMaximumBookAgeMs": 10000,
+  "firstObservedFreshProgressMaximumAgeMs": 120000,
+  "newWindowSelection": "First OBSERVED matching PID661886 progress with phase trading and realtimeHealthy true, age0..120s; freeze progress.at once, measure original processedAt in [start,start+300000ms). No favorable replacement or fallback window.",
+  "requiredNewWitnesses": [
+    "Separately SHA-pinned complete first-fresh-proof.zip with original progress and capture",
+    "Separately SHA-pinned original completed observer events.jsonl with earliest first-fresh-trading record and exact parsed progress equality",
+    "Separately SHA-pinned final first-300s-clock-proof.zip with identical original first-progress bytes and full anchored native suffix"
+  ],
+  "observerSourceLfSha256": "065adb924c764c8c119d9a836d6d78fdd5bda266d05a216c1ec95cbe4d7aa2b7",
+  "metricAlgorithmLfSha256": "1fbc599e16417778d4aa48545eb2c7af9c3073875fd4ffb26f72c0333443a34b",
+  "generationParserWrapperLfSha256": "63ca51eb5f4f9d00b25c8518cd2892dbde0f3ff78013929eeff3a57892997e35",
+  "metrics": "Unchanged compare_book_clocks.py Packet/measure/distribution; all, realtime, REST; all existing invalid/missing/source/request/receipt/processing/stale counters and denominators.",
+  "generationRequirement": "Old R27 packet has5 generations; its full sidecar is a byte prefix of pinned incident6. New first/final packets preserve full incident prefix and exact6 generation rows, all before new window; no seventh. Additional non-generation lifecycle rows may append without reinterpretation.",
+  "modelPeriodDifference": "R27 old5 precedes ME+AK sixth node-only generation. Forecast/ballot clocks, probabilities/economics unchanged by that generation, but actual node evidence, approval metadata, expiry, market time and generation count differ.",
+  "concurrentWork": "R29 nice19 offline build with2 jobs MAY overlap; this comparison cannot establish a causal effect of R28. No post-outcome exclusion based on build overlap.",
+  "limitations": [
+    "Old outcomes already inspected; observational diagnostic, not confirmatory or randomized.",
+    "No causal attribution: periods, market activity, cache state, restored history size and possible concurrent R29 build differ.",
+    "First observed freshness is relative to the known finite observer and retained observation trace, not independently witnessed first internal worker transition.",
+    "Original native admitted records/seals do not independently authenticate raw provider source-body membership or continuous feed coverage.",
+    "Full300s source-clock coverage is mandatory; missing/truncated/failed/changed-generation windows remain unavailable, never replaced by a favorable later interval.",
+    "Latency metrics establish neither executable edge, financial authority nor profitability."
+  ],
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "causalBenefitEstablished": false
+}

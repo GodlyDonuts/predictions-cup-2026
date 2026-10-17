@@ -1,0 +1,9 @@
+# R28: fresh production operation verified
+
+At **2026-10-17 15:34:17 UTC**, the root execution owner independently verified actual sole service PID661886, its executable bytes, exact argv, immutable control, process start ticks21886965 and model channel. The actual progress was15:34:01.417, phase trading, realtimeHealthy true; no current execution STOP existed. Source069a85a4/binary203462d8/native5b61/control64dcee match the [qualified deployment](../README.md). This supersedes the earlier restoration-only observation.
+
+[Root verification](root-verification.json) authenticates15 original archive members, the exact original stopped492481 anchor and256 appended native rows, complete21,901-row dispatch and71-row fundamental chains, all six original review generations and unchanged15 financial bridge bytes. All382 earlier raw fill tokens are preserved exactly. The captured first-fresh financial report is15:23:08.558/sequence492737, before the later actual process observation; its accounting must not be represented as a simultaneous live account snapshot.
+
+Cash is3,613.785, reserved cash0, owned cost91,851.730 and attributed realized−114.400 (new trading−184.970; inherited+70.570). There are zero appended native fills at that financial capture. A separate15:37 progress check still reported382 fills. No fresh profit, dashboard P&L or current executable liquidation value is established.
+
+The original private archive is4,851,416bytes/SHA224e5c55c55bf473a5641283fa61b97072ab618cd7e67bc4313a1bf3086efa67. Its read-only producer makes no account calls and performs no runtime writes. Native seals authenticate admitted journal bytes; this is not independent authentication of every raw provider response body. The [unchanged five-minute measurement](../../r28-first-300s-result.md) did not establish a latency gain.
