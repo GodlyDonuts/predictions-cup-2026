@@ -3009,7 +3009,7 @@ pub fn main()->Result<()>{
  }
  #[test]fn inherited_reload_candidate_errors_do_not_hide_original_integrity_failures(){
   for code in ["FUNDAMENTAL_GENERATION_EXISTING_NOT_AVAILABLE","FUNDAMENTAL_EXISTING_SNAPSHOT_OR_REVIEW_CHANGED","FUNDAMENTAL_EXISTING_FIFO_MISMATCH"]{assert!(fundamental_reload_rejection(&Box::<dyn std::error::Error>::from(code)));}
-  for code in ["LIVE_COMMITTED_ADOPTION_MISMATCH","FUNDAMENTAL_POISONED","DISPATCH_UNRESOLVED_ATTEMPT"]{assert!(!fundamental_reload_rejection(&Box::<dyn std::error::Error>::from(code)));}
+  for code in ["LIVE_COMMITTED_ADOPTION_MISMATCH","FUNDAMENTAL_EXISTING_ORIGINAL_BOUNDARY_CHANGED","FUNDAMENTAL_POISONED","DISPATCH_UNRESOLVED_ATTEMPT"]{assert!(!fundamental_reload_rejection(&Box::<dyn std::error::Error>::from(code)));}
  }
  fn setup()->(F,FundamentalRuntime,Control,RestSource,Value){setup_at(now()-12000)}
  fn setup_at(base:u64)->(F,FundamentalRuntime,Control,RestSource,Value){

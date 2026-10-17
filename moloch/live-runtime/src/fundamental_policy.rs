@@ -1580,9 +1580,10 @@ impl Cohorts{
             let ex=snapshot.origin.adopted_position["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXISTING_SCOPE")?.to_owned();
             let r=loaded.reviews.iter().find(|r|r.input.exchange_id==ex).ok_or("FUNDAMENTAL_GENERATION_EXISTING_REVIEW")?;
             no_existing_liability(bank,log,&ex)?;
-            need(!self.policies.contains_key(&ex)&&!self.cohorts.contains_key(&ex)&&r.input.existing_origin.as_ref()==Some(&snapshot.origin.approval)
-                &&snapshot.head==bank.durable_head()&&snapshot.report_sha==digest(&bank.engine().report()?)?&&snapshot.fill_count==bank.engine().fills().len()&&snapshot.fill_sha==digest(bank.engine().fills())?
+            need(snapshot.head==bank.durable_head()&&snapshot.report_sha==digest(&bank.engine().report()?)?&&snapshot.fill_count==bank.engine().fills().len()&&snapshot.fill_sha==digest(bank.engine().fills())?
                 &&snapshot.dispatch==log.descriptor_identity()?&&snapshot.queue==queue_view(transport)?&&snapshot.scope_sha==digest(scope)?&&snapshot.scope_sha==digest(transport.scope())?&&snapshot.account_sha==bytes_sha(transport.account_scope().as_bytes())
+                ,"FUNDAMENTAL_EXISTING_ORIGINAL_BOUNDARY_CHANGED")?;
+            need(!self.policies.contains_key(&ex)&&!self.cohorts.contains_key(&ex)&&r.input.existing_origin.as_ref()==Some(&snapshot.origin.approval)
                 &&snapshot.origin.adopted_position["marketId"]==r.input.market_id&&snapshot.origin.adopted_position["quantity"].as_i64().is_some_and(|n|if n<0{r.input.side=="NO"}else{r.input.side=="YES"})
                 &&snapshot.origin.quantity<=r.input.maximum_quantity&&amount(&snapshot.origin.principal)?<=amount(&r.input.maximum_principal)?,"FUNDAMENTAL_EXISTING_SNAPSHOT_OR_REVIEW_CHANGED")?;
             let mut origin=snapshot.origin;origin.review_sha256=r.sha.clone();
