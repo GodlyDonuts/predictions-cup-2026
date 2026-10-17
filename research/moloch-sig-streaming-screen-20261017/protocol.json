@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "experiment": "sig_stream_price_screen_v1",
+  "horizonMs": 60000,
+  "decisionBlockMs": 60000,
+  "sampling": "first valid original book per exact scope/block; no alternate rescue for missing features",
+  "availability": "original processedAt; no backdating to source/execution",
+  "features": [
+    "micropriceMinusMidpoint",
+    "imbalance",
+    "spread",
+    "midpointDelta1s",
+    "midpointDelta5s",
+    "midpointDelta30s"
+  ],
+  "lagAnchorSlackMs": 20000,
+  "maximumBookAgeMs": 10000,
+  "tradeVolume": "optional unsigned30s diagnostic only with actual complete original coverage; no model column",
+  "gap": "clear book/history/trade/coverage; pending crossings unavailable",
+  "models": [
+    "unchanged_bbo",
+    "sig_local_imbalance_spread",
+    "sig_six_features"
+  ],
+  "ridge": 1,
+  "minimumTrainingClusters": 16,
+  "chronologicalFolds": 3,
+  "purge": "60s horizon + entire virtual packet delay +3s mark slack; train labels fully available before test start",
+  "groupHoldout": "sha256(groupID) modulo5 ==0; absent semantic map use marketID, report semantic groups unavailable",
+  "costs": {
+    "assumedFeePerShare": "0.000000",
+    "feeAssumption": "zero assumption only, not source-verified current fee authority",
+    "extraMarginPerShare": "0.005000"
+  },
+  "virtualPacing": {
+    "readPerMinute": 100,
+    "writePerMinute": 24,
+    "readCompletionSpacingMs": 600,
+    "writeCompletionSpacingMs": 2500,
+    "serialized": true,
+    "readsPerPacket": 7,
+    "writesPerPacket": 1,
+    "nativeActivationMs": 3000,
+    "maximumPacketDelayMs": 10000,
+    "firstMarkSlackMs": 3000,
+    "httpDurationAssumptionMs": 0,
+    "historicalAccountLoadKnown": false
+  },
+  "onePendingPerScope": true,
+  "minimumOosClusters": 100,
+  "minimumSelectedClusters": 100,
+  "executionAuthority": false,
+  "modelApproval": false,
+  "profitabilityEstablished": false,
+  "ownDepth": "remove only known original suffix ACK remaining quantities; pre-anchor own-order state unavailable",
+  "uncertainty": "market/time nonoverlap and deterministic group holdout do not remove common election/factor correlation",
+  "bounds": {
+    "maximumRows": 1000000,
+    "maximumJournalBytes": 2147483648,
+    "maximumScopes": 1024,
+    "maximumHistoryPerScope": 2048,
+    "maximumExamples": 50000,
+    "maximumPending": 1024,
+    "maximumRememberedRecentTradeIds": 32768,
+    "maximumActiveKnownOwnOrders": 1024
+  },
+  "sourceWitness": "native original raw chain to original stopped anchor/final sealed report; underlying source body membership not independently verified",
+  "chronologicalBoundaries": "three equal-duration test quarters after the first training quarter of original suffix processed-time span; never outcome-optimized"
+}
