@@ -813,6 +813,11 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  if let Some((decision,review))=&maker{if let Err(error)=decision.validate_current(bank,review,log,now()){
   if !expected_maker_expiry(error.as_ref()){return Err(error)}authority.clear_ready();atomic_json(&c.root.join("maker-policy-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":error.to_string(),"physicalAttempted":false}))?;return Ok(())
  }}
+ // Configuration or a marker is not an entry capability. Recompute covered
+ // opposite inventory against the final fresh state before any durable intent.
+ if q["action"]=="buy"&&fundamental_decision.is_none()&&maker.is_none()&&!unreviewed_inventory_reduction(c,bank,log,q)?{
+  authority.clear_ready();atomic_json(&c.root.join("ordinary-entry-quarantine-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":"unreviewed_new_exposure","physicalAttempted":false}))?;return Ok(())
+ }
  if let Err(error)=authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision){if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
@@ -1438,9 +1443,10 @@ impl OrdinaryPreflightReads for LivePreflightReads<'_>{
    refresh_controls(self.c,self.authority,self.stream)
   }
 }
-/// The callback evaluates the genuine newly admitted book and pinned policy.
-/// It can only decline an expensive packet, never replace its physical facts.
-fn reviewed_book_prefilter(c:&Control,bank:&mut Session,source:&mut RestSource,target:&Value,reads:&mut impl OrdinaryPreflightReads,mut eligible:impl FnMut(&Session,u64)->Result<bool>)->Result<bool>{
+/// The callback evaluates the genuine admitted book and pinned policy. It may
+/// retire proved-unused local drafts before comparing actual available cash;
+/// it never replaces the independent physical packet or grants a submission.
+fn reviewed_book_prefilter(c:&Control,bank:&mut Session,source:&mut RestSource,target:&Value,reads:&mut impl OrdinaryPreflightReads,mut eligible:impl FnMut(&mut Session,u64)->Result<bool>)->Result<bool>{
  if !reads.guarded()?{return Ok(false)}
  let book=preflight_read(bank,source,reads,None,Endpoint::OrderBook{market_id:target["marketId"].as_str().ok_or("LIVE_MARKET_ID")?.into(),depth:20})?;
  accept_fresh_book(bank,c,target,&book,source)?;
@@ -1448,9 +1454,8 @@ fn reviewed_book_prefilter(c:&Control,bank:&mut Session,source:&mut RestSource,t
 }
 // Additional reviewed runtime selection only. A shadow/logging failure cannot
 // change the old dispatch flow; Enforce still defers if evidence is unavailable.
-fn ordinary_side_edge_allows(c:&Control,bank:&Session,log:&DispatchLog,q:&Value,book:&Receipt,fundamental_managed:bool,at:u64)->bool{
- use moloch_live_runtime::ordinary_side_edge::{self,Mode};
- if c.ordinary_side_edge==Mode::Disabled||fundamental_managed||q["action"]!="buy"||bank.engine().is_package_order(q["id"].as_u64().unwrap_or(0)){return true}
+fn covered_opposite_buy(bank:&Session,log:&DispatchLog,q:&Value)->bool{
+ if q["action"]!="buy"{return false}
  let opposite=match q["side"].as_str(){Some("YES")=>Some(moloch_replay::Side::No),Some("NO")=>Some(moloch_replay::Side::Yes),_=>None};
  if let(Some(side),Some(ex))=(opposite,q["exchangeId"].as_str()){
   let held=bank.engine().wallet.quantity(ex,side);
@@ -1461,9 +1466,27 @@ fn ordinary_side_edge_allows(c:&Control,bank:&Session,log:&DispatchLog,q:&Value,
     // replayed abort is untrusted, and any actual execution evidence wins.
     !log.proved_no_network(**id)||log.acknowledgments.contains_key(*id)||bank.engine().live_order_bindings().contains_key(*id)||!records.iter().any(|o|o["id"]==**id&&o["retired"]==true&&o["filled"]==0)
    }).copied().collect();
-   if ordinary_side_edge::fully_covered_opposite_buy(q,held,&records,&unclosed){return true}
+   if moloch_live_runtime::ordinary_side_edge::fully_covered_opposite_buy(q,held,&records,&unclosed){return true}
   }
  }
+ false
+}
+/// Whole-quantity inventory reduction only, never permission to open exposure or
+/// bypass a reviewed hold/package. Existing physical/gross-funding gates remain.
+fn unreviewed_inventory_reduction(c:&Control,bank:&Session,log:&DispatchLog,q:&Value)->Result<bool>{
+ log.require_resolved_attempts()?;
+ let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let ex=q["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;
+ if c.scope.exchanges.get(ex).is_none_or(|m|q["marketId"]!=*m){return Err("LIVE_QUOTE_SCOPE".into())}
+ if q["action"]!="buy"||q["retired"]!=false||q.get("reviewedFundamentalEntry").is_some()||q.get("reviewedInventoryExit").is_some()
+  ||bank.engine().ordinary_entry_exclusions().contains(ex)||bank.engine().managed_inventory_planning_excludes(ex)
+  ||bank.engine().is_package_order(id)||bank.engine().package_blocks_submissions()||profit_refresh_protected(&c.scope,&bank.engine().package_records())?.contains(ex){return Ok(false)}
+ if !bank.engine().order_records().iter().any(|current|current==q){return Ok(false)}
+ Ok(covered_opposite_buy(bank,log,q))
+}
+fn ordinary_side_edge_allows(c:&Control,bank:&Session,log:&DispatchLog,q:&Value,book:&Receipt,fundamental_managed:bool,at:u64)->bool{
+ use moloch_live_runtime::ordinary_side_edge::{self,Mode};
+ if c.ordinary_side_edge==Mode::Disabled||fundamental_managed||q["action"]!="buy"||bank.engine().is_package_order(q["id"].as_u64().unwrap_or(0)){return true}
+ if covered_opposite_buy(bank,log,q){return true}
  let assessment=ordinary_side_edge::assess_original(bank.engine().policy(),&c.scope,q,book,at);
  let deferred=c.ordinary_side_edge.defers(&assessment);
  let _=atomic_json(&c.root.join("ordinary-side-edge.json"),&json!({"at":iso(at),"qid":q["id"],"mode":c.ordinary_side_edge,"assessment":assessment,"nativeHead":bank.durable_head(),"deferred":deferred,"physicalAttempted":false,"priceChanged":false,"quantityChanged":false,"executionAuthority":false}));
@@ -1538,7 +1561,9 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
   let scopes=source.scopes();if !scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{return fundamental_entry_deferred(c,ex,"coverage","COMPLETE_TARGET_TAPE_REQUIRED")}
  }
  let target=json!({"marketId":market,"exchangeId":ex});
+ let quarantine=c.maker_policy.is_none()&&!queue_has_unknown(t)?;let managed=f.cohorts.managed_exchanges();
  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},|bank,at|{
+  let at=if quarantine{retire_unqualified_entry_drafts(c,bank,log,&managed)?;now()}else{at};
   let(books,_)=moloch_live_runtime::package_admission::native_books(bank,&c.scope,at,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("LIVE_BOOK_POLICY")?)?;
   if !books.contains_key(ex){return Ok(true)} // Unavailable/legacy comparison is not price evidence.
   Ok(f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,at)?.is_none_or(|comparison|!comparison.candidates.is_empty()))
@@ -1547,6 +1572,11 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;if existing_target_busy(bank,log,ex)?{return fundamental_entry_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
  retire_existing_drafts(bank,log,ex)?;
+ // Serviced reads can regenerate ordinary drafts. Release their ACTUAL local
+ // reservations again after the final book, before the funded comparison.
+ if c.maker_policy.is_none(){if queue_has_unknown(t)?{return fundamental_entry_deferred(c,ex,"queue","GLOBAL_UNKNOWN_ACCEPTANCE")}
+  retire_unqualified_entry_drafts(c,bank,log,&managed)?;
+ }
  let gap=bank.engine().policy()["writeGapMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_WRITE_GAP")?;let latency=bank.engine().policy()["latencyMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_ACTIVATION")?;
  if now().checked_add(latency).is_none_or(|end|end>=facts_until){return fundamental_entry_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
  refresh_controls(c,authority,stream)?;
@@ -1609,18 +1639,26 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
 /// No source/transport work may interleave validation and this serialized batch.
 fn retire_stale_entry_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>)->Result<usize>{
  let at=now();let selected=moloch_live_runtime::stale_entry_drafts::select(bank,log,&c.scope,managed,at)?;
+ retire_selected_entry_drafts(c,bank,log,managed,&selected,"stale_unsubmitted_ordinary_buy","stale-entry-drafts.json")
+}
+fn retire_unqualified_entry_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>)->Result<usize>{
+ if c.maker_policy.is_some(){return Ok(0)} // Retention only, not physical permission.
+ let selected=moloch_live_runtime::stale_entry_drafts::select_unqualified_new_entries(bank,log,&c.scope,managed,now())?;
+ retire_selected_entry_drafts(c,bank,log,managed,&selected,"unqualified_flat_ordinary_buy","ordinary-entry-quarantine.json")
+}
+fn retire_selected_entry_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>,selected:&moloch_live_runtime::stale_entry_drafts::Selection,reason:&str,diagnostic:&str)->Result<usize>{
  if selected.drafts().is_empty(){return Ok(0)}
  selected.validate_current(bank,log,&c.scope,managed,now())?;
  let mut rows=Vec::new();
  for draft in selected.drafts(){let id=draft.qid();let current=quote(bank,id)?;
-  if current!=*draft.quote()||!log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){return Err("LIVE_STALE_DRAFT_ORIGINAL_CHANGED".into())}
+  if current!=*draft.quote()||!log.never_attempted(id)||log.intents.contains_key(&id)||log.attempted.contains(&id)||log.acknowledgments.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){return Err("LIVE_STALE_DRAFT_ORIGINAL_CHANGED".into())}
   let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
   // Existing native defer flag suppresses immediate replanning. It grants no
   // package authority and does not cancel or release any physical order.
   accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))?;
   rows.push(json!({"qid":id,"releasedLocalReservationUnits":draft.reserved_units().to_string()}));
  }
- atomic_json(&c.root.join("stale-entry-drafts.json"),&json!({"at":iso(now()),"pid":std::process::id(),"reason":"stale_unsubmitted_ordinary_buy","originalNativeHead":selected.native_head(),"originalDispatchDescriptor":selected.dispatch_descriptor_identity(),"retired":rows,"nativeHead":bank.durable_head(),"networkRequests":0,"physicalOrdersCanceled":0,"pricesChanged":false}))?;
+ atomic_json(&c.root.join(diagnostic),&json!({"at":iso(now()),"pid":std::process::id(),"reason":reason,"originalNativeHead":selected.native_head(),"originalDispatchDescriptor":selected.dispatch_descriptor_identity(),"retired":rows,"nativeHead":bank.durable_head(),"networkRequests":0,"physicalOrdersCanceled":0,"pricesChanged":false}))?;
  Ok(rows.len())
 }
 /// A prior durable cancellation is not a retry ticket, even when the original
@@ -1720,7 +1758,8 @@ fn early_native_side_filter(mode:moloch_live_runtime::ordinary_side_edge::Mode,b
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if allow_new_submissions&&!bank.engine().package_blocks_submissions(){
   let managed=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
-  retire_stale_entry_drafts(c,bank,log,&managed)?;
+  if maker_review.is_none(){if !queue_has_unknown(t)?{retire_unqualified_entry_drafts(c,bank,log,&managed)?;}}
+  else{retire_stale_entry_drafts(c,bank,log,&managed)?;}
  }
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
@@ -1800,7 +1839,8 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   if q["action"]=="buy"{if let Some(review)=maker_review{
    let decision=match moloch_live_runtime::maker_policy::decide(bank,&c.scope,log,review,q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now()){Ok(d)=>d,Err(error)if expected_maker_expiry(error.as_ref())=>{continue},Err(error)=>return Err(error)};
    maker_assessments.push(decision.proof().clone());if !decision.allowed(){continue}maker_decisions.push((index,decision));continue;
-  }}ranked.push((0,index));
+  }else if !unreviewed_inventory_reduction(c,bank,log,q)?{continue}}
+  ranked.push((0,index));
  }
  if !maker_decisions.is_empty(){let decisions:Vec<_>=maker_decisions.iter().map(|(_,decision)|decision).collect();for position in moloch_live_runtime::maker_policy::rank(&decisions,now())?{let(index,decision)=&maker_decisions[position];ranked.push((decision.priority(),*index));}}
  if maker_review.is_some(){let _=atomic_json(&c.root.join("maker-policy.json"),&json!({"at":iso(now()),"assessments":maker_assessments,"executionAuthority":false}));}
@@ -2313,7 +2353,7 @@ pub fn main()->Result<()>{
    let tape=Receipt{endpoint:"/orders/9001/fills?limit=200".into(),request_started_at:iso(at-100),received_at:iso(at),status:200,data:json!({"orderId":"9001","tournamentId":T,"exchangeId":"101","coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null,"limit":200},"totalQuantityFilled":-(filled as i64),"data":[{"id":"8001","side":"no","quantity":-(filled as i64),"price":0.590,"filledAt":iso(at-500)}]})};
    let events=feedback::fills(&mate,"9001",T,&tape,&iso(at)).unwrap();assert_eq!(events.len(),1);bank.accept("original-owned-fixture",2,&events[0]).unwrap();
    assert_eq!(bank.engine().wallet.quantity("101",moloch_replay::Side::No),filled);let current=quote(&bank,q["id"].as_u64().unwrap()).unwrap();assert_eq!(current["quantity"],2);assert!(!current["cancelEffectiveAt"].is_u64());let head=bank.durable_head();
-   assert_eq!(ordinary_side_edge_allows(&c,&bank,&log,&current,&book,false,now()),filled==2);assert_eq!(bank.durable_head(),head);
+   assert_eq!(ordinary_side_edge_allows(&c,&bank,&log,&current,&book,false,now()),filled==2);assert_eq!(unreviewed_inventory_reduction(&c,&bank,&log,&current).unwrap(),filled==2);let mut changed=current.clone();changed["quantity"]=json!(1);assert!(!unreviewed_inventory_reduction(&c,&bank,&log,&changed).unwrap());assert_eq!(bank.durable_head(),head);
    if filled==1{assert_eq!(load(&root.0.join("ordinary-side-edge.json")).unwrap()["assessment"]["class"],"below_minimum");}else{assert!(!root.0.join("ordinary-side-edge.json").exists());}
   }
  }
@@ -2984,6 +3024,16 @@ pub fn main()->Result<()>{
  #[test]fn stale_cleanup_preserves_actual_pending_mate_while_another_flat_exchange_yields(){
   let temp=Temp::new();let(c,mut bank,mut log,_,_)=stale_fixture(&temp.0,2);let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="101"&&q["side"]=="YES").unwrap();let id=q["id"].as_u64().unwrap();let mut event=ack(&q);event["receivedAt"]=json!(iso(q["activationAt"].as_u64().unwrap()));for row in [json!({"kind":"intent","qid":id,"quote":q}),json!({"kind":"attempt","qid":id}),json!({"kind":"ack","qid":id,"receipt":{"data":{"orderId":event["actualOrderId"]}}})]{log.append(row).unwrap();}bank.accept("stale-retained-actual-ack",1,&event).unwrap();let protected=bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>();let positions=bank.engine().wallet.positions();let cash=bank.engine().wallet.cash;let actual=bank.engine().live_order_bindings().clone();
   assert_eq!(retire_stale_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),2);assert_eq!(bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>(),protected);assert!(bank.engine().order_records().iter().filter(|q|q["exchangeId"]=="102").all(|q|q["retired"]==true));assert_eq!(bank.engine().live_order_bindings(),&actual);assert_eq!(bank.engine().wallet.positions(),positions);assert_eq!(bank.engine().wallet.cash,cash);assert!(!log.closed.contains(&id));assert!(bank.engine().fills().is_empty());
+ }
+ #[test]fn fresh_unqualified_batch_releases_only_native_reservation_and_replays_without_new_funds(){
+  let temp=Temp::new();let(c,mut bank,mut log,policy,seed)=stale_fixture(&temp.0,1);let at=now();let stamp=iso(at);accept(&mut bank,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":"cup","marketId":"101","exchangeId":"101","sequence":"2","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();let before=bank.engine().report().unwrap();assert_eq!(retire_stale_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),0);
+  assert_eq!(retire_unqualified_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),2);let after=bank.engine().report().unwrap();for key in ["cash","ownedCost","realized","fees","positions"]{assert_eq!(after[key],before[key],"{key}");}assert_eq!(after["reservedCash"],"0.000000");assert!(log.intents.is_empty()&&log.attempted.is_empty()&&log.acknowledgments.is_empty());assert!(bank.engine().fills().is_empty());drop(log);drop(bank);
+  let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();let mut log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();assert_eq!(bank.engine().report().unwrap(),after);assert_eq!(retire_unqualified_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),0);accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())})).unwrap();assert!(bank.engine().wallet.reserved().unwrap()>0);assert_eq!(retire_unqualified_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),2);assert_eq!(bank.engine().wallet.reserved().unwrap(),0);assert_eq!(bank.engine().wallet.cash,1_000_000_000);assert!(bank.engine().fills().is_empty());
+ }
+ #[test]fn unqualified_cleanup_does_not_retire_intended_mate_or_acknowledged_actual_order(){
+  for acknowledged in [false,true]{let temp=Temp::new();let(c,mut bank,mut log,_,_)=stale_fixture(&temp.0,2);let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="101"&&q["side"]=="YES").unwrap();let id=q["id"].as_u64().unwrap();log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap();if acknowledged{let mut e=ack(&q);e["receivedAt"]=json!(iso(q["activationAt"].as_u64().unwrap()));log.append(json!({"kind":"attempt","qid":id})).unwrap();log.append(json!({"kind":"ack","qid":id,"receipt":{"data":{"orderId":e["actualOrderId"]}}})).unwrap();bank.accept("quarantine-actual-ack",1,&e).unwrap();}let held=bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>();let cash=bank.engine().wallet.cash;
+   assert_eq!(retire_unqualified_entry_drafts(&c,&mut bank,&mut log,&Default::default()).unwrap(),2);assert_eq!(bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]=="101").collect::<Vec<_>>(),held);assert_eq!(bank.engine().wallet.cash,cash);assert!(!log.closed.contains(&id));assert!(bank.engine().fills().is_empty());
+  }
  }
  #[test]fn paper5_draft_selection_is_readonly_then_yields_only_positive_original_unsent_components(){let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,2);let exchanges=std::collections::BTreeSet::from(["101".into()]);let head=bank.durable_head();let report=bank.engine().report().unwrap();let drafts=paper5_component_drafts(&bank,&log,&exchanges).unwrap().unwrap();assert!(!drafts.is_empty());assert!(drafts.iter().all(|q|q["exchangeId"]=="101"&&log.never_attempted(q["id"].as_u64().unwrap())));assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);for q in drafts{retire_for_package(&mut bank,&mut log,&q).unwrap();}assert!(paper5_component_drafts(&bank,&log,&exchanges).unwrap().unwrap().is_empty());assert!(bank.engine().order_records().iter().any(|q|q["exchangeId"]=="102"&&q["retired"]==false));assert_eq!(bank.engine().wallet.positions(),json!({}));assert!(bank.engine().fills().is_empty());}
  #[test]fn paper5_keeps_original_physical_and_unknown_liabilities_without_cancel_or_replacement(){for case in ["ack","native_binding","unknown_other"]{let temp=Temp::new();let(mut bank,mut log,_,_)=setup(&temp.0,1);let q=bank.engine().order_records()[0].clone();let id=q["id"].as_u64().unwrap();match case{"ack"=>{log.acknowledgments.insert(id,json!({"data":{"orderId":"901"}}));},"native_binding"=>{restore_ack(&mut bank,&ack(&q)).unwrap();},_=>{log.append(json!({"kind":"intent","qid":999})).unwrap();log.append(json!({"kind":"attempt","qid":999})).unwrap();}}let head=bank.durable_head();let rows=fs::read(temp.0.join("dispatch.ndjson")).unwrap();let selected=paper5_component_drafts(&bank,&log,&["101".into()].into());if case=="unknown_other"{assert!(selected.is_err());}else{assert!(selected.unwrap().is_none());}assert_eq!(bank.durable_head(),head);assert_eq!(fs::read(temp.0.join("dispatch.ndjson")).unwrap(),rows);assert!(bank.engine().fills().is_empty());}}
