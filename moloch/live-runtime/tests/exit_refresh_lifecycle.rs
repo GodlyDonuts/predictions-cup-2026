@@ -1,7 +1,7 @@
 //! Actual source tracker + durable native Session, fixed virtual clocks only.
 //! No HTTP/client/worker dispatch is exercised or authorized by this fixture.
 use baal_transport_service::{Receipt,Scope};
-use moloch_live_runtime::exit_refresh::{BookAcceptance,ReadHint,RefreshFacts,RefreshPlan,RefreshStage,Safety};
+use moloch_live_runtime::exit_refresh::{BookAcceptance,PostBookPlanning,ReadHint,RefreshFacts,RefreshPlan,RefreshStage,Safety};
 use moloch_replay::{session::{Session,BatchEntry},source::RestSource,Side};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -101,7 +101,7 @@ fn profit_session(side:Side)->(PathBuf,Session,Value){
  let r=receipts()[6].clone();let mut e=moloch_replay::source::receipt_events(&wrapped(&r)).unwrap().remove(0);e["book"]["sequence"]=json!("1");for k in ["sourceAt","requestStartedAt","receivedAt"]{e["book"][k]=json!(at(0))}e["receivedAt"]=json!(at(0));commit(&mut bank,&[e],0);
  let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="sell"&&q["side"]==label&&q["retired"]==false).unwrap();assert_eq!(q["executionStyle"],"inventoryAON");assert!(q.get("inventoryExitReason").is_none());(root,bank,q)
 }
-fn profit_safety(bank:&Session,side:Side)->Safety{Safety{never_attempted:true,has_intent:false,unresolved_attempts:false,global_unknown:false,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity("2",side),reserved_sell_quantity:0,same_exchange_pending_physical_order:false,lifecycle_fingerprint:Sha256::digest(serde_json::to_vec(&bank.engine().report().unwrap()).unwrap()).into(),native_head_fingerprint:Sha256::digest(serde_json::to_vec(&bank.durable_head()).unwrap()).into()}}
+fn profit_safety(bank:&Session,side:Side)->Safety{Safety{never_attempted:true,has_intent:false,unresolved_attempts:false,global_unknown:false,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity("2",side),reserved_sell_quantity:0,same_exchange_pending_physical_order:false,lifecycle_fingerprint:Sha256::digest(serde_json::to_vec(&bank.engine().report().unwrap()).unwrap()).into(),native_head_fingerprint:{let mut bytes=serde_json::to_vec(&bank.durable_head()).unwrap();bytes.push(b'\n');Sha256::digest(bytes).into()}}}
 #[test]fn genuine_yes_and_no_inherited_profit_refresh_requires_new_native_quote_and_original_seven_facts(){
  use moloch_live_runtime::exit_refresh::{ReadKind,current_profit_qualified};
  for side in [Side::Yes,Side::No]{let(root,mut bank,old)=profit_session(side);let safe=profit_safety(&bank,side);
@@ -165,4 +165,84 @@ fn profit_safety(bank:&Session,side:Side)->Safety{Safety{never_attempted:true,ha
   else{assert_eq!(plan.err().unwrap().to_string(),"EXIT_REFRESH_NO_FRESH_CANDIDATE");}
   assert!(bank.engine().fills().is_empty());assert_eq!(bank.engine().wallet.quantity("2",Side::No),5);drop(bank);fs::remove_dir_all(root).unwrap();
  }
+}
+
+// The same real seven receipts are admitted before one unused live draft is
+// retired normally. The retirement creates a new native quote, not a renewed old
+// qid. Virtual elapsed clocks model the original three-second activation only.
+fn post_book_profit(side:Side)->(PathBuf,Session,RefreshFacts,BookAcceptance,Value,u64){
+ let(root,mut bank,old)=profit_session(side);
+ let hint=ReadHint::from_live_profit(&old,profit_safety(&bank,side),ms(1000)).unwrap();
+ let mut raw=receipts();for(i,r)in raw.iter_mut().enumerate(){r.request_started_at=at(2000+i as u64*1000);r.received_at=at(2100+i as u64*1000);}
+ let label=if side==Side::Yes{"YES"}else{"NO"};let price=if side==Side::Yes{0.2}else{0.5};
+ raw[0].data["myBalance"]=json!(1000);raw[1].data=json!({"positions":[{"exchangeId":"2","marketId":"1","quantity":if side==Side::No{-5}else{5},"lots":[{"lotId":"901","side":label,"quantity":5,"entryPrice":price,"openedAt":at(0)}]}]});raw[3].data=json!({"balance":1000,"availableAdvance":0,"buyingPower":1000});
+ raw[6].data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["at"]=json!(at(8000));
+ let facts=RefreshFacts::new(&scope(),&hint,raw.clone(),ms(8200)).unwrap();
+ let output=moloch_replay::source::receipt_events(&wrapped(&raw[6])).unwrap();let events=commit(&mut bank,&output,8200);
+ let safe=profit_safety(&bank,side);let proof=BookAcceptance::from_events(&facts,&events,true,safe.native_head_fingerprint,ms(8200),ms(8300)).unwrap();
+ let cutoff=bank.engine().order_records().iter().filter_map(|q|q["id"].as_u64()).max().unwrap();
+ assert_eq!(bank.engine().order_records().iter().find(|q|q["id"]==old["id"]).unwrap(),&old);
+ (root,bank,facts,proof,old,cutoff)
+}
+fn retire_live_profit(bank:&mut Session,old:&Value){
+ commit(bank,&[json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","receiptHash":"e".repeat(64),"orderId":old["id"],"confirmedNetworkAttempts":0,"receivedAt":at(9000)})],9000);
+}
+#[test]fn actual_post_book_retirement_reconcile_and_three_second_activation_yes_and_no(){
+ for side in [Side::Yes,Side::No]{
+  let(root,mut bank,facts,acceptance,old,cutoff)=post_book_profit(side);
+  assert!(RefreshPlan::select(&facts,&acceptance,&bank.engine().order_records(),cutoff,ms(1000),ms(8300),ms(8300),|_|profit_safety(&bank,side)).is_err());
+  retire_live_profit(&mut bank,&old);let safe=profit_safety(&bank,side);
+  let actual_head:[u8;32]=Sha256::digest(fs::read(root.join("head.json")).unwrap()).into();assert_eq!(safe.native_head_fingerprint,actual_head);
+  let binding=PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(9100),safe.native_head_fingerprint).unwrap();
+  assert_eq!(binding.book_acceptance_completed_ms(),ms(8300));assert_eq!(binding.planning_started_ms(),ms(9000));assert_eq!(binding.planning_completed_ms(),ms(9100));assert_eq!(binding.native_head(),&bank.durable_head());
+  let plan=RefreshPlan::select_after_planning(&facts,&binding,&bank,cutoff,ms(9100),|_|safe).unwrap();
+  assert!(plan.quote()["id"].as_u64().unwrap()>cutoff);assert_ne!(plan.quote()["id"],old["id"]);assert_eq!(plan.quote()["createdAt"],ms(9000));assert_eq!(plan.quote()["activationAt"],ms(12000));assert_eq!(plan.quote()["expiresAt"],ms(22000));
+  assert_eq!(plan.stage(plan.quote(),&facts,&scope(),safe,ms(9100)).unwrap(),RefreshStage::WaitUntil(ms(12000)));
+  assert_eq!(plan.stage(plan.quote(),&facts,&scope(),safe,ms(12000)).unwrap(),RefreshStage::Ready);
+  assert!(plan.stage(plan.quote(),&facts,&scope(),safe,ms(18001)).is_err());
+  assert!(RefreshPlan::select_after_planning(&facts,&binding,&bank,plan.quote()["id"].as_u64().unwrap(),ms(9100),|_|safe).is_err());
+  for denied in [Safety{has_intent:true,..safe},Safety{never_attempted:false,..safe},Safety{unresolved_attempts:true,..safe},Safety{global_unknown:true,..safe},Safety{same_exchange_pending_physical_order:true,..safe},Safety{reserved_sell_quantity:5,..safe}]{assert!(RefreshPlan::select_after_planning(&facts,&binding,&bank,cutoff,ms(9100),|_|denied).is_err());}
+  assert!(PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(9100),[42;32]).is_err());
+  let before=bank.durable_head();let owned=bank.engine().wallet.quantity("2",side);let fills=bank.engine().fills();
+  assert!(RefreshPlan::select_after_planning(&facts,&binding,&bank,cutoff,ms(9100),|_|safe).is_ok());assert_eq!(bank.durable_head(),before);assert_eq!(bank.engine().wallet.quantity("2",side),owned);assert_eq!(bank.engine().fills(),fills);
+  commit(&mut bank,&[json!({"type":"tick","receivedAt":at(9200)})],9200);
+  assert!(RefreshPlan::select_after_planning(&facts,&binding,&bank,cutoff,ms(9200),|_|profit_safety(&bank,side)).is_err());
+  drop(bank);fs::remove_dir_all(root).unwrap();
+ }
+}
+#[test]fn post_book_binding_rejects_changed_or_gapped_actual_book_and_stale_original_facts(){
+ for gap in [false,true]{let(root,mut bank,facts,acceptance,old,cutoff)=post_book_profit(Side::No);retire_live_profit(&mut bank,&old);
+  let safe=profit_safety(&bank,Side::No);assert!(PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(18001),safe.native_head_fingerprint).is_err());
+  let event=if gap{json!({"type":"gap","exchangeId":"2","receivedAt":at(9200)})}else{let mut e=moloch_replay::source::receipt_events(&wrapped(facts.book())).unwrap().remove(0);e["book"]["sequence"]=json!("101");e["book"]["bids"][0]["quantity"]=json!(999);e};
+  commit(&mut bank,&[event],9200);let safe=profit_safety(&bank,Side::No);
+  assert!(PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(9300),safe.native_head_fingerprint).is_err());
+  let _=cutoff;drop(bank);fs::remove_dir_all(root).unwrap();
+ }
+}
+#[test]fn live_profit_read_hint_preserves_original_window_and_never_accepts_partial_or_age_exit(){
+ let(root,bank,old)=profit_session(Side::No);let safe=profit_safety(&bank,Side::No);
+ assert!(ReadHint::from_live_profit(&old,safe,ms(1000)).is_ok());assert!(ReadHint::from_live_profit(&old,safe,ms(13000)).is_err());assert!(ReadHint::from_live_profit(&old,safe,ms(0)-1).is_err());
+ for key in ["filled","retired","inventoryExitReason","cancelEffectiveAt"]{let mut q=old.clone();q[key]=match key{"filled"=>json!(1),"retired"=>json!(true),"inventoryExitReason"=>json!("maximumAge"),_=>json!(ms(500))};assert!(ReadHint::from_live_profit(&q,safe,ms(1000)).is_err());}
+ assert_eq!(bank.engine().order_records().iter().find(|q|q["id"]==old["id"]).unwrap(),&old);drop(bank);fs::remove_dir_all(root).unwrap();
+}
+
+#[test]fn post_book_profit_selection_rejects_actual_ack_binding_and_partial_fill(){
+ let(root,mut bank,facts,acceptance,old,cutoff)=post_book_profit(Side::No);retire_live_profit(&mut bank,&old);
+ let safe=profit_safety(&bank,Side::No);let binding=PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(9100),safe.native_head_fingerprint).unwrap();
+ let q=RefreshPlan::select_after_planning(&facts,&binding,&bank,cutoff,ms(9100),|_|safe).unwrap().quote().clone();
+ let actual=|kind:&str,t:u64|json!({"type":kind,"source":"official_sig_api_v1","receiptHash":"b".repeat(64),"orderId":q["id"],"actualOrderId":"201","exchangeId":"2","marketId":"1","side":"NO","action":"sell","quantity":q["quantity"],"price":q["price"],"receivedAt":at(t)});
+ commit(&mut bank,&[actual("actual_order_ack",12000)],12000);
+ let safe=profit_safety(&bank,Side::No);let binding=PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(12100),safe.native_head_fingerprint).unwrap();
+ assert!(RefreshPlan::select_after_planning(&facts,&binding,&bank,cutoff,ms(12100),|_|safe).is_err(),"native binding cannot be overridden by caller never_attempted");
+ let mut fill=actual("actual_fill",12200);fill["quantity"]=json!(1);fill["fee"]=json!("0.000000");fill["executedAt"]=json!(at(12100));fill["fillId"]=json!("301");commit(&mut bank,&[fill],12200);
+ let safe=profit_safety(&bank,Side::No);let binding=PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(12300),safe.native_head_fingerprint).unwrap();
+ assert!(RefreshPlan::select_after_planning(&facts,&binding,&bank,cutoff,ms(12300),|_|safe).is_err());assert_eq!(bank.engine().wallet.quantity("2",Side::No),4);assert_eq!(bank.engine().fills().len(),1);
+ drop(bank);fs::remove_dir_all(root).unwrap();
+}
+#[test]fn post_book_profit_phase_refuses_actual_managed_target_even_with_caller_safe_flags(){
+ let(root,mut bank,facts,acceptance,old,_)=post_book_profit(Side::No);retire_live_profit(&mut bank,&old);
+ let event=json!({"type":"managed_inventory_planning_v1","source":"moloch_live_dispatcher","receivedAt":at(9200),"bankScope":{"runId":"profit-refresh","tournamentId":TOURNAMENT,"bankManifestHash":bank.manifest_hash()},"controlSha256":"a".repeat(64),"approvedReviewSetSha256":"b".repeat(64),"generationSha256":"c".repeat(64),"managedExchangeIds":["2"],"expectedPreviousModeSha256":null});
+ commit(&mut bank,&[event],9200);let safe=profit_safety(&bank,Side::No);
+ assert!(PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(9300),safe.native_head_fingerprint).is_err());
+ assert_eq!(bank.engine().wallet.quantity("2",Side::No),5);assert!(bank.engine().fills().is_empty());drop(bank);fs::remove_dir_all(root).unwrap();
 }

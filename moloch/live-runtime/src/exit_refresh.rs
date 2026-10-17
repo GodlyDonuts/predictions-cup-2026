@@ -95,8 +95,19 @@ impl ReadHint {
         let exchange=q["exchangeId"].as_str().filter(|s|!s.is_empty()).ok_or("EXIT_REFRESH_SCOPE")?.to_owned();
         Ok(Self{old_qid:number(q,"id")?,market,exchange,side:q["side"].as_str().unwrap().into(),kind})
     }
+    /// A live unused profit quote nominates READS only. This does not retire it,
+    /// renew its window or authorize its replacement; the caller must exclude
+    /// reviewed/protected scopes and independently prove every dispatch fact.
+    pub fn from_live_profit(q:&Value,safety:Safety,now_ms:u64)->Result<Self>{
+        safety.check()?;need(identity(q)?==ReadKind::Profit,"EXIT_REFRESH_HINT_KIND")?;
+        need(q["retired"]==false && number(q,"createdAt")?<=now_ms && now_ms<number(q,"expiresAt")?,"EXIT_REFRESH_HINT_NOT_LIVE")?;
+        let market=q["marketId"].as_str().filter(|s|!s.is_empty()).ok_or("EXIT_REFRESH_SCOPE")?.to_owned();
+        let exchange=q["exchangeId"].as_str().filter(|s|!s.is_empty()).ok_or("EXIT_REFRESH_SCOPE")?.to_owned();
+        Ok(Self{old_qid:number(q,"id")?,market,exchange,side:q["side"].as_str().unwrap().into(),kind:ReadKind::Profit})
+    }
     pub fn kind(&self)->ReadKind{self.kind}
     pub fn old_qid(&self) -> u64 {self.old_qid}
+    pub fn side(&self) -> &str {&self.side}
     pub fn market(&self) -> &str {&self.market}
     pub fn exchange(&self) -> &str {&self.exchange}
 }
@@ -133,6 +144,62 @@ impl BookAcceptance {
         facts.fresh(completed_ms)?;
         Ok(Self{started_ms,completed_ms,native_head_fingerprint,facts_hash:facts.digest.clone()})
     }
+}
+
+/// Separate post-admission planning observation, never a source-clock renewal.
+/// The caller records real wall clocks around normal native planning and supplies
+/// its exact held-head fingerprint, as for BookAcceptance. The actual Session
+/// head and normalized current book are checked again at selection. No native
+/// event, retirement, tick or physical permission is created by this object.
+pub struct PostBookPlanning {
+    started_ms:u64, completed_ms:u64, head:Value, book:Value,
+    native_head_fingerprint:[u8;32], facts_hash:String,
+    book_started_ms:u64, book_completed_ms:u64,
+}
+fn current_original_book(facts:&RefreshFacts,bank:&moloch_replay::session::Session)->Result<Value>{
+    let r=facts.book();
+    let wrapped=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":facts.scope.tournament_id,"marketId":facts.hint.market,"exchangeId":facts.hint.exchange,"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
+    let events=moloch_replay::source::receipt_events(&wrapped)?;
+    let expected=&events.iter().find(|e|e["type"]=="book").ok_or("EXIT_REFRESH_NO_VALID_BOOK")?["book"];
+    let mut found=None;
+    for mut book in bank.engine().live_package_books(){
+        if book["exchangeId"]!=facts.hint.exchange{continue}
+        need(found.is_none(),"EXIT_REFRESH_AMBIGUOUS_ADMITTED_BOOK")?;
+        if let Some(o)=book.as_object_mut(){o.remove("invalid");}
+        need(book==*expected,"EXIT_REFRESH_CURRENT_BOOK_CHANGED")?;found=Some(book);
+    }
+    found.ok_or("EXIT_REFRESH_NO_CURRENT_BOOK".into())
+}
+fn ordinary_profit_scope(bank:&moloch_replay::session::Session,exchange:&str)->bool{
+    if bank.engine().managed_inventory_planning_excludes(exchange)||bank.engine().ordinary_entry_exclusions().contains(exchange){return false}
+    // Public probabilistic summaries omit non-wire protected components.
+    !bank.engine().package_records().as_array().is_none_or(|rows|rows.iter().any(|p|{
+        p["phase"]!="no_execution" && p["protectionReleased"]!=true &&
+        (p.get("probabilistic").is_some_and(|v|!v.is_null()) ||
+         p["legs"].as_array().is_some_and(|xs|xs.iter().any(|l|l["exchangeId"]==exchange)) ||
+         p["portfolio"]["componentExchanges"].as_array().is_some_and(|xs|xs.iter().any(|e|e==exchange)))
+    }))
+}
+impl PostBookPlanning {
+    pub fn from_session(facts:&RefreshFacts,acceptance:&BookAcceptance,bank:&moloch_replay::session::Session,
+        planning_started_ms:u64,planning_completed_ms:u64,native_head_fingerprint:[u8;32])->Result<Self>{
+        need(facts.hint.kind==ReadKind::Profit && acceptance.facts_hash==facts.digest &&
+            acceptance.completed_ms<=planning_started_ms && planning_started_ms<=planning_completed_ms &&
+            native_head_fingerprint.iter().any(|b|*b!=0),"EXIT_REFRESH_PLANNING_BINDING")?;
+        facts.fresh(planning_completed_ms)?;
+        need(ordinary_profit_scope(bank,&facts.hint.exchange),"EXIT_REFRESH_PROTECTED_PROFIT_SCOPE")?;
+        let mut head_bytes=serde_json::to_vec(&bank.durable_head())?;head_bytes.push(b'\n');
+        let actual_head:[u8;32]=Sha256::digest(&head_bytes).into();
+        need(native_head_fingerprint==actual_head,"EXIT_REFRESH_PLANNING_HEAD")?;
+        let book=current_original_book(facts,bank)?;
+        Ok(Self{started_ms:planning_started_ms,completed_ms:planning_completed_ms,head:bank.durable_head(),book,
+            native_head_fingerprint,facts_hash:facts.digest.clone(),book_started_ms:acceptance.started_ms,book_completed_ms:acceptance.completed_ms})
+    }
+    pub fn planning_started_ms(&self)->u64{self.started_ms}
+    pub fn planning_completed_ms(&self)->u64{self.completed_ms}
+    pub fn native_head(&self)->&Value{&self.head}
+    pub fn book_acceptance_started_ms(&self)->u64{self.book_started_ms}
+    pub fn book_acceptance_completed_ms(&self)->u64{self.book_completed_ms}
 }
 
 /// Original complete receipts, ordered tournament,positions,openOrders,exactCash,
@@ -208,6 +275,33 @@ impl RefreshPlan {
         }
         let (quote,lifecycle_fingerprint)=found.ok_or("EXIT_REFRESH_NO_FRESH_CANDIDATE")?;
         let plan=Self{quote_hash:hash(&quote)?,quote,facts_hash:facts.digest.clone(),scope_hash:hash(&serde_json::to_value(&facts.scope)?)?,lifecycle_fingerprint,native_head_fingerprint:acceptance.native_head_fingerprint};
+        let _=plan.stage(&plan.quote,facts,&facts.scope,safety(number(&plan.quote,"id")?),now_ms)?;Ok(plan)
+    }
+    /// Select only a genuine current native profit successor after final original
+    /// book admission and normal planning. A missing successor is not evidence of
+    /// write-budget denial and gives no permission to mutate or extend a quote.
+    pub fn select_after_planning(facts:&RefreshFacts,planning:&PostBookPlanning,bank:&moloch_replay::session::Session,
+        maximum_qid_before:u64,now_ms:u64,mut safety:impl FnMut(u64)->Safety)->Result<Self>{
+        facts.fresh(now_ms)?;
+        need(planning.facts_hash==facts.digest && planning.completed_ms<=now_ms && bank.durable_head()==planning.head,
+            "EXIT_REFRESH_PLANNING_CHANGED")?;
+        need(current_original_book(facts,bank)?==planning.book,"EXIT_REFRESH_CURRENT_BOOK_CHANGED")?;
+        need(ordinary_profit_scope(bank,&facts.hint.exchange),"EXIT_REFRESH_PROTECTED_PROFIT_SCOPE")?;
+        let mut found=None;
+        for q in bank.engine().order_records(){
+            if q["marketId"]!=facts.hint.market || q["exchangeId"]!=facts.hint.exchange || q["side"]!=facts.hint.side || q["action"]!="sell"{continue}
+            let qid=number(&q,"id")?;
+            if qid<=maximum_qid_before || qid==facts.hint.old_qid || q["retired"]!=false{continue}
+            if identity(&q)?!=ReadKind::Profit{continue}
+            let created=number(&q,"createdAt")?;
+            need(created>=planning.started_ms && created<=planning.completed_ms,"EXIT_REFRESH_NOT_CREATED_IN_FLOW")?;
+            need(!bank.engine().is_package_order(qid) && !bank.engine().live_order_bindings().contains_key(&qid) && current_profit_qualified(bank,&q)?,"EXIT_REFRESH_NOT_CURRENT_PROFIT")?;
+            let s=safety(qid);need(number(&q,"quantity")?<=s.check()?,"EXIT_REFRESH_UNCOVERED")?;
+            need(s.native_head_fingerprint==planning.native_head_fingerprint,"EXIT_REFRESH_BINDING_CHANGED")?;
+            need(found.is_none(),"EXIT_REFRESH_AMBIGUOUS_CANDIDATES")?;found=Some((q,s.lifecycle_fingerprint));
+        }
+        let(quote,lifecycle_fingerprint)=found.ok_or("EXIT_REFRESH_NO_FRESH_CANDIDATE")?;
+        let plan=Self{quote_hash:hash(&quote)?,quote,facts_hash:facts.digest.clone(),scope_hash:hash(&serde_json::to_value(&facts.scope)?)?,lifecycle_fingerprint,native_head_fingerprint:planning.native_head_fingerprint};
         let _=plan.stage(&plan.quote,facts,&facts.scope,safety(number(&plan.quote,"id")?),now_ms)?;Ok(plan)
     }
     pub fn quote(&self) -> &Value {&self.quote}
