@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "study_id": "tartarus-liquidity-regime-20261017-v1",
+  "declared_at_utc": "2026-10-17T19:17:58Z",
+  "actual_datasets_inspected": false,
+  "horizon_ms": 10000,
+  "label_slack_ms": 3000,
+  "entry_maximum_age_ms": 3000,
+  "ticker_episode_spacing_ms": 13000,
+  "quantity_grid": [1, 10, 100, 1000, 10000],
+  "round_trip_fee_micros_assumption": 0,
+  "buffer_per_share_micros": 5000,
+  "fee_assumption_is_venue_fact": false,
+  "regime": {
+    "maximum_spread_micros": 20000,
+    "maximum_revision_age_ms": 1000,
+    "maximum_replenishment_anchor_age_ms": 1000,
+    "definition": "For each side: unchanged executable entry price and strictly increased displayed entry quantity versus last prior consumed valid full book; narrow spread and young source revision. Aggregate displayed replenishment is not an order identity or sponsor inventory."
+  },
+  "controls": {
+    "delayed_external_ms": 1000,
+    "wrong_race": "Explicit frozen alternative race map, never guessed; missing mapping unavailable.",
+    "local_bbo": "Unchanged SIG price, crossing spread plus declared fee/buffer; same common episode cohort.",
+    "adverse_queue": "Only matched original actual execution-distribution observations; no hypothetical passive fills.",
+    "doubled_latency": "Only original measured execution latency and actual corresponding later consumed executable book; otherwise unavailable.",
+    "depth_haircut_bps": 5000,
+    "leave_one_event_out": "Entire deduplicated event and overlapping 13-second ticker episode excluded; no event fragment leaks."
+  },
+  "learning": {
+    "model": "Two fixed regime residual corrections to genuine supplied source-model executable-return predictions; no terminal probability or new generic lead-lag model.",
+    "ridge_penalty": 1,
+    "training_fraction_numerator": 3,
+    "training_fraction_denominator": 5,
+    "minimum_training_episodes": 40,
+    "minimum_oos_episodes": 20,
+    "minimum_training_per_regime": 10,
+    "selection_threshold_micros": 5000,
+    "purge": "Training label availability strictly precedes each OOS decision; held-out common cohort and all controls fixed before completeness.",
+    "baseline_unavailable": "No genuine retained trained source_innovation artifact/predictions means no correction fit or learned-value claim."
+  },
+  "selection": "First global (ticker,tradeId) representative by original decision/sample ID before features/labels; immutable event conflict quarantines whole key. First representative consumes 13s per ticker even when later censored. No replacement by a better-labeled event.",
+  "evidence": "Known sealed trace replay and same reviewed sampler only. Preserve every skipped/censored/failed episode. Inspected historical cohorts are exploratory; prospective validation requires separately frozen uninspected cohort manifest.",
+  "capacity": "Exact full-depth entry ask/exit bid prefixes for YES; complementary YES bid/ask prefixes for NO. Costs/fees counted once. Displayed crossing counterfactuals do not prove own fills, queue priority, principal turnover or executable strategy alpha.",
+  "outputs": ["episode_dataset_manifest", "capacity_curve", "rejected_variants", "trained_artifact_or_insufficient_evidence"],
+  "execution_authorized": false,
+  "calibrated_probability_claimed": false
+}
