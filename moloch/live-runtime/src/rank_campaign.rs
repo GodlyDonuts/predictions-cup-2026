@@ -15,8 +15,15 @@
 //! minimumTargetGainPpm}; unmodeledStateStatement. Prerequisite-only
 //! contingentPlan{assumptionLabel,executionAuthority:false,
 //! actualFillAndFreshReapprovalRequired:true,minimumTargetGainPpm>0,
+//! executionAssumption:{minimumCompletionMs,availableAtMs,validUntilMs,
+//! conditionalFutureLiquidityAssumption},
 //! buyLegs:[{contractId,exchangeId,marketId,side,quantity,limitPrice,
 //! sourceSha256,availableAtMs,validUntilMs}]} is conditional research ONLY.
+//! At most 128 staged BUY tranches, each bounded by the physical order cap;
+//! repeated same-side tranches share cumulative market/funding limits. Native
+//! evaluation includes the minimum post-SELL pacing/rolling-rate horizon,
+//! incomplete-prefix and partial-fill outcomes. Future liquidity/completion are
+//! explicitly uncertified; every next tranche needs actual fills and reapproval.
 //! Direct gain must be positive; a prerequisite may declare exactly zero
 //! immediate gain. Monetary expectations remain explicit, including negative.
 //! No source clock is derived from capture time. Current physical book evidence
