@@ -241,7 +241,7 @@ fn retire_live_profit(bank:&mut Session,old:&Value){
 }
 #[test]fn post_book_profit_phase_refuses_actual_managed_target_even_with_caller_safe_flags(){
  let(root,mut bank,facts,acceptance,old,_)=post_book_profit(Side::No);retire_live_profit(&mut bank,&old);
- let event=json!({"type":"managed_inventory_planning_v1","source":"moloch_live_dispatcher","receivedAt":at(9200),"bankScope":{"runId":"profit-refresh","tournamentId":TOURNAMENT,"bankManifestHash":bank.manifest_hash()},"controlSha256":"a".repeat(64),"approvedReviewSetSha256":"b".repeat(64),"generationSha256":"c".repeat(64),"managedExchangeIds":["2"],"expectedPreviousModeSha256":null});
+ let event=json!({"type":"managed_inventory_planning_v1","source":"moloch_live_dispatcher","receivedAt":at(9200),"bankScope":{"runId":"profit-refresh","tournamentId":TOURNAMENT,"bankManifestHash":bank.manifest_hash()},"bankHead":bank.durable_head(),"expectedReportSha256":format!("{:x}",Sha256::digest(serde_json::to_vec(&bank.engine().report().unwrap()).unwrap())),"controlSha256":"a".repeat(64),"approvedReviewSetSha256":"b".repeat(64),"generationSha256":"c".repeat(64),"managedExchangeIds":["2"],"expectedPreviousModeSha256":null});
  commit(&mut bank,&[event],9200);let safe=profit_safety(&bank,Side::No);
  assert!(PostBookPlanning::from_session(&facts,&acceptance,&bank,ms(9000),ms(9300),safe.native_head_fingerprint).is_err());
  assert_eq!(bank.engine().wallet.quantity("2",Side::No),5);assert!(bank.engine().fills().is_empty());drop(bank);fs::remove_dir_all(root).unwrap();
