@@ -1,0 +1,34 @@
+Traceback (most recent call last):
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 903, in apply
+    callback(value, now)
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 579, in breadth
+    self.accept({"hash": row["hash"], "sequence": row["sequence"], "event": {"type": "book", "book": {
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 662, in accept
+    self.emit(label)
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 894, in emit
+    self.append("trace-samples-v1.jsonl.gz", row)
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 862, in append
+    raise InputTraceError("TRACE_MINIMUM_FREE_SPACE")
+InputTraceError: TRACE_MINIMUM_FREE_SPACE
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 1158, in <module>
+    main()
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 1113, in main
+    drain_sig()
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 1089, in drain_sig
+    tail, segment = drain_sig_once(tail, callback, base=base if args.format == "breadth" else None,
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 1010, in drain_sig_once
+    trace.consume_sig(tail, row, callback, now)
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 919, in consume_sig
+    self.apply("sig_row", reference, callback, row, now)
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 905, in apply
+    self.record({"kind": "apply_failed", "beginSequence": begin, "completedAtMs": self.clock(),
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 889, in record
+    self.append("input-trace-v1.jsonl.gz", {**unsigned, "hash": digest})
+  File "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py", line 856, in append
+    raise InputTraceError("TRACE_CAPTURE_UNAVAILABLE")
+InputTraceError: TRACE_CAPTURE_UNAVAILABLE

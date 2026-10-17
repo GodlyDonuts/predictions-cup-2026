@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-10-17T06:18:41.053883+00:00",
+  "service": [
+    "MainPID=616815",
+    "ActiveState=active"
+  ],
+  "progress": {
+    "actualFills": 352,
+    "actualOrders": 1498,
+    "at": "2026-10-17T06:18:19.272Z",
+    "completedReadScopes": 37,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 616815,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 38,
+    "terminalOrders": 1497
+  },
+  "localStop": false,
+  "globalStop": false,
+  "freeMiB": 10177,
+  "noAccountRequests": true
+}

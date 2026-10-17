@@ -1,0 +1,272 @@
+{
+  "observedAt": "2026-10-17T06:18:34.052100+00:00",
+  "stoppedR21Boundary": {
+    "sequence": 19425,
+    "hash": "5f95c60c632e958908546b097012c1f5000611729a49dccb40746f8864213cb8"
+  },
+  "verifiedCompleteDispatchPrefixBytes": 9703789,
+  "dispatchPrefixSha256": "64009171eab339fdbb7149b64f7c408ed0f0b3d5bf14b1ece31fc6d692440811",
+  "verifiedThroughSequence": 19690,
+  "verifiedThroughHash": "ad700abd774bb990ee84fd8c7a6b143bc74b42c81124a25b17a2dbe2f5abc3aa",
+  "newAcknowledgments": [
+    {
+      "dispatchSequence": 19494,
+      "rowHash": "56eeeaacbf18fd26017c08df4aa56af4187283dc22ee666e0e4b6e6fc48ece16",
+      "rawRowSha256": "efa15630ae1e4055f5659bdf2eda4c5e816916ca1ce228bbcbd062d5a9635339",
+      "qid": 13501,
+      "receivedAt": "2026-10-17T06:05:19.957Z",
+      "requestStartedAt": "2026-10-17T06:05:19.423Z",
+      "status": 200,
+      "endpoint": "/orders",
+      "data": {
+        "orderId": 44698582,
+        "exchangeId": "1011",
+        "side": "no",
+        "action": "buy",
+        "price": 0.335,
+        "quantity": 11,
+        "quantityTraded": 0,
+        "fillPrice": null,
+        "open": true,
+        "terminalReasonCode": null
+      },
+      "nativeOrder": {
+        "action": "buy",
+        "activationAt": 1792217092275,
+        "barrier": {
+          "endAt": 1792217689275,
+          "sequence": "186363392"
+        },
+        "createdAt": 1792217089275,
+        "exchangeId": "1011",
+        "expiresAt": 1792217689275,
+        "filled": 0,
+        "id": 13501,
+        "marketId": "322",
+        "participationCredit": 0,
+        "price": "0.335000",
+        "quantity": 11,
+        "retired": true,
+        "side": "NO"
+      }
+    },
+    {
+      "dispatchSequence": 19507,
+      "rowHash": "be4c9e1e1254038df87c9c4d36a77ad82042a0fa24c385594765d6ea7f36b5fa",
+      "rawRowSha256": "a5da5b011add0721ed6ffcd1b993065f7d15ac09557f066dd335164d30be5efb",
+      "qid": 13488,
+      "receivedAt": "2026-10-17T06:06:21.482Z",
+      "requestStartedAt": "2026-10-17T06:06:20.947Z",
+      "status": 200,
+      "endpoint": "/orders",
+      "data": {
+        "orderId": 44700109,
+        "exchangeId": "1017",
+        "side": "no",
+        "action": "buy",
+        "price": 0.485,
+        "quantity": 3141,
+        "quantityTraded": 0,
+        "fillPrice": null,
+        "open": true,
+        "terminalReasonCode": null
+      },
+      "nativeOrder": {
+        "action": "buy",
+        "activationAt": 1792217026101,
+        "barrier": {
+          "endAt": 1792217623101,
+          "sequence": "186357557"
+        },
+        "createdAt": 1792217023101,
+        "exchangeId": "1017",
+        "expiresAt": 1792217623101,
+        "filled": 0,
+        "id": 13488,
+        "marketId": "328",
+        "participationCredit": 0,
+        "price": "0.485000",
+        "quantity": 3141,
+        "retired": true,
+        "side": "NO"
+      }
+    },
+    {
+      "dispatchSequence": 19517,
+      "rowHash": "25d4e8348facf2ce60cf5e64fbbdf4ae43e1b1d75abe74d8300af6cc5ef85ece",
+      "rawRowSha256": "0cb61fc90d249075fae4c32cce194f33a6fa9d446ec1f45c1d81c2b8b1e116a9",
+      "qid": 13489,
+      "receivedAt": "2026-10-17T06:06:55.554Z",
+      "requestStartedAt": "2026-10-17T06:06:55.061Z",
+      "status": 200,
+      "endpoint": "/orders",
+      "data": {
+        "orderId": 44700960,
+        "exchangeId": "1017",
+        "side": "yes",
+        "action": "buy",
+        "price": 0.51,
+        "quantity": 3141,
+        "quantityTraded": 0,
+        "fillPrice": null,
+        "open": true,
+        "terminalReasonCode": null
+      },
+      "nativeOrder": {
+        "action": "buy",
+        "activationAt": 1792217026101,
+        "barrier": {
+          "endAt": 1792217623101,
+          "sequence": "186357557"
+        },
+        "createdAt": 1792217023101,
+        "exchangeId": "1017",
+        "expiresAt": 1792217623101,
+        "filled": 0,
+        "id": 13489,
+        "marketId": "328",
+        "participationCredit": 0,
+        "price": "0.510000",
+        "quantity": 3141,
+        "retired": true,
+        "side": "YES"
+      }
+    },
+    {
+      "dispatchSequence": 19527,
+      "rowHash": "627c0d3f465d1f643b80293a08b1c3ed14bcebe2f942375ce013ef35cdb35325",
+      "rawRowSha256": "bcc12153caa62aa8d24550c0b59e219ef3e6cd8aeac56f410f3da43aa785ee2e",
+      "qid": 13512,
+      "receivedAt": "2026-10-17T06:07:32.174Z",
+      "requestStartedAt": "2026-10-17T06:07:31.730Z",
+      "status": 200,
+      "endpoint": "/orders",
+      "data": {
+        "orderId": 44701982,
+        "exchangeId": "1019",
+        "side": "no",
+        "action": "buy",
+        "price": 0.41,
+        "quantity": 212,
+        "quantityTraded": 0,
+        "fillPrice": null,
+        "open": true,
+        "terminalReasonCode": null
+      },
+      "nativeOrder": {
+        "action": "buy",
+        "activationAt": 1792217145629,
+        "barrier": {
+          "endAt": 1792217742629,
+          "sequence": "186369195"
+        },
+        "createdAt": 1792217142629,
+        "exchangeId": "1019",
+        "expiresAt": 1792217742629,
+        "filled": 0,
+        "id": 13512,
+        "marketId": "330",
+        "participationCredit": 0,
+        "price": "0.410000",
+        "quantity": 212,
+        "retired": true,
+        "side": "NO"
+      }
+    },
+    {
+      "dispatchSequence": 19538,
+      "rowHash": "66c9a6b0de2b31ac5bbb32f098928661d55fe6d04b029fab707d6f3987a349ab",
+      "rawRowSha256": "c74fcca9293cea3c27a9afdb78712181a106fb233c5e959cf738d5ac0aa1fd29",
+      "qid": 13513,
+      "receivedAt": "2026-10-17T06:08:12.194Z",
+      "requestStartedAt": "2026-10-17T06:08:11.565Z",
+      "status": 200,
+      "endpoint": "/orders",
+      "data": {
+        "orderId": 44702923,
+        "exchangeId": "1019",
+        "side": "yes",
+        "action": "buy",
+        "price": 0.585,
+        "quantity": 212,
+        "quantityTraded": 0,
+        "fillPrice": null,
+        "open": true,
+        "terminalReasonCode": null
+      },
+      "nativeOrder": {
+        "action": "buy",
+        "activationAt": 1792217145629,
+        "barrier": {
+          "endAt": 1792217742629,
+          "sequence": "186369195"
+        },
+        "createdAt": 1792217142629,
+        "exchangeId": "1019",
+        "expiresAt": 1792217742629,
+        "filled": 0,
+        "id": 13513,
+        "marketId": "330",
+        "participationCredit": 0,
+        "price": "0.585000",
+        "quantity": 212,
+        "retired": true,
+        "side": "YES"
+      }
+    },
+    {
+      "dispatchSequence": 19620,
+      "rowHash": "0f19c35fa0370c587c8ff6800acf3d40cab29605ad23c7a66c8e08ffaf334a27",
+      "rawRowSha256": "f24a8e94f90fa54aeb796cf41d6fdbd1abcd0b8ed9cb09ddb5aaa8c07649a5c1",
+      "qid": 13581,
+      "receivedAt": "2026-10-17T06:14:11.061Z",
+      "requestStartedAt": "2026-10-17T06:14:10.562Z",
+      "status": 200,
+      "endpoint": "/orders",
+      "data": {
+        "orderId": 44712603,
+        "exchangeId": "1075",
+        "side": "no",
+        "action": "sell",
+        "price": 0.9,
+        "quantity": 2,
+        "quantityTraded": 0,
+        "fillPrice": null,
+        "open": true,
+        "terminalReasonCode": null
+      },
+      "nativeOrder": {
+        "action": "sell",
+        "activationAt": 1792217455726,
+        "barrier": null,
+        "createdAt": 1792217452726,
+        "exchangeId": "1075",
+        "expiresAt": 1792218052726,
+        "filled": 0,
+        "id": 13581,
+        "marketId": "386",
+        "participationCredit": 0,
+        "price": "0.900000",
+        "quantity": 2,
+        "retired": false,
+        "side": "NO"
+      }
+    }
+  ],
+  "newAcknowledgmentCount": 6,
+  "ackTimestampField": "event.receipt.receivedAt; ACK has no event.at",
+  "bankReportRawSha256": "9e1c00620f01d347d16f7b1a4391d3f01e8a3819bd5686334c08115774a2dac8",
+  "bankSequence": 424599,
+  "fills": 352,
+  "postR21FillRows": [],
+  "noAccountRequests": true,
+  "financial": {
+    "cash": "9274.510000",
+    "ownedCost": "86165.565000",
+    "realized": "-139.840000",
+    "newTradingRealized": "-184.970000",
+    "inheritedRealizedGross": "45.130000",
+    "reservedCash": "9062.915000"
+  },
+  "privateOriginalObservationRawSha256": "d4c368786fd7d1014ab287d20ff453187c60bb03d0cecc5e88381448a1016956"
+}

@@ -1,0 +1,20 @@
+test_actual_earlier_year_joint_predictions_match_original_sampler (__main__.AtlasTests.test_actual_earlier_year_joint_predictions_match_original_sampler) ... ok
+test_actual_house_partial_pooling_retains_uncertainty (__main__.AtlasTests.test_actual_house_partial_pooling_retains_uncertainty) ... ok
+test_actual_joint_covariance_is_psd_and_not_independent (__main__.AtlasTests.test_actual_joint_covariance_is_psd_and_not_independent) ... ok
+test_actual_original_cohorts (__main__.AtlasTests.test_actual_original_cohorts) ... ok
+test_artifact_joint_weights_fingerprint_and_integer_wire (__main__.AtlasTests.test_artifact_joint_weights_fingerprint_and_integer_wire) ... ok
+test_chronological_joint_partitions_and_pair_identity (__main__.AtlasTests.test_chronological_joint_partitions_and_pair_identity) ... ok
+test_current_future_unavailable_clock_never_becomes_observed (__main__.AtlasTests.test_current_future_unavailable_clock_never_becomes_observed) ... ok
+test_field_time_and_duplicate_house_are_validated (__main__.AtlasTests.test_field_time_and_duplicate_house_are_validated) ... ok
+test_held_cycle_is_absent_and_chronological_cutoffs_are_strict (__main__.AtlasTests.test_held_cycle_is_absent_and_chronological_cutoffs_are_strict) ... ok
+test_held_final_year_labels_do_not_change_any_chronological_forecast (__main__.AtlasTests.test_held_final_year_labels_do_not_change_any_chronological_forecast) ... ok
+test_joint_uncertainty_weights_cycles_not_number_of_pairs (__main__.AtlasTests.test_joint_uncertainty_weights_cycles_not_number_of_pairs) ... ok
+test_no_claim_of_baseline_superiority_or_refund_probability (__main__.AtlasTests.test_no_claim_of_baseline_superiority_or_refund_probability) ... ok
+test_shared_uncertainty_does_not_vanish_with_huge_poll_samples (__main__.AtlasTests.test_shared_uncertainty_does_not_vanish_with_huge_poll_samples) ... ok
+test_t4_probability_matches_actual_joint_sampler (__main__.AtlasTests.test_t4_probability_matches_actual_joint_sampler) ... ok
+test_training_cutoff_cannot_include_the_current_election (__main__.AtlasTests.test_training_cutoff_cannot_include_the_current_election) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 2.217s
+
+OK

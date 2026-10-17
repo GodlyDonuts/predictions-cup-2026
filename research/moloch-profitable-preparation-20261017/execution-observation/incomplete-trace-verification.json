@@ -1,0 +1,29 @@
+{
+  "observedAt": "2026-10-17T06:18:41.051677+00:00",
+  "producerPid": 619883,
+  "producerAbsent": true,
+  "files": [
+    {
+      "name": "input-trace-v1.jsonl.gz",
+      "sha256": "a5a838b80495b1d2f3662aab4c1b4349ef7191a7834cbed36af1bd3ec59f9af6",
+      "bytes": 161994646,
+      "gzipFooterAndCrcVerified": true,
+      "decompressedBytes": 1014162642,
+      "lineCount": 4468
+    },
+    {
+      "name": "trace-samples-v1.jsonl.gz",
+      "sha256": "79ecb13f5190608229e4aadfae577613f08bf99d3ce21c2088c5e692fb84c553",
+      "bytes": 9924900,
+      "gzipFooterAndCrcVerified": true,
+      "decompressedBytes": 29088722,
+      "lineCount": 12021
+    }
+  ],
+  "originalSealComplete": false,
+  "pendingInputs": 1,
+  "wholeWitnessVerified": false,
+  "qualification": false,
+  "restartPerformed": false,
+  "reason": "unchanged 10GiB TRACE_MINIMUM_FREE_SPACE; do not relabel as complete capture"
+}

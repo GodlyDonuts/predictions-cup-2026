@@ -1,5 +1,7 @@
 # Atlas joint election model — source and measured validation
 
+October17 update: [earlier-year joint validation](chronological-joint-20261017/README.md) now evaluates5,640 pairs across15 election-cycle blocks without training on later years. Equal-cycle joint-minus-product pair Brier is+0.0004680, with bootstrap95% percentile interval[-0.0007028,+0.0017223]. **No joint advantage is established.** All prior fit parameters and validation fields reproduce exactly; fifteen real-data tests pass independently for child and owner. Installed CTM/operator forecasts remain a separate family; no live probabilities or allocations changed.
+
 Atlas is a working offline empirical-Bayes predictive model, not a trading permission or a demonstrated source of excess returns. It ingests the actual retained Senate and governor cohorts, fits correlated forecast error, runs held-cycle and earlier-cycle-only diagnostics, then exports a compact integer-only joint-state artifact for the Rust value-surface/semantic compiler.
 
 The first actual fit contains **416 races and 1,291 pollster/race observations**: Senate185/491 and governor231/800, spanning23 election cycles. It uses NumPy2.3.5 from the bundled runtime; SciPy is unnecessary. No live account requests, process changes, provisioning or raw dataset publication occur.

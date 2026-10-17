@@ -1,0 +1,12 @@
+{
+  ".gitattributes": "ffe82f3c5b968ed009c2577fa38f32c83be167799ee565d40a18e3440c57b342",
+  "actual-dispatch.json": "3acdd79cae92783d466225c7b11619d7200f3b17bf514f50636db276aa8eef27",
+  "exits-observations.ndjson": "c6ab8b37307013e232678ab987a36dd053eb6da6151f2c2eb7f3c7d079819cc4",
+  "exits-status.json": "3938f3050081869c46bd97b3dc17d19b74f4803e91b4afa3fa5434e32ccfb8df",
+  "incomplete-trace-verification.json": "a3bc2c4fbc2fb2850346ee0e10712870731f2553248f588522eb90b866b47151",
+  "README.md": "54167ede41cf2fc209d69d3bd7c40f9d1b1f38ddf6fc9c5709f72dec10d852ca",
+  "service-observation.json": "9589ccb9001e90d739c2ca323171ed95584ee914eff2238da8bcf69fc7d8503d",
+  "v3-input-trace-seal.json": "fa01434f761106df033e2c0949dc70dd5639394657fdb948c7c266a9d1961c4b",
+  "v3-status.json": "570b2204d3ab02f0a4088f0e6996a18b3e48ee06809d4b0d0c28341e816ede4e",
+  "v3-stderr.txt": "e892695c999b08c58eb7c538140b5d123dca7760b6729deeb838d06cf6996ea9"
+}

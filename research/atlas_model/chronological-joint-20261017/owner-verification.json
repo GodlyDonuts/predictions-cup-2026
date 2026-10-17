@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "38005155",
+  "handoffId": "atlas-chrono-joint-20261017",
+  "childCommit": "c2ef18d1084888aa4c97ea039186cf2239990073",
+  "rootAndChildFullValidationExactlyEqual": true,
+  "privateRootFullValidationSha256": "bca4cd28aa93dc782a5b926725f0c4ddd0b3fb450bddb7d67c90c687f2597f49",
+  "privateChildFullValidationSha256": "3aa8b0439c90b21e2fb51c0d60f3950bde34a6921e06a75c1880672a5b091fe0",
+  "allOldFunctionsExceptValidateAndArtifactAstUnchanged": true,
+  "allModelConstantsAstUnchanged": true,
+  "originalPollCsvSha256": "9f0b185506e59117c150fb988e73b612346effe8e3a8f0d90fdafcad07f54756",
+  "originalGovernorCsvSha256": "22ff0589b8ccc4c1c6f6f8c20ea5099d20fa044c696db9392823d59ead1364dc",
+  "originalMitSenateCsvAvailable": false,
+  "rootTests": {
+    "passed": 15,
+    "exitCode": 0,
+    "secondsReported": 2.024,
+    "toolChunkId": "e32fa0",
+    "training": "exact original training96c140d7",
+    "current": "original current-v2.json; no renewal or live artifact export"
+  },
+  "childTestLogSha256": "5162f594f7189ddbe59ba82f1287c4593bc9ecc3efb1f407e77d9e5a3654422f",
+  "sourceGitLfSha256": {
+    "model.py": "6da558523a212ae826d2580400944be581046f7f04150d7336ad773b72c79232",
+    "test_model.py": "b30d459633a2a792d990b931399ed7f55e576a145160b302e00ebe45f976ce37"
+  },
+  "currentForecastOrControlChanged": false,
+  "accountRequests": 0,
+  "modelApproval": false,
+  "executionAuthority": false,
+  "profitEstablished": false
+}
