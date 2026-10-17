@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-17T09:14:36.429939+00:00",
+  "result": "PASS",
+  "operator": "moloch-profit-exit-timing-r24-20261017",
+  "stageSha256": "8bcb118ad578551c94b79c6fdab813cc76b05398612ac0138fc50b4586a7d99b",
+  "boundarySha256": "d3b9a87f33892a78fd72990f0f9899830076b5a51c6e5e9c44821a030c5a8174",
+  "sequence": 462976,
+  "prior380FillCountUnchanged": true,
+  "priorReviewAttempt": "Refused before approval due to a mistyped 65-character expected boundary hash; original boundary unchanged",
+  "cash": "3597.585000",
+  "ownedCost": "91867.840000",
+  "realized": "-114.490000",
+  "allWholeBoundaryBytesUnchanged": true,
+  "onlyControlChange": "activation.binarySha256",
+  "nativeAnd15BridgesUnchanged": true,
+  "globalUnknown": 0,
+  "originalModelAndRateClocksUnchanged": true,
+  "newHumanApprovalRequested": false
+}

@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-17T09:14:56.267619+00:00",
+  "operator": "moloch-profit-exit-timing-r24-20261017",
+  "newPid": 643393,
+  "oldPid": 636242,
+  "binarySha256": "d8e4672a8b5a90f406de830846a9388aaa3922a4a34cabfe3077165ef6cced72",
+  "sourceCommit": "43b0341a15a3ef0d072c34724a3ef7a169d7594e",
+  "engineIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "release": "/home/archon/apps/moloch/releases/throughput-capital-d8e4672a8b5a/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-profit-exit-timing-r24-20261017.json",
+  "controlSha256": "74a0cc9550366226fd7a84e0fb7b106733a4aad666ad5d2dffbd82a42daef08c",
+  "boundarySha256": "d3b9a87f33892a78fd72990f0f9899830076b5a51c6e5e9c44821a030c5a8174",
+  "approvalSha256": "fa1d297613001b7cb51d11469fc5ea2a934affcfb8fe8d3dbb27b2c8f45e79be",
+  "financialBridgeUnchanged": true,
+  "freshTradingVerified": false,
+  "state": "starting-restoring"
+}
