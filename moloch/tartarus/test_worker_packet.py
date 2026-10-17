@@ -35,6 +35,8 @@ class Fixture:
                 "queue":{"globalUnknownCount":0,"hasUnknown":False,"unknown_acceptances":0,
                     "state":{"active":None,"manual_review":False,"scope":"acct","last_clock":1000}},
                 "provedNoNetworkOrderIds":[],"originalAckReceiptHashes":[],"unsubmitted":[1]},"neverSubmittedDraftIds":[1],
+            "nativeBooks":[{"exchangeId":"1","sourceAt":"1970-01-01T00:00:01.000Z",
+                "bids":[{"price":"0.400000","quantity":5}],"asks":[]}],
             "terminalDebtMicros":None,"executionAuthority":False}
         for label,endpoint,data in (
             ("account-original","/account?tournamentId=cup",{"id":"profile","balance":10}),
@@ -145,6 +147,37 @@ class PacketTests(unittest.TestCase):
         f=self.f;p=f.verify();args={**f.args,"source_observation_ms":2000}
         with self.assertRaisesRegex(W.PacketError,"CLASSIFICATION_BOUNDARY"):
             N.adapt_native_snapshot(p.report_bytes,draft_classification=p.draft_classification,**args)
+    def test_factory_binding_and_packet_attributes_cannot_be_reassigned_or_deleted(self):
+        f=self.f;p=f.verify();proof=p.draft_classification
+        f.d["report"]["reservedCash"]="0.000000";f.refresh()
+        rebound=(f.args["expected_report_sha256"],f.d["manifestHash"],f.head,(1,),10_000_000,0,1001)
+        for name,value in (("_binding",rebound),("_token",None),("_metadata_sha","f"*64)):
+            with self.assertRaises(AttributeError):setattr(proof,name,value)
+            with self.assertRaises(AttributeError):delattr(proof,name)
+        for name,value in (("head",{}),("report_bytes",f.members["report-original"]),
+                           ("_proof",None),("_metadata_bytes",b"{}"),("provenance",{})):
+            with self.assertRaises(AttributeError):setattr(p,name,value)
+            with self.assertRaises(AttributeError):delattr(p,name)
+        with self.assertRaisesRegex(W.PacketError,"CLASSIFICATION_BOUNDARY"):
+            N.adapt_native_snapshot(f.members["report-original"],draft_classification=proof,**f.args)
+    def test_mutating_all_projections_cannot_change_pinned_metadata_head_or_proof(self):
+        f=self.f;p=f.verify();head=p.head;metadata=p.metadata;books=p.native_books
+        head["sequence"]=999
+        metadata["nativeHead"]["sequence"]=999
+        metadata["nativeBooks"][0]["bids"][0]["price"]="0.990000"
+        books[0]["bids"][0]["quantity"]=999
+        evidence=p.draft_classification.evidence();evidence["draft_ids"].clear()
+        with self.assertRaises(TypeError):p.provenance["metadata_sha256"]="f"*64
+        self.assertEqual(p.head,f.head)
+        self.assertEqual(p.metadata_sha256,f.pins["expected_metadata_sha256"])
+        self.assertEqual(p.native_books,f.m["nativeBooks"])
+        self.assertEqual(p.draft_classification.evidence()["draft_ids"],[1])
+        self.assertIsInstance(p.draft_classification._binding[2],bytes)
+        self.assertEqual(N.adapt_native_snapshot(p.report_bytes,registry=f.registry,liabilities=f.liability,
+            draft_classification=p.draft_classification,**f.args)["status"],"available")
+        replay=deepcopy(f.head);replay["sequence"]=999
+        with self.assertRaisesRegex(W.PacketError,"CLASSIFICATION_BOUNDARY"):
+            p.draft_classification.validate(p.report_bytes,f.d["manifestHash"],replay,[1],10_000_000,2_000_000,1001)
     def test_receipt_digest_preserves_original_decimal_tokens_and_field_order(self):
         raw=b'{"data":{"cash":0.1000000000000000000001},"endpoint":"/x","receivedAt":"r","requestStartedAt":"s","status":200}\n'
         expected=b'{"endpoint":"/x","requestStartedAt":"s","receivedAt":"r","status":200,"data":{"cash":0.1000000000000000000001}}'

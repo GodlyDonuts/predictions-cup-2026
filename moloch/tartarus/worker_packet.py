@@ -6,7 +6,9 @@ no-network archive verification remain explicitly producer-held assertions.
 The returned classification only explains native reservations: it releases none.
 """
 from pathlib import Path
+from copy import deepcopy
 import hashlib
+import json
 import os
 import re
 import stat
@@ -110,25 +112,63 @@ def _journal(raw, descriptor, package=False):
     need(descriptor["sequence"] == sequence and descriptor.get("previous") == previous, "JOURNAL_HEAD")
     return rows
 
-class DraftClassification:
-    """Factory-only retained research evidence, not a physical-order capability."""
+class _Frozen:
+    __slots__ = ()
+    def __setattr__(self, name, value):
+        raise AttributeError("verified evidence is immutable")
+    def __delattr__(self, name):
+        raise AttributeError("verified evidence is immutable")
+
+
+def _head_bytes(head):
+    return json.dumps(head, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+
+
+class DraftClassification(_Frozen):
+    """Factory-only research evidence, not a Python-memory or trading boundary."""
     __slots__ = ("_binding", "_token", "_metadata_sha")
     def __init__(self, binding, metadata_sha, token):
         need(token is _TOKEN, "CLASSIFICATION_FACTORY_REQUIRED")
-        self._binding, self._token, self._metadata_sha = binding, token, metadata_sha
+        # Never retain a mutable head shared with any caller projection.
+        immutable = (*binding[:2], _head_bytes(binding[2]), *binding[3:])
+        object.__setattr__(self, "_binding", immutable)
+        object.__setattr__(self, "_token", token)
+        object.__setattr__(self, "_metadata_sha", metadata_sha)
     def validate(self, report_bytes, manifest, head, ids, cash, reserved, observed):
-        need(self._token is _TOKEN and self._binding == (sha(report_bytes), manifest, head, tuple(ids), cash, reserved, observed), "CLASSIFICATION_BOUNDARY")
+        need(self._token is _TOKEN and self._binding == (sha(report_bytes), manifest, _head_bytes(head), tuple(ids), cash, reserved, observed), "CLASSIFICATION_BOUNDARY")
     def evidence(self):
         return {"metadata_sha256":self._metadata_sha,"draft_ids":list(self._binding[3]),
                 "source_observation_ms":self._binding[6],
                 "producer_held_sdk_and_lease_assertion":True,
                 "sdk_or_os_state_independently_verified":False,"execution_authorized":False}
 
-class VerifiedPacket:
-    __slots__ = ("report_bytes", "head", "draft_classification", "provenance")
-    def __init__(self, report_bytes, head, proof, provenance):
-        self.report_bytes, self.head, self.draft_classification = report_bytes, head, proof
-        self.provenance = MappingProxyType(provenance)
+class VerifiedPacket(_Frozen):
+    __slots__ = ("_report_bytes", "_head_bytes", "_proof", "_provenance", "_metadata_bytes")
+    def __init__(self, report_bytes, head, proof, provenance, metadata_bytes, token):
+        need(token is _TOKEN, "PACKET_FACTORY_REQUIRED")
+        object.__setattr__(self, "_report_bytes", report_bytes)
+        object.__setattr__(self, "_head_bytes", _head_bytes(head))
+        object.__setattr__(self, "_proof", proof)
+        object.__setattr__(self, "_provenance", MappingProxyType(deepcopy(provenance)))
+        object.__setattr__(self, "_metadata_bytes", metadata_bytes)
+    @property
+    def report_bytes(self): return self._report_bytes
+    @property
+    def head(self): return decode(self._head_bytes)
+    @property
+    def draft_classification(self): return self._proof
+    @property
+    def provenance(self): return MappingProxyType(deepcopy(dict(self._provenance)))
+    @property
+    def metadata(self):
+        """Defensive projection of the ORIGINAL externally pinned metadata."""
+        return decode(self._metadata_bytes)
+    @property
+    def native_books(self):
+        """Captured native books; no renewed clocks or server authentication."""
+        return self.metadata["nativeBooks"]
+    @property
+    def metadata_sha256(self): return self._provenance["metadata_sha256"]
 
 def _verify_packet(directory, *, expected_metadata_sha256, expected_control_sha256,
                   expected_generation_sha256, expected_report_sha256, expected_head_sha256):
@@ -283,7 +323,7 @@ def _verify_packet(directory, *, expected_metadata_sha256, expected_control_sha2
         "historical_aborts_producer_verified":tuple(sorted(aborted)),
         "native_binding_and_package_semantics_producer_checked":True,
         "terminal_debt_model_available":False,"execution_authorized":False,
-        "source_observation_ms":m["sourceObservationMs"],"captured_at_ms":capture})
+        "source_observation_ms":m["sourceObservationMs"],"captured_at_ms":capture},rawmeta,_TOKEN)
 
 
 def verify_packet(directory, **expected_pins):
