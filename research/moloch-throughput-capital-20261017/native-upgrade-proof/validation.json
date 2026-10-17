@@ -1,0 +1,268 @@
+{
+  "sourceCommit": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "sourceManifestSha256": "6fa1a1c2a33239201fc8d68fe3774ad5ca7f54a33caada3c6e0f9cf7eb473189",
+  "sourceFiles": 260,
+  "expectedEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "productionChanged": false,
+  "startedAt": "2026-10-17T01:00:12.185473+00:00",
+  "checks": {
+    "sdk-library": {
+      "exitCode": 0,
+      "seconds": 25.253784310014453,
+      "logSha256": "1aa2d540ba66aefbe9aecd2bd1e04997d4c3417f867fb06ca21eaee472fcdf74",
+      "logBytes": 24978,
+      "testResults": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "native-library": {
+      "exitCode": 0,
+      "seconds": 18.354853102006018,
+      "logSha256": "143fd5dcd257e4bfbdf4aa977aa505dc15a6d65b7b039612fafa1e97561ec167",
+      "logBytes": 13220,
+      "testResults": [
+        [
+          "98",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "runtime-library": {
+      "exitCode": 0,
+      "seconds": 47.853905583993765,
+      "logSha256": "bbcac0cb6c12fa9867c647942a950837e11a22cd702f31bf4be3fced605ba1d3",
+      "logBytes": 34712,
+      "testResults": [
+        [
+          "230",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 55.13922393901157,
+      "logSha256": "0690c93d1ac14a22b0c2ecafafc4b9cb0df7bfc7a2de0b4074649beeea464b3a",
+      "logBytes": 25187,
+      "testResults": [
+        [
+          "119",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "order_snapshot": {
+      "exitCode": 0,
+      "seconds": 16.10351553998771,
+      "logSha256": "334619631d8e1a4f38e93cbb9556fd1596d82ec3807a893ffea399c1754006f8",
+      "logBytes": 11795,
+      "testResults": [
+        [
+          "6",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "quote_priority": {
+      "exitCode": 0,
+      "seconds": 3.455253017018549,
+      "logSha256": "b048c5bde053c841de2df1410b089bdf7ebd103578b8883017f791df4bed4011",
+      "logBytes": 12462,
+      "testResults": [
+        [
+          "15",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "maker_policy": {
+      "exitCode": 0,
+      "seconds": 8.319518780015642,
+      "logSha256": "486dbc1829ab1b61eb97f5fe86fc03ca7ef9c677059a0293fc779ec470aed4c9",
+      "logBytes": 13840,
+      "testResults": [
+        [
+          "33",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "execution_distribution": {
+      "exitCode": 0,
+      "seconds": 6.025047148985323,
+      "logSha256": "64e2db5008b0c89c91a5174ad1f524fce36098ae1a46310be2486e1775e2db64",
+      "logBytes": 13490,
+      "testResults": [
+        [
+          "25",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_acquisition": {
+      "exitCode": 0,
+      "seconds": 5.053670624998631,
+      "logSha256": "1e8cd1a78260ec4fc59b480c354565628fa137d66b9edf5c3cd8c8b94a71de27",
+      "logBytes": 12509,
+      "testResults": [
+        [
+          "10",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_policy": {
+      "exitCode": 0,
+      "seconds": 73.30297016599798,
+      "logSha256": "90cd58d1133677fba9e89bc562abff2746cb60ce337c42db590f666977417f5e",
+      "logBytes": 24115,
+      "testResults": [
+        [
+          "114",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_quantity": {
+      "exitCode": 0,
+      "seconds": 2.76163419400109,
+      "logSha256": "e61048c4c084aa6398a71f3b76c33a06fa912dc98eb409576bd5ba80abafcd04",
+      "logBytes": 11469,
+      "testResults": [
+        [
+          "2",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_source_bounds": {
+      "exitCode": 0,
+      "seconds": 17.295216979982797,
+      "logSha256": "cd4b2b86351abb6bd570da6d33e66c62ae538294f11fba9ef4e15e165465170e",
+      "logBytes": 11859,
+      "testResults": [
+        [
+          "7",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "release": {
+      "exitCode": 0,
+      "seconds": 324.5627072020143,
+      "logSha256": "4a1081b12b7d4465057838515fdaf6daffacdcc6806f04bf0db6411439e7208b",
+      "logBytes": 188039
+    },
+    "engine-probe-build": {
+      "exitCode": 0,
+      "seconds": 1.5915361430088524,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "engine-probe-run": {
+      "exitCode": 0,
+      "seconds": 0.007754164980724454,
+      "logSha256": "c4e8b5d3dd2e0b12d6ff7e518738bc554659685d5b2c22d8c5a780e26b6a1779",
+      "logBytes": 65
+    },
+    "bridge-helper-build": {
+      "exitCode": 0,
+      "seconds": 2.9684050209762063,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    }
+  },
+  "reusedUnchangedSDKCheck": {
+    "originalCheckedSource": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+    "originalLog": "/tmp/moloch-capital-native-r15-20261017/sdk-library.log",
+    "allSDKAndQueueSourceBytesUnchanged": true,
+    "newNativeSourceNotAnSDKDependency": true
+  },
+  "reusedUnchangedPriorChecks": {
+    "native-library": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/native-library.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    },
+    "runtime-library": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/runtime-library.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    },
+    "worker": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/worker.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    },
+    "order_snapshot": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/order_snapshot.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    },
+    "quote_priority": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/quote_priority.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    },
+    "maker_policy": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/maker_policy.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    },
+    "execution_distribution": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/execution_distribution.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    },
+    "fundamental_acquisition": {
+      "originalSourceCommit": "83e583ff5507fb988c755962aa876faf9e49b9a4",
+      "originalLog": "/tmp/moloch-capital-native-r15-20261017/fundamental_acquisition.log",
+      "allProductionNativeAndOtherTestSourcesUnchanged": true
+    }
+  },
+  "engineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "binarySha256": "fb303ba7dabebe991e20983d1e289c779deea45869d27e77cdd69383d9711b5f",
+  "binaryBytes": 13808184,
+  "nativeRlib": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libmoloch_replay-cb394fd095372d8c.rlib",
+  "nativeRlibSha256": "de42c95231e0c6e06178fafdab241b38ecf24732526382643f522ed229d7c923",
+  "finishedAt": "2026-10-17T01:07:11.821832+00:00"
+}

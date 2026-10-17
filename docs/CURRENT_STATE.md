@@ -1,3 +1,15 @@
+# October17,01:16UTC — capital/native candidate checked; current worker continues trading
+
+Current sole584167 has265 fill rows; the four new BUY orders total19,587.50
+principal/28,885 shares. Cash51,175.35, owned cost44,268.335, attributed realized
+−136.23; these new holdings have not realized profit. The optimized candidate
+7c11cd1c (equivalent main4b5dcfd6), binaryfb303ba7/native7a74f8c3, passed892 checks.
+It is **not deployed**; full original1.13GB financial-prefix replay is running.
+Current nativeb5/13bridges and nine-review generation stay active. Prospective
+larger cumulative positions, market budgets and eleven reviews remain inactive.
+See [exact implementation and constraints](MOLOCH_CAPITAL_NATIVE_UPGRADE_20261017.md)
+and [original validation/source artifacts](../research/moloch-throughput-capital-20261017/native-upgrade-proof/validation.json).
+
 # October17,01:02UTC: live fills and capital deployed
 
 Sole **584167/source027abb60/binary33005b45/nativeb5** recovered the original

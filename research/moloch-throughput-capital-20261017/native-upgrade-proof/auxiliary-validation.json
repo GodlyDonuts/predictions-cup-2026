@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-17T01:07:19.069767+00:00",
+  "sourceCommit": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "helpers": {
+    "bridge-helper-build": {
+      "exitCode": 0,
+      "seconds": 2.9684050209762063,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0,
+      "sourceSha256": "f69d308eb7b31ab322368ec690fdd6a313cea1ecf1c7466034ed9c4a08262662",
+      "binarySha256": "bb020311eb780a3bac96b540ebc620fe0dbe701e78eb69867a3701ef74a41e5e"
+    },
+    "review-validator-build": {
+      "exitCode": 0,
+      "seconds": 2.8018660199886654,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0,
+      "sourceSha256": "af01891ae5393e5d89eac3791729f019aee4fc9b7a970ea191975b2fc9737bec",
+      "binarySha256": "c65f479f54b05359effd9ed2ec9470fa12f3072f008f5d391e642adbb42dc6a7"
+    }
+  },
+  "validationSha256": "88fedde0c1d2e4167d6b41b48154172f2bbf8b9bccacb0411c8587f239a413b8"
+}

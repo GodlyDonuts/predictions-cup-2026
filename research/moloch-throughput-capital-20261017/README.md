@@ -1,3 +1,23 @@
+# Checked capital and execution candidate — October17,01:16UTC
+
+The next native/runtime candidate passed **892 actual checks** and an optimized
+ARM64 release. It is **not yet deployed**. Current production remains sole584167,
+with265 official fill rows, cash51,175.35, position cost44,268.335 and combined
+attributed realized−136.23. Four new BUY orders acquired28,885 shares for19,587.50;
+these holdings have not realized a profit. Full original financial-prefix
+compatibility is being checked while production continues trading.
+
+[Implementation and limits](../../docs/MOLOCH_CAPITAL_NATIVE_UPGRADE_20261017.md),
+[actual build/validation](native-upgrade-proof/validation.json),
+[raw checksums](native-upgrade-proof/SHA256SUMS.json),
+[complete original build sources](native-upgrade-proof/actual-source.zip), and
+[Git normalization verification](native-upgrade-proof/main-source-normalization-verification.json)
+separate checked source from the pending native rollout and prospective eleven
+review configuration. Source7c11cd1c corresponds to main4b5dcfd6; all260 raw source
+files match those main blobs exactly or by CRLF-to-LF normalization only
+(62 exact /198 normalized). Prior failed fixture checks remain retained and are
+not counted as passing checks. Per-order10k and account API limits remain.
+
 # Actual restored trading and new fills — October17,01:02UTC
 
 [Live proof](live-proof/live-verification.json) binds the actual new worker,
