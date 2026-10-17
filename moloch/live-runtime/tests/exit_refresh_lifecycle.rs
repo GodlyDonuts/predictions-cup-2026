@@ -88,3 +88,42 @@ fn later_facts(f:&Fixture)->(RefreshFacts,[Receipt;7]){
   let(facts,raw)=later_facts(&f);let invalid=f.source.accept(&wrapped(&raw[6])).unwrap();assert_eq!(invalid.len(),1);assert_eq!(invalid[0]["book"]["invalid"],true);let committed=commit(&mut f.bank,&invalid,36000);assert!(BookAcceptance::from_events(&facts,&committed,true,head(&f),ms(36000),ms(36100)).is_err());assert_eq!(f.bank.engine().report().unwrap()["fills"],1);assert_eq!(f.bank.engine().wallet.quantity("2",Side::Yes),1);
  }
 }
+
+// Genuine inherited lots have no new-entry loss timer. Their profitable AON
+// successors must be recomputed by the native planner, never relabeled age exits.
+fn profit_session(side:Side)->(PathBuf,Session,Value){
+ static N:AtomicU64=AtomicU64::new(0);
+ let root=std::env::temp_dir().join(format!("profit-refresh-{}-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos(),N.fetch_add(1,Ordering::SeqCst)));
+ let policy=json!({"quantity":5,"maximumMarkets":3,"entriesEnabled":false,"maximumInventoryAgeMs":60000,"inventoryAgeClock":"execution","inventoryTakerAfterMs":0,"inventoryMinimumGain":"0.005000","inventoryExitMode":"fixedGain","inventoryExitDepthBps":5000});
+ let seed=json!({"runId":"profit-refresh","tournamentId":TOURNAMENT,"availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":at(0)});
+ let mut bank=Session::open_live(&root,&policy,&seed).unwrap();let no=side==Side::No;let label=if no{"NO"}else{"YES"};let price=if no{"0.500000"}else{"0.200000"};let principal=if no{"2.500000"}else{"1.000000"};
+ commit(&mut bank,&[json!({"type":"actual_position_adoption","source":"official_sig_api_v1","authority":"human_moloch_inherited_management_20261015","complete":true,"receiptHash":"d".repeat(64),"tournamentId":TOURNAMENT,"receivedAt":at(0),"requestStartedAt":at(0),"openingCost":principal,"effectiveMaximumMarkets":4,"positions":[{"marketId":"1","exchangeId":"2","quantity":if no{-5}else{5},"lotPrincipal":principal,"reportedCostBasis":principal,"reportedMinusLotPrincipal":"0.000000","basisClassification":"exact","lots":[{"lotId":"901","quantity":5,"side":label,"entryPrice":price,"openedAt":at(0)}]}]})],0);
+ let r=receipts()[6].clone();let mut e=moloch_replay::source::receipt_events(&wrapped(&r)).unwrap().remove(0);e["book"]["sequence"]=json!("1");for k in ["sourceAt","requestStartedAt","receivedAt"]{e["book"][k]=json!(at(0))}e["receivedAt"]=json!(at(0));commit(&mut bank,&[e],0);
+ let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="sell"&&q["side"]==label&&q["retired"]==false).unwrap();assert_eq!(q["executionStyle"],"inventoryAON");assert!(q.get("inventoryExitReason").is_none());(root,bank,q)
+}
+fn profit_safety(bank:&Session,side:Side)->Safety{Safety{never_attempted:true,has_intent:false,unresolved_attempts:false,global_unknown:false,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity("2",side),reserved_sell_quantity:0,same_exchange_pending_physical_order:false,lifecycle_fingerprint:Sha256::digest(serde_json::to_vec(&bank.engine().report().unwrap()).unwrap()).into(),native_head_fingerprint:Sha256::digest(serde_json::to_vec(&bank.durable_head()).unwrap()).into()}}
+#[test]fn genuine_yes_and_no_inherited_profit_refresh_requires_new_native_quote_and_original_seven_facts(){
+ use moloch_live_runtime::exit_refresh::{ReadKind,current_profit_qualified};
+ for side in [Side::Yes,Side::No]{let(root,mut bank,old)=profit_session(side);let safe=profit_safety(&bank,side);
+  assert!(ReadHint::from_expired(&old,safe,ms(20000)).is_err(),"legacy age API must not silently accept profit");
+  let hint=ReadHint::from_expired_kind(&old,safe,ms(20000),ReadKind::Profit).unwrap();assert_eq!(hint.kind(),ReadKind::Profit);
+  let cutoff=bank.engine().order_records().iter().filter_map(|q|q["id"].as_u64()).max().unwrap();
+  commit(&mut bank,&[json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","receiptHash":"e".repeat(64),"orderId":old["id"],"confirmedNetworkAttempts":0,"deferPlanningForPackage":true,"receivedAt":at(20000)})],20000);
+  let mut raw=receipts();let label=if side==Side::Yes{"YES"}else{"NO"};let price=if side==Side::Yes{0.2}else{0.5};
+  raw[0].data["myBalance"]=json!(1000);raw[1].data=json!({"positions":[{"exchangeId":"2","marketId":"1","quantity":if side==Side::No{-5}else{5},"lots":[{"lotId":"901","side":label,"quantity":5,"entryPrice":price,"openedAt":at(0)}]}]});raw[3].data=json!({"balance":1000,"availableAdvance":0,"buyingPower":1000});
+  let facts=RefreshFacts::new(&scope(),&hint,raw.clone(),ms(27000)).unwrap();let events=moloch_replay::source::receipt_events(&wrapped(&raw[6])).unwrap();let events=commit(&mut bank,&events,27000);
+  let safe=profit_safety(&bank,side);let proof=BookAcceptance::from_events(&facts,&events,true,safe.native_head_fingerprint,ms(27000),ms(27100)).unwrap();
+  let orders=bank.engine().order_records();let plan=RefreshPlan::select(&facts,&proof,&orders,cutoff,ms(20000),ms(27100),ms(27100),|_|safe).unwrap();assert!(plan.quote()["id"].as_u64().unwrap()>cutoff);assert!(current_profit_qualified(&bank,plan.quote()).unwrap());assert!(plan.quote().get("inventoryExitReason").is_none());
+  assert_eq!(plan.stage(plan.quote(),&facts,&scope(),safe,ms(30000)).unwrap(),RefreshStage::Ready);
+  for safety in [Safety{has_intent:true,..safe},Safety{never_attempted:false,..safe},Safety{global_unknown:true,..safe},Safety{same_exchange_pending_physical_order:true,..safe},Safety{owned_quantity:0,..safe}]{assert!(plan.stage(plan.quote(),&facts,&scope(),safety,ms(30000)).is_err());}
+  assert!(plan.stage(plan.quote(),&facts,&scope(),safe,ms(36001)).is_err());assert_eq!(bank.engine().wallet.quantity("2",side),5);assert!(bank.engine().fills().is_empty());drop(bank);fs::remove_dir_all(root).unwrap();
+ }
+}
+#[test]fn genuine_deteriorated_book_cannot_turn_inherited_profit_hint_into_a_loss_exit(){
+ use moloch_live_runtime::exit_refresh::ReadKind;
+ let(root,mut bank,old)=profit_session(Side::No);let hint=ReadHint::from_expired_kind(&old,profit_safety(&bank,Side::No),ms(20000),ReadKind::Profit).unwrap();let cutoff=old["id"].as_u64().unwrap();
+ commit(&mut bank,&[json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","receiptHash":"e".repeat(64),"orderId":old["id"],"confirmedNetworkAttempts":0,"deferPlanningForPackage":true,"receivedAt":at(20000)})],20000);
+ let mut raw=receipts();let row=&mut raw[6].data["contexts"][0]["orderbook"]["exchanges"][0];row["bids"]=json!([{"price":0.59,"quantity":1000}]);row["asks"]=json!([{"price":0.60,"quantity":1000}]);
+ let facts=RefreshFacts::new(&scope(),&hint,raw.clone(),ms(27000)).unwrap();let events=moloch_replay::source::receipt_events(&wrapped(&raw[6])).unwrap();let events=commit(&mut bank,&events,27000);let safe=profit_safety(&bank,Side::No);let proof=BookAcceptance::from_events(&facts,&events,true,safe.native_head_fingerprint,ms(27000),ms(27100)).unwrap();
+ assert!(RefreshPlan::select(&facts,&proof,&bank.engine().order_records(),cutoff,ms(20000),ms(27100),ms(27100),|_|safe).is_err());assert_eq!(bank.engine().wallet.quantity("2",Side::No),5);assert!(bank.engine().fills().is_empty());drop(bank);fs::remove_dir_all(root).unwrap();
+}

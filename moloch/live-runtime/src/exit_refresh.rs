@@ -11,15 +11,48 @@ fn clock(s: &str) -> Result<u64> {
 }
 fn number(q: &Value, key: &str) -> Result<u64> {q[key].as_u64().ok_or("EXIT_REFRESH_QUOTE_CLOCK_OR_SIZE".into())}
 fn canceled(q: &Value) -> bool {q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())}
-fn identity(q: &Value) -> Result<()> {
-    need(q["action"]=="sell" && q["executionStyle"]=="inventoryAON" && q["inventoryExitReason"]=="maximumAge"
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ReadKind { MaximumAge, Profit }
+impl ReadKind {
+    pub fn from_quote(q:&Value)->Option<Self>{
+        if q["action"]!="sell"||q["executionStyle"]!="inventoryAON"{return None}
+        if q["inventoryExitReason"]=="maximumAge"{Some(Self::MaximumAge)}
+        else if q.get("inventoryExitReason").is_none_or(Value::is_null){Some(Self::Profit)}else{None}
+    }
+}
+fn identity(q: &Value) -> Result<ReadKind> {
+    need(ReadKind::from_quote(q).is_some()
         && matches!(q["side"].as_str(),Some("YES"|"NO")) && q["filled"].as_u64()==Some(0)
-        && q["retired"].is_boolean() && !canceled(q), "EXIT_REFRESH_NOT_MAXIMUM_AGE_SELL")?;
+        && q["retired"].is_boolean() && !canceled(q), "EXIT_REFRESH_NOT_INVENTORY_AON_SELL")?;
     need(number(q,"id")?>0 && number(q,"quantity")?>0, "EXIT_REFRESH_QUOTE_ID_OR_SIZE")?;
     let price=decimal_units(q["price"].as_str().ok_or("EXIT_REFRESH_PRICE")?)?;
     need(price>0 && price<1_000_000,"EXIT_REFRESH_PRICE")?;
     let (created,activation,expiry)=(number(q,"createdAt")?,number(q,"activationAt")?,number(q,"expiresAt")?);
-    need(created<=activation && activation<=created.saturating_add(3000) && activation<expiry,"EXIT_REFRESH_NATIVE_WINDOW")
+    need(created<=activation && activation<=created.saturating_add(3000) && activation<expiry,"EXIT_REFRESH_NATIVE_WINDOW")?;
+    Ok(ReadKind::from_quote(q).unwrap())
+}
+
+/// Necessary profit check for an actual current native quote, never a permit.
+/// Matches native profitable_age/depth rules: worst remaining lot and rounded
+/// one-share fees on both acquisition basis and exit. No age-loss substitution.
+pub fn current_profit_qualified(bank:&moloch_replay::session::Session,q:&Value)->Result<bool>{
+    if identity(q)?!=ReadKind::Profit{return Ok(false)}
+    let ex=q["exchangeId"].as_str().ok_or("EXIT_REFRESH_SCOPE")?;
+    let side=q["side"].as_str().ok_or("EXIT_REFRESH_SCOPE")?;
+    let positions=bank.engine().wallet.positions();
+    let lots=positions.get(ex).and_then(|p|p.get(side)).and_then(Value::as_array).ok_or("EXIT_REFRESH_PROFIT_LOTS")?;
+    let mut worst=0i128;let mut held=0u64;
+    for lot in lots{
+        let n=lot["quantity"].as_u64().filter(|n|*n>0).ok_or("EXIT_REFRESH_PROFIT_LOTS")?;
+        held=held.checked_add(n).ok_or("EXIT_REFRESH_PROFIT_RANGE")?;
+        worst=worst.max(decimal_units(lot["price"].as_str().ok_or("EXIT_REFRESH_PROFIT_LOTS")?)?);
+    }
+    if held<number(q,"quantity")?{return Ok(false)}
+    let policy=bank.engine().policy();let limit=decimal_units(q["price"].as_str().ok_or("EXIT_REFRESH_PRICE")?)?;
+    let bps=u32::try_from(policy["feeBps"].as_u64().ok_or("EXIT_REFRESH_PROFIT_FEES")?)?;
+    let per=decimal_units(policy["feePerShare"].as_str().ok_or("EXIT_REFRESH_PROFIT_FEES")?)?;
+    let minimum=policy.get("inventoryMinimumGain").map(|v|->Result<i128>{Ok(decimal_units(v.as_str().ok_or("EXIT_REFRESH_PROFIT_MINIMUM")?)?)}).transpose()?.unwrap_or(0);
+    Ok(limit-worst-moloch_replay::fee(worst,1,bps,per)?-moloch_replay::fee(limit,1,bps,per)? >= minimum)
 }
 
 /// Supply CURRENT authoritative journal/queue/control observations on EVERY gate.
@@ -48,17 +81,21 @@ impl Safety {
     }
 }
 #[derive(Clone)]
-pub struct ReadHint { old_qid: u64, market: String, exchange: String, side: String }
+pub struct ReadHint { old_qid: u64, market: String, exchange: String, side: String, kind: ReadKind }
 impl ReadHint {
     /// Retired is permitted ONLY for this expired, never-attempted read hint.
     /// An existing intent, even with no recorded attempt, is not refreshable.
     pub fn from_expired(q: &Value, safety: Safety, now_ms: u64) -> Result<Self> {
-        safety.check()?;identity(q)?;
+        Self::from_expired_kind(q,safety,now_ms,ReadKind::MaximumAge)
+    }
+    pub fn from_expired_kind(q:&Value,safety:Safety,now_ms:u64,kind:ReadKind)->Result<Self>{
+        safety.check()?;need(identity(q)?==kind,"EXIT_REFRESH_HINT_KIND")?;
         need(number(q,"expiresAt")?<=now_ms,"EXIT_REFRESH_HINT_NOT_EXPIRED")?;
         let market=q["marketId"].as_str().filter(|s|!s.is_empty()).ok_or("EXIT_REFRESH_SCOPE")?.to_owned();
         let exchange=q["exchangeId"].as_str().filter(|s|!s.is_empty()).ok_or("EXIT_REFRESH_SCOPE")?.to_owned();
-        Ok(Self{old_qid:number(q,"id")?,market,exchange,side:q["side"].as_str().unwrap().into()})
+        Ok(Self{old_qid:number(q,"id")?,market,exchange,side:q["side"].as_str().unwrap().into(),kind})
     }
+    pub fn kind(&self)->ReadKind{self.kind}
     pub fn old_qid(&self) -> u64 {self.old_qid}
     pub fn market(&self) -> &str {&self.market}
     pub fn exchange(&self) -> &str {&self.exchange}
@@ -124,7 +161,7 @@ impl RefreshFacts {
         }
         let rows=receipts[6].data["contexts"][0]["orderbook"]["exchanges"].as_array().ok_or("EXIT_REFRESH_BOOK_SCOPE")?;
         need(rows.iter().filter(|r|r["exchangeId"]==hint.exchange).count()==1,"EXIT_REFRESH_BOOK_SCOPE")?;
-        let digest=hash(&json!({"scope":scope,"oldQid":hint.old_qid,"market":hint.market,"exchange":hint.exchange,"side":hint.side,"receipts":receipts}))?;
+        let digest=hash(&json!({"scope":scope,"oldQid":hint.old_qid,"market":hint.market,"exchange":hint.exchange,"side":hint.side,"kind":format!("{:?}",hint.kind),"receipts":receipts}))?;
         let facts=Self{scope:scope.clone(),hint:hint.clone(),receipts,digest};facts.fresh(now_ms)?;Ok(facts)
     }
     pub fn digest(&self) -> &str {&self.digest}
@@ -162,7 +199,7 @@ impl RefreshPlan {
             if q["marketId"]!=facts.hint.market || q["exchangeId"]!=facts.hint.exchange || q["side"]!=facts.hint.side || q["action"]!="sell" {continue;}
             let qid=number(q,"id")?;
             if qid<=maximum_qid_before || qid==facts.hint.old_qid || q["retired"]!=false {continue;}
-            identity(q)?;
+            if identity(q)?!=facts.hint.kind{continue}
             let created=number(q,"createdAt")?;
             need(created>=flow_started_ms && created<=accept_completed_ms,"EXIT_REFRESH_NOT_CREATED_IN_FLOW")?;
             let current_safety=safety(qid);
@@ -180,7 +217,7 @@ impl RefreshPlan {
     pub fn stage(&self,current: &Value,facts: &RefreshFacts,scope: &Scope,safety: Safety,now_ms:u64) -> Result<RefreshStage> {
         need(hash(current)?==self.quote_hash && facts.digest==self.facts_hash && hash(&serde_json::to_value(scope)?)?==self.scope_hash
             && safety.lifecycle_fingerprint==self.lifecycle_fingerprint && safety.native_head_fingerprint==self.native_head_fingerprint,"EXIT_REFRESH_BINDING_CHANGED")?;
-        facts.fresh(now_ms)?;identity(current)?;
+        facts.fresh(now_ms)?;need(identity(current)?==facts.hint.kind,"EXIT_REFRESH_KIND_CHANGED")?;
         need(current["retired"]==false && number(current,"quantity")?<=safety.check()?,"EXIT_REFRESH_UNCOVERED_OR_RETIRED")?;
         let activation=number(current,"activationAt")?;let expiry=number(current,"expiresAt")?;
         need(expiry.saturating_sub(now_ms)>3000,"EXIT_REFRESH_EXPIRY_HEADROOM")?;
@@ -208,6 +245,15 @@ mod tests {
     fn admitted(f:&RefreshFacts)->Value {let r=f.book();moloch_replay::source::receipt_events(&json!({"source":"official_sig_api_v1","kind":"book","tournamentId":f.scope.tournament_id,"marketId":f.hint.market,"exchangeId":f.hint.exchange,"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data})).unwrap().remove(0)}
     fn acceptance(f:&RefreshFacts)->BookAcceptance {BookAcceptance::new(f,&admitted(f),true,[3;32],26_900,27_100).unwrap()}
     fn plan(facts:&RefreshFacts,q:&Value)->Result<RefreshPlan>{RefreshPlan::select(facts,&acceptance(facts),&[q.clone()],1,26_900,27_100,27_100,|_|safe())}
+    #[test]fn profit_hint_is_explicit_and_cannot_select_an_age_loss_successor(){
+        let(s,_,mut f,mut fresh)=fixture();let mut old=q(1,0);old.as_object_mut().unwrap().remove("inventoryExitReason");
+        assert!(ReadHint::from_expired(&old,safe(),20_000).is_err());
+        let hint=ReadHint::from_expired_kind(&old,safe(),20_000,ReadKind::Profit).unwrap();
+        f=RefreshFacts::new(&s,&hint,f.receipts.clone(),27_000).unwrap();
+        assert!(plan(&f,&fresh).is_err(),"maximum-age successor cannot satisfy a profit hint");
+        fresh.as_object_mut().unwrap().remove("inventoryExitReason");let p=plan(&f,&fresh).unwrap();
+        let original=fresh.clone();fresh["inventoryExitReason"]=json!("maximumAge");assert!(p.stage(&fresh,&f,&s,safe(),30_000).is_err());assert_eq!(p.quote(),&original);
+    }
     #[test]fn new_quote_waits_original_activation_and_then_ready(){let(s,_,f,q)=fixture();let p=plan(&f,&q).unwrap();assert_eq!(p.stage(&q,&f,&s,safe(),27_100).unwrap(),RefreshStage::WaitUntil(30_000));assert_eq!(p.stage(&q,&f,&s,safe(),30_000).unwrap(),RefreshStage::Ready);assert_eq!(p.quote()["expiresAt"],40_000);}
     #[test]fn old_qid_never_becomes_new_intent(){let(_,_,f,_)=fixture();assert!(plan(&f,&q(1,27_000)).is_err());assert!(RefreshPlan::select(&f,&acceptance(&f),&[q(2,27_000)],2,26_900,27_100,27_100,|_|safe()).is_err());}
     #[test]fn changed_price_and_size_are_bound_to_new_quote_only(){let(s,_,f,mut q)=fixture();q["price"]=json!("0.650000");q["quantity"]=json!(169);let p=plan(&f,&q).unwrap();assert_eq!(p.quote()["quantity"],169);assert_eq!(p.quote()["price"],"0.650000");q["price"]=json!("0.655000");assert!(p.stage(&q,&f,&s,safe(),30_000).is_err());}

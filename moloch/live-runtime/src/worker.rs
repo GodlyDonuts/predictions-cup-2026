@@ -887,15 +887,20 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   Ok(v)=>v,Err(e)=>{refresh_deferred(c,"book_ineligible",e.as_ref())?;return Ok(())}
  };
  // Every I/O/control failure is propagated; only pure helper denials defer.
- let candidates:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|id|id>maximum_qid_before&&id!=hint.old_qid())&&q["retired"]==false&&q["marketId"]==old["marketId"]&&q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"&&q["executionStyle"]=="inventoryAON"&&q["inventoryExitReason"]=="maximumAge"&&q["filled"].as_u64()==Some(0)&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)).collect();
+ let candidates:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|id|id>maximum_qid_before&&id!=hint.old_qid())&&q["retired"]==false&&q["marketId"]==old["marketId"]&&q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"&&q["executionStyle"]=="inventoryAON"&&moloch_live_runtime::exit_refresh::ReadKind::from_quote(q)==Some(hint.kind())&&q["filled"].as_u64()==Some(0)&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)).collect();
  let mut safety=std::collections::BTreeMap::new();
+ let candidates=if hint.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit{
+  let mut qualified=Vec::new();for q in candidates{if moloch_live_runtime::exit_refresh::current_profit_qualified(bank,&q)?{qualified.push(q)}}qualified
+ }else{candidates};
  for q in &candidates{if q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"{safety.insert(q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,refresh_safety(c,bank,log,authority,stream,q,unknown)?);}}
  let plan=match RefreshPlan::select(&bound,&acceptance,&candidates,maximum_qid_before,flow_started,completed,now(),|id|*safety.get(&id).expect("validated native candidate safety")){
   Ok(v)=>v,Err(e)=>{refresh_deferred(c,"candidate_ineligible",e.as_ref())?;return Ok(())}
  };
  let qid=plan.quote()["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
  loop{
-  let current=quote(bank,qid)?;let current_safety=refresh_safety(c,bank,log,authority,stream,&current,unknown)?;
+  let current=quote(bank,qid)?;
+  if hint.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit&&!moloch_live_runtime::exit_refresh::current_profit_qualified(bank,&current)?{refresh_deferred(c,"profit_ineligible",&"EXIT_REFRESH_CURRENT_GAIN_REQUIRED")?;return Ok(())}
+  let current_safety=refresh_safety(c,bank,log,authority,stream,&current,unknown)?;
   match plan.stage(&current,&bound,&c.scope,current_safety,now()){
    Ok(RefreshStage::WaitUntil(at))=>{std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100)));}
    Ok(RefreshStage::Ready)=>break,
@@ -904,18 +909,39 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  }
  // Query the real shared queue once after waiting, never synthesize empty unknowns.
  let unknown=queue_has_unknown(t)?;let current=quote(bank,qid)?;
+ if hint.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit&&!moloch_live_runtime::exit_refresh::current_profit_qualified(bank,&current)?{refresh_deferred(c,"profit_ineligible",&"EXIT_REFRESH_CURRENT_GAIN_REQUIRED")?;return Ok(())}
  match plan.stage(&current,&bound,&c.scope,refresh_safety(c,bank,log,authority,stream,&current,unknown)?,now()){
   Ok(RefreshStage::Ready)=>{},Ok(_)=>{refresh_deferred(c,"final_ineligible",&"ACTIVATION_NOT_READY")?;return Ok(())},Err(e)=>{refresh_deferred(c,"final_ineligible",e.as_ref())?;return Ok(())}
  }
  // Rebuild complete physical identity from this NEW frozen quote only after wait.
  submit_order(t,c,bank,log,authority,plan.quote(),facts,None,fundamental)
 }
+fn profit_hint_scope_allowed(q:&Value,managed:&std::collections::BTreeSet<String>,protected:&std::collections::BTreeSet<String>)->bool{
+ // This extra conservative exclusion is profit-only; preserve the original
+ // age path's separate native/package/review authority checks.
+ if q["inventoryExitReason"]=="maximumAge"{return true}
+ let Some(ex)=q["exchangeId"].as_str()else{return false};
+ !protected.contains(ex)&&!managed.contains(ex)
+}
+fn profit_refresh_protected(scope:&Scope,packages:&Value)->Result<std::collections::BTreeSet<String>>{
+ let mut protected=std::collections::BTreeSet::new();
+ for p in packages.as_array().ok_or("LIVE_EXIT_REFRESH_PACKAGES")?{
+  if p["phase"]=="no_execution"||p["protectionReleased"]==true{continue}
+  // Public probabilistic summaries omit some non-wire held components. No
+  // profit nomination or priority may infer those components are unprotected.
+  if p.get("probabilistic").is_some_and(|v|!v.is_null()){protected.extend(scope.exchanges.keys().cloned());}
+  if let Some(legs)=p["legs"].as_array(){for leg in legs{if let Some(ex)=leg["exchangeId"].as_str(){protected.insert(ex.to_owned());}}}
+  if let Some(xs)=p["portfolio"]["componentExchanges"].as_array(){for ex in xs{if let Some(ex)=ex.as_str(){protected.insert(ex.to_owned());}}}
+ }Ok(protected)
+}
 fn latest_refresh_hints(orders:&[Value],at:u64,eligible:impl Fn(u64)->bool)->Result<std::collections::BTreeMap<String,Value>>{
  let mut latest=std::collections::BTreeMap::<String,Value>::new();
  for q in orders{
-  if q["action"]!="sell"||q["inventoryExitReason"]!="maximumAge"||q["executionStyle"]!="inventoryAON"||q["filled"].as_u64()!=Some(0)||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|t>at){continue}
+  if moloch_live_runtime::exit_refresh::ReadKind::from_quote(q).is_none()||q["filled"].as_u64()!=Some(0)||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|t>at){continue}
   let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if !eligible(id){continue}
-  let key=format!("{}:{}:sell",q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?,q["side"].as_str().ok_or("LIVE_SIDE")?);
+  let mut key=format!("{}:{}:sell",q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?,q["side"].as_str().ok_or("LIVE_SIDE")?);
+  // Distinct historical kinds must not hide one another before current age checks.
+  if moloch_live_runtime::exit_refresh::ReadKind::from_quote(q)==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit){key.push_str(":profit");}
   if latest.get(&key).is_none_or(|old|old["id"].as_u64().unwrap()<id){latest.insert(key,q.clone());}
  }Ok(latest)
 }
@@ -958,11 +984,11 @@ fn prepare_expired_exit_hints(
   .filter_map(|q|Some(format!("{}:{}:sell",q["exchangeId"].as_str()?,q["side"].as_str()?))).collect();
  for(key,old)in latest{
   let ex=old["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;let side=old["side"].as_str().ok_or("LIVE_SIDE")?;
-  if owned(ex,side)?==0||live_sells.contains(&key)||!policy_allows(ex)?||!age_due(ex,side)?{continue}candidates.push((key,old));
+  if owned(ex,side)?==0||live_sells.contains(&format!("{ex}:{side}:sell"))||!policy_allows(ex)?||(old["inventoryExitReason"]=="maximumAge"&&!age_due(ex,side)?){continue}candidates.push((key,old));
  }
  if candidates.is_empty(){return Ok((hints,false))}
  let unknown=queue_unknown()?;
- for(key,old)in candidates{let checked=safety(&old,unknown)?;if let Ok(hint)=moloch_live_runtime::exit_refresh::ReadHint::from_expired(&old,checked,at){hints.insert(key,(old,hint));}}
+ for(key,old)in candidates{let checked=safety(&old,unknown)?;if let Ok(hint)=moloch_live_runtime::exit_refresh::ReadHint::from_expired_kind(&old,checked,at,moloch_live_runtime::exit_refresh::ReadKind::from_quote(&old).ok_or("LIVE_EXIT_REFRESH_KIND")?){hints.insert(key,(old,hint));}}
  Ok((hints,unknown))
 }
 fn existing_exit_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->Result<()>{
@@ -1099,16 +1125,21 @@ fn refresh_fundamental_cohort(t:&mut Transport,c:&Control,bank:&Session,log:&Dis
  choices.sort_by(|a,b|a.2.cmp(&b.2));let keys:Vec<_>=choices.iter().map(|c|c.2.clone()).collect();moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first().map(|index|choices[*index].clone())
 }
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
-enum SharedPreflight{ExistingRead(usize),EntryRead(usize),Physical(usize)}
+enum SharedPreflight{ExistingRead(usize),EntryRead(usize),ProfitRead(usize),Physical(usize)}
 /// Read hints cannot permanently consume the sole expensive packet. Use ONE
 /// stable market/side/action cursor for the union, including unqualified hints.
 /// A real ready quote supersedes a same-key hint; only evidenced owned exits
 /// preempt this fair union. `physical` is already native-priority/value filtered.
-fn shared_preflight_rotation(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],physical:&[(String,usize,bool)],cursor:Option<&str>)->Option<(SharedPreflight,String)>{
+#[cfg(test)]fn shared_preflight_rotation(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],physical:&[(String,usize,bool)],cursor:Option<&str>)->Option<(SharedPreflight,String)>{
+ shared_preflight_with_profit(existing,entries,&[],physical,&Default::default(),cursor)
+}
+fn shared_preflight_with_profit(existing:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],profit_keys:&[String],physical:&[(String,usize,bool)],covered:&std::collections::BTreeSet<usize>,cursor:Option<&str>)->Option<(SharedPreflight,String)>{
  if let Some((key,index,_))=physical.iter().find(|(_,_,urgent)|*urgent){return Some((SharedPreflight::Physical(*index),key.clone()))}
+ if let Some((key,index,_))=physical.iter().find(|(_,index,_)|covered.contains(index)){return Some((SharedPreflight::Physical(*index),key.clone()))}
  let mut choices=std::collections::BTreeMap::new();
  for(i,h)in existing.iter().enumerate(){choices.insert(format!("{}:{}:sell",h.exchange_id,h.side),SharedPreflight::ExistingRead(i));}
  for(i,h)in entries.iter().enumerate(){choices.insert(format!("{}:{}:buy",h.exchange_id,h.side),SharedPreflight::EntryRead(i));}
+ for(i,key)in profit_keys.iter().enumerate(){choices.insert(key.clone(),SharedPreflight::ProfitRead(i));}
  let mut seen=std::collections::BTreeSet::new();for(key,index,_)in physical{if seen.insert(key){choices.insert(key.clone(),SharedPreflight::Physical(*index));}}
  let keys:Vec<_>=choices.keys().cloned().collect();let index=*moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first()?;let key=keys[index].clone();Some((choices[&key],key))
 }
@@ -1505,9 +1536,15 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  }
  let orders=bank.engine().order_records();
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
+ let managed_refresh=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
+ let protected_refresh=profit_refresh_protected(&c.scope,&bank.engine().package_records())?;
+ let refresh_eligible:std::collections::BTreeSet<_>=orders.iter().filter_map(|q|{
+  let id=q["id"].as_u64()?;
+  (log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().is_package_order(id)&&profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh)).then_some(id)
+ }).collect();
  let mut age_positions=None;let mut age_inherited=None;
  let(hints,refresh_unknown)=if allow_new_submissions{prepare_expired_exit_hints(&orders,flow_started,
-  |id|log.never_attempted(id)&&!log.intents.contains_key(&id),
+  |id|refresh_eligible.contains(&id),
   |ex,side|Ok(bank.engine().wallet.quantity(ex,match side{"YES"=>moloch_replay::Side::Yes,"NO"=>moloch_replay::Side::No,_=>return Err("LIVE_SIDE".into())})),
   |ex|{if let Some(f)=fundamental.as_ref(){f.authority.validate()?;if f.cohorts.manages(ex){return f.cohorts.exit_refresh_needed(bank,log,&c.scope,ex,f.authority.trusted(),flow_started)}}Ok(true)},
   |ex,side|{
@@ -1544,8 +1581,10 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
    reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;return Ok(())
   }
  }
- if !hints.is_empty(){
-  let keys:Vec<_>=hints.keys().cloned().collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];let key=&keys[index];
+ let profit_keys:Vec<_>=hints.iter().filter(|(_,(_,h))|h.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit).map(|(key,_)|key.clone()).collect();
+ let risk_keys:Vec<_>=hints.iter().filter(|(_,(_,h))|h.kind()==moloch_live_runtime::exit_refresh::ReadKind::MaximumAge).map(|(key,_)|key.clone()).collect();
+ if !risk_keys.is_empty(){
+  let keys=risk_keys;let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];let key=&keys[index];
   let(old,hint)=hints.get(key).ok_or("LIVE_EXIT_REFRESH_HINT")?;
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key.clone());
   refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
@@ -1575,7 +1614,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  if !maker_decisions.is_empty(){let decisions:Vec<_>=maker_decisions.iter().map(|(_,decision)|decision).collect();for position in moloch_live_runtime::maker_policy::rank(&decisions,now())?{let(index,decision)=&maker_decisions[position];ranked.push((decision.priority(),*index));}}
  if maker_review.is_some(){let _=atomic_json(&c.root.join("maker-policy.json"),&json!({"at":iso(now()),"assessments":maker_assessments,"executionAuthority":false}));}
  ranked.sort_by_key(|(priority,_)|*priority);
- let selection_at=now();let mut physical=Vec::new();let mut urgency_positions=None;let mut urgency_inherited=None;
+ let selection_at=now();let mut physical=Vec::new();let mut covered_profit=std::collections::BTreeSet::new();let mut urgency_positions=None;let mut urgency_inherited=None;
  for(_,index)in &ranked{let q=&quotes[*index];let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
   if !physical_preflight_ready(q,log.never_attempted(qid),log.intents.contains_key(&qid),selection_at){continue}
   if q["action"]=="buy"&&selection_at>=authority.entry_until_ms(){retire_never_sent(bank,log,q)?;continue}
@@ -1590,11 +1629,15 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
    remaining_exit_age_due(bank.engine().policy(),positions,urgency_inherited.as_ref().unwrap_or(&Value::Null),ex,side,selection_at)?}
   }else{false};
   let urgent=physical_exit_urgent(q,due_age,reviewed_exit);
+  if !urgent&&profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh)
+   &&moloch_live_runtime::exit_refresh::ReadKind::from_quote(q)==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit)
+   &&selection.assessments.iter().any(|a|a.index==*index&&a.decision.class==moloch_live_runtime::quote_priority::Class::CoveredMarketable)
+   &&moloch_live_runtime::exit_refresh::current_profit_qualified(bank,q)?{covered_profit.insert(*index);}
   physical.push((keys[*index].clone(),*index,urgent));
  }
  // Mandatory cancels and actual urgent exits above retain priority. One
  // optional defense replaces this pass's speculative packet, never adds one.
- if c.defensive_cancel&&!physical.iter().any(|(_,_,urgent)|*urgent){
+ if c.defensive_cancel&&covered_profit.is_empty()&&!physical.iter().any(|(_,_,urgent)|*urgent){
   let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
   if let Some((key,decision))=defensive_cancel_candidate(c,bank,log,&managed,preflight_cursor.as_deref(),now())?{
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
@@ -1610,18 +1653,23 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
  let early_at=now();let early=early_native_side_filter(c.ordinary_side_edge,bank,&c.scope,log,&managed,&quotes,&mut physical,early_at);
  if !early.is_empty(){let _=atomic_json(&c.root.join("ordinary-side-edge-early.json"),&json!({"at":iso(early_at),"mode":c.ordinary_side_edge,"assessments":early,"httpReads":0,"reservationReleased":false,"physicalAttempted":false,"executionAuthority":false}));}
- let mut chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
+ let mut chosen=shared_preflight_with_profit(&stale_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
  if let Some((SharedPreflight::Physical(index),key))=&chosen{
   let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
   let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
   if !vetoes.is_empty(){
    if apply_bulk_vetoes(&c.scope,&quotes,&mut physical,&vetoes,*index,now())?{*preflight_cursor=Some(key.clone());}
-   chosen=shared_preflight_rotation(&stale_existing_hints,&entry_hints,&physical,preflight_cursor.as_deref());
+   chosen=shared_preflight_with_profit(&stale_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
   }
  }
  let Some((chosen,key))=chosen else{return Ok(())};
  let chosen_index=match chosen{
   SharedPreflight::Physical(index)=>index,
+  SharedPreflight::ProfitRead(index)=>{
+   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key.clone());
+   let(old,hint)=hints.get(&profit_keys[index]).ok_or("LIVE_EXIT_REFRESH_HINT")?;
+   refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe,None)?;return Ok(())
+  },
   SharedPreflight::ExistingRead(index)|SharedPreflight::EntryRead(index)=>{
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
    let f=fundamental.as_deref_mut().ok_or("LIVE_FUNDAMENTAL_READ_RUNTIME")?;f.authority.validate()?;
@@ -2239,6 +2287,37 @@ pub fn main()->Result<()>{
   let mut events=source_ticks(18);for e in &mut events{e["padding"]=json!("x".repeat(512*1024));}pending.push_at(&mut bank,&events,1_760_000_001_000).unwrap();assert!(bank.last_source_sequence("moloch-live")>0);pending.finish(&mut bank,Ok(())).unwrap();assert_eq!(bank.last_source_sequence("moloch-live"),18);
   let large=json!({"type":"tick","receivedAt":iso(1_760_000_002_000),"padding":"y".repeat(5*1024*1024)});pending.push_at(&mut bank,&[large],1_760_000_002_000).unwrap();assert!(pending.prepared.is_empty());assert_eq!(bank.last_source_sequence("moloch-live"),19);
  }
+ #[test]fn expired_profit_hints_bypass_only_age_and_keep_unknown_intent_partial_guards(){
+  let mut q=expired_hint_quote(7,"1012");q.as_object_mut().unwrap().remove("inventoryExitReason");
+  let calls=std::cell::Cell::new(0);
+  let(hints,_)=prepare_expired_exit_hints(&[q.clone()],20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|{calls.set(calls.get()+1);Ok(false)},||Ok(false),|_,u|Ok(hint_safety(u))).unwrap();
+  assert_eq!(hints.len(),1);assert_eq!(calls.get(),0);assert_eq!(hints["1012:NO:sell:profit"].1.kind(),moloch_live_runtime::exit_refresh::ReadKind::Profit);
+  for case in ["intent","attempt","unknown","pending","partial","held"]{
+   let mut old=q.clone();if case=="partial"{old["filled"]=json!(1)}
+   let(hints,_)=prepare_expired_exit_hints(&[old],20000,|_|case!="attempt",|_,_|Ok(if case=="held"{0}else{300}),|_|Ok(true),|_,_|Ok(false),||Ok(case=="unknown"),|_,u|Ok(moloch_live_runtime::exit_refresh::Safety{has_intent:case=="intent",same_exchange_pending_physical_order:case=="pending",..hint_safety(u)})).unwrap();assert!(hints.is_empty(),"{case}");
+  }
+  let managed=["1012".to_owned()].into();assert!(!profit_hint_scope_allowed(&q,&managed,&Default::default()));assert!(!profit_hint_scope_allowed(&q,&Default::default(),&managed));
+ }
+ #[test]fn active_probabilistic_lease_blocks_all_profit_scopes_but_not_existing_age_path(){
+  let scope=baal_transport_service::Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("1012".into(),"525".into()),("1013".into(),"526".into())].into()};
+  let lease=json!({"phase":"unknown","probabilistic":{"qualificationSha256":"a".repeat(64)},"legs":[{"exchangeId":"1012"}]});
+  let protected=profit_refresh_protected(&scope,&json!([lease.clone()])).unwrap();assert_eq!(protected.len(),2,"unexposed held component cannot be inferred absent");
+  let mut q=expired_hint_quote(1,"1013");q.as_object_mut().unwrap().remove("inventoryExitReason");assert!(!profit_hint_scope_allowed(&q,&Default::default(),&protected));
+  q["inventoryExitReason"]=json!("maximumAge");assert!(profit_hint_scope_allowed(&q,&["1013".into()].into(),&protected),"extra profit exclusion does not alter original maximum-age checks");
+  for field in ["released","no_execution"]{let mut ended=lease.clone();if field=="released"{ended["protectionReleased"]=json!(true)}else{ended["phase"]=json!("no_execution")};assert!(profit_refresh_protected(&scope,&json!([ended])).unwrap().is_empty());}
+ }
+ #[test]fn profit_history_cannot_mask_a_current_due_risk_hint(){
+  let age=expired_hint_quote(1,"1012");let mut profit=age.clone();profit["id"]=json!(2);profit.as_object_mut().unwrap().remove("inventoryExitReason");
+  let(hints,_)=prepare_expired_exit_hints(&[age,profit],20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||Ok(false),|_,u|Ok(hint_safety(u))).unwrap();assert_eq!(hints.len(),2);assert_eq!(hints["1012:NO:sell"].1.kind(),moloch_live_runtime::exit_refresh::ReadKind::MaximumAge);
+ }
+ #[test]fn covered_profit_preempts_speculation_but_never_a_risk_exit_even_out_of_order(){
+  let entries=vec![fundamental::EntryHint{exchange_id:"966".into(),market_id:"277".into(),contract_id:"278".into(),side:"YES".into(),review_sha256:"a".repeat(64)}];let profit_keys=vec!["948:NO:sell:profit".into()];
+  let covered=[4usize].into();let physical=vec![("948:NO:sell".into(),4,false),("999:YES:sell".into(),5,true)];
+  assert_eq!(shared_preflight_with_profit(&[],&entries,&profit_keys,&physical,&covered,None).unwrap().0,SharedPreflight::Physical(5));
+  assert_eq!(shared_preflight_with_profit(&[],&entries,&profit_keys,&physical[..1],&covered,None).unwrap().0,SharedPreflight::Physical(4));
+  let mut cursor=None;let mut seen=Vec::new();for _ in 0..4{let(choice,key)=shared_preflight_with_profit(&[],&entries,&profit_keys,&[],&Default::default(),cursor.as_deref()).unwrap();seen.push(choice);cursor=Some(key)}
+  assert_eq!(seen.iter().filter(|s|**s==SharedPreflight::ProfitRead(0)).count(),2);assert_eq!(seen.iter().filter(|s|**s==SharedPreflight::EntryRead(0)).count(),2);
+ }
  #[test]fn remaining_fifo_deadline_does_not_inherit_historical_quote_age(){
   let policy=json!({"inventoryAgeClock":"execution","maximumInventoryAgeMs":60000});let at=100000;
   let young=json!({"1012":{"NO":[{"quantity":3,"executedAt":iso(50000)}]}});
@@ -2506,7 +2585,7 @@ pub fn main()->Result<()>{
   assert_eq!((ordinary,reads),(4,4));
  }
  #[test]fn no_ready_physical_quote_still_performs_fundamental_refresh(){let entries=vec![entry("966")];assert_eq!(shared_preflight_rotation(&[],&entries,&[],Some("966:YES:buy")),Some((SharedPreflight::EntryRead(0),"966:YES:buy".into())));assert!(shared_preflight_rotation(&[],&[],&[],None).is_none());}
- #[test]fn profitable_marketable_aon_sells_share_cursor_with_entry_instead_of_preempting_forever(){
+ #[test]fn nonmarketable_profit_sells_without_covered_proof_share_cursor_with_entry(){
   let entries=vec![entry("966")];let q=json!({"action":"sell","executionStyle":"inventoryAON"});let original=q.clone();
   let physical=vec![("1010:NO:sell".into(),4,physical_exit_urgent(&q,false,false))];let mut cursor=None;let mut selected=Vec::new();
   for _ in 0..6{let(choice,key)=shared_preflight_rotation(&[],&entries,&physical,cursor.as_deref()).unwrap();selected.push(choice);cursor=Some(key);}
