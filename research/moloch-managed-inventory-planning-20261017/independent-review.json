@@ -10,5 +10,15 @@
   "remainingActionableBlockerFound": false,
   "scope": "source and draft only, no SSH/API/execution",
   "actualProofPinsFrozen": false,
-  "promotionApproval": false
+  "promotionApproval": false,
+  "startupOrderingOwnerReviewed": true,
+  "startupOrderingScope": "Actual55fc source: ReadOnlyAuthority transport, Session::open_live full-prefix/check_prefix/complete, then ProductionAuthority and continuing financial transport. Original sources/settings unchanged; actual prestage replay still required.",
+  "compactTemplateReview": {
+    "reviewer": "existing relationship_feed read-only child",
+    "templateSha256": "c9784c0551d97cd3209b64ac0c404b6ff76b0f4ed7b513acc513f43e09633ed5",
+    "finalProposalSizeGuardAdded": true,
+    "remainingActionableBlockerFound": false,
+    "actualProofPinsFrozen": false,
+    "promotionApproval": false
+  }
 }

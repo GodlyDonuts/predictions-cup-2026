@@ -1,0 +1,14 @@
+{
+  "verified": true,
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "binarySha256": "34fbc56050254dd0b3756dca7f630571fe1d70ab195fc24f34083d7620dcaa18",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "commandPasses": 1175,
+  "sourceComparison": {
+    "exact": 61,
+    "crlfOnly": 202
+  },
+  "allSourceAndLogHashesMatch": true,
+  "originalHelperFailureRetained": true,
+  "deploymentVerified": false
+}

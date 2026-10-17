@@ -1,6 +1,8 @@
 # Moloch research baseline
 
-New checked source: [managed inventory planning/original-cohort exits](../research/moloch-managed-inventory-planning-20261017/README.md), actual native320/fundamental128/SDK233 pass; remaining release/runtime/full-prefix qualification in progress. **Not deployed**; R21 remains active.
+October17,07:06UTC: **362 official fill rows**, including an additional10,000-share reviewed1067 YES purchase for3,215.035, zero fees. Cash8,106.255/owned87,351.635 (**91.508% cost allocation**); realized remains−122.025 (new−184.970/inherited+62.945). [Official source-bound observation](../research/moloch-profitable-preparation-20261017/additional-reviewed-purchase/README.md). R21 remains trading; open holdings are not profit.
+
+New checked source: [managed inventory planning/original-cohort exits](../research/moloch-managed-inventory-planning-20261017/README.md), all15 ARM64 test commands/optimized release pass; [actual build and preserved helper failures](../research/moloch-managed-inventory-planning-20261017/build-proof/README.md). Compact-helper full-prefix qualification in progress. **Not deployed**; R21 remains active.
 
 October17,06:28UTC: **actual profitable exit verified**. R21 sold2,267 inherited948 NO shares for2,046.780 against2,028.965 recorded basis, zero fees: **+17.815 realized**. [Official fill/accounting evidence](../research/moloch-profitable-preparation-20261017/actual-profit-exit/README.md). Ledger355 fills/cash11,321.290/owned84,136.600/combined realized−122.025; new-trading stays−184.970, inherited+62.945. R21 sole616815 remains the executing release; R22 managed-planning/original-cohort exits are being compiled, not deployed. This does not prove new-strategy profitability or causal latency improvement.
 

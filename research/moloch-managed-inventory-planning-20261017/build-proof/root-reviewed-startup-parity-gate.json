@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-17T06:58:43.838161+00:00",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "executionOwnerReviewed": true,
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "binarySha256": "34fbc56050254dd0b3756dca7f630571fe1d70ab195fc24f34083d7620dcaa18",
+  "nativeEngineIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "actualStartupMustValidateBeforeFinancialWrites": true,
+  "finalPrefixParityVerified": false,
+  "prestageActualFullPrefixParityStillRequired": true,
+  "genuineStartupGate": "Session::open_live -> all15 UpgradeChain.check_prefix exact financial reports/orders/fills/cursors/bindings and complete -> returned Session -> ProductionAuthority and continuing financial Transport",
+  "readsBeforeGate": "existing one startup ReadOnlyAuthority transport performs typed account GETs; no claim of zero HTTP before gate",
+  "failureBehavior": "parity error returns before financial-write authority; worker stops; no automatic rollback/replacement/retry",
+  "sourceHashes": {
+    "moloch/live-runtime/src/worker.rs": "b7d79dd71a87ed959b803870918d1e59895b7f86022f68e5d6f996802e975cc5",
+    "moloch/native/src/session.rs": "e3fab4cc58cd63753bf248d8b8505a3a76d341981aab12d1b345bce5b79087ad"
+  },
+  "sourceByteOffsets": {
+    "readonlyTransport": 204628,
+    "nativeFullReplay": 207065,
+    "productionAuthority": 207705,
+    "continuingFinancialTransport": 208813
+  },
+  "independentReview": "main_takeover reviewed unchanged startup/lease/STOP/proposal/generation and strict flag opt-in source; root reread actual55fc startup/native ordering",
+  "avoidedWork": "second offline final stopped-prefix replay duplicates mandatory actual production startup replay; actual detached prestage replay still required",
+  "productionChanged": false,
+  "pins": {
+    "/tmp/moloch-managed-inventory-r22b-20261017/moloch/live-runtime/src/worker.rs": "b7d79dd71a87ed959b803870918d1e59895b7f86022f68e5d6f996802e975cc5",
+    "/tmp/moloch-managed-inventory-r22b-20261017/moloch/native/src/session.rs": "e3fab4cc58cd63753bf248d8b8505a3a76d341981aab12d1b345bce5b79087ad"
+  }
+}

@@ -1,0 +1,665 @@
+warning: unnecessary parentheses around `if` condition
+  --> src/engine_collateral.rs:90:254
+   |
+90 | ...before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{1...
+   |                     ^                                                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+90 -   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+90 +   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint" {86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |
+
+warning: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+  --> src/realtime.rs:98:25
+   |
+98 | ...   self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;O...
+   |                       ^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+   |
+98 -         self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+98 +         self.generation.try_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+   |
+
+warning: value assigned to `duplicate` is never read
+   --> src/realtime.rs:124:97
+    |
+124 |         let mut scopes=std::collections::BTreeSet::new();let mut global=false;let mut duplicate=false;
+    |                                                                                                 ^^^^^ this value is reassigned later and never used
+...
+160 |             duplicate=self.standalone.contains(&digest);
+    |             ------------------------------------------- `duplicate` is overwritten here before the previous value is read
+    |
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> src/realtime.rs:417:9
+    |
+417 |         mut socket: WebSocket<MaybeTlsStream<TcpStream>>,
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `accept` is never used
+   --> src/realtime.rs:273:8
+    |
+253 | impl Protocol {
+    | ------------- method in this implementation
+...
+273 |     fn accept(&mut self, v: &Value) -> Result<Option<Incoming>> {self.accept_original(v,&v.to_string())}
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `start` is never used
+   --> src/realtime.rs:416:8
+    |
+374 | impl Realtime {
+    | ------------- associated function in this implementation
+...
+416 |     fn start(
+    |        ^^^^^
+
+   Compiling moloch-replay v0.1.0 (/tmp/moloch-managed-inventory-r22b-20261017/moloch/native)
+warning: `moloch-replay` (lib) generated 6 warnings (run `cargo fix --lib -p moloch-replay` to apply 3 suggestions)
+warning: `moloch-replay` (lib test) generated 4 warnings (4 duplicates)
+warning: function `main` is never used
+  --> tests/../src/bin/moloch-verify-live-prefix.rs:34:4
+   |
+34 | fn main()->Result<()>{let args:Vec<_>=std::env::args().collect();if args.len()!=2{return Err("usage: moloch-verify-live-prefix FROZE...
+   |    ^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `moloch-replay` (test "live_prefix_equivalence") generated 1 warning
+warning: function `workload` is never used
+  --> tests/support/engine_clone_fixture.rs:33:8
+   |
+33 | pub fn workload(kind:&str,n:usize)->Vec<Value>{
+   |        ^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `rollback_probe` is never used
+  --> tests/support/engine_clone_fixture.rs:41:8
+   |
+41 | pub fn rollback_probe(e:&mut Engine,at:u64)->Result<Value>{
+   |        ^^^^^^^^^^^^^^
+
+warning: `moloch-replay` (test "engine_book_cow") generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 47s
+     Running unittests src/lib.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_replay-b624d798fa3e393f)
+
+running 99 tests
+test engine::active_pledge_audit_tests::cancel_pending_and_expired_unretired_orders_remain_pledged ... ok
+test engine::active_pledge_audit_tests::audited_scope_overflow_or_negative_remaining_rejects_checked_without_wrap ... ok
+test engine::active_pledge_audit_tests::first_wallet_key_shortage_precedes_later_scope_overflow ... ok
+test engine::active_pledge_audit_tests::irrelevant_unheld_scope_and_same_side_buy_never_create_new_audit_failure ... ok
+test engine::active_pledge_audit_tests::partial_sells_opposite_buys_and_retired_history_match_original_equation ... ok
+test engine::reviewed_fundamental_entry::tests::actual_ack_partial_fill_terminal_and_restart_preserve_real_accounting_only ... ok
+test engine::reviewed_fundamental_entry::tests::cheap_contract_total_can_exceed_ten_thousand_only_through_funded_closed_entry_top_up ... ok
+test engine::reviewed_fundamental_entry::tests::derives_quantity_from_total_market_cash_and_review_quantity_bounds ... ok
+test engine::reviewed_fundamental_entry::tests::explicit_top_up_caps_total_basis_and_quantity_without_crediting_cash ... ok
+test engine::reviewed_fundamental_entry::tests::exact_session_head_report_and_book_bindings_reject_stale_plans_without_mutation ... ok
+test engine::reviewed_fundamental_entry::tests::full_executable_bid_depth_clips_quantity_and_stale_book_denies ... ok
+test engine::reviewed_fundamental_entry::tests::legacy_entry_cannot_claim_held_lots_without_explicit_top_up ... ok
+test engine::reviewed_fundamental_entry::tests::managed_market_cap_includes_other_active_reviewed_reservation ... ok
+test engine::reviewed_fundamental_entry::tests::million_share_total_ceiling_never_raises_native_single_order_or_full_principal_budget ... ok
+test engine::reviewed_fundamental_entry::tests::modes_bounded_buy_uses_all_ask_levels_within_frozen_limit ... ok
+test engine::reviewed_fundamental_entry::tests::modes_full_frozen_price_funding_not_weighted_depth_clips_quantity ... ok
+test engine::reviewed_fundamental_entry::tests::modes_generated_action_and_review_provenance_survive_ticks_and_restart ... ok
+test engine::reviewed_fundamental_entry::tests::modes_improved_entry_does_not_require_liquidation_bid_at_acquisition_price ... ok
+test engine::reviewed_fundamental_entry::tests::modes_marketable_reservation_is_not_atomic_fill_or_ack_profit ... ok
+test engine::reviewed_fundamental_entry::tests::modes_bad_mode_ceiling_provenance_and_value_fail_atomically ... ok
+test engine::reviewed_fundamental_entry::tests::modes_no_side_complements_both_acquisition_and_liquidation_depth ... ok
+test engine::reviewed_fundamental_entry::tests::modes_omission_and_explicit_join_preserve_old_metadata_and_financials ... ok
+test engine::reviewed_fundamental_entry::tests::modes_native_caps_apply_to_aggressive_reservations ... ok
+test engine::reviewed_fundamental_entry::tests::ordinary_ticks_never_add_opposite_pair_or_cancel_reviewed_quote ... ok
+test engine::reviewed_fundamental_entry::tests::modes_stale_or_gap_book_cannot_reserve_despite_positive_forecast ... ok
+test engine::reviewed_fundamental_entry::tests::reserves_real_capped_single_buy_without_pair_flow_or_minimum_spread ... ok
+test engine::reviewed_fundamental_entry::tests::second_unresolved_same_exchange_entry_cannot_replace_or_double_fund ... ok
+test engine::reviewed_fundamental_entry::tests::over_million_or_zero_total_caps_reject_without_mutation ... ok
+test engine::reviewed_fundamental_entry::tests::top_up_total_quantity_caps_whole_cohort_in_addition_to_per_order_cap ... ok
+test engine::reviewed_fundamental_entry::tests::unrelated_ordinary_draft_reservations_are_funded_before_reviewed_entry ... ok
+test journal::tests::changed_skipped_and_reordered_events_fail ... ok
+test legacy::tests::canonical_matches_js_numeric_keys_and_number_spelling ... ok
+test legacy::tests::counterfeit_snapshot_is_rejected ... ok
+test realtime::tests::account_authentication_is_exact_and_cannot_request_an_arbitrary_topic ... ok
+test realtime::tests::account_capture_failure_is_fatal_and_cannot_hide_already_received_invalidation ... ok
+test realtime::tests::account_gap_and_compact_resync_invalidate_whole_scope_without_fills ... ok
+test realtime::tests::account_join_is_independent_and_market_ready_waits_for_both_topics ... ok
+test realtime::tests::actual_resting_fill_invalidates_at_receive_without_market_queue_or_order_update ... ok
+test realtime::tests::authenticated_official_custom_origins_are_supported_without_private_routing ... ok
+test realtime::tests::changed_same_revision_is_captured_and_fails_closed_instead_of_hiding_mutation ... ok
+test realtime::tests::disconnected_consumer_is_not_queue_capacity_failure ... ok
+test realtime::tests::duplicate_account_revision_cannot_renew_generation_or_receipt_clock ... ok
+test realtime::tests::failed_signal_observer_always_finds_reason_already_published ... ok
+test realtime::tests::first_reason_survives_later_cleanup_and_reporter_drop ... ok
+test realtime::tests::foreign_tournament_does_not_adopt_or_dirty_and_wrong_current_scope_fails ... ok
+test realtime::tests::heartbeat_replies_are_correlated ... ok
+test realtime::tests::legacy_default_keeps_single_market_topic_and_rejects_account_frames ... ok
+test realtime::tests::lower_revision_requires_retained_exact_identity_and_unknown_old_revision_fails ... ok
+test realtime::tests::native_websocket_receives_join_and_broadcast ... ok
+test realtime::tests::nullable_fill_attribution_and_window_zero_order_update_only_invalidate ... ok
+test realtime::tests::planned_deadline_and_requested_stop_have_distinct_socket_results ... ok
+test realtime::tests::poisoned_diagnostic_mutex_still_publishes_failure ... ok
+test realtime::tests::protocol_requires_ack_and_known_topic ... ok
+test realtime::tests::real_single_socket_account_receipt_invalidates_without_waiting_for_main_drain ... ok
+test realtime::tests::reconciliation_completion_cannot_clear_an_event_arriving_during_reads ... ok
+test realtime::tests::rejects_arbitrary_auth_destinations_and_expired_tokens ... ok
+test realtime::tests::saturated_queue_cannot_hide_published_reason_or_weaken_failed_gate ... ok
+test realtime::tests::standalone_refund_is_deduplicated_without_treating_it_as_cash ... ok
+test realtime::tests::unreported_return_is_fixed_unexplained_and_unknown_input_is_sanitized ... ok
+test realtime::tests::unwind_reports_fixed_panic_code_without_retaining_payload ... ok
+test semantic_floor::tests::candidate_leg_bound_and_duplicate_consumption_deny ... ok
+test semantic_floor::tests::current_receipt_cannot_refresh_old_source_clock ... ok
+test semantic_floor::tests::depth_exhaustion_and_insufficient_full_limit_cash_do_not_become_opportunities ... ok
+test semantic_floor::tests::finite_model_without_separate_reviewed_completeness_never_certifies ... ok
+test semantic_floor::tests::fresh_current_node_with_changed_rule_cannot_use_old_certificate ... ok
+test semantic_floor::tests::full_depth_limit_funding_and_minimum_net_are_separate ... ok
+test semantic_floor::tests::known_fees_can_remove_an_apparent_floor ... ok
+test semantic_floor::tests::no_side_uses_complementary_bid_depth_and_not_yes_ask ... ok
+test semantic_floor::tests::omitted_exceptions_unresolved_obligations_and_wrong_matrix_deny ... ok
+test semantic_floor::tests::original_source_mutation_or_current_foreign_scope_deny ... ok
+test semantic_floor::tests::positive_expected_single_leg_is_not_positive_minimum ... ok
+test semantic_floor::tests::refund_is_principal_not_dollar_and_fees_remain_costs ... ok
+test semantic_floor::tests::separately_approved_proof_pins_matrix_and_fee_bound_not_only_state_names ... ok
+test session::staged_prefix_benchmark::original_frozen_prefix_staged_clone_benchmark ... ignored, explicit immutable copied prefix, bytes and SHA environment required; no live Session
+test session::tests::altered_source_prefix_and_invalid_event_do_not_change_finance ... ok
+test session::tests::atomic_json_buffer_write_or_flush_failure_never_publishes ... ok
+test session::tests::atomic_json_buffered_exact_bytes_and_bounded_write_count ... ok
+test session::tests::atomic_json_failed_rename_preserves_destination_and_complete_temp ... ok
+test session::tests::committed_truncation_and_partial_tail_fail_closed ... ok
+test session::tests::competing_writer_cannot_open_and_released_kernel_lock_can ... ok
+test session::tests::consuming_unpublished_replay_matches_transactional_every_reference_prefix ... ok
+test session::tests::failed_unpublished_replay_never_publishes_partial_head_or_report ... ok
+test session::tests::fully_written_event_before_head_update_recovers_once ... ok
+test session::tests::live_accept_still_rolls_back_and_preserves_all_published_bytes_on_error ... ok
+test engine::reviewed_fundamental_entry::tests::top_up_wrong_fifo_actual_binding_side_counts_and_caps_fail_without_mutation ... ok
+test session::tests::live_restart_replays_original_ack_fill_terminal_and_sources_exactly ... ok
+test session::tests::lost_projection_is_rebuilt_and_changed_policy_rejected ... ok
+test source::tests::full_chain_minimum_checkpoint ... ok
+test source::tests::initial_resync_requires_book_and_complete_tape ... ok
+test source::tests::late_socket_gap_retains_the_actual_recovery_start ... ok
+test source::tests::market_registry_can_watch_the_venue_without_expanding_read_concurrency ... ok
+test source::tests::missing_reordered_cyclic_incomplete_pages ... ok
+test source::tests::served_window_and_foreign_context_fail ... ok
+test tests::decimals ... ok
+test tests::failed_mutations_are_atomic ... ok
+test tests::losses_and_fifo_preserved ... ok
+test tests::paired_fifo_netting ... ok
+test tests::partial_fills_keep_reservations_and_round_fees ... ok
+test session::tests::restart_preserves_fill_and_repeated_input_is_exactly_once ... ok
+
+test result: ok. 98 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 49.63s
+
+     Running unittests src/bin/moloch-atomic-json-bench.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_atomic_json_bench-5a2880df07f53255)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-collector.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_collector-36fdf6a730b618ae)
+
+running 9 tests
+test capture_scope::tests::ambiguous_and_oversized_scope_rejected ... ok
+test capture_scope::tests::funding_liabilities_must_remain_in_scope ... ok
+test capture_scope::tests::historical_example_cannot_silently_starve_selected_strategy ... ok
+test tests::clock_reversal_rejected ... ok
+test tests::exit_priority_moves_existing_reads_without_adding_or_dropping_tape ... ok
+test tests::retry_after_is_preserved ... ok
+test tests::rolling_budget ... ok
+test tests::startup_invalidation_is_one_event_and_covers_unobserved_cached_books ... ok
+test tests::complete_source_to_persistent_paper_path_matches_reference ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.10s
+
+     Running unittests src/bin/moloch-compare.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_compare-e64002362412a3a8)
+
+running 3 tests
+test tests::changed_capital_and_fill_models_rejected ... ok
+test tests::strategy_variation_allowed_but_names_unique ... ok
+test continuation_tests::inventory_fees_and_pnl_carry_between_sealed_episodes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running unittests src/bin/moloch-engine-clone-bench.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_engine_clone_bench-0e685f586a7955e3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-paper.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_paper-3bc73fa5763b2291)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-ready.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_ready-cf9c35b4c5afa572)
+
+running 3 tests
+test capture_scope::tests::ambiguous_and_oversized_scope_rejected ... ok
+test capture_scope::tests::funding_liabilities_must_remain_in_scope ... ok
+test capture_scope::tests::historical_example_cannot_silently_starve_selected_strategy ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_replay-8131e3bee54ee942)
+
+running 4 tests
+test tests::forecast_is_scored_before_current_price_is_fitted ... ok
+test tests::future_execution_is_rejected ... ok
+test tests::historical_close_is_not_released_at_bucket_start_and_incomplete_bucket_is_excluded ... ok
+test tests::clock_does_not_sort_future_backwards ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-seed.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_seed-cf48dba8281abe2d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-session.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_session-c87a0c4a6aacbd08)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-session-batch-bench.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_session_batch_bench-8c9cc22cae67f2d0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-source.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_source-3665894fd8dd72ed)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-upgrade.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_upgrade-3b1c28a131354e61)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/moloch-verify-live-copy.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_verify_live_copy-81468f8065c5513d)
+
+running 4 tests
+test tests::changed_journal_and_marker_are_not_accepted ... ok
+test tests::genuine_session_copy_parity_and_unchanged_bytes ... ok
+test tests::production_path_and_relative_refused ... ok
+test tests::hardlinked_lock_and_symlink_refused ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.89s
+
+     Running unittests src/bin/moloch-verify-live-prefix.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/moloch_verify_live_prefix-8fada955d13a7bc2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/engine_book_cow.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/engine_book_cow-c21702cfc3ba5bd7)
+
+running 4 tests
+test replacement_book_does_not_change_shared_old_snapshot_behavior ... ok
+test rejected_gap_does_not_poison_shared_original_or_other_fork ... ok
+test successful_gap_changes_only_its_engine_fork ... ok
+test valid_gap_then_resync_matches_independent_replay ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s
+
+     Running tests/engine_clone_benchmark.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/engine_clone_benchmark-897bb853de1e9637)
+
+running 4 tests
+test synthetic_fixture_has237_depth20_books_and_native_orders ... ok
+test rejected_partial_gap_mutation_rolls_back_and_future_behavior_matches_fresh_engine ... ok
+test warmed_clones_preserve_public_financial_state_exactly ... ok
+test synthetic_workloads_produce_deterministic_prefixes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.12s
+
+     Running tests/engine_parity.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/engine_parity-f9325c14c165cb95)
+
+running 3 tests
+test expired_quote_recovery_requests_only_its_original_window ... ok
+test rejected_event_does_not_mutate_accounting ... ok
+test identical_events_match_reference_at_every_checkpoint ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/engine_upgrade.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/engine_upgrade-73bedeb93bb0ec6c)
+
+running 10 tests
+test approved_prefix_survives_durable_adoption_and_effective_policy_suffix ... ok
+test exact_upgrade_keeps_manifest_and_prefix_then_accepts_appended_suffix_on_restart ... ok
+test identity_bridge_reproduces_real_order_binding_and_partial_fill_history ... ok
+test larger_byte_bound_does_not_relax_sixteen_entry_chain_cap ... ok
+test proof_creation_requires_a_released_writer_and_existing_committed_head ... ok
+test upgrade_document_above_thirty_two_mib_is_rejected_before_parsing ... ok
+test upgrade_document_symlink_is_rejected_even_with_valid_sealed_target ... ok
+test validly_resealed_wrong_prefix_report_identity_or_approval_does_not_bypass_checks ... ok
+test zero_event_prefix_is_a_valid_exact_upgrade_boundary ... ok
+test original_sealed_upgrade_above_eight_mib_replays_without_mutating_history ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.90s
+
+     Running tests/inherited_inventory.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/inherited_inventory-5018a06b16b5110b)
+
+running 11 tests
+test ancient_acquisition_does_not_create_an_instant_forced_loss_exit ... ok
+test adoption_reconciles_but_never_duplicates_preexisting_actual_order_and_fill_history ... ok
+test closing_inherited_positions_does_not_turn_their_slots_into_extra_new_markets ... ok
+test inherited_only_inventory_has_no_forced_loss_exit_after_sixty_one_seconds ... ok
+test inherited_sale_preserves_constant_opening_basis_and_separates_new_profit ... ok
+test material_reported_basis_difference_is_explicit_and_does_not_block_management ... ok
+test opening_basis_moves_attributed_cash_without_importing_fills_or_profit ... ok
+test duplicate_side_quantity_cost_coverage_and_clock_errors_are_atomic ... ok
+test paper_wallet_cannot_adopt_actual_positions ... ok
+test ordinary_new_actual_position_retains_its_original_sixty_second_loss_cap ... ok
+test unresolved_quotes_and_insufficient_capital_cannot_be_imported_around ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/inventory_parity.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/inventory_parity-8eede39f70f72fff)
+
+running 3 tests
+test policy_change_cannot_reset_initial_capital_or_erase_loss ... ok
+test seeded_balance_and_liabilities_cannot_be_forged ... ok
+test original_engine_paths_preserve_financial_orders_and_fills ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s
+
+     Running tests/live_capital.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/live_capital-a9fd7453c7f546d7)
+
+running 9 tests
+test full_original_surplus_is_contributed_not_profit_and_replays_original_manifest ... ok
+test old_additional_cash_authorization_cannot_be_relabelled_as_full_account_daily_approval ... ok
+test original_closed_financial_history_and_unsubmitted_reserves_remain_identical ... ok
+test paper_and_context_stripping_cannot_inherit_contributed_capital ... ok
+test partial_contribution_chain_cannot_repeat_id_or_exceed_approved_total ... ok
+test remaining_seed_cash_not_official_mark_or_receipt_alone_bounds_contribution ... ok
+test malformed_proofs_cash_debt_positions_and_unknowns_cannot_raise_sizing ... ok
+test separately_named_full_account_mandate_links_contribution_without_rewriting_old_window ... ok
+test revision_rejects_changed_geometry_cap_previous_contribution_and_current_prefix ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.33s
+
+     Running tests/live_collateral.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/live_collateral-04fc8fb00a37292e)
+
+running 20 tests
+test actual_borrow_is_debt_and_never_wallet_profit_or_sizing_cash ... ok
+test checkpoint_cannot_hide_fill_cash_debt_or_component_changes ... ok
+test cross_group_advance_is_aggregate_not_misattributed_to_unlinked_traded_group ... ok
+test actual_fill_coverage_and_cash_equations_cannot_be_replaced_by_ack_totals ... ok
+test no_economic_checkpoint_advances_original_receipts_and_preserves_money ... ok
+test long_idle_checkpoint_refuses_over24h_or_rebased_before_or_uncertain_boundary ... ok
+test official_zero_and_full_settlements_consume_lots_without_synthetic_fills ... ok
+test opening_official_cash_cannot_rebase_seeded_bank_and_committed_refs_are_exact ... ok
+test ordinary_cash_sync_has_bounded_original_interval_without_extending_all_windows ... ok
+test ordinary_cash_sync_requires_original_before_receipts_not_later_equivalent_cash ... ok
+test ordinary_fill_already_before_prior_cash_snapshot_is_not_double_subtracted ... ok
+test ordinary_gross_unknown_survives_exact_replay_without_recrediting_fills ... ok
+test ordinary_terminal_partial_late_execution_reconciles_actual_cash_not_ack_window ... ok
+test repayment_and_native_pair_redemption_are_not_double_credited ... ok
+test session_scope_head_unknown_and_stale_report_reject_before_durability ... ok
+test standalone_seed_cannot_silently_erase_actual_debt_or_collateral_history ... ok
+test still_open_partial_passive_order_does_not_gain_snapshot_atomicity ... ok
+test ordinary_cash_sync_rejects_missing_changed_unowned_and_unexplained_sources_atomically ... ok
+test unchanged_long_idle_checkpoint_preserves_cash_and_marks_unwitnessed_gross_unknown ... ok
+test uncertain_or_incomplete_settlement_never_removes_positions ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.58s
+
+     Running tests/live_engine.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/live_engine-89339251097bf46c)
+
+running 10 tests
+test admission_resize_releases_only_unadmitted_quantity_and_binding_stays_fixed ... ok
+test covered_actual_sale_preserves_fifo_cost_and_realized_profit ... ok
+test executed_price_fees_partial_fill_and_duplicates_are_accounted_exactly ... ok
+test fill_after_requested_cancel_is_not_lost_before_terminal_confirmation ... ok
+test foreign_ack_conflicting_binding_and_impossible_fills_fail_atomically ... ok
+test market_prints_and_coverage_never_create_live_fills_or_release_cash ... ok
+test only_demonstrably_unattempted_unbound_intents_can_release_funding ... ok
+test paper_bank_rejects_actual_account_events ... ok
+test live_session_replays_actual_fills_without_paper_seed_or_double_credit ... ok
+test terminal_status_waits_for_actual_partial_fills_then_releases_only_remainder ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.73s
+
+     Running tests/live_entry_windows.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/live_entry_windows-e1382b813bded73c)
+
+running 10 tests
+test absent_mandate_preserves_legacy_report_shape_and_tick_behavior ... ok
+test campaign_final_partial_window_clamps_and_exact_end_denies ... ok
+test early_wrong_end_previous_source_paper_and_missing_processed_reject_atomically ... ok
+test first_window_changes_only_cutoff_and_adds_durable_mandate_report ... ok
+test half_open_utc_windows_and_offline_skips_use_exact_current_end ... ok
+test exact_eight_key_mandate_caps_clock_and_duration_are_required ... ok
+test recorded_mandate_is_immutable_and_duplicate_transition_is_rejected ... ok
+test unsupported_seed_cannot_silently_drop_a_live_window_mandate ... ok
+test utc_day_stays_twenty_four_hours_across_daylight_saving_boundary ... ok
+test session_replay_uses_immutable_original_policy_and_preserves_window_event ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/live_market_capacity.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/live_market_capacity-4450f21cbebc24ab)
+
+running 6 tests
+test capacity_uses_current_daily_cutoff_not_original_manifest_policy ... ok
+test default_history_has_no_capacity_record_and_no_extra_planning ... ok
+test inherited_three_to_twelve_is_durable_without_changing_any_money_or_existing_order ... ok
+test noninherited_live_capacity_changes_only_original_market_field ... ok
+test paper_and_standalone_seed_cannot_inherit_unproved_capacity ... ok
+test changed_prefix_previous_scope_caps_or_authority_is_atomic_denial ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.18s
+
+     Running tests/live_packages.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/live_packages-79c4fa74299300a0)
+
+running 40 tests
+test actual_partial_fill_and_terminal_release_only_remaining_leg_funding ... ok
+test acknowledgments_never_create_positions_and_wrapper_is_transactional ... ok
+test aggregate_quantity_cap_applies_to_all_package_legs_together ... ok
+test attempt_is_once_original_window_and_changed_book_deny ... ok
+test attempted_zero_requires_allowlisted_complete_bound_response ... ok
+test buying_opposite_existing_side_is_not_a_synthetic_covered_hedge ... ok
+test complete_requires_real_full_fills_and_terminal_then_holds_portfolio_protected ... ok
+test current_worse_or_insufficient_book_cannot_attempt_frozen_economics ... ok
+test consistently_rehashed_unrelated_bank_or_queue_binding_is_still_not_native_authority ... ok
+test failed_final_leg_funding_rolls_back_all_native_orders_and_cash ... ok
+test first_call_cannot_release_unknown_acknowledged_or_filled_package ... ok
+test first_call_changed_or_incomplete_original_sources_never_release ... ok
+test full_funding_two_and_three_leg_reservation_is_exact ... ok
+test held_acquisition_leases_original_inventory_and_funds_new_order_exactly ... ok
+test held_lease_rejects_missing_quantity_wrong_parent_or_partial_graph ... ok
+test native_local_not_sent_never_accepts_absence_or_unknown_phase ... ok
+test never_attempted_package_can_release_only_with_exact_zero_proof ... ok
+test never_dispatch_rejects_missing_changed_or_inconsistent_fence_source ... ok
+test never_dispatch_unknown_ack_and_partial_fill_never_release ... ok
+test never_physical_dispatch_fence_releases_only_reservation_without_profit_or_fill ... ok
+test no_side_uses_complementary_bid_depth_at_full_wire_limit ... ok
+test ordinary_tick_coverage_and_retirement_cannot_release_package ... ok
+test original_first_call_proof_releases_only_funding_and_never_creates_cash_profit_or_fills ... ok
+test package_books_are_readonly_noninvalid_current_raw_snapshots ... ok
+test package_expiry_still_obeys_lifetime_entry_cutoff_and_original_attempt_deadline ... ok
+test permanent_id_and_unresolved_package_fences ... ok
+test stale_hash_depth_scope_duplicate_exchanges_and_expiry_deny ... ok
+test thirty_second_expiry_does_not_relax_stale_reservation_books_or_source_clocks ... ok
+test thirty_second_intent_does_not_turn_ten_second_books_into_fresh_attempt_facts ... ok
+test typed_dispatch_witness_is_not_a_reserved_or_absence_alias ... ok
+test unknown_retains_every_reservation_and_blocks_new_submissions ... ok
+test unsupported_seed_cannot_drop_package_state ... ok
+test unwind_unknown_preserves_parent_protection_and_owned_inventory ... ok
+test unwind_verified_zero_execution_keeps_original_package_protected ... ok
+test whole_unwind_must_sell_every_held_component_and_cannot_use_floor_for_upside_profit ... ok
+test whole_unwind_reserves_inventory_not_cash_and_only_actual_fills_release_protection ... ok
+test wholly_covered_unwind_is_management_after_buy_entry_deadline ... ok
+test zero_execution_receipt_cannot_predate_the_attempt ... ok
+test zero_fees_caps_entry_allowlist_and_exact_economics_required ... ok
+test durable_session_restart_replays_reservation_attempt_and_unknown_exactly ... ok
+
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+
+     Running tests/live_prefix_equivalence.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/live_prefix_equivalence-689fbf1a40b4ae78)
+
+running 3 tests
+test even_a_resealed_wrong_financial_report_fails_replay_parity ... ok
+test complete_live_prefix_matches_all_financial_views_without_mutation ... ok
+test truncated_or_altered_chain_is_rejected_without_repair ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+     Running tests/managed_inventory_planning.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/managed_inventory_planning-eca68b6473024868)
+
+running 4 tests
+test absent_mode_preserves_report_and_install_has_no_financial_or_order_effect ... ok
+test exact_closed_entry_and_partial_prior_exit_reconstruct_remaining_fifo_without_cash_on_reservation ... ok
+test mode_scope_head_previous_source_and_sorted_set_are_cas_bound ... ok
+test changed_origin_actual_quantity_fifo_and_missing_mode_fail_without_new_qids_or_money ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.54s
+
+     Running tests/managed_read_capacity.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/managed_read_capacity-078e9b30f5b437f4)
+
+running 2 tests
+test twenty_eight_actual_positions_expand_managed_capacity_but_preserve_risk_allocation ... ok
+test thirty_one_managed_slots_still_allow_only_three_fresh_funded_markets ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/ordinary_entry_exclusions.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/ordinary_entry_exclusions-a3cd79314c528b53)
+
+running 11 tests
+test default_has_no_report_field_or_planning_change ... ok
+test actual_journal_restart_preserves_revision_orders_and_financial_report ... ok
+test excluded_flat_market_does_not_reserve_cash_or_take_only_fresh_slot ... ok
+test inherited_owned_sell_management_survives_exclusion ... ok
+test install_is_not_cancellation_or_cash_release_and_retired_drafts_stay_retired ... ok
+test paper_engine_cannot_install_live_exclusion ... ok
+test original_physical_ack_cannot_be_abandoned_by_exclusion ... ok
+test reviewed_entry_can_reserve_excluded_market_under_original_caps ... ok
+test set_updates_are_chained_and_same_set_preserves_historical_audit ... ok
+test standalone_seed_cannot_silently_drop_installed_exclusions ... ok
+test source_scope_head_report_hashes_sorted_ids_and_future_receipt_fail_atomically ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.84s
+
+     Running tests/package_planning.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/package_planning-a538584c97279923)
+
+running 6 tests
+test absent_and_false_flags_keep_identical_ordinary_replacement_behavior ... ok
+test actual_acknowledgments_and_fills_stay_owned_and_cannot_be_retired_with_flag ... ok
+test deferral_cannot_bypass_any_original_unsubmitted_proof_or_retirement_guard ... ok
+test malformed_or_wrong_event_flag_is_rejected_transactionally ... ok
+test no_candidate_or_restart_leaves_next_tick_free_to_plan_normally ... ok
+test generated_component_quotes_retire_then_reserve_without_intervening_planning ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.75s
+
+     Running tests/probabilistic_packages.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/probabilistic_packages-28d2555ae5b9f5d8)
+
+running 11 tests
+test actual_partial_fill_and_terminal_release_only_unexecuted_funding_then_restart_blocks ... ok
+test completion_requires_actual_full_fills_and_keeps_remaining_portfolio_protected ... ok
+test covered_sell_consumes_actual_fifo_instead_of_average_cost ... ok
+test genuine_session_reserve_debits_no_cash_and_records_no_guaranteed_floor ... ok
+test old_floor_and_new_probability_transition_classes_cannot_mix ... ok
+test ordinary_tick_and_expiry_cannot_release_unknown_or_reserved_funding ... ok
+test exact_session_head_positions_scope_and_current_depth_are_mandatory ... ok
+test refund_returns_new_principal_and_does_not_turn_cancelled_state_into_win ... ok
+test probability_expected_value_and_cvar_are_recomputed_not_trusted ... ok
+test reviewed_tail_funding_factor_and_native_caps_deny_atomic_reservation ... ok
+test typed_never_attempted_release_is_financially_neutral_and_id_cannot_reuse ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.06s
+
+     Running tests/profitable_depth_mode.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/profitable_depth_mode-278c6218a7f9d4f2)
+
+running 14 tests
+test absent_mode_keeps_original_top_depth_zero_and_omits_report_and_policy_fields ... ok
+test disabled_transition_is_chained_and_restart_retains_exact_quote_and_report ... ok
+test actual_new_lot_maximum_age_loss_exit_retains_original_top_depth_fraction_and_price ... ok
+test durable_install_does_not_replan_release_or_fill_and_future_book_uses_actual_marginal_price ... ok
+test existing_sell_pledge_does_not_allow_a_second_full_position_exit ... ok
+test fees_exclude_deeper_unprofitable_levels_instead_of_averaging_them ... ok
+test invalid_book_cannot_supply_cumulative_depth ... ok
+test managed_forecast_scope_retains_original_exit_sizing ... ok
+test no_side_uses_complement_of_each_actual_ask_level_not_best_price_for_deeper_quantity ... ok
+test ordinary_actual_ack_and_fill_keep_fifo_cost_inherited_attribution_and_exact_cash ... ok
+test original_depth_policy_must_be_fifty_percent ... ok
+test owned_cap_selects_top_price_when_all_requested_shares_fit_top_level ... ok
+test paper_and_standalone_seed_cannot_install_or_drop_live_mode ... ok
+test mode_prefix_scope_previous_policy_and_fraction_are_atomic_guards ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.03s
+
+     Running tests/session_batch.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/session_batch-b1c18fc390f43c4a)
+
+running 9 tests
+test actual_ack_partial_fill_and_terminal_match_serial_without_synthetic_fill_credit ... ok
+test any_complete_serial_prefix_ahead_of_old_head_is_recovered_without_batch_atomicity_claim ... ok
+test duplicate_only_batch_does_not_touch_projection_paths ... ok
+test failed_head_or_report_publication_poison_both_apis_then_recover_complete_prefix ... ok
+test golden_financial_fee_gap_and_individual_journal_bytes_match_serial ... ok
+test historical_and_in_batch_duplicates_are_exactly_once_and_conflict_is_atomic ... ok
+test invalid_late_event_gap_or_reserved_reference_changes_nothing_and_does_not_poison ... ok
+test partial_final_row_fails_closed_and_is_not_automatically_repaired ... ok
+test count_raw_bytes_row_bytes_and_nested_shape_are_bounded_before_io ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.74s
+
+     Running tests/session_crash.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/session_crash-957fb3643cd2cb6d)
+
+running 1 test
+test killed_process_releases_lock_without_resetting_wallet ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s
+
+     Running tests/session_staged_advance.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/session_staged_advance-04c7b2def6427ef5)
+
+running 5 tests
+test batch_consuming_candidate_rolls_back_earlier_ack_and_cash_fill_when_final_terminal_invalid ... ok
+test failed_individual_candidate_preserves_all_published_state_and_same_sequence_remains_usable ... ok
+test serial_staging_matches_transactional_engine_every_actual_financial_prefix ... ok
+test single_and_batch_commit_identical_original_bytes_for_actual_accounting ... ok
+test serial_and_batch_original_bytes_restart_and_poison_recovery_preserve_actual_financial_prefix ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.06s
+
+     Running tests/source_parity.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/source_parity-354cdd73d6ee5c24)
+
+running 3 tests
+test realtime_gap_recovery_and_precision_match_original ... ok
+test complete_receipt_windows_match_original_source ... ok
+test restart_preserves_verified_native_precision_for_rest_duplicates ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests moloch_replay
+warning: unnecessary parentheses around `if` condition
+  --> src/engine_collateral.rs:90:254
+   |
+90 | ...before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{1...
+   |                     ^                                                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+90 -   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+90 +   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint" {86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |
+
+warning: 1 warning emitted
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

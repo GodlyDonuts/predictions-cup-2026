@@ -1,6 +1,8 @@
 {
   ".gitattributes": "ffe82f3c5b968ed009c2577fa38f32c83be167799ee565d40a18e3440c57b342",
-  "independent-review.json": "ee85f3a972a17c430aa207ba304867e6cf43283e4140cc4a1906d552d84c7b31",
+  "independent-review.json": "ba83694648f5a6f8d52ac53d81da12f904c943c9f80ad69083a034ab02053ebf",
   "operator-draft.py": "decad64c39aec3a43b28140dbb0fc82a8ba4f1d7360be7949b6b517c7609c96c",
-  "README.md": "b85a1f741e5051bbd947370b4999234b392fdbb14bf130c6608437c8454bc262"
+  "README.md": "103d8c83426943a45c2da18b35907c9bbbf7dd37f7ebdb036d06387851ce77c8",
+  "operator-compact-draft.py": "c9784c0551d97cd3209b64ac0c404b6ff76b0f4ed7b513acc513f43e09633ed5",
+  "build-proof/SHA256SUMS.json": "03d1cf6a2527d73aa928db3f7af704e199667386bff56ddcd827f6fcddd134c7"
 }

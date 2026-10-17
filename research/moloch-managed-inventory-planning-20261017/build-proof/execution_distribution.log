@@ -1,0 +1,206 @@
+warning: unnecessary parentheses around `if` condition
+  --> /tmp/moloch-managed-inventory-r22b-20261017/moloch/native/src/engine_collateral.rs:90:254
+   |
+90 | ...before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{1...
+   |                     ^                                                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+90 -   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+90 +   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint" {86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |
+
+warning: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+  --> /tmp/moloch-managed-inventory-r22b-20261017/moloch/native/src/realtime.rs:98:25
+   |
+98 | ...   self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;O...
+   |                       ^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+   |
+98 -         self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+98 +         self.generation.try_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+   |
+
+warning: value assigned to `duplicate` is never read
+   --> /tmp/moloch-managed-inventory-r22b-20261017/moloch/native/src/realtime.rs:124:97
+    |
+124 |         let mut scopes=std::collections::BTreeSet::new();let mut global=false;let mut duplicate=false;
+    |                                                                                                 ^^^^^ this value is reassigned later and never used
+...
+160 |             duplicate=self.standalone.contains(&digest);
+    |             ------------------------------------------- `duplicate` is overwritten here before the previous value is read
+    |
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /tmp/moloch-managed-inventory-r22b-20261017/moloch/native/src/realtime.rs:417:9
+    |
+417 |         mut socket: WebSocket<MaybeTlsStream<TcpStream>>,
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `accept` is never used
+   --> /tmp/moloch-managed-inventory-r22b-20261017/moloch/native/src/realtime.rs:273:8
+    |
+253 | impl Protocol {
+    | ------------- method in this implementation
+...
+273 |     fn accept(&mut self, v: &Value) -> Result<Option<Incoming>> {self.accept_original(v,&v.to_string())}
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `start` is never used
+   --> /tmp/moloch-managed-inventory-r22b-20261017/moloch/native/src/realtime.rs:416:8
+    |
+374 | impl Realtime {
+    | ------------- associated function in this implementation
+...
+416 |     fn start(
+    |        ^^^^^
+
+warning: `moloch-replay` (lib) generated 6 warnings (run `cargo fix --lib -p moloch-replay` to apply 3 suggestions)
+warning: unnecessary parentheses around function argument
+  --> /tmp/moloch-managed-inventory-r22b-20261017/backend-rust/transport-service/src/multi_leg_portfolio.rs:84:63
+   |
+84 | ...&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIM...
+   |                           ^                                                                                ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+84 -   let last=prices::official_tick_units(&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIMIT")?;
+84 +   let last=prices::official_tick_units(&d["fillPrice"])?;need(if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000},"PORTFOLIO_ACK_FILL_LIMIT")?;
+   |
+
+warning: `baal-transport-service` (lib) generated 1 warning (run `cargo fix --lib -p baal-transport-service` to apply 1 suggestion)
+warning: unused import: `self`
+ --> src/package_worker.rs:5:77
+  |
+5 | use crate::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_admission::Admission,package_authori...
+  |                                                                             ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `UNIT`
+ --> src/package_portfolio.rs:6:75
+  |
+6 | use moloch_relationship_arbitrage::{Instrument,Side,Book,Level,depth_cost,UNIT};
+  |                                                                           ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `dispatch::DispatchLog`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/package_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_portfolio::Plan,package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^            ^^^^                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `BindingLookup` and `Transport`
+ --> src/package_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                                                          ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/package_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: unused import: `UNIT`
+ --> src/package_allocation.rs:6:49
+  |
+6 | use moloch_relationship_arbitrage::{Limits,Side,UNIT};
+  |                                                 ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/probabilistic_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},probabilistic_portfolio::{Plan,Reservation,Policy},package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                  ^^^^                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Action`, `BindingLookup`, `Leg`, and `Transport`
+ --> src/probabilistic_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                 ^^^^^^ ^^^                               ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/probabilistic_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> src/package_preflight.rs:24:90
+   |
+24 | pub fn collect<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,basket:&Basket,mut after:F)->Result<PackageSnapshotSet>{
+   |                                                                                          ----^^^^^
+   |                                                                                          |
+   |                                                                                          help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `completed` is never read
+  --> src/execution_distribution.rs:51:77
+   |
+51 | #[derive(Clone)]struct Sample{key:Option<PoolKey>,market:String,attempt:u64,completed:u64,requested:u64,filled:u64,gain:Option<i128>...
+   |                        ------ field in this struct                          ^^^^^^^^^
+   |
+   = note: `Sample` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `moloch-live-runtime` (lib) generated 11 warnings (run `cargo fix --lib -p moloch-live-runtime` to apply 10 suggestions)
+   Compiling moloch-live-runtime v0.1.0 (/tmp/moloch-managed-inventory-r22b-20261017/moloch/live-runtime)
+warning: function `closed_legacy_ack` is never used
+  --> src/worker.rs:61:4
+   |
+61 | fn closed_legacy_ack(bank:&Session,log:&DispatchLog,qid:u64,event:&Value)->bool{
+   |    ^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `recovery_not_before` is never used
+    --> src/worker.rs:1793:4
+     |
+1793 | fn recovery_not_before(budget:&RecoveryBudget,at:u64,auth:u64)->Result<u64>{
+     |    ^^^^^^^^^^^^^^^^^^^
+
+warning: `moloch-live-runtime` (bin "moloch-live-runtime") generated 2 warnings
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.03s
+     Running tests/execution_distribution.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/execution_distribution-41efcfaaa4aa59fa)
+
+running 25 tests
+test actual_opposite_buy_redemption_ends_owned_capital_without_a_markout_assumption ... ok
+test actual_maker_review_versions_are_not_pooled_even_for_identical_normalized_quotes ... ok
+test actual_smaller_admission_is_partial_requested_execution_and_releases_rejected_reservation_at_ack ... ok
+test bank_events_not_observed_by_the_execution_model_block_prospective_estimation ... ok
+test aged_confirmed_owned_cohort_is_reclaimed_only_after_actual_fifo_close ... ok
+test carry_tagged_original_attempts_never_pollute_short_horizon_distribution ... ok
+test cancellation_ack_does_not_hide_a_later_official_partial_fill_or_become_zero ... ok
+test complete_quantity_and_value_remain_distinct_from_actual_profit ... ok
+test current_sdk_owned_fills_endpoint_is_exact_and_scope_stays_in_original_data ... ok
+test exact_membership_rejects_changed_prepared_bytes_and_policy_change ... ok
+test delayed_observation_cannot_retroactively_use_an_already_observed_profitable_book ... ok
+test first_shallow_mark_is_censored_instead_of_replaced_by_later_favorable_depth ... ok
+test known_own_remaining_bid_liquidity_is_not_a_counterfactual_exit ... ok
+test normalized_parent_pool_shrinks_market_counts_without_treating_same_time_races_as_independent_blocks ... ok
+test original_receipt_clock_is_preserved_when_actual_terminal_processing_finishes_later ... ok
+test original_tape_and_committed_terminal_are_mandatory_not_an_ack_or_retired_flag ... ok
+test partial_loss_is_quantity_weighted_not_charged_the_unfilled_principal ... ok
+test prospective_query_does_not_reuse_passive_samples_for_aggressive_or_foreign_action ... ok
+test prospective_query_reuses_genuine_configured_features_without_creating_an_exposure ... ok
+test prospective_short_markout_cannot_be_used_as_terminal_or_new_strategy_evidence ... ok
+test repeated_full_tapes_do_not_double_count_fills_fifo_capital_or_samples ... ok
+test simultaneous_fill_rows_share_depth_and_never_each_reuse_the_same_first_level ... ok
+test unknown_and_open_orders_never_become_zero_after_a_timeout ... ok
+test zero_is_only_a_closed_complete_original_lifecycle_and_has_zero_principal_pnl ... ok
+test source_gaps_and_old_source_clocks_cannot_create_a_conditional_value_label ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 26.75s
+
