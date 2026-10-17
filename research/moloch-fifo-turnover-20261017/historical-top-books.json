@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "provenance": "Historical YES top books supplied by root in the task170 delegation; original receipt bytes and receipt hashes were not supplied to this analyzer.",
+  "reportedTimeUtcMinute": "2026-10-17T16:14Z",
+  "exactOriginalReceiptTimeUtc": null,
+  "originalReceiptSha256": null,
+  "authenticatedOriginalBook": false,
+  "currentExecutableQuote": false,
+  "books": [
+    {"exchangeId":"1042","yesBid":"0.915000","yesBidQuantity":7505,"yesAsk":"0.920000","yesAskQuantity":2868},
+    {"exchangeId":"1051","yesBid":"0.135000","yesBidQuantity":45687,"yesAsk":"0.145000","yesAskQuantity":7980},
+    {"exchangeId":"1067","yesBid":"0.310000","yesBidQuantity":4355,"yesAsk":"0.315000","yesAskQuantity":1910},
+    {"exchangeId":"1068","yesBid":"0.950000","yesBidQuantity":4571,"yesAsk":"0.955000","yesAskQuantity":34395},
+    {"exchangeId":"851","yesBid":"0.120000","yesBidQuantity":8493,"yesAsk":"0.125000","yesAskQuantity":4892},
+    {"exchangeId":"865","yesBid":"0.860000","yesBidQuantity":4032,"yesAsk":"0.875000","yesAskQuantity":5738},
+    {"exchangeId":"872","yesBid":"0.460000","yesBidQuantity":1740,"yesAsk":"0.470000","yesAskQuantity":5082},
+    {"exchangeId":"885","yesBid":"0.705000","yesBidQuantity":1,"yesAsk":"0.710000","yesAskQuantity":18772},
+    {"exchangeId":"966","yesBid":"0.905000","yesBidQuantity":773,"yesAsk":"0.910000","yesAskQuantity":164},
+    {"exchangeId":"977","yesBid":"0.065000","yesBidQuantity":4254,"yesAsk":"0.075000","yesAskQuantity":1304},
+    {"exchangeId":"993","yesBid":"0.715000","yesBidQuantity":1873,"yesAsk":"0.720000","yesAskQuantity":8325}
+  ]
+}
