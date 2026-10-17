@@ -14,6 +14,32 @@ fn iso(at:i64)->String{chrono::DateTime::from_timestamp_millis(at).unwrap().to_r
 fn sha(b:&[u8])->String{format!("{:x}",Sha256::digest(b))}
 fn retain(root:&Path,r:Receipt)->RetainedReceipt{fs::create_dir_all(root.join("receipts")).unwrap();atomic_json(&root.join("receipts").join(format!("{}.json",feedback::digest(&r).unwrap())),&serde_json::to_value(&r).unwrap()).unwrap();RetainedReceipt::open(root,&r,ReceiptStore::Ordinary).unwrap()}
 fn receipt(endpoint:String,data:Value)->Receipt{Receipt{endpoint,data,status:200,request_started_at:iso(NOW-2000),received_at:iso(NOW-1000)}}
+// Optional interop handoff only. The external destination is never used as a
+// fixture root and is NEVER deleted (even on failure). No official/live data.
+fn export_synthetic_interop(packet:&Path){
+ let Some(output)=std::env::var_os("TARTARUS_PACKET_FIXTURE_OUTPUT")else{return};
+ let output=PathBuf::from(output);assert!(output.is_absolute(),"fixture output must be absolute");
+ assert!(!output.exists(),"fixture output must be create-new");fs::create_dir(&output).unwrap();
+ use std::{io::Write,os::unix::{fs::{MetadataExt,OpenOptionsExt,PermissionsExt}}};
+ fs::set_permissions(&output,fs::Permissions::from_mode(0o700)).unwrap();
+ let names=["account-original.json","positions-original.json","open-orders-original.json","collateral-original.json","control.json","manifest-original.json","head-original.json","report-original.json","ordinary-dispatch-original.json","package-dispatch-original.json","metadata.json"];
+ let metadata:Value=serde_json::from_slice(&fs::read(packet.join("metadata.json")).unwrap()).unwrap();
+ assert_eq!(metadata["generationSha256"],ZERO);assert_eq!(metadata["executionAuthority"],false);
+ assert!(!packet.join("generation-request.json").exists());
+ let mut files=serde_json::Map::new();let mut total=0u64;
+ for name in names{
+  let source=packet.join(name);let before=fs::symlink_metadata(&source).unwrap();assert!(before.is_file()&&!before.file_type().is_symlink()&&before.nlink()==1&&before.len()<=64*1024*1024);
+  total=total.checked_add(before.len()).unwrap();assert!(total<=128*1024*1024);
+  let bytes=fs::read(&source).unwrap();let after=fs::symlink_metadata(&source).unwrap();
+  assert_eq!((before.dev(),before.ino(),before.len()),(after.dev(),after.ino(),after.len()));assert_eq!(bytes.len()as u64,before.len());
+  let mut file=fs::OpenOptions::new().write(true).create_new(true).mode(0o600).open(output.join(name)).unwrap();file.write_all(&bytes).unwrap();file.sync_all().unwrap();
+  assert_eq!(fs::read(output.join(name)).unwrap(),bytes);files.insert(name.into(),json!({"sha256":sha(&bytes),"bytes":bytes.len()}));
+ }
+ let expected=json!({"expected_metadata_sha256":files.get("metadata.json").unwrap()["sha256"],"expected_control_sha256":files.get("control.json").unwrap()["sha256"],"expected_generation_sha256":ZERO,"expected_report_sha256":files.get("report-original.json").unwrap()["sha256"],"expected_head_sha256":files.get("head-original.json").unwrap()["sha256"]});
+ let artifact=json!({"schemaVersion":1,"evidenceClass":"synthetic_rust_fixture","synthetic":true,"executionAuthority":false,"financialEvidence":false,"expectedPins":expected,"files":files,"producerModuleSha256":sha(include_bytes!("../src/tartarus_snapshot.rs")),"producerTestSha256":sha(include_bytes!("tartarus_snapshot.rs"))});
+ let mut raw=serde_json::to_vec(&artifact).unwrap();raw.push(b'\n');let mut file=fs::OpenOptions::new().write(true).create_new(true).mode(0o600).open(output.join("interop-expected-pins.json")).unwrap();file.write_all(&raw).unwrap();file.sync_all().unwrap();fs::File::open(&output).unwrap().sync_all().unwrap();
+ println!("TARTARUS_SYNTHETIC_PACKET_FIXTURE={}",json!({"outputDirectory":output,"expectedPinsArtifactSha256":sha(&raw),"expectedPins":expected,"synthetic":true,"executionAuthority":false}));
+}
 struct F{root:PathBuf,owner_path:PathBuf,owner:ExclusiveLock,t:Transport,log:DispatchLog,packages:PackageDispatchLog,bank:Session,control_sha:String,account:RetainedReceipt,positions:RetainedReceipt,open:RetainedReceipt,collateral:RetainedReceipt}
 impl Drop for F{fn drop(&mut self){let _=fs::remove_dir_all(&self.root);}}
 impl F{
@@ -45,6 +71,7 @@ impl F{
  assert_eq!(m["nativeBooks"][0]["sourceAt"],iso(NOW));let path=packet.write_new(&f.bank,&f.boundary(),"frozen-001").unwrap();
  for(label,source)in [("report-original","bank/report.json"),("head-original","bank/head.json"),("ordinary-dispatch-original","dispatch.ndjson")]{assert_eq!(fs::read(path.join(format!("{label}.json"))).unwrap(),fs::read(f.root.join(source)).unwrap());}
  assert!(packet.write_new(&f.bank,&f.boundary(),"frozen-001").is_err());assert!(packet.write_new(&f.bank,&f.boundary(),"../elsewhere").is_err());assert_eq!(f.bank.durable_head(),head);assert_eq!(f.financial_bytes(),before);
+ assert!(f.bank.engine().managed_inventory_planning_record().is_none());export_synthetic_interop(&path);
 }
 #[test]fn missing_collateral_preserves_unknown_debt_but_still_exports_present_evidence(){let f=F::new(false);let p=f.capture(false).unwrap();assert!(p.metadata()["observedCollateralDebtMicros"].is_null());assert!(p.metadata()["terminalDebtMicros"].is_null());assert_eq!(p.metadata()["economicFreshnessQualified"],false);}
 #[test]fn actual_unknown_sdk_request_refuses_without_financial_mutation(){let f=F::new(true);let before=f.financial_bytes();assert!(f.capture(true).is_err());assert_eq!(f.financial_bytes(),before);}
