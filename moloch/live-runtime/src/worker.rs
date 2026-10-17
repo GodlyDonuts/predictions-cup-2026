@@ -888,7 +888,9 @@ fn profit_successor_exists(bank:&Session,old:&Value,hint:&moloch_live_runtime::e
 fn negative_profit_preparation(bank:&Session,scope:&Scope,log:&DispatchLog,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,original:&Receipt,accepted:&[Value],admitted_head:&Value,managed:bool,at:u64)->bool{
  (||->Result<bool>{
   use moloch_live_runtime::exit_refresh::ReadKind;
-  if bank.durable_head()!=*admitted_head||managed||hint.kind()!=ReadKind::Profit||ReadKind::from_quote(old)!=Some(ReadKind::Profit)
+  if bank.durable_head()!=*admitted_head||managed
+   ||bank.engine().ordinary_entry_exclusions().contains(hint.exchange())||bank.engine().managed_inventory_planning_excludes(hint.exchange())
+   ||hint.kind()!=ReadKind::Profit||ReadKind::from_quote(old)!=Some(ReadKind::Profit)
    ||old.get("reviewedInventoryExit").is_some_and(|v|!v.is_null())||old.get("reviewedFundamentalEntry").is_some_and(|v|!v.is_null())
    ||old["filled"].as_u64()!=Some(0)||old["id"].as_u64()!=Some(hint.old_qid())
    ||old["exchangeId"]!=hint.exchange()||old["marketId"]!=hint.market()
@@ -971,7 +973,8 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   let initial=preflight_read(bank,source,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},None,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
   let target=json!({"marketId":market,"exchangeId":hint.exchange()});let admitted=accept_fresh_book(bank,c,&target,&initial,source)?;
   let admitted_head=bank.durable_head();
-  if negative_profit_preparation(bank,&c.scope,log,old,hint,&initial,&admitted,&admitted_head,fundamental.is_some(),now()){
+  let target_managed=fundamental.as_ref().is_some_and(|f|f.cohorts.manages(hint.exchange()));
+  if negative_profit_preparation(bank,&c.scope,log,old,hint,&initial,&admitted,&admitted_head,target_managed,now()){
    return refresh_deferred(c,"preparation_negative",&"CURRENT_GROSS_BID_BELOW_NATIVE_PROFIT_MINIMUM")
   }
   if !profit_successor_exists(bank,old,hint,maximum_qid_before,now())?{
@@ -2534,6 +2537,18 @@ pub fn main()->Result<()>{
  }
  #[test]fn profit_preparation_equality_and_positive_bounds_keep_full_final_path(){
   for(side,bid)in [("YES",505000),("NO",505000),("YES",510000),("NO",510000)]{let(_temp,mut bank,log,c,mut source,old,hint)=negative_profit_fixture(side);let r=negative_profit_receipt(side,bid,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()),"{side}/{bid}");}
+ }
+ #[test]fn negative_profit_preparation_management_is_target_specific_and_native_guarded(){
+  for kind in ["ordinary_entry_exclusions_v1","managed_inventory_planning_v1"]{
+   let(_temp,mut bank,log,c,mut source,old,hint)=negative_profit_fixture("NO");let r=negative_profit_receipt("NO",490000,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();
+   for target in ["102","101"]{
+    let stamp=iso(now());let mut e=json!({"type":kind,"source":"moloch_live_dispatcher","receivedAt":stamp,"processedAt":stamp,"bankScope":{"runId":"existing-worker-fixture","bankManifestHash":bank.manifest_hash(),"tournamentId":TID},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report().unwrap()),"managedExchangeIds":[target],"approvedReviewSetSha256":"a".repeat(64),"controlSha256":"b".repeat(64)});
+    if kind=="ordinary_entry_exclusions_v1"{e["expectedPreviousExclusionSha256"]=bank.engine().ordinary_entry_exclusion_record().map_or(Value::Null,|v|v["sha256"].clone());}
+    else{e["generationSha256"]=json!("c".repeat(64));e["expectedPreviousModeSha256"]=bank.engine().managed_inventory_planning_record().map_or(Value::Null,|v|v["sha256"].clone());}
+    accept(&mut bank,&e).unwrap();
+    assert_eq!(negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()),target!="101","{kind}/{target}: unrelated manager must not mask target; caller false must not bypass target-native management");
+   }
+  }
  }
  #[test]fn negative_profit_preparation_never_vetoes_uncertain_changed_or_reviewed_context(){
   let(_temp,mut bank,mut log,c,mut source,old,hint)=negative_profit_fixture("NO");let r=negative_profit_receipt("NO",490000,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();let head=bank.durable_head();let at=now();
