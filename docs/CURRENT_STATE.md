@@ -1,14 +1,12 @@
-# October 17 - R24 trading; first actual inherited exit profit verified
+# October 17 - R25 installed; original ledger restoring
 
-**R24/source43b0341a/binaryd8e4672a/native5b61, solePID643393 is verified trading with healthy realtime and no active STOP.** Its first actual profitable exit sold16 inherited948NO shares at09:42:44.410UTC:14.400proceeds minus14.320recorded FIFO basis and0recorded fees = **+0.080 realized**. Original ACK, complete terminal/signed official tape and authenticated native/dispatch chains agree. [Actual exit proof](../research/moloch-entry-capital-quarantine-20261017/r24-first-actual-exit/README.md).
+**R25/source8251b883/binary0bc69f07/native5b61 is installed as solePID649399 at10:35:06UTC; the original ledger is restoring. Fresh new-process trading is not yet verified.** [Actual controlled installation](../research/moloch-entry-capital-quarantine-20261017/deployment/README.md). Old R24 progress is not assigned to this process.
 
-Native465624 at2026-10-17T09:48:07.672Z:381officialfillrows, cash3,611.985, owned principal91,853.520 and attributed realized-114.410 (new-184.970/inherited+70.560). All prior380rawfilltokens and other position lots are unchanged. This is actual R24 recorded-basis profit; no causal latency/strategy benefit or winning rank is established.
+Stopped native478357 preserves381 official fill rows, cash3,611.985, owned cost91,853.520 and attributed realized-114.410 (new-184.970/inherited+70.560). Root verified all prior381 raw fill tokens,15 original bridge bytes and a quiet SDK queue with zero unknown acceptances. Only the binary binding/ExecStart changed; original models, reviews and source/model/rate/risk/activation clocks remain.
 
-The upgraded worker preserves original15bridge bytes/four model generations/eleven reviews/source/model/activation/rate clocks. Actual ARM64 worker134/lifecycle14/unchanged-library21 checks, optimized release and263source verification pass. The single upgrade took about21minutes until its first captured restored heartbeat. [Restored operation](../research/moloch-profit-exit-timing-20261017/live-proof/README.md).
+The installed source quarantines unqualified ordinary new-exposure BUYs, preserves genuine reviewed entries and fully-covered opposite-BUY reductions, and retires only proven unused flat reservations before funded comparison. Actual ARM64149 checks, optimized production release and263-source comparison pass. [Implementation](../research/moloch-entry-capital-quarantine-20261017/IMPLEMENTATION.md), [build proof](../research/moloch-entry-capital-quarantine-20261017/build-proof/README.md). Actual cleanup and economic benefit require later observation.
 
-**Task165 targets entry capital:** at the earlier09:36 snapshot, four ordinary BUY drafts reserved3,593.940 of3,597.585cash, leaving3.645 for the comparison cash bound. Checked source8251b883/binary0bc69f07 passes149 actual ARM64 checks, optimized production build and263-source verification. It preserves legitimate opposite-BUY exits and requires positive lifecycle proof before local retirement. R24 continues operating pending the controlled rollout. [Exact frozen census](../research/moloch-entry-capital-quarantine-20261017/README.md).
-
-The frozen 08:34 inherited-depth census found only exchange 948 positive among 14 unmanaged inherited sides. The other 13 fail the gain floor; eight also have stale books. This historical diagnostic is not an extra order or additional realized profit. [Census](../research/moloch-profit-exit-timing-20261017/FROZEN_DEPTH_CENSUS.md).
+Historical R24's16-share948NO sale at09:42:44.410UTC realized+0.080 against recorded inherited FIFO basis; that is not R25 profit. [Authenticated actual exit](../research/moloch-entry-capital-quarantine-20261017/r24-first-actual-exit/README.md). The earlier transient3,593.940 reservation census is retained as dated evidence rather than continuous current cash pressure.
 
 # Earlier dated observations
 
