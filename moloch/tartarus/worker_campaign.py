@@ -54,7 +54,7 @@ def run(packet_directory, pins, config):
         decision = N._int(config.get("decision_ms"), "DECISION_CLOCK")
         stage = "verify_original_worker_packet"
         packet = W.verify_packet(packet_directory, **pins)
-        docs["audit_manifest"].update(evidence_class=config["evidence_class"], packet_provenance=packet.provenance,
+        docs["audit_manifest"].update(evidence_class=config["evidence_class"], packet_provenance=dict(packet.provenance),
             bank_head=packet.head, generation_sha256=pins["expected_generation_sha256"])
         trace.append({"step": stage, "status": "passed", "execution_authorized": False})
         stage = "adapt_complete_native_account"

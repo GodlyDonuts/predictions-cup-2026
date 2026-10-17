@@ -1,6 +1,9 @@
 """Complete synthetic packet pipeline; no live book, probability or trade."""
 from copy import deepcopy
 import importlib.util
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 import worker_campaign as C
@@ -64,6 +67,22 @@ class WorkerCampaignTests(unittest.TestCase):
         self.assertIn("LIABILITY_EVIDENCE_UNAVAILABLE", out["audit_manifest"]["unavailable_reason"])
         self.assertIsNone(out["rank_candidates"]["candidates"])
         self.assertEqual(out["capacity_frontier"]["dated_static_bound"]["cash_micros"], 10000000)
+
+    def test_real_four_artifact_output_round_trip_with_immutable_packet_provenance(self):
+        self.config.pop("liabilities")
+        docs = self.run_campaign()
+        with tempfile.TemporaryDirectory() as parent:
+            output = Path(parent) / "new-research-output"
+            audit = C.census.write_outputs(docs, output)
+            self.assertEqual(audit["status"], "unavailable")
+            self.assertEqual({p.name for p in output.iterdir()},
+                {name + ".json" for name in docs})
+            restored = json.loads((output / "audit_manifest.json").read_bytes())
+            self.assertEqual(restored["packet_provenance"]["draft_ids"], [1])
+            self.assertFalse(restored["packet_provenance"]["sdk_or_os_state_independently_verified"])
+            self.assertIn("LIABILITY_EVIDENCE_UNAVAILABLE", restored["unavailable_reason"])
+            self.assertTrue(all(json.loads(p.read_bytes())["execution_authorized"] is False
+                                for p in output.iterdir()))
 
     def test_old_receipts_never_reclocked_to_newer_native_snapshot(self):
         self.f.d["report"]["at"] = "1970-01-01T00:00:01.500Z"
