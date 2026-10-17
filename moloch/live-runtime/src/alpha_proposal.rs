@@ -96,13 +96,21 @@ pub fn compare(bank:&Session,scope:&Scope,r:&ReviewBounds,now:u64)->Result<Compa
   let mut limit=match mode{Mode::JoinBid=>bid,Mode::ImproveOneTick=>bid.checked_add(TICK).ok_or("ALPHA_RANGE")?,Mode::BoundedLimitMayRest=>r.acquisition_ceiling/TICK*TICK};
   if *mode==Mode::ImproveOneTick&&limit>=ask{fail(&mut out,"no_inside_tick");continue}
   if limit>r.acquisition_ceiling||limit>r.expected_payout{fail(&mut out,"reviewed_value_ceiling");continue}
-  if available<limit{fail(&mut out,"insufficient_fully_funded_capital");continue}
-  let mut n=maximum.min(liquidation_capacity).min(u64::try_from(available/limit)?);
+  let minimum_price=if *mode==Mode::BoundedLimitMayRest{ask}else{limit};
+  if available<minimum_price{fail(&mut out,"insufficient_fully_funded_capital");continue}
+  let mut n=maximum.min(liquidation_capacity);
   if *mode==Mode::BoundedLimitMayRest{
-   let capacity=asks.iter().filter(|l|l.price<=limit).try_fold(0u64,|a,l|a.checked_add(l.quantity).ok_or("ALPHA_RANGE"))?;
-   n=n.min(capacity);if n==0{fail(&mut out,"no_ask_depth_within_ceiling");continue}
-   let mut left=n;for l in asks.iter().filter(|l|l.price<=limit){left=left.saturating_sub(l.quantity);if left==0{limit=l.price;break}}
-  }
+   // Each prefix is funded at its full marginal limit, never its weighted
+   // visible cost. The reviewed ceiling bounds prices, not the chosen quantity.
+   let ceiling=limit;let mut capacity=0u64;let mut selected=0u64;
+   for l in asks.iter().filter(|l|l.price<=ceiling){
+    capacity=capacity.checked_add(l.quantity).ok_or("ALPHA_RANGE")?;
+    let affordable=u64::try_from((available/l.price).min(n as i128))?;
+    let prefix=capacity.min(affordable);
+    if prefix>selected{selected=prefix;limit=l.price;}
+   }
+   n=selected;if capacity==0{fail(&mut out,"no_ask_depth_within_ceiling");continue}
+  }else{n=n.min(u64::try_from(available/limit)?);}
   if n==0{fail(&mut out,"no_liquidation_capacity");continue}
   let mut left=n;let mut acquisition=0i128;for l in asks.iter().filter(|l|l.price<=limit){let take=left.min(l.quantity);acquisition=acquisition.checked_add(times(l.price,take)?).ok_or("ALPHA_RANGE")?;left-=take;if left==0{break}}
   let immediate=n-left;left=n;let mut liquidation=0i128;for l in bids{let take=left.min(l.quantity);liquidation=liquidation.checked_add(times(l.price,take)?).ok_or("ALPHA_RANGE")?;left-=take;if left==0{break}}
