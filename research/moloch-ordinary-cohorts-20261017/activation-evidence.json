@@ -1,0 +1,71 @@
+{
+  "individualAdmissionWitness": "not present in financial report; release eras cannot prove individual gate admission, continued deployment or cancellation effectiveness",
+  "milestones": [
+    {
+      "deployedAt": "2026-10-16T14:37:09.605684+00:00",
+      "firstFreshAt": "2026-10-16T14:51:18.235085+00:00",
+      "kind": "ordinary_side_edge_enforce"
+    },
+    {
+      "deployedAt": "2026-10-16T17:07:56.937582+00:00",
+      "firstFreshAt": "2026-10-16T17:26:02.402458+00:00",
+      "kind": "defensive_cancel"
+    }
+  ],
+  "referenceEncoding": "Fixed repository artifacts, exact Git LF hash; CRLF working copies are normalized only for these pinned repository files.",
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "fields": {
+        "at": "2026-10-16T14:37:09.605684+00:00",
+        "binarySha256": "d2ad93b50af64122b626bb197ce79bcfcbdf6f22d8ec0e738b11ebf9b6f6a023",
+        "newPid": 516085,
+        "sourceCommit": "870ce889d51a04c654a93785277c47ea33b52bea"
+      },
+      "gitLfSha256": "05b39d336786f23e9e2ccbe50ce25de5f6b8aa32304c603b406cbd1d02811085",
+      "path": "research/moloch-ordinary-side-edge-20261016/deployment/production-rollout.json"
+    },
+    {
+      "fields": {
+        "at": "2026-10-16T14:39:19.158025+00:00",
+        "controlSha256": "5b673d2b0423edd43f9712994f492d4fccdfa2f6ca69acf85f79109371cc9189",
+        "ordinarySideEdge": "enforce"
+      },
+      "gitLfSha256": "975e2e6209dd39e6da728549c0aea64d99fbf103c4fcfa102338bf69876253c0",
+      "path": "research/moloch-ordinary-side-edge-20261016/deployment/activation-selection.json"
+    },
+    {
+      "fields": {
+        "bankSequence": 270593,
+        "checkedAt": "2026-10-16T14:51:18.235085+00:00",
+        "freshTradingVerified": true,
+        "newTradingRealized": "-151.615000",
+        "pid": 516085
+      },
+      "gitLfSha256": "80b6dbdb0729589ebcb60213255d52ffa01fe61b52620483d8cc63c9cb411ad3",
+      "path": "research/moloch-ordinary-side-edge-20261016/deployment/first-fresh.json"
+    },
+    {
+      "fields": {
+        "at": "2026-10-16T17:07:56.937582+00:00",
+        "binarySha256": "3ab6ef7c49c089f19ff90220cd3431ff5ce1c84a5858d6d9fdde060f1b9d6883",
+        "newPid": 525450,
+        "sourceCommit": "b112c6c1b941bcc3282c754c1883a55b2b9b6cc2"
+      },
+      "gitLfSha256": "c84acc4c42c374e12e646f3a73fb068009669b6f4c8cbd386d5b93d739745c89",
+      "path": "research/moloch-defensive-cancel-20261016/deployment/rollout-summary.json"
+    },
+    {
+      "fields": {
+        "bankSequence": 294247,
+        "checkedAt": "2026-10-16T17:26:02.402458+00:00",
+        "defensiveCancel": true,
+        "freshTradingVerified": true,
+        "newTradingRealized": "-176.595000",
+        "pid": 525450
+      },
+      "gitLfSha256": "39fb9c5df3f2976dafa6f1d8fc6068eaba856209f48358c6eb5681705fe4ead3",
+      "path": "research/moloch-defensive-cancel-20261016/deployment/fresh-live-verification.json"
+    }
+  ]
+}
