@@ -1595,10 +1595,22 @@ impl Cohorts{
     /// Revised/stale value assumptions also retire known still-open covered
     /// SELLs through the original cancel path; never invent unknown actual IDs.
     pub fn existing_exit_cancellations(&self,bank:&Session,log:&DispatchLog,trusted:&BTreeSet<String>,now:u64)->Result<Vec<u64>>{
-        self.check(bank,log)?;let mut out=Vec::new();for(ex,c)in &self.cohorts{if c.existing.is_none(){continue}let r=&self.policies[ex];
-            for b in c.exits.values(){if log.acknowledgments.contains_key(&b.qid)&&!log.closed.contains(&b.qid)
-                &&bank.engine().order_records().iter().any(|q|q["id"]==b.qid&&q["retired"]==false)
-                &&(digest(r)?!=b.review_sha256||((!trusted.contains(&digest(r)?)||!current(r,now))&&b.quote["reviewedInventoryExit"]["reason"]!="reviewed_holding_deadline")){out.push(b.qid);}}
+        self.check(bank,log)?;let mut out=Vec::new();for(ex,c)in &self.cohorts{let r=&self.policies[ex];
+            for b in c.exits.values(){
+                let cohort_exit=c.existing.is_none()&&c.entry.is_some()&&b.quote["reviewedInventoryExit"]["originKind"]=="original_entry_cohort";
+                if c.existing.is_none()&&!cohort_exit{continue}
+                if !log.acknowledgments.contains_key(&b.qid)||log.closed.contains(&b.qid){continue}
+                let Some(q)=crate::order_snapshot::quote(bank,b.qid).filter(|q|q["retired"]==false)else{continue};
+                if cohort_exit{
+                    need(q["reviewedInventoryExit"]==b.quote["reviewedInventoryExit"]&&q["reviewedInventoryExit"]["originSha256"]==c.origin_sha()?
+                        &&q["exchangeId"]==*ex&&q["side"]==r.side&&q["action"]=="sell","FUNDAMENTAL_COHORT_CANCEL_ORIGIN_CHANGED")?;
+                    let actual=bank.engine().live_order_bindings().get(&b.qid).ok_or("FUNDAMENTAL_COHORT_CANCEL_ACTUAL_REQUIRED")?;
+                    let ack:Receipt=serde_json::from_value(log.acknowledgments[&b.qid].clone())?;
+                    let event=if let Some(recovered)=log.recovered.get(&b.qid){let fills:Receipt=serde_json::from_value(recovered["fills"].clone())?;need(fills.endpoint==format!("/orders/{actual}/fills?limit=200"),"FUNDAMENTAL_COHORT_CANCEL_ACK_ENDPOINT")?;crate::feedback::recovered_acknowledgment(&b.quote,actual,&r.tournament_id,&ack,&fills,&fills.received_at)?}else{need(ack.endpoint=="/orders","FUNDAMENTAL_COHORT_CANCEL_ACK_ENDPOINT")?;crate::feedback::acknowledgment(&b.quote,&ack,&ack.received_at)?};
+                    self.validate_acknowledgment(b.qid,&event)?;need(event["actualOrderId"]==*actual,"FUNDAMENTAL_COHORT_CANCEL_ACK_CHANGED")?;
+                }
+                if digest(r)?!=b.review_sha256||((!trusted.contains(&digest(r)?)||!current(r,now))&&b.quote["reviewedInventoryExit"]["reason"]!="reviewed_holding_deadline"){out.push(b.qid);}
+            }
         }Ok(out)
     }
     /// Persist exact original request BEFORE any physical attempt, never after
