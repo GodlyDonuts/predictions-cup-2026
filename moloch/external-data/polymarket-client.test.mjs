@@ -10,7 +10,7 @@ test('public route allowlist rejects auth/orders/SIG/redirect injection and boun
 });
 test('100 simultaneous admissions are smooth <=30 in every rolling second', async () => {
   const a = fakeAdmission(), starts = await Promise.all(Array.from({ length: 100 }, () => a.reserve()));
-  for (let n = 1; n < starts.length; n++) assert.ok(starts[n] - starts[n - 1] >= 1000 / 30);
+  for (let n = 1; n < starts.length; n++) assert.ok(starts[n] - starts[n - 1] >= 32);
   for (const at of starts) assert.ok(starts.filter(t => t > at - 1000 && t <= at).length <= 30);
   assert.equal(a.admitted, 100);
 });
@@ -38,4 +38,12 @@ test('429 persists original retry deadline and all clients sharing admission obe
 test('stream body bound and invalid JSON are explicit failures with completed accounting', async () => {
   const c = new ReadClient({ admission: fakeAdmission(), maximumBodyBytes: 2, fetcher: async () => new Response('123') }); await assert.rejects(c.book('123'), /BODY_BOUND/); assert.equal(c.stats.completions, 1);
   const d = new ReadClient({ admission: fakeAdmission(), fetcher: async () => new Response('{') }); await assert.rejects(d.search('senate'), /JSON/);
+});
+test('exact public POST /books is bounded read-only and preserves original request/response', async () => {
+  let call; const raw = JSON.stringify([body()]); const c = new ReadClient({ admission: fakeAdmission(), fetcher: async (u, options) => { call = { u, options }; return new Response(raw); } });
+  const r = await c.books(['123']); assert.equal(call.u.href, CLOB + '/books'); assert.equal(call.options.method, 'POST'); assert.equal(call.options.body, '[{"token_id":"123"}]'); assert.equal(r.requestBodySha256, sha256(call.options.body)); assert.equal(r.bodyText, raw); assert.equal(c.stats.admissions, 1);
+  await assert.rejects(c.books(Array.from({ length: 21 }, (_, i) => String(i + 1))), /BATCH_BOUND/); await assert.rejects(c.books(['123', '123']), /BATCH_BOUND/); await assert.rejects(c.request('POST', CLOB, '/order', []), /READ_METHOD/); await assert.rejects(c.request('POST', CLOB, '/books', [{ token_id: '1', side: 'BUY' }]), /BATCH_SCHEMA/); assert.equal(c.stats.admissions, 1);
+});
+test('backoff publication failure is fatal and cannot become a soft network error', async () => {
+  const c = new ReadClient({ admission: fakeAdmission(), fetcher: async () => new Response('{}', { status: 429 }), onBackoff: async () => { throw Error('disk'); } }); await assert.rejects(c.book('123'), e => e.fatal === true && e.message === 'disk');
 });

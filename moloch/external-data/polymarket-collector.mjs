@@ -53,17 +53,31 @@ export function validateUniverse(value) {
   return value;
 }
 export class Journal {
-  constructor(root, { maximumBytes = 2 * 1024 ** 3, segmentBytes = 32 * 1024 ** 2 } = {}) { Object.assign(this, { root, maximumBytes, segmentBytes }); this.total = 0; this.segment = 0; this.file = null; this.tail = Promise.resolve(); }
+  constructor(root, { maximumBytes = 2 * 1024 ** 3, segmentBytes = 32 * 1024 ** 2 } = {}) { Object.assign(this, { root, maximumBytes, segmentBytes }); this.total = 0; this.segment = 0; this.file = null; this.tail = Promise.resolve(); this.prunedSegments = 0; this.prunedBytes = 0; }
   async initialize() {
     await fs.mkdir(this.root, { recursive: true, mode: 0o700 }); const names = await fs.readdir(this.root);
     if (names.length > 8192) throw Error('POLYMARKET_JOURNAL_FILES_BOUND');
     for (const name of names) { if (!/^books-[a-f0-9-]+\.ndjson\.gz$/.test(name)) throw Error('POLYMARKET_JOURNAL_UNKNOWN_FILE'); const st = await fs.lstat(path.join(this.root, name)); if (!st.isFile() || st.isSymbolicLink()) throw Error('POLYMARKET_JOURNAL_FILE'); this.total += st.size; }
-    this.files = names.length; if (this.total >= this.maximumBytes) throw Error('POLYMARKET_JOURNAL_BOUND');
+    this.files = names.length; await this.prune(0);
+  }
+  async prune(incoming) {
+    if (incoming > this.maximumBytes) throw Error('POLYMARKET_JOURNAL_BOUND');
+    const closed = [];
+    for (const name of await fs.readdir(this.root)) {
+      const file = path.join(this.root, name); if (file === this.file) continue;
+      if (!/^books-[a-f0-9-]+\.ndjson\.gz$/.test(name)) throw Error('POLYMARKET_JOURNAL_UNKNOWN_FILE');
+      const st = await fs.lstat(file); if (!st.isFile() || st.isSymbolicLink()) throw Error('POLYMARKET_JOURNAL_FILE'); closed.push({ file, bytes: st.size, at: st.mtimeMs });
+    }
+    for (const x of closed.sort((a, b) => a.at - b.at || a.file.localeCompare(b.file))) {
+      if (this.total + incoming <= this.maximumBytes && this.files < 8192) break;
+      await fs.unlink(x.file); this.total -= x.bytes; this.files--; this.prunedSegments++; this.prunedBytes += x.bytes;
+    }
+    if (this.total + incoming > this.maximumBytes) throw Error('POLYMARKET_JOURNAL_BOUND');
   }
   append(value) {
     const operation = this.tail.then(async () => {
       const raw = Buffer.from(JSON.stringify(value) + '\n'); if (raw.length > 20 * 1024 ** 2) throw Error('POLYMARKET_JOURNAL_ROW_BOUND');
-      const compressed = gzipSync(raw, { level: 1 }); if (this.total + compressed.length > this.maximumBytes) throw Error('POLYMARKET_JOURNAL_BOUND');
+      const compressed = gzipSync(raw, { level: 1 }); if (this.total + compressed.length > this.maximumBytes || this.files >= 8192) await this.prune(compressed.length);
       if (!this.file || this.segment + raw.length > this.segmentBytes) { if (this.files >= 8192) throw Error('POLYMARKET_JOURNAL_FILES_BOUND'); this.file = path.join(this.root, 'books-' + crypto.randomUUID() + '.ndjson.gz'); await fs.writeFile(this.file, '', { flag: 'wx', mode: 0o600 }); this.files++; this.segment = 0; }
       await fs.appendFile(this.file, compressed); this.total += compressed.length; this.segment += raw.length;
     }); this.tail = operation; return operation;
@@ -71,41 +85,55 @@ export class Journal {
   async close() { await this.tail; }
 }
 export function retained(row, identity) {
-  if (row?.identity?.assetId !== identity.assetId || row.identity.conditionId !== identity.conditionId || row.receipt?.status !== 200 || row.receipt.source !== 'polymarket_clob_public' || row.receipt.endpoint !== 'https://clob.polymarket.com/book?token_id=' + identity.assetId || sha256(row.receipt.bodyText ?? '') !== row.receipt.bodySha256) throw Error('POLYMARKET_RETAINED_RECEIPT');
+  if (row?.identity?.assetId !== identity.assetId || row.identity.conditionId !== identity.conditionId || row.receipt?.status !== 200 || row.receipt.source !== 'polymarket_clob_public' || sha256(row.receipt.bodyText ?? '') !== row.receipt.bodySha256) throw Error('POLYMARKET_RETAINED_RECEIPT');
   const start = Date.parse(row.receipt.requestStartedAt), end = Date.parse(row.receipt.receivedAt), first = Date.parse(row.firstAvailableAt);
   if (![start, end, first].every(Number.isFinite) || start > end || end > Date.now() || first > end) throw Error('POLYMARKET_RETAINED_CLOCK');
-  const body = JSON.parse(row.receipt.bodyText), book = normalizeBook(body, identity);
+  const body = JSON.parse(row.receipt.bodyText); let selected = body;
+  if (row.receipt.endpoint === 'https://clob.polymarket.com/books' && row.receipt.method === 'POST') {
+    if (sha256(row.receipt.requestBodyText ?? '') !== row.receipt.requestBodySha256) throw Error('POLYMARKET_RETAINED_BATCH');
+    const request = JSON.parse(row.receipt.requestBodyText);
+    if (!Array.isArray(request) || request.length < 1 || request.length > 20 || new Set(request.map(x => x.token_id)).size !== request.length || request.some(x => Object.keys(x).length !== 1) || !request.some(x => x.token_id === identity.assetId) || !Array.isArray(body) || body.length !== request.length || !Number.isInteger(row.bodyIndex) || row.bodyIndex < 0 || row.bodyIndex >= body.length) throw Error('POLYMARKET_RETAINED_BATCH');
+    for (const x of request) assetId(x.token_id);
+    if (new Set(body.map(x => x.asset_id)).size !== body.length || body.some(x => !request.some(r => r.token_id === x.asset_id))) throw Error('POLYMARKET_RETAINED_BATCH'); selected = body[row.bodyIndex];
+  } else if (row.receipt.endpoint !== 'https://clob.polymarket.com/book?token_id=' + identity.assetId || ![undefined, 'GET'].includes(row.receipt.method) || row.bodyIndex !== undefined) throw Error('POLYMARKET_RETAINED_RECEIPT');
+  const book = normalizeBook(selected, identity);
   if (JSON.stringify(body) !== JSON.stringify(row.receipt.body) || JSON.stringify(book) !== JSON.stringify(row.book) || Number(book.sourceTimestamp) > end + 5000) throw Error('POLYMARKET_RETAINED_BOOK');
   return row;
 }
 export async function run(options, dependencies = {}) {
-  const cache = path.resolve(options.cache ?? 'polymarket-cache'), port = Number(options.port ?? 17842), rps = Number(options.rps ?? 30), concurrency = Number(options.concurrency ?? 12), duration = Number(options['duration-seconds'] ?? 0);
-  if (!options.universe || !Number.isInteger(port) || port < 0 || port > 65535 || !Number.isInteger(concurrency) || concurrency < 1 || concurrency > 64 || !Number.isInteger(rps) || rps < 1 || rps > 30 || !Number.isFinite(duration) || duration < 0 || duration > 86400) throw Error('POLYMARKET_CONFIGURATION');
+  const cache = path.resolve(options.cache ?? 'polymarket-cache'), port = Number(options.port ?? 17842), rps = Number(options.rps ?? 30), concurrency = Number(options.concurrency ?? 12), batchSize = Number(options['batch-size'] ?? 1), duration = Number(options['duration-seconds'] ?? 0);
+  if (!options.universe || !Number.isInteger(port) || port < 0 || port > 65535 || !Number.isInteger(concurrency) || concurrency < 1 || concurrency > 64 || !Number.isInteger(batchSize) || batchSize < 1 || batchSize > 20 || !Number.isInteger(rps) || rps < 1 || rps > 30 || !Number.isFinite(duration) || duration < 0 || duration > 86400) throw Error('POLYMARKET_CONFIGURATION');
   const universeBytes = await fs.readFile(options.universe); if (universeBytes.length > 16 * 1024 ** 2) throw Error('POLYMARKET_UNIVERSE_BOUND');
   const universe = validateUniverse(JSON.parse(universeBytes)); const release = await acquire(cache); const controller = new AbortController();
-  const latest = new Map(), tasks = new Set(), states = universe.outcomes.map(identity => ({ identity, pending: false })); let cursor = 0, stopped = false, fatal, server, statusTimer, durationTimer;
+  const latest = new Map(), tasks = new Set(), markets = new Map();
+  for (const identity of universe.outcomes) { if (!markets.has(identity.conditionId)) markets.set(identity.conditionId, []); markets.get(identity.conditionId).push(identity); }
+  const states = [...markets.values()].flatMap(ids => Array.from({ length: Math.ceil(ids.length / batchSize) }, (_, n) => ({ identities: ids.slice(n * batchSize, (n + 1) * batchSize), pending: false })));
+  let cursor = 0, stopped = false, fatal, server, statusTimer, durationTimer;
   const stats = { scheduled: 0, successfulBooks: 0, invalidBooks: 0, errors: 0, oldBooks: 0, conflicts: 0, maximumInFlight: 0, lastError: null };
   const startedAt = new Date().toISOString(); const stop = () => { stopped = true; controller.abort(); }; let maximumBackoff = 0, backoffTail = Promise.resolve();
   const admission = dependencies.client?.admission ?? new Admission({ rps });
   const client = dependencies.client ?? new ReadClient({ admission, onBackoff: value => { maximumBackoff = Math.max(maximumBackoff, Date.parse(value.blockedUntil)); backoffTail = backoffTail.then(() => atomicJson(path.join(cache, 'backoff.json'), { ...value, blockedUntil: new Date(maximumBackoff).toISOString() })); return backoffTail; } });
   const journal = new Journal(path.join(cache, 'journal'), dependencies.journalOptions);
-  const status = () => { const now = Date.now(), ages = [...latest.values()].map(x => now - Number(x.book.sourceTimestamp)).sort((a, b) => a - b); return { source: 'polymarket_clob_public', pricingAuthority: false, resolutionEquivalenceVerified: false, pid: process.pid, startedAt, at: new Date(now).toISOString(), state: fatal ? 'failed' : stopped ? 'stopped' : 'running', universeSha256: sha256(universeBytes), outcomes: states.length, cachedBooks: latest.size, inFlight: tasks.size, configuredMaximumRps: rps, concurrency, blockedUntil: new Date(Date.now() + Math.max(0, admission.blockedUntil - admission.clock())).toISOString(), admissions: client.stats.admissions, completions: client.stats.completions, client: client.stats, stats: { ...stats }, sourceAgeMs: { minimum: ages[0] ?? null, median: ages[Math.floor(ages.length / 2)] ?? null, maximum: ages.at(-1) ?? null } }; };
+  const status = () => { const now = Date.now(), ages = [...latest.values()].map(x => now - Number(x.book.sourceTimestamp)).sort((a, b) => a - b); return { source: 'polymarket_clob_public', pricingAuthority: false, resolutionEquivalenceVerified: false, pid: process.pid, startedAt, at: new Date(now).toISOString(), state: fatal ? 'failed' : stopped ? 'stopped' : 'running', universeSha256: sha256(universeBytes), outcomes: universe.outcomes.length, markets: markets.size, cachedBooks: latest.size, completeMarketCoverage: [...markets.values()].filter(xs => xs.every(x => latest.has(x.assetId))).length, inFlight: tasks.size, configuredMaximumRps: rps, concurrency, batchSize, journalRetention: { maximumBytes: journal.maximumBytes, prunedSegments: journal.prunedSegments, prunedBytes: journal.prunedBytes }, blockedUntil: new Date(Date.now() + Math.max(0, admission.blockedUntil - admission.clock())).toISOString(), admissions: client.stats.admissions, completions: client.stats.completions, client: client.stats, stats: { ...stats }, sourceAgeMs: { minimum: ages[0] ?? null, median: ages[Math.floor(ages.length / 2)] ?? null, maximum: ages.at(-1) ?? null } }; };
   const publishStatus = () => atomicJson(path.join(cache, 'status.json'), status());
-  async function ingest({ identity, receipt }) {
-    let book; try { book = normalizeBook(receipt.body, identity); if (Number(book.sourceTimestamp) > Date.parse(receipt.receivedAt) + 5000) throw Error('POLYMARKET_BOOK_FUTURE'); }
+  async function ingest({ identity, receipt, bodyIndex }) {
+    let book; try { book = normalizeBook(bodyIndex === undefined ? receipt.body : receipt.body[bodyIndex], identity); if (Number(book.sourceTimestamp) > Date.parse(receipt.receivedAt) + 5000) throw Error('POLYMARKET_BOOK_FUTURE'); }
     catch (e) { stats.invalidBooks++; stats.lastError = e.message; await journal.append({ identity, receipt, invalid: e.message }); return; }
     const previous = latest.get(identity.assetId); const content = sha256(JSON.stringify({ bids: book.bids, asks: book.asks }));
-    await journal.append({ identity, receipt, book });
+    await journal.append({ identity, receipt, book, ...(bodyIndex === undefined ? {} : { bodyIndex }) });
     if (previous && Number(book.sourceTimestamp) < Number(previous.book.sourceTimestamp)) { stats.oldBooks++; return; }
     if (previous && book.sourceTimestamp === previous.book.sourceTimestamp && content !== previous.contentSha256) { stats.conflicts++; latest.delete(identity.assetId); await fs.unlink(path.join(cache, 'latest', identity.assetId + '.json')).catch(e => { if (e.code !== 'ENOENT') throw e; }); return; }
-    const row = { identity, receipt, book, contentSha256: content, firstAvailableAt: previous && book.sourceTimestamp === previous.book.sourceTimestamp ? previous.firstAvailableAt : receipt.receivedAt };
+    const row = { identity, receipt, book, ...(bodyIndex === undefined ? {} : { bodyIndex }), contentSha256: content, firstAvailableAt: previous && book.sourceTimestamp === previous.book.sourceTimestamp ? previous.firstAvailableAt : receipt.receivedAt };
     retained(row, identity); await atomicJson(path.join(cache, 'latest', identity.assetId + '.json'), row); latest.set(identity.assetId, row); stats.successfulBooks++; await dependencies.onEvent?.(row);
   }
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
   try {
     await fs.mkdir(path.join(cache, 'latest'), { recursive: true, mode: 0o700 }); await journal.initialize();
     try { const b = JSON.parse(await fs.readFile(path.join(cache, 'backoff.json'), 'utf8')); const until = Date.parse(b.blockedUntil); if (!Number.isFinite(until)) throw Error('POLYMARKET_BACKOFF_STATE'); maximumBackoff = until; admission.backoff(Math.max(0, until - Date.now())); } catch (e) { if (e.code !== 'ENOENT') throw e; }
-    for (const state of states) { try { const row = retained(JSON.parse(await fs.readFile(path.join(cache, 'latest', state.identity.assetId + '.json'), 'utf8')), state.identity); latest.set(state.identity.assetId, row); } catch (e) { if (e.code !== 'ENOENT') throw e; } }
+    for (const identity of universe.outcomes) { try { const row = retained(JSON.parse(await fs.readFile(path.join(cache, 'latest', identity.assetId + '.json'), 'utf8')), identity); latest.set(identity.assetId, row); } catch (e) { if (e.code !== 'ENOENT') throw e; } }
+    // The prior dead owner's last rolling second must expire before ANY new
+    // public admission. This does not renew cached receipt/source clocks.
+    admission.backoff(1000);
     server = http.createServer((req, res) => {
       if (req.method !== 'GET') { res.writeHead(405); res.end(); return; }
       const url = new URL(req.url, 'http://127.0.0.1'); let value;
@@ -116,7 +144,7 @@ export async function run(options, dependencies = {}) {
       res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value));
     }); server.maxConnections = 64; server.requestTimeout = 5000;
     await new Promise((resolve, reject) => { server.once('error', reject); server.listen(port, '127.0.0.1', resolve); });
-    await publishStatus(); await dependencies.onReady?.({ port: server.address().port, stop, onEvent: ingest, status });
+    await publishStatus(); await dependencies.onReady?.({ port: server.address().port, stop, onEvent: ingest, recordEvent: row => journal.append(row), outcomes: universe.outcomes, status });
     statusTimer = setInterval(() => { publishStatus().catch(e => { fatal ??= e; stop(); }); }, 1000);
     if (duration) durationTimer = setTimeout(stop, duration * 1000);
     while (!stopped) {
@@ -126,9 +154,12 @@ export async function run(options, dependencies = {}) {
       if (!found) { if (tasks.size) await Promise.race([...tasks]); else await sleep(10); continue; }
       found.pending = true; stats.scheduled++;
       const task = (async () => { let receipt;
-        try { receipt = await client.book(found.identity.assetId, { signal: controller.signal }); }
-        catch (e) { if (e.fatal) throw e; if (!stopped) { stats.errors++; stats.lastError = String(e.message).slice(0, 256); if (e.receipt) await journal.append({ identity: found.identity, receipt: e.receipt, invalid: e.message }); } return; }
-        await ingest({ identity: found.identity, receipt });
+        try { receipt = found.identities.length === 1 ? await client.book(found.identities[0].assetId, { signal: controller.signal }) : await client.books(found.identities.map(x => x.assetId), { signal: controller.signal }); }
+        catch (e) { if (e.fatal) throw e; if (!stopped) { stats.errors++; stats.lastError = String(e.message).slice(0, 256); if (e.receipt) await journal.append({ identities: found.identities, receipt: e.receipt, invalid: e.message }); } return; }
+        if (found.identities.length > 1) {
+          if (!Array.isArray(receipt.body) || receipt.body.length !== found.identities.length || new Set(receipt.body.map(x => x.asset_id)).size !== found.identities.length || receipt.body.some(x => !found.identities.some(i => i.assetId === x.asset_id))) { stats.invalidBooks++; await journal.append({ identities: found.identities, receipt, invalid: 'POLYMARKET_BATCH_COVERAGE' }); return; }
+          for (const identity of found.identities) await ingest({ identity, receipt, bodyIndex: receipt.body.findIndex(x => x.asset_id === identity.assetId) });
+        } else await ingest({ identity: found.identities[0], receipt });
       })().catch(e => { fatal ??= e; stop(); }).finally(() => { found.pending = false; tasks.delete(task); });
       tasks.add(task); stats.maximumInFlight = Math.max(stats.maximumInFlight, tasks.size);
     }
@@ -139,5 +170,5 @@ export async function run(options, dependencies = {}) {
   }
   if (fatal) throw fatal; return status();
 }
-function args(argv) { const out = {}; for (let i = 0; i < argv.length; i += 2) { if (!['--cache', '--universe', '--rps', '--concurrency', '--port', '--duration-seconds'].includes(argv[i]) || argv[i + 1] === undefined) throw Error('POLYMARKET_ARGUMENT'); out[argv[i].slice(2)] = argv[i + 1]; } return out; }
+function args(argv) { const out = {}; for (let i = 0; i < argv.length; i += 2) { if (!['--cache', '--universe', '--rps', '--concurrency', '--batch-size', '--port', '--duration-seconds'].includes(argv[i]) || argv[i + 1] === undefined) throw Error('POLYMARKET_ARGUMENT'); out[argv[i].slice(2)] = argv[i + 1]; } return out; }
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) run(args(process.argv.slice(2))).catch(e => { process.stderr.write(e.message + '\n'); process.exitCode = 1; });

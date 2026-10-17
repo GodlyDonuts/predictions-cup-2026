@@ -6,6 +6,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { gunzipSync } from 'node:zlib';
+import crypto from 'node:crypto';
 import { acquire, atomicJson, Journal, retained, run, validateUniverse } from './polymarket-collector.mjs';
 import { Admission, ReadClient, normalizeBook, sha256 } from './polymarket-client.mjs';
 const conditionId = '0x' + 'a'.repeat(64);
@@ -24,10 +25,11 @@ test('atomic per-file publications serialize and preserve complete JSON', async 
 test('universe exact asset-condition mapping and no pricing/equivalence authority', () => {
   const u = { schemaVersion: 1, source: 'polymarket_gamma_public', outcomes: [outcome('1'), outcome('2')] }; assert.equal(validateUniverse(u), u); assert.throws(() => validateUniverse({ ...u, outcomes: [outcome('1'), outcome('1')] })); assert.throws(() => validateUniverse({ ...u, outcomes: [{ ...outcome('1'), pricingAuthority: true }] }));
 });
-test('compressed bounded journal retains all members and fails without pruning', async () => temp(async root => {
+test('compressed retention prunes only old closed owned segments and preserves current', async () => temp(async root => {
   const j = new Journal(root, { maximumBytes: 90, segmentBytes: 5 }); await j.initialize(); await j.append({ row: 1 }); await j.append({ row: 2 }); const names = await fs.readdir(root); assert.equal(names.length, 2);
   const decoded = await Promise.all(names.map(async n => JSON.parse(gunzipSync(await fs.readFile(path.join(root, n)))))); assert.deepEqual(decoded.sort((a, b) => a.row - b.row), [{ row: 1 }, { row: 2 }]);
-  await assert.rejects(j.append({ random: 'a'.repeat(200) + '1234567890' }), /BOUND/); assert.equal((await fs.readdir(root)).length, 2);
+  await j.append({ row: 3 }); await j.append({ row: 4 }); assert.equal(j.prunedSegments, 1); assert.ok(j.prunedBytes > 0); assert.equal((await fs.readdir(root)).length, 3); assert.ok((await fs.readdir(root)).includes(path.basename(j.file)));
+  await assert.rejects(j.append({ random: crypto.randomBytes(500).toString('hex') }), /BOUND/);
 }));
 test('retained cache validates original body/hash/identity and never renews its clocks', () => {
   const identity = outcome('1'), at = '2026-10-16T00:00:00.000Z', body = { market: conditionId, asset_id: '1', timestamp: String(Date.parse(at)), bids: [], asks: [] }, bodyText = JSON.stringify(body), receipt = { source: 'polymarket_clob_public', endpoint: 'https://clob.polymarket.com/book?token_id=1', requestStartedAt: at, receivedAt: at, status: 200, bodyText, bodySha256: sha256(bodyText), body };
@@ -36,6 +38,13 @@ test('retained cache validates original body/hash/identity and never renews its 
 test('actual loopback cache service polls fairly with <=12 inflight and shuts down cleanly', async () => temp(async root => {
   const universe = path.join(root, 'universe.json'); await fs.writeFile(universe, JSON.stringify({ schemaVersion: 1, source: 'polymarket_gamma_public', outcomes: [outcome('1'), outcome('2'), outcome('3')] }));
   const seen = []; const client = new ReadClient({ admission: new Admission({ rps: 30 }), fetcher: async u => { const id = u.searchParams.get('token_id'); seen.push(id); return new Response(JSON.stringify({ market: conditionId, asset_id: id, timestamp: String(Date.now()), bids: [{ price: '0.4', size: '10' }], asks: [{ price: '0.5', size: '20' }] })); } });
-  let stop; const result = await run({ cache: path.join(root, 'cache'), universe, port: '0', concurrency: '12', 'duration-seconds': '.3' }, { client, onReady: async x => { stop = x.stop; const response = await fetch('http://127.0.0.1:' + x.port + '/health'); assert.equal(response.status, 200); }, onEvent: row => { assert.equal(row.book.pricingAuthority, false); } });
+  let stop; const result = await run({ cache: path.join(root, 'cache'), universe, port: '0', concurrency: '12', 'duration-seconds': '1.3' }, { client, onReady: async x => { stop = x.stop; assert.equal(typeof x.recordEvent, 'function'); const response = await fetch('http://127.0.0.1:' + x.port + '/health'); assert.equal(response.status, 200); }, onEvent: row => { assert.equal(row.book.pricingAuthority, false); } });
   assert.equal(typeof stop, 'function'); assert.ok(result.stats.successfulBooks >= 3); assert.deepEqual(seen.slice(0, 3), ['1', '2', '3']); assert.ok(result.stats.maximumInFlight <= 12); assert.equal(result.admissions, result.completions); await assert.rejects(fs.stat(path.join(root, 'cache', 'collector.lock')), { code: 'ENOENT' }); const r = JSON.parse(await fs.readFile(path.join(root, 'cache', 'latest', '1.json'))); assert.equal(r.receipt.bodySha256, sha256(r.receipt.bodyText));
+}));
+test('paired batch maps out-of-order response exactly and retains whole original body per outcome', async () => temp(async root => {
+  const universe = path.join(root, 'universe.json'); await fs.writeFile(universe, JSON.stringify({ schemaVersion: 1, source: 'polymarket_gamma_public', outcomes: [outcome('1'), outcome('2')] }));
+  let stop; const calls = []; const client = new ReadClient({ admission: new Admission({ rps: 30 }), fetcher: async (u, options) => { calls.push(options); assert.equal(u.pathname, '/books'); return new Response(JSON.stringify(JSON.parse(options.body).reverse().map(x => ({ market: conditionId, asset_id: x.token_id, timestamp: String(Date.now()), bids: [], asks: [] })))); } });
+  const result = await run({ cache: path.join(root, 'cache'), universe, port: '0', 'batch-size': '2', 'duration-seconds': '2' }, { client, onReady: x => { stop = x.stop; }, onEvent: row => { assert.equal(row.receipt.method, 'POST'); if (row.identity.assetId === '2') stop(); } });
+  assert.equal(result.admissions, 1); assert.equal(result.stats.successfulBooks, 2); assert.equal(result.completeMarketCoverage, 1); assert.equal(calls[0].body, '[{"token_id":"1"},{"token_id":"2"}]');
+  const row = JSON.parse(await fs.readFile(path.join(root, 'cache', 'latest', '1.json'))); assert.equal(retained(row, outcome('1')).bodyIndex, 1); assert.equal(row.receipt.body.length, 2); assert.throws(() => retained({ ...row, bodyIndex: 0 }, outcome('1')), /IDENTITY/);
 }));

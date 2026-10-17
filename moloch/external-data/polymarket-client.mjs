@@ -13,10 +13,12 @@ export function assetId(value) {
   if (typeof value !== 'string' || !ASSET.test(value) || BigInt(value) <= 0n || BigInt(value) >= 1n << 256n || String(BigInt(value)) !== value) throw Error('POLYMARKET_ASSET');
   return value;
 }
-export function readUrl(origin, suffix) {
+export function readUrl(origin, suffix, method = 'GET') {
   if (![GAMMA, CLOB].includes(origin) || typeof suffix !== 'string' || !suffix.startsWith('/') || suffix.startsWith('//')) throw Error('POLYMARKET_READ_PATH');
   const u = new URL(suffix, origin);
   if (u.origin !== origin || u.hash || u.username || u.password) throw Error('POLYMARKET_READ_PATH');
+  if (method === 'POST' && origin === CLOB && u.pathname === '/books' && !u.search) return u;
+  if (method !== 'GET') throw Error('POLYMARKET_READ_METHOD');
   const keys = [...u.searchParams.keys()];
   if (new Set(keys).size !== keys.length) throw Error('POLYMARKET_READ_QUERY');
   const allowed = origin === CLOB && u.pathname === '/book' ? ['token_id']
@@ -46,7 +48,9 @@ export class Admission {
         const rolling = this.starts.length >= this.rps ? this.starts[0] + 1000 - at : 0;
         const delay = Math.max(this.next - at, this.blockedUntil - at, rolling, 0);
         if (delay > 0) { await this.wait(Math.min(60000, Math.ceil(delay)), undefined, { signal }); continue; }
-        this.starts.push(at); this.next = at + 1000 / this.rps; this.admitted++; return at;
+        this.starts.push(at); const interval = 1000 / this.rps;
+        this.next = at - this.next >= interval ? at + interval : this.next + interval;
+        this.admitted++; return at;
       }
     }).finally(() => { this.queued--; });
     this.tail = operation.catch(() => {}); return operation;
@@ -62,11 +66,20 @@ export class ReadClient {
     this.stats = { admissions: 0, completions: 0, responses: 0, errors: 0, throttles: 0 }; this.consecutive429 = 0;
   }
   async get(origin, suffix, { signal } = {}) {
-    const u = readUrl(origin, suffix); await this.admission.reserve(signal); signal?.throwIfAborted();
+    return this.request('GET', origin, suffix, undefined, { signal });
+  }
+  async request(method, origin, suffix, payload, { signal } = {}) {
+    const u = readUrl(origin, suffix, method); let requestBodyText;
+    if (method === 'POST') {
+      if (!Array.isArray(payload) || payload.length < 1 || payload.length > 20 || new Set(payload.map(x => x?.token_id)).size !== payload.length) throw Error('POLYMARKET_BATCH_BOUND');
+      for (const row of payload) { if (Object.keys(row ?? {}).length !== 1) throw Error('POLYMARKET_BATCH_SCHEMA'); assetId(row.token_id); }
+      requestBodyText = JSON.stringify(payload);
+    } else if (payload !== undefined) throw Error('POLYMARKET_READ_BODY');
+    await this.admission.reserve(signal); signal?.throwIfAborted();
     const requestStartedAt = new Date().toISOString(); this.stats.admissions++; this.onAdmission?.({ requestStartedAt, endpoint: u.href });
     try {
       const timeout = AbortSignal.timeout(this.timeoutMs); const combined = signal ? AbortSignal.any([signal, timeout]) : timeout;
-      const response = await this.fetcher(u, { method: 'GET', redirect: 'error', signal: combined, headers: { Accept: 'application/json' } });
+      const response = await this.fetcher(u, { method, redirect: 'error', signal: combined, headers: { Accept: 'application/json', ...(requestBodyText === undefined ? {} : { 'Content-Type': 'application/json' }) }, ...(requestBodyText === undefined ? {} : { body: requestBodyText }) });
       this.stats.responses++;
       if (response.status === 429 || response.status === 503) {
         this.consecutive429++; this.stats.throttles++;
@@ -83,6 +96,7 @@ export class ReadClient {
       } catch (e) { await reader.cancel().catch(() => {}); throw e; }
       const bodyText = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)); const receivedAt = new Date().toISOString();
       const receipt = { source: origin === CLOB ? 'polymarket_clob_public' : 'polymarket_gamma_public', endpoint: u.href, requestStartedAt, receivedAt, status: response.status, bodyText, bodySha256: sha256(bodyText), bodyBytes: bytes, sourceTimestamp: null };
+      if (requestBodyText !== undefined) Object.assign(receipt, { method, requestBodyText, requestBodySha256: sha256(requestBodyText) });
       if (!response.ok) throw Object.assign(Error('POLYMARKET_HTTP_' + response.status), { code: response.status, receipt });
       try { receipt.body = JSON.parse(bodyText); } catch { throw Object.assign(Error('POLYMARKET_JSON'), { receipt }); }
       if (origin === CLOB && typeof receipt.body?.timestamp === 'string') receipt.sourceTimestamp = receipt.body.timestamp;
@@ -93,6 +107,7 @@ export class ReadClient {
   getEvent(slug, options) { return this.get(GAMMA, '/events/slug/' + slug, options); }
   search(q, options) { return this.get(GAMMA, '/public-search?' + new URLSearchParams({ q, limit_per_type: '50' }), options); }
   book(id, options) { return this.get(CLOB, '/book?' + new URLSearchParams({ token_id: assetId(id) }), options); }
+  books(ids, options) { if (!Array.isArray(ids)) return Promise.reject(Error('POLYMARKET_BATCH_BOUND')); return this.request('POST', CLOB, '/books', ids.map(id => ({ token_id: id })), options); }
   listEvents({ limit = 100, offset = 0, active = true, closed = false } = {}, options) {
     if (!Number.isInteger(limit) || limit < 1 || limit > 500 || !Number.isInteger(offset) || offset < 0 || offset > 100000) throw Error('POLYMARKET_EVENTS_BOUND');
     return this.get(GAMMA, '/events?' + new URLSearchParams({ limit, offset, active, closed }), options);
