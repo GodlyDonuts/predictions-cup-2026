@@ -1,6 +1,18 @@
 //! Actual-account feedback. Public prints and depth cannot fill live orders.
 use super::*;
 impl Engine {
+ pub fn managed_inventory_planning_record(&self)->Option<&Value>{self.managed_inventory_planning.as_ref()}
+ pub fn managed_inventory_planning_excludes(&self,ex:&str)->bool{self.managed_inventory_planning.as_ref().is_some_and(|r|r["managedExchangeIds"].as_array().is_some_and(|a|a.iter().any(|v|v==ex)))}
+ pub(super) fn apply_managed_inventory_planning(&mut self,e:&Value,at:i64)->Result<()>{
+  if !self.live_mode||e["source"]!="moloch_live_dispatcher"||ms(&e["processedAt"])?!=at||ms(&e["receivedAt"])? >at{return Err("MANAGED_INVENTORY_SOURCE")}
+  for key in ["controlSha256","approvedReviewSetSha256","generationSha256"]{if e[key].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("MANAGED_INVENTORY_PROOF")}}
+  let scope=&e["bankScope"];if scope.as_object().is_none_or(|o|o.len()!=3)||scope["runId"].as_str().is_none_or(str::is_empty)||scope["tournamentId"].as_str().is_none_or(str::is_empty)||scope["bankManifestHash"].as_str().is_none_or(|s|s.len()!=64){return Err("MANAGED_INVENTORY_SCOPE")}
+  let ids=e["managedExchangeIds"].as_array().filter(|a|a.len()<=256).ok_or("MANAGED_INVENTORY_IDS")?;let mut last=None;
+  for raw in ids{let ex=id(raw)?;if raw.as_str()!=Some(ex.as_str())||last.as_ref().is_some_and(|old:&String|old>=&ex){return Err("MANAGED_INVENTORY_IDS")};last=Some(ex);}
+  let previous=self.managed_inventory_planning.as_ref().map_or(Value::Null,|r|r["sha256"].clone());if e.get("expectedPreviousModeSha256")!=Some(&previous){return Err("MANAGED_INVENTORY_PREVIOUS")}
+  if self.managed_inventory_planning.as_ref().is_some_and(|r|r["bankScope"]!=*scope){return Err("MANAGED_INVENTORY_SCOPE_CHANGED")}
+  let mut record=json!({"version":1,"bankScope":scope,"managedExchangeIds":ids,"controlSha256":e["controlSha256"],"approvedReviewSetSha256":e["approvedReviewSetSha256"],"generationSha256":e["generationSha256"],"installedAtMs":at,"previousSha256":previous});record["sha256"]=json!(hash(&record));self.managed_inventory_planning=Some(record);Ok(())
+ }
  /// Replay-derived optional policy. A source/hash string is audit provenance,
  /// not human authority: the sole runtime authenticates the pinned Control.
  pub fn profitable_depth_mode_record(&self)->Option<&Value>{self.profitable_depth_mode.as_ref()}

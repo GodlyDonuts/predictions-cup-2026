@@ -459,6 +459,7 @@ pub struct Engine {
     reviewed_fundamental_entries: BTreeMap<u64,Value>,
     ordinary_entry_exclusions: Option<Value>,
     profitable_depth_mode: Option<Value>,
+    managed_inventory_planning: Option<Value>,
     live_market_capacity: Option<Value>,
     capital_allocation: Option<Value>,
     capital_mandate_revision: Option<Value>,
@@ -746,6 +747,7 @@ impl Engine {
             reviewed_fundamental_entries: BTreeMap::new(),
             ordinary_entry_exclusions: None,
             profitable_depth_mode: None,
+            managed_inventory_planning: None,
             live_market_capacity: None,
             capital_allocation: None,
             capital_mandate_revision: None,
@@ -875,6 +877,7 @@ impl Engine {
             // review authority controlling every physical disposition.
             if !self.reviewed_fundamental_entries.is_empty()&&yes==0&&no==0&&self.orders.iter().any(|q|q.exchange==b.exchange&&!q.retired&&self.reviewed_fundamental_entries.contains_key(&q.id)){continue;}
             if yes > 0 || no > 0 {
+                if self.managed_inventory_planning_excludes(&b.exchange){continue;}
                 if p.raw["repriceProfitableHedge"] != true {
                     for q in &self.orders {
                         if !q.retired
@@ -1249,6 +1252,8 @@ impl Engine {
         for i in 0..self.orders.len() {
             let q = &self.orders[i];
             if self.is_package_order(q.id)||self.reviewed_inventory_exits.contains_key(&q.id)||self.reviewed_fundamental_entries.contains_key(&q.id) {continue;}
+            // Planning exclusion cannot manufacture cancellation or release old liabilities.
+            if self.managed_inventory_planning_excludes(&q.exchange){continue;}
             // Installing a planning exclusion cannot cancel an already physical
             // flat-scope BUY. The worker separately proves never-sent retirement;
             // original expiration/owned terminal handling remain authoritative.
@@ -1515,7 +1520,8 @@ impl Engine {
         let kind = e["type"].as_str().ok_or("EVENT_TYPE")?;
         let mut duplicate = false;
         match kind {
-            "reviewed_inventory_exit_reserved_v1" => self.reserve_reviewed_inventory_exit(e,at)?,
+            "reviewed_inventory_exit_reserved_v1"|"reviewed_cohort_exit_reserved_v1" => self.reserve_reviewed_inventory_exit(e,at)?,
+            "managed_inventory_planning_v1" => self.apply_managed_inventory_planning(e,at)?,
             "reviewed_fundamental_entry_reserved_v1" => self.reserve_reviewed_fundamental_entry(e,at)?,
             "ordinary_profitable_depth_mode_v1" => self.apply_profitable_depth_mode(e,at)?,
             "ordinary_entry_exclusions_v1" => self.apply_ordinary_entry_exclusions(e,at)?,
@@ -1846,7 +1852,7 @@ impl Engine {
         // No persistent state is set: a subsequent tick/book plans normally.
         if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
         let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
-        if kind!="ordinary_profitable_depth_mode_v1"&&kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="live_owner_mandate_revision_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
+        if kind!="managed_inventory_planning_v1"&&kind!="reviewed_cohort_exit_reserved_v1"&&kind!="ordinary_profitable_depth_mode_v1"&&kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="live_owner_mandate_revision_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1883,6 +1889,7 @@ impl Engine {
         if !self.reviewed_inventory_exits.is_empty(){report["reviewedInventoryExitReservations"]=json!(self.reviewed_inventory_exits);}
         if !self.reviewed_fundamental_entries.is_empty(){report["reviewedFundamentalEntryReservations"]=json!(self.reviewed_fundamental_entries);}
         if let Some(record)=&self.profitable_depth_mode{report["profitableDepthMode"]=record.clone();}
+        if let Some(record)=&self.managed_inventory_planning{report["managedInventoryPlanning"]=record.clone();}
         if let Some(record)=&self.ordinary_entry_exclusions{report["ordinaryEntryExclusions"]=record.clone();}
         if let Some(record)=&self.live_market_capacity{report["liveMarketCapacity"]=record.clone();}
         if let Some(record)=&self.capital_allocation{report["ownerCapitalAllocation"]=record.clone();}

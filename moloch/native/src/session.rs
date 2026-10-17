@@ -476,6 +476,11 @@ impl Session {
                 ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))
                 ||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("REVIEWED_ENTRY_SESSION_PREFIX".into())}
         }
+        if event["type"]=="managed_inventory_planning_v1"||event["type"]=="reviewed_cohort_exit_reserved_v1"{
+            let seed=self.live_account_seed().ok_or("MANAGED_INVENTORY_SESSION_NOT_LIVE")?;
+            if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]||seed.get("tournamentId").is_some_and(|tid|event["bankScope"]["tournamentId"]!=*tid)
+                ||event["bankHead"]!=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":sequence,"previous":previous}))||event["expectedReportSha256"]!=hash(&engine.report()?){return Err("MANAGED_INVENTORY_SESSION_PREFIX".into())}
+        }
         if event["type"]=="reviewed_inventory_exit_reserved_v1"{
             let seed=self.live_account_seed().ok_or("REVIEWED_EXIT_SESSION_NOT_LIVE")?;
             if event["bankScope"]["runId"]!=seed["runId"]||event["bankScope"]["bankManifestHash"]!=self.manifest["hash"]

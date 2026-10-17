@@ -1011,7 +1011,7 @@ impl Cohorts{
     }
     pub fn existing_exit_hint(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExitHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;
-        let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some())else{return Ok(None)};
+        let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some()||(c.entry.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange)))else{return Ok(None)};
         if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(None)}
         let r=&self.policies[exchange];need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
         let reason=if liquidation_due(r,c,now){"reviewed_holding_deadline"}
@@ -1039,7 +1039,8 @@ impl Cohorts{
     /// execution. Retire proved never-sent drafts first, accept this event once,
     /// then bind its actual native qid/spec and mint the normal opaque token.
     pub fn prepare_existing_exit(&self,bank:&Session,log:&DispatchLog,transport:&Transport,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExit>>{
-        self.check(bank,log)?;let queue=queue_view(transport)?;let Some(c)=self.cohorts.get(exchange)else{return Ok(None)};let Some(origin)=&c.existing else{return Ok(None)};
+        self.check(bank,log)?;let queue=queue_view(transport)?;let Some(c)=self.cohorts.get(exchange)else{return Ok(None)};
+        if c.existing.is_none()&&(!bank.engine().managed_inventory_planning_excludes(exchange)||c.entry.is_none()){return Ok(None)}
         let r=&self.policies[exchange];let owned=self.owned(bank,exchange,c)?;if owned==0{return Ok(None)}
         need(digest(scope)?==digest(transport.scope())?&&scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
         no_existing_liability(bank,log,exchange)?;
@@ -1053,8 +1054,29 @@ impl Cohorts{
         let mut expires=now.checked_add(policy["lifetimeMs"].as_u64().ok_or("FUNDAMENTAL_LIFETIME")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?;
         if reason!="reviewed_holding_deadline"{expires=expires.min(until);if !terminal_hold(r){expires=expires.min(deadline);}}
         if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
-        let event=json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":r.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":digest(&bank.engine().report()?)?,"exchangeId":exchange,"marketId":r.market_id,"side":r.side,"quantity":n,"limitPrice":money(limit),"expiresAt":daily_windows::iso(expires)?,"originSha256":c.origin_sha()?,"reviewSha256":digest(r)?,"adoptionRef":origin.adoption_ref,"adoptionReceiptHash":origin.approval.adoption_receipt_sha256,"expectedPositionSha256":digest(&bank.engine().wallet.positions()[exchange])?,"bookSha256":hashes.get(exchange).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reason":reason,"expectedPayout":money(payout),"reviewCurrentUntilMs":until,"holdingDeadlineMs":deadline,"revoked":r.revoke_existing});
+        let mut event=json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":r.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":digest(&bank.engine().report()?)?,"exchangeId":exchange,"marketId":r.market_id,"side":r.side,"quantity":n,"limitPrice":money(limit),"expiresAt":daily_windows::iso(expires)?,"originSha256":c.origin_sha()?,"reviewSha256":digest(r)?,"expectedPositionSha256":digest(&bank.engine().wallet.positions()[exchange])?,"bookSha256":hashes.get(exchange).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reason":reason,"expectedPayout":money(payout),"reviewCurrentUntilMs":until,"holdingDeadlineMs":deadline,"revoked":r.revoke_existing});
+        if let Some(origin)=&c.existing{event["adoptionRef"]=origin.adoption_ref.clone();event["adoptionReceiptHash"]=json!(origin.approval.adoption_receipt_sha256);}
+        else{event["type"]=json!("reviewed_cohort_exit_reserved_v1");let Some(proof)=self.cohort_exit_origin(bank,log,exchange,c)?else{return Ok(None)};event["cohortOrigin"]=proof;}
         need(queue_view(transport)?==queue,"FUNDAMENTAL_EXISTING_QUEUE_CHANGED")?;Ok(Some(ExistingExit{event}))
+    }
+    fn cohort_exit_origin(&self,bank:&Session,log:&DispatchLog,ex:&str,c:&Cohort)->Result<Option<Value>>{
+        let r=&self.policies[ex];let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_EXIT_FIFO_CHANGED")?;
+        let records=bank.engine().order_records();let mut bindings=Vec::new();
+        for b in c.entries().chain(c.exits.values()){
+            if !bank.engine().live_order_bindings().contains_key(&b.qid){need(log.never_attempted(b.qid)||log.proved_no_network(b.qid),"FUNDAMENTAL_EXIT_UNKNOWN_BINDING")?;need(!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid),"FUNDAMENTAL_EXIT_UNBOUND_FILL")?;continue}
+            if !log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid){return Ok(None)}bindings.push(b);
+        }
+        let wanted=bindings.iter().map(|b|b.qid).collect();let closed=self.original_closed_records(log,&wanted)?.0;let mut entries=Vec::new();let mut exits=Vec::new();
+        for b in bindings{let q=records.iter().find(|q|q["id"]==b.qid).ok_or("FUNDAMENTAL_EXIT_NATIVE_QUOTE")?;need(q["retired"]==true,"FUNDAMENTAL_EXIT_PRIOR_OPEN")?;
+            let actual=&bank.engine().live_order_bindings()[&b.qid];let rows=closed.get(&b.qid).ok_or("FUNDAMENTAL_EXIT_CLOSED_ROWS")?;let terminal=&rows.last().ok_or("FUNDAMENTAL_EXIT_CLOSED_ROWS")?["event"];
+            need(hex(terminal["orderReceiptHash"].as_str().unwrap_or(""))&&hex(terminal["fillReceiptHash"].as_str().unwrap_or("")),"FUNDAMENTAL_EXIT_TERMINAL_HASHES")?;
+            let ack:Receipt=serde_json::from_value(log.acknowledgments[&b.qid].clone())?;
+            let event=if let Some(recovered)=log.recovered.get(&b.qid){let fills:Receipt=serde_json::from_value(recovered["fills"].clone())?;need(fills.endpoint==format!("/orders/{actual}/fills?limit=200"),"FUNDAMENTAL_EXIT_ACK_ENDPOINT")?;crate::feedback::recovered_acknowledgment(&b.quote,actual,&r.tournament_id,&ack,&fills,&fills.received_at)?}else{need(ack.endpoint=="/orders","FUNDAMENTAL_EXIT_ACK_ENDPOINT")?;crate::feedback::acknowledgment(&b.quote,&ack,&ack.received_at)?};
+            self.validate_acknowledgment(b.qid,&event)?;need(event["actualOrderId"]==*actual,"FUNDAMENTAL_EXIT_ACK_CHANGED")?;
+            let row=json!({"qid":b.qid,"actualOrderId":actual,"filledQuantity":q["filled"],"bindingSha256":digest(b)?,"closedDispatchSha256":digest(rows)?});if c.is_entry(b.qid){entries.push(row)}else{exits.push(row)}
+        }
+        entries.sort_by_key(|r|r["qid"].as_u64());exits.sort_by_key(|r|r["qid"].as_u64());need(!entries.is_empty()&&entries.len()<=16&&exits.len()<=4096,"FUNDAMENTAL_EXIT_ORIGIN_LIMIT")?;
+        Ok(Some(json!({"version":1,"originSha256":c.origin_sha()?,"positionsSha256":digest(&bank.engine().wallet.positions()[ex])?,"heldQuantity":self.owned(bank,ex,c)?,"heldCost":money(bank.engine().wallet.market_cost(ex)),"entries":entries,"exits":exits})))
     }
     /// Mint after durable bind and before the original intent/attempt. After
     /// those original appends the worker MUST re-run check_bound, then the SDK
@@ -1490,6 +1512,11 @@ impl Cohorts{
                 top_up=Some(proof);
             }else{
             if q["action"]!="sell"||q["side"]!=r.side||owned==0{return Ok(hold("exclusive_cohort_no_additional_or_opposite_entry"))}
+             if c.existing.is_none()&&bank.engine().managed_inventory_planning_excludes(ex){
+                 if q["reviewedInventoryExit"]["originKind"]!="original_entry_cohort"{return Ok(hold("reviewed_cohort_exit_reservation_required"))}
+                 need(q["reviewedInventoryExit"]["originSha256"]==c.origin_sha()?,"FUNDAMENTAL_COHORT_EXIT_ORIGIN_CHANGED")?;
+                 if q["reviewedInventoryExit"]["reviewSha256"]!=digest(r)?{return Ok(hold("reviewed_cohort_exit_review_changed"))}
+             }
             if c.existing.is_some()&&q.get("reviewedInventoryExit").is_none(){return Ok(hold("reviewed_existing_exit_reservation_required"))}
             need(n==native,"FUNDAMENTAL_EXIT_MUST_MATCH_NATIVE_QUANTITY")?;
             if c.pending_entry(log)||c.exits.keys().any(|id|*id!=qid&&log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(hold("prior_owned_order_reconciliation_required"))}
