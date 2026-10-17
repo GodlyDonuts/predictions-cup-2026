@@ -204,6 +204,63 @@ class PacketTests(unittest.TestCase):
         self.assertEqual(p.provenance["draft_ids"],(1,))
         f.d["orders"][1]["retired"]=False;f.m["neverSubmittedDraftIds"]=[1,2];f.m["heldBoundary"]["unsubmitted"]=[1,2];f.refresh()
         with self.assertRaisesRegex(W.PacketError,"ABORT_NATIVE_TERMINAL"):f.verify()
+    def local_guard_fixture(self):
+        f=self.f
+        body={"idempotencyKey":"run:q2","tournamentId":"cup","exchangeId":"1","side":"no","action":"buy","quantity":1,"price":"0.500000"}
+        spec={"method":"POST","endpoint":"/orders","body":body,"bodyJson":encoded(body).decode().strip()}
+        permit={"runId":"run","intentId":"q2","owner":"Codex","expiresAtMs":900,"maximumQuantity":1,"maximumCost":"0.500000"}
+        intent={"kind":"intent","qid":2,"spec":spec,"permit":permit}
+        attempt={"kind":"attempt","qid":2,"at":"1970-01-01T00:00:00.500Z","captureAtMs":500}
+        error={"kind":"error","qid":2,"at":"1970-01-01T00:00:00.600Z","error":{"code":"FUNDAMENTAL_PHYSICAL_BOOK_STALE","status":None,"orderId":None,"mayHaveExecuted":True,"retryAfterMs":0,"apiCode":None}}
+        # Deliberately synthetic producer attestation, not an opaque SDK proof.
+        proof={"kind":"sdk_ordinary_final_guard_no_http_v1","attemptAt":500,"originalSpec":spec,"originalPermit":permit,"originalError":error["error"],"queueScope":"acct","sdkSourceSha256":"e"*64,"verifiedSDKHead":{"lastClock":600},"binding":{"intent":"run:q2","key":"run:q2","payload_hash":W.sha(encoded({"scope":f.m["scope"],"spec":spec}).rstrip(b"\n"))},"executionAuthority":False,"retryPermitted":False}
+        proof["contextSha256"]=W.sha(encoded(proof).rstrip(b"\n"))
+        outcome={"kind":"local_final_guard_no_http","qid":2,"at":"1970-01-01T00:00:00.700Z","originalIntentSha256":W.sha(encoded(intent).rstrip(b"\n")),"originalAttemptSha256":W.sha(encoded(attempt).rstrip(b"\n")),"originalErrorSha256":W.sha(encoded(error).rstrip(b"\n")),"proof":proof}
+        f.d["orders"].append({"id":2,"retired":True,"quantity":1,"filled":0})
+        f.m["heldBoundary"]["provedNoNetworkOrderIds"]=[2]
+        return [intent,attempt,error,outcome]
+    def test_local_final_guard_preserves_unknown_error_and_requires_producer_quiet_attestation(self):
+        events=self.local_guard_fixture();self.f.chain(events);p=self.f.verify()
+        self.assertTrue(events[2]["error"]["mayHaveExecuted"])
+        self.assertEqual(p.provenance["historical_local_final_guards_producer_verified"],(2,))
+        self.assertFalse(p.provenance["historical_abort_sdk_archive_independently_verified"])
+        self.assertFalse(p.provenance["execution_authorized"])
+        self.assertEqual(p.provenance["draft_ids"],(1,))
+        self.f.m["heldBoundary"]["queue"]["hasUnknown"]=True;self.f.meta()
+        with self.assertRaisesRegex(W.PacketError,"QUEUE_NOT_QUIET"):self.f.verify()
+    def test_local_guard_proof_context_and_original_hashes_cannot_be_changed(self):
+        events=self.local_guard_fixture()
+        for field in ("originalIntentSha256","originalAttemptSha256","originalErrorSha256"):
+            changed=deepcopy(events);changed[-1][field]="f"*64;self.f.chain(changed)
+            with self.assertRaisesRegex(W.PacketError,"LOCAL_GUARD_CONTEXT"):self.f.verify()
+        for field,value in (("kind","caller_claim"),("originalError",{}),("originalSpec",{}),("originalPermit",{}),("attemptAt",501),("queueScope","foreign")):
+            changed=deepcopy(events);changed[-1]["proof"][field]=value;self.f.chain(changed)
+            with self.assertRaisesRegex(W.PacketError,"LOCAL_GUARD_PROOF_CONTEXT"):self.f.verify()
+        changed=deepcopy(events);changed[-1]["proof"]["sdkSourceSha256"]="c"*64;self.f.chain(changed)
+        with self.assertRaisesRegex(W.PacketError,"LOCAL_GUARD_PROOF_HASH"):self.f.verify()
+    def test_local_guard_rehashed_context_cannot_change_permanent_sdk_binding(self):
+        events=self.local_guard_fixture()
+        for field,value in (("intent","run:other"),("key","replacement-key"),("payload_hash","b"*64)):
+            changed=deepcopy(events);proof=changed[-1]["proof"];proof["binding"][field]=value
+            del proof["contextSha256"];proof["contextSha256"]=W.sha(encoded(proof).rstrip(b"\n"));self.f.chain(changed)
+            with self.assertRaisesRegex(W.PacketError,"LOCAL_GUARD_IMMUTABLE_BINDING"):self.f.verify()
+    def test_local_guard_json_without_reverified_producer_set_or_native_retirement_is_not_sufficient(self):
+        events=self.local_guard_fixture();self.f.m["heldBoundary"]["provedNoNetworkOrderIds"]=[];self.f.chain(events)
+        with self.assertRaisesRegex(W.PacketError,"PRODUCER_ABORT_SET"):self.f.verify()
+        self.f.m["heldBoundary"]["provedNoNetworkOrderIds"]=[2]
+        for field,value in (("retired",False),("filled",1)):
+            old=deepcopy(self.f.d);self.f.d["orders"][1][field]=value;self.f.refresh()
+            with self.assertRaisesRegex(W.PacketError,"ABORT_NATIVE_TERMINAL"):self.f.verify()
+            self.f.d=old
+        self.f.d["fills"]=[{"orderId":2}];self.f.refresh()
+        with self.assertRaisesRegex(W.PacketError,"ABORT_NATIVE_TERMINAL"):self.f.verify()
+    def test_local_guard_cannot_accept_late_ack_second_attempt_or_error_rewrite(self):
+        events=self.local_guard_fixture()
+        for extra in ({"kind":"attempt","qid":2},{"kind":"ack","qid":2},{"kind":"error","qid":2,"error":{"mayHaveExecuted":False}},events[-1]):
+            self.f.chain(events+[extra])
+            with self.assertRaises(W.PacketError):self.f.verify()
+        self.f.chain(events[:-1])
+        with self.assertRaisesRegex(W.PacketError,"ACTUAL_NONTERMINAL_OR_UNKNOWN"):self.f.verify()
     def test_replayed_native_head_external_pin_refuses(self):
         self.f.pins["expected_head_sha256"]="d"*64
         with self.assertRaisesRegex(W.PacketError,"EXPECTED_ORIGINAL"):self.f.verify()

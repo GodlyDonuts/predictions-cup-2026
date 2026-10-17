@@ -238,11 +238,12 @@ def _verify_packet(directory, *, expected_metadata_sha256, expected_control_sha2
     package = _journal(originals["package-dispatch-original"], b["packageDescriptor"], True)
     intents, attempts, acks, closed, aborted, errors = {}, {}, set(), set(), set(), {}
     attempt_events, error_events, ack_receipts, cancel_acks = {}, {}, set(), set()
+    intent_events, intent_raws, local_guards = {}, {}, set()
     for e,eventraw in ordinary:
         qid, kind = e.get("qid"), e.get("kind")
         need(integer(qid) and qid > 0, "DISPATCH_QID")
         if kind == "intent":
-            need(qid not in intents, "DUPLICATE_INTENT"); intents[qid] = sha(eventraw)
+            need(qid not in intents, "DUPLICATE_INTENT"); intents[qid] = sha(eventraw); intent_events[qid] = e; intent_raws[qid] = eventraw
         elif kind == "attempt":
             need(qid in intents and qid not in attempts, "ATTEMPT_ORDER"); attempts[qid] = sha(eventraw)
             attempt_events[qid] = e
@@ -261,6 +262,26 @@ def _verify_packet(directory, *, expected_metadata_sha256, expected_control_sha2
             proof = e["proof"]
             need(proof.get("attemptAtMs") == attempt_at and proof.get("originalError") == failure and proof.get("queueScope") == b["accountScope"], "ABORT_PROOF_CONTEXT")
             aborted.add(qid)
+        elif kind == "local_final_guard_no_http":
+            need(qid in attempts and qid not in acks and qid not in aborted and e["originalIntentSha256"] == intents[qid] and e["originalAttemptSha256"] == attempts[qid] and e["originalErrorSha256"] == errors.get(qid), "LOCAL_GUARD_CONTEXT")
+            original, attempt = error_events[qid], attempt_events[qid]
+            failure, proof = original["error"], e.get("proof")
+            attempt_at = N._ns(attempt["at"])//1_000_000
+            need(attempt.get("captureAtMs", attempt_at) == attempt_at and N._ns(e["at"]) >= N._ns(original["at"]) >= attempt_at*1_000_000, "LOCAL_GUARD_CLOCK")
+            need(type(failure.get("mayHaveExecuted")) is bool and "status" in failure and failure["status"] is None and "orderId" in failure and failure["orderId"] is None and type(proof) is dict, "LOCAL_GUARD_ORIGINAL_ERROR")
+            need(proof.get("kind") == "sdk_ordinary_final_guard_no_http_v1" and proof.get("attemptAt") == attempt_at and proof.get("originalError") == failure and proof.get("originalSpec") == intent_events[qid].get("spec") and proof.get("originalPermit") == intent_events[qid].get("permit") and proof.get("queueScope") == b["accountScope"], "LOCAL_GUARD_PROOF_CONTEXT")
+            need(proof.get("executionAuthority") is False and proof.get("retryPermitted") is False and N._HEX.fullmatch(proof.get("sdkSourceSha256", "")) and type(proof.get("verifiedSDKHead")) is dict and type(proof.get("binding")) is dict, "LOCAL_GUARD_PROOF_SHAPE")
+            proof_tokens = tokens(tokens(eventraw)["proof"])
+            context_raw = b"{" + b",".join(json.dumps(k).encode()+b":"+proof_tokens[k] for k in sorted(proof_tokens) if k != "contextSha256") + b"}"
+            need(proof.get("contextSha256") == sha(context_raw), "LOCAL_GUARD_PROOF_HASH")
+            # This checks original immutable SDK identity, not the private SDK
+            # archive/OS state itself. The externally pinned producer asserts
+            # opaque reverification AND current held SDK quiet above.
+            binding, permit, spec = proof["binding"], intent_events[qid]["permit"], intent_events[qid]["spec"]
+            payload_raw = b'{"scope":'+tokens(originals["control"])["scope"]+b',"spec":'+tokens(intent_raws[qid])["spec"]+b'}'
+            need(spec.get("method") == "POST" and spec.get("endpoint") == "/orders" and spec["body"].get("tournamentId") == scope["tournamentId"] and spec["body"].get("exchangeId") in scope["exchanges"] and permit.get("owner") == "Codex", "LOCAL_GUARD_ORDINARY_SCOPE")
+            need(binding.get("intent") == str(permit["runId"])+":"+str(permit["intentId"]) and binding.get("key") == spec["body"]["idempotencyKey"] and binding.get("payload_hash") == sha(payload_raw), "LOCAL_GUARD_IMMUTABLE_BINDING")
+            aborted.add(qid); local_guards.add(qid)
         elif kind == "error":
             if e.get("operation") is None and qid in attempts and qid not in acks:
                 need(qid not in aborted, "ERROR_AFTER_ABORT")
@@ -321,6 +342,7 @@ def _verify_packet(directory, *, expected_metadata_sha256, expected_control_sha2
         "producer_held_sdk_quiet_and_lease_asserted":True,"sdk_or_os_state_independently_verified":False,
         "historical_abort_sdk_archive_independently_verified":False,
         "historical_aborts_producer_verified":tuple(sorted(aborted)),
+        "historical_local_final_guards_producer_verified":tuple(sorted(local_guards)),
         "native_binding_and_package_semantics_producer_checked":True,
         "terminal_debt_model_available":False,"execution_authorized":False,
         "source_observation_ms":m["sourceObservationMs"],"captured_at_ms":capture},rawmeta,_TOKEN)
