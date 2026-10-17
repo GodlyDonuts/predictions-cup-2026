@@ -1,6 +1,6 @@
 # Historical order rendering before physical submission
 
-**October17 20:25UTC: R32 component is checked and remains undeployed; production stopped naturally at20:03:10 with `FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE`.** Its old progress file is historical. Root confirmed the unit has no PID and independently verified the existing SDK queue is quiet, all1,575 ACKs are terminal, and there are no uncertain ordinary attempts. A narrow worker recovery candidate is under qualification. The original execution stop remains intact.
+**October17 20:46UTC: the cache component and narrow stale-SELL repair are installed as sole worker699384, restoring the original bank.** [Root-verified R33 build and installation](exit-recovery/README.md) preserve the original natural-stop incident, eight source generations and all16 financial bridges. Fresh trading, whole-worker speed benefit and additional profit remain unverified. The standalone R32 binary was never installed.
 
 Task [174](https://github.com/GodlyDonuts/predictions-cup-2026/issues/174) follows a real reviewed reservation deferred at October17 19:40:31.550UTC with `FUNDAMENTAL_PHYSICAL_BOOK_STALE`, before an exchange attempt. The original quote, source clocks and physical admission controls remain intact. A local native reservation is distinct from a submitted order or fill.
 
@@ -14,7 +14,7 @@ The new genuine-Session regression checks exact rows, one rendering across repea
 
 ## Actual-data measurement
 
-The actual ARM64 run completed20:17:45UTC with exact equality of all16,601 rows. For the declared11-query workload, median old time was1.073230356s versus0.137538544s for one rendering plus the same scans (7.80x component ratio). Allocation requests fell6,820,221→620,021; requested bytes511,778,113→46,525,293. [Original measured output](render-benchmark.json) and [run metadata](render-result.json) retain every alternating round. The captured rows' [conservative encoded bound](cache-bound.json) is19,378,541B, inside the existing64MiB retention bound; this is not measured heap usage.
+The actual ARM64 run completed20:17:45UTC with exact equality of all16,601 rows. For the declared11-query workload, median old time was1.073230356s versus0.137538544s for one rendering plus the same scans (7.80x component ratio). Allocation requests fell6,820,221â†’620,021; requested bytes511,778,113â†’46,525,293. [Original measured output](render-benchmark.json) and [run metadata](render-result.json) retain every alternating round. The captured rows' [conservative encoded bound](cache-bound.json) is19,378,541B, inside the existing64MiB retention bound; this is not measured heap usage.
 
 [Root build verification](root-build-verification.json) independently checks all273 inputs against Git (221 byte-exact/52 line-ending equivalents), all281 original proof members, unchanged native/Session source,334 focused checks and ARM64 release binary `d382d9f10c280a8856129e19a44b802499ea7268bcf4bc687fa9da6da8503842`. The binary has not been installed. This component result does not establish a live latency or profit improvement.
 
