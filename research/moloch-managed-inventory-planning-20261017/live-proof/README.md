@@ -1,0 +1,9 @@
+# R22 actual fresh trading proof
+
+The existing service resumed actual trading as sole PID636242, source55fc4533/binary34fbc560/native5b61d3cb. New-process progress07:41:49.198UTC and proof07:41:53.221UTC agree with the real systemd PID, immutable executable, Control81ddfa2d, current model-owner channel and original four generation rows/eleven policies. No active STOP exists. The original final437096-event/362-fill stopped prefix was validated by this actual startup before financial-write authority. A second final offline replay is not claimed.
+
+At financial sequence437378 all362 actual fill rows are unchanged: cash8,106.255, owned cost87,351.635, combined attributed realized−122.025 (new−184.970/inherited+62.945). Zero post-upgrade fill rows at this observation. This proves restoration and resumed operation; it does not prove a profitable new strategy, faster execution or competition rank.
+
+The installed15-bridge bytes and all14 original entries remain unchanged. All original generation row hashes, model metadata and immutable source pins passed the finite read-only verifier. The actual native managedInventoryPlanning record binds Control81ddfa2d, generationb27c4699 and all eleven managed exchange IDs. Only the checked binary and explicit planning opt-in changed; no source-clock, forecast, risk, rate or activation renewal occurred.
+
+Root independently downloaded the original ZIP, verified its SHA256 and all six original packet file hashes, then compared the actual raw report against proof/progress/channel/feature fields. The original raw financial report remains private; selected source-bound evidence and its hash are published here. The finite verifier makes no API calls or production changes. The earlier [installation](../deployment/README.md) and [detached replay](../parity-proof/README.md) remain immutable historical evidence.

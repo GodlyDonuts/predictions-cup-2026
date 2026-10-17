@@ -1,0 +1,13 @@
+{
+  "verifiedBy": "Rhaegal/Viserion-paper6-20261016 root",
+  "originalZipSha256": "6147875ed3ff7092b09de89272c275443dd479e5374d9fb470920973e1b4c510",
+  "allSixOriginalPacketFileHashesVerified": true,
+  "originalFinancialReportRawSha256": "50f19fa025e56034f189a1747344b41f0aa07b48aafa1af90ccfd13d59ffeece",
+  "rawFinancialReportRetainedPrivately": true,
+  "actualPidProgressChannelAndSourceBindingAgree": true,
+  "original362FillRowsComparedToPriorOriginalReport": true,
+  "finalStoppedPrefixValidatedByActualWorkerStartup": true,
+  "independentSecondFinalOfflineReplayClaimed": false,
+  "postUpgradeFillsAtThisObservation": 0,
+  "newStrategyProfitabilityOrCausalLatencyBenefitClaimed": false
+}

@@ -1,0 +1,18 @@
+{
+  "authentication": "linux_same_uid_peer_credentials",
+  "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "baseControlSha256": "81ddfa2d30bc4385e709dbeea3af0250cb8a808df8c60fe89cb13acfc9595b51",
+  "ownerLease": {
+    "bytes": 44,
+    "device": 66305,
+    "inode": 12355017,
+    "schemaVersion": 1
+  },
+  "previousGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "requestMaximumLifetimeMs": 60000,
+  "runId": "moloch-live-20261015-v1",
+  "socket": "/home/archon/apps/moloch/shared/live-production-v1/fundamental-reload/owner.sock",
+  "version": 1,
+  "workerPid": 636242,
+  "workerStartTicks": 19158230
+}

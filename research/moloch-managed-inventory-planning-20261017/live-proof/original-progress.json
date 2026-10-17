@@ -1,0 +1,13 @@
+{
+  "actualFills": 362,
+  "actualOrders": 1517,
+  "at": "2026-10-17T07:41:49.198Z",
+  "completedReadScopes": 1,
+  "maximumRealtimeFramesPerDrain": 64,
+  "phase": "trading",
+  "pid": 636242,
+  "profitabilityEstablished": false,
+  "realtimeHealthy": true,
+  "selectedReadScopes": 39,
+  "terminalOrders": 1517
+}
