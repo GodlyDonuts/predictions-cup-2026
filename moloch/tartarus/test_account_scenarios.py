@@ -167,9 +167,22 @@ class AccountScenariosTests(unittest.TestCase):
         a["holdings"][0]["lots"][0]["quantity"] = True
         self.reject(a, s, "LOT_QUANTITY")
         a, s = fixture(1)
-        a["holdings"][0]["quantity"] = 2
-        a["holdings"][0]["lots"] = [{"quantity": 2, "unit_cost_micros": A.MAX_INTEGER}]
+        a["holdings"][0]["quantity"] = A.MAX_INTEGER
+        a["holdings"][0]["lots"] = [{"quantity": A.MAX_INTEGER, "unit_cost_micros": A.UNIT}]
         self.reject(a, s, "HOLDING_BASIS_RANGE")
+
+    def test_binary_principal_above_one_rejects_without_changing_fifo(self):
+        a, s = fixture(1)
+        a["holdings"][0]["lots"][0]["unit_cost_micros"] = A.UNIT + 1
+        original = deepcopy(a["holdings"][0])
+        self.reject(a, s, "LOT_UNIT_COST_EXCEEDS_PAYOUT")
+        with self.assertRaisesRegex(A.AccountScenarioError, "LOT_UNIT_COST_EXCEEDS_PAYOUT"):
+            A.fifo_sell(a["holdings"][0], 1)
+        self.assertEqual(a["holdings"][0], original)
+        a["holdings"][0]["lots"][0]["unit_cost_micros"] = A.UNIT
+        out = A.compile_account(a, s, 2000)
+        self.assertEqual(out["baseline_wealth_micros"][2], 2_500_000)
+        self.assertEqual(A.fifo_sell(a["holdings"][0], 1)["removed_basis_micros"], A.UNIT)
 
     def test_source_semantics_shape_and_explicit_unavailable_statements_required(self):
         a, s = fixture(1)

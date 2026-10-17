@@ -99,6 +99,9 @@ def _holding(value):
         _shape(lot, {"quantity", "unit_cost_micros"}, "LOT_SHAPE")
         q = _integer(lot["quantity"], "LOT_QUANTITY", 1)
         cost = _integer(lot["unit_cost_micros"], "LOT_UNIT_COST")
+        # This contract models original native binary principal, not fees
+        # capitalized into basis. Its declared refund cannot exceed q * $1.
+        _need(cost <= UNIT, "LOT_UNIT_COST_EXCEEDS_PAYOUT")
         total = _integer(total + q, "HOLDING_QUANTITY_RANGE")
         basis = _integer(basis + q * cost, "HOLDING_BASIS_RANGE")
     _need(total == quantity, "HOLDING_FIFO_QUANTITY_MISMATCH")
