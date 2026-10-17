@@ -24,7 +24,7 @@ Historical R24's16-share948NO sale at09:42:44.410UTC realized+0.080 against reco
 
 ## Active strategy and feature state
 
-- Reviewed terminal-value entries and same-side top-ups operate under five model generations and eleven current reviews; the fifth changes only genuine Oregon node evidence, preserving the original four generation rows. Managed exits follow their original entry objective, current value, deadline and revocation. Point forecasts remain assumptions rather than a calibrated joint 2026 election posterior.
+- The retained model has six generations and eleven reviews: fifth-generation Oregon and sixth-generation Maine/Alaska changes use genuine later contract-node evidence, preserving original forecasts, probabilities and economic clocks. Production is currently stopped as dated above. Managed exits follow their original entry objective, current value, deadline and revocation. Point forecasts remain assumptions rather than a calibrated joint 2026 election posterior. [Sixth-generation proof](../research/moloch-node-continuity-20261017/committed-proof.md).
 - R25 quarantines unqualified ordinary new exposure while preserving reviewed decisions and fully covered inventory reductions; actual cleanup is verified. The fixed 355-fill audit attributed -184.970 realized to ordinary trading; sparse causal markouts were also negative. [Owned-fill audit](../research/moloch-owned-fill-calibration-20261017/README.md).
 - Inherited inventory is managed separately using verified remaining FIFO lots. The latest audited profitable exit belongs to inherited inventory, not new-strategy alpha.
 - Empirical maker/execution models remain OFF. Collateral accounting is OFF; no trusted package certificates or reviewed package allocations establish a live package strategy. Earlier-year joint-model diagnostics and prospective traces did not establish a new deployable edge.
@@ -37,6 +37,8 @@ The last independent official marked observation was **07:56 UTC**, before the l
 ## Next research
 
 Find and validate executable alpha across external innovations, SIG dislocations, semantic packages and correlated terminal allocations. Capital utilization is already high. Execution repairs remove missed opportunities but do not establish an edge where current prices fail the gain threshold.
+
+[Task169](https://github.com/GodlyDonuts/predictions-cup-2026/issues/169) is implementing explicit reviewed value-limit SELLs for verified inherited inventory. These orders may rest at or above the same active model value, rather than requiring full immediately executable bid depth. This remains an isolated candidate, default off; it requires historical native parity, a checked financial-identity bridge and actual owner approval before deployment. No resting quantity or FIFO comparison is claimed as realized profit.
 
 The [fixed SIG-only streaming screen](../research/moloch-sig-streaming-screen-20261017/README.md) authenticated15,381 original rows but produced zero completed labels because mandatory causal history and timely entry books were unavailable. Root reproduced every result field. No model was fitted, so this is insufficient coverage rather than an estimated zero return or a new deployable alpha. The [historical clock audit](../research/moloch-source-latency-20261017/README.md) independently measures an8,872ms receipt-to-processing median, with6,528 stale books originally source-fresh at receipt. This does not establish current R25 latency; task167 first measures it without a new account client or clock relaxation.
 
