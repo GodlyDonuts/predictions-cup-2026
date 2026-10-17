@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-17T00:32:49.439155+00:00",
+  "operator": "moloch-throughput-capital-20261017-r11-rebase-draft",
+  "sourceCommit": "027abb60eef2c1c5e03f077b9eb9d0778aa53b9b",
+  "engineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "binarySha256": "33005b4569fe62ef76d4170a02d04eadc0be903b15806408d8865c925425d537",
+  "release": "/home/archon/apps/moloch/releases/throughput-capital-33005b4569fe/moloch-live-runtime",
+  "unitCandidate": "/tmp/moloch-throughput-entry-r10-20261017/unit-candidate.service",
+  "controlChanges": [
+    "activation.binarySha256 relative to ORIGINAL active overlay"
+  ],
+  "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+  "activeOverlaySha256": "32be077587d31069734e13cb1b834a60b625cad6781c00b0ff2851f5cf8985a0",
+  "oldBaseSha256": "3317d016966cfd3455b2e541b75d20af12cf6922d5a4826113e5856dbb5795e0",
+  "newBaseSha256": "2d0dc9319cf3b1930738bc7984e63d663e22584a282bf3726f4b4a649dd2c6de",
+  "financialBridgeChanged": false,
+  "pins": {
+    "/home/archon/apps/moloch/shared/fundamental-paper7-expanded-20261017/next-control-root-reviewed.json": "32be077587d31069734e13cb1b834a60b625cad6781c00b0ff2851f5cf8985a0",
+    "/home/archon/apps/moloch/shared/fundamental-paper7-expanded-20261017/owner-request-001.json": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+    "/home/archon/apps/moloch/shared/fundamental-paper7-expanded-20261017/settings-root-reviewed.json": "b727a084310b02d0ffeec319fd2ab5dde2dfcf6ea88f0c69af6582a18ed09558",
+    "/tmp/moloch-throughput-entry-r10-20261017/root-reviewed-settings-validation.json": "7e781ecaf7c57f5f1fd10aeb4f29382d80dbef145e563f14ce2bfceacc00aec8",
+    "/home/archon/apps/moloch/shared/moloch-live-throughput-capital-r11-20261017.json": "2d0dc9319cf3b1930738bc7984e63d663e22584a282bf3726f4b4a649dd2c6de",
+    "/home/archon/apps/moloch/releases/throughput-capital-33005b4569fe/moloch-live-runtime": "33005b4569fe62ef76d4170a02d04eadc0be903b15806408d8865c925425d537",
+    "/tmp/moloch-throughput-entry-r10-20261017/unit-candidate.service": "f3301af793bf7062838a5d77c8e7d3ec6cb1bbba1e3d9ad91b233e65ca966e2e",
+    "/tmp/moloch-throughput-entry-r10-20261017/validation.json": "84dcef2f1f716814dbd8eb13b3b0cfa3dbd4665015c988140e9de715a01d51d6",
+    "/tmp/moloch-throughput-entry-r10-20261017/integrated-source-manifest.json": "adc4b52f97ae74882e83cddc2324792e42d5c0eabe9a0cf62a6bcbfe1c291214",
+    "/home/archon/apps/moloch/shared/moloch-live-paper7-generation-20261016.json": "3317d016966cfd3455b2e541b75d20af12cf6922d5a4826113e5856dbb5795e0",
+    "/tmp/moloch-paper7-generation-recovered-10701-r4-production-rollout.json": "889c0a47f311c71bfa3e18830c4f706761579fcf6eaef528664550afd4b2a0b8",
+    "/tmp/moloch-paper7-generation-recovered-10701-r4-staging.json": "3e9fda7c83bb64d0127f68351216cc3bf4b4935bedbd0259f56061a8eb52d67a"
+  },
+  "priorBridgeSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "financialBridgeEntries": 13
+}

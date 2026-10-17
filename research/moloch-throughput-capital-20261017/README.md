@@ -1,3 +1,21 @@
+# Actual R11 rollout — October17,00:35UTC
+
+[Production receipt](deployment/production-rollout.json) verifies sole584167
+started the33005b45 binary/source027abb60 with unchanged nativeb5/13bridges.
+[Initial health](deployment/initial-restoring-health.json) proves executable and
+service, explicitly **not fresh trading or generation recovery**. Old progress
+belongs to577770. [Boundary](deployment/boundary.json), [owner approval](deployment/root-approval.json)
+and [frozen operator](deployment/operator.py) bind the genuine requested stop,
+quiet SDK and original nine-model generation. No financial history was reset.
+[Raw pins](deployment/SHA256SUMS.json) and [main/source normalization verification](deployment/main-source-normalization-verification.json)
+retain exact provenance. [Prepared source refresh](deployment/source-refresh-prepared.json)
+is offline only, not a committed runtime generation.
+
+The pre-stop SDK helper failure was confined to the unused R10 draft. The actual
+R11 removes only the pre-stop lock attempt, then verifies SDK quiet under the
+capture lock after the old PID exits and again before promotion. The original
+active overlay/request/authority/source metadata survive the binary-only rebase.
+
 # Throughput and capital release — October17
 
 Source027abb60 (published main source84925305) passed872 actual checks and a

@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-17T00:34:27.213467+00:00",
+  "operator": "moloch-throughput-capital-20261017-r11-rebase-draft",
+  "stagingSha256": "41abf1eaf638739506763e12874b220dfbea2b85c39d3f896c5e868ba7eacb4d",
+  "snapshot": {
+    "head": {
+      "hash": "ff8f4cdbf0145352cbcd847b11c1c595c474fda4f6eb1c007eaed103604af14f",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "833f29e4378b7564d52cbf7af8093bf832f1a144ea849a7a27802111f35ae388",
+      "sequence": 362367
+    },
+    "reportSha256": "a72f2c404d898ca646a6222177a5c9575823dd5fed1745a5925b03e61c0f837c",
+    "prefixBytes": 1131396835,
+    "prefixSha256": "d39242380d2bb519ab69088ad279e954b44f4240523db2a79e878dd119c37f19",
+    "dispatch": {
+      "sequence": 16397,
+      "hash": "e866ebb5e242dafa6aaad7e02b9bafbedb7e37c7417f5724d3d1108feb0ba855",
+      "acknowledged": 1383,
+      "provedAborted": {
+        "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7",
+        "10701": "0f8e3dead33ceabb887af2ac321a2e295c83d7cf2e1d16eb70e62882b168f41c"
+      },
+      "unknownOrdinaryAttempts": 0
+    },
+    "pins": {
+      "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/manifest.json": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+      "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/engine-upgrade-v1.json": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+      "/home/archon/apps/moloch/shared/live-production-v1/dispatch.ndjson": "9b44b8a0ccee9bb62116497faa3cae0f4775650cd4a785b343f9e5bccdef4e0d",
+      "/home/archon/apps/moloch/shared/live-production-v1/fundamental.ndjson": "4401538a6e9fb545924e8f7b69650ece8a87caaa410654ad73f73e663ba6ce64",
+      "/home/archon/apps/moloch/shared/live-production-v1/fundamental.initialized.json": "cb5efd642c6ab79ff57db55e36a17dcd7497a7f3f160be3fff2546d7a34021c1",
+      "/home/archon/apps/moloch/shared/live-production-v1/package-dispatch/package-dispatch.ndjson": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fills": 241,
+    "reportRealized": "-136.230000"
+  },
+  "requestSha256": "2ebc368683f232405f1bfb9e9774bff459087550059a78cf85aad73e2af2e99e",
+  "stopSha256": "ab0c47dd14b6442ec6c21adf5748caab5848e7bfce1b25b9e95df589a87a69fc",
+  "workerStatusSha256": "fba583272201bc4b1165a25545dec35fb69b2f0b9648af6b15af1539e306de08",
+  "workerStatus": {
+    "at": "2026-10-17T00:34:08.812Z",
+    "mode": "stopped",
+    "pid": 577770,
+    "profitabilityEstablished": false,
+    "reason": "STOPPED_OR_OWNER_LOST"
+  },
+  "queueQuiet": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  }
+}

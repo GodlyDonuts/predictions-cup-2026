@@ -1,0 +1,38 @@
+{
+  "operator.py": {
+    "sha256": "564d3a462e9730090ef68e3c76143473ae38270b0ba7628bd9bf24d4251b5e66",
+    "bytes": 22008
+  },
+  "owner-freeze.json": {
+    "sha256": "659c2df83abdc6c94eff5b184e69537ec98a5f8ca40e22f23cf0395b92f1ee69",
+    "bytes": 2586
+  },
+  "staging.json": {
+    "sha256": "41abf1eaf638739506763e12874b220dfbea2b85c39d3f896c5e868ba7eacb4d",
+    "bytes": 3011
+  },
+  "boundary.json": {
+    "sha256": "a727b2c7903266f73e261aabc702e300667133c0b1e9cf0919fa84f502a8dfe0",
+    "bytes": 2699
+  },
+  "root-approval.json": {
+    "sha256": "9ac239c58f083ab55eb963a4418276cf8f162188adf918923f742a3326bbd5ec",
+    "bytes": 1060
+  },
+  "production-rollout.json": {
+    "sha256": "6f06ac060fe79bac87a017501b28cab4b4a5e75b5ecc0f72d625f1c8caa960d3",
+    "bytes": 3994
+  },
+  "initial-restoring-health.json": {
+    "sha256": "3b09014ecedcbe979efed990175ddfd80d685215b3d15237b26fad96277bdd84",
+    "bytes": 948
+  },
+  "main-source-normalization-verification.json": {
+    "sha256": "0e848ec836592ea39de45c52da1ec27f3fffec11391d4d55cb3b8b4ea9ce4b83",
+    "bytes": 495
+  },
+  "source-refresh-prepared.json": {
+    "sha256": "5aabbad6b5aabdb875e96280330f2e66542a1bca5596842043714740d45b0c57",
+    "bytes": 1200
+  }
+}

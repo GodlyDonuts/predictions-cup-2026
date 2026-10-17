@@ -1,3 +1,28 @@
+# October17,00:40UTC: speed release started; original ledger restoring
+
+Root deployed the checked throughput release as sole **584167**, source027abb60
+(main84925305), binary33005b45/nativeb5. Actual executable/service/noSTOP were
+verified; it is replaying the original1.13GB bank before fresh trading. At00:39
+its journal FD had read50.6% of bytes; this is a byte position, not an overall
+completion percentage or ETA. Old577770 progress is historical.
+
+The graceful upgrade boundary at00:34:08 contained1383 acknowledged orders
+(**11 new** versus the launch baseline),241 fills unchanged, cash70,762.85 and
+combined attributed realized−136.23. The exact SDK quiet check found no active,
+unknown or manual-review request. Root archived only this requested stop after
+reviewing its cause, preserved all13 financial bridges/history, and started the
+replacement. [Raw rollout and boundaries](../research/moloch-throughput-capital-20261017/README.md).
+
+The original authenticated nine-market generation is retained byte-for-byte;
+new Control changes only the binary relative to its original active overlay.
+Its recovery and a fresh trading cycle from584167 remain pending actual replay.
+A separate genuine primary-source refresh for DE/MA/NC is prepared offline,
+with unchanged probabilities, principal caps, objectives, deadlines and origins.
+MA now cites an actual General ballot instead of the old primary page; CTM's
+>99.9% remains censored, not an exact point. Those data updates are not active yet
+and can hot-reload after recovery without another restart. Paper7 remains
+incomplete; no new fill/profit is claimed.
+
 # October17,00:30UTC: trading live; nine-market model installed
 
 Sole worker **577770/sourceb3a2bd86/binary21d628ffd437/nativeb5** completed its

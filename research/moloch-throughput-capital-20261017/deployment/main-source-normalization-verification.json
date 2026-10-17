@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-17T00:34:03.140575+00:00",
+  "checkedBuildSourceCommit": "027abb60eef2c1c5e03f077b9eb9d0778aa53b9b",
+  "mainSourceCommit": "8492530527844e8e57e2f36eacc192187a27689c",
+  "actualSourceManifestSha256": "adc4b52f97ae74882e83cddc2324792e42d5c0eabe9a0cf62a6bcbfe1c291214",
+  "sourceFilesVerified": 258,
+  "exactGitBlobBytes": 60,
+  "onlyCrLfToLfDifferences": 198,
+  "otherDifferences": 0,
+  "allActualBuildRawBytesRemainPinned": true,
+  "verificationChangesSourceOrBinary": false
+}
