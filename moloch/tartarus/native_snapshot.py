@@ -145,14 +145,14 @@ def _evidence(value, extra, prefix, decision, reasons):
 
 def adapt_native_snapshot(report_bytes, *, expected_report_sha256, expected_manifest_sha256,
                           expected_head, source_observation_ms, decision_ms, valid_until_ms,
-                          registry=None, liabilities=None):
+                          registry=None, liabilities=None, draft_classification=None):
     """Return an exact Contract A input only when all declared evidence fits.
 
     expected_manifest_sha256 is native manifestHash (not the manifest file's raw
     byte SHA). registry and liabilities are explicitly scoped normalized source
     evidence; their raw receipt/semantic membership is NOT independently proved
-    here. This first version refuses native unretired orders pending original
-    physical/draft classification, even if a caller says official open=[]:
+    here. Native unretired orders require the optional original worker packet's
+    factory-bound classification, even if a caller says official open=[]:
     a native draft is not itself an official order or a zero liability proof.
     """
     _hex(expected_report_sha256, "EXPECTED_REPORT_SHA256")
@@ -273,7 +273,16 @@ def adapt_native_snapshot(report_bytes, *, expected_report_sha256, expected_mani
             _need(type(liabilities[key]) is list and len(liabilities[key]) <= 10_000, "LIABILITY_COLLECTION_BOUND")
             if liabilities[key]:
                 reasons.append(key.upper() + "_UNAVAILABLE")
-    if unretired or unresolved:
+    if draft_classification is not None:
+        try:
+            from .worker_packet import DraftClassification
+        except ImportError:
+            from worker_packet import DraftClassification
+        _need(type(draft_classification) is DraftClassification, "DRAFT_CLASSIFICATION_FACTORY_REQUIRED")
+        draft_classification.validate(report_bytes, expected_manifest_sha256, expected_head,
+                                      [q["id"] for q in orders if not q["retired"]], cash, reserved,
+                                      source_observation_ms)
+    if (unretired or unresolved) and draft_classification is None:
         reasons.append("NATIVE_OPEN_ORDER_CLASSIFICATION_UNAVAILABLE")
     static = {"held_sides": len(held), "absolute_shares": qty, "remaining_fifo_principal_micros": basis,
               "cash_micros": cash, "reserved_cash_micros": reserved,
@@ -287,6 +296,8 @@ def adapt_native_snapshot(report_bytes, *, expected_report_sha256, expected_mani
         combined = {"report_sha256": expected_report_sha256, "head": expected_head,
                     "source_observation_ms": source_observation_ms, "valid_until_ms": valid_until_ms,
                     "registry": registry, "liabilities": liabilities}
+        if draft_classification is not None:
+            combined["worker_packet"] = draft_classification.evidence()
         combined_sha = hashlib.sha256(json.dumps(combined, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
         account = {"schema_version": 1, "evidence_class": registry["evidence_class"] if registry["evidence_class"] == liabilities["evidence_class"] else "mixed",
                    "as_of_ms": max(source_observation_ms, registry["as_of_ms"], liabilities["as_of_ms"]),
@@ -301,7 +312,8 @@ def adapt_native_snapshot(report_bytes, *, expected_report_sha256, expected_mani
                          "source_observation_ms": source_observation_ms, "valid_until_ms": valid_until_ms,
                          "report_raw_sha256": expected_report_sha256, "report_seal_sha256": d["hash"],
                          "manifest_hash": expected_manifest_sha256, "head": deepcopy(expected_head)},
-            "source_evidence": {"registry": deepcopy(registry), "liabilities": deepcopy(liabilities)},
+            "source_evidence": {"registry": deepcopy(registry), "liabilities": deepcopy(liabilities),
+                                **({"worker_packet": draft_classification.evidence()} if draft_classification is not None else {})},
             "original_lot_clocks": clocks, "evidence_class": "sealed_dated_native_snapshot_research_only",
             "raw_report_pin_and_seal_verified": True, "financial_prefix_replay_performed": False,
             "official_receipt_membership_independently_verified": False,
