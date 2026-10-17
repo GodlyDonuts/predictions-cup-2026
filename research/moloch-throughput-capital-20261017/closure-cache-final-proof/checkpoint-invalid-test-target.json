@@ -1,0 +1,66 @@
+{
+  "sourceCommit": "e2115d1037d9276cbc4d5b4645bcb07434062d22",
+  "sourceManifestSha256": "ac6e94273068b6b09cdba6342a7eb07282f93573058e264f6365c65f38339792",
+  "sourceFiles": 262,
+  "expectedEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "productionChanged": false,
+  "startedAt": "2026-10-17T01:56:45.961870+00:00",
+  "checks": {
+    "sdk-library": {
+      "exitCode": 0,
+      "seconds": 25.253784310014453,
+      "logSha256": "1aa2d540ba66aefbe9aecd2bd1e04997d4c3417f867fb06ca21eaee472fcdf74",
+      "logBytes": 24978,
+      "testResults": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "native-library": {
+      "exitCode": 0,
+      "seconds": 18.354853102006018,
+      "logSha256": "143fd5dcd257e4bfbdf4aa977aa505dc15a6d65b7b039612fafa1e97561ec167",
+      "logBytes": 13220,
+      "testResults": [
+        [
+          "98",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "runtime-library": {
+      "exitCode": 0,
+      "seconds": 63.41671915902407,
+      "logSha256": "9c87278ac096ee8dc8eada618a18b2056ef0fa17633a5bdf54b6932bc8292561",
+      "logBytes": 36168,
+      "testResults": [
+        [
+          "237",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "worker": {
+      "exitCode": 101,
+      "seconds": 0.18158175799180754,
+      "logSha256": "59e9b2515eaa5fe5985f45dc8d2d31949635b0dc97edf8b99a0e7d25af610511",
+      "logBytes": 1370,
+      "testResults": []
+    }
+  },
+  "reusedChecks": {
+    "sdk-library": "All SDK and queue source bytes exact unchanged; actual R16 233-check raw log retained.",
+    "native-library": "All native source bytes exact unchanged; actual R16 98-check raw log retained. No new financial bridge."
+  }
+}

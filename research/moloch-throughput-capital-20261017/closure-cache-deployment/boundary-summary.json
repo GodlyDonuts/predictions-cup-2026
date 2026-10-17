@@ -1,0 +1,39 @@
+{
+  "derivedAggregateOnly": true,
+  "originalPrivateBoundarySha256": "35ca4d16342d6781e3764e9e405a036f7797fcd22db15057f4b59db173e9fb33",
+  "operator": "moloch-throughput-capital-20261017-r18-closure-cache",
+  "at": "2026-10-17T02:16:01.918708+00:00",
+  "stagingSha256": "7717200cf10263a1dac5be26abe0517a6da08ee5addcbc5a096fadc215355473",
+  "requestSha256": "979a24ad9520c13c6196970a78d9747abe2468288e783f18f3acddaceb793189",
+  "stopSha256": "d29b4440feed8ed3bfb60aa042e23c761f9db3ed5071c074562c795cbd5e6880",
+  "workerStatusSha256": "18692dea3f92939a9fae7a049839f3bd3162576af2626b7082662145b863cc46",
+  "stoppedFinancialHead": {
+    "hash": "5bef296eb67623a0c2dc9dd963bc4167fb9224208cdae0ab88f363ee9d852286",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "4b82126e040f688cb6afff521f213decccb55f294df539b5f46ea02ae67ab0d4",
+    "sequence": 381266
+  },
+  "financialJournalBytes": 1202028791,
+  "financialJournalSha256": "ea95d28023818d71ff26536477b1dfeb79fdea6757c77309c39e0ae9c1073a4d",
+  "financialReportSha256": "135602ee7dd60a050aae15fd31b295e7e7159f7b6476342d686b806f03aa1c43",
+  "officialFillRows": 283,
+  "combinedAttributedRealized": "-136.230000",
+  "dispatch": {
+    "sequence": 17341,
+    "hash": "020d95c995e71cc129bb97560afbadb67413874bbd3a02e467721e9710837774",
+    "acknowledged": 1418,
+    "provedAborted": {
+      "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7",
+      "10701": "0f8e3dead33ceabb887af2ac321a2e295c83d7cf2e1d16eb70e62882b168f41c"
+    },
+    "unknownOrdinaryAttempts": 0
+  },
+  "queueQuiet": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  },
+  "allFinancialHistoryAnd14BridgeBytesPreserved": true,
+  "original4ModelGenerationsPreserved": true,
+  "privateRawAccountAndStatusOmitted": true
+}

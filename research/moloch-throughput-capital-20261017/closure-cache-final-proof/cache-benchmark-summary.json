@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+  "actualLogSha256": "e34c40b7e663a5b6b7c3c1694f08a6568debedecc5e3fc8ddb639e642d3d5884",
+  "actual": {
+    "coldMs": 5838.694587,
+    "financialAuthority": false,
+    "fullParsePasses": 1,
+    "originalBytes": 8597641,
+    "originalSequence": 17133,
+    "rowsSha256": "d8ac9b68c55a89fb2c3b9684f65942cbb329382db9f3be73b0593671b9466b92",
+    "wanted": [
+      10790,
+      10795,
+      10828
+    ],
+    "warmFullFileHashRequired": true,
+    "warmMs": 1218.557661
+  },
+  "privateCopiedOriginalDispatchProofSha256": "7ae2002c0a9c5dee0e2c8660049e000a73dcf9010bee2cad3d809b75fd19967a",
+  "noFinancialAuthority": true,
+  "productionChanged": false,
+  "benchmarkFromExactUnchangedR17Library": true
+}

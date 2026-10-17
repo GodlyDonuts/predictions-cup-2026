@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-17T02:16:57.215549+00:00",
+  "operator": "moloch-throughput-capital-20261017-r18-closure-cache",
+  "oldPid": 592183,
+  "newPid": 595256,
+  "sourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+  "binarySha256": "b398c7e75436a94799b5fd968ed3c131d65d6dce0e0a530ccd10feaf277432af",
+  "engineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "release": "/home/archon/apps/moloch/releases/throughput-capital-b398c7e75436/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-throughput-capital-r18-20261017.json",
+  "controlSha256": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+  "stagingSha256": "7717200cf10263a1dac5be26abe0517a6da08ee5addcbc5a096fadc215355473",
+  "approvalSha256": "d245357aecdd80eeeb3a1fab739d30207446429182e347f70c132d6ab5e71e51",
+  "bridgeSha256": "9ec918ba2964fa322d142e7c88514d79f587e2182a0187984fbb5af83ad50c84",
+  "financialBridgeEntries": 14,
+  "controlChanges": [
+    "activation.binarySha256 relative to ORIGINAL active overlay"
+  ],
+  "financialHistoryChangedByOperator": false,
+  "freshTradingVerified": false,
+  "profitabilityEstablished": false,
+  "derivedAggregateOnly": true,
+  "originalPrivateRolloutSha256": "623e97b0b981f49faa4300a1719eaf4fce4a477372f045b7c1336fe2599eea65",
+  "privateRawAccountAndStatusOmitted": true,
+  "boundarySummarySha256": "9bddb04c77d58643112f578d397ed50624459125ec31fcf540cee09450c06911",
+  "all14FinancialBridgeBytesUnchanged": true,
+  "noNewFinancialBridge": true,
+  "newCadenceEnabled": false,
+  "original4ModelGenerationsPreserved": true
+}

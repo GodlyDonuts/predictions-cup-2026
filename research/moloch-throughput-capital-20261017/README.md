@@ -1,3 +1,26 @@
+# October17,02:18UTC — cache fix deployed; original ledger recovering
+
+Sole worker **595256**, sourcef21c8b5f, binaryb398c7e7, has started the verified
+closure-cache and precise-expiry-diagnostic release. **Fresh trading is not yet
+verified**: old592183 progress must not be attributed to this process. Native
+7a74f8c3 and all14 financial bridge bytes remain unchanged; all four original
+model generations and the eleven-market allocation are preserved. The exact
+stopped boundary is381266 events/283 actual fills, no unresolved SDK request,
+cash48,061.58/owned47,382.105/combined attributed realized−136.23. No history,
+cash, loss, source clock, probability, deadline or daily window was reset.
+
+The final source passed811 checks with unchanged-library evidence explicitly
+reused; its119 worker checks and optimized release are actual final-source
+checks. Original262 build files match Git exactly or by CRLF normalization.
+Root independently reviewed and promoted only the binary change relative to
+the active overlay. [Final build/source proof](closure-cache-final-proof/validation.json), [frozen rollout](closure-cache-deployment/production-rollout-summary.json), [original boundary](closure-cache-deployment/boundary-summary.json).
+
+This release addresses repeated journal parsing during entry preparation.
+Actual repeated fills, cash deployment and production latency remain pending
+ledger recovery. Read cadence and write caps are unchanged; calibrated
+probabilities, joint portfolio optimization and qualified market making remain
+unfinished. A running replacement is not proof those research goals are done.
+
 # October17,02:10UTC — closure cache checked; replacement release pending
 
 The verified-closure cache sourcee2115d10 passed811 checks, including retained
