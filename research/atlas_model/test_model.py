@@ -1,6 +1,6 @@
 import os
 os.environ.setdefault('OPENBLAS_NUM_THREADS','1')
-import argparse,copy,json,unittest
+import argparse,copy,itertools,json,unittest
 from pathlib import Path
 import numpy as np
 import model
@@ -19,6 +19,43 @@ class AtlasTests(unittest.TestCase):
   year=2022;train=[r for r in self.rows if r['year']!=year];test=[r for r in self.rows if r['year']==year];bad=copy.deepcopy(test)
   for r in bad:r['actualMargin']=-r['actualMargin'];r['democraticWon']=not r['democraticWon']
   m=model.fit(train);_,a,ca=model.posterior(m,test);_,b,cb=model.posterior(m,bad);np.testing.assert_array_equal(a,b);np.testing.assert_array_equal(ca,cb)
+ def test_chronological_joint_partitions_and_pair_identity(self):
+  folds=self.validation['chronologicalJointFolds'];self.assertEqual(len(folds),20)
+  pairs=self.validation['chronologicalJointPairRows']
+  for f in folds:
+   year=f['heldOutYear'];past=[p for p in self.rows if p['year']<year];test=[p for p in self.rows if p['year']==year]
+   self.assertEqual(f['trainingYears'],sorted({p['year'] for p in past}));self.assertLess(f['trainedThroughYear'],year)
+   self.assertEqual(f['trainingCutoffMs'],max(p['electionAtMs'] for p in past));self.assertLess(f['trainingCutoffMs'],min(p['electionAtMs'] for p in test))
+   ids=sorted({p['raceId'] for p in test});self.assertEqual(f['testRaceIds'],ids);self.assertEqual(f['trainingRaces'],len({p['raceId'] for p in past}))
+   ps=[p for p in pairs if p['year']==year];self.assertEqual(len(ps),len(ids)*(len(ids)-1)//2)
+   self.assertEqual({tuple(p['raceIds']) for p in ps},set(itertools.combinations(ids,2)));self.assertEqual(f['pairs'],len(ps))
+   if not ps:self.assertIsNone(f['jointPairBrier']);self.assertIsNone(f['independentMarginalsPairBrier'])
+  self.assertEqual(self.validation['chronologicalJointCycleBootstrap']['electionCycleBlocks'],15)
+ def test_held_final_year_labels_do_not_change_any_chronological_forecast(self):
+  changed=copy.deepcopy(self.rows)
+  for p in changed:
+   if p['year']==2022:p['actualMargin']=-p['actualMargin'];p['democraticWon']=not p['democraticWon']
+  other=model.validate(changed)
+  forecast=lambda v:[(p['year'],p['raceIds'],p['jointProbability'],p['independentMarginalsProbability']) for p in v['chronologicalJointPairRows']]
+  self.assertEqual(forecast(self.validation),forecast(other))
+  marginal=lambda v:[(p['raceId'],p['mean'],p['sd'],p['probability'],p['trainedThroughYear']) for p in v['chronologicalRows']]
+  self.assertEqual(marginal(self.validation),marginal(other))
+  self.assertNotEqual([p['bothDemocraticWon'] for p in self.validation['chronologicalJointPairRows']],[p['bothDemocraticWon'] for p in other['chronologicalJointPairRows']])
+ def test_actual_earlier_year_joint_predictions_match_original_sampler(self):
+  year=2022;m=model.fit([p for p in self.rows if p['year']<year]);rs,means,cov=model.posterior(m,[p for p in self.rows if p['year']==year]);ps=model.probabilities(means,cov)
+  win=model.draw_joint(means,cov,4096,year)>0;by_id={r['raceId']:i for i,r in enumerate(rs)}
+  for p in self.validation['chronologicalJointPairRows']:
+   if p['year']!=year:continue
+   a,b=map(by_id.__getitem__,p['raceIds']);self.assertEqual(p['jointProbability'],float(np.mean(win[:,a]&win[:,b])))
+   self.assertEqual(p['independentMarginalsProbability'],float(ps[a]*ps[b]));self.assertEqual(p['bothDemocraticWon'],bool(rs[a]['actual']>0 and rs[b]['actual']>0))
+ def test_joint_uncertainty_weights_cycles_not_number_of_pairs(self):
+  folds=[{'heldOutYear':2018,'pairs':1,'jointPairBrier':.3,'independentMarginalsPairBrier':.1},
+         {'heldOutYear':2020,'pairs':100000,'jointPairBrier':.1,'independentMarginalsPairBrier':.2},
+         {'heldOutYear':2021,'pairs':0,'jointPairBrier':None,'independentMarginalsPairBrier':None}]
+  u=model.chronological_joint_uncertainty(folds);self.assertEqual(u['electionCycleBlocks'],2);self.assertEqual(u['pairs'],100001)
+  self.assertAlmostEqual(u['meanJointMinusIndependent'],.05);self.assertAlmostEqual(u['equalCycleJointPairBrier'],.2)
+  np.testing.assert_allclose(u['percentile95Interval'],[-.1,.2]);self.assertTrue(u['notAConfidenceGuarantee'])
+  with self.assertRaisesRegex(ValueError,'duplicate joint election-cycle block'):model.chronological_joint_uncertainty(folds+[folds[0]])
  def test_actual_joint_covariance_is_psd_and_not_independent(self):
   _,mean,cov=model.posterior(self.fitted,self.current['rows']);self.assertGreater(np.min(np.linalg.eigvalsh(cov)),0);self.assertTrue(np.any(np.abs(cov-np.diag(np.diag(cov)))>1));draw=model.draw_joint(mean,cov,65536,1701);emp=np.cov(draw.T);np.testing.assert_allclose(emp,cov,rtol=.25,atol=1.5)
  def test_shared_uncertainty_does_not_vanish_with_huge_poll_samples(self):

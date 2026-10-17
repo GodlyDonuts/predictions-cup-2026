@@ -148,8 +148,30 @@ def metrics(rows):
  return {'races':len(rows),'cycles':len({r['year'] for r in rows}),'brier':float(np.mean((p-y)**2)),'logLoss':float(-np.mean(y*np.log(p)+(1-y)*np.log(1-p))),'correct':int(np.sum((p>.5)==y)),'marginRmse':float(np.sqrt(np.mean([(r['actual']-r['mean'])**2 for r in rows]))),'interval90Coverage':float(np.mean([abs(r['actual']-r['mean'])<=2.13184678632665*r['sd']/math.sqrt(2) for r in rows])),
   'bins':[{'lower':a/5,'upper':(a+1)/5,'n':int(sum(a/5<=x<((a+1)/5 if a<4 else 1.000001) for x in p)),'mean':float(np.mean([x for x in p if a/5<=x<((a+1)/5 if a<4 else 1.000001)])) if any(a/5<=x<((a+1)/5 if a<4 else 1.000001) for x in p) else None,'observed':float(np.mean([r['won'] for r,x in zip(rows,p) if a/5<=x<((a+1)/5 if a<4 else 1.000001)])) if any(a/5<=x<((a+1)/5 if a<4 else 1.000001) for x in p) else None} for a in range(5)]}
 
+def chronological_joint_pairs(races,means,cov,ps,year):
+ # Exactly the existing LOCO sampler, draw count, year seed and pair target.
+ draws=draw_joint(means,cov,4096,year);win=(draws>0).astype(float);joint=win.T@win/len(win)
+ return [{'year':year,'raceIds':[races[j]['raceId'],races[i]['raceId']],
+          'jointProbability':float(joint[i,j]),'independentMarginalsProbability':float(ps[i]*ps[j]),
+          'bothDemocraticWon':bool(races[i]['actual']>0 and races[j]['actual']>0)}
+         for i in range(len(races)) for j in range(i)]
+
+def chronological_joint_uncertainty(folds):
+ # One paired mean per election cycle, never thousands of IID race pairs.
+ scored=[f for f in folds if f['pairs']>0]
+ if not scored:return {'electionCycleBlocks':0,'pairs':0,'equalCycleJointPairBrier':None,'equalCycleIndependentMarginalsPairBrier':None,'meanJointMinusIndependent':None,'percentile95Interval':None,'bootstrapReplicates':2000,'notAConfidenceGuarantee':True}
+ if len({f['heldOutYear'] for f in scored})!=len(scored):raise ValueError('duplicate joint election-cycle block')
+ deltas=np.array([f['jointPairBrier']-f['independentMarginalsPairBrier'] for f in scored])
+ rng=np.random.default_rng(1701);sample=rng.choice(deltas,size=(2000,len(scored)),replace=True).mean(axis=1)
+ return {'electionCycleBlocks':len(scored),'pairs':sum(f['pairs'] for f in scored),
+         'equalCycleJointPairBrier':float(np.mean([f['jointPairBrier'] for f in scored])),
+         'equalCycleIndependentMarginalsPairBrier':float(np.mean([f['independentMarginalsPairBrier'] for f in scored])),
+         'meanJointMinusIndependent':float(deltas.mean()),'percentile95Interval':list(map(float,np.quantile(sample,[.025,.975]))),
+         'bootstrapReplicates':2000,'bootstrapSeed':1701,'aggregation':'equal election-cycle means; within-cycle pairs remain together',
+         'statistic':'earlier-years-only joint minus product-marginals pair Brier; lower is better','notAConfidenceGuarantee':True}
+
 def validate(rows):
- rows=normalize(rows);years=sorted({p['year'] for p in rows});predictions=[];chronological=[];pair_scores=[];folds=[]
+ rows=normalize(rows);years=sorted({p['year'] for p in rows});predictions=[];chronological=[];pair_scores=[];folds=[];chronological_pairs=[];chronological_folds=[]
  for year in years:
   train=[p for p in rows if p['year']!=year];test=[p for p in rows if p['year']==year];model=fit(train);rs,means,cov=posterior(model,test);ps=probabilities(means,cov)
   assert year not in model['cycles']
@@ -166,6 +188,12 @@ def validate(rows):
   if len({p['raceId'] for p in past})>=30 and len({p['year'] for p in past})>=3:
    m=fit(past);rr,mm,cc=posterior(m,test);pp=probabilities(mm,cc);assert m['trainedThroughYear']<year
    for r,mu,v,p in zip(rr,mm,np.diag(cc),pp):chronological.append({'raceId':r['raceId'],'year':year,'won':r['actual']>0,'actual':r['actual'],'mean':float(mu),'sd':math.sqrt(float(v)),'probability':float(p),'trainedThroughYear':m['trainedThroughYear']})
+   pairs=chronological_joint_pairs(rr,mm,cc,pp,year);chronological_pairs.extend(pairs)
+   chronological_folds.append({'heldOutYear':year,'trainingYears':m['cycles'],'trainedThroughYear':m['trainedThroughYear'],
+    'trainingCutoffMs':m['trainingCutoffMs'],'trainingRaces':m['races'],'testRaceIds':[r['raceId'] for r in rr],
+    'testRaces':len(rr),'pairs':len(pairs),'draws':4096,'seed':year,
+    'jointPairBrier':float(np.mean([(p['jointProbability']-p['bothDemocraticWon'])**2 for p in pairs])) if pairs else None,
+    'independentMarginalsPairBrier':float(np.mean([(p['independentMarginalsProbability']-p['bothDemocraticWon'])**2 for p in pairs])) if pairs else None})
  baseline=[dict(r,probability=r['baselineProbability'],mean=r['baselineMean'],sd=r['baselineSd']) for r in predictions]
  # Election-cycle block bootstrap of paired Brier differences; no IID-race CI.
  rng=np.random.default_rng(1701);blocks={y:[r for r in predictions if r['year']==y] for y in years};deltas=[]
@@ -173,7 +201,7 @@ def validate(rows):
   sample=[r for y in rng.choice(years,len(years),replace=True) for r in blocks[int(y)]]
   deltas.append(float(np.mean([(r['probability']-r['won'])**2-(r['baselineProbability']-r['won'])**2 for r in sample])))
  uncertainty={'statistic':'Atlas minus pooled baseline paired Brier; lower is better','electionCycleBlocks':len(years),'bootstrapReplicates':2000,'percentile95Interval':list(map(float,np.quantile(deltas,[.025,.975]))),'notAConfidenceGuarantee':True}
- return {'pairedBrierCycleBootstrap':uncertainty,'leaveElectionCycleOut':metrics(predictions),'sameFoldPooledErrorBaseline':metrics(baseline),'chronologicalOutcomeDiagnostic':metrics(chronological),'pairwiseJointDiagnostic':pair_scores,'folds':folds,'predictionRows':predictions,'chronologicalRows':chronological,'limitations':['LOCO is retrospective: other later cycles enter training; chronological diagnostic trains earlier years only.','Original historical release clocks/populations are absent; field dates cannot prove then-available forecasts.','Final-candidate identity selection and revised outcome archives prevent untouched historical-vintage claims.','Variance-component EB moments/floors, state/house shrinkage and t4 tail are declared modeling assumptions, not a fully sampled hyperparameter posterior.','Poll error already includes undecided resolution/drift; no additional adverse undecided allocation is silently added.','No executable historical market prices, fill costs or trading PnL.']}
+ return {'chronologicalJointFolds':chronological_folds,'chronologicalJointPairRows':chronological_pairs,'chronologicalJointCycleBootstrap':chronological_joint_uncertainty(chronological_folds),'pairedBrierCycleBootstrap':uncertainty,'leaveElectionCycleOut':metrics(predictions),'sameFoldPooledErrorBaseline':metrics(baseline),'chronologicalOutcomeDiagnostic':metrics(chronological),'pairwiseJointDiagnostic':pair_scores,'folds':folds,'predictionRows':predictions,'chronologicalRows':chronological,'limitations':['LOCO is retrospective: other later cycles enter training; chronological diagnostic trains earlier years only.','Original historical release clocks/populations are absent; field dates cannot prove then-available forecasts.','Final-candidate identity selection and revised outcome archives prevent untouched historical-vintage claims.','Variance-component EB moments/floors, state/house shrinkage and t4 tail are declared modeling assumptions, not a fully sampled hyperparameter posterior.','Poll error already includes undecided resolution/drift; no additional adverse undecided allocation is silently added.','No executable historical market prices, fill costs or trading PnL.']}
 
 def integer_tree(value):
  if isinstance(value,float):return int(round(value*1000000))
@@ -196,7 +224,7 @@ def artifact(model,current,provenance,calibration,observed_at,expires_at,draws=6
  body={'schemaVersion':1,'objective':'ordinary_terminal_race_outcome','observedAtMs':observed_at,'expiresAtMs':expires_at,'trainingCutoffMs':model['trainingCutoffMs'],
   'qualification':{'kind':'research','historicalAvailabilityClocksKnown':False,'historicalPopulationKnown':False,'allCurrentPollHorizonsWithinTrainingSupport':all(model['trainingHorizonRange'][p['office']][0]<=p['horizonDays']<=model['trainingHorizonRange'][p['office']][1] for p in current),'ordinaryOnly':True,'exceptionalStateProbabilitiesIdentified':False,'currentSourceOriginalsVerified':False,'varianceHyperparametersFullyBayesian':False,'executionAuthority':False},
   'races':[{'raceId':r['raceId'],'state':r['state'],'office':r['office']} for r in rs],'scenarios':scenarios,
-  'sources':provenance['sources'],'calibrationContinuousValueScale':1000000,'calibration':integer_tree({k:v for k,v in calibration.items() if k not in ('predictionRows','chronologicalRows')}),
+  'sources':provenance['sources'],'calibrationContinuousValueScale':1000000,'calibration':integer_tree({k:v for k,v in calibration.items() if k not in ('predictionRows','chronologicalRows','chronologicalJointPairRows')}),
   'declaredModel':{'algorithm':model['algorithm'],'parametersScaledBy':1000000,'fittedParameterSha256':sha(model),'configMicrounits':integer_tree(model['config']),'varianceMicropointsSquared':integer_tree(model['variance']),'varianceEvidence':model['varianceEvidence'],'trainingRaces':model['races'],'trainingPollsterRaceObservations':model['pollsterRaceObservations'],'sampling':{'draws':draws,'seed':seed,'jointTail':'shared_t4_scale'},'marginMeanMicropoints':[int(round(x*1000000)) for x in means],'marginCovarianceMicropointsSquared':[[int(round(x*1000000000000)) for x in row] for row in cov]},
   'currentInputSha256':sha(current),'limitations':calibration['limitations']+['Current retained poll source originals are not independently reloaded by the sample builder; research artifact only.','Ordinary DEM/REP outcomes are not contractual settlement/party/refund certificates.','A terminal posterior is not a deadline liquidation cash estimate.']}
  body['modelSha256']=sha(body);return body
