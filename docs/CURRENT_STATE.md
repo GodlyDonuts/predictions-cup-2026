@@ -1,8 +1,10 @@
-# October17,11:44UTC - stopped pre-intent book expiry; repair qualifying
+# October17,11:51:36 UTC - R26 installed; ledger restoring
 
-Production stopped naturally at11:16:03 with FUNDAMENTAL_PHYSICAL_BOOK_STALE. Root authenticated the original stopped481281 head and proved the failed851NO top-up15178 had no dispatch intent, attempt, ACK or fill. The ten-second book limit expired locally after receipt. Original STOP and financial history remain intact; known1075NO SELL2/ACK15156 still requires official startup reconciliation.
+**Sole worker651324/source6295e22c/binary97aeaf63/native5b61 is installed and restoring the original ledger. Fresh new-process trading is not yet verified.** Exact PID/executable/argv/service identity match. [Actual controlled installation and root verification](../research/moloch-source-latency-20261017/deployment/README.md).
 
-Corrected source6295e22c passes143 actual ARM64 worker checks, optimized release and independent263-source verification. Owner-controlled recovery is pending. One worker/account queue, original models,15 bridge records, source clocks, risk and rate limits remain unchanged. No profit or latency gain is established. [Original incident and narrow repair](../research/moloch-source-latency-20261017/README.md).
+The corrected worker services original queued frames during routine book reads and defers only proved untouched quotes whose books expire before submission. All143 actual ARM64 worker checks, optimized release and263-source root verification pass. No freshness limit is relaxed. [Repair and original incident](../research/moloch-source-latency-20261017/README.md).
+
+The authenticated stopped481281 boundary preserves381 fill rows, cash3,611.985, owned cost91,853.520 and attributed realized-114.410. Original STOP is archived intact. Known1075NO SELL2/qid15156/order45189675 requires official startup reconciliation; no fill or replacement is assumed. The one queue, original models,15 financial bridge records and source/rate/risk/activation clocks remain unchanged. A finite file-only observer is running. No post-repair profit or latency benefit is established.
 
 ## Earlier R25 operation and reservation cleanup
 

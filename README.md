@@ -1,6 +1,6 @@
 # Moloch - official production bot
 
-**October17,11:44UTC: production is stopped following a pre-submission book-expiry error at11:16:03.** The original stop, financial ledger and known two-share SELL are preserved. Corrected source6295e22c passes143 actual ARM64 worker checks, optimized production build and independent263-source verification. Controlled recovery remains pending. [Incident and repair](research/moloch-source-latency-20261017/README.md). This supersedes the operation status below.
+**October17,11:51:36 UTC: repaired R26 is running as sole worker651324 and restoring its original ledger. Fresh new-process trading is not yet verified.** Source6295e22c/binary97aeaf63/native5b61 match the checked release. [Controlled installation](research/moloch-source-latency-20261017/deployment/README.md). The original book-expiry stop and known two-share SELL remain preserved for reconciliation. Models, financial history and source/rate/risk/activation clocks are unchanged.
 
 ## Earlier R25 observation
 

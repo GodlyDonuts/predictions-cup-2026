@@ -1,6 +1,6 @@
 # Source availability delay
 
-**Incident: R25 stopped11:16:03UTC with FUNDAMENTAL_PHYSICAL_BOOK_STALE.** The earlier fresh-trading observation is historical. The original STOP and known last two-share SELL are preserved; no blind restart or replacement is performed. The [corrected candidate is qualified](build-proof/README.md); controlled recovery remains pending.
+**R26 is installed and restoring as sole worker651324 at11:51:36UTC; fresh new-process trading remains unverified.** [Actual controlled recovery](deployment/README.md). The original R25 stopped at11:16:03 with FUNDAMENTAL_PHYSICAL_BOOK_STALE; its exact STOP and known two-share SELL remain preserved. The repaired binary is qualified; original clocks and financial history are unchanged.
 
 [Task167](https://github.com/GodlyDonuts/predictions-cup-2026/issues/167) follows the [fixed SIG-only screen](../moloch-sig-streaming-screen-20261017/README.md). Root independently reproduced this historical timestamp census using the existing original raw-token native reader and its book-clock parser. This is an execution-data bottleneck investigation, not a new model, API client or infrastructure rewrite.
 
@@ -20,7 +20,7 @@ The separate [current-process packet audit](r25-current-clock-audit.json) authen
 
 There are411 books,373 realtime/38REST:211 stale,210 source-fresh at receipt and203 waiting more than10s before processing. Separate receipt-to-processing/source-to-receipt medians are9,657ms/596.9631ms; maximum receipt-to-processing34,581ms. Original381 fill tokens, cash/cost/realized remain unchanged; zero new fills and reservedCash0. No API calls were made by capture/verification. The different old/new samples do not establish a causal performance difference.
 
-## Qualified source candidate (not yet deployed)
+## Qualified source repair (installed; fresh operation pending)
 
 Periodic source acquisition previously blocked the original Session through a public Trades GET, tape application and an OrderBook GET before draining the stream. The candidate uses the existing LivePreflightReads/serviced_read implementation for the already-allowlisted **OrderBook GET only**, servicing queued frames before reads and while that same exclusive SDK task waits. Public Trades remains blocking. Its original returned tape is fully validated/applied before another callback. The returned original book is immediately validated/applied with no trailing hook.
 
