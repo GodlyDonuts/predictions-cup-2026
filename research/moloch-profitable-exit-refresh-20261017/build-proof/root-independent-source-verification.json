@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "4bbeae46e5d72de5c06d49aad476a4a68eb6a3d6",
+  "actualSourceFiles": 262,
+  "allSourceFilesMatchCommittedSource": true,
+  "comparison": "exact bytes allowing only CRLF/LF normalization",
+  "allExportFilesSha256Verified": true,
+  "exportSha256": "28b393c48fe97105aa4e7e96957e3f1fca48f1e2a29c2c1a3a1fdcad06d2c4ba",
+  "APIOrProductionMutation": false
+}

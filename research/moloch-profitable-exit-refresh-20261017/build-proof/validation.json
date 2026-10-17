@@ -1,0 +1,271 @@
+{
+  "sourceCommit": "4bbeae46e5d72de5c06d49aad476a4a68eb6a3d6",
+  "sourceManifestSha256": "62a34080abdaa3a85cda1077f8dab269714be2a3f35e8ca436f27281e9af5aa4",
+  "sourceFiles": 262,
+  "expectedEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "productionChanged": false,
+  "startedAt": "2026-10-17T04:26:00.245494+00:00",
+  "checks": {
+    "sdk-library": {
+      "exitCode": 0,
+      "seconds": 25.253784310014453,
+      "logSha256": "1aa2d540ba66aefbe9aecd2bd1e04997d4c3417f867fb06ca21eaee472fcdf74",
+      "logBytes": 24978,
+      "testResults": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "native-library": {
+      "exitCode": 0,
+      "seconds": 18.354853102006018,
+      "logSha256": "143fd5dcd257e4bfbdf4aa977aa505dc15a6d65b7b039612fafa1e97561ec167",
+      "logBytes": 13220,
+      "testResults": [
+        [
+          "98",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "runtime-library": {
+      "exitCode": 0,
+      "seconds": 131.48551672502072,
+      "logSha256": "224bf1c208529ac86a4710d49859ed065d3ef77cf7c1626eec5c42b8b623adea",
+      "logBytes": 39433,
+      "testResults": [
+        [
+          "238",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 38.52920893300325,
+      "logSha256": "cc86c8c11a428e2e76682a54d00fdf27debc95825b27859377930dada02fbcd4",
+      "logBytes": 25951,
+      "testResults": [
+        [
+          "126",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "exit_refresh_lifecycle": {
+      "exitCode": 0,
+      "seconds": 6.424854091979796,
+      "logSha256": "d98395208dc7e6d7e78f4e9ee91b7925bba031483ec474d57e80db9fd495b2fe",
+      "logBytes": 11988,
+      "testResults": [
+        [
+          "8",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_policy": {
+      "exitCode": 0,
+      "seconds": 65.11111695700674,
+      "logSha256": "434f2d7ff128093bb4c35cba01d196422a7865139858f54e1594a62a472c6787",
+      "logBytes": 24268,
+      "testResults": [
+        [
+          "119",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_quantity": {
+      "exitCode": 0,
+      "seconds": 2.729128253995441,
+      "logSha256": "823e4231618370e170f3740c675231ebd49d84eb37781cd059e7ab6751d7deea",
+      "logBytes": 11445,
+      "testResults": [
+        [
+          "2",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_source_bounds": {
+      "exitCode": 0,
+      "seconds": 17.16479700501077,
+      "logSha256": "9b1136ee61f6c539c42dc2d6de2deb2ed65dc3bab3b2b1fd087d9047623e1572",
+      "logBytes": 11835,
+      "testResults": [
+        [
+          "7",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "alpha_proposal": {
+      "exitCode": 0,
+      "seconds": 5.732160567014944,
+      "logSha256": "87280ea90af1712048fbb54330fb87c70a44e709f0ac79085a8f69b87e4aff1a",
+      "logBytes": 12528,
+      "testResults": [
+        [
+          "18",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "release": {
+      "exitCode": 0,
+      "seconds": 328.7506222539814,
+      "logSha256": "5e7c20cf3f19911651d46435a4cc22b9fb84e697c52649f0ba0a4d4cd1b4e532",
+      "logBytes": 187727
+    },
+    "engine-probe-build": {
+      "exitCode": 0,
+      "seconds": 1.5520214930002112,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "engine-probe-run": {
+      "exitCode": 0,
+      "seconds": 0.008419196994509548,
+      "logSha256": "c4e8b5d3dd2e0b12d6ff7e518738bc554659685d5b2c22d8c5a780e26b6a1779",
+      "logBytes": 65
+    }
+  },
+  "parentValidationSha256": "dd526885b9af9dcbd4869a958ca05218d791f4f2b9c4b20e81e9e5d68cd045f1",
+  "reusedChecks": {
+    "sdk-library": {
+      "passedSourceCommit": "78914561e2e0c3a3f87b56af0502e65fd6de70f3",
+      "checkpointSha256": "dd526885b9af9dcbd4869a958ca05218d791f4f2b9c4b20e81e9e5d68cd045f1",
+      "allCompiledSourcesExactUnchanged": true,
+      "onlyChangedFile": "moloch/live-runtime/tests/exit_refresh_lifecycle.rs",
+      "changeIsExternalTestFixtureOnly": true,
+      "earlierReuse": {
+        "passedSourceCommit": "9685d86d627bc4df50f1f6b120345177260241b2",
+        "checkpointSha256": "3801d8c08c00edc1a8b2e64a78314095dc41904813f1c602fb6fc417bda9834c",
+        "allCompiledLibrarySourcesExactUnchanged": true,
+        "onlyChangedFile": "moloch/live-runtime/src/worker.rs",
+        "changeIsTestFixtureOnly": true,
+        "earlierReuse": {
+          "passedSourceCommit": "a557c7793077faae1b3a0703d9690998625f7644",
+          "validationSha256": "24af42f63eef29ad758e0bbdc4d7049f24567435e645313d547536d6acbba1e4",
+          "allSdkAndNativeSourceBytesExactUnchanged": true,
+          "earlierReuse": {
+            "passedCheckpointSourceCommit": "453fead62b3bb1c93b876ca655aff0a18e95f6ea",
+            "passedCheckpointSha256": "50ff67ef82f1654cda8f3a88208f5063324ec276d3b619cdf06f5856cd25010a",
+            "allCompiledSourceBytesUnchanged": true,
+            "onlyChangedFile": "moloch/live-runtime/tests/fundamental_policy.rs",
+            "earlierReuse": {
+              "originalSourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+              "originalValidationSha256": "9299869924baea31a9eb97bb71502df8f7a1829890796c4882e66778fb1d0898",
+              "allSdkAndNativeSourceBytesExactUnchanged": true
+            }
+          }
+        }
+      }
+    },
+    "native-library": {
+      "passedSourceCommit": "78914561e2e0c3a3f87b56af0502e65fd6de70f3",
+      "checkpointSha256": "dd526885b9af9dcbd4869a958ca05218d791f4f2b9c4b20e81e9e5d68cd045f1",
+      "allCompiledSourcesExactUnchanged": true,
+      "onlyChangedFile": "moloch/live-runtime/tests/exit_refresh_lifecycle.rs",
+      "changeIsExternalTestFixtureOnly": true,
+      "earlierReuse": {
+        "passedSourceCommit": "9685d86d627bc4df50f1f6b120345177260241b2",
+        "checkpointSha256": "3801d8c08c00edc1a8b2e64a78314095dc41904813f1c602fb6fc417bda9834c",
+        "allCompiledLibrarySourcesExactUnchanged": true,
+        "onlyChangedFile": "moloch/live-runtime/src/worker.rs",
+        "changeIsTestFixtureOnly": true,
+        "earlierReuse": {
+          "passedSourceCommit": "a557c7793077faae1b3a0703d9690998625f7644",
+          "validationSha256": "24af42f63eef29ad758e0bbdc4d7049f24567435e645313d547536d6acbba1e4",
+          "allSdkAndNativeSourceBytesExactUnchanged": true,
+          "earlierReuse": {
+            "passedCheckpointSourceCommit": "453fead62b3bb1c93b876ca655aff0a18e95f6ea",
+            "passedCheckpointSha256": "50ff67ef82f1654cda8f3a88208f5063324ec276d3b619cdf06f5856cd25010a",
+            "allCompiledSourceBytesUnchanged": true,
+            "onlyChangedFile": "moloch/live-runtime/tests/fundamental_policy.rs",
+            "earlierReuse": {
+              "originalSourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+              "originalValidationSha256": "9299869924baea31a9eb97bb71502df8f7a1829890796c4882e66778fb1d0898",
+              "allSdkAndNativeSourceBytesExactUnchanged": true
+            }
+          }
+        }
+      }
+    },
+    "runtime-library": {
+      "passedSourceCommit": "78914561e2e0c3a3f87b56af0502e65fd6de70f3",
+      "checkpointSha256": "dd526885b9af9dcbd4869a958ca05218d791f4f2b9c4b20e81e9e5d68cd045f1",
+      "allCompiledSourcesExactUnchanged": true,
+      "onlyChangedFile": "moloch/live-runtime/tests/exit_refresh_lifecycle.rs",
+      "changeIsExternalTestFixtureOnly": true,
+      "earlierReuse": {
+        "passedSourceCommit": "9685d86d627bc4df50f1f6b120345177260241b2",
+        "checkpointSha256": "3801d8c08c00edc1a8b2e64a78314095dc41904813f1c602fb6fc417bda9834c",
+        "allCompiledLibrarySourcesExactUnchanged": true,
+        "onlyChangedFile": "moloch/live-runtime/src/worker.rs",
+        "changeIsTestFixtureOnly": true,
+        "earlierReuse": null
+      }
+    },
+    "worker": {
+      "passedSourceCommit": "78914561e2e0c3a3f87b56af0502e65fd6de70f3",
+      "checkpointSha256": "dd526885b9af9dcbd4869a958ca05218d791f4f2b9c4b20e81e9e5d68cd045f1",
+      "allCompiledSourcesExactUnchanged": true,
+      "onlyChangedFile": "moloch/live-runtime/tests/exit_refresh_lifecycle.rs",
+      "changeIsExternalTestFixtureOnly": true,
+      "earlierReuse": null
+    }
+  },
+  "retainedFailures": [
+    {
+      "priorSourceCommit": "9685d86d627bc4df50f1f6b120345177260241b2",
+      "failedCheck": "worker",
+      "failedExitCode": 101,
+      "originalFailureLogSha256": "391f743f3c4192659f57dc8312ac0d38817a5a49c3d544ec92c22cf5715daab2",
+      "onlyChange": "cfg(test) local EntryHint fixture replaces inaccessible sibling-module helper; all production source unchanged"
+    },
+    {
+      "priorSourceCommit": "78914561e2e0c3a3f87b56af0502e65fd6de70f3",
+      "failedCheck": "exit_refresh_lifecycle",
+      "failedExitCode": 101,
+      "originalFailureLogSha256": "fa1fad1b5b8698ae976c72d043d4bca70454efbddb124258a70e435894064021",
+      "onlyChange": "test adoption/fresh-receipt NO position quantity negative; individual lots positive; all production source unchanged"
+    }
+  ],
+  "engineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "binarySha256": "c734ca4c6016d300b33c4300026b9aa418131ddf032c7da1716aaed87dc744e7",
+  "binaryBytes": 13882736,
+  "nativeRlib": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libmoloch_replay-ffed938a0aa2abed.rlib",
+  "nativeRlibSha256": "a6b9c4f68a08d74b40f39d7fc1c0e0d78a3e2e8c596a983bae4b1f01e0aad386",
+  "finishedAt": "2026-10-17T04:33:07.855969+00:00"
+}

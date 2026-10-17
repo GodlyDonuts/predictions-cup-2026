@@ -1,0 +1,11 @@
+{
+  "reviewer": "relationship_feed",
+  "reviewedSourceCommit": "78914561e2e0c3a3f87b56af0502e65fd6de70f3",
+  "finalSourceCommit": "4bbeae46e5d72de5c06d49aad476a4a68eb6a3d6",
+  "laterChange": "only external lifecycle fixture uses signed NO positions",
+  "productionSourceUnchangedSinceReview": true,
+  "blockersFound": false,
+  "verified": "risk exits and mandatory cancels first; fair profit cursor; genuine successor and fresh facts; native worst-lot/fee/gain floor; owned and managed/package protections; unknown and STOP guards",
+  "limitation": "13s native quote can still expire during serialized reads/preparation; no latency, fill or profit guarantee",
+  "reviewMode": "read-only source review; no API or production action"
+}
