@@ -38,7 +38,10 @@ impl Engine {
         let passive=match e.get("executionMode"){None=>false,Some(Value::String(mode)) if mode=="executableDepth"=>false,
             Some(Value::String(mode)) if mode=="passiveValueLimit"=>true,_=>return Err("REVIEWED_EXIT_EXECUTION_MODE")};
         if passive{
-            if cohort||e["reason"]!="refreshed_value_exit"{return Err("REVIEWED_PASSIVE_EXIT_INHERITED_VALUE_ONLY")}
+            // Cohort exits continue through the original complete entry/exit
+            // FIFO verifier below; this mode never turns wallet presence into
+            // an inherited adoption or an authenticated cohort origin.
+            if e["reason"]!="refreshed_value_exit"{return Err("REVIEWED_PASSIVE_EXIT_VALUE_ONLY")}
             // Prevent ordinary planning from creating a competing SELL/hedge
             // on later books or partial fills while this limit remains open.
             if !self.managed_inventory_planning_excludes(&ex){return Err("REVIEWED_PASSIVE_EXIT_MANAGED_PLANNING_REQUIRED")}

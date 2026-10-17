@@ -139,7 +139,7 @@ pub struct ReviewInput {
 }
 pub fn review_sha256(input:&ReviewInput)->Result<String>{digest(input)}
 fn structure(r:&ReviewInput)->Result<i128>{
-    if let Some(p)=&r.passive_value_exit{need(p.version==1&&r.existing_origin.is_some()&&p.maximum_quantity>0&&p.maximum_quantity<=r.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_POLICY")?;}
+    if let Some(p)=&r.passive_value_exit{need(p.version==1&&(r.existing_origin.is_some()||r.version==2)&&p.maximum_quantity>0&&p.maximum_quantity<=r.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_POLICY")?;}
     if let Some(p)=&r.same_side_top_ups{need(p.version==1&&(2..=16).contains(&p.maximum_entries)&&r.version==2&&r.existing_origin.is_none(),"FUNDAMENTAL_TOP_UP_POLICY")?;}
     if let Some(p)=&r.execution_policy{need(p.version==1&&!p.allowed_modes.is_empty()&&p.allowed_modes.len()<=3,"FUNDAMENTAL_EXECUTION_POLICY")?;
         for(i,m)in p.allowed_modes.iter().enumerate(){need(!p.allowed_modes[..i].contains(m),"FUNDAMENTAL_DUPLICATE_EXECUTION_MODE")?;}}
@@ -1102,7 +1102,7 @@ impl Cohorts{
             else if r.revoke_existing{"reviewed_source_revocation"}
             else{let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
                 if let Some(book)=books.get(exchange){let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let payout=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
-                    if c.existing.is_some()&&r.passive_value_exit.is_some()&&passive_exit_clear(bank,log,exchange,None,true)?&&passive_value_limit(r,bank.engine().policy())?.is_some(){"reviewed_passive_value_exit"}
+                    if (c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&passive_exit_clear(bank,log,exchange,None,true)?&&passive_value_limit(r,bank.engine().policy())?.is_some(){"reviewed_passive_value_exit"}
                     else{if levels.first().is_none_or(|l|l.price<payout){return Ok(None)}"refreshed_value_exit"}
                 }else{"reviewed_inventory_book_refresh"}};
         Ok(Some(ExistingExitHint{exchange_id:exchange.into(),market_id:r.market_id.clone(),contract_id:r.contract_id.clone(),side:r.side.clone(),reason:reason.into()}))
@@ -1132,7 +1132,7 @@ impl Cohorts{
         let reason=if liquidation_due(r,c,now){"reviewed_holding_deadline"}else if approved&&r.revoke_existing{"reviewed_source_revocation"}else if approved{"refreshed_value_exit"}else{return Ok(None)};
         let policy=bank.engine().policy();let (books,hashes)=package_admission::native_books(bank,scope,now,policy["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;let Some(book)=books.get(exchange)else{return Ok(None)};
         let cap=owned.min(r.maximum_quantity).min(policy["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?);
-        let passive=reason=="refreshed_value_exit"&&c.existing.is_some()&&r.passive_value_exit.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange);
+        let passive=reason=="refreshed_value_exit"&&(c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange);
         let(n,limit)=if passive{
             if !passive_exit_clear(bank,log,exchange,None,false)?{return Ok(None)}
             let Some(limit)=passive_value_limit(r,policy)?else{return Ok(None)};
@@ -1482,7 +1482,7 @@ impl Cohorts{
         // original entry binding or repeatedly preempt acquisitions on hash alone.
         if r.revoke_existing{return Ok(true)}
         let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
-        if c.existing.is_some()&&r.passive_value_exit.is_some()&&books.contains_key(exchange)
+        if (c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&books.contains_key(exchange)
             &&passive_exit_clear(bank,log,exchange,None,true)?&&passive_value_limit(r,bank.engine().policy())?.is_some(){return Ok(true)}
         let value=add(structure(r)?,amount(&r.margin_per_share)?)?;
         Ok(books.get(exchange).and_then(|b|if r.side=="YES"{b.yes_bids.first()}else{b.no_bids.first()}).is_some_and(|l|l.price>=value))
@@ -1623,7 +1623,7 @@ impl Cohorts{
             if let Some(mode)=q["reviewedInventoryExit"].get("executionMode"){
                 need(mode=="passiveValueLimit","FUNDAMENTAL_PASSIVE_EXIT_MODE")?;
                 let p=r.passive_value_exit.as_ref().ok_or("FUNDAMENTAL_PASSIVE_EXIT_NOT_APPROVED")?;
-                need(c.existing.is_some()&&bank.engine().managed_inventory_planning_excludes(ex)&&n<=p.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_ORIGIN_OR_QUANTITY")?;
+                need((c.existing.is_some()||c.entry.is_some())&&bank.engine().managed_inventory_planning_excludes(ex)&&n<=p.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_ORIGIN_OR_QUANTITY")?;
                 if !approved||r.revoke_existing||liquidation_due(r,c,now){return Ok(hold("current_passive_value_review_required"))}
                 let payout=add(ceiling,amount(&r.margin_per_share)?)?.max(0);let metadata=&q["reviewedInventoryExit"];
                 need(metadata["reason"]=="refreshed_value_exit"&&metadata["reviewSha256"]==digest(r)?&&metadata["originSha256"]==c.origin_sha()?
