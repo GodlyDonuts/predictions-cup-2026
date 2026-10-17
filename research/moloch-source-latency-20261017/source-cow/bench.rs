@@ -219,6 +219,8 @@ fn main() {
     let mut new = new_source::RestSource::make(&input);
     let old_prime = run(&mut old, prime); let new_prime = run(&mut new, prime);
     expected(prime, &old_prime); assert_eq!(old_prime, new_prime, "PRIME_PARITY");
+    let mut known_keys = seed_keys.clone();
+    for trade in events(&old_prime, "trade") { known_keys.insert(key(&trade)); }
     let mut rows = Vec::new();
     for case in cases {
         let steps = array(case, "steps", 64); assert!(!steps.is_empty());
@@ -228,7 +230,7 @@ fn main() {
         expected(steps, &want); assert_eq!(want, got, "CASE_PARITY");
         let want_follow = run(&mut a, follow); let got_follow = run(&mut b, follow);
         expected(follow, &want_follow); assert_eq!(want_follow, got_follow, "FOLLOWUP_PARITY");
-        semantic_case(case, &want, &want_follow, &seed_keys);
+        semantic_case(case, &want, &want_follow, &known_keys);
         if case["name"] == "insert_then_conflict" {
             assert_eq!(run(&mut old.clone(), follow), want_follow, "OLD_REJECTED_TRANSACTION_CHANGED_FOLLOWUP");
             assert_eq!(run(&mut new.clone(), follow), got_follow, "NEW_REJECTED_TRANSACTION_CHANGED_FOLLOWUP");
@@ -251,7 +253,7 @@ fn main() {
         }
         rows.push(json!({"name":case["name"],"steps":steps.len(),"followupSteps":follow.len(),"emittedBooks":events(&want,"book").len(),"emittedTrades":events(&want,"trade").len(),"resultSha256":digest(&want),"followupSha256":digest(&want_follow),"old":summary(&before),"new":summary(&after),"exactParity":true}));
     }
-    println!("{}", serde_json::to_string_pretty(&json!({"schemaVersion":1,"inputSha256":args[2],"oldSourceSha256":args[3],"newSourceSha256":args[4],"harnessSha256":sha(include_bytes!("bench.rs")),"seedEvents":seeds.len(),"uniqueSeedKeys":seed_keys.len(),"factJsonProjectionBytes":fact_projection_bytes(seeds),"factProjectionIsRustHeapMeasurement":false,"scopes":scopes.len(),"primeSteps":prime.len(),"primeResultSha256":digest(&old_prime),"provenanceSha256":sha(&serde_json::to_vec(&input["provenance"]).unwrap()),"rounds":ROUNDS,"warmups":WARMUPS,"cases":rows,"allocationMetric":"alloc/alloc_zeroed requested size plus each realloc NEW requested size; includes failed requests, not peak/live/RSS","timedRegion":"steps only; excludes base clone/setup, seed/prime, checks/hashes, followup and owner/result drop","executionAuthority":false,"wholeWorkerSpeedupMeasured":false})).unwrap());
+    println!("{}", serde_json::to_string_pretty(&json!({"schemaVersion":1,"inputSha256":args[2],"oldSourceSha256":args[3],"newSourceSha256":args[4],"harnessSha256":sha(include_bytes!("bench.rs")),"seedEvents":seeds.len(),"uniqueSeedKeys":seed_keys.len(),"knownKeysAfterPrime":known_keys.len(),"factJsonProjectionBytes":fact_projection_bytes(seeds),"factProjectionIsRustHeapMeasurement":false,"scopes":scopes.len(),"primeSteps":prime.len(),"primeResultSha256":digest(&old_prime),"provenanceSha256":sha(&serde_json::to_vec(&input["provenance"]).unwrap()),"rounds":ROUNDS,"warmups":WARMUPS,"cases":rows,"allocationMetric":"alloc/alloc_zeroed requested size plus each realloc NEW requested size; includes failed requests, not peak/live/RSS","timedRegion":"steps only; excludes base clone/setup, seed/prime, checks/hashes, followup and owner/result drop","executionAuthority":false,"wholeWorkerSpeedupMeasured":false})).unwrap());
 }
 
 #[cfg(test)]

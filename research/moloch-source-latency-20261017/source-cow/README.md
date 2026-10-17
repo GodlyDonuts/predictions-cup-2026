@@ -48,7 +48,7 @@ The strings above describe objects; they are not runnable fixtures. Each Step is
 All four named cases are mandatory:
 
 - `book_only`: original successful reads/broadcasts emit at least one valid book and no trade. Record which transport path was actually exercised. A blocked empty broadcast is insufficient.
-- `duplicate_trade`: original successful transactions emit trades whose exact exchange/ID already exists in the original seed. Normalizer duplicate/conflict checks still run.
+- `duplicate_trade`: original successful transactions emit trades whose exact exchange/ID already exists in the original seed or was actually emitted by the parity-checked common prime. Normalizer duplicate/conflict checks still run. `knownKeysAfterPrime` is reported separately; the original seed count is not changed.
 - `new_trade`: explicitly synthetic copied transaction emits a previously absent ID. Its follow-up changes that ID's price and must fail `SOURCE_TRADE_FACT_CONFLICT`. The same follow-up must succeed from the untouched baseline, proving successful candidate mutation did not leak to its shared owner.
 - `insert_then_conflict`: one explicitly synthetic transaction inserts `rollbackProbe` before a seeded conflicting trade and fails with a fact/clock conflict. For a REST page, the harness obtains the **normalizer's sorted** trade order from original `receipt_events`; merely placing rows earlier in an unsorted page is insufficient. The follow-up must successfully introduce the same probe at a different price. It must match a follow-up from the untouched baseline, proving rollback. Broadcast cases use the original batch shape and ordering.
 
