@@ -1,5 +1,9 @@
 # R31 startup: older base policy correctly rejected
 
+**Owner correction applied18:42:02 UTC; fresh trading remains unverified.** Sole worker690857/startticks23217665 uses the same checked binary60c1d34d/source86619d82 and unchanged native8012cc9f. New immutable control SHA256 `6de844a4bd4dc7e1fd2e6b451dbecf83e83eb27e5430f8ea421da895bd2944f4` equals the authentic G8 overlay in every parsed field except its binary hash. Root checked every review/source/authority pin, the full unchanged1,724,459,085-byte ledger SHA541b5dea, unchanged complete dispatch/fundamental bytes and16 bridge bytes before the owner correction/start. The exact incident STOP and previous control/unit were archived; original sources, deadlines, financial limits and activation were preserved. A separate finite file observer awaits actual fresh690857 progress.
+
+The diagnosis below predates this applied correction and grants no runtime authority.
+
 Read-only diagnosis, October 17, 2026. R31 PID 690003 stopped at 18:38:15 UTC after restoring history, with `RELOAD_REBASE_NONBINARY_CONTROL_CHANGED`. This note does **not** claim a corrected deployment, resumed trading, new fill, or profit. The execution owner retains STOP and recovery authority.
 
 The active generation was G8, `5350339f459a3651a3f8394abc40684b2be49dee6ab1f2c9b411a8a8fec752e1`. Its original immutable active overlay has raw SHA256 **`ec7421c0ece470e06919c0195f97858c1af28ab4761b3a6d3b8b8235a7f7132e`**. The installed R31 startup Control, SHA256 `8aa4db9d0dd51af45c2265bce365c8fa4c1b660e7172cca2ab7ac834eba073fb`, instead retained older base review settings. Comparing the parsed originals finds exactly four differing paths:
