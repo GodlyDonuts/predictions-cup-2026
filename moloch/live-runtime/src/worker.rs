@@ -863,9 +863,9 @@ fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&Productio
 fn refresh_deferred(c:&Control,stage:&str,error:&dyn std::fmt::Display)->Result<()>{atomic_json(&c.root.join("exit-refresh.json"),&json!({"at":iso(now()),"stage":stage,"code":error.to_string(),"expiryExtended":false,"writeAttempted":false}))}
 // A preparation hint only: final selection still binds the new quote to all
 // seven original receipts and reruns current lifecycle/coverage/profit checks.
-fn profit_successor_exists(bank:&Session,hint:&moloch_live_runtime::exit_refresh::ReadHint,cutoff:u64,at:u64)->Result<bool>{
+fn profit_successor_exists(bank:&Session,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,cutoff:u64,at:u64)->Result<bool>{
  for q in bank.engine().order_records(){
-  if q["id"].as_u64().is_some_and(|id|id>cutoff)&&q["marketId"]==hint.market()&&q["exchangeId"]==hint.exchange()&&q["side"]==hint.side()
+  if q["id"].as_u64().is_some_and(|id|id>cutoff)&&q["marketId"]==hint.market()&&q["exchangeId"]==hint.exchange()&&q["side"]==old["side"]
    &&q["retired"]==false&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)
    &&q["expiresAt"].as_u64().is_some_and(|end|end>at.saturating_add(3000))
    &&moloch_live_runtime::exit_refresh::ReadKind::from_quote(&q)==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit)
@@ -890,16 +890,16 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   refresh_controls(c,authority,stream)?;
  }
  if hint.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit{
-  if queue_has_unknown(t)?{return refresh_deferred(c,"preparation","GLOBAL_UNKNOWN_ACCEPTANCE")}
+  if queue_has_unknown(t)?{return refresh_deferred(c,"preparation",&"GLOBAL_UNKNOWN_ACCEPTANCE")}
   // Give the ordinary native planner the actual target book BEFORE consuming
   // the timed seven-fact packet. Otherwise unrelated profitable drafts may use
   // the real write gap and the target appears only after that packet is over.
   // This extra read is not one of the final seven and grants no HTTP authority.
   let initial=preflight_read(bank,source,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},None,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
   let target=json!({"marketId":market,"exchangeId":hint.exchange()});accept_fresh_book(bank,c,&target,&initial,source)?;
-  if !profit_successor_exists(bank,hint,maximum_qid_before,now())?{
+  if !profit_successor_exists(bank,old,hint,maximum_qid_before,now())?{
    let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_PROFIT_REFRESH_WRITE_GAP")?;
-   if gap>3000{return refresh_deferred(c,"preparation","NATIVE_GAP_EXCEEDS_BOUNDED_PREPARATION")}
+   if gap>3000{return refresh_deferred(c,"preparation",&"NATIVE_GAP_EXCEEDS_BOUNDED_PREPARATION")}
    let ready=now().checked_add(gap).ok_or("LIVE_PROFIT_REFRESH_CLOCK_RANGE")?;
    while now()<ready{refresh_controls(c,authority,stream)?;std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).clamp(1,100)));}
    refresh_controls(c,authority,stream)?;
