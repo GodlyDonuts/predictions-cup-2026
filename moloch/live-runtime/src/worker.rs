@@ -7,6 +7,7 @@ use moloch_live_runtime::universe::Universe;
 use moloch_live_runtime::reconciliation::{self,Reconciler};
 use moloch_live_runtime::fundamental_policy::{self as fundamental,Cohorts,ReviewAuthority};
 use moloch_live_runtime::stream_recovery::{StreamFailure,RecoveryBudget,RECOVERY_WINDOW_MS,RECOVERY_MAXIMUM_ATTEMPTS};
+#[path="realtime_book_catchup.rs"] mod realtime_book_catchup;
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -2071,14 +2072,24 @@ fn account_reconciliation_due(stream:&Realtime)->bool{stream.account_signal().is
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  require_stream(stream)?;
  let mut pending=QueuedSourceBatch::default();
- for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{if let Err(error)=require_stream(stream){return pending.finish(bank,Err(error))}let Ok(input)=stream.incoming.try_recv()else{break};match input{
+ let account=stream.account_signal();let generation=||account.as_ref().map(|s|s.generation());
+ let mut catchup=realtime_book_catchup::Drain::new(generation());
+ let emit=|pending:&mut QueuedSourceBatch,bank:&mut Session,rows:Vec<realtime_book_catchup::Stamped>|->Result<()>{for(event,at)in rows{pending.push_at(bank,std::slice::from_ref(&event),at)?;}Ok(())};
+ for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{
+  catchup.observe_generation(generation());
+  if let Err(error)=require_stream(stream){emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}let Ok(input)=stream.incoming.try_recv()else{break};match input{
   Incoming::Broadcast{event,payload,received_at}=>{
    let events=(||->Result<Vec<Value>>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}Ok(source.broadcast(&event,&payload,&received_at)?)})();
-   match events{Ok(events)=>pending.push_at(bank,&events,now())?,Err(error)=>return pending.finish(bank,Err(error))}
+   let at=now();catchup.observe_generation(generation());
+   match events{Ok(events)=>{let rows=catchup.frame(events,at,realtime_book_catchup::book_only_frame(&event,&payload));emit(&mut pending,bank,rows)?;},Err(error)=>{emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}}
   },
-  Incoming::Failed(code)=>return pending.finish(bank,Err(StreamFailure::new(code).into())),
-  Incoming::Joined{..}=>return pending.finish(bank,Err("LIVE_STREAM_UNEXPECTED_REJOIN".into()))
+  Incoming::Failed(code)=>{emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(StreamFailure::new(code).into()))},
+  Incoming::Joined{..}=>{emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err("LIVE_STREAM_UNEXPECTED_REJOIN".into()))}
  }}
+ // Last observed account generation immediately precedes the first selected
+ // native admission. Later private updates still invalidate physical authority.
+ if let Err(error)=require_stream(stream){emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}
+ emit(&mut pending,bank,catchup.finish(&generation,true))?;
  pending.finish(bank,Ok(()))
 }
 fn recovery_budget(path:&Path,at:u64)->Result<RecoveryBudget>{
