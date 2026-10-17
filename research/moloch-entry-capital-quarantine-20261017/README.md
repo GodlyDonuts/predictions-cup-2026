@@ -13,3 +13,5 @@ The candidate strategy restriction is to quarantine unreviewed ordinary new expo
 After genuine final-book admission, real comparison must see actual released native reservations; never subtract fictional cash from a cloned report. Source updates can recreate ordinary drafts, so a one-time startup cleanup is insufficient. Fresh original account/contract/book facts and full physical authority remain mandatory before spending.
 
 The historical ordinary41-BUY-group cohort realized-184.970, whereas reviewed terminal positions remain open. A quarantine is a risk-reducing judgment from observed class economics, not a proof that another strategy is profitable. Conditional forecast value remains uncalibrated; allocation priority alone cannot manufacture alpha.
+
+Concurrent actual R24 result:16 inherited948NO shares sold for14.400 against14.320recorded basis, +0.080realized; the source-bound audit has381fillrows/combined realized-114.410. This is independent of the proposed quarantine. [Actual exit](r24-first-actual-exit/README.md).
