@@ -20,5 +20,15 @@
     "remainingActionableBlockerFound": false,
     "actualProofPinsFrozen": false,
     "promotionApproval": false
+  },
+  "actualExecutionOwnerRolloutReview": {
+    "operatorSha256": "2b0b464095d3529b6ddd3716c2540b16a1e952bbd9737b7ad3827c17cc4ad270",
+    "actualProofPinsFrozen": true,
+    "executionOwnerConcreteApprovalSha256": "ac18ecc116238881ea3164283c87d6def38278c99f76ea91bcf5cbec0a4b7107",
+    "actualStageQuietFinalBoundaryAndProposalReviewed": true,
+    "actualOriginalPrefixParityPassed": true,
+    "installedPid": 636242,
+    "freshTradingVerified": false,
+    "finalStoppedPrefixMustBeValidatedByActualNewWorker": true
   }
 }

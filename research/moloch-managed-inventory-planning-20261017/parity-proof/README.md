@@ -1,0 +1,9 @@
+# Actual candidate replay and frozen operator
+
+Candidate55fc4533/binary34fbc560/native5b61d3cb restored the complete original detached426,656-event/1,365,113,068-byte/355-fill bank prefix. Actual restore877.783seconds; final financial report/orders/fills/cursors/bindings exact, original14bridge entries unchanged, zero network requests. Original source worker continued trading during this detached replay. This does not claim final later stopped-prefix parity or production deployment.
+
+The original15-entry pretty proposal40,065,243bytes was correctly rejected by the unchanged32MiB reader bound. Failed log is retained. The separately compiled helper changes only serde_json::to_writer_pretty to to_writer for proposal output; sealed Value/all14entries unchanged. Actual compact proposal22,095,633bytes passed the real reader/replay. The frozen operator additionally checks the later actual stopped proposal size before installation, rather than assuming it equals this clone.
+
+Execution owner independently retrieved and checked the original packet: entire frozen operator equals the independently reviewed compact template plus exact actual proof pins/test-result arrays; all4original generation requests/11policies remain. Actual typed source/settings checks pass. Frozen operatorSHA2b0b464095d3529b6ddd3716c2540b16a1e952bbd9737b7ad3827c17cc4ad270. Freezing executes no operational mode and grants no promotion authority.
+
+Reversible staging and a controlled handover are separate actions. Actual production startup must validate the final stopped native prefix and all15bridges before constructing financial-write authority. Installation, restoration, fresh trading and post-upgrade economics require their own observations. Current deployment state is recorded in docs/CURRENT_STATE.md; this packet is immutable prestage evidence.

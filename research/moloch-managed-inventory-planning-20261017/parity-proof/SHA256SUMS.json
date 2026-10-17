@@ -1,0 +1,16 @@
+{
+  "actual-candidate-compact-full-prefix-parity.log": "e6fa46cafdc4212ddcba61c0af5163a6f7e9c80390ff85290d85615245fbd64f",
+  "actual-candidate-full-prefix-parity.log": "06c143e40b50698dcef285f0c35f0baeb2c58be570581f123e8021b2578efe3d",
+  "actual-proof-operator-freeze.json": "2aad9fef4f2acd43708fdb193aecb485faa1f9aefc5588c079932a7f3157d75a",
+  "auxiliary-validation.json": "d326164946dd783cd545f4afe497f04da5eec4bba653d066bfb14640e2b2aa84",
+  "clone-only-bridge-proposal.log": "d2532a38d22aca35b82a0108bee8ab1f48ed9f7f1bf2fb6583590c4640bd5bef",
+  "compact-bridge-helper-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "compact-helper-validation.json": "4be3343fbd3bc727e9df187be73041b919a8212a314142bd1df9d30d04406825",
+  "frozen-operator.py": "2b0b464095d3529b6ddd3716c2540b16a1e952bbd9737b7ad3827c17cc4ad270",
+  "moloch-upgrade-compact.rs": "b2de9029f8f1b46c322026082825aecd0eff83ef60debb36e57cd11eca706c93",
+  "owner-verification.json": "3ffdd2b26f3a6ea084b973da7097bacd65a208f30c50cbb55eadb03a2b0c7d91",
+  "README.md": "c8f0a4f15c1e1b1bc9189d67b833eb5c2b418495691868877d6ec0cf03bd46bc",
+  "root-current-eleven-settings-verification.log": "8c25c4a85ed29b669bc38adbce2a371b8d3a12426f21f8dad2a2c5cb5cad5e81",
+  "root-current-eleven-source-verification.log": "ea8ca5268c803906d86ffcecf9303d6cfa0cb3a2e015105add6f9623b55d99b3",
+  "root-reviewed-financial-prefix-parity.json": "e6973cd665b108a9c9ed9b232dd9666e8f44ea75a580c017444a9989ae888136"
+}

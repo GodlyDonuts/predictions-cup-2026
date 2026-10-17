@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-17T07:25:28.293102+00:00",
+  "operator": "moloch-managed-inventory-20261017-r22",
+  "oldPid": 616815,
+  "newPid": 636242,
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "binarySha256": "34fbc56050254dd0b3756dca7f630571fe1d70ab195fc24f34083d7620dcaa18",
+  "engineIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "release": "/home/archon/apps/moloch/releases/throughput-capital-34fbc5605025/moloch-live-runtime",
+  "control": "/home/archon/apps/moloch/shared/moloch-live-managed-inventory-r22-20261017.json",
+  "controlSha256": "81ddfa2d30bc4385e709dbeea3af0250cb8a808df8c60fe89cb13acfc9595b51",
+  "stagingSha256": "930df95b4cb3d56ff8d49738872be19216905ffb005920ca1655943c0551b86d",
+  "approvalSha256": "ac18ecc116238881ea3164283c87d6def38278c99f76ea91bcf5cbec0a4b7107",
+  "bridgeSha256": "b54830b219fba35238792927fc0c123c582a91b4311cb86a3b100f305f4c32e8",
+  "financialBridgeEntries": 15,
+  "originalFourteenBridgeSha256": "9ec918ba2964fa322d142e7c88514d79f587e2182a0187984fbb5af83ad50c84",
+  "proposalSha256": "b54830b219fba35238792927fc0c123c582a91b4311cb86a3b100f305f4c32e8",
+  "controlChanges": [
+    "activation.binarySha256",
+    "managedInventoryPlanning false-or-absent to true; every other original active-overlay field unchanged"
+  ],
+  "financialHistoryChangedByOperator": false,
+  "bridgeAppendedOnly": true,
+  "freshTradingVerified": false,
+  "finalStoppedPrefixParityVerified": false,
+  "actualStartupMustValidateBeforeFinancialWrites": true,
+  "startupPrefixParityGateSha256": "5b32a529ea8d113f92d4e7fec3afabb65da2a7b336bf0b47672efabe4a4cfd5c",
+  "profitabilityEstablished": false,
+  "boundary": {
+    "sequence": 437096,
+    "officialFillRows": 362,
+    "reportSha256": "7969fe53cc661173626d81165c92c76443f8859b1d2794f2121f8fae9473b642",
+    "combinedAttributedRealized": "-122.025000",
+    "queueQuiet": {
+      "globalUnknownCount": 0,
+      "active": null,
+      "manualReview": false
+    }
+  },
+  "installationObservedAt": "2026-10-17T07:26:44.861301+00:00",
+  "actualBinaryAndServiceVerified": true,
+  "originalFourteenEntriesUnchanged": true,
+  "observedPriorProcessProgressPid": 616815,
+  "priorProgressNotAttributedToNewPid": true,
+  "sourceRolloutRawSha256": "988bcad1fa47fd9122e23c32753f4d0b0a6f0f788d11d13b0d37b27747024f42"
+}

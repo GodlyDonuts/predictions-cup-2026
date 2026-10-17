@@ -1,8 +1,10 @@
 {
   ".gitattributes": "ffe82f3c5b968ed009c2577fa38f32c83be167799ee565d40a18e3440c57b342",
-  "independent-review.json": "ba83694648f5a6f8d52ac53d81da12f904c943c9f80ad69083a034ab02053ebf",
+  "independent-review.json": "1f111e6c46b275de68ec3c457a133075fbb2abce0089fa6a3ad5795058cea249",
   "operator-draft.py": "decad64c39aec3a43b28140dbb0fc82a8ba4f1d7360be7949b6b517c7609c96c",
-  "README.md": "103d8c83426943a45c2da18b35907c9bbbf7dd37f7ebdb036d06387851ce77c8",
+  "README.md": "4fcfcfd5905c0d0bde7d55cf37b08a3f9b9473ec90f2bacdedd7d79a3cccc407",
   "operator-compact-draft.py": "c9784c0551d97cd3209b64ac0c404b6ff76b0f4ed7b513acc513f43e09633ed5",
-  "build-proof/SHA256SUMS.json": "03d1cf6a2527d73aa928db3f7af704e199667386bff56ddcd827f6fcddd134c7"
+  "build-proof/SHA256SUMS.json": "03d1cf6a2527d73aa928db3f7af704e199667386bff56ddcd827f6fcddd134c7",
+  "parity-proof/SHA256SUMS.json": "81eb843cceb953626ff70f0e96cb3e3f6968fbba0575858f040d182d069d7dd8",
+  "deployment/SHA256SUMS.json": "aa9ec6600a0327eb2871d8816b61126f29ecb220f0290eb4e6fd785ed6f59177"
 }

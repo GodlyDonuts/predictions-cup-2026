@@ -1,0 +1,16 @@
+{
+  "verified": true,
+  "actualFinancialPrefixParity": true,
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "binarySha256": "34fbc56050254dd0b3756dca7f630571fe1d70ab195fc24f34083d7620dcaa18",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "prefixSequence": 426656,
+  "prefixBytes": 1365113068,
+  "restoreSeconds": 877.783366186,
+  "frozenOperatorExactTemplateAndActualProofPins": true,
+  "operatorSha256": "2b0b464095d3529b6ddd3716c2540b16a1e952bbd9737b7ad3827c17cc4ad270",
+  "originalFourGenerationsAndElevenPoliciesRetained": true,
+  "onlyCompactHelperSerializationChanged": true,
+  "originalFailureRetained": true,
+  "promotionApproval": false
+}

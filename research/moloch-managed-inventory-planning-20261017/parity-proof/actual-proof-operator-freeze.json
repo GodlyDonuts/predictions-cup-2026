@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-17T07:18:36.488900+00:00",
+  "templateSha256": "c9784c0551d97cd3209b64ac0c404b6ff76b0f4ed7b513acc513f43e09633ed5",
+  "operatorPath": "/tmp/moloch-managed-inventory-r22-20261017-frozen-operator.py",
+  "operatorSha256": "2b0b464095d3529b6ddd3716c2540b16a1e952bbd9737b7ad3827c17cc4ad270",
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "binarySha256": "34fbc56050254dd0b3756dca7f630571fe1d70ab195fc24f34083d7620dcaa18",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "actualProofPins": {
+    "VALIDATION_SHA": "c3029bad0f86f5ae37d25ad4a4407e98e89bef8ebd96269f04d82b47f0ac2786",
+    "REVIEW_BUNDLE_SHA": "04f0564a3678d5a212354801187bd41d55a3d74094193ccbe5794dd2a350bc98",
+    "BRIDGE_HELPER_SHA": "5a5b91e61312cf9b1665153e36a6dd98ca2eea2b30c49a10aa5241a6413fb60b",
+    "STARTUP_GATE_SHA": "5b32a529ea8d113f92d4e7fec3afabb65da2a7b336bf0b47672efabe4a4cfd5c",
+    "PARITY_SHA": "e6973cd665b108a9c9ed9b232dd9666e8f44ea75a580c017444a9989ae888136",
+    "COMPACT_HELPER_VALIDATION_SHA": "4be3343fbd3bc727e9df187be73041b919a8212a314142bd1df9d30d04406825"
+  },
+  "allOperationalModesExecuted": false,
+  "productionChanged": false,
+  "promotionApproval": false,
+  "executionOwnerFinalReviewStillRequired": true
+}

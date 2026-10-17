@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "nativeEngineIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "actualReleaseBinaryUnchanged": true,
+  "binarySha256": "34fbc56050254dd0b3756dca7f630571fe1d70ab195fc24f34083d7620dcaa18",
+  "originalHelperSha256": "f11b4d7cd80a9491d6b4525e896a9e9475a8a767bffb8f862faa9873cd2d16ee",
+  "compactHelperSha256": "5a5b91e61312cf9b1665153e36a6dd98ca2eea2b30c49a10aa5241a6413fb60b",
+  "originalSourceSha256": "f69d308eb7b31ab322368ec690fdd6a313cea1ecf1c7466034ed9c4a08262662",
+  "compactSourceSha256": "b2de9029f8f1b46c322026082825aecd0eff83ef60debb36e57cd11eca706c93",
+  "onlySourceChange": "serde_json::to_writer_pretty -> serde_json::to_writer for proposal output; same sealed Value",
+  "checks": {
+    "compact-bridge-helper-build": {
+      "exitCode": 0,
+      "seconds": 22.77712720798445,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    }
+  }
+}

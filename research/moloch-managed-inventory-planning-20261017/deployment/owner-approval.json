@@ -1,0 +1,20 @@
+{
+  "operator": "moloch-managed-inventory-20261017-r22",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "executionOwnerReviewed": true,
+  "stagingSha256": "930df95b4cb3d56ff8d49738872be19216905ffb005920ca1655943c0551b86d",
+  "boundarySha256": "8f8b216ff7c5ca5a66171f0428d24b3a6615f5f5fef02e32ca3098e78cd29e49",
+  "requestSha256": "4cfba437c16a0d9b2c7ba41e766704c24af6e61aac2463737a96a4fa5e08d6ff",
+  "stopSha256": "3e605e2aebb97a47eb41f56b8868bc2fd5e056e0ce77233be2cf29bb7eb686e2",
+  "workerStatusSha256": "17b87e6cf42bfc1272c3bc6ab46c7b64fe6878a9119d56bacf146fac15cf4cc5",
+  "proposalSha256": "b54830b219fba35238792927fc0c123c582a91b4311cb86a3b100f305f4c32e8",
+  "paritySha256": "e6973cd665b108a9c9ed9b232dd9666e8f44ea75a580c017444a9989ae888136",
+  "startupPrefixParityGateSha256": "5b32a529ea8d113f92d4e7fec3afabb65da2a7b336bf0b47672efabe4a4cfd5c",
+  "fromEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "toEngineIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "activeOverlaySha256": "5478dab3b905ad1ea75cff6fa1e9c4a59ab646bc9e85be5d4a5872f96499036a",
+  "oldBaseSha256": "66707270087ca8105d2a1405ba826f1726347c1feba297e417bbef463e24c2e9",
+  "newBaseSha256": "81ddfa2d30bc4385e709dbeea3af0250cb8a808df8c60fe89cb13acfc9595b51",
+  "reason": "root-reviewed-fifteenth-bridge-original-overlay-managed-planning-opt-in-native-startup-must-validate-exact-final-prefix-before-financial-writes"
+}

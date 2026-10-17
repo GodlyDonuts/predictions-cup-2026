@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "checks": {
+    "compact-bridge-helper-build": {
+      "exitCode": 0,
+      "seconds": 22.77712720798445,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "actual-candidate-compact-full-prefix-parity": {
+      "exitCode": 0,
+      "seconds": 878.7263676729926,
+      "logSha256": "e6fa46cafdc4212ddcba61c0af5163a6f7e9c80390ff85290d85615245fbd64f",
+      "logBytes": 295
+    }
+  },
+  "productionChanged": false,
+  "finishedAt": "2026-10-17T07:17:31.109472+00:00"
+}
