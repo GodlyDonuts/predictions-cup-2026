@@ -2004,7 +2004,7 @@ impl Engine {
  use super::*;
  fn fixture()->(Engine,Order){
   let mut e=Engine::new(&json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"1000.000000","quantity":10,"maximumMarkets":3})).unwrap();
-  e.advance(&json!({"type":"book","receivedAt":"2026-10-17T00:00:00Z","book":{"exchangeId":"101","marketId":"201","sequence":"1","sourceAt":"2026-10-17T00:00:00Z","bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();
+  e.advance(&json!({"type":"book","receivedAt":"2026-10-17T00:00:00Z","book":{"exchangeId":"101","marketId":"201","sequence":"1","sourceAt":"2026-10-17T00:00:00Z","receivedAt":"2026-10-17T00:00:00Z","requestStartedAt":"2026-10-17T00:00:00Z","bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();
   let q=e.orders[0].clone();e.orders.clear();e.wallet.reservations.clear();(e,q)
  }
  fn hold(e:&mut Engine,ex:&str,side:Side,n:u64){let id=format!("fixture-held-{ex}");e.wallet.reserve(&id,Reservation{exchange:ex.into(),side,quantity:n,limit:400000}).unwrap();e.wallet.buy_fill(&id,n).unwrap();}
