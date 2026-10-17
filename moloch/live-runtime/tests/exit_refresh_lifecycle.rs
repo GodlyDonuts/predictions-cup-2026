@@ -159,7 +159,7 @@ fn profit_safety(bank:&Session,side:Side)->Safety{Safety{never_attempted:true,ha
   raw[0].data["myBalance"]=json!(1000);raw[1].data=json!({"positions":[{"exchangeId":"2","marketId":"1","quantity":-5,"lots":[{"lotId":"902","side":"NO","quantity":5,"entryPrice":0.5,"openedAt":at(0)}]}]});raw[3].data=json!({"balance":1000,"availableAdvance":0,"buyingPower":1000});
   raw[6].data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["at"]=json!(at(36000));raw[6].data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["sequence"]=json!(3);
   let facts=RefreshFacts::new(&scope(),&hint,raw.clone(),ms(36200)).unwrap();let events=moloch_replay::source::receipt_events(&wrapped(&raw[6])).unwrap();let events=commit(&mut bank,&events,36100);
-  let safe=profit_safety(&bank,Side::No);let proof=BookAcceptance::from_events(&facts,&events,true,safe.native_head_fingerprint,ms(36000),ms(36200)).unwrap();let quotes=bank.engine().order_records();
+  let safe=profit_safety(&bank,Side::No);let proof=BookAcceptance::from_events(&facts,&events,true,safe.native_head_fingerprint,ms(36100),ms(36200)).unwrap();let quotes=bank.engine().order_records();
   let plan=RefreshPlan::select(&facts,&proof,&quotes,cutoff,ms(26000),ms(36200),ms(36200),|_|safe);
   if warm{let plan=plan.unwrap();assert!(current_profit_qualified(&bank,plan.quote()).unwrap());assert_eq!(plan.quote()["createdAt"],ms(29500));assert_ne!(plan.quote()["id"],old["id"]);assert_eq!(plan.stage(plan.quote(),&facts,&scope(),safe,ms(36200)).unwrap(),RefreshStage::Ready);}
   else{assert_eq!(plan.err().unwrap().to_string(),"EXIT_REFRESH_NO_FRESH_CANDIDATE");}
