@@ -885,10 +885,16 @@ impl Cohorts{
     /// Stale/missing books and missing ordinary quotes do not suppress reads.
     /// Physical/unknown liabilities and already-owned cohorts still suppress nomination.
     pub fn entry_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,trusted:&BTreeSet<String>,now:u64)->Result<Vec<EntryHint>>{
+        self.entry_hints_matching(bank,log,scope,trusted,now,None)
+    }
+    fn entry_hints_matching(&self,bank:&Session,log:&DispatchLog,scope:&Scope,trusted:&BTreeSet<String>,now:u64,only:Option<&str>)->Result<Vec<EntryHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
         for (ex,r) in &self.policies{
             if r.version!=2||r.existing_origin.is_some()||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id),"FUNDAMENTAL_ENTRY_SCOPE")?;
+            // Keep global integrity/unknown and every cheap review/scope check,
+            // but rebuild costly ownership/closure proofs only for this packet.
+            if only.is_some_and(|target|target!=ex){continue}
             let top_up=self.cohorts.contains_key(ex);
             if top_up&&self.top_up_state(bank,log,ex,None,true)?.is_none(){continue}
             if !top_up&&(bank.engine().wallet.quantity(ex,Side::Yes)>0||bank.engine().wallet.quantity(ex,Side::No)>0){continue}
@@ -945,7 +951,7 @@ impl Cohorts{
     /// retirement of proved never-sent blocking drafts. Quantity is derived by
     /// the native primitive; no ordinary pair or stale quote is repurposed.
     pub fn prepare_entry(&self,bank:&Session,log:&DispatchLog,transport:&Transport,scope:&Scope,hint:&EntryHint,f:&crate::authority::SnapshotSet,authority:&ReviewAuthority,now:u64)->Result<Option<EntryPlan>>{
-        authority.validate()?;let hints=self.entry_hints(bank,log,scope,authority.trusted(),now)?;
+        authority.validate()?;let hints=self.entry_hints_matching(bank,log,scope,authority.trusted(),now,Some(&hint.exchange_id))?;
         if !hints.iter().any(|h|h==hint){return Ok(None)}
         need(digest(scope)?==digest(transport.scope())?,"FUNDAMENTAL_ENTRY_TRANSPORT_SCOPE")?;
         no_existing_liability(bank,log,&hint.exchange_id)?;let queue=queue_view(transport)?;let r=&self.policies[&hint.exchange_id];
