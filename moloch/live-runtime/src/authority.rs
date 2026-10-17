@@ -100,7 +100,8 @@ impl ProductionAuthority {
   if !bank.engine().is_live(){return Err("PAPER_BANK_CANNOT_AUTHORIZE_WRITES".into())}
   if bank.engine().is_package_order(qid){return Err("PACKAGE_REQUIRES_BASKET_AUTHORITY".into())}
   if spec.method=="POST"&&bank.engine().package_blocks_submissions(){return Err("PACKAGE_UNRESOLVED".into())}
-  let quote=bank.engine().order_records().into_iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).ok_or("LIVE_INTENT_NOT_FUNDED")?;
+  let orders=crate::order_snapshot::snapshot(bank);
+  let quote=orders.records().iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).cloned().ok_or("LIVE_INTENT_NOT_FUNDED")?;
   let exchange=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   if self.fundamental_required(exchange)&&fundamental.is_none(){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
   if fundamental.as_ref().is_some_and(|proof|proof.native_head()!=&bank.durable_head()){return Err("LIVE_FUNDAMENTAL_NATIVE_HEAD_CHANGED".into())}
@@ -108,7 +109,7 @@ impl ProductionAuthority {
   let owned=bank.engine().wallet.quantity(quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?,if quote["side"]=="YES"{moloch_replay::Side::Yes}else{moloch_replay::Side::No});
   let ex=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
-  let market_cost=bank.engine().wallet.market_cost(ex)+bank.engine().order_records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
+  let market_cost=bank.engine().wallet.market_cost(ex)+orders.records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
   let expected_cash=reconciled_expected_cash(bank)?;
   *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{account_stamp,spec,permit,quote,ledger:bank.engine().report()?,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental}));Ok(())
  }

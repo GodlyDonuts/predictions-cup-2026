@@ -692,7 +692,7 @@ impl Cohorts{
         no_existing_liability(bank,log,&hint.exchange_id)?;let queue=queue_view(transport)?;
         let c=&self.cohorts[&hint.exchange_id];let top_up=c.top_ups.contains_key(&hint.qid);let b=c.binding(hint.qid).ok_or("FUNDAMENTAL_ABANDON_ORIGIN")?;
         let owned=if top_up{self.owned(bank,&hint.exchange_id,c)?}else{0};let wanted=if self.policies[&hint.exchange_id].side=="YES"{owned as i64}else{-(owned as i64)};let mut position_seen=false;
-        let q=bank.engine().order_records().into_iter().find(|q|q["id"]==hint.qid).ok_or("FUNDAMENTAL_ABANDON_QUOTE")?;
+        let q=crate::order_snapshot::quote(bank,hint.qid).ok_or("FUNDAMENTAL_ABANDON_QUOTE")?;
         need(q["retired"]==true&&q["filled"]==0,"FUNDAMENTAL_ABANDON_NATIVE_RETIREMENT_REQUIRED")?;
         let(mut not_sents,ordinary)=self.original_not_sent_records(log,&[hint.qid].into())?;let not_sent=not_sents.remove(&hint.qid).ok_or("FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED")?;
         let mut event=retirement.clone();let reference=event.as_object_mut().ok_or("FUNDAMENTAL_ABANDON_RETIREMENT")?.remove("sourceRef");let sha=digest(&event)?;
@@ -729,7 +729,7 @@ impl Cohorts{
         for(ex,c)in &self.cohorts{let Some(b)=&c.entry else{continue};need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_REARM_SCOPE")?;
             if c.existing.is_some()||!c.top_ups.is_empty()||!c.exits.is_empty()||!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)
                 ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
-            let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{continue};let Some(q)=bank.engine().order_records().into_iter().find(|q|q["id"]==b.qid)else{return Err("FUNDAMENTAL_REARM_NATIVE_QUOTE".into())};
+            let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{continue};let Some(q)=crate::order_snapshot::quote(bank,b.qid)else{return Err("FUNDAMENTAL_REARM_NATIVE_QUOTE".into())};
             if q["retired"]!=true||q["filled"]!=0{continue}out.push(RearmHint{exchange_id:ex.clone(),qid:b.qid,actual_id:actual.clone(),binding_sha256:digest(b)?});
         }Ok(out)
     }
@@ -990,7 +990,7 @@ impl Cohorts{
     pub fn physical_decision(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,permit:&Permit,authority:&ReviewAuthority,now:u64)->Result<PhysicalDecision>{
         authority.validate()?;self.check_bound(bank,log,scope,qid,spec,authority.trusted(),now)?;
         let (ex,c)=self.cohorts.iter().find(|(_,c)|c.binding(qid).is_some()).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
-        let r=&self.policies[ex];let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
+        let r=&self.policies[ex];let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;
         let n=request_quantity(spec)?;let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
         need(q["retired"]==false&&q["activationAt"].as_u64().is_some_and(|t|t<=now)&&!q["cancelEffectiveAt"].is_u64()
             &&permit.owner=="Codex"&&permit.run_id==self.run&&permit.intent_id==qid.to_string()
@@ -1183,7 +1183,7 @@ impl Cohorts{
                 &&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_ABANDONED_LATE_PHYSICAL_EVENT")?;
             need(a.cohort.first_fill_index<=bank.engine().fills().len()&&digest(&bank.engine().fills()[..a.cohort.first_fill_index])?==a.cohort.prior_fills_sha256
                 &&digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_ABANDONED_PREFIX_CHANGED")?;
-            let q=bank.engine().order_records().into_iter().find(|q|q["id"]==*id).ok_or("FUNDAMENTAL_ABANDONED_QUOTE")?;
+            let q=crate::order_snapshot::quote(bank,*id).ok_or("FUNDAMENTAL_ABANDONED_QUOTE")?;
             need(q["retired"]==true&&q["filled"]==0&&q["exchangeId"]==a.exchange&&q["side"]==b.quote["side"]&&q["action"]==b.quote["action"]
                 &&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(if a.closed_zero.is_some(){request_quantity(&b.spec)?}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?}),"FUNDAMENTAL_ABANDONED_NATIVE_CHANGED")?;
             if let Some(original)=log.intents.get(id){let spec:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&spec)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(*id).as_ref(),"FUNDAMENTAL_ABANDONED_ORIGINAL_CHANGED")?;}
@@ -1205,7 +1205,7 @@ impl Cohorts{
                 let n=request_quantity(&b.spec)?;request_matches(&b.spec,&b.quote,&self.run,&self.policies[ex].tournament_id,n)?;
                 if let Some(original)=log.intents.get(&b.qid){let s:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&s)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(b.qid).as_ref(),"FUNDAMENTAL_DISPATCH_REQUEST_OR_TAG_CHANGED")?;}
                 else{need(log.never_attempted(b.qid),"FUNDAMENTAL_MISSING_ORIGINAL_INTENT")?;}
-                let q=bank.engine().order_records().into_iter().find(|q|q["id"]==b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
+                let q=crate::order_snapshot::quote(bank,b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
                 let expected=if bank.engine().live_order_bindings().contains_key(&b.qid){n}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?};
                 need(q["exchangeId"]==*ex&&q["side"]==b.quote["side"]&&q["marketId"]==b.quote["marketId"]&&q["action"]==b.quote["action"]&&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(expected),"FUNDAMENTAL_NATIVE_BINDING_CHANGED")?;
             }
@@ -1373,14 +1373,14 @@ impl Cohorts{
     /// Ordinary assessment never resets a cohort. Explicit opaque abandonment
     /// or independently proved closed-zero rearm is required for that transition.
     pub fn assess(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
-        let n=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).and_then(|q|q["quantity"].as_u64()).ok_or("FUNDAMENTAL_QUANTITY")?;
+        let n=crate::order_snapshot::quote(bank,qid).and_then(|q|q["quantity"].as_u64()).ok_or("FUNDAMENTAL_QUANTITY")?;
         self.assess_quantity(bank,log,scope,qid,n,trusted,now)
     }
     /// Explicit one-shot planned size. Only new entries may be smaller than the
     /// immutable native draft; covered exits retain their full native quantity.
     pub fn assess_quantity(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,planned_quantity:u64,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
         self.check(bank,log)?;
-        let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
+        let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;
         let ex=q["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let Some(r)=self.policies.get(ex)else{return Ok(Decision::Unmanaged)};
         if log.proved_no_network(qid){return Ok(hold("proved_aborted_intent_cannot_retry"))}
         need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id)&&q["marketId"]==r.market_id,"FUNDAMENTAL_SCOPE_CHANGED")?;
@@ -1453,7 +1453,7 @@ impl Cohorts{
     /// that exact number in the original RequestSpec. No price/quote mutation.
     pub fn planned_entry_quantity(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,trusted:&BTreeSet<String>,now:u64)->Result<Option<u64>>{
         self.check(bank,log)?;
-        let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
+        let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;
         let ex=q["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;
         let Some(r)=self.policies.get(ex)else{return Ok(None)};
         if q["action"]!="buy"||q["side"]!=r.side{return Ok(None)}
@@ -1495,14 +1495,14 @@ impl Cohorts{
     /// Persist exact original request BEFORE any physical attempt, never after
     /// observing a fill. No partial-size substitution or guessed ACK is allowed.
     pub fn bind(&mut self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
-        let n=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).and_then(|q|q["quantity"].as_u64()).ok_or("FUNDAMENTAL_QUANTITY")?;
+        let n=crate::order_snapshot::quote(bank,qid).and_then(|q|q["quantity"].as_u64()).ok_or("FUNDAMENTAL_QUANTITY")?;
         self.bind_quantity(bank,log,scope,qid,n,spec,trusted,now)
     }
     pub fn bind_quantity(&mut self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,planned_quantity:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<Decision>{
         let decision=self.assess_quantity(bank,log,scope,qid,planned_quantity,trusted,now)?;
         need(matches!(decision,Decision::Entry{..}|Decision::Exit{..}),"FUNDAMENTAL_NOT_ELIGIBLE")?;
         need(log.never_attempted(qid)&&!log.intents.contains_key(&qid),"FUNDAMENTAL_BIND_MUST_PRECEDE_DISPATCH")?;
-        let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;let ex=q["exchangeId"].as_str().unwrap();let r=&self.policies[ex];
+        let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;let ex=q["exchangeId"].as_str().unwrap();let r=&self.policies[ex];
         request_matches(spec,&q,&self.run,&r.tournament_id,planned_quantity)?;
         if let Some(old)=self.cohorts.get(ex).and_then(|c|c.binding(qid)){
             need(old.spec_sha256==digest(spec)?&&old.quote==q&&old.review_sha256==digest(r)?
@@ -1535,7 +1535,7 @@ impl Cohorts{
             need(log.attempted.iter().all(|id|*id==qid||log.acknowledgments.contains_key(id)||log.proved_no_network(*id)),"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id)
                 &&now<daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("FUNDAMENTAL_ENTRY_DEADLINE")?)?,"FUNDAMENTAL_PHYSICAL_SCOPE_OR_DEADLINE")?;
-            let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("FUNDAMENTAL_QUOTE")?;
+            let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;
             need(q["retired"]==false&&q["quantity"]==b.quote["quantity"]&&q["activationAt"].as_u64().is_some_and(|t|t<=now)
                 &&q["expiresAt"].as_u64().is_some_and(|t|t>now)&&!q["cancelEffectiveAt"].is_u64(),"FUNDAMENTAL_PHYSICAL_NATIVE_INACTIVE")?;
             let planned=request_quantity(&b.spec)?;request_matches(spec,&b.quote,&self.run,&r.tournament_id,planned)?;

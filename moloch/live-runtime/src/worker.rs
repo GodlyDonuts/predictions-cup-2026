@@ -254,7 +254,7 @@ fn spec(order:&Order)->Result<RequestSpec>{
  let body=json!({"idempotencyKey":order.idempotency_key,"exchangeId":order.exchange_id,"side":order.side,"action":order.action,"quantity":order.quantity,"price":number,"expirationDate":order.expiration_date,"tournamentId":order.tournament_id});
  Ok(RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body_json:Some(serde_json::to_string(&body)?),body:Some(body)})
 }
-fn quote(bank:&Session,id:u64)->Result<Value>{bank.engine().order_records().into_iter().find(|q|q["id"].as_u64()==Some(id)).ok_or("LIVE_QUOTE_MISSING".into())}
+fn quote(bank:&Session,id:u64)->Result<Value>{moloch_live_runtime::order_snapshot::quote(bank,id).ok_or("LIVE_QUOTE_MISSING".into())}
 fn retire_never_sent(bank:&mut Session,log:&mut DispatchLog,q:&Value)->Result<()>{
  let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if !log.never_attempted(id){return Err("LIVE_CANNOT_RETIRE_ATTEMPTED_INTENT".into())}
  let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
