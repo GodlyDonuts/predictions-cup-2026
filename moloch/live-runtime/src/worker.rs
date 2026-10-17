@@ -882,6 +882,69 @@ fn profit_successor_exists(bank:&Session,old:&Value,hint:&moloch_live_runtime::e
    &&moloch_live_runtime::exit_refresh::current_profit_qualified(bank,&q)?{return Ok(true)}
  }Ok(false)
 }
+/// Negative selection only. Nonnegative native fees make gross best bid minus
+/// worst remaining lot an UPPER bound on every deeper level's net gain. Equality,
+/// missing evidence or changed context never vetoes the original final packet.
+fn negative_profit_preparation(bank:&Session,scope:&Scope,log:&DispatchLog,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,original:&Receipt,accepted:&[Value],admitted_head:&Value,managed:bool,at:u64)->bool{
+ (||->Result<bool>{
+  use moloch_live_runtime::exit_refresh::ReadKind;
+  if bank.durable_head()!=*admitted_head||managed||hint.kind()!=ReadKind::Profit||ReadKind::from_quote(old)!=Some(ReadKind::Profit)
+   ||old.get("reviewedInventoryExit").is_some_and(|v|!v.is_null())||old.get("reviewedFundamentalEntry").is_some_and(|v|!v.is_null())
+   ||old["filled"].as_u64()!=Some(0)||old["id"].as_u64()!=Some(hint.old_qid())
+   ||old["exchangeId"]!=hint.exchange()||old["marketId"]!=hint.market()
+   ||!log.never_attempted(hint.old_qid())||log.intents.contains_key(&hint.old_qid())||bank.engine().is_package_order(hint.old_qid())
+   ||!profit_hint_scope_allowed(old,&Default::default(),&profit_refresh_protected(scope,&bank.engine().package_records())?){return Ok(false)}
+  log.require_resolved_attempts()?;
+  if scope.exchanges.get(hint.exchange()).map(String::as_str)!=Some(hint.market())||original.status!=200
+   ||original.endpoint!=format!("/markets/{}/orderbook?tournamentId={}&depth=20",hint.market(),scope.tournament_id){return Ok(false)}
+  let policy=bank.engine().policy();let age=policy["bookAgeMs"].as_u64().filter(|n|*n>0).ok_or("LIVE_PROFIT_NEGATIVE_AGE")?;
+  let start=moloch_live_runtime::daily_windows::clock(&original.request_started_at)?;let received=moloch_live_runtime::daily_windows::clock(&original.received_at)?;
+  if start>received||received>at||at-start>=age{return Ok(false)}
+  // The caller passes ONLY events returned by the successful actual admission.
+  // Check their final target state, then bind to BOTH original normalization and
+  // the currently valid native book (a later gap removes it from this view).
+  let mut final_book=None;
+  for e in accepted{
+   if e["type"]=="gap"&&e["exchangeId"]==hint.exchange(){final_book=None;}
+   if e["type"]=="book"&&e["book"]["exchangeId"]==hint.exchange(){
+    if e["book"]["marketId"]!=hint.market()||e["book"]["invalid"]==true{return Ok(false)}
+    final_book=Some(&e["book"]);
+   }
+  }
+  let Some(admitted)=final_book else{return Ok(false)};
+  let wrapped=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":scope.tournament_id,"marketId":hint.market(),"exchangeId":hint.exchange(),"endpoint":original.endpoint,"status":original.status,"requestStartedAt":original.request_started_at,"receivedAt":original.received_at,"data":original.data});
+  let expected=moloch_replay::source::receipt_events(&wrapped)?;let expected=expected.iter().find(|e|e["type"]=="book").ok_or("LIVE_PROFIT_NEGATIVE_BOOK")?;
+  let normalize=|v:&Value|{let mut v=v.clone();if let Some(o)=v.as_object_mut(){o.remove("invalid");}v};
+  if normalize(admitted)!=expected["book"]{return Ok(false)}
+  let books=bank.engine().live_package_books();let matching:Vec<_>=books.iter().filter(|b|b["exchangeId"]==hint.exchange()).collect();
+  if matching.len()!=1||normalize(matching[0])!=expected["book"]{return Ok(false)}
+  let b=matching[0];if b["tournamentId"]!=scope.tournament_id||b["marketId"]!=hint.market(){return Ok(false)}
+  let source=moloch_live_runtime::daily_windows::clock(b["sourceAt"].as_str().ok_or("LIVE_PROFIT_NEGATIVE_CLOCK")?)?;
+  if source>received||at-source>=age{return Ok(false)}
+  let levels=|key:&str,ascending:bool|->Result<Vec<i128>>{
+   let rows=b[key].as_array().filter(|a|!a.is_empty()).ok_or("LIVE_PROFIT_NEGATIVE_DEPTH")?;let mut prices=Vec::new();
+   for row in rows{let p=decimal_units(row["price"].as_str().ok_or("LIVE_PROFIT_NEGATIVE_DEPTH")?)?;
+    if p<=0||p>=1_000_000||row["quantity"].as_u64().is_none_or(|n|n==0){return Err("LIVE_PROFIT_NEGATIVE_DEPTH".into())}
+    if prices.last().is_some_and(|last|if ascending{p<=*last}else{p>=*last}){return Err("LIVE_PROFIT_NEGATIVE_DEPTH".into())}prices.push(p);
+   }Ok(prices)
+  };
+  let bids=levels("bids",false)?;let asks=levels("asks",true)?;if bids[0]>=asks[0]{return Ok(false)}
+  let positions=bank.engine().wallet.positions();let side=old["side"].as_str().ok_or("LIVE_SIDE")?;
+  let lots=positions.get(hint.exchange()).and_then(|p|p.get(side)).and_then(Value::as_array).filter(|a|!a.is_empty()).ok_or("LIVE_PROFIT_NEGATIVE_HOLDING")?;
+  let mut worst=0;for lot in lots{
+   // A new execution/cohort lot does not inherit this inherited-only screen.
+   if lot["quantity"].as_u64().is_none_or(|n|n==0)||lot.get("executedAt").is_some_and(|v|!v.is_null()){return Ok(false)}
+   worst=worst.max(decimal_units(lot["price"].as_str().ok_or("LIVE_PROFIT_NEGATIVE_BASIS")?)?);
+  }
+  if worst<=0{return Ok(false)}
+  let bps=policy["feeBps"].as_u64().ok_or("LIVE_PROFIT_NEGATIVE_FEES")?;
+  let per=decimal_units(policy["feePerShare"].as_str().ok_or("LIVE_PROFIT_NEGATIVE_FEES")?)?;
+  if bps>u32::MAX as u64||per<0{return Ok(false)}
+  let minimum=policy.get("inventoryMinimumGain").map(|v|->Result<i128>{Ok(decimal_units(v.as_str().ok_or("LIVE_PROFIT_NEGATIVE_GAIN")?)?)}).transpose()?.unwrap_or(0);
+  let bid=match side{"YES"=>bids[0],"NO"=>1_000_000-asks[0],_=>return Ok(false)};
+  Ok(bid-worst<minimum)
+ })().unwrap_or(false)
+}
 fn exit_recovery_from(source:&RestSource,market:&str,prior_window:u64)->Option<u64>{source.recovery_start_ms(market).map(|from|from.min(prior_window))}
 fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,RefreshPlan,RefreshStage};
@@ -906,7 +969,11 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   // the real write gap and the target appears only after that packet is over.
   // This extra read is not one of the final seven and grants no HTTP authority.
   let initial=preflight_read(bank,source,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},None,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
-  let target=json!({"marketId":market,"exchangeId":hint.exchange()});accept_fresh_book(bank,c,&target,&initial,source)?;
+  let target=json!({"marketId":market,"exchangeId":hint.exchange()});let admitted=accept_fresh_book(bank,c,&target,&initial,source)?;
+  let admitted_head=bank.durable_head();
+  if negative_profit_preparation(bank,&c.scope,log,old,hint,&initial,&admitted,&admitted_head,fundamental.is_some(),now()){
+   return refresh_deferred(c,"preparation_negative",&"CURRENT_GROSS_BID_BELOW_NATIVE_PROFIT_MINIMUM")
+  }
   if !profit_successor_exists(bank,old,hint,maximum_qid_before,now())?{
    let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_PROFIT_REFRESH_WRITE_GAP")?;
    if gap>3000{return refresh_deferred(c,"preparation",&"NATIVE_GAP_EXCEEDS_BOUNDED_PREPARATION")}
@@ -2441,6 +2508,48 @@ pub fn main()->Result<()>{
   bank.accept("original-adoption",1,&adoption).unwrap();let at=at+1000;
   bank.accept("original-book",1,&json!({"type":"book","receivedAt":iso(at),"book":{"marketId":"201","exchangeId":"101","tournamentId":TID,"sequence":"1","sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":"0.300000","quantity":100}],"asks":[{"price":"0.320000","quantity":100}]}})).unwrap();
   let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,bank,log,adoption,policy,seed)
+ }
+ fn negative_profit_receipt(side:&str,bid:i128,at:u64,sequence:u64)->Receipt{
+  let(yes_bid,yes_ask)=if side=="YES"{(bid,bid+5000)}else{(1_000_000-bid-5000,1_000_000-bid)};
+  Receipt{endpoint:format!("/markets/201/orderbook?tournamentId={TID}&depth=20"),status:200,request_started_at:iso(at),received_at:iso(at),data:json!({"contexts":[{"type":"tournament","tournament":{"id":TID},"orderbook":{"exchanges":[{"exchangeId":"101","asOf":{"sequence":sequence,"at":iso(at)},"bids":[{"price":money(yes_bid),"quantity":100}],"asks":[{"price":money(yes_ask),"quantity":100}]}]}}]})}
+ }
+ fn negative_profit_fixture(side:&str)->(Temp,Session,DispatchLog,Control,RestSource,Value,moloch_live_runtime::exit_refresh::ReadHint){
+  let temp=Temp::new();private_dir(&temp.0).unwrap();let old=now()-20000;
+  let policy=json!({"initialCash":"1000.000000","quantity":5,"maximumMarkets":3,"entriesEnabled":false,"minimumQuoteAgeMs":10000,"inventoryTakerAfterMs":0,"inventoryMinimumGain":"0.005000","maximumInventoryAgeMs":60000,"inventoryAgeClock":"execution","inventoryExitMode":"fixedGain","inventoryExitDepthBps":5000});
+  let seed=json!({"runId":"existing-worker-fixture","tournamentId":TID,"availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(old-1000)});let mut bank=Session::open_live(&temp.0.join("bank"),&policy,&seed).unwrap();
+  bank.accept("negative-original-adoption",1,&json!({"type":"actual_position_adoption","source":"official_sig_api_v1","authority":"human_moloch_inherited_management_20261015","complete":true,"receiptHash":"d".repeat(64),"requestStartedAt":iso(old-1),"receivedAt":iso(old),"tournamentId":TID,"openingCost":"2.500000","effectiveMaximumMarkets":4,"positions":[{"marketId":"201","exchangeId":"101","quantity":if side=="NO"{-5}else{5},"lotPrincipal":"2.500000","reportedCostBasis":"2.500000","reportedMinusLotPrincipal":"0.000000","basisClassification":"exact","lots":[{"lotId":"501","quantity":5,"side":side,"entryPrice":"0.500000","openedAt":iso(old-1000)}]}]})).unwrap();
+  let c=control(&temp.0);let initial=negative_profit_receipt(side,505000,old+1000,1);let wrap=|r:&Receipt|json!({"kind":"book","source":"official_sig_api_v1","status":r.status,"marketId":"201","exchangeId":"101","tournamentId":TID,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"endpoint":r.endpoint,"data":r.data});
+  let events=moloch_replay::source::receipt_events(&wrap(&initial)).unwrap();for(i,e)in events.iter().enumerate(){bank.accept("negative-original-book",i as u64+1,e).unwrap();}
+  let oldq=bank.engine().order_records().into_iter().find(|q|q["action"]=="sell"&&q["retired"]==false).unwrap();assert_eq!(moloch_live_runtime::exit_refresh::ReadKind::from_quote(&oldq),Some(moloch_live_runtime::exit_refresh::ReadKind::Profit));
+  let safety=moloch_live_runtime::exit_refresh::Safety{never_attempted:true,has_intent:false,unresolved_attempts:false,global_unknown:false,stop:false,stream_healthy:true,owned_quantity:5,reserved_sell_quantity:0,same_exchange_pending_physical_order:false,lifecycle_fingerprint:[1;32],native_head_fingerprint:[1;32]};let hint=moloch_live_runtime::exit_refresh::ReadHint::from_expired_kind(&oldq,safety,now(),moloch_live_runtime::exit_refresh::ReadKind::Profit).unwrap();
+  let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();let mut source=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"}]),TID,&iso(old)).unwrap();source.accept(&wrap(&initial)).unwrap();
+  accept_source_events(&mut bank,&source.accept(&json!({"kind":"trades","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":TID,"requestStartedAt":iso(old+1000),"receivedAt":iso(old+1000),"endpoint":format!("/exchanges/101/trades?tournamentId={TID}&from={}&to={}",iso(old-1),iso(old+1000)),"data":{"marketId":"201","exchangeId":"101","from":iso(old-1),"to":iso(old+1000),"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":1}}})).unwrap()).unwrap();
+  (temp,bank,log,c,source,oldq,hint)
+ }
+ #[test]fn negative_profit_preparation_uses_actual_yes_no_admission_and_never_mutates_lifecycle(){
+  for side in ["YES","NO"]{let(temp,mut bank,log,c,mut source,old,hint)=negative_profit_fixture(side);let r=negative_profit_receipt(side,490000,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();let head=bank.durable_head();let report=bank.engine().report().unwrap();let bytes=fs::read(temp.0.join("bank/events.jsonl")).unwrap();let descriptor=log.descriptor_identity().unwrap();
+   assert!(negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&head,false,now()),"{side}");
+   assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),bytes);assert_eq!(log.descriptor_identity().unwrap(),descriptor);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+  }
+ }
+ #[test]fn profit_preparation_equality_and_positive_bounds_keep_full_final_path(){
+  for(side,bid)in [("YES",505000),("NO",505000),("YES",510000),("NO",510000)]{let(_temp,mut bank,log,c,mut source,old,hint)=negative_profit_fixture(side);let r=negative_profit_receipt(side,bid,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()),"{side}/{bid}");}
+ }
+ #[test]fn negative_profit_preparation_never_vetoes_uncertain_changed_or_reviewed_context(){
+  let(_temp,mut bank,mut log,c,mut source,old,hint)=negative_profit_fixture("NO");let r=negative_profit_receipt("NO",490000,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();let head=bank.durable_head();let at=now();
+  assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&[],&head,false,at));
+  assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&head,true,at));
+  assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&head,false,at+10001));
+  assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&head,false,moloch_live_runtime::daily_windows::clock(&r.received_at).unwrap()-1));
+  for field in ["endpoint","status","data"]{let mut changed=r.clone();match field{"endpoint"=>changed.endpoint.push_str("&wrong=1"),"status"=>changed.status=503,_=>changed.data=Value::Null};assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&changed,&events,&head,false,at));}
+  let mut wrong=c.scope.clone();wrong.exchanges.insert("101".into(),"999".into());assert!(!negative_profit_preparation(&bank,&wrong,&log,&old,&hint,&r,&events,&head,false,at));
+  let mut reviewed=old.clone();reviewed["reviewedInventoryExit"]=json!({"version":1});assert!(!negative_profit_preparation(&bank,&c.scope,&log,&reviewed,&hint,&r,&events,&head,false,at));
+  let mut partial=old.clone();partial["filled"]=json!(1);assert!(!negative_profit_preparation(&bank,&c.scope,&log,&partial,&hint,&r,&events,&head,false,at));
+  let mut gapped=events.clone();gapped.push(json!({"type":"gap","exchangeId":"101"}));assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&gapped,&head,false,at));
+  let mut absent=old.clone();absent["side"]=json!("YES");assert!(!negative_profit_preparation(&bank,&c.scope,&log,&absent,&hint,&r,&events,&head,false,at));
+  accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())})).unwrap();assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&head,false,now()));
+  accept(&mut bank,&json!({"type":"gap","exchangeId":"101","receivedAt":iso(now())})).unwrap();assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()));
+  log.append(json!({"kind":"intent","qid":hint.old_qid(),"quote":old})).unwrap();assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()));
  }
  #[test]fn real_adopted_fifo_lots_have_no_new_entry_deadline_and_restart_preserves_that(){
   let at=now()-20000;let(root,bank,_log,_,policy,seed)=fixture_at(at);let before=bank.durable_head();let report=bank.engine().report().unwrap();
