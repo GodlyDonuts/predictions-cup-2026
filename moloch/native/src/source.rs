@@ -4,6 +4,7 @@ use crate::{Result, amount, money, price};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
+use std::sync::Arc;
 fn time(v: &Value) -> Result<i64> {
     chrono::DateTime::parse_from_rfc3339(v.as_str().ok_or("SOURCE_TIMESTAMP")?)
         .map_err(|_| "SOURCE_TIMESTAMP")?
@@ -332,7 +333,7 @@ pub struct RestSource {
     tape: TapeCoverage,
     last: Option<i64>,
     revisions: BTreeMap<String, u64>,
-    facts: BTreeMap<String, TradeFact>,
+    facts: Arc<BTreeMap<String, TradeFact>>,
 }
 impl RestSource {
     pub fn seed_trade_facts(&mut self, mut events: Vec<Value>) -> Result<()> {
@@ -374,7 +375,7 @@ impl RestSource {
             tape: TapeCoverage::default(),
             last: None,
             revisions: BTreeMap::new(),
-            facts: BTreeMap::new(),
+            facts: Arc::new(BTreeMap::new()),
         })
     }
     pub fn accept(&mut self, r: &Value) -> Result<Vec<Value>> {
@@ -503,7 +504,7 @@ impl RestSource {
                     );
                 }
             } else {
-                self.facts.insert(
+                Arc::make_mut(&mut self.facts).insert(
                     key,
                     TradeFact {
                         market: e["marketId"].clone(),
