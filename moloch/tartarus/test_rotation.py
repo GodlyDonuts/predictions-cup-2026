@@ -67,6 +67,9 @@ class RotationTests(unittest.TestCase):
         out=run(f,[branch(replacement_status='not_attempted')]);row=out['branches'][0]
         self.assertEqual(row['sale']['gross_proceeds_micros'],7*U)
         self.assertEqual(row['sale']['accounting_realized_gain_micros'],5*U)
+        self.assertEqual(row['sale']['accounting_basis'],'remaining_fifo_principal_plus_declared_sale_fee')
+        self.assertIsNone(row['sale']['historical_acquisition_fees_micros'])
+        self.assertFalse(row['sale']['accounting_realized_gain_is_all_fee_net'])
         self.assertEqual(row['sale_only']['whole_account_wealth_after_micros'],[7*U,7*U])
         self.assertEqual(row['sale_only']['rotation_comparison']['classification'],'accounting_profit_with_rank_deterioration')
 
