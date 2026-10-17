@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "verifiedAt": "2026-10-17T18:06:10.312330+00:00",
+  "sourceCommit": "86619d823de3391c0bd6cdb8514d12b936841a1b",
+  "sourceFiles": 273,
+  "rawGitExact": 221,
+  "gitLineEndingEquivalent": 52,
+  "changedSourceComparedToR30": [
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "actualTestCounts": {
+    "worker": 164
+  },
+  "distinctTests": 164,
+  "binarySha256": "60c1d34da7ff8621193c466ba052d95fcd26cbff1f30ff31b6e9c942b8db120f",
+  "nativeIdentity": "8012cc9fb2c4feef68f1759ce65a37dc7afcf62a843cfb7a28493d8ac58e1ab6",
+  "allNativeAndSessionSourceBytesUnchanged": true,
+  "nativeBridgeRequired": false,
+  "qualificationPhase": "checked-release-complete",
+  "privateArchiveBytes": 7393725,
+  "privateArchiveSha256": "a5f790d0b1f766027560596d3ad9b59232ea0112d2b43fbef26a1b0519f503ad",
+  "originalMembersVerified": 279,
+  "productionChangedByVerifier": false,
+  "profitabilityEstablished": false
+}
