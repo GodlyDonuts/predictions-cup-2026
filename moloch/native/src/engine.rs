@@ -566,9 +566,27 @@ impl Engine {
         self.audit_packages()?;
         self.audit_collateral()?;
         self.audit_owner_capital()?;
+        // Temporary exact sums only: no persisted state, planning change, or
+        // weaker audit. Retired orders are excluded; expired/cancel-pending
+        // unretired orders count exactly as pledge()/opposite_buys() did.
+        // Only audited wallet keys participate. Error sentinels defer range
+        // rejection to the original wallet-key iteration order, so an earlier
+        // shortage is never hidden by a later scope's malformed order.
+        let mut active:BTreeMap<(&str,Side),(Option<u64>,Option<u64>)>=self.wallet.lots.keys()
+            .map(|(ex,side)|((ex.as_str(),*side),(Some(0),Some(0)))).collect();
+        for q in self.orders.iter().filter(|q|!q.retired){
+            let key=(q.exchange.as_str(),if q.buy{q.side.other()}else{q.side});
+            let Some(sums)=active.get_mut(&key)else{continue};
+            let n=q.quantity.checked_sub(q.filled);
+            let sum=if q.buy{&mut sums.1}else{&mut sums.0};
+            *sum=sum.and_then(|total|n.and_then(|n|total.checked_add(n)));
+        }
         for (ex, side) in self.wallet.lots.keys() {
             let held = self.wallet.quantity(ex, *side);
-            if held < self.pledge(ex, *side) + held.min(self.opposite_buys(ex, *side)) {
+            let sums=active.get(&(ex.as_str(),*side)).ok_or("SHARE_PLEDGE_RANGE")?;
+            let sells=sums.0.ok_or("SHARE_PLEDGE_RANGE")?;
+            let opposite=sums.1.ok_or("SHARE_PLEDGE_RANGE")?;
+            if held < sells.checked_add(held.min(opposite)).ok_or("SHARE_PLEDGE_RANGE")? {
                 return Err("SHARE_PLEDGE");
             }
         }
@@ -1980,4 +1998,39 @@ impl Engine {
         if let Some(proof)=self.reviewed_fundamental_entries.get(&q.id){v["reviewedFundamentalEntry"]=proof.clone();}
         if let Some(at)=q.cancel{v["cancelEffectiveAt"]=json!(at)}if q.aon{v["executionStyle"]=json!("inventoryAON")}if q.age_reason{v["inventoryExitReason"]=json!("maximumAge")}if q.participation!=100{v["participationBps"]=json!(q.participation)}if q.through{v["throughFillCapacity"]=json!(true)}if q.conditional{v["fillModel"]=json!("conditionalFifo");v["touchAttributionBps"]=json!(q.touch_bps);v["queueAhead"]=json!((q.same+q.better).to_string());v["queueSame"]=json!(q.same.to_string());v["queueBetter"]=json!(q.better.to_string());v["queueVisibleSame"]=json!(q.visible_same.to_string());v["queueVisibleBetter"]=json!(q.visible_better.to_string());v["touchRemainder"]=json!(q.touch_remainder)}v}).collect()
     }
+}
+
+#[cfg(test)]mod active_pledge_audit_tests{
+ use super::*;
+ fn fixture()->(Engine,Order){
+  let mut e=Engine::new(&json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"1000.000000","quantity":10,"maximumMarkets":3})).unwrap();
+  e.advance(&json!({"type":"book","receivedAt":"2026-10-17T00:00:00Z","book":{"exchangeId":"101","marketId":"201","sequence":"1","sourceAt":"2026-10-17T00:00:00Z","bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();
+  let q=e.orders[0].clone();e.orders.clear();e.wallet.reservations.clear();(e,q)
+ }
+ fn hold(e:&mut Engine,ex:&str,side:Side,n:u64){let id=format!("fixture-held-{ex}");e.wallet.reserve(&id,Reservation{exchange:ex.into(),side,quantity:n,limit:400000}).unwrap();e.wallet.buy_fill(&id,n).unwrap();}
+ fn old_check(e:&Engine)->Result<()>{for(ex,side)in e.wallet.lots.keys(){let held=e.wallet.quantity(ex,*side);if held<e.pledge(ex,*side)+held.min(e.opposite_buys(ex,*side)){return Err("SHARE_PLEDGE")}}Ok(())}
+ fn order(q:&Order,ex:&str,side:Side,buy:bool,n:u64,filled:u64)->Order{let mut out=q.clone();out.exchange=ex.into();out.side=side;out.buy=buy;out.quantity=n;out.filled=filled;out.retired=false;out}
+ #[test]fn partial_sells_opposite_buys_and_retired_history_match_original_equation(){
+  let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);hold(&mut e,"102",Side::No,8);
+  e.orders.push(order(&q,"101",Side::Yes,false,10,3));e.orders.push(order(&q,"101",Side::No,true,5,2));
+  e.orders.push(order(&q,"102",Side::No,false,6,1));e.orders.push(order(&q,"102",Side::Yes,true,4,1));
+  for _ in 0..10000{let mut old=order(&q,"101",Side::Yes,false,u64::MAX,0);old.retired=true;e.orders.push(old);}
+  let before=e.report().unwrap();assert!(old_check(&e).is_ok());assert!(e.audit().is_ok());assert_eq!(e.report().unwrap(),before);
+  e.orders[1].quantity+=1;assert_eq!(old_check(&e),Err("SHARE_PLEDGE"));assert_eq!(e.audit(),Err("SHARE_PLEDGE"));
+ }
+ #[test]fn cancel_pending_and_expired_unretired_orders_remain_pledged(){
+  let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);let mut sell=order(&q,"101",Side::Yes,false,11,0);sell.cancel=Some(0);sell.expires=0;e.orders.push(sell);
+  assert_eq!(old_check(&e),Err("SHARE_PLEDGE"));assert_eq!(e.audit(),Err("SHARE_PLEDGE"));
+ }
+ #[test]fn irrelevant_unheld_scope_and_same_side_buy_never_create_new_audit_failure(){
+  let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);e.orders.push(order(&q,"999",Side::Yes,false,0,1));e.orders.push(order(&q,"101",Side::Yes,true,0,1));
+  assert!(old_check(&e).is_ok());assert!(e.audit().is_ok());
+ }
+ #[test]fn first_wallet_key_shortage_precedes_later_scope_overflow(){
+  let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);hold(&mut e,"102",Side::Yes,1);e.orders.push(order(&q,"101",Side::Yes,false,11,0));e.orders.push(order(&q,"102",Side::Yes,false,u64::MAX,0));e.orders.push(order(&q,"102",Side::Yes,false,1,0));
+  assert_eq!(old_check(&e),Err("SHARE_PLEDGE"));assert_eq!(e.audit(),Err("SHARE_PLEDGE"));
+ }
+ #[test]fn audited_scope_overflow_or_negative_remaining_rejects_checked_without_wrap(){
+  for malformed in [false,true]{let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);if malformed{e.orders.push(order(&q,"101",Side::Yes,false,0,1));}else{e.orders.push(order(&q,"101",Side::Yes,false,u64::MAX,0));e.orders.push(order(&q,"101",Side::Yes,false,1,0));}assert_eq!(e.audit(),Err("SHARE_PLEDGE_RANGE"));}
+ }
 }

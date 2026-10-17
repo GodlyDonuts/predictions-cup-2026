@@ -145,7 +145,7 @@ fn structure(r:&ReviewInput)->Result<i128>{
     let p=amount(&r.ordinary_probability)?;let e=amount(&r.exceptional_probability_allowance)?;
     let exceptional=amount(&r.minimum_exceptional_payout)?;let margin=amount(&r.margin_per_share)?;
     need(p<=UNIT&&e<=UNIT&&exceptional<=UNIT&&margin<UNIT&&amount(&r.maximum_principal)?>0
-        &&r.maximum_quantity>0&&r.maximum_quantity<=10_000,"FUNDAMENTAL_REVIEW_ECONOMICS")?;
+        &&r.maximum_quantity>0&&r.maximum_quantity<=1_000_000,"FUNDAMENTAL_REVIEW_ECONOMICS")?;
     let review_span=r.expires_at_ms.checked_sub(r.reviewed_at_ms).ok_or("FUNDAMENTAL_REVIEW_HORIZON")?;
     // Terminal's nominal hold clock bounds NEW acquisition, not management of
     // delayed settlement. Fresh revisions keep the original schedule/cohort hold.
