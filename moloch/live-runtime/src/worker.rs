@@ -909,7 +909,8 @@ fn negative_profit_preparation(bank:&Session,scope:&Scope,log:&DispatchLog,old:&
   for e in accepted{
    if e["type"]=="gap"&&e["exchangeId"]==hint.exchange(){final_book=None;}
    if e["type"]=="book"&&e["book"]["exchangeId"]==hint.exchange(){
-    if e["book"]["marketId"]!=hint.market()||e["book"]["invalid"]==true{return Ok(false)}
+    if e["book"]["marketId"]!=hint.market(){return Ok(false)}
+    if e["book"]["invalid"]==true{final_book=None;continue}
     final_book=Some(&e["book"]);
    }
   }
@@ -2534,6 +2535,18 @@ pub fn main()->Result<()>{
    assert!(negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&head,false,now()),"{side}");
    assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),bytes);assert_eq!(log.descriptor_identity().unwrap(),descriptor);assert!(log.intents.is_empty()&&log.attempted.is_empty());
   }
+ }
+ #[test]fn negative_profit_preparation_uses_final_actual_recovery_state(){
+  for side in ["YES","NO"]{for recovered in [false,true]{
+   let(_temp,mut bank,log,c,_source,old,hint)=negative_profit_fixture(side);
+   let started=now()-2;let mut source=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"}]),TID,&iso(started)).unwrap();
+   if recovered{let through=now();accept_source_events(&mut bank,&source.accept(&json!({"kind":"trades","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":TID,"requestStartedAt":iso(through),"receivedAt":iso(through),"endpoint":format!("/exchanges/101/trades?tournamentId={TID}&from={}&to={}",iso(started-1),iso(through)),"data":{"marketId":"201","exchangeId":"101","from":iso(started-1),"to":iso(through),"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":2}}})).unwrap()).unwrap();}
+   let r=negative_profit_receipt(side,490000,now(),2);let mut events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();
+   assert!(events.iter().any(|e|e["type"]=="book"&&e["book"]["invalid"]==true),"real blocked source must first admit invalid book");
+   assert_eq!(events.iter().any(|e|e["type"]=="book"&&e["book"]["invalid"]!=true),recovered,"only complete recovery emits actual valid replacement");
+   assert_eq!(negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()),recovered,"{side}/{recovered}");
+   if recovered{let invalid=events.iter().find(|e|e["type"]=="book"&&e["book"]["invalid"]==true).unwrap().clone();accept(&mut bank,&invalid).unwrap();events.push(invalid);assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()),"final invalidation must deny even after valid replacement");}
+  }}
  }
  #[test]fn profit_preparation_equality_and_positive_bounds_keep_full_final_path(){
   for(side,bid)in [("YES",505000),("NO",505000),("YES",510000),("NO",510000)]{let(_temp,mut bank,log,c,mut source,old,hint)=negative_profit_fixture(side);let r=negative_profit_receipt(side,bid,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();assert!(!negative_profit_preparation(&bank,&c.scope,&log,&old,&hint,&r,&events,&bank.durable_head(),false,now()),"{side}/{bid}");}
