@@ -452,6 +452,11 @@ fn reverify_aborted_records(c:&Control,log:&mut DispatchLog)->Result<()>{
  for(qid,evidence)in records{let(spec,permit,at,error)=log.pre_admission_originals(qid)?;
   let proof=api::verify_retained_ordinary_pre_admission(&proof_config(c),&spec,&permit,at,&error,&evidence)?;
   log.verify_aborted_before_admission(qid,&proof)?;
+ }
+ let records:Vec<_>=log.local_final_guard_records().iter().map(|(qid,row)|(*qid,row["proof"].clone())).collect();
+ for(qid,evidence)in records{let(spec,permit,at,error)=log.local_final_guard_originals(qid)?;
+  let proof=api::verify_retained_ordinary_local_guard_no_http(&proof_config(c),&spec,&permit,at,&error,&evidence)?;
+  log.verify_local_final_guard_no_http(qid,&proof)?;
  }Ok(())
 }
 fn retire_proved_unadmitted(bank:&mut Session,log:&DispatchLog,qid:u64)->Result<()>{
@@ -460,7 +465,7 @@ fn retire_proved_unadmitted(bank:&mut Session,log:&DispatchLog,qid:u64)->Result<
  let original=&log.intents.get(&qid).ok_or("LIVE_UNADMITTED_ORIGINAL_INTENT")?["quote"];
  for field in ["id","marketId","exchangeId","side","action","quantity","price"]{if q[field]!=original[field]{return Err("LIVE_UNADMITTED_NATIVE_QUOTE_CHANGED".into())}}
  if q["filled"]!=0{return Err("LIVE_UNADMITTED_NATIVE_FILL".into())}
- let proof=&log.aborted_records().get(&qid).ok_or("LIVE_UNADMITTED_DURABLE_PROOF")?["proof"];
+ let proof=&log.aborted_records().get(&qid).or_else(||log.local_final_guard_records().get(&qid)).ok_or("LIVE_UNADMITTED_DURABLE_PROOF")?["proof"];
  accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":qid,"confirmedNetworkAttempts":0,"receiptHash":hash(proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))
 }
 /// Explicit local incident repair: no Transport, credentials or HTTP. The STOP
@@ -475,6 +480,51 @@ fn recover_unadmitted(c:&Control)->Result<()>{
   log.append_aborted_before_admission(qid,&proof,&iso(now()))?;recovered.push(qid);
  }log.require_resolved_attempts()?;
  atomic_json(&c.root.join("pre-admission-recovery.json"),&json!({"at":iso(now()),"recoveredOriginalQids":recovered,"sdkArchiveReverified":true,"dispatchHead":log.descriptor_identity()?,"networkRequests":0,"stopPreserved":stop.exists(),"sameIntentRetryAuthorized":false,"financialStateChanged":false}))?;Ok(())
+}
+/// File-only, exact-incident reconciliation. This authority can neither read an
+/// account nor send an order. The proof factory verifies the original SDK and
+/// dispatch chains and the externally pinned approval before this is created.
+struct LocalGuardRecoveryAuthority{scope:Value,binding:Value}
+impl Authority for LocalGuardRecoveryAuthority{
+ fn can_read(&self,_:&Scope)->bool{false}
+ fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,network:bool,at:u64)->api::Result<()>{ReadOnlyAuthority.authorize(scope,spec,permit,network,at)}
+ fn owns_order(&self,_:&str)->bool{false}
+ fn reconcile_unknown(&self,scope:&Scope,binding:&Value,_:u64)->api::Result<()>{
+  if serde_json::to_value(scope).ok().as_ref()==Some(&self.scope)&&binding==&self.binding{Ok(())}else{Err(api::TransportError{code:"LOCAL_GUARD_RECOVERY_BINDING".into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None})}
+ }
+}
+fn local_guard_recovery_state(state:&Value,binding:&Value)->Result<bool>{
+ let s=&state["state"];let unknown=s["unknown"].as_object().ok_or("LOCAL_GUARD_SDK_UNKNOWN_STATE")?;
+ let intent=binding["intent"].as_str().ok_or("LOCAL_GUARD_SDK_INTENT")?;let key=binding["key"].as_str().ok_or("LOCAL_GUARD_SDK_KEY")?;
+ if s["schema_version"]!=1||!s["active"].is_null()||s["manual_review"]!=false||s["intents"][intent]!=*binding||s["keys"][key]!=*binding{return Err("LOCAL_GUARD_SDK_PERMANENT_BINDING_OR_ACTIVE".into())}
+ if unknown.is_empty(){return Ok(false)}
+ if unknown.len()!=1||unknown.get(intent)!=Some(binding){return Err("LOCAL_GUARD_SDK_OTHER_UNKNOWN".into())}Ok(true)
+}
+fn recover_local_final_guard(c:&Control,approval_path:&Path,approval_sha:&str)->Result<()>{
+ let stop=c.root.join("EXECUTION_STOP");let stopped=fs::read(&stop)?;
+ if serde_json::from_slice::<Value>(&stopped)?["reason"]!="LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"{return Err("LOCAL_GUARD_INCIDENT_STOP_REQUIRED".into())}
+ let approval_raw=fs::read(approval_path)?;if format!("{:x}",Sha256::digest(&approval_raw))!=approval_sha{return Err("LOCAL_GUARD_APPROVAL_HASH".into())}let approval:Value=serde_json::from_slice(&approval_raw)?;
+ let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(c,&mut log)?;
+ let candidates:Vec<_>=log.attempted.iter().filter_map(|qid|log.local_final_guard_originals(*qid).ok().filter(|(_,_,at,_)|Some(*at)==approval["attemptAt"].as_u64()).map(|v|(*qid,v))).collect();
+ if candidates.len()!=1{return Err("LOCAL_GUARD_EXACT_ORIGINAL_REQUIRED".into())}
+ let(qid,(spec,permit,at,error))=candidates.into_iter().next().unwrap();
+ if permit.run_id!=c.activation.run_id||spec.body.as_ref().is_none_or(|b|b["tournamentId"]!=c.scope.tournament_id)||log.acknowledgments.contains_key(&qid){return Err("LOCAL_GUARD_ORIGINAL_SCOPE_OR_ACK".into())}
+ let proof=if let Some(row)=log.local_final_guard_records().get(&qid){
+  if row["proof"]["ownerApprovalSha256"]!=approval_sha{return Err("LOCAL_GUARD_RETAINED_APPROVAL_CHANGED".into())}
+  api::verify_retained_ordinary_local_guard_no_http(&proof_config(c),&spec,&permit,at,&error,&row["proof"])?
+ }else{api::verify_legacy_ordinary_local_guard_no_http(&proof_config(c),&spec,&permit,at,&error,approval_path,approval_sha)?};
+ let evidence=proof.evidence()?;let binding=evidence["binding"].clone();
+ if fs::read(&stop)?!=stopped{return Err("LOCAL_GUARD_STOP_CHANGED".into())}
+ if log.local_final_guard_records().contains_key(&qid){log.verify_local_final_guard_no_http(qid,&proof)?}else{log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?}
+ log.require_resolved_attempts()?;
+ let authority=LocalGuardRecoveryAuthority{scope:serde_json::to_value(&c.scope)?,binding:binding.clone()};
+ let mut sdk=Transport::new(proof_config(c),Box::new(api::credentials::DisabledCredentials),Box::new(SystemClock),Box::new(authority))?;
+ let before=sdk.admission_state()?;let needs_reconciliation=local_guard_recovery_state(&before,&binding)?;
+ if fs::read(&stop)?!=stopped{return Err("LOCAL_GUARD_STOP_CHANGED".into())}
+ if needs_reconciliation{sdk.reconcile_unknown(binding.clone())?;}
+ let after=sdk.admission_state()?;if local_guard_recovery_state(&after,&binding)?{return Err("LOCAL_GUARD_SDK_UNKNOWN_REMAINS".into())}
+ if fs::read(&stop)?!=stopped{return Err("LOCAL_GUARD_STOP_CHANGED".into())}
+ atomic_json(&c.root.join("local-final-guard-recovery.json"),&json!({"at":iso(now()),"qid":qid,"originalErrorPreserved":true,"proof":evidence,"dispatchHead":log.descriptor_identity()?,"sdkBeforeSha256":hash(&before),"sdkAfterSha256":hash(&after),"sdkReconciled":needs_reconciliation,"permanentIntentAndKeyPreserved":true,"networkRequests":0,"stopPreserved":true,"sameIntentRetryAuthorized":false,"financialStateChanged":false}))?;Ok(())
 }
 /// Service only already queued official source frames BEFORE a physical read.
 /// Once a Receipt returns, reconciliation validates/applies its complete tape
@@ -1109,6 +1159,9 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}
  let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{let end=now();let _=trace.record(Stage::TransportCall,transport_start,end);if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"transport_error","diagnosticOnly":true}));}log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
+  if let Ok((spec,permit,at,error))=log.local_final_guard_originals(qid){
+   if let Ok(proof)=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error){log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
+  }
   if let Ok((spec,permit,at,error))=log.pre_admission_originals(qid){
    if let Ok(proof)=t.verify_current_ordinary_pre_admission(&spec,&permit,at,&error){log.append_aborted_before_admission(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
   }
@@ -2364,6 +2417,18 @@ fn recover_stream(t:&mut Transport,c:&Control,bank:&mut Session,log:&DispatchLog
 }
 pub fn main()->Result<()>{
  let args:Vec<_>=std::env::args().collect();
+ // Explicit incident repair does not load strategy settings, restore a bank,
+ // read credentials, issue an account request, or remove either STOP.
+ if args.len()==5&&args[1]=="recover-local-final-guard"{
+  let path=PathBuf::from(&args[2]);let approval=PathBuf::from(&args[3]);
+  if !path.is_absolute()||!approval.is_absolute(){return Err("LOCAL_GUARD_ABSOLUTE_PATHS".into())}
+  let original=fs::read(&path)?;let c:Control=serde_json::from_slice(&original)?;
+  if !c.root.is_absolute()||!c.owner_lock.is_absolute(){return Err("LOCAL_GUARD_ABSOLUTE_PATHS".into())}
+  let _lease=ExclusiveLock::acquire(&c.owner_lock)?;
+  recover_local_final_guard(&c,&approval,&args[4])?;
+  if fs::read(&path)?!=original{return Err("LOCAL_GUARD_CONTROL_CHANGED".into())}
+  println!("Exact original local guard reconciled; STOP preserved; no network; no intent retry");return Ok(())
+ }
  // This branch reads no credentials and constructs no Transport/Session. The
  // existing OS owner contacts the already-running private control socket.
  if args.len()==5&&args[1]=="fundamental-reload"{
@@ -2415,7 +2480,7 @@ pub fn main()->Result<()>{
   let maker_review=c.maker_policy.as_ref().map(|settings|moloch_live_runtime::maker_policy::Reviewed::load(settings.clone(),&bank)).transpose()?;
   if let Some(review)=&maker_review{review.validate_model(c.execution_model.as_ref().ok_or("LIVE_MAKER_MODEL_REQUIRED")?)?;authority.require_maker_review(review.sha256())?;}
   let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(&c,&mut log)?;log.require_resolved_attempts()?;
-  for qid in log.aborted_records().keys().copied().collect::<Vec<_>>(){retire_proved_unadmitted(&mut bank,&log,qid)?;}
+  for qid in log.aborted_records().keys().chain(log.local_final_guard_records().keys()).copied().collect::<Vec<_>>(){retire_proved_unadmitted(&mut bank,&log,qid)?;}
   // End the startup reader before constructing the ONE continuing worker. The
   // existing-origin baseline borrows this same transport's real quiet queue;
   // it cannot create an independent account client or infer unknown absence.
@@ -3815,4 +3880,13 @@ mod profitable_depth_control_tests{
 #[cfg(test)]mod fundamental_reload_control_tests{
  use super::*;
  #[test]fn legacy_control_keeps_reload_off_and_serialization_omits_it(){let raw=json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"});let control:Control=serde_json::from_value(raw.clone()).unwrap();assert!(!control.fundamental_reload);assert!(serde_json::to_value(control).unwrap().get("fundamentalReload").is_none());let mut enabled=raw;enabled["fundamentalReload"]=json!(true);assert!(serde_json::from_value::<Control>(enabled).unwrap().fundamental_reload);}
+}
+#[cfg(test)]
+mod local_final_guard_recovery_tests{
+ use super::*;
+ fn binding()->Value{json!({"intent":"original:17811","key":"original:17811","payload_hash":"f".repeat(64)})}
+ fn state(unknown:bool)->Value{let b=binding();let mut s=json!({"state":{"schema_version":1,"active":null,"manual_review":false,"unknown":{},"intents":{},"keys":{}}});s["state"]["intents"]["original:17811"]=b.clone();s["state"]["keys"]["original:17811"]=b.clone();if unknown{s["state"]["unknown"]["original:17811"]=b;}s}
+ #[test]fn exact_recovery_keeps_permanent_key_before_and_after_clear(){assert!(local_guard_recovery_state(&state(true),&binding()).unwrap());assert!(!local_guard_recovery_state(&state(false),&binding()).unwrap());}
+ #[test]fn other_unknown_active_poison_or_missing_permanent_binding_blocks_recovery(){let original=state(true);for(field,value)in [("active",json!({"request":"different"})),("manual_review",json!(true)),("schema_version",json!(2)),("intents",json!({})),("keys",json!({}))]{let mut s=original.clone();s["state"][field]=value;assert!(local_guard_recovery_state(&s,&binding()).is_err(),"{field}");}let mut s=original;s["state"]["unknown"]["other"]=binding();assert!(local_guard_recovery_state(&s,&binding()).is_err());let mut s=state(true);s["state"]["unknown"]["original:17811"]["payload_hash"]=json!("0".repeat(64));assert!(local_guard_recovery_state(&s,&binding()).is_err());}
+ #[test]fn recovery_authority_can_only_reconcile_exact_original_binding_and_scope(){let scope=Scope{tournament_id:"fixture".into(),tournament_slug:"cup".into(),exchanges:[("885".into(),"196".into())].into()};let authority=LocalGuardRecoveryAuthority{scope:serde_json::to_value(&scope).unwrap(),binding:binding()};assert!(!authority.can_read(&scope));assert!(!authority.owns_order("1"));assert!(authority.reconcile_unknown(&scope,&binding(),1).is_ok());let mut changed=binding();changed["key"]=json!("replacement");assert!(authority.reconcile_unknown(&scope,&changed,1).is_err());let mut other=scope.clone();other.tournament_id="other".into();assert!(authority.reconcile_unknown(&other,&binding(),1).is_err());let spec=RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body:None,body_json:None};let permit=Permit{run_id:"original".into(),intent_id:"17811".into(),owner:"Codex".into(),expires_at_ms:1000,maximum_quantity:10000,maximum_cost:"7100".into()};for network in [false,true]{assert!(authority.authorize(&scope,&spec,&permit,network,1).is_err());}}
 }
