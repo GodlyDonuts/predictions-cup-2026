@@ -2428,6 +2428,59 @@ pub fn main()->Result<()>{
   let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,c,bank,log,source,q,book)
  }
  fn periodic_events(path:&Path)->Vec<Value>{fs::read_to_string(path).unwrap().lines().map(|line|serde_json::from_str::<Value>(line).unwrap()["event"].clone()).collect()}
+ fn fundamental_fixture(c:&Control,bank:&Session,log:&DispatchLog,at:u64,revoke:bool)->FundamentalRuntime{
+  // Synthetic, source-bound review for the real Session quote above. The
+  // terminal objective makes this a genuine eligible new-entry cohort.
+  let node=json!({"market_id":"201","root":{"node_type":"contract","node_id":"301","contract_id":"301","contract_type":"Election Outcome","contract_details":{"contractType":"Election Outcome","resolutionType":"Party Winner","winnerName":"Republican Party","electionDate":"2026-11-03","officeLevel":"Federal","usState":"Synthetic","raceId":1,"stageId":2,"raceName":"Synthetic fixture","raceStage":"General"},"settled_with":null,"settlement_date":iso(at+300000),"title":"Synthetic Republican Party Winner fixture"}});
+  let originals=[b"synthetic forecast, not a publisher".to_vec(),b"synthetic official ballot".to_vec(),serde_json::to_vec(&node).unwrap()];
+  let hashes=originals.iter().map(|b|format!("{:x}",Sha256::digest(b))).collect::<Vec<_>>();
+  let sources=["forecast","official_ballot","official_contract_node"].iter().enumerate().map(|(i,kind)|json!({"kind":kind,"url":format!("https://fixture.invalid/{kind}"),"sha256":hashes[i],"publishedAtMs":at-100,"observedAtMs":at-50,"maximumAgeMs":180000})).collect::<Vec<_>>();
+  let review:fundamental::ReviewInput=serde_json::from_value(json!({"version":2,"reviewerId":"test-operator","assumptionLabel":"Synthetic worker fixture; party mapping and probability are assumptions, not calibration","runId":c.activation.run_id,"bankManifestSha256":bank.manifest_hash(),"tournamentId":T,"marketId":"201","exchangeId":"101","contractId":"301","side":"YES","officialContractRootSha256":fundamental::official_contract_root_sha256(&node).unwrap(),"ordinaryProbability":"0.950000","exceptionalProbabilityAllowance":"0.010000","minimumExceptionalPayout":"0.000000","marginPerShare":"0.010000","maximumPrincipal":"4.000000","maximumQuantity":2,"reviewedAtMs":at,"expiresAtMs":at+180000,"holdUntilMs":at+600000,"payoutMappingIsOperatorAssumption":true,"revokeExisting":revoke,"sources":sources,"valuationObjective":{"kind":"terminalSettlement","timingSourceSha256":hashes[2],"timingJsonPointer":"/root/settlement_date","scheduledSettlementAtMs":at+300000,"delayPolicy":"holdForActualSettlement"}})).unwrap();
+  let trusted:std::collections::BTreeSet<String>=[fundamental::review_sha256(&review).unwrap()].into();
+  let bytes=originals.iter().enumerate().map(|(i,b)|fundamental::SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();let reviewed=fundamental::Reviewed::verify(review,&bytes,&trusted,at).unwrap();
+  let owner=Arc::new(ExclusiveLock::acquire(&c.owner_lock).unwrap());let mut cohorts=Cohorts::initialize(&c.root,bank,log,owner).unwrap();cohorts.install(reviewed,bank,log,at).unwrap();
+  let authority_bytes=serde_json::to_vec(&json!({"version":1,"trustedReviewSha256":trusted})).unwrap();let authority_path=c.root.join("review-authority.json");fs::write(&authority_path,&authority_bytes).unwrap();
+  FundamentalRuntime{cohorts,authority:ReviewAuthority::load(&authority_path,&format!("{:x}",Sha256::digest(&authority_bytes))).unwrap()}
+ }
+ #[test]fn fundamental_preintent_catches_actual_bind_refusal_before_dispatch(){
+  use std::cell::Cell;
+  let at=now()-1000;let(root,c,bank,log,_source,q,_book)=fixture_at(at);let mut f=fundamental_fixture(&c,&bank,&log,at,false);let qid=q["id"].as_u64().unwrap();
+  assert!(f.eligible(&bank,&log,&c.scope,qid,at).unwrap());let n=f.cohorts.planned_entry_quantity(&bank,&log,&c.scope,qid,f.authority.trusted(),at).unwrap().unwrap();let(_,request,permit)=physical_order(&c,&q).unwrap();
+  let stale=at+6001; // Original book at at-4000 is now 10001ms old.
+  assert_eq!(f.cohorts.bind_quantity(&bank,&log,&c.scope,qid,n,&request,f.authority.trusted(),stale).err().expect("actual bind must refuse stale source").to_string(),"FUNDAMENTAL_NOT_ELIGIBLE");
+  let head=bank.durable_head();let financial=bank.engine().report().unwrap();let dispatch=fs::read(root.0.join("dispatch.ndjson")).unwrap();let sidecar=fs::read(root.0.join("fundamental.ndjson")).unwrap();let clocks=Cell::new(0);let queues=Cell::new(0);
+  let result=fundamental_preintent(&mut f,&bank,&log,&c.scope,&q,n,&request,&permit,||{clocks.set(clocks.get()+1);stale},||{queues.set(queues.get()+1);recovery_queue_clear(&json!({"state":{"unknown":{},"active":null,"manual_review":false}}))}).unwrap();
+  assert!(matches!(result,FundamentalPreintent::Deferred(reason)if reason=="FUNDAMENTAL_NOT_ELIGIBLE"));assert_eq!(clocks.get(),2,"bind then defer proof; physical mint is not reached");assert_eq!(queues.get(),1);
+  assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),financial);assert_eq!(quote(&bank,qid).unwrap(),q);assert_eq!(fs::read(root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert_eq!(fs::read(root.0.join("fundamental.ndjson")).unwrap(),sidecar);
+  assert!(f.cohorts.durable_tag(qid).is_none());assert!(log.intents.is_empty()&&log.attempted.is_empty()&&log.acknowledgments.is_empty());assert!(bank.engine().live_order_bindings().is_empty()&&bank.engine().fills().is_empty());
+ }
+ #[test]fn fundamental_preintent_real_bind_mints_when_fresh_and_preserves_binding_if_mint_expires(){
+  use std::cell::Cell;
+  for expire_mint in [false,true]{
+   let at=now()-1000;let(root,c,bank,log,_source,q,_book)=fixture_at(at);let mut f=fundamental_fixture(&c,&bank,&log,at,false);let qid=q["id"].as_u64().unwrap();let n=q["quantity"].as_u64().unwrap();let(_,request,permit)=physical_order(&c,&q).unwrap();assert!(f.eligible(&bank,&log,&c.scope,qid,at).unwrap());
+   let head=bank.durable_head();let financial=bank.engine().report().unwrap();let dispatch=fs::read(root.0.join("dispatch.ndjson")).unwrap();let clocks=Cell::new(0);let queues=Cell::new(0);
+   let result=fundamental_preintent(&mut f,&bank,&log,&c.scope,&q,n,&request,&permit,||{let n=clocks.get();clocks.set(n+1);if expire_mint&&n>0{at+6001}else{at}},||{queues.set(queues.get()+1);recovery_queue_clear(&json!({"state":{"unknown":{},"active":null,"manual_review":false}}))}).unwrap();
+   match result{
+    FundamentalPreintent::Ready(decision)=>{assert!(!expire_mint);assert_eq!(decision.planned_quantity(),n);decision.validate_frozen(&q,&financial,qid,at).unwrap();decision.authorize(&c.scope,&request,&permit,at).unwrap();assert_eq!(clocks.get(),2);assert_eq!(queues.get(),0);},
+    FundamentalPreintent::Deferred(reason)=>{assert!(expire_mint);assert_eq!(reason,"FUNDAMENTAL_PHYSICAL_BOOK_STALE");assert_eq!(clocks.get(),3);assert_eq!(queues.get(),1);}
+   }
+   assert!(f.cohorts.durable_tag(qid).is_some(),"successful bind stays original, without rearm or replacement");assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),financial);assert_eq!(fs::read(root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(log.intents.is_empty()&&log.attempted.is_empty()&&log.acknowledgments.is_empty());assert!(bank.engine().live_order_bindings().is_empty()&&bank.engine().fills().is_empty());
+  }
+ }
+ #[test]fn fundamental_preintent_real_refusal_never_hides_current_book_queue_or_original_operations(){
+  for case in ["fresh_ineligible","unknown","active","manual","queue_io","intent","attempt","ack","binding"]{
+   let at=now()-1000;let(root,c,mut bank,mut log,_source,q,_book)=fixture_at(at);let mut f=fundamental_fixture(&c,&bank,&log,at,case=="fresh_ineligible");let qid=q["id"].as_u64().unwrap();let n=q["quantity"].as_u64().unwrap();let(_,request,permit)=physical_order(&c,&q).unwrap();
+   if matches!(case,"intent"|"attempt"|"ack"){log.append(json!({"kind":"intent","qid":qid,"quote":q})).unwrap();}
+   if matches!(case,"attempt"|"ack"){log.append(json!({"kind":"attempt","qid":qid})).unwrap();}
+   if case=="ack"{log.append(json!({"kind":"ack","qid":qid,"receipt":{"data":{"orderId":"902"}}})).unwrap();}
+   if case=="binding"{bank.accept("original-fixture-ack",1,&json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":qid,"actualOrderId":"902","exchangeId":"101","marketId":"201","side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(at+1)})).unwrap();}
+   let head=bank.durable_head();let financial=bank.engine().report().unwrap();let dispatch=fs::read(root.0.join("dispatch.ndjson")).unwrap();let sidecar=fs::read(root.0.join("fundamental.ndjson")).unwrap();let mut queue=json!({"state":{"unknown":{},"active":null,"manual_review":false}});
+   match case{"unknown"=>queue["state"]["unknown"]=json!({"original":"uncertain"}),"active"=>queue["state"]["active"]=json!({"original":"ongoing"}),"manual"=>queue["state"]["manual_review"]=json!(true),_=>{}}
+   let error=fundamental_preintent(&mut f,&bank,&log,&c.scope,&q,n,&request,&permit,||if case=="fresh_ineligible"{at}else{at+6001},||{if case=="queue_io"{return Err(std::io::Error::other("fixture quiet snapshot failure").into())}recovery_queue_clear(&queue)}).err().expect(case);
+   if case=="fresh_ineligible"{assert_eq!(error.to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");}if case=="queue_io"{assert_eq!(error.to_string(),"fixture quiet snapshot failure");}
+   assert_eq!(bank.durable_head(),head,"{case}");assert_eq!(bank.engine().report().unwrap(),financial,"{case}");assert_eq!(fs::read(root.0.join("dispatch.ndjson")).unwrap(),dispatch,"{case}");assert_eq!(fs::read(root.0.join("fundamental.ndjson")).unwrap(),sidecar,"{case}");assert!(f.cohorts.durable_tag(qid).is_none(),"{case}");
+  }
+ }
  #[test]fn fundamental_preintent_stale_defer_requires_real_freshness_loss_and_preserves_prefix(){
   let at=now()-1000;let(root,c,bank,log,_source,q,_book)=fixture_at(at);let stale:Box<dyn std::error::Error>="FUNDAMENTAL_PHYSICAL_BOOK_STALE".into();let head=bank.durable_head();let bytes=fs::read(root.0.join("dispatch.ndjson")).unwrap();let financial=bank.engine().report().unwrap();
   assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).unwrap());
