@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "verifierSourceRawSha256": "f9b67d903a111bb29a8d9d7aa1f582e2b049c8f0a71df3445109dea277800d1c",
+  "verifierSourceLfSha256": "f9b67d903a111bb29a8d9d7aa1f582e2b049c8f0a71df3445109dea277800d1c",
+  "result": "PASS_ORIGINAL_R27_PREINTENT_BOOK_EXPIRY_INCIDENT",
+  "incidentZipSha256": "7ee0a95b75500d732e2568a1962eb1491cd525125284a495f39bc14d38666af4",
+  "incidentZipBytes": 6054486,
+  "originalArtifactsRawPinsVerified": 18,
+  "packetManifestSha256": "574b95cccbdad1bb31530ebb1d79747a3d456d1b6b1a93a0613a385e8424d428",
+  "nodeContinuityZipSha256": "19e964fb2168bee447600a23e14cdb83a1dd5ead24be04a0c43cd0f824ba0774",
+  "anchorIncidentZipSha256": "8c09fd1aaa589dd0e4e55da09188b5b5aa7f19c9ea3378c779155da534dc02d3",
+  "nativeSuffix": {
+    "anchorSequence": 489338,
+    "firstSequence": 489339,
+    "finalSequence": 492481,
+    "rows": 3143,
+    "rawPin": {
+      "member": "native.suffix.jsonl",
+      "bytes": 10654666,
+      "sha256": "e0351244c811dfab46dd271011de463f8b1afff4febfb39953093e99a1b2e529"
+    },
+    "exactRawSealsAndTailVerified": true
+  },
+  "prior382RawFillTokensUnchanged": true,
+  "wholeOriginalSixGenerationPrefixPreserved": true,
+  "generationHashes": [
+    "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+    "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+    "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31",
+    "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+    "64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda",
+    "813f85a7a6da473c52152d7acbdd0b88102f288380c95199bd5d23360b0ff12a"
+  ],
+  "originalFundamentalPin": {
+    "member": "fundamental.original.jsonl",
+    "bytes": 493714,
+    "sha256": "e294520aff0a0b2571e0b7f57a98aff0f7c7a4026b70bdcf15d7f6176a4650f2"
+  },
+  "dispatchRows": 21894,
+  "originalDispatchPin": {
+    "member": "dispatch.original.ndjson",
+    "bytes": 10652764,
+    "sha256": "266808aa7e3996d22320ceeb5f7a1ad22c44e1c32ca51bde8ccb874ed68afab6"
+  },
+  "quote": {
+    "qid": 15612,
+    "exchangeId": "851",
+    "side": "NO",
+    "action": "buy",
+    "quantity": 680,
+    "limit": "0.875000",
+    "filled": 0,
+    "retired": false
+  },
+  "noOriginalDispatchOrActualNativeOperationForQid": true,
+  "stoppedAt": "2026-10-17T14:21:28.344Z",
+  "reason": "FUNDAMENTAL_NOT_ELIGIBLE",
+  "pid": 654706,
+  "originalStopPin": {
+    "member": "stop.original.json",
+    "bytes": 128,
+    "sha256": "714c14596b860100baaf85c391a3000d3a96c3085a2a2d15b237fac2788a04fa"
+  },
+  "queue": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  },
+  "final851Book": {
+    "marketId": "162",
+    "exchangeId": "851",
+    "transport": null,
+    "sequence": "189467231",
+    "sourceAt": "2026-10-17T14:21:16.3497627+00:00",
+    "requestStartedAt": "2026-10-17T14:21:16.109Z",
+    "receivedAt": "2026-10-17T14:21:16.455Z",
+    "invalid": null
+  },
+  "bookAgeAtStopMs": {
+    "sourceAt": "11994.2373",
+    "requestStartedAt": "12235",
+    "receivedAt": "11889"
+  },
+  "bookSourceReference": {
+    "hash": "a01de9ce2c51ea8dd32f2896a70e1ba7293773072d53dcb36df862e849e7f73e",
+    "id": "moloch-live",
+    "sequence": 492473
+  },
+  "wholeNativePrefixReportedByCapture": {
+    "sha256": "7b1471ccaf50da2332be6a11ad32967322a5faba34d12e113cdd9806f50035c8",
+    "bytes": 1606236482
+  },
+  "wholeNativePrefixIndependentlyRehashedHere": false,
+  "sourceBodyMembershipIndependentlyVerified": false,
+  "financialReplayPerformed": false,
+  "newAccountRequests": 0,
+  "executionAuthority": false,
+  "profitabilityEstablished": false
+}
