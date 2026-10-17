@@ -2624,7 +2624,8 @@ pub fn main()->Result<()>{
   (temp,bank,log,c,source,oldq,hint)
  }
  #[test]fn live_profit_too_short_for_frozen_preflight_still_nominates_one_read_packet(){
-  let mut q=expired_hint_quote(2,"1012");q.as_object_mut().unwrap().remove("inventoryExitReason");q["retired"]=json!(false);q["createdAt"]=json!(18000);q["activationAt"]=json!(21000);q["expiresAt"]=json!(31000);
+  fn hint_safety(unknown:bool)->moloch_live_runtime::exit_refresh::Safety{moloch_live_runtime::exit_refresh::Safety{never_attempted:true,has_intent:false,unresolved_attempts:false,global_unknown:unknown,stop:false,stream_healthy:true,owned_quantity:300,reserved_sell_quantity:0,same_exchange_pending_physical_order:false,lifecycle_fingerprint:[1;32],native_head_fingerprint:[2;32]}}
+  let q=json!({"id":2,"marketId":"525","exchangeId":"1012","side":"NO","action":"sell","executionStyle":"inventoryAON","filled":0,"quantity":60,"price":"0.685000","retired":false,"createdAt":18000,"activationAt":21000,"expiresAt":31000});
   assert!(!physical_preflight_ready(&q,true,false,28500));
   let mut history=q.clone();history["id"]=json!(1);history["retired"]=json!(true);history["createdAt"]=json!(0);history["activationAt"]=json!(3000);history["expiresAt"]=json!(13000);
   let(hints,_)=prepare_expired_exit_hints(&[history,q.clone()],28500,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(false),||Ok(false),|_,u|Ok(hint_safety(u))).unwrap();
