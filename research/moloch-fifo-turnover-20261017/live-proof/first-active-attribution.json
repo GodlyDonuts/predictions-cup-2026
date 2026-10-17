@@ -1,0 +1,59 @@
+{
+  "activity": [],
+  "counterfactualExecutionOccurred": false,
+  "executionAuthority": false,
+  "limitations": [
+    "Only the explicit new FIFO-profit reason is attributed; other strategies and whole-account PnL are excluded.",
+    "A quote or ACK is not a fill. Filled native retirement is not complete terminal-tape proof.",
+    "A zero-fill open/unknown order is not a confirmed nonfill. No fill probability is estimated.",
+    "The cost bound is frozen native pricing metadata, including native acquisition-fee upper rounding, not independently replayed exact FIFO realized cost.",
+    "Native accepted fill rows, original dispatch and report membership are checked; underlying fill-tape receipt bodies and full Rust financial replay are not authenticated here.",
+    "The suffix must include original reservation, ACK and accepted fill evidence for selected quotes; missing or after-report proof is refused.",
+    "Public output contains native qids, aggregates and source hashes; actual venue order/fill identifiers and raw receipts remain private."
+  ],
+  "reasonFilter": "reviewed_fifo_profit_turnover",
+  "schemaVersion": 1,
+  "source": {
+    "analyzerSha256": "916464e804d9b33bb8d8f9f9a68bc1358f4741a72dc8c2591c0b8bf31bbdb8d6",
+    "dispatchFinalSha256": "e7f1f25d6e17ce1cedb8df96035674fa3f5691fd599a6f945f58374bdfc37055",
+    "dispatchRowsVerified": 22683,
+    "nativeAnchorSequence": 515532,
+    "nativePrevious": "e90a32157c649da5487ece08af9f4a7150ece0777844acf95fdf81f1802b1c1e",
+    "nativeSequence": 515895,
+    "nativeSuffixRowsVerified": 363,
+    "originalFilePins": {
+      "anchor-head.original.json": {
+        "bytes": 254,
+        "sha256": "fecc65afc558c284020509292ffa2055967f77e72db2a837e346de4821671a71"
+      },
+      "dispatch.original.ndjson": {
+        "bytes": 10929615,
+        "sha256": "b05d75daefae2854099af1ee4eeb4335779f7badc0e0fab0cedfa1653015cdfe"
+      },
+      "head.original.json": {
+        "bytes": 254,
+        "sha256": "0b96cf10587b3451accecccc0f91ff3c3d7b2285be61ee2996661c26e1176f69"
+      },
+      "native.suffix.jsonl": {
+        "bytes": 487325,
+        "sha256": "ea3d1320ddca98100ee1608696c69c089b8eec270f9f61e60d7c1343673cfd89"
+      },
+      "report.original.json": {
+        "bytes": 5458955,
+        "sha256": "462e4b140f90245dae1da0f11cb9dde8201d8816e12bcd0f74eca0e718ce60ff"
+      }
+    },
+    "packetManifestSha256": "f663fa4b4d2b6b7832750071c0508327900b5890d91f4844684f3306d35e739f",
+    "privateZipSha256": "42868bf3d906cad5aa955a472130261d2ce4595e94f88ff9e99b29e300b1f869",
+    "reportAtUtc": "2026-10-17T17:41:10.881Z"
+  },
+  "summary": {
+    "actualFillCount": 0,
+    "actualFilledQuantity": 0,
+    "actualNetProceeds": "0.000000",
+    "conservativeGainLowerBound": "0.000000",
+    "nativeQuotes": 0,
+    "originalAcks": 0,
+    "originalAttempts": 0
+  }
+}
