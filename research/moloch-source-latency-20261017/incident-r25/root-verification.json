@@ -1,0 +1,30 @@
+{
+  "result": "PASS_ORIGINAL_STOPPED_PACKET",
+  "privateArchiveBytes": 5955635,
+  "privateArchiveSha256": "f8647aba40245a344febeb756b725283768c920c9d84938e33c35b005f6c7b5e",
+  "originalPacketFilesVerified": 22,
+  "stoppedPid": 649399,
+  "stoppedAt": "2026-10-17T11:16:03.094Z",
+  "stopReason": "FUNDAMENTAL_PHYSICAL_BOOK_STALE",
+  "originalStopSha256": "6f430ae6543b1c2a498dd60cc96d4bb5d4d97c6ece4e4e1f1a2fee0aabf61335",
+  "nativeStoppedSequence": 481281,
+  "nativeSuffixRows": 2924,
+  "fullDispatchRows": 21457,
+  "fullCohortRows": 66,
+  "allPrior381FillTokensUnchanged": true,
+  "localNativeFillRows": 381,
+  "cash": "3611.985000",
+  "ownedCost": "91853.520000",
+  "realized": "-114.410000",
+  "reservedCash": "3611.840000",
+  "queue": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  },
+  "lastAckSequence": 21448,
+  "allPostLastAckDispatchEventsNotSent": true,
+  "financialSessionReplay": false,
+  "rawSourceBodyMembershipVerified": false,
+  "startupOfficialReconciliationRequired": true
+}

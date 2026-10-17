@@ -797,6 +797,20 @@ fn defer_account_preintent(c:&Control,bank:&Session,log:&DispatchLog,authority:&
  if !untouched{return Err("LIVE_ACCOUNT_DEFER_AFTER_ORIGINAL_OPERATION".into())}
  authority.clear_ready();atomic_json(&c.root.join("account-realtime-deferred.json"),&json!({"at":iso(now()),"qid":qid,"operation":if cancel{"cancel"}else{"order"},"reason":error.to_string(),"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity()?,"physicalAttempted":false,"requiresAuthoritativeRefresh":true}))?;Ok(true)
 }
+/// A freshness loss at physical capability minting can decline an untouched
+/// quote. This helper is never used after an original intent or attempt.
+fn fundamental_stale_preintent(bank:&Session,log:&DispatchLog,scope:&Scope,expected:&Value,error:&dyn std::error::Error,sdk_unknown:bool,at:u64)->Result<bool>{
+ if error.to_string()!="FUNDAMENTAL_PHYSICAL_BOOK_STALE"{return Ok(false)}
+ log.require_resolved_attempts()?;
+ if sdk_unknown{return Err("LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE".into())}
+ let qid=expected["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let current=quote(bank,qid)?;
+ if current!=*expected{return Err("LIVE_FUNDAMENTAL_STALE_DEFER_QUOTE_CHANGED".into())}
+ if !log.never_attempted(qid)||log.intents.contains_key(&qid)||log.acknowledgments.contains_key(&qid)||bank.engine().live_order_bindings().contains_key(&qid)||bank.engine().fills().iter().any(|f|f["orderId"]==qid){return Err("LIVE_FUNDAMENTAL_STALE_DEFER_AFTER_ORIGINAL_OPERATION".into())}
+ let ex=current["exchangeId"].as_str().ok_or("LIVE_SCOPE")?;
+ let age=bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?;
+ let(books,_)=moloch_live_runtime::package_admission::native_books(bank,scope,at,age)?;
+ if books.contains_key(ex){return Err("LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK".into())}Ok(true)
+}
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if !owner_capital_buys_allowed(c,bank,&q["action"])?{return Ok(())}
  use moloch_live_runtime::decision_trace::{Trace,Stage};
@@ -813,7 +827,19 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   let n=f.cohorts.planned_entry_quantity(bank,log,&c.scope,qid,f.authority.trusted(),now())?.unwrap_or(u64::from(order.quantity));
   order.quantity=u32::try_from(n)?;request_spec=spec(&order)?;p.maximum_quantity=order.quantity;p.maximum_cost=money(decimal_units(&order.price)?.checked_mul(i128::from(n)).ok_or("LIVE_COST_OVERFLOW")?);
   f.cohorts.bind_quantity(bank,log,&c.scope,qid,n,&request_spec,f.authority.trusted(),now())?;
-  Some(Arc::new(f.cohorts.physical_decision(bank,log,&c.scope,qid,&request_spec,&p,&f.authority,now())?))
+  let decision=match f.cohorts.physical_decision(bank,log,&c.scope,qid,&request_spec,&p,&f.authority,now()){
+   Ok(decision)=>decision,
+   Err(error)=>{
+    if error.to_string()=="FUNDAMENTAL_PHYSICAL_BOOK_STALE"{
+     // The same positive quiet-queue proof used by stream recovery also
+     // excludes active admission/manual review, not only unknown accepts.
+     recovery_queue_clear(&t.admission_state()?)?;
+     if fundamental_stale_preintent(bank,log,&c.scope,q,error.as_ref(),false,now())?{
+      authority.clear_ready();atomic_json(&c.root.join("fundamental-preintent-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":error.to_string(),"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity()?,"physicalAttempted":false,"requiresAuthoritativeRefresh":true,"cohortBindingPreserved":true}))?;return Ok(())
+     }
+    }return Err(error)
+   }
+  };Some(Arc::new(decision))
  }else{None};
  if let Some((decision,review))=&maker{if let Err(error)=decision.validate_current(bank,review,log,now()){
   if !expected_maker_expiry(error.as_ref()){return Err(error)}authority.clear_ready();atomic_json(&c.root.join("maker-policy-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":error.to_string(),"physicalAttempted":false}))?;return Ok(())
@@ -2385,6 +2411,24 @@ pub fn main()->Result<()>{
   let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,c,bank,log,source,q,book)
  }
  fn periodic_events(path:&Path)->Vec<Value>{fs::read_to_string(path).unwrap().lines().map(|line|serde_json::from_str::<Value>(line).unwrap()["event"].clone()).collect()}
+ #[test]fn fundamental_preintent_stale_defer_requires_real_freshness_loss_and_preserves_prefix(){
+  let at=now()-1000;let(root,c,bank,log,_source,q,_book)=fixture_at(at);let stale:Box<dyn std::error::Error>="FUNDAMENTAL_PHYSICAL_BOOK_STALE".into();let head=bank.durable_head();let bytes=fs::read(root.0.join("dispatch.ndjson")).unwrap();let financial=bank.engine().report().unwrap();
+  assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).unwrap());
+  assert!(!fundamental_stale_preintent(&bank,&log,&c.scope,&q,&std::io::Error::other("unrelated failure"),false,at+60000).unwrap());
+  assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");
+  assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),true,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE");
+  let mut changed=q.clone();changed["price"]=json!("0.005000");assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&changed,stale.as_ref(),false,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_QUOTE_CHANGED");
+  assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),financial);assert_eq!(fs::read(root.0.join("dispatch.ndjson")).unwrap(),bytes);
+ }
+ #[test]fn fundamental_preintent_stale_defer_never_hides_an_original_operation(){
+  for case in ["intent","attempt","ack","binding"]{let at=now()-1000;let(_root,c,mut bank,mut log,_source,q,_book)=fixture_at(at);let qid=q["id"].as_u64().unwrap();let stale:Box<dyn std::error::Error>="FUNDAMENTAL_PHYSICAL_BOOK_STALE".into();
+   if case!="binding"{log.append(json!({"kind":"intent","qid":qid,"quote":q})).unwrap();}
+   if matches!(case,"attempt"|"ack"){log.append(json!({"kind":"attempt","qid":qid})).unwrap();}
+   if case=="ack"{log.append(json!({"kind":"ack","qid":qid,"receipt":{"data":{"orderId":"902"}}})).unwrap();}
+   if case=="binding"{accept(&mut bank,&json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":qid,"actualOrderId":"902","exchangeId":"101","marketId":"201","side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(now())})).unwrap();}
+   let head=bank.durable_head();let descriptor=log.descriptor_identity().unwrap();assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).is_err(),"{case}");assert_eq!(bank.durable_head(),head);assert_eq!(log.descriptor_identity().unwrap(),descriptor);
+  }
+ }
  struct PeriodicReads{at:u64,tape:Receipt,book:Receipt,journal:PathBuf,initial_sequence:u64,services:usize,fail_service:Option<usize>,book_failure:bool,queued_gap:bool,trace:Vec<&'static str>}
  impl OrdinaryPreflightReads for PeriodicReads{
   fn now_ms(&self)->u64{self.at}
