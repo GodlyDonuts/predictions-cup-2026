@@ -4,7 +4,7 @@ use serde_json::{Value,json};
 use std::{path::PathBuf,sync::Arc};
 const NOW:u64=1_792_022_400_000;
 fn iso(at:u64)->String{chrono::DateTime::from_timestamp_millis(at as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
-struct Temp(PathBuf);impl Temp{fn new()->Self{let p=std::env::temp_dir().join(format!("order-snapshot-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));std::fs::create_dir(&p).unwrap();Self(p)}}impl Drop for Temp{fn drop(&mut self){let _=std::fs::remove_dir_all(&self.0);}}
+struct Temp(PathBuf);impl Temp{fn new()->Self{let p=std::env::temp_dir().join(format!("order-snapshot-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));Self(p)}}impl Drop for Temp{fn drop(&mut self){let _=std::fs::remove_dir_all(&self.0);}}
 fn policy()->Value{json!({"quantity":5,"maximumMarkets":3,"entryStopAt":iso(NOW+600000)})}
 fn seed()->Value{json!({"runId":"order-cache-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(NOW-1000)})}
 fn book()->Value{json!({"type":"book","receivedAt":iso(NOW),"book":{"marketId":"101","exchangeId":"101","sequence":"1","sourceAt":iso(NOW),"requestStartedAt":iso(NOW),"receivedAt":iso(NOW),"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})}
