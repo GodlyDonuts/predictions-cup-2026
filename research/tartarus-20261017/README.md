@@ -38,6 +38,8 @@ The [native census driver](run_native_capacity_audit.py) ran on the original13-m
 
 The four reproducible artifacts are [audit manifest](native-capacity/audit_manifest.json), [capacity frontier](native-capacity/capacity_frontier.json), [rank candidates](native-capacity/rank_candidates.json) and [decision trace](native-capacity/decision_trace.json). Their campaign status is explicitly **unavailable**, with null rank scores: source validity, full normalized resolver registry, official liability evidence and classification of three unretired/unresolved native intents are missing. Native intents are not labeled three physical exchange orders. The driver does not manufacture zero debt, current probabilities or complete opposing portfolios. Genuine captured contract nodes are being inventoried separately to close the registry gap.
 
+The [later buy-only bound](buy-only-capacity-bound.json) uses verified G9 report547539/22:05:14.467 and the actual runtime `.005` minimum admitted price. Even if every existing share pays one, every gross-cash unit is available, fees are zero and unlimited new liquidity is available at that floor,149477 held shares plus722757 new shares reach at most **872234.000**. All five declared paper targets remain above that optimistic envelope. This identifies a concrete need to evaluate confirmed-proceeds rotation or interim realized trading gains. Opponents' terminal wealth can change; the bound establishes no calibrated probability of first place. It assumes no sales, leverage or interim credits, and ignores current market/depth/risk limits in the optimistic direction.
+
 Reproduce with the private original packet (raw records remain private):
 
 ```powershell
@@ -75,6 +77,8 @@ The failed trial changes the next engineering step: reuse independently checked 
 [depth_actions.py](../../moloch/tartarus/depth_actions.py) preserves original source/request/receipt/capture clocks and turns captured depth into YES/NO buy alternatives and separate sale curves. It requires explicit fees, exact registry identities and declared book age. Complementary views share original liquidity resource IDs; the buy-only frontier selects at most one side per exchange, never credits a modeled sale and does not claim full-venue depth.
 
 The [campaign driver](../../moloch/tartarus/worker_campaign.py) connects those components to complete account scenarios and target search. Registry, terminal-liability model, fees, joint scenarios, rival models and risk constraints must be supplied explicitly. Its four audit artifacts retain the exact stage and reason when evidence is absent, stale, incompatible or insufficient. A synthetic23-holding integration retains a target-reaching negative monetary-expectation alternative without classifying it positive alpha; it does not establish actual execution or calibrated winning odds.
+
+The current optional hook exports original evidence at cycle end. A source audit found that ordinary later book/tick admissions commonly advance the native report clock beyond the cached account receipts, which correctly leaves the scoring adapter unavailable. A future account-packet boundary integration must preserve original clocks, current SDK/dispatch/lease and account-generation checks. No clock is replaced with capture time, and the end-cycle hook carries no promise of economically current scoring.
 
 Run privately with a pinned input JSON containing `pins` (the five external pins) and `config` (explicit declared economic inputs):
 
