@@ -577,6 +577,73 @@ fn original_closed_rows(cache:&std::sync::Mutex<ClosedRowsCache>,ordinary_path:&
 #[cfg(all(test,unix))]
 #[path="../../../research/moloch-fundamental-closure-cache-20261017/tests.rs"]
 mod closed_rows_cache_tests;
+// Only ordinary NEVER-ATTEMPTED original rows are memoized. Every hit still
+// rehashes the FULL held dispatch file; SDK-proved aborts always use the parser.
+const NOT_SENT_CACHE_BYTES:usize=8*1024*1024;
+const NOT_SENT_CACHE_COUNT:usize=32;
+struct CachedNotSentRows{rows:BTreeMap<u64,Value>,pin:FilePin}
+#[derive(Default)]struct NotSentRowsCache{descriptor:Option<Value>,entries:BTreeMap<BTreeSet<u64>,CachedNotSentRows>,bytes:usize,#[cfg(test)]parses:u64}
+fn original_not_sent_rows(cache:&std::sync::Mutex<NotSentRowsCache>,ordinary_path:&PathBuf,ordinary_identity:&Value,log:&DispatchLog,wanted:&BTreeSet<u64>)->Result<(BTreeMap<u64,Value>,FilePin)>{
+    need(wanted.len()<=4096&&wanted.iter().all(|qid|log.never_attempted(*qid)||log.proved_no_network(*qid)),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
+    // Do not retain or serve any SDK-proved branch: its original archive must
+    // be opened and independently checked on EVERY original parser invocation.
+    if wanted.iter().any(|qid|log.proved_no_network(*qid)){
+        return original_not_sent_rows_uncached(ordinary_path,ordinary_identity,log,wanted)
+    }
+    let before=log.descriptor_identity()?;
+    if let Ok(mut retained)=cache.lock(){
+        if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.bytes=0;retained.descriptor=Some(before.clone());}
+        if let Some(entry)=retained.entries.get(wanted){
+            need(entry.pin.path==*ordinary_path&&entry.pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
+            entry.pin.validate()?;
+            need(before==log.descriptor_identity()?,"FUNDAMENTAL_ABANDON_DISPATCH_CHANGED")?;
+            let pin=FilePin{file:entry.pin.file.try_clone()?,path:entry.pin.path.clone(),identity:entry.pin.identity.clone(),bytes:entry.pin.bytes,sha:entry.pin.sha.clone(),maximum:entry.pin.maximum,version:entry.pin.version.clone()};
+            pin.validate_metadata()?;return Ok((entry.rows.clone(),pin))
+        }
+        #[cfg(test)]{retained.parses+=1;}
+    }
+    // A poisoned optimization lock is not financial authority. Fall back to
+    // unchanged original verification, including all original errors/fences.
+    let(found,pin)=original_not_sent_rows_uncached(ordinary_path,ordinary_identity,log,wanted)?;
+    need(before==log.descriptor_identity()?,"FUNDAMENTAL_ABANDON_DISPATCH_CHANGED")?;
+    let serialized=serde_json::to_vec(&found)?.len().saturating_add(wanted.len().saturating_mul(std::mem::size_of::<u64>()));
+    if serialized<=NOT_SENT_CACHE_BYTES{
+        if let Ok(mut retained)=cache.lock(){
+            let cached_pin=FilePin{file:pin.file.try_clone()?,path:pin.path.clone(),identity:pin.identity.clone(),bytes:pin.bytes,sha:pin.sha.clone(),maximum:pin.maximum,version:pin.version.clone()};
+            if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.bytes=0;retained.descriptor=Some(before.clone());}
+            if retained.entries.len()>=NOT_SENT_CACHE_COUNT||retained.bytes.saturating_add(serialized)>NOT_SENT_CACHE_BYTES{retained.entries.clear();retained.bytes=0;}
+            retained.bytes+=serialized;retained.entries.insert(wanted.clone(),CachedNotSentRows{rows:found.clone(),pin:cached_pin});
+        }
+    }
+    Ok((found,pin))
+}
+fn original_not_sent_rows_uncached(ordinary_path:&PathBuf,ordinary_identity:&Value,log:&DispatchLog,wanted:&BTreeSet<u64>)->Result<(BTreeMap<u64,Value>,FilePin)>{
+        need(wanted.len()<=4096&&wanted.iter().all(|qid|log.never_attempted(*qid)||log.proved_no_network(*qid)),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
+        let before=log.descriptor_identity()?;let pin=FilePin::from_held(File::open(ordinary_path)?,ordinary_path.clone(),64*1024*1024,None)?;
+        need(pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
+        let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_ABANDON_DISPATCH_TORN")?;
+        let mut sequence=0u64;let mut previous="0".repeat(64);let mut found=BTreeMap::new();
+        for line in bytes.split(|b|*b==b'\n').filter(|l|!l.is_empty()){
+            need(line.len()<=2*1024*1024,"FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND")?;
+            let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_ABANDON_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_ABANDON_DISPATCH_HASH")?;
+            need(row["sequence"]==sequence+1&&row["previous"]==previous&&sha==digest(&row)?,"FUNDAMENTAL_ABANDON_DISPATCH_CHAIN")?;
+            if let Some(qid)=row["event"]["qid"].as_u64().filter(|id|wanted.contains(id)){
+                if log.proved_no_network(qid){
+                    need(!matches!(row["event"]["kind"].as_str(),Some("ack"|"recovered_ack"|"closed"|"cancel_attempt"|"cancel_ack")),"FUNDAMENTAL_ABORT_PHYSICAL_EVENT")?;
+                    if row["event"]["kind"]=="aborted_before_admission"{need(!found.contains_key(&qid)&&log.aborted_records().get(&qid)==Some(&row["event"]),"FUNDAMENTAL_ABORT_ORIGINAL_ROW")?;let _=aborted_archive(log,qid)?;found.insert(qid,original);}
+                }else{
+                need(!matches!(row["event"]["kind"].as_str(),Some("attempt"|"ack"|"recovered_ack")),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
+                if row["event"]["kind"]=="not_sent"{let proof=&row["event"]["proof"];
+                    need(!found.contains_key(&qid)&&*proof==json!({"qid":qid,"chain":previous,"sequence":sequence,"networkAttempts":0}),"FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT")?;found.insert(qid,original);}}
+            }
+            sequence+=1;previous=sha.as_str().ok_or("FUNDAMENTAL_ABANDON_DISPATCH_HASH")?.into();
+        }
+        pin.validate()?;need(log.descriptor_identity()?==before&&before["sequence"]==sequence&&before["previous"]==previous,"FUNDAMENTAL_ABANDON_DISPATCH_CHANGED")?;
+        need(found.len()==wanted.len(),"FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED")?;Ok((found,pin))
+    }
+#[cfg(all(test,unix))]
+#[path="../../../research/moloch-fundamental-not-sent-cache-20261017/tests.rs"]
+mod not_sent_rows_cache_tests;
 pub struct Cohorts{
     file:File,path:PathBuf,ordinary_path:PathBuf,ordinary_identity:Value,
     marker:FilePin,
@@ -585,6 +652,7 @@ pub struct Cohorts{
     policies:BTreeMap<String,ReviewInput>,cohorts:BTreeMap<String,Cohort>,abandoned:BTreeMap<u64,AbandonedCohort>,
     aborted_archives:std::sync::Mutex<BTreeMap<u64,FilePin>>,
     closed_rows_cache:std::sync::Mutex<ClosedRowsCache>,
+    not_sent_rows_cache:std::sync::Mutex<NotSentRowsCache>,
 }
 #[cfg(unix)]fn identity(file:&File)->Result<Value>{use std::os::unix::fs::MetadataExt;let m=file.metadata()?;Ok(json!({"device":m.dev(),"inode":m.ino()}))}
 #[cfg(not(unix))]fn identity(_file:&File)->Result<Value>{Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
@@ -763,28 +831,7 @@ impl Cohorts{
         }}Ok(out)
     }
     fn original_not_sent_records(&self,log:&DispatchLog,wanted:&BTreeSet<u64>)->Result<(BTreeMap<u64,Value>,FilePin)>{
-        need(wanted.len()<=4096&&wanted.iter().all(|qid|log.never_attempted(*qid)||log.proved_no_network(*qid)),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
-        let before=log.descriptor_identity()?;let pin=FilePin::from_held(File::open(&self.ordinary_path)?,self.ordinary_path.clone(),64*1024*1024,None)?;
-        need(pin.identity==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
-        let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_ABANDON_DISPATCH_TORN")?;
-        let mut sequence=0u64;let mut previous="0".repeat(64);let mut found=BTreeMap::new();
-        for line in bytes.split(|b|*b==b'\n').filter(|l|!l.is_empty()){
-            need(line.len()<=2*1024*1024,"FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND")?;
-            let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_ABANDON_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_ABANDON_DISPATCH_HASH")?;
-            need(row["sequence"]==sequence+1&&row["previous"]==previous&&sha==digest(&row)?,"FUNDAMENTAL_ABANDON_DISPATCH_CHAIN")?;
-            if let Some(qid)=row["event"]["qid"].as_u64().filter(|id|wanted.contains(id)){
-                if log.proved_no_network(qid){
-                    need(!matches!(row["event"]["kind"].as_str(),Some("ack"|"recovered_ack"|"closed"|"cancel_attempt"|"cancel_ack")),"FUNDAMENTAL_ABORT_PHYSICAL_EVENT")?;
-                    if row["event"]["kind"]=="aborted_before_admission"{need(!found.contains_key(&qid)&&log.aborted_records().get(&qid)==Some(&row["event"]),"FUNDAMENTAL_ABORT_ORIGINAL_ROW")?;let _=aborted_archive(log,qid)?;found.insert(qid,original);}
-                }else{
-                need(!matches!(row["event"]["kind"].as_str(),Some("attempt"|"ack"|"recovered_ack")),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
-                if row["event"]["kind"]=="not_sent"{let proof=&row["event"]["proof"];
-                    need(!found.contains_key(&qid)&&*proof==json!({"qid":qid,"chain":previous,"sequence":sequence,"networkAttempts":0}),"FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT")?;found.insert(qid,original);}}
-            }
-            sequence+=1;previous=sha.as_str().ok_or("FUNDAMENTAL_ABANDON_DISPATCH_HASH")?.into();
-        }
-        pin.validate()?;need(log.descriptor_identity()?==before&&before["sequence"]==sequence&&before["previous"]==previous,"FUNDAMENTAL_ABANDON_DISPATCH_CHANGED")?;
-        need(found.len()==wanted.len(),"FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED")?;Ok((found,pin))
+        original_not_sent_rows(&self.not_sent_rows_cache,&self.ordinary_path,&self.ordinary_identity,log,wanted)
     }
     /// Original retirement must include its ACTUAL prepared processedAt bytes
     /// and be retained in this Session's source references, not reconstructed.
@@ -1194,7 +1241,7 @@ impl Cohorts{
             marker,
             manifest:bank.manifest_hash().as_str().ok_or("FUNDAMENTAL_MANIFEST")?.into(),
             run:bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"].as_str().ok_or("FUNDAMENTAL_RUN")?.into(),
-            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new(),aborted_archives:Default::default(),closed_rows_cache:Default::default()};
+            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new(),aborted_archives:Default::default(),closed_rows_cache:Default::default(),not_sent_rows_cache:Default::default()};
         let mut reader=BufReader::new(out.file.try_clone()?);let mut line=Vec::new();
         loop{line.clear();let n=reader.by_ref().take((MAX_ROW+1) as u64).read_until(b'\n',&mut line)?;if n==0{break}
             need(line.len()<=MAX_ROW&&line.last()==Some(&b'\n'),"FUNDAMENTAL_TORN_OR_OVERSIZED_ROW")?;
