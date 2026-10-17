@@ -38,6 +38,18 @@ fn only_binary_changed(active:&[u8],next_base:&[u8])->Result<Settings>{
     let settings:Settings=serde_json::from_value(a.get("fundamentalPolicy").cloned().ok_or("RELOAD_POLICY_REQUIRED")?)?;
     need(!settings.allow_initialization,"RELOAD_INITIALIZATION_FORBIDDEN")?;Ok(settings)
 }
+/// The execution owner's new immutable startup Control may prospectively opt
+/// into managed planning. Original overlays and model generations stay pinned;
+/// this recovery comparison permits no other strategy/financial/model change.
+fn recovery_settings(active:&[u8],next_base:&[u8])->Result<(Settings,bool)>{
+    let a:Value=serde_json::from_slice(active)?;let mut b:Value=serde_json::from_slice(next_base)?;
+    let opt_in=a.get("managedInventoryPlanning").is_none_or(|v|v==false)&&b.get("managedInventoryPlanning")==Some(&json!(true));
+    if opt_in{
+        if let Some(original)=a.get("managedInventoryPlanning"){b["managedInventoryPlanning"]=original.clone();}
+        else{b.as_object_mut().ok_or("RELOAD_REBASE_CONTROL_OBJECT")?.remove("managedInventoryPlanning");}
+        Ok((only_binary_changed(active,&serde_json::to_vec(&b)?)?,true))
+    }else{Ok((only_binary_changed(active,next_base)?,false))}
+}
 pub struct ControlPin{file:File,path:PathBuf,identity:Value,bytes:u64,hash:String,version:Value}
 impl ControlPin{
     fn open(path:&Path,expected:&str)->Result<Self>{
@@ -114,9 +126,10 @@ impl Active{
         need(pin.identity==meta["controlIdentity"],"RELOAD_CONTROL_REPLACED")?;
         let original_active=pin.read()?;
         let rebased=request.base_control_sha256!=current_base;
-        let settings=if rebased{only_binary_changed(&original_active,base)?}else{only_fundamental_changed(base,&original_active)?};
+        let(settings,planning_opt_in)=if rebased{recovery_settings(&original_active,base)?}else{(only_fundamental_changed(base,&original_active)?,false)};
         let loaded=settings.load()?;store.validate_generation_settings(&loaded)?;pin.validate()?;
-        let recovery=json!({"originalBaseSha256":request.base_control_sha256,"currentBaseSha256":current_base,"recoveredGenerationSha256":meta["generationSha256"],"binaryOnlyRebase":rebased});
+        let mut recovery=json!({"originalBaseSha256":request.base_control_sha256,"currentBaseSha256":current_base,"recoveredGenerationSha256":meta["generationSha256"],"binaryOnlyRebase":rebased&&!planning_opt_in});
+        if planning_opt_in{recovery["managedInventoryPlanningOptIn"]=json!(true);}
         Ok(Some((Self{pin,metadata:meta.clone(),recovery,exchanges:store.managed_exchanges(),files:loaded.retained_files()?},loaded)))
     }
     pub fn installed(store:&Cohorts,approved:Approved,loaded:&LoadedSettings)->Result<Self>{
@@ -191,6 +204,18 @@ mod linux{
 #[cfg(test)]mod tests{
  use super::*;
  fn settings()->Value{json!({"version":1,"authorityPath":"/immutable/authority.json","authoritySha256":"a".repeat(64),"reviews":[],"allowInitialization":false})}
+ #[test]fn recovery_opt_in_preserves_every_other_original_field_and_settings(){
+  for explicit_false in [false,true]{
+   let mut old=json!({"activation":{"binarySha256":"b".repeat(64),"maximumCommitted":"95579.915000"},"scope":{"tournamentId":"cup"},"fundamentalReload":true,"fundamentalPolicy":settings()});if explicit_false{old["managedInventoryPlanning"]=json!(false);}
+   let original=serde_json::to_vec(&old).unwrap();let mut next=old.clone();next["activation"]["binarySha256"]=json!("c".repeat(64));next["managedInventoryPlanning"]=json!(true);
+   let(s,opt)=recovery_settings(&original,&serde_json::to_vec(&next).unwrap()).unwrap();assert!(opt);assert_eq!(serde_json::to_value(s).unwrap(),settings());assert_eq!(serde_json::from_slice::<Value>(&original).unwrap(),old);
+   for key in ["activation","scope","fundamentalPolicy","fundamentalReload","unknownField","credentials","dailyEntryWindows","ownerCapitalAllocation"]{let mut bad=next.clone();bad[key]=json!("changed");assert!(recovery_settings(&original,&serde_json::to_vec(&bad).unwrap()).is_err(),"{key}");}
+   for value in [Value::Null,json!("true"),json!(1)]{let mut bad=next.clone();bad["managedInventoryPlanning"]=value;assert!(recovery_settings(&original,&serde_json::to_vec(&bad).unwrap()).is_err());}
+   let enabled=serde_json::to_vec(&next).unwrap();let mut later=next.clone();later["activation"]["binarySha256"]=json!("d".repeat(64));assert!(!recovery_settings(&enabled,&serde_json::to_vec(&later).unwrap()).unwrap().1);
+   for value in [json!(false),Value::Null,json!("true")]{let mut bad=later.clone();bad["managedInventoryPlanning"]=value;assert!(recovery_settings(&enabled,&serde_json::to_vec(&bad).unwrap()).is_err());}
+   later.as_object_mut().unwrap().remove("managedInventoryPlanning");assert!(recovery_settings(&enabled,&serde_json::to_vec(&later).unwrap()).is_err());
+  }
+ }
  #[test]fn only_the_explicit_fundamental_overlay_may_change(){
   let base=json!({"activation":{"binarySha256":"b".repeat(64),"maximumCommitted":"95579.915000"},"accountScope":"account","scope":{"tournamentId":"cup"},"root":"/bank","fundamentalReload":true,"fundamentalPolicy":null});
   let bytes=serde_json::to_vec(&base).unwrap();let mut next=base.clone();next["fundamentalPolicy"]=settings();assert!(only_fundamental_changed(&bytes,&serde_json::to_vec(&next).unwrap()).is_ok());

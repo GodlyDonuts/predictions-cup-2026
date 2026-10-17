@@ -1060,6 +1060,10 @@ impl Cohorts{
         need(queue_view(transport)?==queue,"FUNDAMENTAL_EXISTING_QUEUE_CHANGED")?;Ok(Some(ExistingExit{event}))
     }
     fn cohort_exit_origin(&self,bank:&Session,log:&DispatchLog,ex:&str,c:&Cohort)->Result<Option<Value>>{
+        // A proved no-network attempt is not a closed cohort entry. Preserve
+        // its original resolution requirements instead of minting an exit
+        // which the unchanged physical pending-entry gate cannot dispatch.
+        if c.pending_entry(log){return Ok(None)}
         let r=&self.policies[ex];let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_EXIT_FIFO_CHANGED")?;
         let records=bank.engine().order_records();let mut bindings=Vec::new();
         for b in c.entries().chain(c.exits.values()){

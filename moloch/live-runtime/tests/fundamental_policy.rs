@@ -1064,6 +1064,11 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
             let(active,loaded)=reload::Active::recover(f.store.as_ref().unwrap(),&bytes).unwrap().unwrap();active.validate_full().unwrap();loaded.validate_files().unwrap();
             assert_eq!(active.recovery_receipt(),&json!({"originalBaseSha256":sha(&initial),"currentBaseSha256":sha(&bytes),"recoveredGenerationSha256":metadata["generationSha256"],"binaryOnlyRebase":true}));
             assert_eq!(f.store.as_ref().unwrap().active_generation(),Some(&metadata));assert_eq!(metadata["request"]["baseControlSha256"],sha(&initial));assert_eq!(std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),original_history);assert_eq!(f.bank.durable_head(),head);drop(active);drop(loaded);
+            let mut planning=upgraded.clone();planning["managedInventoryPlanning"]=json!(true);let planning_bytes=serde_json::to_vec(&planning).unwrap();
+            let(active,loaded)=reload::Active::recover(f.store.as_ref().unwrap(),&planning_bytes).unwrap().unwrap();active.validate_full().unwrap();loaded.validate_files().unwrap();
+            assert_eq!(active.recovery_receipt()["binaryOnlyRebase"],false);assert_eq!(active.recovery_receipt()["managedInventoryPlanningOptIn"],true);
+            assert_eq!(f.store.as_ref().unwrap().active_generation(),Some(&metadata));assert_eq!(std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),original_history);assert_eq!(f.bank.durable_head(),head);drop(active);drop(loaded);
+            planning["activation"]["entryUntilMs"]=json!(NOW+600001);assert!(reload::Active::recover(f.store.as_ref().unwrap(),&serde_json::to_vec(&planning).unwrap()).is_err());
             for case in ["cash","quantity","deadline","scope","credentials","unknown","reviewpath","authority","source","model","binary","missingbinary"]{
                 let mut bad=upgraded.clone();match case{
                     "cash"=>bad["activation"]["maximumCommitted"]=json!("1001.000000"),"quantity"=>bad["activation"]["quantity"]=json!(6),"deadline"=>bad["activation"]["entryUntilMs"]=json!(NOW+600001),
