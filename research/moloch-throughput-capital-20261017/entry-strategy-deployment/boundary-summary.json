@@ -1,0 +1,44 @@
+{
+  "cash": "16092.385000",
+  "ownedCost": "79347.690000",
+  "reservedCash": "3741.075000",
+  "newTradingRealized": "-184.970000",
+  "inheritedRealizedGross": "45.130000",
+  "derivedAggregateOnly": true,
+  "originalPrivateBoundarySha256": "58a030c4a6b603fe1eb808967d32e0bc1938035da1faa35e22f8f583ad35aa1c",
+  "operator": "moloch-throughput-capital-20261017-r19-closure-cache",
+  "at": "2026-10-17T03:42:15.434752+00:00",
+  "stagingSha256": "147cbc6ff6d4d1cb5606f7106ab199b4cecd24327c7ff82f141b90679d59726d",
+  "requestSha256": "f83e8890319ff30022162ddcfde1df30fffbaaa00394a3a797071069d0fd0c58",
+  "stopSha256": "7e09e553098d7fbed4f8b994515d3b28ae2bf9ebf50d53b1f482f2ba59014a1d",
+  "workerStatusSha256": "56a8022d8177d865cbfac63c358d7029e07a04032c75b630bf881407b2aeb0c3",
+  "stoppedFinancialHead": {
+    "hash": "6099dcebbef7f50ece7108b9d94a9731a96f9d93848e4c6bb199fbcae63375da",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "42c987ca6f79bc76bdde68ac47f6653f53f0a8053efc752573653349eb6d0c31",
+    "sequence": 396960
+  },
+  "financialJournalBytes": 1258635132,
+  "financialJournalSha256": "1ac50e1c13d782601f0fabdb42737b76b1f0791d31536255c2763ed7081f2b66",
+  "financialReportSha256": "0e3d3f84f2557ee63ab426ec556cb3934edae81a39e543efda7aca996f33d491",
+  "officialFillRows": 338,
+  "combinedAttributedRealized": "-139.840000",
+  "dispatch": {
+    "sequence": 18127,
+    "hash": "0d236092551c85c719f19f4ecdb16a65b071ac136c1a1814ab704ae725173015",
+    "acknowledged": 1453,
+    "provedAborted": {
+      "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7",
+      "10701": "0f8e3dead33ceabb887af2ac321a2e295c83d7cf2e1d16eb70e62882b168f41c"
+    },
+    "unknownOrdinaryAttempts": 0
+  },
+  "queueQuiet": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  },
+  "allFinancialHistoryAnd14BridgeBytesPreserved": true,
+  "original4ModelGenerationsPreserved": true,
+  "privateRawAccountAndStatusOmitted": true
+}

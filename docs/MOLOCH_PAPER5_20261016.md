@@ -1,3 +1,5 @@
+> Current deployment, results and unfinished research: [October 17 handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md). The dated sections below preserve historical evidence and are not the current deployment specification.
+
 # Paper 5: independent values and execution economics
 
 October16,10:08UTC update: combined source4678385b integrates the probabilistic runtime driver/authority/lifecycle, capital-allocation foundations and optional bulk negative screening. ARM64 runtime324/SDK217/native249checks pass, one benchmark intentionally ignored, normal-bin check passes. Production remainsfec81a5e/441490 and does not activate these new lanes. Kalshi WebSocket data is now live; economic model qualification and physical signal integration remain separate. Paper5 is still incomplete, especially genuine model qualification, protected-parent unwind/final-settlement ownership, and the current funding/control rollout. See [Paper6's current implementation ledger](MOLOCH_PAPER6_20261016.md) and [current state](CURRENT_STATE.md); dated statements below retain historical context.

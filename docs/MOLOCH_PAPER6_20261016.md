@@ -1,3 +1,5 @@
+> Current deployment, results and unfinished research: [October 17 handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md). The dated sections below preserve historical evidence and are not the current deployment specification.
+
 # Paper 6: cross-venue state, payoff floors and tournament capital
 
 Received October16, 2026. Original private attachment SHA256

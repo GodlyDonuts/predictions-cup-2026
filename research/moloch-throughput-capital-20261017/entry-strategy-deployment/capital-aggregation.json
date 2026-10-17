@@ -1,0 +1,235 @@
+{
+  "sourceSha256": "0e3d3f84f2557ee63ab426ec556cb3934edae81a39e543efda7aca996f33d491",
+  "financialSequence": 396960,
+  "officialFillRows": 338,
+  "cash": "16092.385000",
+  "ownedCost": "79347.690000",
+  "nativeModeledReservedCash": "3741.075000",
+  "combinedAttributedRealized": "-139.840000",
+  "newTradingRealized": "-184.970000",
+  "inheritedRealizedGross": "45.130000",
+  "costBasisAllocationPercent": "83.13875486791057110967274491",
+  "postCacheOfficialRows": 55,
+  "postCacheActions": {
+    "buy": {
+      "logicalOrders": 14,
+      "quantity": 39152,
+      "principalOrProceeds": "32685.115000",
+      "officialRows": 49
+    },
+    "sell": {
+      "logicalOrders": 3,
+      "quantity": 1082,
+      "principalOrProceeds": "715.920000",
+      "officialRows": 6
+    }
+  },
+  "postCacheGroups": [
+    {
+      "qid": 11680,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 8430,
+      "principal": "7908.410000",
+      "officialRows": 10,
+      "receiptSha256": [
+        "f701e2d53016059e833a64b5dfc2c092d058c5497ec01262207cc9f9a133ad81"
+      ]
+    },
+    {
+      "qid": 11762,
+      "exchangeId": "851",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 9909,
+      "principal": "8648.215000",
+      "officialRows": 6,
+      "receiptSha256": [
+        "07bd4f4c4eb88a892402582530d2bf6dffd80d363debf2d06ac4c688e9b9232a"
+      ]
+    },
+    {
+      "qid": 11793,
+      "exchangeId": "885",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 3856,
+      "principal": "2732.560000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "70f51da0f36c9d9d772a8dfab656cf2b3edb829ca6263af866080f4413cb5675"
+      ]
+    },
+    {
+      "qid": 11813,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 148,
+      "principal": "139.120000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "1ab97c5c93511c235525502693e6c66ad09893b4cfa3cff97ba32731cbbe1c80"
+      ]
+    },
+    {
+      "qid": 11919,
+      "exchangeId": "851",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 648,
+      "principal": "567.000000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "458ca64e69c8e780aaa7bf294f138a6ee913e8455440237f5479e973d7c47c4c"
+      ]
+    },
+    {
+      "qid": 11967,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 3,
+      "principal": "2.835000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "312c0351a96a16c5d7f8d3ee14bbc3ccef479f83b09491a856d5bc5fcb73a062"
+      ]
+    },
+    {
+      "qid": 11985,
+      "exchangeId": "1051",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 10000,
+      "principal": "8613.725000",
+      "officialRows": 19,
+      "receiptSha256": [
+        "0868ea94b836f769d7f527a2a6399e48d6710e069b71b0484d1e1dc17fee3ef4"
+      ]
+    },
+    {
+      "qid": 12010,
+      "exchangeId": "1033",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 60,
+      "principal": "39.900000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "8b52244f077abb19d092e6be2e5405cf72947ff4301d6b72fe2b1bd158035b2e"
+      ]
+    },
+    {
+      "qid": 12050,
+      "exchangeId": "872",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 786,
+      "principal": "361.560000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "56e897cc1a8eaf55ea0ec684ad6628b1f218e59ed0b9d7a13166bbc5037b967b"
+      ]
+    },
+    {
+      "qid": 12060,
+      "exchangeId": "1033",
+      "side": "NO",
+      "action": "sell",
+      "quantity": 60,
+      "principal": "39.900000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "802a9bda3939f24bf7a8e398e7bf40972174c801fae52beaf9252ad10be0a517"
+      ]
+    },
+    {
+      "qid": 12088,
+      "exchangeId": "872",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 110,
+      "principal": "50.600000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "9a3392bcf4262b1d24ac1cbd81962024045bfef898b28e18c185d6da1a83ac1f"
+      ]
+    },
+    {
+      "qid": 12119,
+      "exchangeId": "993",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 3880,
+      "principal": "2735.400000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "9176018d13643d11c403acaa45e96de930a35cd7742d3104438bf85fc6b0b428"
+      ]
+    },
+    {
+      "qid": 12100,
+      "exchangeId": "885",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 284,
+      "principal": "198.800000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "f6f4541695f58fce8ca720339ec27fddada11fddbb34552d19dd352ae857d144"
+      ]
+    },
+    {
+      "qid": 12101,
+      "exchangeId": "1033",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 1022,
+      "principal": "679.630000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "806192698da43dc6fef737559c8ada3513d2f681304482163448b39e937628a4"
+      ]
+    },
+    {
+      "qid": 12187,
+      "exchangeId": "1033",
+      "side": "NO",
+      "action": "sell",
+      "quantity": 872,
+      "principal": "577.020000",
+      "officialRows": 3,
+      "receiptSha256": [
+        "eacfaaf176e9c8b47c7100ad2c000229ce54d1b4a199c536299822167233f546"
+      ]
+    },
+    {
+      "qid": 12194,
+      "exchangeId": "1033",
+      "side": "NO",
+      "action": "sell",
+      "quantity": 150,
+      "principal": "99.000000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "d829ed628065018fe955a197f7c7865c8fff7b80d149b77cb985aca712f4aa60"
+      ]
+    },
+    {
+      "qid": 12242,
+      "exchangeId": "872",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 16,
+      "principal": "7.360000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "1f4dde9bbfe09738ace6d79d8de8d90ceb86bea6a104f8ee1c81f9e979238d72"
+      ]
+    }
+  ],
+  "openPositionsAreNotRealizedProfit": true,
+  "wholeAccountOrRankPnlVerified": false
+}

@@ -1,0 +1,15 @@
+{
+  "auxiliary-validation.json": "9b0efceb115fb522ceedce9758dbe46571aa9962bf14684e5cf3fe020d00027e",
+  "boundary-summary.json": "a7cf0d8c7113e4486bfad818a03c92b75162e461b38c6009e667dc37dd9364c5",
+  "initial-restoring-health.json": "f0f7d91e680c80ee7edd5e35a33f99d79bfb6e3987910ab8fadfd61007869365",
+  "operator-freeze.json": "b5c3937df4839eb836169596306255da72508624904f8d2eaf825dcae47b2dae",
+  "operator.py": "dcfa980b913bdbbc1647df992c165685c85fc77aa125af31bbec780cccf86081",
+  "production-rollout-summary.json": "95ec60a39b05817ef410509ec0b239e5cd4b5d7752100e6f0c74f5502b56a0e5",
+  "root-approval.json": "aa294616667a5402c95b6c67333a8ff52f5cb94a501cbf9ff7a32c00e7a0562e",
+  "root-independent-prestop-review.json": "258f3531152d6c79173e056ad40906985ca7ee1b47401a7a760ee2c8c925ec41",
+  "staging.json": "147cbc6ff6d4d1cb5606f7106ab199b4cecd24327c7ff82f141b90679d59726d",
+  "typed-settings-verification.log": "8c25c4a85ed29b669bc38adbce2a371b8d3a12426f21f8dad2a2c5cb5cad5e81",
+  "typed-source-verification.log": "ea8ca5268c803906d86ffcecf9303d6cfa0cb3a2e015105add6f9623b55d99b3",
+  "capital-aggregation.json": "9602c477649d8358edf4473cb84aa19e02e4afea55baf4eb1861518a586e072e",
+  ".gitattributes": "ffe82f3c5b968ed009c2577fa38f32c83be167799ee565d40a18e3440c57b342"
+}

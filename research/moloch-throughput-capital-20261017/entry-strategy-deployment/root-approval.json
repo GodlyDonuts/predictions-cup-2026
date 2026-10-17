@@ -1,0 +1,15 @@
+{
+  "operator": "moloch-throughput-capital-20261017-r19-closure-cache",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "executionOwnerReviewed": true,
+  "stagingSha256": "147cbc6ff6d4d1cb5606f7106ab199b4cecd24327c7ff82f141b90679d59726d",
+  "boundarySha256": "58a030c4a6b603fe1eb808967d32e0bc1938035da1faa35e22f8f583ad35aa1c",
+  "requestSha256": "f83e8890319ff30022162ddcfde1df30fffbaaa00394a3a797071069d0fd0c58",
+  "stopSha256": "7e09e553098d7fbed4f8b994515d3b28ae2bf9ebf50d53b1f482f2ba59014a1d",
+  "workerStatusSha256": "56a8022d8177d865cbfac63c358d7029e07a04032c75b630bf881407b2aeb0c3",
+  "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "activeOverlaySha256": "5478dab3b905ad1ea75cff6fa1e9c4a59ab646bc9e85be5d4a5872f96499036a",
+  "oldBaseSha256": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+  "newBaseSha256": "de32bc2d0f5cbf99a15a9dae599d5a4ec39de31498414704124859ab6bb4239f",
+  "reason": "root-reviewed-original-active-overlay-binary-only-rebase-controlled-stop-not-human-stop"
+}

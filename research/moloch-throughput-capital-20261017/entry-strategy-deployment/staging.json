@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-17T03:37:56.285843+00:00",
+  "operator": "moloch-throughput-capital-20261017-r19-closure-cache",
+  "sourceCommit": "a557c7793077faae1b3a0703d9690998625f7644",
+  "engineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "binarySha256": "7d44e8392abc47d80151cc3215faf0e71ec9f12d0299a0d3a5a6c1dd20b35ee7",
+  "release": "/home/archon/apps/moloch/releases/throughput-capital-7d44e8392abc/moloch-live-runtime",
+  "unitCandidate": "/tmp/moloch-strategy-entry-r19b3-20261017/unit-candidate.service",
+  "controlChanges": [
+    "activation.binarySha256 relative to ORIGINAL active overlay"
+  ],
+  "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "activeOverlaySha256": "5478dab3b905ad1ea75cff6fa1e9c4a59ab646bc9e85be5d4a5872f96499036a",
+  "oldBaseSha256": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+  "newBaseSha256": "de32bc2d0f5cbf99a15a9dae599d5a4ec39de31498414704124859ab6bb4239f",
+  "financialBridgeChanged": false,
+  "pins": {
+    "/home/archon/apps/moloch/shared/fundamental-paper7-capital-expanded-20261017/next-control-root-reviewed.json": "5478dab3b905ad1ea75cff6fa1e9c4a59ab646bc9e85be5d4a5872f96499036a",
+    "/home/archon/apps/moloch/shared/fundamental-paper7-capital-expanded-20261017/owner-request-001.json": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+    "/home/archon/apps/moloch/shared/fundamental-paper7-capital-expanded-20261017/settings-root-reviewed.json": "4f0212bd1bfc31f9cc2789ec358b540788e07983e95e5ef0deb501d868546ee2",
+    "/tmp/moloch-strategy-entry-r19b3-20261017/root-reviewed-settings-validation.json": "9ab20389cc2520e0faca577d01563e0193db9ffdf93a350ec6f81932bcf06dcc",
+    "/home/archon/apps/moloch/shared/moloch-live-throughput-capital-r19-20261017.json": "de32bc2d0f5cbf99a15a9dae599d5a4ec39de31498414704124859ab6bb4239f",
+    "/home/archon/apps/moloch/releases/throughput-capital-7d44e8392abc/moloch-live-runtime": "7d44e8392abc47d80151cc3215faf0e71ec9f12d0299a0d3a5a6c1dd20b35ee7",
+    "/tmp/moloch-strategy-entry-r19b3-20261017/unit-candidate.service": "e6116afcfcb2319c0151e9c385ecabbe6e227da4b05cf1ddb733427a7e57a77d",
+    "/tmp/moloch-strategy-entry-r19b3-20261017/validation.json": "24af42f63eef29ad758e0bbdc4d7049f24567435e645313d547536d6acbba1e4",
+    "/tmp/moloch-strategy-entry-r19b3-20261017/integrated-source-manifest.json": "d49f0c85378ae58db916a8c399c1e967a3e357d2161f9f7c372bb6e3aeefee0a",
+    "/home/archon/apps/moloch/shared/moloch-live-throughput-capital-r18-20261017.json": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+    "/tmp/moloch-throughput-capital-r18-recovered-20261017-production-rollout.json": "0bae11141b559f4afe6e218ab893ffd112fccd144451f12df4d1796380558b74",
+    "/tmp/moloch-throughput-capital-r18-20261017-staging.json": "7717200cf10263a1dac5be26abe0517a6da08ee5addcbc5a096fadc215355473"
+  },
+  "priorBridgeSha256": "9ec918ba2964fa322d142e7c88514d79f587e2182a0187984fbb5af83ad50c84",
+  "financialBridgeEntries": 14
+}

@@ -1,3 +1,5 @@
+> Current deployment, results and unfinished research: [October 17 handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md). The dated sections below preserve historical evidence and are not the current deployment specification.
+
 # Paper6 exhaustive payoff floor candidate
 
 `moloch/native/src/semantic_floor.rs` is a pure offline solver and certificate

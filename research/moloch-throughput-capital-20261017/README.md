@@ -1,3 +1,32 @@
+# October 17, 03:57 UTC — sizing/preparation release verified trading
+
+Sole worker **607949**, source **a557c779**, binary **7d44e839**, native **7a74f8c3**,
+is verified trading with healthy realtime and no active STOP at 03:57:59 UTC.
+All 14 financial bridge bytes, four original model generations and eleven policies
+are restored unchanged. The ledger still has 338 fill rows: cash 16,092.385,
+owned cost 79,347.690, combined attributed realized −139.840.
+**No new post-upgrade fill or measured latency/profit benefit is claimed.**
+[Actual new-process verification](entry-strategy-live-proof/live-verification.json).
+
+The active sizing and preparation fixes passed 836 checks and the optimized
+ARM64 build. Current strategy gaps and next economics work are in the
+[current research handoff](../../docs/MOLOCH_RESEARCH_HANDOFF_20261017.md).
+Infrastructure work remains deferred unless essential to existing production.
+
+# October17,03:43UTC — sizing/preparation fixes installed; original ledger restoring
+
+Sole607949/sourcea557c779/binary7d44e839/native7a74f8c3 started03:43:30UTC.
+**Fresh trading is not yet verified**; old601007 progress is not attributed to it.
+The controlled boundary396960 preserves338fills/cash16,092.385/owned79,347.690/
+combined attributed realized−139.840 and native modeled reserves3,741.075.
+All14 bridge bytes/four original model generations/eleven-policy settings remain
+unchanged. No source clock, probability, risk, cadence or activation renewal.
+[Actual frozen rollout and boundary](entry-strategy-deployment/production-rollout-summary.json).
+
+836 checks/optimized release pass; all262 source files matchGit exactly or byCRLF.
+Actual sizing/latency/capital benefit remains pending new-PID trading. Existing
+production uptime and strategy economics remain the priority; no infra rewrite.
+
 # October17,03:40UTC — active strategy fixes checked and staged
 
 Candidatea557c779/binary7d44e839 passed836 checks and optimized ARM64 release;

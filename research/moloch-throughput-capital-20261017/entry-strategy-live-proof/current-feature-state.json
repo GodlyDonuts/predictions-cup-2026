@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-10-17T03:57:59.531221+00:00",
+  "source": "installed base control; binary-only binding changed from original active overlay",
+  "sourceControlSha256": "de32bc2d0f5cbf99a15a9dae599d5a4ec39de31498414704124859ab6bb4239f",
+  "activeGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "features": {
+    "collateralAccounting": false,
+    "executionDistribution": null,
+    "executionModel": null,
+    "ordinarySideEdge": "enforce",
+    "packageAllocation": {
+      "maximumWait": 8,
+      "reviews": [],
+      "trustedReviewSha256": []
+    },
+    "packages": {
+      "bufferPerShare": "0.005000",
+      "bundleSha256": "52c15d58b719feb4b905c837e07c4bb9711a81637322dccc392b2e163c89c38c",
+      "certificateBundle": "/home/archon/apps/moloch/shared/moloch-package-certificates-20261015.json",
+      "maximumRelationshipAgeMs": 300000,
+      "maximumRuleAgeMs": 86400000,
+      "minimumSurplus": "0.005000",
+      "refreshMs": 30000,
+      "trustedCertificateSha256": []
+    }
+  },
+  "actualPackageFillClaimed": false
+}

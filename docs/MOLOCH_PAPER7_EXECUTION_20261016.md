@@ -1,3 +1,5 @@
+> Current deployment, results and unfinished research: [October 17 handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md). The dated sections below preserve historical evidence and are not the current deployment specification.
+
 # October17,03:40UTC — active strategy fixes checked and staged
 
 Candidatea557c779/binary7d44e839 passed836 checks and optimized ARM64 release;

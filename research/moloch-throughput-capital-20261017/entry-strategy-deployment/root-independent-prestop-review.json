@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-17T03:41:42.387740+00:00",
+  "rootReviewed": true,
+  "sourceCommit": "a557c7793077faae1b3a0703d9690998625f7644",
+  "binarySha256": "7d44e8392abc47d80151cc3215faf0e71ec9f12d0299a0d3a5a6c1dd20b35ee7",
+  "financialEngineAndAll14BridgeBytesUnchanged": true,
+  "original4GenerationsAnd11ModelSettingsPreserved": true,
+  "onlyControlChange": "activation.binarySha256 relative to original active overlay",
+  "sourceFiles": 262,
+  "allChecksPassed": 836,
+  "newCadenceEnabled": false,
+  "oldPid": 601007,
+  "networkRequestsDuringReview": 0,
+  "nextAction": "root controlled stop using already frozen operator; SDK quiet verified only after old worker exits"
+}
