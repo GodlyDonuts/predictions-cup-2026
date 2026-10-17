@@ -2068,13 +2068,14 @@ pub fn main()->Result<()>{
   let c:Control=serde_json::from_value(json!({"activation":{"runId":"cooperative-preflight","entryUntilMs":at+600000,"maximumCommitted":"40.000000","maximumMarketCost":"10.000000","maximumQuantity":2,"tournamentId":T,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":T,"tournamentSlug":"cup","exchanges":{"101":"201","102":"202"}},"policy":policy,"root":root.0,"credentials":"/unused","ownerLock":root.0.join("owner.lock"),"accountScope":"offline-cooperative-preflight"})).unwrap();
   let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,c,bank,log,source,q,book)
  }
- struct Reads{calls:usize,fail_at:Option<usize>,invalidate_at:Option<usize>,book:Receipt,trace:Vec<&'static str>,endpoints:Vec<Value>,returned:Vec<Value>}
- impl Reads{fn new(book:Receipt)->Self{Self{calls:0,fail_at:None,invalidate_at:None,book,trace:vec![],endpoints:vec![],returned:vec![]}}}
+ struct Reads{rest_only:bool,calls:usize,fail_at:Option<usize>,invalidate_at:Option<usize>,book:Receipt,trace:Vec<&'static str>,endpoints:Vec<Value>,returned:Vec<Value>}
+ impl Reads{fn new(book:Receipt)->Self{Self{rest_only:false,calls:0,fail_at:None,invalidate_at:None,book,trace:vec![],endpoints:vec![],returned:vec![]}}}
  impl OrdinaryPreflightReads for Reads{
   fn now_ms(&self)->u64{now()}
   fn guarded(&mut self)->Result<bool>{Ok(true)}
   fn service_before_read(&mut self,bank:&mut Session,source:&mut RestSource)->Result<()>{
    self.calls+=1;self.trace.push("service");if self.fail_at==Some(self.calls){return Err("LIVE_PREFLIGHT_QUOTE_INVALIDATED".into())}
+   if self.rest_only{return Ok(())}
    let change=self.invalidate_at==Some(self.calls);let(bid,ask)=if change{("0.405000","0.415000")}else{("0.400000","0.410000")};let at=iso(now());
    // Use the same original broadcast normalizer as drain_stream, keeping its
    // revision/book state coherent with the real Session. A later REST response
@@ -2091,7 +2092,7 @@ pub fn main()->Result<()>{
     Endpoint::Account=>(format!("/account?tournamentId={T}"),json!({"balance":1000})),
     Endpoint::Market{market_id}=>(format!("/markets/{market_id}?tournamentId={T}"),json!({"id":market_id,"status":"open"})),
     Endpoint::Nodes{market_id}=>(format!("/markets/{market_id}/nodes?tournamentId={T}"),json!({"market_id":market_id,"root":{"node_type":"contract","contract_id":"301"}})),
-    Endpoint::OrderBook{..}=>(self.book.endpoint.clone(),self.book.data.clone()),
+    Endpoint::OrderBook{..}=>{let mut data=self.book.data.clone();if self.rest_only{let b=&mut data["contexts"][0]["orderbook"]["exchanges"][0];b["asOf"]=json!({"sequence":self.calls+1,"at":at});b["bids"][0]["quantity"]=json!(990);b["asks"][0]["quantity"]=json!(10);}(self.book.endpoint.clone(),data)},
     _=>return Err("FIXTURE_UNEXPECTED_READ".into())
    };let r=Receipt{endpoint:path,request_started_at:at.clone(),received_at:at,status:200,data};self.returned.push(serde_json::to_value(&r)?);Ok(r)
   }
@@ -2108,7 +2109,8 @@ pub fn main()->Result<()>{
   use moloch_live_runtime::ordinary_side_edge::Mode;
   let(root,mut c,mut bank,log,mut source,yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=Mode::Enforce;
   let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();
-  let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);
+  let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);reads.rest_only=true;
+  assert_eq!(moloch_live_runtime::quote_priority::from_native(&bank,&c.scope,&[no.clone()],reads.now_ms(),None).unwrap().assessments[0].decision.class,moloch_live_runtime::quote_priority::Class::NeedsRefresh);
   assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&no,&mut reads).unwrap().is_none());
   assert_eq!(reads.endpoints.len(),1);assert_eq!(reads.endpoints[0],serde_json::to_value(Endpoint::OrderBook{market_id:"201".into(),depth:20}).unwrap());
   let diagnostic=load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap();assert_eq!(diagnostic["class"],"below_minimum");assert_eq!(diagnostic["vetoedThisPass"],true);
@@ -2119,10 +2121,18 @@ pub fn main()->Result<()>{
  }
  #[test]fn refreshed_negative_disabled_and_shadow_preserve_entire_original_packet(){
   use moloch_live_runtime::ordinary_side_edge::Mode;
-  for mode in [Mode::Disabled,Mode::Shadow]{let(root,mut c,mut bank,log,mut source,_yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=mode;let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();let mut reads=Reads::new(book);
+  for mode in [Mode::Disabled,Mode::Shadow]{let(root,mut c,mut bank,log,mut source,_yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=mode;let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();let mut reads=Reads::new(book);reads.rest_only=true;
    assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&no,&mut reads).unwrap().is_some());assert_eq!(reads.endpoints.len(),8);assert!(log.intents.is_empty()&&log.attempted.is_empty());
    if mode==Mode::Disabled{assert!(!root.0.join("ordinary-side-edge-refreshed.json").exists());}else{assert_eq!(load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap()["vetoedThisPass"],false);}
   }
+ }
+ #[test]fn refreshed_ws_only_book_without_original_request_clock_cannot_veto(){
+  use moloch_live_runtime::ordinary_side_edge::Mode;
+  let(root,mut c,mut bank,log,mut source,_yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=Mode::Enforce;let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();let mut reads=Reads::new(book);
+  // The hook admits a genuine newer WS book; the returned REST book is an
+  // older source sequence. WS lacks requestStartedAt: no negative capability.
+  assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&no,&mut reads).unwrap().is_some());assert_eq!(reads.endpoints.len(),8);
+  let diagnostic=load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap();assert_eq!(diagnostic["class"],"unavailable");assert_eq!(diagnostic["vetoedThisPass"],false);assert!(log.intents.is_empty()&&log.attempted.is_empty());
  }
  #[test]fn refreshed_negative_never_swallows_stream_or_durable_errors(){
   use moloch_live_runtime::ordinary_side_edge::Mode;
