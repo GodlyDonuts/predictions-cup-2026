@@ -1,0 +1,17 @@
+{
+  "startedAt": "2026-10-17T07:43:53.761989+00:00",
+  "finishedAt": "2026-10-17T07:50:12.683340+00:00",
+  "command": [
+    "/home/archon/.cargo/bin/cargo",
+    "test",
+    "--release",
+    "--offline",
+    "--locked",
+    "--manifest-path",
+    "/tmp/moloch-negative-profit-prefilter-20261017/moloch/live-runtime/Cargo.toml",
+    "--bin",
+    "moloch-live-runtime"
+  ],
+  "testExitCode": 0,
+  "productionChanged": false
+}

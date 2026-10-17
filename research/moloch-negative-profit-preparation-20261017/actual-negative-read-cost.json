@@ -1,0 +1,20 @@
+{
+  "originalInitialReceiptAt": "2026-10-17T07:50:33.352Z",
+  "originalFinalReceiptAt": "2026-10-17T07:50:43.617Z",
+  "initialToFinalReceiptMilliseconds": 10265000000,
+  "exchangeId": "979",
+  "side": "NO",
+  "inheritedQuantity": 47,
+  "actualInitialAdmissionKinds": [
+    "invalid",
+    "valid_replacement"
+  ],
+  "grossBestBid": "0.165",
+  "worstRemainingLotPrincipalPerShare": "0.175000",
+  "grossGainUpperBound": "-0.010000",
+  "sourceOriginalInitialReceiptRawSha256": "920d4723c36572edeed30b14eb1655922c6c72794855f35f5a8b89d88d7fba61",
+  "sourceOriginalFinalReceiptRawSha256": "f6fd1d78c89e2c446386cc8d9505a763d65916a5e904e948b6952e1b3ba3ecb7",
+  "nativeAdmissionRowsAuthenticatedWithinCompleteLaterSuffix": true,
+  "counterfactualShortcutActuallyExecutedInProduction": false,
+  "latencyOrProfitGainMeasured": false
+}

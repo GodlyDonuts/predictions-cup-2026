@@ -1,0 +1,36 @@
+{
+  "worker-release-tests-recovery-v2": {
+    "command": [
+      "/home/archon/.cargo/bin/cargo",
+      "test",
+      "--release",
+      "--offline",
+      "--locked",
+      "--bin",
+      "moloch-live-runtime",
+      "--manifest-path",
+      "/tmp/moloch-negative-profit-prefilter-20261017/moloch/live-runtime/Cargo.toml"
+    ],
+    "startedAt": "2026-10-17T07:58:29.683949+00:00",
+    "finishedAt": "2026-10-17T08:01:32.065214+00:00",
+    "exitCode": 0,
+    "logSha256": "e9c24e16676d91b596560d6bd8883fd2b80a0551fff3979bd0f587379d5d4022"
+  },
+  "release-recovery-v2": {
+    "command": [
+      "/home/archon/.cargo/bin/cargo",
+      "build",
+      "--release",
+      "--offline",
+      "--locked",
+      "--bin",
+      "moloch-live-runtime",
+      "--manifest-path",
+      "/tmp/moloch-negative-profit-prefilter-20261017/moloch/live-runtime/Cargo.toml"
+    ],
+    "startedAt": "2026-10-17T08:01:32.066179+00:00",
+    "finishedAt": "2026-10-17T08:06:16.757490+00:00",
+    "exitCode": 0,
+    "logSha256": "a827f96a9487cec166fb87150888e61f4236926153d6ad037da13d67473994ff"
+  }
+}

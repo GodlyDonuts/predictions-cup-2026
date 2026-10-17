@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-10-17T08:02:01.166953+00:00",
+  "startsAfterPublishedFreshSequence": 437378,
+  "startsPrevious": "772f0301f964db47feaa3e9c2b16992d481f6d933c998f3993b68d15fee9a77f",
+  "endsSequence": 441893,
+  "endsPrevious": "7d2bc2e505485aeff5fdef6cb7e3ce428e2c79ecb0f71c385188e1c4de9ddeed",
+  "actualRowsVerified": 4515,
+  "exactOriginalNegativeAdmissionRows": 3,
+  "sourceOriginalFreshReportSha256": "50f19fa025e56034f189a1747344b41f0aa07b48aafa1af90ccfd13d59ffeece",
+  "sourceOriginalEndReportSha256": "d4ebf27558037ba612f2623c0ebd593ec5328b0bd9e117459bf6b348f57706bb",
+  "sourceOriginalNativeSuffixSha256": "981c3a535ce604696fe5e6895c280a65ee26b890b16250de2a9da0ebbb4abac5",
+  "productionChanged": false
+}

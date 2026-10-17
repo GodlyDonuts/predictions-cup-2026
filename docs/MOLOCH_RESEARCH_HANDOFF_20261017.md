@@ -1,5 +1,10 @@
 # Moloch: current research handoff
 
+October17,07:56UTC: **official cash2,901.76 + position marks91,633.33 =94,535.09**, about1,044.825 below reconciled native capital95,579.915. All24 official side quantities/cash match native; native realized-122.025,373fillrows/owned principal92,556.130. [Exact source-bound marked observation](../research/moloch-current-marked-account-20261017/README.md) preserves API basis discrepancy-245.03 and unrealized arithmetic difference+.04. This is not daily P&L, executable liquidation or scoreboard rank. Current R22/sole636242 remains trading.
+
+New [negative-only profit preparation candidate](../research/moloch-negative-profit-preparation-20261017/README.md), sourcef7aaa343/binary198bcb26/native5b61: all131 actual worker checks/optimized release/native probe pass;263actual source files independently verified. Final actual invalid-then-valid book recovery is supported; positive/equal/uncertain/managed cases retain full final checks. **Checked and unpointed; production stays R22.** Original actual979read case spent10.265seconds between initial/final receipts despite negative gross bid-minus-basis; no already-realized speed/profit benefit claimed. Another restart costs about16minutes restoring history, so no automatic second restart. Infrastructure remains deferred unless essential.
+
+
 October17,07:45UTC: **two actual post-R22 orders verified:11,131shares/4,508.170 principal/zero fees across nine official fill rows.** Reviewed same-side top-ups1051NO1,602shares and1067YES9,529shares match original ACKs, terminal orders and complete scoped tapes. Ledger371fills/cash3,598.085/owned91,859.805 (**96.2307% recorded-cost allocation**); realized−122.025 unchanged. [Actual fill proof](../research/moloch-managed-inventory-planning-20261017/entry-fill-proof/README.md). These are purchases, not realized profit or proof of passive maker quality. Original362fillrows and four generations/eleven policies preserved; sole636242 remains executing. Earlier zero-post-upgrade-fill proof below is historical.
 
 

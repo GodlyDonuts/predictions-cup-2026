@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-10-17T07:59:06.195421+00:00",
+  "cashReceiptAt": "2026-10-17T07:56:42.201Z",
+  "positionsReceiptAt": "2026-10-17T07:56:39.989Z",
+  "officialCash": "2901.76",
+  "officialPositionMarketValue": "91633.33",
+  "officialReportedPositionCostBasis": "92311.10",
+  "officialReportedUnrealizedPnl": "-677.73",
+  "reportedUnrealizedMinusMarketValueLessReportedBasis": "0.04",
+  "cashPlusOfficialMarks": "94535.09",
+  "nativeOwnedLotPrincipal": "92556.130000",
+  "nativeAttributedRealized": "-122.025000",
+  "nativeCapitalBase": "95579.915000",
+  "cashPlusMarksMinusNativeCapital": "-1044.825000",
+  "officialReportedBasisMinusNativeOwnedLotPrincipal": "-245.030000",
+  "all24OfficialNonzeroPositionsMatchExactNativeSideQuantities": true,
+  "nativeFinancialSequence": 440934,
+  "nativeOfficialFillRows": 373,
+  "sourceRawSha256": {
+    "current-mark-original-account.json": "c5cd91e48958f1ea663e821f82c093c71f8d477ed296859538c905c35fe72e51",
+    "current-mark-original-positions.json": "f896887129e5ea3b14b55cd39cc2a7454f6214b70f70828612d86d95fc20e9bc",
+    "current-mark-original-native-report.json": "7d31e60253d37ec7c31fcc368050ea77e2d3c8bb09a96c6784103ec539e04e1d"
+  },
+  "valuationKind": "official_tournament_position_marks_not_executable_liquidation_depth",
+  "dailyPnlEstablished": false,
+  "simultaneousReceiptClockClaimed": false,
+  "extraAccountApiCalls": 0
+}

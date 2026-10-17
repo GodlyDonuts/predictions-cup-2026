@@ -1,0 +1,15 @@
+{
+  "originalPacketSha256": "81a4c4501a074186fb3bb54033661e78d3e7b7f33e563c936a7280c411ca0bf2",
+  "originalPacketFiles": 29,
+  "actualSourceFilesComparedToGit": 263,
+  "exactGitBytes": 61,
+  "crlfOnlyDifferences": 202,
+  "candidateGitCommit": "f7aaa343ec3ef4b920d95935269d4bd93701896d",
+  "actualWorkerPasses": 131,
+  "optimizedBinarySha256": "198bcb26d5a5d8c801b3fba854402561d42b03567b39d4b7cd7f7190f9d5e129",
+  "binaryDownloadedAndRehashed": true,
+  "actualNativeRowsVerified": 4515,
+  "markedCashPlusValue": "94535.09",
+  "markedDifferenceVersusNativeCapital": "-1044.825000",
+  "candidateDeployed": false
+}

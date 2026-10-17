@@ -1,0 +1,10 @@
+{
+  "originalProofZipSha256": "81a4c4501a074186fb3bb54033661e78d3e7b7f33e563c936a7280c411ca0bf2",
+  "allThreeOriginalSourceHashesVerified": true,
+  "all24OfficialSideQuantitiesAndCashMatchNative": true,
+  "officialRowSumsMatchSummary": true,
+  "reportedUnrealizedDiscrepancyPreserved": "0.04",
+  "reportedBasisVersusRemainingLotPrincipalDifferencePreserved": "-245.030000",
+  "rawPersonalAccountReceiptRetainedPrivately": true,
+  "dailyPnlOrScoreboardRankOrExecutableLiquidationClaimed": false
+}

@@ -1,0 +1,20 @@
+{
+  "startedAt": "2026-10-17T07:51:03.424994+00:00",
+  "finishedAt": "2026-10-17T07:58:28.386915+00:00",
+  "command": [
+    "/home/archon/.cargo/bin/cargo",
+    "build",
+    "--release",
+    "--offline",
+    "--locked",
+    "--manifest-path",
+    "/tmp/moloch-negative-profit-prefilter-20261017/moloch/live-runtime/Cargo.toml",
+    "--bin",
+    "moloch-live-runtime"
+  ],
+  "releaseExitCode": 0,
+  "productionChanged": false,
+  "automaticDeployment": false,
+  "binarySha256": "22421212e813c3238da8fdc6b1ba96d56f63f4468b0058a9ab6fa278c1f42b19",
+  "binaryBytes": 14021440
+}

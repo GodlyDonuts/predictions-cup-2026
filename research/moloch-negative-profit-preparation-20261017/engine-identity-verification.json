@@ -1,0 +1,20 @@
+{
+  "computedFromExact16ActualNativeSources": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "actualCompiledNativeLibraryProbe": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "nativeLibrary": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libmoloch_replay-8ec6dfc30fb309ec.rlib",
+  "nativeLibrarySha256": "3fb64aa32c975fdaff683763f6ea655dbf758d3a3ed4f27409acf667716c746b",
+  "command": [
+    "/home/archon/.cargo/bin/rustc",
+    "--edition=2024",
+    "-C",
+    "lto=thin",
+    "/tmp/moloch-negative-profit-prefilter-20261017/engine-identity-probe.rs",
+    "--extern",
+    "moloch_replay=/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libmoloch_replay-8ec6dfc30fb309ec.rlib",
+    "-L",
+    "dependency=/tmp/moloch-paper7-generation-live-20261016/target/release/deps",
+    "-o",
+    "/tmp/moloch-negative-profit-prefilter-20261017/engine-identity-probe"
+  ],
+  "candidateWorkerBinaryStarted": false
+}
