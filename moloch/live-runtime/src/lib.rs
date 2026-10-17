@@ -73,3 +73,4 @@ pub mod account_realtime;
 pub mod fundamental_reload;
 
 pub mod order_snapshot;
+pub mod tartarus_snapshot;
