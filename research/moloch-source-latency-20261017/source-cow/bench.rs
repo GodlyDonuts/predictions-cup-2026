@@ -206,8 +206,10 @@ fn main() {
     let mut seed_keys = BTreeSet::new();
     for e in seeds { assert_eq!(e["type"], "trade"); seed_keys.insert(key(e)); }
     assert!(input["provenance"].is_object(), "PROVENANCE_REQUIRED");
-    let synthetic = input["provenance"]["syntheticCases"].as_array().expect("SYNTHETIC_CASES");
-    assert!(synthetic.iter().any(|v| v == "new_trade") && synthetic.iter().any(|v| v == "insert_then_conflict"));
+    let synthetic = &input["provenance"]["syntheticCases"];
+    let declared = |name: &str| synthetic.as_array().is_some_and(|a| a.iter().any(|v| v == name))
+        || synthetic.as_object().is_some_and(|o| o.get(name).is_some_and(|v| v.as_str().is_some_and(|s| !s.is_empty())));
+    assert!(declared("new_trade") && declared("insert_then_conflict"), "SYNTHETIC_CASES");
     let scopes = array(&input, "scopes", 1000); assert!(!scopes.is_empty());
     let prime = array(&input, "prime", 4096);
     let cases = array(&input, "cases", 4); assert_eq!(cases.len(), 4);
