@@ -1,5 +1,7 @@
 # Current measurement: no observed latency benefit
 
+**Current14:07UTC:** R27/654706 is verified trading. Its [closed first300s comparison](r27-first-300s-result.md) shows lower observed median delay14588→8212ms, realtime17467.5→8315ms, with p9027160ms still high and no new fills/profit. This supersedes only the top heading's older R25/R26 result. The same report corrects an R27 callsite mistake: bind_quantity can raise NOT_ELIGIBLE before the physical-decision handler; a complete original-stop repair is not yet deployed.
+
 The [frozen complete five-minute comparison](clock-comparison-readme.md#root-computed-complete-comparison) is negative: median receipt-to-processing rises from9311ms to14588ms; realtime12863.5ms to17467.5ms. R26 remains operating; restored uptime does not prove faster execution or profit. Task167 remains active. A source-sized facts-map copy-on-write candidate is being measured separately before any release.
 
 # Source availability delay
