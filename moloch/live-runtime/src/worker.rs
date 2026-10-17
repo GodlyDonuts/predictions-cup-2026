@@ -832,7 +832,7 @@ fn defer_account_preintent(c:&Control,bank:&Session,log:&DispatchLog,authority:&
 /// A freshness loss during bind or physical capability minting can decline an
 /// untouched quote. This helper is never used after an original intent/attempt.
 fn fundamental_book_expiry_error(error:&dyn std::error::Error)->bool{
- matches!(error.to_string().as_str(),"FUNDAMENTAL_PHYSICAL_BOOK_STALE"|"FUNDAMENTAL_NOT_ELIGIBLE")
+ matches!(error.to_string().as_str(),"FUNDAMENTAL_PHYSICAL_BOOK_STALE"|"FUNDAMENTAL_NOT_ELIGIBLE"|"FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE")
 }
 fn fundamental_stale_preintent(bank:&Session,log:&DispatchLog,scope:&Scope,expected:&Value,error:&dyn std::error::Error,sdk_unknown:bool,at:u64)->Result<bool>{
  if !fundamental_book_expiry_error(error){return Ok(false)}
@@ -2557,10 +2557,15 @@ pub fn main()->Result<()>{
   assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at+60000).unwrap());
   assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");
   assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),true,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE");
+  let exit_denied:Box<dyn std::error::Error>="FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE".into();
+  assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,exit_denied.as_ref(),false,at+60000).unwrap());
+  assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,exit_denied.as_ref(),false,at).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");
+  assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,exit_denied.as_ref(),true,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE");
   assert!(!fundamental_stale_preintent(&bank,&log,&c.scope,&q,&std::io::Error::other("unrelated failure"),false,at+60000).unwrap());
   assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");
   assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),true,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE");
   let mut changed=q.clone();changed["price"]=json!("0.005000");assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&changed,stale.as_ref(),false,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_QUOTE_CHANGED");
+  assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&changed,exit_denied.as_ref(),false,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_QUOTE_CHANGED");
   assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),financial);assert_eq!(fs::read(root.0.join("dispatch.ndjson")).unwrap(),bytes);
  }
  #[test]fn fundamental_preintent_stale_defer_never_hides_an_original_operation(){
@@ -2571,6 +2576,7 @@ pub fn main()->Result<()>{
    if case=="binding"{accept(&mut bank,&json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":qid,"actualOrderId":"902","exchangeId":"101","marketId":"201","side":q["side"],"action":q["action"],"quantity":q["quantity"],"price":q["price"],"receivedAt":iso(now())})).unwrap();}
    let head=bank.durable_head();let descriptor=log.descriptor_identity().unwrap();assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).is_err(),"{case}");
    let denied:Box<dyn std::error::Error>="FUNDAMENTAL_NOT_ELIGIBLE".into();assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at+60000).is_err(),"{case}");
+   let exit_denied:Box<dyn std::error::Error>="FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE".into();assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,exit_denied.as_ref(),false,at+60000).is_err(),"{case}");
    assert_eq!(bank.durable_head(),head);assert_eq!(log.descriptor_identity().unwrap(),descriptor);
   }
  }
@@ -2895,6 +2901,25 @@ pub fn main()->Result<()>{
   let tape=json!({"source":"official_sig_api_v1","kind":"trades","marketId":"201","exchangeId":"101","tournamentId":fixture::T,"status":200,"endpoint":format!("/exchanges/101/trades?tournamentId={}&from={}&to={}",fixture::T,iso(base+3998),stamp),"requestStartedAt":stamp,"receivedAt":stamp,"data":{"marketId":"201","exchangeId":"101","from":iso(base+3998),"to":stamp,"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":2}}});
   accept_source_events(&mut f.bank,&source.accept(&tape).unwrap()).unwrap();
   assert_eq!(quote(&f.bank,q["id"].as_u64().unwrap()).unwrap(),q);(f,runtime,c,source,q)
+ }
+ #[test]fn fundamental_preintent_real_sell_mints_fresh_and_defers_only_when_book_expires_between_bind_and_mint(){
+  use std::cell::Cell;
+  for expire_mint in [false,true]{
+   let base=now()-12000;let(f,mut runtime,c,_source,q)=setup_at(base);let id=q["id"].as_u64().unwrap();let n=q["quantity"].as_u64().unwrap();let fresh=base+11001;let stale=base+14001;
+   assert_eq!(q["action"],"sell");assert_eq!(q["side"],"NO");assert!(runtime.eligible(&f.bank,&f.log,&c.scope,id,fresh).unwrap());assert!(runtime.cohorts.durable_tag(id).is_none());
+   let request=f.spec(&q);let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:id.to_string(),owner:"Codex".into(),expires_at_ms:stale+1000,maximum_quantity:2,maximum_cost:"1.970000".into()};
+   runtime.cohorts.bind_quantity(&f.bank,&f.log,&c.scope,id,n,&request,runtime.authority.trusted(),fresh).unwrap();let sidecar=fs::read(f.root.0.join("fundamental.ndjson")).unwrap();
+   let head=f.bank.durable_head();let financial=f.bank.engine().report().unwrap();let dispatch=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();let clocks=Cell::new(0);let queues=Cell::new(0);
+   let result=fundamental_preintent(&mut runtime,&f.bank,&f.log,&c.scope,&q,n,&request,&permit,||{let i=clocks.get();clocks.set(i+1);if expire_mint&&i>0{stale}else{fresh}},||{queues.set(queues.get()+1);recovery_queue_clear(&json!({"state":{"unknown":{},"active":null,"manual_review":false}}))}).unwrap();
+   match result{
+    FundamentalPreintent::Ready(decision)=>{assert!(!expire_mint);assert_eq!(clocks.get(),2);assert_eq!(queues.get(),0);decision.validate_frozen(&q,&financial,id,fresh).unwrap();decision.authorize(&c.scope,&request,&permit,fresh).unwrap();},
+    FundamentalPreintent::Deferred(reason)=>{assert!(expire_mint);assert_eq!(reason,"FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE");assert_eq!(clocks.get(),3);assert_eq!(queues.get(),1);
+     let error=runtime.cohorts.physical_decision(&f.bank,&f.log,&c.scope,id,&request,&permit,&runtime.authority,stale).err().expect("genuine SELL check_bound must reject the expired original book");assert_eq!(error.to_string(),reason);
+    }
+   }
+   assert!(runtime.cohorts.durable_tag(id).is_some(),"the original successful bind stays; no rearm or replacement");assert_eq!(fs::read(f.root.0.join("fundamental.ndjson")).unwrap(),sidecar,"the original binding is neither changed nor appended twice");
+   assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),financial);assert_eq!(quote(&f.bank,id).unwrap(),q);assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty()&&f.log.acknowledgments.is_empty());assert!(f.bank.engine().live_order_bindings().is_empty()&&f.bank.engine().fills().is_empty());
+  }
  }
  struct Reads{services:usize,endpoints:Vec<Value>,returned:Vec<Value>,fail_at:Option<usize>,retirement:Option<Value>,stale:bool}
  impl Reads{fn new()->Self{Self{services:0,endpoints:vec![],returned:vec![],fail_at:None,retirement:None,stale:false}}}
