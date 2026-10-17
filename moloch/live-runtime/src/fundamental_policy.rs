@@ -1026,7 +1026,7 @@ impl Cohorts{
             let top_up=self.cohorts.contains_key(ex);
             if top_up&&self.top_up_state(bank,log,ex,None,true)?.is_none(){continue}
             if !top_up&&(bank.engine().wallet.quantity(ex,Side::Yes)>0||bank.engine().wallet.quantity(ex,Side::No)>0){continue}
-            if bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){continue}
+            if crate::order_snapshot::snapshot(bank).records().iter().any(|q|q["exchangeId"]==*ex&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){continue}
             if bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true
                 &&(p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["exchangeId"]==*ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|ls|ls.iter().any(|l|l==ex)))){continue}
             let policy=bank.engine().policy();if policy["entriesEnabled"]!=true||policy["entryStopAt"].as_str().map(daily_windows::clock).transpose()?.is_some_and(|t|now>=t){continue}
@@ -1207,7 +1207,7 @@ impl Cohorts{
         // which the unchanged physical pending-entry gate cannot dispatch.
         if c.pending_entry(log){return Ok(None)}
         let r=&self.policies[ex];let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_EXIT_FIFO_CHANGED")?;
-        let records=bank.engine().order_records();let mut bindings=Vec::new();
+        let snapshot=crate::order_snapshot::snapshot(bank);let records=snapshot.records();let mut bindings=Vec::new();
         for b in c.entries().chain(c.exits.values()){
             if !bank.engine().live_order_bindings().contains_key(&b.qid){need(log.never_attempted(b.qid)||log.proved_no_network(b.qid),"FUNDAMENTAL_EXIT_UNKNOWN_BINDING")?;need(!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid),"FUNDAMENTAL_EXIT_UNBOUND_FILL")?;continue}
             if !log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid){return Ok(None)}bindings.push(b);
@@ -1448,7 +1448,7 @@ impl Cohorts{
                 let e=&p.retirement["event"];let source=p.retirement["id"].as_str().ok_or("FUNDAMENTAL_ADOPTION_REF")?;let seq=p.retirement["sequence"].as_u64().ok_or("FUNDAMENTAL_ADOPTION_REF")?;
                 need(bank.committed_source_hash(source,seq)==p.retirement["sha256"].as_str()&&p.retirement["sha256"]==digest(e)?&&e["type"]=="unsubmitted_intent_retired"
                     &&e["orderId"]==*id&&e["confirmedNetworkAttempts"]==0&&e["receiptHash"]==digest(&p.not_sent["event"]["proof"])?
-                    &&bank.engine().order_records().iter().any(|q|q["id"]==*id&&q["retired"]==true&&q["filled"]==0),"FUNDAMENTAL_TOP_UP_ABANDON_SOURCE_CHANGED")?;
+                    &&crate::order_snapshot::snapshot(bank).records().iter().any(|q|q["id"]==*id&&q["retired"]==true&&q["filled"]==0),"FUNDAMENTAL_TOP_UP_ABANDON_SOURCE_CHANGED")?;
             }
             for b in c.entries().chain(c.exits.values()){
                 need(digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_BINDING_HASH")?;
@@ -1569,7 +1569,7 @@ impl Cohorts{
         let positions=f.positions.data["positions"].as_array().ok_or("FUNDAMENTAL_GENERATION_POSITIONS")?;let open=f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_GENERATION_ORDERS")?;
         let mut seen=BTreeSet::new();for row in positions{let ex=row["exchangeId"].as_str().ok_or("FUNDAMENTAL_GENERATION_POSITION_SCOPE")?;need(seen.insert(ex)&&row["quantity"].as_i64().is_some(),"FUNDAMENTAL_GENERATION_POSITION_DUPLICATE_OR_QUANTITY")?;}
         for row in open{need(row["exchangeId"].as_str().is_some(),"FUNDAMENTAL_GENERATION_OPEN_SCOPE")?;}
-        let orders=bank.engine().order_records();let packages=bank.engine().package_records();
+        let snapshot=crate::order_snapshot::snapshot(bank);let orders=snapshot.records();let packages=bank.engine().package_records();
         for r in &loaded.reviews{let ex=&r.input.exchange_id;
             need(r.input.tournament_id==*tid&&scope.exchanges.get(ex)==Some(&r.input.market_id)&&r.input.bank_manifest_sha256==self.manifest&&r.input.run_id==self.run,"FUNDAMENTAL_GENERATION_SCOPE")?;
             let changed=self.policies.get(ex).is_none_or(|p|digest(p).ok().as_deref()!=Some(r.sha.as_str()));
@@ -1613,7 +1613,7 @@ impl Cohorts{
             need(r.input.existing_origin.is_none(),"FUNDAMENTAL_EXISTING_REQUIRES_BOUND_SNAPSHOT")?;
             let ex=&r.input.exchange_id;
             need(bank.engine().wallet.quantity(ex,Side::Yes)==0&&bank.engine().wallet.quantity(ex,Side::No)==0
-                &&!bank.engine().order_records().iter().any(|q|q["exchangeId"]==*ex
+                &&!crate::order_snapshot::snapshot(bank).records().iter().any(|q|q["exchangeId"]==*ex
                     &&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id)))
                 &&!bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|
                     p["phase"]!="no_execution"&&p.get("protectionReleased")!=Some(&json!(true))
@@ -1759,7 +1759,7 @@ impl Cohorts{
         self.check(bank,log)?;let mut out=Vec::new();
         for(ex,c)in &self.cohorts{let r=&self.policies[ex];for entry in c.entries(){
             if !log.closed.contains(&entry.qid)&&log.acknowledgments.contains_key(&entry.qid)
-                &&bank.engine().order_records().iter().any(|q|q["id"]==entry.qid&&q["retired"]==false)
+                &&crate::order_snapshot::snapshot(bank).records().iter().any(|q|q["id"]==entry.qid&&q["retired"]==false)
                 &&(!current(r,now)||r.revoke_existing||!trusted.contains(&digest(r)?)||digest(r)?!=entry.review_sha256||liquidation_due(r,c,now)){
                 out.push(entry.qid);
             }

@@ -19,6 +19,7 @@ impl Snapshot{
  pub fn validate_current(&self,bank:&Session)->bool{self.key==Key::current(bank)}
 }
 thread_local!{static CURRENT:RefCell<Option<Arc<Snapshot>>>=const{RefCell::new(None)};}
+#[cfg(test)]thread_local!{static RENDERS:std::cell::Cell<usize>=const{std::cell::Cell::new(0)};}
 // Conservative serialized JSON upper bound without serializing all order rows
 // again. String bytes may each need six escaped bytes. This bounds encoded
 // retention, not a claim that total allocator overhead equals JSON size.
@@ -41,6 +42,7 @@ pub fn snapshot(bank:&Session)->Arc<Snapshot>{
  if let Some(hit)=CURRENT.with(|slot|slot.borrow().as_ref().filter(|s|s.key==key).cloned()){return hit}
  // At most ONE retained cache entry; drop it before rendering a replacement.
  CURRENT.with(|slot|*slot.borrow_mut()=None);
+ #[cfg(test)]RENDERS.with(|n|n.set(n.get()+1));
  let records=Arc::new(bank.engine().order_records());let cacheable=bounded(&records,MAXIMUM_RECORDS,MAXIMUM_ENCODED_BYTES);
  let index=cacheable.then(||first_indices(&records));let rendered=Arc::new(Snapshot{key,records,index});
  if cacheable{CURRENT.with(|slot|*slot.borrow_mut()=Some(rendered.clone()));}rendered
@@ -56,5 +58,33 @@ pub fn quote(bank:&Session,qid:u64)->Option<Value>{snapshot(bank).quote(qid).clo
  #[test]fn both_bounds_are_conservative_and_excess_is_uncached_not_financial_error(){
   let rows=vec![json!({"id":1,"s":"\n\"\\"})];let raw=serde_json::to_vec(&rows).unwrap().len();let upper=2+encoded_bound(&rows[0]).unwrap()+1;
   assert!(upper>=raw);assert!(bounded(&rows,1,upper));assert!(!bounded(&rows,0,upper));assert!(!bounded(&rows,1,upper-1));
+ }
+ #[test]fn genuine_session_full_scans_render_once_until_actual_native_head_changes(){
+  use moloch_replay::session::Session;
+  let root=std::env::temp_dir().join(format!("order-snapshot-render-count-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+  let at=1_792_022_400_000i64;
+  let iso=|ms|chrono::DateTime::from_timestamp_millis(ms).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true);
+  let policy=json!({"quantity":5,"maximumMarkets":3,"entryStopAt":iso(at+600000)});
+  let seed=json!({"runId":"order-cache-render-count","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-1000)});
+  let mut bank=Session::open_live(&root,&policy,&seed).unwrap();
+  let book=json!({"type":"book","receivedAt":iso(at),"book":{"tournamentId":"cup","marketId":"101","exchangeId":"101","sequence":"1","sourceAt":iso(at),"requestStartedAt":iso(at),"receivedAt":iso(at),"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}});
+  bank.accept("original-books",1,&book).unwrap();
+  CURRENT.with(|slot|*slot.borrow_mut()=None);RENDERS.with(|n|n.set(0));
+  let original=bank.engine().order_records();assert!(!original.is_empty());
+  let before=bank.durable_head();let journal=std::fs::read(root.join("events.jsonl")).unwrap();
+  let first=snapshot(&bank);
+  for q in &original{
+   let current=snapshot(&bank);assert!(Arc::ptr_eq(&first,&current));
+   // Retain the exact full-scan/first-match comparisons used by fundamental
+   // retirement, pending-liability and cancellation checks; not index shortcuts.
+   assert_eq!(current.records().iter().find(|r|r["id"]==q["id"]),original.iter().find(|r|r["id"]==q["id"]));
+   assert_eq!(current.records().iter().any(|r|r["exchangeId"]==q["exchangeId"]&&r["retired"]==false),original.iter().any(|r|r["exchangeId"]==q["exchangeId"]&&r["retired"]==false));
+  }
+  assert_eq!(RENDERS.with(|n|n.get()),1);assert_eq!(bank.durable_head(),before);assert_eq!(std::fs::read(root.join("events.jsonl")).unwrap(),journal);
+  let tick=json!({"type":"tick","receivedAt":iso(at+1)});bank.accept("ticks",1,&tick).unwrap();
+  let after=snapshot(&bank);assert!(!first.validate_current(&bank));assert!(!Arc::ptr_eq(&first,&after));assert_eq!(after.records(),bank.engine().order_records());assert_eq!(RENDERS.with(|n|n.get()),2);
+  assert!(!bank.accept("ticks",1,&tick).unwrap());assert!(Arc::ptr_eq(&after,&snapshot(&bank)));
+  let mut conflict=tick.clone();conflict["receivedAt"]=json!(iso(at+2));assert!(bank.accept("ticks",1,&conflict).is_err());assert!(Arc::ptr_eq(&after,&snapshot(&bank)));assert_eq!(RENDERS.with(|n|n.get()),2);
+  drop(bank);CURRENT.with(|slot|*slot.borrow_mut()=None);std::fs::remove_dir_all(root).unwrap();
  }
 }
