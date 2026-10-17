@@ -1923,11 +1923,11 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
- let entry_hints=if !owner_capital_ready(c,bank)?{Vec::new()}else if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!bank.engine().order_records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
+ let entry_hints=if !owner_capital_ready(c,bank)?{Vec::new()}else if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
  // At most one new physical order per pass; subsequent fills change funding.
  // Retired history and already-physical orders have separate reconciliation
  // paths above; they cannot become a new submission or consume its ranking.
- let quotes:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!bank.engine().is_package_order(id))).collect();
+ let quotes:Vec<_>=moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!bank.engine().is_package_order(id))).cloned().collect();
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
  let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));
