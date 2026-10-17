@@ -1,5 +1,7 @@
 # Victory Directive: evidence and integration map
 
+Latest: R21 is now [verified trading at06:00:17UTC](../moloch-profitable-preparation-20261017/live-proof/README.md), with352 fills and zero post-upgrade fill rows at that proof. All original financial/model records preserved; profitable-exit benefit unverified. Separate full-input-trace producer619883 is actually observing after fresh trading; capture unsealed and economically unqualified.
+
 The human supplied this paper on October 17. [Original text](supplied-paper.md)
 is retained byte for byte; [provenance](provenance.json) pins its SHA256. Its
 audit of main 698969d5 is historical. Checked profitable-exit source 4bbeae46

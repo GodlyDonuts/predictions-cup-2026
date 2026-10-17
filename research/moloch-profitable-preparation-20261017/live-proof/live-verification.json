@@ -1,0 +1,66 @@
+{
+  "observedAt": "2026-10-17T06:00:17.505831+00:00",
+  "actualWorkerPid": 616815,
+  "sourceCommit": "b796e2c1ddb219ebd36cff97428db99a8de780ed",
+  "binarySha256": "70f16b21b4fc19a4f575042eb1e0e64f1f5c89061c1c0626a46e8f981871f9a1",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "actualRelease": "/home/archon/apps/moloch/releases/throughput-capital-70f16b21b4fc/moloch-live-runtime",
+  "freshTradingVerified": true,
+  "realtimeHealthy": true,
+  "activeStopExists": false,
+  "originalLedgerRestoredByWorker": true,
+  "stoppedFinancialSequence": 420144,
+  "previousWorkerPid": 611948,
+  "settingsOrActivationRenewed": false,
+  "financialBridgeEntries": 14,
+  "all14BridgeBytesUnchanged": true,
+  "originalFourModelGenerationsRecoveredUnchanged": true,
+  "originalGenerations": [
+    {
+      "rowRawSha256": "53eb96c069f03fcf584ac5467e9b88c6fc62fc293a8cb38f04a06e7a0f43e1fe",
+      "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68"
+    },
+    {
+      "rowRawSha256": "c2b33f6b868e7699e90eab069704830328bdd34a47ce57c96d5d838e7caaab82",
+      "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1"
+    },
+    {
+      "rowRawSha256": "16c02f0c0f6985945499974014b78283e747a0431a266a579f31c1a107941026",
+      "generationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31"
+    },
+    {
+      "rowRawSha256": "04c3c402f2901713c13a3259ca2301d578d69090a5a4e4bba5f2ab3fe4b4364d",
+      "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17"
+    }
+  ],
+  "activeGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "managedReviewCount": 11,
+  "baseControlSha256": "66707270087ca8105d2a1405ba826f1726347c1feba297e417bbef463e24c2e9",
+  "progress": {
+    "actualFills": 352,
+    "actualOrders": 1492,
+    "at": "2026-10-17T06:00:15.505Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 616815,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 38,
+    "terminalOrders": 1492
+  },
+  "financialReportSha256": "802e68bfd240d4cbdf4e5da3be4c54ce5ccf45d82c429859c3aeec9948edfa87",
+  "financialSequence": 420427,
+  "officialFillRows": 352,
+  "cash": "9274.510000",
+  "ownedCost": "86165.565000",
+  "combinedAttributedRealized": "-139.840000",
+  "newTradingRealized": "-184.970000",
+  "inheritedRealizedGross": "45.130000",
+  "newOfficialRowsSinceProfitPreparationUpgrade": 0,
+  "newFillGroupsSinceProfitPreparationUpgrade": [],
+  "profitPreparationProductionLatencyImprovementVerified": false,
+  "profitabilityEstablished": false,
+  "wholeAccountOrRankPnlVerified": false,
+  "noNewAccountClientOrCadenceMode": true
+}

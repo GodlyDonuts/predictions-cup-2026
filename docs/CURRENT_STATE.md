@@ -1,3 +1,7 @@
+# October17,06:00UTC — R21 verified trading
+
+Latest06:00:17UTC: **R21 sole616815/sourceb796e2c1/binary70f16b21 verified trading/realtimeHealthy/noSTOP.** Actual service PID/executable/release/fresh progress/model channel agree; original14 bridge bytes/four generations/eleven policies recovered. Ledger352 fills/cash9,274.510/owned86,165.565/realized−139.840; **zero post-upgrade fill rows at this proof**, no profitable exit or latency/economic benefit claimed. [Actual fresh-process proof](../research/moloch-profitable-preparation-20261017/live-proof/README.md). The earlier installation below remains historical/restoring. Existing read-only observer619883 actually started after fresh trading with full input trace; running/unsealed/no model authority. Infrastructure remains deferred unless essential.
+
 # October17,05:45UTC — R21 profit preparation installed; restoring
 
 Existing service started sole616815/sourceb796e2c1/binary70f16b21/native7a74f8c3 at05:45:02.709UTC. Actual PID/executable/release and control66707270 verified. **Ledger restoring; fresh new-process trading not yet verified.** Old611948 progress is not assigned to616815. [Actual installation proof](../research/moloch-profitable-preparation-20261017/deployment/README.md).

@@ -1,5 +1,8 @@
 # Moloch research baseline
 
+Latest06:00:17UTC: **R21 sole616815/sourceb796e2c1/binary70f16b21 verified trading/realtimeHealthy/noSTOP.** Actual service PID/executable/release/fresh progress/model channel agree; original14 bridge bytes/four generations/eleven policies recovered. Ledger352 fills/cash9,274.510/owned86,165.565/realized−139.840; **zero post-upgrade fill rows at this proof**, no profitable exit or latency/economic benefit claimed. [Actual fresh-process proof](../research/moloch-profitable-preparation-20261017/live-proof/README.md). The earlier installation below remains historical/restoring. Existing read-only observer619883 actually started after fresh trading with full input trace; running/unsealed/no model authority. Infrastructure remains deferred unless essential.
+
+
 Latest05:45UTC: **R21 sole616815/sourceb796e2c1/binary70f16b21 installed, restoring; fresh trading not yet verified.** [Actual controlled installation](../research/moloch-profitable-preparation-20261017/deployment/README.md). Exact420144/352 boundary/cash9,274.510/owned86,165.565/realized−139.840; all14 bridge bytes/four original generations/eleven policies preserved. No source/model/rate/risk/activation renewal. Prior dated observations remain historical.
 
 New05:42UTC: [b796e2c1 profit preparation](../research/moloch-profitable-preparation-20261017/build-proof/README.md) checked850/release, not yet deployed; R20 remains sole611948. [New prospective price cohort](../research/moloch-victory-directive-20261017/prospective-v2/README.md):17,349 decisions/23,697 labels, zero selected after-cost trades across all horizons/comparators. No alpha/model activation. Dated observations below remain historical.
