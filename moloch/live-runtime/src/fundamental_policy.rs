@@ -394,8 +394,11 @@ fn passive_terms(r:&ReviewInput,bank:&Session,ex:&str,c:&Cohort,cap:u64,ask:Opti
     let Some(ask)=ask else{return Ok(None)};let inside=(ask-5000).max(5000);let policy=bank.engine().policy();
     let bps=u32::try_from(policy["feeBps"].as_u64().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
     let share=amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
-    let net=inside-moloch_replay::fee(inside,1,bps,share)?;let all=cohort_fifo_cost(bank,ex,c,&r.side,cap)?;
-    let mut prefix=0u64;for l in all["lots"].as_array().ok_or("FUNDAMENTAL_FIFO_COST")?{if add(amount(l["unitCostUpper"].as_str().ok_or("FUNDAMENTAL_FIFO_COST")?)?,gain)?>net{break}prefix=prefix.checked_add(l["quantity"].as_u64().ok_or("FUNDAMENTAL_FIFO_COST")?.min(cap-prefix)).ok_or("FUNDAMENTAL_FIFO_RANGE")?;if prefix==cap{break}}
+    let all=cohort_fifo_cost(bank,ex,c,&r.side,cap)?;let mut prefix=0u64;
+    // If improving loses the first FIFO unit, joining the unchanged observed
+    // ask may still preserve a genuinely profitable prefix (never later lots).
+    for candidate in [inside,ask]{let net=candidate-moloch_replay::fee(candidate,1,bps,share)?;
+        for l in all["lots"].as_array().ok_or("FUNDAMENTAL_FIFO_COST")?{if add(amount(l["unitCostUpper"].as_str().ok_or("FUNDAMENTAL_FIFO_COST")?)?,gain)?>net{break}prefix=prefix.checked_add(l["quantity"].as_u64().ok_or("FUNDAMENTAL_FIFO_COST")?.min(cap-prefix)).ok_or("FUNDAMENTAL_FIFO_RANGE")?;if prefix==cap{break}}if prefix>0{break}}
     let n=if prefix>0{prefix}else{cap};let cost=cohort_fifo_cost(bank,ex,c,&r.side,n)?;
     let floor=add(amount(cost["maximumFifoUnitCost"].as_str().ok_or("FUNDAMENTAL_FIFO_COST")?)?,gain)?;
     let Some(tick)=fee_floor_tick(policy,floor)?else{return Ok(None)};
