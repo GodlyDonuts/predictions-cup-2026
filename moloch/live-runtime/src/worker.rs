@@ -542,8 +542,13 @@ fn passive_reserved_exit(bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&s
  Ok(Some(q.clone()))
 }
 fn existing_exit_read_hint(bank:&Session,log:&DispatchLog,scope:&Scope,f:&FundamentalRuntime,exchange:&str,at:u64)->Result<Option<fundamental::ExistingExitHint>>{
- if existing_target_busy(bank,log,exchange)?&&passive_reserved_exit(bank,log,scope,exchange,at)?.is_none(){return Ok(None)}
- f.cohorts.existing_exit_hint(bank,log,scope,exchange,f.authority.trusted(),at)
+ let untouched_passive=if existing_target_busy(bank,log,exchange)?{if passive_reserved_exit(bank,log,scope,exchange,at)?.is_none(){return Ok(None)}true}else{false};
+ let mut hint=f.cohorts.existing_exit_hint(bank,log,scope,exchange,f.authority.trusted(),at)?;
+ // This owned reservation already exists; a stale book nominates its SAME
+ // seven-fact retry, rather than relegating it to the ordinary read-hint union.
+ // Selection grants no freshness or physical authority and never renews qid/TTL.
+ if untouched_passive{if let Some(h)=hint.as_mut(){if h.reason=="reviewed_inventory_book_refresh"{h.reason="reviewed_passive_reservation_retry".into();}}}
+ Ok(hint)
 }
 /// ONLY a reviewed native FRESH_MARKET_CAP denial calls this fallback. Yield
 /// one entirely flat ordinary proposal market, with no intent/attempt/ACK,
@@ -2879,8 +2884,9 @@ pub fn main()->Result<()>{
  use super::*;
  mod fixture{include!(concat!(env!("CARGO_MANIFEST_DIR"),"/tests/support/fundamental_passive_fixture.rs"));}
  use fixture::F;
- fn setup()->(F,FundamentalRuntime,Control,RestSource,Value){
-  let base=now()-12000;let mut f=F::new_at(Some(2),"0.990000",0,"0.000000",true,base);let q=f.reserve_at(base+7001);
+ fn setup()->(F,FundamentalRuntime,Control,RestSource,Value){setup_at(now()-12000)}
+ fn setup_at(base:u64)->(F,FundamentalRuntime,Control,RestSource,Value){
+  let mut f=F::new_at(Some(2),"0.990000",0,"0.000000",true,base);let q=f.reserve_at(base+7001);
   let authority_path=f.root.0.join("retry-authority.json");let bytes=serde_json::to_vec(&json!({"version":1,"trustedReviewSha256":f.trust})).unwrap();fs::write(&authority_path,&bytes).unwrap();
   let runtime=FundamentalRuntime{cohorts:f.store.take().unwrap(),authority:ReviewAuthority::load(&authority_path,&fixture::sha(&bytes)).unwrap()};
   let c:Control=serde_json::from_value(json!({"activation":{"runId":"passive-inherited-fixture","entryUntilMs":base+3600000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":3,"tournamentId":fixture::T,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":f.scope,"policy":f.policy,"root":f.root.0,"credentials":"/unused","ownerLock":f.root.0.join("owner.lock"),"accountScope":"synthetic-passive-inherited-account"})).unwrap();
@@ -2925,6 +2931,30 @@ pub fn main()->Result<()>{
    let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:id.to_string(),owner:"Codex".into(),expires_at_ms:now()+1000,maximum_quantity:2,maximum_cost:"1.970000".into()};let token=runtime.cohorts.physical_decision(&f.bank,&f.log,&c.scope,id,&request,&permit,&runtime.authority,now()).unwrap();token.authorize(&c.scope,&request,&permit,now()).unwrap();
    assert_eq!(f.bank.engine().order_records(),orders);for key in ["cash","ownedCost","realized","fees","positions"]{assert_eq!(before[key],f.bank.engine().report().unwrap()[key],"{key}");}assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty()&&f.bank.engine().live_order_bindings().is_empty()&&f.bank.engine().fills().is_empty());
    f.log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":request,"fundamental":runtime.cohorts.durable_tag(id).unwrap()})).unwrap();let one_intent=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();let mut no_reads=Reads::new();assert!(passive_reserved_preflight(&c,&mut f.bank,&f.log,&mut source,&runtime,&q,&mut no_reads).unwrap().is_none());assert!(no_reads.endpoints.is_empty());assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),one_intent);
+  }
+ }
+ #[test]fn passive_reserved_stale_book_retry_is_priority_but_still_requires_seven_fresh_facts(){
+  let(mut f,mut runtime,c,mut source,q)=setup_at(now()-16000);let id=q["id"].as_u64().unwrap();let at=now();
+  let books=moloch_live_runtime::package_admission::native_books(&f.bank,&c.scope,at,10000).unwrap().0;assert!(!books.contains_key("101"));
+  let raw_hint=runtime.cohorts.existing_exit_hint(&f.bank,&f.log,&c.scope,"101",runtime.authority.trusted(),at).unwrap().unwrap();assert_eq!(raw_hint.reason,"reviewed_inventory_book_refresh");assert!(!runtime.eligible(&f.bank,&f.log,&c.scope,id,at).unwrap());
+  let head=f.bank.durable_head();let before=f.bank.engine().report().unwrap();let orders=f.bank.engine().order_records();let dispatch=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();
+  let hint=existing_exit_read_hint(&f.bank,&f.log,&c.scope,&runtime,"101",at).unwrap().unwrap();assert_eq!(hint.reason,"reviewed_passive_reservation_retry");assert_eq!((hint.exchange_id.as_str(),hint.market_id.as_str(),hint.side.as_str()),("101","201","NO"));assert_eq!(f.bank.durable_head(),head,"nomination changes no source clock or financial state");
+  let mut stale=Reads::new();stale.stale=true;assert!(passive_reserved_preflight(&c,&mut f.bank,&f.log,&mut source,&runtime,&q,&mut stale).unwrap().is_none());assert_eq!(stale.endpoints.len(),7);assert_eq!(f.bank.durable_head(),head,"stale final packet is not admitted");
+  let mut fresh=Reads::new();let(facts,until)=passive_reserved_preflight(&c,&mut f.bank,&f.log,&mut source,&runtime,&q,&mut fresh).unwrap().unwrap();assert_eq!(fresh.endpoints.len(),7);assert_eq!(fresh.services,7);assert_eq!(json!(fresh.returned),serde_json::to_value([&facts.account,&facts.positions,&facts.open_orders,&facts.cash_balance,&facts.market,&facts.contract,&facts.book]).unwrap());
+  assert_eq!(existing_reservation_stage(&quote(&f.bank,id).unwrap(),&q,now(),until).unwrap(),None);assert!(runtime.eligible(&f.bank,&f.log,&c.scope,id,now()).unwrap());let request=f.spec(&q);runtime.cohorts.bind(&f.bank,&f.log,&c.scope,id,&request,runtime.authority.trusted(),now()).unwrap();
+  let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:id.to_string(),owner:"Codex".into(),expires_at_ms:now()+1000,maximum_quantity:2,maximum_cost:"1.970000".into()};let token=runtime.cohorts.physical_decision(&f.bank,&f.log,&c.scope,id,&request,&permit,&runtime.authority,now()).unwrap();token.authorize(&c.scope,&request,&permit,now()).unwrap();
+  assert_eq!(quote(&f.bank,id).unwrap(),q);assert_eq!(f.bank.engine().order_records(),orders);for key in ["cash","ownedCost","realized","fees","positions"]{assert_eq!(before[key],f.bank.engine().report().unwrap()[key],"{key}");}assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty()&&f.bank.engine().live_order_bindings().is_empty()&&f.bank.engine().fills().is_empty());
+ }
+ #[test]fn passive_reserved_retry_priority_never_promotes_revoked_expired_or_dispatched_quotes(){
+  for case in ["revoked","expired","attempt","ack"]{let(mut f,mut runtime,c,_source,q)=setup_at(now()-16000);let id=q["id"].as_u64().unwrap();let mut at=now();
+   match case{
+    "revoked"=>{let mut review=f.review.clone();review.reviewed_at_ms=at;review.revoke_existing=true;let checked=f.verify(review,at);runtime.cohorts.install(checked,&f.bank,&f.log,at).unwrap();let path=f.root.0.join("retry-authority.json");let bytes=serde_json::to_vec(&json!({"version":1,"trustedReviewSha256":f.trust})).unwrap();fs::write(&path,&bytes).unwrap();runtime.authority=ReviewAuthority::load(&path,&fixture::sha(&bytes)).unwrap();},
+    "expired"=>at=q["expiresAt"].as_u64().unwrap(),
+    _=>{f.log.append(json!({"kind":"intent","qid":id})).unwrap();f.log.append(json!({"kind":"attempt","qid":id})).unwrap();if case=="ack"{f.log.append(json!({"kind":"ack","qid":id,"receipt":{"orderId":"901"}})).unwrap();}}
+   }
+   let head=f.bank.durable_head();let original=quote(&f.bank,id).unwrap();let result=existing_exit_read_hint(&f.bank,&f.log,&c.scope,&runtime,"101",at);
+   if case=="attempt"{assert!(result.is_err(),"unknown attempt remains fatal");}else{let hint=result.unwrap();assert!(hint.as_ref().is_none_or(|h|h.reason!="reviewed_passive_reservation_retry"),"{case}");if case=="revoked"{assert_eq!(hint.unwrap().reason,"reviewed_source_revocation");}}
+   assert_eq!(f.bank.durable_head(),head);assert_eq!(quote(&f.bank,id).unwrap(),original);assert_eq!(f.bank.engine().order_records().iter().filter(|q|q["retired"]==false&&q["exchangeId"]=="101").count(),1);
   }
  }
  #[test]fn passive_reserved_attempt_unknown_ack_native_binding_and_cancel_never_retry(){
