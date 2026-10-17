@@ -799,8 +799,11 @@ fn defer_account_preintent(c:&Control,bank:&Session,log:&DispatchLog,authority:&
 }
 /// A freshness loss at physical capability minting can decline an untouched
 /// quote. This helper is never used after an original intent or attempt.
+fn fundamental_book_expiry_error(error:&dyn std::error::Error)->bool{
+ matches!(error.to_string().as_str(),"FUNDAMENTAL_PHYSICAL_BOOK_STALE"|"FUNDAMENTAL_NOT_ELIGIBLE")
+}
 fn fundamental_stale_preintent(bank:&Session,log:&DispatchLog,scope:&Scope,expected:&Value,error:&dyn std::error::Error,sdk_unknown:bool,at:u64)->Result<bool>{
- if error.to_string()!="FUNDAMENTAL_PHYSICAL_BOOK_STALE"{return Ok(false)}
+ if !fundamental_book_expiry_error(error){return Ok(false)}
  log.require_resolved_attempts()?;
  if sdk_unknown{return Err("LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE".into())}
  let qid=expected["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let current=quote(bank,qid)?;
@@ -830,7 +833,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   let decision=match f.cohorts.physical_decision(bank,log,&c.scope,qid,&request_spec,&p,&f.authority,now()){
    Ok(decision)=>decision,
    Err(error)=>{
-    if error.to_string()=="FUNDAMENTAL_PHYSICAL_BOOK_STALE"{
+    if fundamental_book_expiry_error(error.as_ref()){
      // The same positive quiet-queue proof used by stream recovery also
      // excludes active admission/manual review, not only unknown accepts.
      recovery_queue_clear(&t.admission_state()?)?;
@@ -2414,6 +2417,12 @@ pub fn main()->Result<()>{
  #[test]fn fundamental_preintent_stale_defer_requires_real_freshness_loss_and_preserves_prefix(){
   let at=now()-1000;let(root,c,bank,log,_source,q,_book)=fixture_at(at);let stale:Box<dyn std::error::Error>="FUNDAMENTAL_PHYSICAL_BOOK_STALE".into();let head=bank.durable_head();let bytes=fs::read(root.0.join("dispatch.ndjson")).unwrap();let financial=bank.engine().report().unwrap();
   assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).unwrap());
+  // check_bound assesses current value before physical_decision's explicit
+  // book check, so real book expiry may surface as NOT_ELIGIBLE first.
+  let denied:Box<dyn std::error::Error>="FUNDAMENTAL_NOT_ELIGIBLE".into();
+  assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at+60000).unwrap());
+  assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");
+  assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),true,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE");
   assert!(!fundamental_stale_preintent(&bank,&log,&c.scope,&q,&std::io::Error::other("unrelated failure"),false,at+60000).unwrap());
   assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");
   assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),true,at+60000).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_UNKNOWN_ACCEPTANCE");
