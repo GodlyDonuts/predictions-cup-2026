@@ -1,6 +1,6 @@
 # Moloch research baseline
 
-Updated **2026-10-17 04:02:31 UTC**.
+Latest: source4bbeae46 /binaryc734ca4c installed04:39:58UTC as611948, **restoring; fresh trading pending**. Exact stopped boundary351fills/cash9,463.510/owned85,976.565/combined attributed realized−139.840. [Actual installation](../research/moloch-profitable-exit-refresh-20261017/deployment/README.md); [new Victory Directive and evidence map](../research/moloch-victory-directive-20261017/README.md). Prior verified R19 trading observation follows.
 
 Read [the current research handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md) first. It separates deployed strategies, source-only components, missing economics, capital/fill evidence and next work. Older dated reports are history; previous baseline versions remain in Git.
 

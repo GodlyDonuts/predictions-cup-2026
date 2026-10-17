@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-17T04:40:43.611405+00:00",
+  "actualWorkerPid": 611948,
+  "actualExecutableSha256": "c734ca4c6016d300b33c4300026b9aa418131ddf032c7da1716aaed87dc744e7",
+  "actualRelease": "/home/archon/apps/moloch/releases/throughput-capital-c734ca4c6016/moloch-live-runtime",
+  "activeStopExists": false,
+  "freshTradingVerified": false,
+  "ledgerRecoveryPending": true,
+  "lastPublishedProgressPid": 607949,
+  "oldProgressNotAttributedToNewWorker": true,
+  "financialJournalReadPositions": [
+    {
+      "financialJournalFD": "56",
+      "posBytes": 157908992
+    }
+  ],
+  "positionsAreNotOverallCompletionPercentage": true
+}

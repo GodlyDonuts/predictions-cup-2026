@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-17T04:34:23.907358+00:00",
+  "operatorPath": "/tmp/moloch-profitable-exit-r20-owner-frozen-20261017.py",
+  "operatorSha256": "b27a09b31a7579d5dc924cc10fdb8493c02e556e7b1f36a63c73fde38078228c",
+  "sourceCommit": "4bbeae46e5d72de5c06d49aad476a4a68eb6a3d6",
+  "binarySha256": "c734ca4c6016d300b33c4300026b9aa418131ddf032c7da1716aaed87dc744e7",
+  "engineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "validationSha256": "2553903a141cda2f68c16030282b905c1dad22a80f38a97c848979c638d54946",
+  "reviewBundleSha256": "08488c8943bf47730454eae327d3fbe780a859ba1d92618c6c36f5dcefe43b89",
+  "actualPassCount": 849,
+  "originalFourModelGenerationsVerified": true,
+  "managedReviewCount": 11,
+  "lifecycleFunctionAstsUnchangedExceptBackupName": true,
+  "noFinancialBridgeChange": true,
+  "noSourceClockPolicyRateOrActivationRenewal": true,
+  "expectedTestResults": {
+    "sdk-library": [
+      [
+        "233",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "native-library": [
+      [
+        "98",
+        "0",
+        "1",
+        "0",
+        "0"
+      ]
+    ],
+    "runtime-library": [
+      [
+        "238",
+        "0",
+        "1",
+        "0",
+        "0"
+      ]
+    ],
+    "worker": [
+      [
+        "126",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "exit_refresh_lifecycle": [
+      [
+        "8",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "fundamental_policy": [
+      [
+        "119",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "fundamental_quantity": [
+      [
+        "2",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "fundamental_source_bounds": [
+      [
+        "7",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "alpha_proposal": [
+      [
+        "18",
+        "0",
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "release": null,
+    "engine-probe-build": null,
+    "engine-probe-run": null
+  },
+  "modeActionsExecutedByFreeze": false
+}

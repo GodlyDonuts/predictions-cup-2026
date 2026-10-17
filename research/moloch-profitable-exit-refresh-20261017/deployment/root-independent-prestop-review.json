@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-17T04:37:32.836503+00:00",
+  "rootReviewed": true,
+  "sourceCommit": "4bbeae46e5d72de5c06d49aad476a4a68eb6a3d6",
+  "binarySha256": "c734ca4c6016d300b33c4300026b9aa418131ddf032c7da1716aaed87dc744e7",
+  "financialEngineAndAll14BridgeBytesUnchanged": true,
+  "original4GenerationsAnd11ModelSettingsPreserved": true,
+  "onlyControlChange": "activation.binarySha256 relative to original active overlay",
+  "sourceFiles": 262,
+  "allChecksPassed": 849,
+  "newCadenceEnabled": false,
+  "oldPid": 607949,
+  "oldProgressAt": "2026-10-17T04:37:15.826Z",
+  "networkRequestsDuringReview": 0,
+  "nextAction": "existing controlled stop; quiet verified only after old worker exits"
+}

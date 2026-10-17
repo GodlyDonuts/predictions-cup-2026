@@ -1,3 +1,9 @@
+# October 17, 04:39 UTC — profitable-exit strategy installed; restoring
+
+Source4bbeae46 /binaryc734ca4c installed as sole611948 using the existing controlled binary-only upgrade. Exact stopped boundary409030 /351fillrows: cash9,463.510/owned85,976.565/combined attributed realized−139.840. All fourteen bridge bytes/four original model generations preserved; no model/rate/activation renewal. **Fresh trading and fills from this new worker are not yet verified.** Old607949 progress remains historical. [Actual installation evidence](../research/moloch-profitable-exit-refresh-20261017/deployment/README.md).
+
+The human supplied the [Victory Directive](../research/moloch-victory-directive-20261017/README.md); original paper, source hash, recommendation-to-code map and missing economic evidence are recorded. Existing semantic/refund, source-innovation, portfolio and prize-utility components need qualified inputs and actual outcomes. No backend rewrite or silent new-paper allocation change. Infrastructure remains deferred unless essential.
+
 # October 17, 04:01 UTC — actual post-upgrade buys; about 89.90% at cost basis
 
 Sole 607949 is verified trading/realtimeHealthy/noSTOP at 04:01:26 UTC. Since

@@ -1,8 +1,16 @@
 # Moloch: current research handoff
 
-**Updated 2026-10-17 04:02:31 UTC; live financial proof 04:01:26 UTC / 347 fills; independent FIFO audit boundary 396960 / 338 fills.** This is the current baseline. Older dated reports are history. No paper is declared fully implemented.
+**Updated October 17: R20 installed 04:39:58 UTC; restoring, fresh trading pending. Financial boundary 409030 /351 fills; independent FIFO audit 396960 /338 fills.** Older dated reports retain their original status. No paper is declared fully implemented.
 
-## Production and actual capital
+Newest research: [Victory Directive and evidence-to-code map](../research/moloch-victory-directive-20261017/README.md). Original paper is preserved exactly. Its main698969d5 audit predates the checked profitable-exit release.
+
+## Latest installation and financial boundary
+
+Source **4bbeae46 /binary c734ca4c /native 7a74f8c3**, sole worker **611948**, is installed and restoring the original ledger. [Installation receipt](../research/moloch-profitable-exit-refresh-20261017/deployment/production-rollout-summary.json) does not claim fresh trading or fills. Original fourteen bridge bytes/four model generations/eleven settings remain unchanged. At the controlled stopped boundary: **351 fills/cash9,463.510/owned85,976.565/combined attributed realized−139.840**; new−184.970/inherited+45.130. Owned cost and model reserves are separate from profit. [Boundary evidence](../research/moloch-profitable-exit-refresh-20261017/deployment/boundary-summary.json). The prior worker's progress must not be attributed to611948.
+
+The installed fix refreshes never-attempted profit-only inventory exits using fresh facts and a new native quote; current covered profitable SELLs receive priority below risk exits. 849 checks/build/native probe pass; original TTL/gain/source-clock/rate/risk/model/activation remain. Actual new-process operation and economic benefit still require verification.
+
+## Prior R19 production and actual capital
 
 Installed source **a557c779**, binary **7d44e839**, native **7a74f8c3**. Sole worker **607949** is **verified trading at 04:01:26 UTC**, with fresh progress from that process, healthy realtime and no active STOP. All 14 financial bridge bytes, four original model records and eleven policies recovered unchanged. [Actual live/fill verification](../research/moloch-throughput-capital-20261017/entry-strategy-fill-proof/live-verification.json). After the upgrade it filled **two reviewed fundamental BUY orders / 7,438 shares / 6,453.985 principal / nine official rows**: 865 YES 7,437 shares and 872 YES one share. These establish actual resumed trading and capital use, not a causal latency improvement or profit from the fixes. The [03:43:30 installation receipt](../research/moloch-throughput-capital-20261017/entry-strategy-deployment/production-rollout-summary.json) and [03:57:59 first-trading proof](../research/moloch-throughput-capital-20261017/entry-strategy-live-proof/live-verification.json) retain their original earlier statuses.
 
@@ -74,7 +82,7 @@ Kalshi is a reference-data source, not a second trading account. Atlas, election
 
 ## Paper7 traceability
 
-Original supplied paper SHA256:3b7199c71dea9d31da1119476e80481648c937e0519af47b5e0e797db99a5603. Installed source is a557c779; the source/build and deployment evidence above identify its exact bytes. Code presence is not activation or alpha.
+Original supplied paper SHA256:3b7199c71dea9d31da1119476e80481648c937e0519af47b5e0e797db99a5603. The table was first measured against a557c779; the R20 binary-only strategy release 4bbeae46 preserves these model/feature settings. The source/build and deployment evidence above identify exact bytes. Code presence is not activation or alpha.
 
 |Recommendation |Concrete implementation |Missing economics/status |
 | --- | --- | --- |
@@ -113,7 +121,7 @@ The [actual acquisition audit](../research/moloch-acquisition-audit-20261017/REA
 
 The [profit-exit source audit](../research/moloch-profitable-exit-refresh-20261017/README.md) finds 1,301 genuine expired profit-only inventoryAON SELL drafts for inherited 948 NO, all with original 13-second windows and durable zero-attempt not_sent proofs. Repeated drafts concern the same inventory; they cannot be summed as missed fills or profit. Prior book coverage is incomplete and stale/gap states remain explicit.
 
-The existing expired-exit helper accepts maximumAge only. Checked source **4bbeae46** adds a distinct profit-only fresh-read path and gives currently marketable profitable SELLs priority below risk exits. It requires seven original fresh facts, a new actual native quote, current owned/pledged coverage and unchanged worst-lot/fee/minimum-gain checks. Managed holdings and protected packages retain their existing authority. **849 ARM64 checks, optimized build and native probe pass**; unchanged compiled checks are explicitly reused. All 262 built source files match committed source, and the independent read-only review found no concrete blocker. Earlier test-fixture failures remain in the [build evidence](../research/moloch-profitable-exit-refresh-20261017/build-proof/strategy-check-summary.json). Binary c734ca4c is staged; **not yet deployed**. Original 13-second windows may still expire during preparation, so a performance or profit benefit is not established. Source-clock, TTL, native engine, risk and rate limits are unchanged. Existing production 607949 continues independently.
+The existing expired-exit helper accepts maximumAge only. Checked source **4bbeae46** adds a distinct profit-only fresh-read path and gives currently marketable profitable SELLs priority below risk exits. It requires seven original fresh facts, a new actual native quote, current owned/pledged coverage and unchanged worst-lot/fee/minimum-gain checks. Managed holdings and protected packages retain their existing authority. **849 ARM64 checks, optimized build and native probe pass**; unchanged compiled checks are explicitly reused. All 262 built source files match committed source, and the independent read-only review found no concrete blocker. Earlier test-fixture failures remain in the [build evidence](../research/moloch-profitable-exit-refresh-20261017/build-proof/strategy-check-summary.json). Binary c734ca4c was installed as611948 at04:39:58UTC and is **restoring; fresh trading pending**. Original 13-second windows may still expire during preparation, so a performance or profit benefit is not established. Source-clock, TTL, native engine, risk and rate limits are unchanged. Previous607949 stopped at the exact409030/351-fill boundary; its progress is historical.
 
 ## Next: strategy economics
 

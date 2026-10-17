@@ -1,5 +1,8 @@
 # Moloch — official production bot
 
+Newest paper: [Victory Directive, current-code map and evidence requirements](research/moloch-victory-directive-20261017/README.md).
+R20 source4bbeae46 /binaryc734ca4c installed at04:39:58UTC as611948; **restoring, fresh trading pending**. Exact boundary351fills/cash9,463.510/owned85,976.565/combined attributed realized−139.840. [Installation evidence](research/moloch-profitable-exit-refresh-20261017/deployment/README.md).
+
 Latest research handoff: [October17 current state, Paper7 gaps and next strategy work](docs/MOLOCH_RESEARCH_HANDOFF_20261017.md).
 Updated 2026-10-17 04:02:31 UTC: **347 official fill rows, 85,801.675 SUSQies owned cost and 9,638.400 cash**. Release a557c779 / 7d44e839, worker 607949, is verified trading at 04:01:26 UTC; two post-upgrade buys added 7,438 shares / 6,453.985 principal.
 [Earlier 338-fill FIFO attribution](research/moloch-realized-attribution-20261017/README.md): ordinary −184.97 realized, reviewed fundamental 0 realized with 57,011.775 held principal, inherited +45.13 realized; combined −139.84. Owned cost now uses about 89.90% of cash plus owned cost and is not profit.
