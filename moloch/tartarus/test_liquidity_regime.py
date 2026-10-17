@@ -149,6 +149,26 @@ class LiquidityRegimeTests(unittest.TestCase):
         b=book(1,1,'b')['book'];b['bids'].append(deepcopy(b['bids'][0]))
         with self.assertRaisesRegex(ValueError,'DUPLICATE_PRICE'):L.levels(b,'bids')
 
+    def test_exact_millisecond_boundary_and_timezone_without_float_roundup(self):
+        self.assertEqual(L.ms('2026-10-17T00:00:00.999999999Z'),L.ms('2026-10-17T00:00:00Z')+999)
+        self.assertEqual(L.ms('2026-10-17T01:00:00.001999999+01:00'),L.ms('2026-10-17T00:00:00Z')+1)
+        self.assertEqual(L.ms('1969-12-31T23:59:59.999999Z'),-1)
+        with self.assertRaisesRegex(ValueError,'TIMEZONE_REQUIRED'):L.ms('2026-10-17T00:00:00')
+
+    def test_pure_book_rejects_invalid_future_source_and_late_request_but_preserves_old_source(self):
+        original=book(1000,1,'b');original['book']['requestStartedAt']=stamp(900)
+        self.assertEqual(L._book_event(original)['source'],1000)
+        old=deepcopy(original);old['book']['sourceAt']=stamp(800)
+        # Request time is not a fabricated freshness clock for the source book.
+        self.assertEqual(L._book_event(old)['source'],800)
+        invalid=deepcopy(original);invalid['book']['invalid']=True
+        with self.assertRaisesRegex(ValueError,'INVALID_BOOK'):L._book_event(invalid)
+        future=deepcopy(original);future['book']['sourceAt']=stamp(1001)
+        with self.assertRaisesRegex(ValueError,'BOOK_CLOCK'):L._book_event(future)
+        late=deepcopy(original);late['book']['requestStartedAt']=stamp(1001)
+        with self.assertRaisesRegex(ValueError,'BOOK_REQUEST_CLOCK'):L._book_event(late)
+        self.assertEqual(original['book']['sourceAt'],stamp(1000))
+
     def test_original_shaped_sealed_trace_replays_and_tamper_refuses(self):
         folder=L.ROOT/'research/moloch-trade-trigger-20261016/witness'
         sys.path.insert(0,str(folder))

@@ -21,7 +21,7 @@ import json
 import math
 from pathlib import Path
 import types
-from datetime import datetime
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[2]
 PROTOCOL_PATH = ROOT/'research/tartarus-20261017/liquidity-regime-protocol.json'
@@ -60,7 +60,8 @@ def protocol():
 def ms(value):
     parsed=datetime.fromisoformat(value.replace('Z','+00:00'))
     need(parsed.tzinfo is not None,'TIMEZONE_REQUIRED')
-    return int(parsed.timestamp()*1000)
+    delta=parsed.astimezone(timezone.utc)-datetime(1970,1,1,tzinfo=timezone.utc)
+    return (delta.days*86400+delta.seconds)*1000+delta.microseconds//1000
 
 
 def micros(value):
@@ -111,9 +112,13 @@ def crossing(entry, exit_book, side, quantity, haircut_bps=10000):
 
 
 def _book_event(record):
-    b=record['book'];source=ms(b['sourceAt']);received=ms(b['receivedAt'])
+    b=record['book'];need(b.get('invalid') is not True,'INVALID_BOOK')
+    source=ms(b['sourceAt']);received=ms(b['receivedAt'])
     available=integer(record['available_at_ms'],'BOOK_AVAILABILITY')
-    need(source<=available and received<=available,'BOOK_CLOCK')
+    need(0<=source<=received<=available,'BOOK_CLOCK')
+    if 'requestStartedAt' in b:
+        request=ms(b['requestStartedAt'])
+        need(0<=request<=received,'BOOK_REQUEST_CLOCK')
     bids,asks=levels(b,'bids'),levels(b,'asks')
     need(bids[0][0]<=asks[0][0],'CROSSED_BOOK')
     return {'raw':b,'scope':(str(b['marketId']),str(b['exchangeId'])),
