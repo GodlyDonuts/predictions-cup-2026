@@ -1,5 +1,9 @@
 # Moloch: current research handoff
 
+**October17,11:44UTC: production is stopped following a pre-submission book-expiry error at11:16:03.** The original stop, financial ledger and known two-share SELL are preserved. Corrected source6295e22c passes143 actual ARM64 worker checks, optimized production build and independent263-source verification. Controlled recovery remains pending. [Incident and repair](../research/moloch-source-latency-20261017/README.md). This supersedes the operation status below.
+
+## Earlier R25 observation
+
 **R25 is verified trading with healthy realtime as sole worker649399 at 10:56:39 UTC on October17.** Source8251b883, binary0bc69f07 and native5b61 match the [controlled installation](../research/moloch-entry-capital-quarantine-20261017/deployment/README.md). [Actual fresh operation and cleanup](../research/moloch-entry-capital-quarantine-20261017/live-proof/README.md).
 
 Authenticated native478633 retains all381 original fill rows, cash3,611.985, owned cost91,853.520 and attributed realized-114.410 (new-184.970/inherited+70.560). No post-upgrade fill or profit is established at this observation. Original15 bridge bytes, four model generations and eleven managed review settings remain unchanged.

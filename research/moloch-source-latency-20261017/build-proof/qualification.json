@@ -1,0 +1,52 @@
+{
+  "sourceCommit": "6295e22c97c5857d1cd37c6f13435fc34e8437a2",
+  "baseQualifiedCommit": "8251b883d07f2dffa54c55f8c0f7dea20809ce05",
+  "baseSourceManifestSha256": "15973e970e91c4164c20d59301787cef99c37c4d3a67f749909196e2ace9b3c9",
+  "workerSha256": "f6d34a2f891b4458593374fc5694afdfda64d529fd6c2fa6e247c338a59ad6fe",
+  "workerBytes": 430685,
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "productionChanged": false,
+  "qualificationPending": false,
+  "startedAt": "2026-10-17T11:35:05.809716+00:00",
+  "sourcePacketSha256": "6736cbb873751e0073a0c458124ecd53785d72e7ed73f9edc06834dbe4730df5",
+  "checks": [
+    {
+      "label": "worker",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "test",
+        "--bin",
+        "moloch-live-runtime",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T11:35:05.810199+00:00",
+      "exitCode": 0,
+      "completedAt": "2026-10-17T11:41:30.702903+00:00"
+    },
+    {
+      "label": "release",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "build",
+        "--bin",
+        "moloch-live-runtime",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T11:41:30.703564+00:00",
+      "exitCode": 0,
+      "completedAt": "2026-10-17T11:48:42.690069+00:00"
+    }
+  ],
+  "binarySha256": "97aeaf6325b62a56a6f249139d18db50c2cc306707c9555392c654e9edc649be",
+  "completedAt": "2026-10-17T11:48:42.764303+00:00"
+}

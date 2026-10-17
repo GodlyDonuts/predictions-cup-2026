@@ -1,4 +1,10 @@
-# October 17 - R25 verified trading; unused draft reservations released
+# October17,11:44UTC - stopped pre-intent book expiry; repair qualifying
+
+Production stopped naturally at11:16:03 with FUNDAMENTAL_PHYSICAL_BOOK_STALE. Root authenticated the original stopped481281 head and proved the failed851NO top-up15178 had no dispatch intent, attempt, ACK or fill. The ten-second book limit expired locally after receipt. Original STOP and financial history remain intact; known1075NO SELL2/ACK15156 still requires official startup reconciliation.
+
+Corrected source6295e22c passes143 actual ARM64 worker checks, optimized release and independent263-source verification. Owner-controlled recovery is pending. One worker/account queue, original models,15 bridge records, source clocks, risk and rate limits remain unchanged. No profit or latency gain is established. [Original incident and narrow repair](../research/moloch-source-latency-20261017/README.md).
+
+## Earlier R25 operation and reservation cleanup
 
 **R25 is verified trading with healthy realtime as sole worker649399 at 10:56:39 UTC on October17.** Source8251b883, binary0bc69f07 and native5b61 match the [controlled installation](../research/moloch-entry-capital-quarantine-20261017/deployment/README.md). [Actual fresh operation and cleanup](../research/moloch-entry-capital-quarantine-20261017/live-proof/README.md).
 

@@ -1,6 +1,6 @@
 # Source availability delay
 
-**Incident: R25 stopped11:16:03UTC with FUNDAMENTAL_PHYSICAL_BOOK_STALE.** The earlier fresh-trading observation is historical. The original STOP and known last two-share SELL are preserved; no blind restart or replacement is performed. The corrected candidate below is not yet qualified/deployed.
+**Incident: R25 stopped11:16:03UTC with FUNDAMENTAL_PHYSICAL_BOOK_STALE.** The earlier fresh-trading observation is historical. The original STOP and known last two-share SELL are preserved; no blind restart or replacement is performed. The [corrected candidate is qualified](build-proof/README.md); controlled recovery remains pending.
 
 [Task167](https://github.com/GodlyDonuts/predictions-cup-2026/issues/167) follows the [fixed SIG-only screen](../moloch-sig-streaming-screen-20261017/README.md). Root independently reproduced this historical timestamp census using the existing original raw-token native reader and its book-clock parser. This is an execution-data bottleneck investigation, not a new model, API client or infrastructure rewrite.
 
@@ -20,7 +20,7 @@ The separate [current-process packet audit](r25-current-clock-audit.json) authen
 
 There are411 books,373 realtime/38REST:211 stale,210 source-fresh at receipt and203 waiting more than10s before processing. Separate receipt-to-processing/source-to-receipt medians are9,657ms/596.9631ms; maximum receipt-to-processing34,581ms. Original381 fill tokens, cash/cost/realized remain unchanged; zero new fills and reservedCash0. No API calls were made by capture/verification. The different old/new samples do not establish a causal performance difference.
 
-## Narrow source candidate (not yet qualified or deployed)
+## Qualified source candidate (not yet deployed)
 
 Periodic source acquisition previously blocked the original Session through a public Trades GET, tape application and an OrderBook GET before draining the stream. The candidate uses the existing LivePreflightReads/serviced_read implementation for the already-allowlisted **OrderBook GET only**, servicing queued frames before reads and while that same exclusive SDK task waits. Public Trades remains blocking. Its original returned tape is fully validated/applied before another callback. The returned original book is immediately validated/applied with no trailing hook.
 
@@ -37,3 +37,7 @@ Last accepted operation is a known two-share1075NO SELL, local ACK11:14:39.525; 
 The correction catches that exact error ONLY around pre-intent physical_decision. It requires a positively quiet SDK queue, globally resolved attempts, exact current quote, no intent/attempt/ACK/native binding/fill, and current native-book absence under the unchanged age policy. Successful deferral clears prepared authority and records the actual native/dispatch heads. The durable cohort binding, qid and spec remain intact. Current-book availability, changed quote, unsafe queue, original-operation evidence or integrity failures remain fatal. Post-intent check_bound and SDK placement errors remain unchanged/fatal. No general error-list or main-loop catch is added.
 
 Two additional focused fixtures verify real aging/unchanged prefixes and rejection of fresh-book, unknown, changed-quote, original intent/attempt/ACK/native-binding cases. They supply the stale error value; source review establishes the catch is confined to actual pre-intent minting. The corrected source expects143worker checks. Production recovery must preserve/authenticate the original stopped boundary, use the checked binary only, keep all original controls/models/clocks, and reconcile the known actual order before any new dispatch. No profitable or latency result follows from a benign deferral.
+
+## Actual corrected qualification
+
+Source6295e22c passes143actual ARM64 worker checks and optimized release. [Root verification of all263 actual sources and binary](build-proof/README.md). The original native identity and all financial history remain unchanged. Recovery is a separate owner-controlled operation against the exact authenticated natural-stop boundary.

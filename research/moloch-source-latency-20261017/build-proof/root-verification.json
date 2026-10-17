@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "sourceCommit": "6295e22c97c5857d1cd37c6f13435fc34e8437a2",
+  "binarySha256": "97aeaf6325b62a56a6f249139d18db50c2cc306707c9555392c654e9edc649be",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "exact16NativeInputsRecomputed": true,
+  "sourceFiles": 263,
+  "exactSourceFiles": 59,
+  "crlfEquivalentSourceFiles": 204,
+  "onlyChangedSourceComparedToPriorQualified": [
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "workerChecksPassed": 143,
+  "optimizedProductionBuildPassed": true,
+  "unchangedSdkAndLibrarySourcesNotRetested": true,
+  "privateBuildArchiveBytes": 7257114,
+  "privateBuildArchiveSha256": "df7032e8fad7979f860f24087ab26ecab3545ce36d1b57d617e3d0b8cc761577",
+  "originalPacketFilesVerified": 271,
+  "sourcePacketSha256": "6736cbb873751e0073a0c458124ecd53785d72e7ed73f9edc06834dbe4730df5",
+  "productionChanged": false,
+  "latencyBenefitEstablished": false,
+  "profitabilityEstablished": false
+}
