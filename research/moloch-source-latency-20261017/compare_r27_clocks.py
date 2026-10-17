@@ -33,7 +33,7 @@ def generations(packet):
 
 def run(a):
     declaration_raw=Path(a.protocol).read_bytes()
-    C.need(a.protocol_sha256==PROTOCOL_SHA and digest(declaration_raw)==PROTOCOL_SHA,'R27_PROTOCOL')
+    C.need(a.protocol_sha256==digest(declaration_raw) and digest(declaration_raw.replace(b'\r\n',b'\n'))==PROTOCOL_SHA,'R27_PROTOCOL')
     declaration=C.V.load(declaration_raw)
     C.need(declaration['windowMs']==300000 and declaration['policyMaximumBookAgeMs']==10000 and declaration['oldOutcomeAlreadyInspected'] is True,'R27_PROTOCOL_FIELDS')
     C.need(a.old_sha256==OLD_SHA and a.incident_sha256==INCIDENT_SHA,'R27_FIXED_INPUTS')
@@ -45,7 +45,7 @@ def run(a):
         C.need(len(g5)==5 and len(g4)==4 and original.startswith(oldraw),'R27_ORIGINAL_GENERATIONS')
         start,text=C.progress(old,'first-trading-progress.original.json',651324)
         C.need(text==declaration['oldWindowStartUtc'],'R27_OLD_START')
-        result={'protocolRawSha256':PROTOCOL_SHA,'algorithmLfSha256':ALGORITHM_LF_SHA,'wrapperRawSha256':digest(Path(__file__).read_bytes()),
+        result={'protocolRawSha256':a.protocol_sha256,'protocolLfSha256':PROTOCOL_SHA,'algorithmLfSha256':ALGORITHM_LF_SHA,'wrapperRawSha256':digest(Path(__file__).read_bytes()),
             'oldOutcomeAlreadyInspected':True,'confirmatory':False,'comparisonPerformed':False,'new':None,
             'old':C.measure(old,start,text,651324,{'zipSha256':old.expected,**old.original_pin('first-trading-progress.original.json')}),
             'incident':{'zipSha256':incident.expected,'originalFundamental':incident.original_pin('fundamental.original.jsonl'),'generations':g5},
@@ -64,7 +64,7 @@ def run(a):
             result['new']['generations']=current_g;result['new']['wholeOriginalFundamentalPrefixRetained']=True
             result['comparisonPerformed']=True
         for p in packets:p.finish()
-        C.need(digest(Path(a.protocol).read_bytes())==PROTOCOL_SHA,'R27_PROTOCOL_CHANGED')
+        C.need(digest(Path(a.protocol).read_bytes())==a.protocol_sha256,'R27_PROTOCOL_CHANGED')
         return result
     finally:
         for p in packets:p.z.close()
