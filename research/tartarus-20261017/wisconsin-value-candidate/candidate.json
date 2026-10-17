@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "candidate_id": "wi-republican-governor-conditional-value-20261017",
+  "task": 176,
+  "classification": "unqualified_conditional_value_and_sale_vs_hold_candidate",
+  "source_baseline_commit": "f5b796c8e5beac9caead958c3d149b7bf0176c05",
+  "prepared_at_utc": "2026-10-17T21:37:29Z",
+  "execution_authorized": false,
+  "operator_review_created": false,
+  "operator_approval_claimed": false,
+  "settings_or_authority_changed": false,
+  "calibrated_probability_claimed": false,
+  "current_quote_claimed": false,
+  "identity": {
+    "tournament_id": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "market_id": "315",
+    "exchange_id": "1004",
+    "contract_id": "316",
+    "side": "YES",
+    "state": "WI",
+    "office": "Governor",
+    "race_stage": "General",
+    "resolution_type": "Party Winner",
+    "winner_name": "Republican Party",
+    "election_date": "2026-11-03",
+    "scheduled_settlement_at": "2026-11-04T17:00:00.000Z",
+    "guaranteed_cash_release_at": null
+  },
+  "sources": {
+    "source8_audit": {
+      "repository_path": "research/tartarus-20261017/party-marginal-source-census/audit.json",
+      "row_exchange_id": "1004",
+      "private_directory_basename": "moloch-party-marginal-census-20261017-hb4e3ex_",
+      "capture_manifest_sha256": "f50d4feb9cd62110ae33c0438d834ce99969e384a7bed852ad7d7e922bb57dc5"
+    },
+    "forecast": {
+      "url": "https://www.callthemap.com/governors/wisconsin",
+      "private_member": "wisconsin.html",
+      "raw_sha256": "cfe5738ea7ff911bcd77c96d42a021fef1f4b3dda03cefae50c90a0e5f426b8a",
+      "bytes": 188193,
+      "request_started_at": "2026-10-17T21:00:42.394157+00:00",
+      "received_at": "2026-10-17T21:00:42.818606+00:00",
+      "http_status": 200,
+      "publisher_edition_date": "2026-10-17",
+      "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+      "first_publication_independently_verified": false,
+      "raw_bytes_reverified": true,
+      "candidate_win_displays": [
+        {"candidate": "Tom Tiffany", "publisher_party": "R", "displayed_probability": "0.377"},
+        {"candidate": "David Crowley", "publisher_party": "D", "displayed_probability": "0.623"}
+      ],
+      "display_rounding_rule_independently_verified": false,
+      "complete_candidate_win_partition_verified": false,
+      "other_and_writein_vote_share_display": "0.012",
+      "other_and_writein_win_probability": null,
+      "historical_reconstruction_is_prospective_validation": false
+    },
+    "official_ballot": {
+      "url": "https://www.greencountywi.org/DocumentCenter/View/4639/C-Monroe-",
+      "private_directory_basename": "moloch-paper7-nominee-expansion-20261016",
+      "private_member": "wi-official-monroe-general-ballot.pdf",
+      "raw_sha256": "10d7fd0ed0279c84225899aabaa5b17423d4f974e1a472b2d7cc4dfb6b015082",
+      "bytes": 792279,
+      "request_started_at": "2026-10-16T23:47:32.734337+00:00",
+      "received_at": "2026-10-16T23:47:33.695115+00:00",
+      "http_status": 200,
+      "publication_at": null,
+      "election_date": "2026-11-03",
+      "safe_printed_tickets": [
+        {"governor": "Tom Tiffany", "lieutenant_governor": "David Varnam", "party": "Republican"},
+        {"governor": "David Crowley", "lieutenant_governor": "Sarah Godlewski", "party": "Democratic"}
+      ],
+      "governor_and_lieutenant_writein_lines_present": true,
+      "statewide_registered_writein_roster_exhaustively_verified": false,
+      "raw_bytes_reverified": true,
+      "private_source_manifest_sha256": "f75d9331866b3fecb56758e21ab9d7aa6d56e76f15beb5f2f0c4402731562fd1"
+    },
+    "official_contract_node": {
+      "private_directory_basename": "moloch-paper7-original-market-receipts-20261016",
+      "private_member": "nodes/market-315-e118a58d9a861b26.json",
+      "endpoint": "/markets/315/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "raw_sha256": "e118a58d9a861b267808bae049165e4fd7f44009e51d2a8d7bd3095a51c3391f",
+      "bytes": 914,
+      "request_started_at": "2026-10-16T06:25:34.407Z",
+      "received_at": "2026-10-16T06:25:34.661Z",
+      "http_status": 200,
+      "root_semantic_sha256": "2cca6e43ea335ebc70f161abd50b03f70490fd669bb48663e12ee5b2364e420b",
+      "source_archive_sha256": "9b722a68ae34889c3f1131b97ef59d4e542b081c149721a07cd49cadf31845df",
+      "raw_bytes_reverified": true,
+      "complete_resolver_exception_rules_present": false
+    },
+    "settlement_guide": {
+      "url": "https://sig.thesuper.market/docs/settlement-and-payouts",
+      "private_directory_basename": "moloch-tartarus-pivotal-wv-no-20261017-8c1gfiot",
+      "private_member": "sig-settlement-original.html",
+      "raw_sha256": "feaecf6029fcb0f76924f5139bba8a6651b15b71620326b85e32556a1bf62b6f",
+      "request_started_at": "2026-10-17T19:26:05.177Z",
+      "received_at": "2026-10-17T19:26:05.717Z",
+      "publication_at": null,
+      "raw_bytes_reverified": true,
+      "ordinary_yes_payout": "1",
+      "ordinary_no_payout": "0",
+      "cancelled_or_na": "Refundable cost of remaining held shares, not automatically one per share.",
+      "valid_result_and_override_conditions": "Pending valid source result; administrator override is possible."
+    }
+  },
+  "mapping_conditions": [
+    "Tiffany's ordinary valid victory must be recognized by the venue as the Republican Party winning this exact Governor General election.",
+    "Current ticket/party evidence does not certify affiliation-at-resolution, replacement, independent/fusion attribution, ties or discretionary resolver rules.",
+    "An Other/write-in probability is unavailable, not zero. The two rounded candidate displays are not certified exhaustive party probabilities.",
+    "The candidate point is an uncalibrated ordinary-regime assumption; exceptional allowance is unestimated, not a confidence bound."
+  ],
+  "dated_sale_quote_reference": {
+    "source": "Root's supplied native SELL-limit observation, no raw quote/book packet supplied to this analysis",
+    "observed_at_utc_approximate": "2026-10-17T21:10:00Z",
+    "limit_price": "0.245000",
+    "action": "SELL",
+    "quote_raw_sha256": null,
+    "native_qid": null,
+    "book_bid": null,
+    "book_ask": null,
+    "visible_depth": null,
+    "actual_filled_quantity": null,
+    "current_executable": false,
+    "is_acquisition_ask": false
+  },
+  "conditional_value_sensitivity": {
+    "ordinary_probability_assumption": "0.377000",
+    "minimum_exceptional_payout_assumption": "0.000000",
+    "entry_margin_assumption": "0.010000",
+    "tick_assumption": "0.005000",
+    "fee_assumption_per_share": "0.000000",
+    "current_fee_policy_independently_rechecked_here": false,
+    "formula": "v=(1-e)*p+e*r; unticked entry ceiling=v-margin; value-exit net floor=v (not v+margin)",
+    "comparisons_assume_completed_sale_at_reference_price": true,
+    "rows": [
+      {"exception_weight_assumption": "0.000000", "payout_value": "0.377000", "entry_ceiling_unticked": "0.367000", "entry_ceiling_tick_floor": "0.365000", "model_value_sell_tick_ceiling": "0.380000", "hold_value_minus_reference_sale": "0.132000"},
+      {"exception_weight_assumption": "0.100000", "payout_value": "0.339300", "entry_ceiling_unticked": "0.329300", "entry_ceiling_tick_floor": "0.325000", "model_value_sell_tick_ceiling": "0.340000", "hold_value_minus_reference_sale": "0.094300"},
+      {"exception_weight_assumption": "0.200000", "payout_value": "0.301600", "entry_ceiling_unticked": "0.291600", "entry_ceiling_tick_floor": "0.290000", "model_value_sell_tick_ceiling": "0.305000", "hold_value_minus_reference_sale": "0.056600"},
+      {"exception_weight_assumption": "0.300000", "payout_value": "0.263900", "entry_ceiling_unticked": "0.253900", "entry_ceiling_tick_floor": "0.250000", "model_value_sell_tick_ceiling": "0.265000", "hold_value_minus_reference_sale": "0.018900"},
+      {"exception_weight_assumption": "0.350000", "payout_value": "0.245050", "entry_ceiling_unticked": "0.235050", "entry_ceiling_tick_floor": "0.235000", "model_value_sell_tick_ceiling": "0.250000", "hold_value_minus_reference_sale": "0.000050"},
+      {"exception_weight_assumption": "0.400000", "payout_value": "0.226200", "entry_ceiling_unticked": "0.216200", "entry_ceiling_tick_floor": "0.215000", "model_value_sell_tick_ceiling": "0.230000", "hold_value_minus_reference_sale": "-0.018800"}
+    ],
+    "reference_sale_break_even_exception_weight": {"exact_fraction": "132/377", "meaning": "Equality of declared conditional payout and .245 hypothetical completed sale, r=0 and fee=0; not an empirical estimate."},
+    "per_share_difference_is_realized_profit": false,
+    "capital_time_and_joint_portfolio_effects_modeled": false
+  },
+  "existing_framework": {
+    "source": "moloch/live-runtime/src/fundamental_policy.rs",
+    "source_git_lf_sha256": "b1486e18d38825a454e7721239025d8f36d7c5a49411abe783c3862b6aeb8084",
+    "value_formula_lines": [149, 197],
+    "passive_model_value_floor_function": "passive_value_limit",
+    "entry_tick_floor_function": "execution_ceiling",
+    "top_up_function": "Cohorts::top_up_state",
+    "top_up_conditions": "Non-inherited original-entry cohort, no exits, positive fully attributed FIFO ownership; all prior entries ACK-backed/closed; below aggregate principal/quantity/entry caps; no other reservation, unresolved or package liability.",
+    "new_hot_generation_scope_condition": "install_generation requires no existing_origin and both sides/cost zero with no unretired draft (FUNDAMENTAL_GENERATION_NEW_SCOPE_NOT_FLAT).",
+    "held_unmanaged_wi_hot_add_supported": false,
+    "existing_adoption_route": "LoadedSettings::open_with_existing -> ExistingSnapshot::capture -> Cohorts::install_existing",
+    "inherited_review_same_side_top_up_supported": false,
+    "inherited_fifo_profit_turnover_objective_supported": false,
+    "model_value_exit_may_rest_if_explicitly_reviewed": true,
+    "ordinary_fifo_profit_quote_is_forecast_evidence": false
+  },
+  "minimum_prospective_review_requirements": [
+    "Root-owned current official book/fees/full account and complete order/fill/terminal reconciliation; a sale limit is not depth.",
+    "Exact original adoption receipt, position hash, remaining FIFO and no opposite/competing physical or package liabilities before authentic existing-origin management.",
+    "Owner-selected and explicitly approved ordinary/exception assumptions, principal and quantity caps, source TTLs, hold/objective and optional model-value passive exit; no reviewer or approval is supplied here.",
+    "Preserve all source clocks. The old node's 24h reference age has expired; obtain a genuine sole-worker source or explicitly review a longer static-reference TTL with mandatory fresh physical root comparison.",
+    "Do not hot-append held WI through a flat-entry review or top-up clone. Existing native ordinary draft can be retired only with original never-sent proof; physical orders need actual cancellation and terminal reconciliation.",
+    "Only genuine reviewed management can change ordinary-planning ownership; do not label unmanaged WI managed merely to suppress its exit."
+  ],
+  "specific_missing_evidence": [
+    "Pinned current WI quote and book with original source/request/receipt clocks and executable depth",
+    "Current native head, remaining lots, exact admission/attempt/ACK/terminal state and adoption eligibility",
+    "Owner-approved new review and supported installation boundary",
+    "Qualified party/resolver exceptional-state and current fee assumptions",
+    "Better feasible capital continuation and whole-account joint/rival effects"
+  ],
+  "rejection_now": "No current executable value trade or activation is qualified. Preserve the source-supported conditional value hypothesis for owner review; no automatic retention, sale or new purchase.",
+  "falsification": [
+    "Genuine net sale proceeds exceed the approved conditional continuation value",
+    "Candidate-party or exceptional-resolution assumptions fail",
+    "A source-supported feasible replacement/capital-time advantage outweighs retaining WI",
+    "Original ownership/source/liability prerequisites cannot be established"
+  ]
+}
