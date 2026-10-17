@@ -10,7 +10,7 @@ impl Drop for F{fn drop(&mut self){self.bank.take();let _=fs::remove_dir_all(&se
 impl F{
  fn new()->Self{
   let root=std::env::temp_dir().join(format!("passive-cohort-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&root).unwrap();
-  let policy=json!({"initialCash":"100.000000","maximumCommitted":"20.000000","maximumMarketCost":"10.000000","quantity":100,"maximumMarkets":3,"minimumSpreadTicks":10,"requireCurrentFlow":true,"entryStopAt":iso(120000)});
+  let policy=json!({"initialCash":"100.000000","maximumCommitted":"20.000000","maximumMarketCost":"10.000000","quantity":100,"maximumMarkets":3,"minimumSpreadTicks":10,"feePerShare":"0.000001","requireCurrentFlow":true,"entryStopAt":iso(120000)});
   let seed=json!({"runId":"reviewed-entry-fixture","availableCash":"100.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(0)});
   let bank=Session::open_live(&root.join("bank"),&policy,&seed).unwrap();let mut f=Self{split:true,root,bank:Some(bank),policy,seed};f.book(0,"0.400000");f
  }
@@ -35,7 +35,7 @@ fn turnover(f:&F,t:i64,entries:Value,exits:Value,n:u64)->Value{
  let mut e=passive(f,t,entries.clone(),exits.clone(),n);let ids=entries.as_array().unwrap().iter().map(|r|r["qid"].as_u64().unwrap()).collect();let sold=exits.as_array().unwrap().iter().map(|r|r["qid"].as_u64().unwrap()).collect();
  let cost=f.b().engine().reviewed_fifo_cost("101",Side::Yes,&ids,&sold,n).unwrap();let worst=moloch_replay::amount(cost["maximumFifoUnitCost"].as_str().unwrap()).unwrap();let floor=worst+5000;
  e["reason"]=json!("reviewed_fifo_profit_turnover");e["pricingObjective"]=json!({"kind":"fifoProfitTurnover","minimumNetGain":"0.005000"});e["forecastExpectedPayout"]=e["expectedPayout"].clone();e["minimumNetSalePrice"]=json!(moloch_replay::money(floor));
- let tick=(floor+4999)/5000*5000;e["limitPrice"]=json!(moloch_replay::money(tick));
+ let tick=(1..200).map(|i|i*5000).find(|p|*p-moloch_replay::fee(*p,1,0,1).unwrap()>=floor).unwrap();e["limitPrice"]=json!(moloch_replay::money(tick));
  e["pricingBasis"]=json!({"pricingPolicy":"improveAskOneTickFifoFloor","bankHead":e["bankHead"],"positionsSha256":e["expectedPositionSha256"],"quantity":n,"bookSha256":e["bookSha256"],"fifoCostSha256":cost["fifoCostSha256"],"maximumFifoUnitCost":cost["maximumFifoUnitCost"],"minimumNetSalePrice":e["minimumNetSalePrice"],"pricingObjective":e["pricingObjective"],"forecastExpectedPayout":e["expectedPayout"]});e
 }
 #[test]fn explicit_turnover_preserves_forecast_and_fee_inclusive_expensive_prefix(){let(mut f,buy)=ready();let before=f.b().engine().report().unwrap();let e=turnover(&f,12000,json!([F::row(&buy,"901",2)]),json!([]),2);assert_eq!(e["minimumNetSalePrice"],"0.405001");assert_eq!(e["limitPrice"],"0.410000");assert_eq!(e["expectedPayout"],"0.550000");f.accept(&e).unwrap();let q=f.b().engine().order_records().last().unwrap().clone();let m=&q["reviewedInventoryExit"];assert_eq!(m["forecastExpectedPayout"],"0.550000");assert_eq!(m["minimumNetSalePrice"],"0.405001");assert!(m.get("minimumNetValue").is_none());for k in ["cash","ownedCost","realized","positions","fills"]{assert_eq!(f.b().engine().report().unwrap()[k],before[k]);}}
