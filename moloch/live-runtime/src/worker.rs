@@ -485,6 +485,7 @@ fn recover_unadmitted(c:&Control)->Result<()>{
 /// account nor send an order. The proof factory verifies the original SDK and
 /// dispatch chains and the externally pinned approval before this is created.
 struct LocalGuardRecoveryAuthority{scope:Value,binding:Value}
+fn expected_ordinary_final_guard(code:&str)->bool{matches!(code,"LIVE_CONTRACT_OR_BOOK_STALE"|"PERMIT_EXPIRED_OR_INVALID")}
 impl Authority for LocalGuardRecoveryAuthority{
  fn can_read(&self,_:&Scope)->bool{false}
  fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,network:bool,at:u64)->api::Result<()>{ReadOnlyAuthority.authorize(scope,spec,permit,network,at)}
@@ -1160,7 +1161,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{let end=now();let _=trace.record(Stage::TransportCall,transport_start,end);if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"transport_error","diagnosticOnly":true}));}log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
   if let Ok((spec,permit,at,error))=log.local_final_guard_originals(qid){
-   if let Ok(proof)=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error){log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
+   if let Ok(proof)=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error){log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return if expected_ordinary_final_guard(&error.code){Ok(())}else{Err(error.code.into())}}
   }
   if let Ok((spec,permit,at,error))=log.pre_admission_originals(qid){
    if let Ok(proof)=t.verify_current_ordinary_pre_admission(&spec,&permit,at,&error){log.append_aborted_before_admission(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
@@ -3884,6 +3885,7 @@ mod profitable_depth_control_tests{
 #[cfg(test)]
 mod local_final_guard_recovery_tests{
  use super::*;
+ #[test]fn no_http_does_not_turn_fatal_owner_binary_or_stop_errors_into_deferrals(){for code in ["LIVE_CONTRACT_OR_BOOK_STALE","PERMIT_EXPIRED_OR_INVALID"]{assert!(expected_ordinary_final_guard(code));}for code in ["LIVE_BINARY_CHANGED","LIVE_OWNER_OR_ACTIVATION","STOPPED_OR_OWNER_LOST","pinned file IO error","COMPLETION_DURABILITY_UNCERTAIN"]{assert!(!expected_ordinary_final_guard(code));}}
  fn binding()->Value{json!({"intent":"original:17811","key":"original:17811","payload_hash":"f".repeat(64)})}
  fn state(unknown:bool)->Value{let b=binding();let mut s=json!({"state":{"schema_version":1,"active":null,"manual_review":false,"unknown":{},"intents":{},"keys":{}}});s["state"]["intents"]["original:17811"]=b.clone();s["state"]["keys"]["original:17811"]=b.clone();if unknown{s["state"]["unknown"]["original:17811"]=b;}s}
  #[test]fn exact_recovery_keeps_permanent_key_before_and_after_clear(){assert!(local_guard_recovery_state(&state(true),&binding()).unwrap());assert!(!local_guard_recovery_state(&state(false),&binding()).unwrap());}
