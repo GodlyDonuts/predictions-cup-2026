@@ -129,6 +129,11 @@ fn install_cohort_planning(f:&mut F,at:u64){
 }
 
 fn transport(f:&F)->baal_transport_service::Transport{use baal_transport_service::*;Transport::new_for_mock(Config{queue_dir:f.root.join("cohort-queue"),account_scope:"synthetic-passive-cohort-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false},Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap()}
+fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::feedback::Result<Reviewed>{
+ let at=r.reviewed_at_ms;let trust=[review_sha256(&r)?].into();let hashes=originals.iter().map(|b|sha(b)).collect::<Vec<_>>();
+ let source=originals.iter().enumerate().map(|(i,b)|SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();
+ Reviewed::verify(r,&source,&trust,at)
+}
 fn ready(close:bool,filled:u64)->(F,Value){let mut f=F::setup(false,"11111111-1111-1111-1111-111111111111");let mut r=f.review.clone();set_terminal(&mut r);f.review=r.clone();f.install(r,NOW);let(q,_)=f.bind_entry();top_up_close(&mut f,&q,NOW+1,"901",filled,close);install_cohort_planning(&mut f,NOW+9000);f.retire_drafts(NOW+9001);let mut r=f.review.clone();r.reviewed_at_ms=NOW+10000;r.passive_value_exit=Some(PassiveValueExit{version:1,maximum_quantity:2});f.install(r.clone(),NOW+10000);f.review=r;f.book(NOW+12000,"0.300000","0.320000");(f,q)}
 fn plan(f:&F,t:&baal_transport_service::Transport,at:u64)->Result<Option<ExistingExit>,Box<dyn std::error::Error>>{f.store.as_ref().unwrap().prepare_existing_exit(&f.bank,&f.log,t,&f.scope,"101",&f.trust,at)}
 fn reserve(f:&mut F,t:&baal_transport_service::Transport,at:u64)->Value{let p=plan(f,t,at).unwrap().unwrap();f.event(p.event().clone());f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q["reviewedInventoryExit"]["executionMode"]=="passiveValueLimit").unwrap()}
