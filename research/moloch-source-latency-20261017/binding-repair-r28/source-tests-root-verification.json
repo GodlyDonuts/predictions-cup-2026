@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "qualificationPhase": "source-tests-complete-release-pending",
+  "sourceCommit": "069a85a478942eb8148c354df368e369e940eb7e",
+  "sourceFiles": 263,
+  "rawGitExact": 223,
+  "gitLineEndingEquivalent": 40,
+  "changedSourcesComparedToR27": [
+    "moloch/live-runtime/src/fundamental_policy.rs",
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "originalMembersVerified": 273,
+  "privateArchiveBytes": 1541721,
+  "privateArchiveSha256": "94c52477e45047c2420532ea10905fcd5e1677034ab888c6b9320fcc767ddf3f",
+  "binarySha256": null,
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "actualTestCounts": {
+    "fundamental-tests": 8,
+    "order-snapshot-tests": 2,
+    "order-snapshot-integration": 6,
+    "fundamental-integration": 128,
+    "fundamental-preintent": 5,
+    "worker": 146
+  },
+  "distinctTests": 290,
+  "targetedPreintentSubsetOfWorker": true,
+  "releaseExitCode": null,
+  "productionChangedByVerifier": false,
+  "profitabilityEstablished": false
+}
