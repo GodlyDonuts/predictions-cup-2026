@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "verifiedAt": "2026-10-17T17:05:58.334163+00:00",
+  "qualificationPhase": "source-tests-and-release-complete",
+  "sourceCommit": "6972d5ed68b1f65ab5611e6cd7612fa8048f3017",
+  "sourceFiles": 273,
+  "rawGitExact": 221,
+  "gitLineEndingEquivalent": 52,
+  "actualTestCounts": {
+    "native-passive": 9,
+    "native-cohort-passive": 5,
+    "native-fifo-profit": 5,
+    "native-managed": 4,
+    "native-inherited": 11,
+    "native-inventory-parity": 3,
+    "not-sent-cache": 10,
+    "runtime-passive": 9,
+    "runtime-cohort-passive": 6,
+    "runtime-fifo-profit": 9,
+    "fundamental": 128,
+    "worker": 162
+  },
+  "distinctTests": 361,
+  "binarySha256": "4e6c62a34b7608017341622c4ac362736759c49279664cae43f7486d3dad177a",
+  "nativeIdentity": "8012cc9fb2c4feef68f1759ce65a37dc7afcf62a843cfb7a28493d8ac58e1ab6",
+  "changedNativeSources": [
+    "moloch/native/src/reviewed_inventory_exit.rs"
+  ],
+  "privateArchiveBytes": 9222797,
+  "privateArchiveSha256": "959c41373509e68939a16ef80e67308af98eb414681e80912650d546bf3e7907",
+  "originalMembersVerified": 296,
+  "startupMandatoryFinancialParityVerified": false,
+  "productionChangedByVerifier": false,
+  "profitabilityEstablished": false
+}

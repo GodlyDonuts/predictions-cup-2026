@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "sourceCommit": "6972d5ed68b1f65ab5611e6cd7612fa8048f3017",
+  "actualLinkedNativeIdentity": "8012cc9fb2c4feef68f1759ce65a37dc7afcf62a843cfb7a28493d8ac58e1ab6",
+  "allHelperBytesAndSuccessfulCommandsVerified": true,
+  "typedReviews": 11,
+  "productionActivation": false,
+  "privateSourceBundleSha256": "083724f4a8efab718c4926f8887de9f7f73612d58795fc320023c793c8643c23"
+}
