@@ -1,0 +1,68 @@
+{
+  "startedAt": "2026-10-17T10:03:52.559490+00:00",
+  "productionChanged": false,
+  "nativeIdentityFromExact16SourceInputs": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "sourcePacketSha256": "cc6430aab77a6f1e5a8468121e78472e8d7d19d7e4f3c29acbc9410cc489b6bb",
+  "checks": [
+    {
+      "label": "worker",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "test",
+        "--bin",
+        "moloch-live-runtime",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T10:03:52.559646+00:00",
+      "exitCode": 0,
+      "completedAt": "2026-10-17T10:10:13.075671+00:00"
+    },
+    {
+      "label": "stale-entry-drafts",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "test",
+        "--test",
+        "stale_entry_drafts",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T10:20:04.434650+00:00",
+      "exitCode": 0,
+      "completedAt": "2026-10-17T10:21:09.740158+00:00"
+    },
+    {
+      "label": "release",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "build",
+        "--bin",
+        "moloch-live-runtime",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T10:21:09.740888+00:00",
+      "exitCode": 0,
+      "completedAt": "2026-10-17T10:28:36.669532+00:00"
+    }
+  ],
+  "fixtureCorrection": "Second fresh market book at2500ms respects native planning pacing; old same-clock fixture produced no second quotes.",
+  "workerInputsUnchangedFromPassedV1": true,
+  "priorFailedStageRetained": true,
+  "binarySha256": "0bc69f072874263fdf295556d0e185a98041ca4060cfeb731c2e34f6d43b8d41",
+  "completedAt": "2026-10-17T10:28:36.718823+00:00",
+  "sourceCommit": "8251b883d07f2dffa54c55f8c0f7dea20809ce05"
+}

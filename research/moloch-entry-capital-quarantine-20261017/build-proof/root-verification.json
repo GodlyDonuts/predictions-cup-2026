@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "sourceCommit": "8251b883d07f2dffa54c55f8c0f7dea20809ce05",
+  "binarySha256": "0bc69f072874263fdf295556d0e185a98041ca4060cfeb731c2e34f6d43b8d41",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "checks": {
+    "worker": 136,
+    "staleEntryDrafts": 13
+  },
+  "sourceFiles": 263,
+  "exactSourceFiles": 59,
+  "crlfEquivalentSourceFiles": 204,
+  "sourcePacketSha256": "cc6430aab77a6f1e5a8468121e78472e8d7d19d7e4f3c29acbc9410cc489b6bb",
+  "privateBuildArchiveSha256": "821527314d45c0bc22d26a274cf0d650ed4f50b7997a7c33f58a2c45100e8a97",
+  "privateBuildArchiveBytes": 7264499,
+  "originalPacketFilesChecked": 270,
+  "productionChanged": false
+}

@@ -1,6 +1,6 @@
 # Entry capital and ordinary-draft quarantine
 
-[Task165](https://github.com/GodlyDonuts/predictions-cup-2026/issues/165) now implements the source change described in [the implementation record](IMPLEMENTATION.md). Existing R24 remains live while the candidate receives actual ARM64 qualification; source presence does not establish deployment or released production cash.
+[Task165](https://github.com/GodlyDonuts/predictions-cup-2026/issues/165) now implements the source change described in [the implementation record](IMPLEMENTATION.md). The [candidate is now qualified](build-proof/README.md):149 actual ARM64 checks, optimized production build and263-source verification pass. Existing R24 remains live pending controlled rollout; this does not establish deployment or released production cash.
 
 At the authenticated native463299 boundary,09:36:13UTC on October17, cash was3,597.585 and native reservedCash was3,593.940. Four unfilled unreviewed ordinary BUY drafts, arranged as two equal-quantity YES/NO pairs on954 and1003, account for exactly3,593.940 of limit principal. The existing alpha_proposal::compare deducts native reservedCash before sizing a reviewed entry, leaving only3.645 of cash-side comparison headroom at this snapshot. Other funding/risk/depth bounds can reduce it further.
 
