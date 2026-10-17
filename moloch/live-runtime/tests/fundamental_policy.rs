@@ -418,6 +418,12 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
     fn proved_abort_abandon_fixture()->(F,baal_transport_service::Transport,baal_transport_service::Config,Value,moloch_live_runtime::authority::CancelSnapshotSet,Value,Value){
         use baal_transport_service::{Transport,DisabledCredentials,SystemClock,ReadOnlyAuthority};
         let mut f=F::setup(true,"11111111-1111-4111-8111-111111111111");let(q,_)=f.bind_entry();let(config,evidence)=prove_pre_admission_abort(&mut f,&q,true);let id=q["id"].as_u64().unwrap();
+        // This synthetic ordinary pair still has its untouched opposite draft;
+        // production manager setup retires such never-attempted drafts. Keep
+        // the real liability guard: retire only that genuine unsent sibling.
+        let siblings:Vec<_>=f.bank.engine().order_records().into_iter().filter(|o|o["exchangeId"]=="101"&&o["retired"]==false).collect();
+        assert!(!siblings.is_empty());for sibling in &siblings{let sibling_id=sibling["id"].as_u64().unwrap();assert_ne!(sibling_id,id);assert!(f.log.never_attempted(sibling_id)&&!f.log.intents.contains_key(&sibling_id)&&!f.bank.engine().live_order_bindings().contains_key(&sibling_id));}
+        f.retire_drafts(NOW+4);assert!(!f.bank.engine().order_records().iter().any(|o|o["exchangeId"]=="101"&&o["retired"]==false));
         // Use the EXACT event bytes accepted by Session, including processedAt.
         let original=std::fs::read_to_string(f.root.join("bank/events.jsonl")).unwrap();let retirement=original.lines().map(|l|serde_json::from_str::<Value>(l).unwrap()["event"].clone()).find(|e|e["type"]=="unsubmitted_intent_retired"&&e["orderId"]==id).unwrap();
         let t=Transport::new_for_mock(config.clone(),Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();
