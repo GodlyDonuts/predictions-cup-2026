@@ -1,0 +1,70 @@
+{
+  "source": "actual-exit-audit-v4/current.original.json",
+  "rawSourceSha256": "8adc022a94c8716c8670473f8a78a06b7539c03eed09607ace9766cf7881e54f",
+  "financialSequence": 452287,
+  "originalPrivateArchiveSha256": "11167216c88850ff5414f16415f57e00e4924e255dce2174518c1c9f2b40432f",
+  "actualBuys": [
+    {
+      "nativeQid": 14512,
+      "exchangeId": "1067",
+      "side": "YES",
+      "quantity": 1,
+      "price": "0.325000",
+      "principal": "0.325000",
+      "hasNativeReviewedFundamentalEntry": true,
+      "reviewedMarkerKeys": [
+        "acquisitionCeiling",
+        "actionSpec",
+        "bookSha256",
+        "executionMode",
+        "expectedPayout",
+        "grossLimitPrincipal",
+        "marginPerShare",
+        "modelSha256",
+        "originSha256",
+        "reservedQuantity",
+        "reviewCurrentUntilMs",
+        "reviewMaximumPrincipal",
+        "reviewMaximumQuantity",
+        "reviewSha256",
+        "sameSideTopUp",
+        "sourceSha256"
+      ],
+      "executionMode": "boundedLimitMayRest",
+      "quoteExecutionMode": null
+    },
+    {
+      "nativeQid": 14671,
+      "exchangeId": "1067",
+      "side": "YES",
+      "quantity": 1687,
+      "price": "0.325000",
+      "principal": "548.275000",
+      "hasNativeReviewedFundamentalEntry": true,
+      "reviewedMarkerKeys": [
+        "acquisitionCeiling",
+        "actionSpec",
+        "bookSha256",
+        "executionMode",
+        "expectedPayout",
+        "grossLimitPrincipal",
+        "marginPerShare",
+        "modelSha256",
+        "originSha256",
+        "reservedQuantity",
+        "reviewCurrentUntilMs",
+        "reviewMaximumPrincipal",
+        "reviewMaximumQuantity",
+        "reviewSha256",
+        "sameSideTopUp",
+        "sourceSha256"
+      ],
+      "executionMode": "boundedLimitMayRest",
+      "quoteExecutionMode": null
+    }
+  ],
+  "totalPrincipal": "548.600",
+  "classification": "Both actual purchases are reviewed fundamental entries; neither is ordinary-maker fill evidence.",
+  "quantityCauseEstablished": false,
+  "limitation": "The current quote markers classify execution origin. They do not prove why the sizing comparison selected these quantities, causal lost profit, calibrated EV or a quarantine benefit."
+}

@@ -1,0 +1,54 @@
+{
+  "observedAt": "2026-10-17T09:36:34.991807+00:00",
+  "actualPid": 643393,
+  "sourceCommit": "43b0341a15a3ef0d072c34724a3ef7a169d7594e",
+  "binarySha256": "d8e4672a8b5a90f406de830846a9388aaa3922a4a34cabfe3077165ef6cced72",
+  "controlSha256": "74a0cc9550366226fd7a84e0fb7b106733a4aad666ad5d2dffbd82a42daef08c",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "freshTradingVerified": true,
+  "progress": {
+    "actualFills": 380,
+    "actualOrders": 1559,
+    "at": "2026-10-17T09:36:09.391Z",
+    "completedReadScopes": 4,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 643393,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 40,
+    "terminalOrders": 1559
+  },
+  "financialSequence": 463299,
+  "officialFillRows": 380,
+  "cash": "3597.585000",
+  "ownedCost": "91867.840000",
+  "realized": "-114.490000",
+  "newTradingRealized": "-184.970000",
+  "inheritedRealizedGross": "70.480000",
+  "original15BridgeBytesUnchanged": true,
+  "originalFundamentalPrefixUnchanged": {
+    "sha256": "a2b8a3b596f80c77a4380f830d9f9aed9ea400f01e48861b4f3e76017fa81034",
+    "bytes": 368639
+  },
+  "fundamentalAppendChainVerified": true,
+  "appendedCohortKinds": [
+    "abandon_top_up_never_sent"
+  ],
+  "originalGenerationCount": 4,
+  "activeOriginalGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "initialCaptureFailure": "Read-only verifier wrongly required entire cohort journal unchanged; it legitimately appended a never-sent top-up retirement. Original failed capture retained; no runtime change.",
+  "stoppedNativeAndDispatchPrefixesUnchanged": {
+    "events.jsonl": {
+      "bytes": 1496999800,
+      "sha256": "70746a2fdfeb0d0f273be9c18a0d4421d708f663d610eca360328a29e53eb94a"
+    },
+    "dispatch.ndjson": {
+      "bytes": 10352410,
+      "sha256": "876a2487155aa6634f567588670d37f91a531f95e54aa2ec079c95c111d92801"
+    }
+  },
+  "newFillCountBeyondStoppedBoundary": 0,
+  "profitabilityEstablished": false,
+  "apiCallsByObserver": 0
+}
