@@ -1,6 +1,6 @@
 # R28: original binding expiry repair
 
-Checked source is `069a85a478942eb8148c354df368e369e940eb7e`. Production remains stopped after the original R27 failure at14:21:28UTC; an optimized release and controlled sole-worker recovery are pending. Source publication does not establish a deployment, fill or profit.
+Checked source is `069a85a478942eb8148c354df368e369e940eb7e`. R28 was installed at15:00:15.643UTC as the sole worker661886 after the original R27 failure at14:21:28UTC. The new process is restoring; fresh trading, fills and profit are not yet verified.
 
 The original generic `FUNDAMENTAL_NOT_ELIGIBLE` originates in `bind_quantity`, before R27's physical-decision catch. The new pre-intent helper wraps **both actual binding and physical token minting**. It defers only the exact stale-book codes after proving the current quote has no intent, physical attempt, acknowledgment, binding or fill; the SDK queue must positively have zero unknowns/no active operation/no manual review, and the actual target native book must be unavailable under the unchanged ten-second policy. Fresh ineligibility, file/proof errors, queue uncertainty and any post-intent failure retain their original stop behavior.
 
@@ -26,3 +26,11 @@ There are290 distinct checks, not295. Actual regressions exercise the real bindi
 Independent targets were compiled with three jobs on the six-core VPS; source and release settings stayed fixed. The source/test packet explicitly records release pending and no binary hash. No optimized-release success or installation is claimed by that packet. A final release proof and owner recovery must preserve the exact stopped492481 boundary, six original review generations, fifteen financial bridges and current account queue before restarting the sole service.
 
 The separate [measured dispatch-proof component](../not-sent-bench/README.md) and [reviewed value-limit exit strategy](https://github.com/GodlyDonuts/predictions-cup-2026/issues/169) are follow-up work. Neither is silently included in this candidate.
+
+## Final release and controlled recovery
+
+[Final build verification](final-build-root-verification.json) authenticates275 original members/all263 Git inputs and the optimized release with the same290 distinct checks. Binary SHA256 is `203462d82692c9a68c3303546271bc8b7fc60e3945b36fe4224a5252be779dfe`; private build archive7,332,007bytes/SHA091d3ed0ce95dd89246c549f2c01235959d49e0bb7f1ea3f2627c236d7e57b12. The earlier source-only packet remains an accurately dated release-pending artifact.
+
+[Independent deployment verification](deployment-root-verification.json) authenticates23 original members and actual new executable/argv/MainPID, unchanged native identity, exact stopped492481/382fills, all six original review generations and15 original financial bridge bytes. The original natural STOP is archived byte-for-byte. The new control materializes the already committed sixth model generation and changes only activation.binarySha256. No model, rate, risk, source or expiry clock was renewed. Actual last cash3,613.785/owned91,851.730/attributedrealized−114.400 remain historical accounting, not current executable marks.
+
+The finite observer661894 reads only existing files, with no account calls or runtime writes. It requires actual fresh trading/realtimeHealthy from new PID661886 before capturing the first300s. A process that is restoring does not establish current market connectivity, submissions or profitable operation.
