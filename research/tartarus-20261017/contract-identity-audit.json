@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "evidence_class": "dated_official_contract_identity_audit",
+  "result": "PASS",
+  "official_held_contract_ids_verified": 23,
+  "every_id_read_from_original_root": true,
+  "contract_ids_inferred_from_numeric_pattern": false,
+  "all_original_http_statuses": 200,
+  "all_market_exchange_scope_joins_verified": true,
+  "all_selected_raw_bytes_and_manifest_pins_verified": true,
+  "source_archive_bytes": 271313,
+  "source_archive_sha256": "9b722a68ae34889c3f1131b97ef59d4e542b081c149721a07cd49cadf31845df",
+  "source_manifest_sha256": "9579856dcdfc084b75d6f6a4defcec8dab20ed817c97ae056a9a956aba500e17",
+  "private_normalized_identity_map_sha256": "1078098e929949df0af0727d5e3f341041f5f9af384eb1c42ab4a5bf29ad75d4",
+  "selected_identity_rows_canonical_sha256": "d290caa541e36052a93a6a821a50145ecba2b76dfcde36683f217990ee13cf2f",
+  "held_scope_report_raw_sha256": "09a017a91672543933a233c209ab5f37710eb5b351c6e9b8e38b6894a907dcb0",
+  "held_scope_head": {
+    "hash": "efe5fa117280eaf3d4a4eb4c379bb4a9599407cf2415d4a74eb9d6f6cdd86ba8",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "fec7e35db759c37a663288788fbc0038a0d76527b1849f7e9d77e1e14bdfec82",
+    "sequence": 524226
+  },
+  "control_raw_sha256": "6de844a4bd4dc7e1fd2e6b451dbecf83e83eb27e5430f8ea421da895bd2944f4",
+  "original_receipt_window_utc": [
+    "2026-10-15T14:45:27.480Z",
+    "2026-10-16T22:30:34.489Z"
+  ],
+  "ordinary_predicate": {
+    "resolution_type": "Party Winner",
+    "race_stage": "General",
+    "election_date": "2026-11-03"
+  },
+  "explicit_resolver_id_count": 0,
+  "exceptional_resolution_rules_verified": false,
+  "current_source_validity_renewed": false,
+  "whole_account_payout_matrix_qualified": false,
+  "official_liabilities_verified": false,
+  "execution_authorized": false,
+  "calibrated_probability_claimed": false,
+  "raw_positions_published": false,
+  "limitations": [
+    "These dated root identifiers and ordinary predicates do not certify full exceptional payouts or current API membership.",
+    "Preserved original receipt clocks are not renewed by this audit.",
+    "No API request, live read client, model activation, bank write or native financial replay."
+  ]
+}
