@@ -320,11 +320,16 @@ fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,
  if !result.blocks_new_submissions{if let(Some(signal),Some(generation))=(account_signal,account_start){signal.reconciled_through(generation);}}
  Ok(result)
 }
-fn source(t:&mut Transport,c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64)->Result<u64>{
- let from=s.recovery_start_ms(market).map_or(from,|recovery|from.min(recovery));let to=now();let tape=request(t,&c.root,Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(to)})?;
+fn source(c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64,reads:&mut impl OrdinaryPreflightReads)->Result<u64>{
+ // The public tape keeps its existing blocking GET and immediate application.
+ // Only the already-allowlisted book GET uses the existing exclusive I/O task.
+ reads.service_before_read(bank,s)?;
+ let from=s.recovery_start_ms(market).map_or(from,|recovery|from.min(recovery));let to=reads.now_ms();let tape=reads.read(Endpoint::Trades{exchange_id:ex.into(),from:iso(from),to:iso(to)})?;
  let wrap=|r:&Receipt,kind:&str|json!({"source":"official_sig_api_v1","kind":kind,"tournamentId":c.scope.tournament_id,"marketId":market,"exchangeId":ex,"endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});
  accept_source_events(bank,&s.accept(&wrap(&tape,"trades"))?)?;
- let book=request(t,&c.root,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
+ // Never insert a hook between a returned tape and its original commit.
+ reads.service_before_read(bank,s)?;
+ let book=reads.read_serviced(bank,s,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
  accept_source_events(bank,&s.accept(&wrap(&book,"book"))?)?;Ok(to.saturating_sub(2000))
 }
 fn snapshots(t:&mut Transport,c:&Control,authority:&ProductionAuthority,bank:&mut Session,source:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,q:&Value)->Result<SnapshotSet>{
@@ -720,7 +725,7 @@ fn paper5_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&mu
  if exchanges.iter().any(|ex|managed.contains(ex))||paper5_component_drafts(bank,ordinary,&exchanges)?.is_none(){paper5_status(c,runtime,"ownership","MANAGED_OR_PHYSICAL_COMPONENT_BUSY");return Ok(())}
  for(ex,market)in &targets{
   request(t,&c.root,Endpoint::Nodes{market_id:market.clone()})?;if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;
-  let from=*windows.get(ex).ok_or("LIVE_PACKAGE_SOURCE_WINDOW")?;let next=source(t,c,bank,source_state,ex,market,from)?;windows.insert(ex.clone(),next);
+  let from=*windows.get(ex).ok_or("LIVE_PACKAGE_SOURCE_WINDOW")?;let next=source(c,bank,source_state,ex,market,from,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;windows.insert(ex.clone(),next);
   if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;
  }
  let nodes=paper5_nodes(&c.scope);
@@ -2185,7 +2190,7 @@ pub fn main()->Result<()>{
     let _=atomic_json(&c.root.join("discovery-schedule.json"),&json!({"at":iso(now()),"pid":std::process::id(),"nativeHead":bank.durable_head(),"maximumDiscoveryReads":read_budget.maximum_discovery_reads(),"maximumManagedMarkets":read_budget.maximum_managed_markets(),"requiredScopeCount":required.len(),"urgentOwned":urgent,"selectedScopes":order.scopes,"diagnostic":order.diagnostic,"readSchedulingOnly":true,"monetaryCapsChanged":false}));
     order.scopes
    }else{selected};
-   for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let source_started=now();let next=source(&mut t,&c,&mut bank,&mut source_state,ex,market,from)?;owned_age_reads.record_source_read(ex,source_started,now())?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+   for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let source_started=now();let next=source(&c,&mut bank,&mut source_state,ex,market,from,&mut LivePreflightReads{t:&mut t,c:&c,authority:&authority,stream:stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,breadth:&mut breadth,universe:&mut universe})?;owned_age_reads.record_source_read(ex,source_started,now())?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if account_reconciliation_due(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)||reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
@@ -2207,7 +2212,7 @@ pub fn main()->Result<()>{
      require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
      let target=hint.exchange_id().to_owned();let market=hint.market_id().to_owned();
      let started=now();let from=*windows.get(&target).ok_or("LIVE_OWNED_REFRESH_WINDOW")?;
-     let next=source(&mut t,&c,&mut bank,&mut source_state,&target,&market,from)?;
+     let next=source(&c,&mut bank,&mut source_state,&target,&market,from,&mut LivePreflightReads{t:&mut t,c:&c,authority:&authority,stream:stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,breadth:&mut breadth,universe:&mut universe})?;
      owned_age_reads.complete_read(&hint,started,now())?;windows.insert(target.clone(),next);
      let execution_clock=if hint.reason()=="new_lot_maximum_age"{Some(hint.oldest_execution_ms())}else{None};
      let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"reason":hint.reason(),"nativeQid":hint.native_qid(),"oldestExecutionMs":execution_clock,"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
@@ -2378,6 +2383,62 @@ pub fn main()->Result<()>{
   let q=bank.engine().order_records().into_iter().find(|q|q["action"]=="buy"&&q["side"]=="YES"&&q["exchangeId"]=="101"&&q["retired"]==false&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)).unwrap();
   let c:Control=serde_json::from_value(json!({"activation":{"runId":"cooperative-preflight","entryUntilMs":at+600000,"maximumCommitted":"40.000000","maximumMarketCost":"10.000000","maximumQuantity":2,"tournamentId":T,"tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":T,"tournamentSlug":"cup","exchanges":{"101":"201","102":"202"}},"policy":policy,"root":root.0,"credentials":"/unused","ownerLock":root.0.join("owner.lock"),"accountScope":"offline-cooperative-preflight"})).unwrap();
   let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,c,bank,log,source,q,book)
+ }
+ fn periodic_events(path:&Path)->Vec<Value>{fs::read_to_string(path).unwrap().lines().map(|line|serde_json::from_str::<Value>(line).unwrap()["event"].clone()).collect()}
+ struct PeriodicReads{at:u64,tape:Receipt,book:Receipt,journal:PathBuf,initial_sequence:u64,services:usize,fail_service:Option<usize>,book_failure:bool,queued_gap:bool,trace:Vec<&'static str>}
+ impl OrdinaryPreflightReads for PeriodicReads{
+  fn now_ms(&self)->u64{self.at}
+  fn guarded(&mut self)->Result<bool>{panic!("source refresh must not request execution authority")}
+  fn read(&mut self,endpoint:Endpoint)->Result<Receipt>{
+   match endpoint{Endpoint::Trades{exchange_id,from,to}=>{assert_eq!(exchange_id,"101");assert_eq!(from,self.tape.data["from"].as_str().unwrap());assert_eq!(to,self.tape.data["to"].as_str().unwrap());},_=>panic!("only public Trades retains a blocking read")}
+   self.trace.push("tape_return");Ok(self.tape.clone())
+  }
+  fn service_before_read(&mut self,bank:&mut Session,_source:&mut RestSource)->Result<()>{
+   self.services+=1;self.trace.push("service");
+   if self.services>=2{assert!(bank.last_source_sequence("moloch-live")>self.initial_sequence);assert!(periodic_events(&self.journal).iter().any(|e|e["type"]=="coverage"&&e["to"]==self.tape.data["to"]));}
+   if self.fail_service==Some(self.services){return Err(std::io::Error::other("fixture periodic service failure").into())}Ok(())
+  }
+  fn read_serviced(&mut self,bank:&mut Session,source:&mut RestSource,endpoint:Endpoint)->Result<Receipt>{
+   assert!(matches!(endpoint,Endpoint::OrderBook{market_id,depth:20}if market_id=="201"));assert_eq!(self.services,2);self.trace.push("book_wait");
+   // Model a queued-frame pump while the SAME exclusive GET is waiting. The
+   // helper's separate real loopback test establishes its actual SDK boundary.
+   self.service_before_read(bank,source)?;
+   if self.queued_gap{let at=iso(self.at+100);let payload=json!({"marketId":"201","exchangeId":"101","tournamentId":T,"at":at});accept_source_events(bank,&source.broadcast("book_dirty",&payload,&at)?)?;}
+   self.trace.push("book_return");
+   if self.book_failure{return Err("FIXTURE_PERIODIC_BOOK_FAILURE".into())}Ok(self.book.clone())
+  }
+ }
+ fn periodic_reads(at:u64,mut book:Receipt,bank:&Session,c:&Control)->PeriodicReads{
+  let stamp=iso(at);book.request_started_at=stamp.clone();book.received_at=stamp.clone();book.data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]=json!({"sequence":2,"at":stamp});
+  let tape=Receipt{endpoint:format!("/exchanges/101/trades?tournamentId={T}&from={}&to={stamp}",iso(at-4002)),request_started_at:stamp.clone(),received_at:stamp.clone(),status:200,data:json!({"marketId":"201","exchangeId":"101","from":iso(at-4002),"to":stamp,"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":2}})};
+  PeriodicReads{at,tape,book,journal:c.root.join("bank/events.jsonl"),initial_sequence:bank.last_source_sequence("moloch-live"),services:0,fail_service:None,book_failure:false,queued_gap:false,trace:vec![]}
+ }
+ #[test]fn periodic_source_services_book_wait_only_after_original_tape_is_committed(){
+  let at=now()-1000;let(_root,c,mut bank,log,mut state,_,book)=fixture_at(at);let mut reads=periodic_reads(at,book,&bank,&c);let cash=bank.engine().wallet.cash;let fills=bank.engine().fills().to_vec();
+  assert_eq!(source(&c,&mut bank,&mut state,"101","201",at-4002,&mut reads).unwrap(),at-2000);
+  assert_eq!(reads.trace,vec!["service","tape_return","service","book_wait","service","book_return"]);
+  assert!(periodic_events(&reads.journal).iter().any(|e|e["type"]=="book"&&e["book"]["sequence"]=="2"&&e["book"]["sourceAt"]==iso(at)&&e["book"]["receivedAt"]==reads.book.received_at));
+  assert_eq!(bank.engine().wallet.cash,cash);assert_eq!(bank.engine().fills(),fills.as_slice());assert!(log.attempted.is_empty());
+ }
+ #[test]fn periodic_source_rejects_bad_original_tape_before_book_service_or_request(){
+  let at=now()-1000;let(_root,c,mut bank,_,mut state,_,book)=fixture_at(at);let mut reads=periodic_reads(at,book,&bank,&c);reads.tape.status=503;let head=bank.durable_head();
+  assert!(source(&c,&mut bank,&mut state,"101","201",at-4002,&mut reads).is_err());assert_eq!(reads.trace,vec!["service","tape_return"]);assert_eq!(bank.durable_head(),head);
+ }
+ #[test]fn periodic_source_service_failure_preserves_an_already_committed_tape(){
+  for failed in [1,2,3]{let at=now()-1000;let(_root,c,mut bank,_,mut state,_,book)=fixture_at(at);let mut reads=periodic_reads(at,book,&bank,&c);reads.fail_service=Some(failed);let before=bank.last_source_sequence("moloch-live");
+   let error=source(&c,&mut bank,&mut state,"101","201",at-4002,&mut reads).unwrap_err();assert!(error.downcast_ref::<std::io::Error>().is_some());assert_eq!(reads.services,failed);
+   assert_eq!(bank.last_source_sequence("moloch-live")>before,failed>=2);assert!(!reads.trace.contains(&"book_return"));assert!(bank.engine().fills().is_empty());
+  }
+ }
+ #[test]fn periodic_source_book_failure_keeps_tape_without_a_trailing_callback(){
+  let at=now()-1000;let(_root,c,mut bank,_,mut state,_,book)=fixture_at(at);let mut reads=periodic_reads(at,book,&bank,&c);reads.book_failure=true;let before=bank.last_source_sequence("moloch-live");
+  assert_eq!(source(&c,&mut bank,&mut state,"101","201",at-4002,&mut reads).unwrap_err().to_string(),"FIXTURE_PERIODIC_BOOK_FAILURE");assert_eq!(reads.services,3);assert_eq!(reads.trace.last(),Some(&"book_return"));assert!(bank.last_source_sequence("moloch-live")>before);assert!(bank.engine().fills().is_empty());
+ }
+ #[test]fn periodic_source_pending_book_cannot_clear_a_newer_genuine_stream_gap(){
+  let at=now()-1000;let(_root,c,mut bank,log,mut state,_,book)=fixture_at(at);let mut reads=periodic_reads(at,book,&bank,&c);reads.queued_gap=true;let cash=bank.engine().wallet.cash;
+  source(&c,&mut bank,&mut state,"101","201",at-4002,&mut reads).unwrap();
+  assert!(state.scopes().as_array().unwrap().iter().any(|s|s["exchangeId"]=="101"&&s["blocked"]==true));assert!(periodic_events(&reads.journal).iter().any(|e|e["type"]=="gap"&&e["receivedAt"]==iso(at+100)));
+  assert_eq!(bank.engine().wallet.cash,cash);assert!(bank.engine().fills().is_empty());assert!(log.attempted.is_empty());
  }
  struct Reads{rest_only:bool,calls:usize,fail_at:Option<usize>,invalidate_at:Option<usize>,book:Receipt,trace:Vec<&'static str>,endpoints:Vec<Value>,returned:Vec<Value>}
  impl Reads{fn new(book:Receipt)->Self{Self{rest_only:false,calls:0,fail_at:None,invalidate_at:None,book,trace:vec![],endpoints:vec![],returned:vec![]}}}
