@@ -1,0 +1,38 @@
+{
+  "at": "2026-10-17T01:24:27.472126+00:00",
+  "operator": "moloch-throughput-capital-20261017-r13-enginebridge",
+  "sourceCommit": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "engineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "binarySha256": "fb303ba7dabebe991e20983d1e289c779deea45869d27e77cdd69383d9711b5f",
+  "release": "/home/archon/apps/moloch/releases/throughput-capital-fb303ba7dabe/moloch-live-runtime",
+  "unitCandidate": "/tmp/moloch-capital-native-r16-20261017/unit-candidate.service",
+  "controlChanges": [
+    "activation.binarySha256 relative to ORIGINAL active overlay"
+  ],
+  "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+  "activeOverlaySha256": "49ad28ce52dd2c2cd0983710aa7a3b8f7212f5d2fec77165032a4ad832147325",
+  "oldBaseSha256": "2d0dc9319cf3b1930738bc7984e63d663e22584a282bf3726f4b4a649dd2c6de",
+  "newBaseSha256": "3aa9027834c0ca6c25568507a1baa26b4866da60d169feb0ff0c4c25a856f33b",
+  "financialBridgeProposalRequired": true,
+  "startupPrefixParityGateSha256": "d2ade49ed4747d1a50091d02fdf7d682823e88e000f80c28d91c05d9ae799d58",
+  "finalStoppedPrefixParityVerified": false,
+  "fromEngineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "pins": {
+    "/tmp/moloch-capital-native-r16-20261017/root-reviewed-financial-prefix-parity.json": "90ab493bd6f4850883065b8a3029bf329ca1a140f61e3321e99c080b001910d6",
+    "/tmp/moloch-capital-native-r16-20261017/root-reviewed-startup-parity-gate.json": "d2ade49ed4747d1a50091d02fdf7d682823e88e000f80c28d91c05d9ae799d58",
+    "/tmp/moloch-capital-native-r16-20261017/moloch-upgrade": "bb020311eb780a3bac96b540ebc620fe0dbe701e78eb69867a3701ef74a41e5e",
+    "/home/archon/apps/moloch/shared/fundamental-paper7-stale-refresh-20261017/next-control-root-reviewed.json": "49ad28ce52dd2c2cd0983710aa7a3b8f7212f5d2fec77165032a4ad832147325",
+    "/home/archon/apps/moloch/shared/fundamental-paper7-stale-refresh-20261017/settings-root-reviewed.json": "bc1823f4526ed6b90cca182842266c74402eb451780b2ee1ab7a0f3919ea566e",
+    "/tmp/moloch-capital-native-r16-20261017/root-reviewed-settings-validation.json": "518d4b69c5a61a2f75e45e193146ca8005f703c9aa0e299c6bcb377108700bf1",
+    "/home/archon/apps/moloch/shared/moloch-live-throughput-capital-r13-20261017.json": "3aa9027834c0ca6c25568507a1baa26b4866da60d169feb0ff0c4c25a856f33b",
+    "/home/archon/apps/moloch/releases/throughput-capital-fb303ba7dabe/moloch-live-runtime": "fb303ba7dabebe991e20983d1e289c779deea45869d27e77cdd69383d9711b5f",
+    "/tmp/moloch-capital-native-r16-20261017/unit-candidate.service": "2ca38617e9934c2aecfd4788306522b009856c51610a22b7ce5a19335e68a350",
+    "/tmp/moloch-capital-native-r16-20261017/validation.json": "88fedde0c1d2e4167d6b41b48154172f2bbf8b9bccacb0411c8587f239a413b8",
+    "/tmp/moloch-capital-native-r16-20261017/integrated-source-manifest.json": "6fa1a1c2a33239201fc8d68fe3774ad5ca7f54a33caada3c6e0f9cf7eb473189",
+    "/home/archon/apps/moloch/shared/moloch-live-throughput-capital-r11-20261017.json": "2d0dc9319cf3b1930738bc7984e63d663e22584a282bf3726f4b4a649dd2c6de",
+    "/tmp/moloch-throughput-capital-r11-20261017-production-rollout.json": "6f06ac060fe79bac87a017501b28cab4b4a5e75b5ecc0f72d625f1c8caa960d3",
+    "/tmp/moloch-throughput-capital-r11-20261017-staging.json": "41abf1eaf638739506763e12874b220dfbea2b85c39d3f896c5e868ba7eacb4d"
+  },
+  "priorBridgeSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "financialBridgeEntries": 13
+}

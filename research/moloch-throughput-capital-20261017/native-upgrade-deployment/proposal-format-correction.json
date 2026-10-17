@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-17T01:29:37.683729+00:00",
+  "reason": "genuine Rust helper emitted pretty JSON; historical Python raw seal verifier requires compact canonical bytes",
+  "genuineHelperExitCode": 0,
+  "genuineOriginalPrettyPath": "/tmp/moloch-capital-native-r16-20261017/genuine-proposed-bridge.original-pretty.json",
+  "genuineOriginalPrettySha256": "2d29c9573299ee5d427b5726229b57ea67515b09a6695ae1db29ed83ff568155",
+  "canonicalProposalPath": "/tmp/moloch-throughput-capital-r13-20261017-proposed-bridge.json",
+  "canonicalProposalSha256": "9ec918ba2964fa322d142e7c88514d79f587e2182a0187984fbb5af83ad50c84",
+  "jsonValueUnchanged": true,
+  "originalOuterHashUnchanged": "ae3ff49d7460e87d015d4e019a54df4ab2b2f32357f92b6ae5d88d97de57e57a",
+  "allFourteenEntriesAndHashesUnchanged": true,
+  "financialProductionFilesChanged": false,
+  "bridgeOperatorOriginalAttemptFailedAtFormatCheck": true,
+  "noGenuineHelperOrExchangeOperationRetried": true,
+  "pins": {
+    "/tmp/moloch-capital-native-r16-20261017/genuine-proposed-bridge.original-pretty.json": "2d29c9573299ee5d427b5726229b57ea67515b09a6695ae1db29ed83ff568155",
+    "/tmp/moloch-capital-native-r16-20261017/bridge-helper.stdout": "991b7cdfa81a7cba547852551429a7d02b2a8607e4b8cfbeb476f0e0456cec5c",
+    "/tmp/moloch-capital-native-r16-20261017/bridge-helper.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/moloch-capital-native-r16-20261017/bridge-helper-exit.json": "ff8ae5796bcef71911ff9c5c3eaea341819c471f669549e252b830106edd4305"
+  }
+}

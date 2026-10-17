@@ -1,0 +1,17 @@
+{
+  "observedAt": "2026-10-17T01:32:06.774970+00:00",
+  "actualServicePid": 592183,
+  "actualExecutable": "/home/archon/apps/moloch/releases/throughput-capital-fb303ba7dabe/moloch-live-runtime",
+  "actualExecutableSha256": "fb303ba7dabebe991e20983d1e289c779deea45869d27e77cdd69383d9711b5f",
+  "sourceCommit": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "bankBridgeSha256": "9ec918ba2964fa322d142e7c88514d79f587e2182a0187984fbb5af83ad50c84",
+  "bridgeEntries": 14,
+  "activeStopExists": false,
+  "phase": "restoring",
+  "freshTradingVerified": false,
+  "finalStoppedPrefixParityVerified": false,
+  "startupNativeParityGateRequiredBeforeFinancialWrites": true,
+  "oldProgressIsNotNewWorkerHealth": true,
+  "noExtraAccountClientCreated": true
+}

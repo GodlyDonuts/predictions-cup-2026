@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-17T01:23:15.353695+00:00",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "executionOwnerReviewed": true,
+  "sourceCommit": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "binarySha256": "fb303ba7dabebe991e20983d1e289c779deea45869d27e77cdd69383d9711b5f",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "actualStartupMustValidateBeforeFinancialWrites": true,
+  "finalPrefixParityVerified": false,
+  "prestageActualFullPrefixParityStillRequired": true,
+  "genuineStartupGate": "Session::open_live -> all14 UpgradeChain.check_prefix exact financial reports/orders/fills/cursors/bindings and complete -> returned Session -> ProductionAuthority and continuing financial Transport",
+  "readsBeforeGate": "existing one startup ReadOnlyAuthority transport performs typed account GETs; no claim of zero HTTP before gate",
+  "failureBehavior": "parity error returns before financial-write authority; worker stops; no automatic rollback/replacement/retry",
+  "sourceHashes": {
+    "moloch/live-runtime/src/worker.rs": "06e342d63fb3b0bd4b570806218dc58fc722f038283a4c82678b0bb49f44c507",
+    "moloch/native/src/session.rs": "532673091efb7dcaaf77e8f336824e3da201efb02bc1469ae3e7ae203644316a"
+  },
+  "sourceByteOffsets": {
+    "readonlyTransport": 192518,
+    "nativeFullReplay": 194936,
+    "productionAuthority": 195570,
+    "continuingFinancialTransport": 196669
+  },
+  "independentReview": "graph_arbitrage reviewed actual7c11 startup ordering and native gate; no concrete counterexample found",
+  "avoidedWork": "second offline full final-prefix replay duplicates the mandatory actual production startup replay",
+  "productionChanged": false,
+  "pins": {
+    "/tmp/moloch-capital-native-r16-20261017/moloch/live-runtime/src/worker.rs": "06e342d63fb3b0bd4b570806218dc58fc722f038283a4c82678b0bb49f44c507",
+    "/tmp/moloch-capital-native-r16-20261017/moloch/native/src/session.rs": "532673091efb7dcaaf77e8f336824e3da201efb02bc1469ae3e7ae203644316a"
+  }
+}

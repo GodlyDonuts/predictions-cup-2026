@@ -1,3 +1,21 @@
+# Actual native upgrade — October17,01:34UTC
+
+Sole592183 now runs candidatefb303ba7/native7a74f8c3 under the genuine14th
+bridge. It is **restoring, not yet verified trading**. Prospective eleven-review
+larger budgets remain inactive until startup and fresh physical account checks.
+[Deployment summary](native-upgrade-deployment/production-rollout-summary.json),
+[actual full-prefix parity](native-upgrade-deployment/prestage-full-prefix-parity.json),
+[frozen operator](native-upgrade-deployment/operator.py),
+[owner approval](native-upgrade-deployment/root-approval.json),
+[startup no-financial-write gate](native-upgrade-deployment/startup-parity-gate.json)
+and [raw artifact pins](native-upgrade-deployment/SHA256SUMS.json) distinguish
+staged source, actual installation and pending resumed trading. Final prefix
+parity is deliberately not preclaimed. The original pretty proposal is retained
+privately; [format correction](native-upgrade-deployment/proposal-format-correction.json)
+proves identical JSON values and all14 entry hashes, with no financial retry.
+The published boundary/rollout are aggregate summaries explicitly linked to
+original raw hashes, preserving private account/status bodies.
+
 # Checked capital and execution candidate — October17,01:16UTC
 
 The next native/runtime candidate passed **892 actual checks** and an optimized

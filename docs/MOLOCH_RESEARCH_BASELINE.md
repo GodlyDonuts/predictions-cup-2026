@@ -1,3 +1,35 @@
+# October17,01:34UTC — new native binary installed; final ledger validation is in progress
+
+Sole worker **592183**, source7c11cd1c (main source4b5dcfd6), binaryfb303ba7,
+financial native7a74f8c3, has started its original-bank restore. The genuine
+fourteenth engine bridge is installed; the original thirteen bridge entries,
+all financial events, losses, positions and original two model-generation
+records remain preserved. **This is restoring, not verified trading.** The
+larger eleven-review capital generation is ready but **not active**.
+
+The separate actual1,131,396,835-byte/362367event clone replay passed with exact
+financial report/orders/fills/cursors/bindings, exit0,861.705785s restore. The
+final stopped production boundary is370275events/265fills, with no unknown
+SDK submissions, active operation or manual-review flag. Its final prefix is
+validated by the actual pinned production startup **before financial-write
+authority exists**; no final startup pass is claimed in advance. This avoids
+an unnecessary second offline full replay followed by the mandatory startup
+replay. Read-only startup GETs still use the existing shared account budget.
+
+[Deployment evidence](../research/moloch-throughput-capital-20261017/native-upgrade-deployment/production-rollout-summary.json),
+[actual prefix proof](../research/moloch-throughput-capital-20261017/native-upgrade-deployment/prestage-full-prefix-parity.json),
+[no-financial-write startup gate](../research/moloch-throughput-capital-20261017/native-upgrade-deployment/startup-parity-gate.json),
+[raw pins](../research/moloch-throughput-capital-20261017/native-upgrade-deployment/SHA256SUMS.json).
+The boundary/rollout files published here are explicit aggregate summaries,
+bound to the retained private original raw hashes; raw account/status bodies
+are not published. The genuine proposal helper succeeded; its pretty-JSON
+output tripped the old deployment raw-seal formatter. Root retained that
+original and verified a semantics/hash-preserving compact representation;
+no financial operation was retried or bank history changed by that correction.
+
+The last stopped ledger remains cash51,175.35/owned44,268.335/realized−136.23;
+four prior new BUY orders cost19,587.50. These holdings are not realized profit.
+
 # October17,01:16UTC — capital/native candidate checked; current worker continues trading
 
 Current sole584167 has265 fill rows; the four new BUY orders total19,587.50

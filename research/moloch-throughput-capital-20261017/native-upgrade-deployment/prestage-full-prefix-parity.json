@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-17T01:24:16.260861+00:00",
+  "financialPrefixParityPassed": true,
+  "finalPublicStateExact": true,
+  "originalThirteenBridgesUnchanged": true,
+  "sourceCommit": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "fromEngineIdentity": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "productionAuthorization": false,
+  "productionBridgeInstalled": false,
+  "cloneOnlyNoProcessOwnedCopiedBank": true,
+  "originalPrefixSequence": 362367,
+  "originalPrefixBytes": 1131396835,
+  "originalPrefixSha256": "d39242380d2bb519ab69088ad279e954b44f4240523db2a79e878dd119c37f19",
+  "originalReportEnvelopeSha256": "a72f2c404d898ca646a6222177a5c9575823dd5fed1745a5925b03e61c0f837c",
+  "originalBridgeSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "actualRestoreSeconds": 861.705785307,
+  "actualCheckResults": {
+    "clone-only-bridge-proposal": {
+      "exitCode": 0,
+      "seconds": 144.44498414601549,
+      "logSha256": "991b7cdfa81a7cba547852551429a7d02b2a8607e4b8cfbeb476f0e0456cec5c",
+      "logBytes": 126
+    },
+    "actual-candidate-full-prefix-parity": {
+      "exitCode": 0,
+      "seconds": 863.4896867469943,
+      "logSha256": "25c7bcac18c88785603c05abd6f1eaec5a322677f97eecad74b46913943b611b",
+      "logBytes": 295
+    }
+  },
+  "pins": {
+    "/tmp/moloch-r12-frozen-original-bank-20261017-inputs.json": "216352a3058d9853d9ef093ad60bb33c5e08e58084d2079c54c9e55a427df3b3",
+    "/tmp/moloch-capital-native-r16-20261017/moloch-upgrade": "bb020311eb780a3bac96b540ebc620fe0dbe701e78eb69867a3701ef74a41e5e",
+    "/tmp/moloch-capital-native-r16-20261017/moloch-upgrade.rs": "f69d308eb7b31ab322368ec690fdd6a313cea1ecf1c7466034ed9c4a08262662",
+    "/tmp/moloch-capital-native-r16-20261017/frozen-original-prefix-parity/baseline-report.json": "a72f2c404d898ca646a6222177a5c9575823dd5fed1745a5925b03e61c0f837c",
+    "/tmp/moloch-capital-native-r16-20261017/frozen-original-prefix-parity/baseline-engine-upgrade-v1.json": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+    "/tmp/moloch-capital-native-r16-20261017/frozen-original-prefix-parity/clone-only-proposed-bridge.json": "594beaeae7b10e15bbebaeba114641fbb16629ce2a14b30b934058a44d2a902d",
+    "/tmp/moloch-capital-native-r16-20261017/frozen-original-prefix-parity/clone-only-bridge-proposal.log": "991b7cdfa81a7cba547852551429a7d02b2a8607e4b8cfbeb476f0e0456cec5c",
+    "/tmp/moloch-capital-native-r16-20261017/frozen-original-prefix-parity/actual-candidate-full-prefix-parity.log": "25c7bcac18c88785603c05abd6f1eaec5a322677f97eecad74b46913943b611b",
+    "/tmp/moloch-r12-frozen-original-bank-20261017/events.jsonl": "d39242380d2bb519ab69088ad279e954b44f4240523db2a79e878dd119c37f19",
+    "/tmp/moloch-r12-frozen-original-bank-20261017/manifest.json": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "/tmp/moloch-r12-frozen-original-bank-20261017/head.json": "bfa40b26b4fbce15cf230a1b7c891d31b9ce368169215ebd400bc6b84215ee14",
+    "/tmp/moloch-r12-frozen-original-bank-20261017/report.json": "a72f2c404d898ca646a6222177a5c9575823dd5fed1745a5925b03e61c0f837c",
+    "/tmp/moloch-r12-frozen-original-bank-20261017/engine-upgrade-v1.json": "594beaeae7b10e15bbebaeba114641fbb16629ce2a14b30b934058a44d2a902d"
+  }
+}

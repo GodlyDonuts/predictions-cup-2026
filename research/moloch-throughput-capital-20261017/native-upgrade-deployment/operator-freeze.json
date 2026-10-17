@@ -1,0 +1,138 @@
+{
+  "operatorPath": "/tmp/moloch-throughput-capital-rollout-r13-owner-frozen-20261017.py",
+  "operatorSha256": "fc24d58f4e814508bdd5d80f0df16d7b78dfcc5d44aa3b1830af61a6071aa6d9",
+  "pins": {
+    "SOURCE": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+    "VALIDATION_SHA": "88fedde0c1d2e4167d6b41b48154172f2bbf8b9bccacb0411c8587f239a413b8",
+    "PRIOR_SHA": "6f06ac060fe79bac87a017501b28cab4b4a5e75b5ecc0f72d625f1c8caa960d3",
+    "PRIOR_STAGE_PATH": "/tmp/moloch-throughput-capital-r11-20261017-staging.json",
+    "PRIOR_STAGE_SHA": "41abf1eaf638739506763e12874b220dfbea2b85c39d3f896c5e868ba7eacb4d",
+    "REVIEW_BUNDLE_SHA": "518d4b69c5a61a2f75e45e193146ca8005f703c9aa0e299c6bcb377108700bf1",
+    "EXPECTED_TEST_RESULTS": {
+      "sdk-library": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "native-library": [
+        [
+          "98",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "runtime-library": [
+        [
+          "230",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "worker": [
+        [
+          "119",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "order_snapshot": [
+        [
+          "6",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "quote_priority": [
+        [
+          "15",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "maker_policy": [
+        [
+          "33",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "execution_distribution": [
+        [
+          "25",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_acquisition": [
+        [
+          "10",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_policy": [
+        [
+          "114",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_quantity": [
+        [
+          "2",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_source_bounds": [
+        [
+          "7",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "release": null,
+      "engine-probe-build": null,
+      "engine-probe-run": null,
+      "bridge-helper-build": null
+    },
+    "ENGINE": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+    "BRIDGE_HELPER_SHA": "bb020311eb780a3bac96b540ebc620fe0dbe701e78eb69867a3701ef74a41e5e",
+    "PARITY_SHA": "90ab493bd6f4850883065b8a3029bf329ca1a140f61e3321e99c080b001910d6",
+    "STARTUP_GATE_SHA": "d2ade49ed4747d1a50091d02fdf7d682823e88e000f80c28d91c05d9ae799d58",
+    "STAGE_PATH": "/tmp/moloch-capital-native-r16-20261017",
+    "TARGET_PATH": "/tmp/moloch-paper7-generation-live-20261016/target",
+    "ACTIVE_OVERLAY_PATH": "/home/archon/apps/moloch/shared/fundamental-paper7-stale-refresh-20261017/next-control-root-reviewed.json",
+    "SETTINGS_PATH": "/home/archon/apps/moloch/shared/fundamental-paper7-stale-refresh-20261017/settings-root-reviewed.json",
+    "GENERATION_SHA": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+    "ACTIVE_OVERLAY_SHA": "49ad28ce52dd2c2cd0983710aa7a3b8f7212f5d2fec77165032a4ad832147325",
+    "ORIGINAL_REQUEST_SHA": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1"
+  },
+  "productionChanged": false
+}

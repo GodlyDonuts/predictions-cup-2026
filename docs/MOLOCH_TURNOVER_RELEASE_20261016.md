@@ -1,3 +1,14 @@
+# October17,01:34UTC — native upgrade installed, startup validation pending
+
+Current sole592183/source7c11cd1c/binaryfb303ba7/native7a74f8c3 is restoring the
+original ledger under its genuine fourteenth bridge. It is **not yet verified
+trading**, and prospective eleven-review larger budgets are **not active**.
+Actual separate full-prefix replay passed; the final stopped prefix must pass
+inside native startup before financial-write authority exists. Original265fills,
+cash51,175.35/owned44,268.335/realized−136.23 remain at the stopped boundary.
+See [current deployment evidence](CURRENT_STATE.md) and
+[implementation/limits](MOLOCH_CAPITAL_NATIVE_UPGRADE_20261017.md).
+
 # October17,01:02UTC: live fills and capital deployed
 
 Sole **584167/source027abb60/binary33005b45/nativeb5** recovered the original

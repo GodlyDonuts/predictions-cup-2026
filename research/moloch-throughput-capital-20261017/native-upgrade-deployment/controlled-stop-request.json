@@ -1,0 +1,9 @@
+{
+  "operator": "moloch-throughput-capital-20261017-r13-enginebridge",
+  "token": "ede7af85d6fa4d0fa72e6e88facc7b3a",
+  "at": "2026-10-17T01:24:52.660532+00:00",
+  "oldPid": 584167,
+  "reason": "CONTROLLED_THROUGHPUT_CAPITAL_UPGRADE",
+  "stagingSha256": "a7bc3f087dda527fb76120e2d716384cc63417f0c3bef67a5112d150bebc7a29",
+  "action": "finish current operation and stop; preserve all original orders and bank"
+}
