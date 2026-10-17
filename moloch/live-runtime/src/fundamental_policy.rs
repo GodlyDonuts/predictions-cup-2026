@@ -103,7 +103,15 @@ pub struct SameSideTopUps {pub version:u32,pub maximum_entries:u32}
 /// Explicit inherited-inventory value limit; it may rest without a fill claim.
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-pub struct PassiveValueExit {pub version:u32,pub maximum_quantity:u64}
+pub struct PassiveValueExit {pub version:u32,pub maximum_quantity:u64,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub pricing_objective:Option<PassivePricingObjective>}
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(tag="kind",deny_unknown_fields)]
+pub enum PassivePricingObjective {
+    #[serde(rename="fifoProfitTurnover")]
+    FifoProfitTurnover {#[serde(rename="minimumNetGain")] minimum_net_gain:String}
+}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct ReviewInput {
@@ -139,7 +147,7 @@ pub struct ReviewInput {
 }
 pub fn review_sha256(input:&ReviewInput)->Result<String>{digest(input)}
 fn structure(r:&ReviewInput)->Result<i128>{
-    if let Some(p)=&r.passive_value_exit{need(p.version==1&&(r.existing_origin.is_some()||r.version==2)&&p.maximum_quantity>0&&p.maximum_quantity<=r.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_POLICY")?;}
+    if let Some(p)=&r.passive_value_exit{if let Some(PassivePricingObjective::FifoProfitTurnover{minimum_net_gain})=&p.pricing_objective{need(r.version==2&&r.existing_origin.is_none()&&(5000..=UNIT).contains(&amount(minimum_net_gain)?),"FUNDAMENTAL_FIFO_PROFIT_POLICY")?;}need(p.version==1&&(r.existing_origin.is_some()||r.version==2)&&p.maximum_quantity>0&&p.maximum_quantity<=r.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_POLICY")?;}
     if let Some(p)=&r.same_side_top_ups{need(p.version==1&&(2..=16).contains(&p.maximum_entries)&&r.version==2&&r.existing_origin.is_none(),"FUNDAMENTAL_TOP_UP_POLICY")?;}
     if let Some(p)=&r.execution_policy{need(p.version==1&&!p.allowed_modes.is_empty()&&p.allowed_modes.len()<=3,"FUNDAMENTAL_EXECUTION_POLICY")?;
         for(i,m)in p.allowed_modes.iter().enumerate(){need(!p.allowed_modes[..i].contains(m),"FUNDAMENTAL_DUPLICATE_EXECUTION_MODE")?;}}
@@ -361,6 +369,41 @@ fn passive_value_limit(r:&ReviewInput,policy:&Value)->Result<Option<i128>>{
     for tick in 1..200{let price=tick*5000;let fee=moloch_replay::fee(price,1,bps,share)?;
         if price.checked_sub(fee).is_some_and(|net|net>=floor){return Ok(Some(price))}}
     Ok(None)
+}
+// Only authenticated new-entry FIFO cohorts can select this objective. Historical
+// adoption lots do not establish their original acquisition fees.
+fn fifo_gain(r:&ReviewInput)->Result<Option<i128>>{match r.passive_value_exit.as_ref().and_then(|p|p.pricing_objective.as_ref()){
+    None=>Ok(None),Some(PassivePricingObjective::FifoProfitTurnover{minimum_net_gain})=>Ok(Some(amount(minimum_net_gain)?))}}
+fn passive_model_sha(r:&ReviewInput,basis:&Value)->Result<String>{digest(&json!({"forecastModelSha256":execution_model_sha(r)?,"reviewSha256":digest(r)?,"pricingBasis":basis}))}
+fn fee_floor_tick(policy:&Value,floor:i128)->Result<Option<i128>>{
+    let bps=u32::try_from(policy["feeBps"].as_u64().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
+    let share=amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
+    for tick in 1..200{let price=tick*5000;if price-moloch_replay::fee(price,1,bps,share)?>=floor{return Ok(Some(price))}}Ok(None)
+}
+fn cohort_fifo_cost(bank:&Session,ex:&str,c:&Cohort,side:&str,n:u64)->Result<Value>{
+    need(c.existing.is_none()&&c.entry.is_some(),"FUNDAMENTAL_FIFO_PROFIT_COHORT")?;
+    let entries=c.entries().map(|b|b.qid).collect();let exits=c.exits.keys().copied().collect();
+    Ok(bank.engine().reviewed_fifo_cost(ex,if side=="YES"{moloch_replay::Side::Yes}else{moloch_replay::Side::No},&entries,&exits,n)?)
+}
+// Price selection does not assert executable depth or a maker fill. Prefer the
+// longest affordable FIFO prefix at ask-minus-one-tick; never skip leading lots.
+// If none qualifies there, the capped prefix may rest at its own profit floor.
+fn passive_terms(r:&ReviewInput,bank:&Session,ex:&str,c:&Cohort,cap:u64,ask:Option<i128>)->Result<Option<(u64,i128,Option<Value>)>>{
+    let p=r.passive_value_exit.as_ref().ok_or("FUNDAMENTAL_PASSIVE_EXIT_POLICY")?;let cap=cap.min(p.maximum_quantity);if cap==0{return Ok(None)}
+    let Some(gain)=fifo_gain(r)?else{return Ok(passive_value_limit(r,bank.engine().policy())?.map(|price|(cap,price,None)))};
+    let Some(ask)=ask else{return Ok(None)};let inside=(ask-5000).max(5000);let policy=bank.engine().policy();
+    let bps=u32::try_from(policy["feeBps"].as_u64().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
+    let share=amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
+    let net=inside-moloch_replay::fee(inside,1,bps,share)?;let all=cohort_fifo_cost(bank,ex,c,&r.side,cap)?;
+    let mut prefix=0u64;for l in all["lots"].as_array().ok_or("FUNDAMENTAL_FIFO_COST")?{if add(amount(l["unitCostUpper"].as_str().ok_or("FUNDAMENTAL_FIFO_COST")?)?,gain)?>net{break}prefix=prefix.checked_add(l["quantity"].as_u64().ok_or("FUNDAMENTAL_FIFO_COST")?.min(cap-prefix)).ok_or("FUNDAMENTAL_FIFO_RANGE")?;if prefix==cap{break}}
+    let n=if prefix>0{prefix}else{cap};let cost=cohort_fifo_cost(bank,ex,c,&r.side,n)?;
+    let floor=add(amount(cost["maximumFifoUnitCost"].as_str().ok_or("FUNDAMENTAL_FIFO_COST")?)?,gain)?;
+    let Some(tick)=fee_floor_tick(policy,floor)?else{return Ok(None)};
+    Ok(Some((n,inside.max(tick),Some(cost))))
+}
+fn fifo_basis(r:&ReviewInput,head:&Value,position:&Value,book:&Value,n:u64,cost:&Value)->Result<Value>{
+    let floor=add(amount(cost["maximumFifoUnitCost"].as_str().ok_or("FUNDAMENTAL_FIFO_COST")?)?,fifo_gain(r)?.ok_or("FUNDAMENTAL_FIFO_POLICY")?)?;
+    Ok(json!({"pricingPolicy":"improveAskOneTickFifoFloor","bankHead":head,"positionsSha256":position,"quantity":n,"bookSha256":book,"fifoCostSha256":cost["fifoCostSha256"],"maximumFifoUnitCost":cost["maximumFifoUnitCost"],"minimumNetSalePrice":money(floor),"pricingObjective":r.passive_value_exit.as_ref().unwrap().pricing_objective,"forecastExpectedPayout":money(add(structure(r)?,amount(&r.margin_per_share)?)?.max(0))}))
 }
 fn passive_exit_clear(bank:&Session,log:&DispatchLog,ex:&str,current:Option<u64>,allow_drafts:bool)->Result<bool>{
     if !bank.engine().managed_inventory_planning_excludes(ex)
@@ -1102,7 +1145,7 @@ impl Cohorts{
             else if r.revoke_existing{"reviewed_source_revocation"}
             else{let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
                 if let Some(book)=books.get(exchange){let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let payout=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
-                    if (c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&passive_exit_clear(bank,log,exchange,None,true)?&&passive_value_limit(r,bank.engine().policy())?.is_some(){"reviewed_passive_value_exit"}
+                    if (c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&passive_exit_clear(bank,log,exchange,None,true)?&&passive_terms(r,bank,exchange,c,self.owned(bank,exchange,c)?.min(r.maximum_quantity).min(bank.engine().policy()["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?),if r.side=="YES"{book.yes_asks.first()}else{book.no_asks.first()}.map(|l|l.price))?.is_some(){"reviewed_passive_value_exit"}
                     else{if levels.first().is_none_or(|l|l.price<payout){return Ok(None)}"refreshed_value_exit"}
                 }else{"reviewed_inventory_book_refresh"}};
         Ok(Some(ExistingExitHint{exchange_id:exchange.into(),market_id:r.market_id.clone(),contract_id:r.contract_id.clone(),side:r.side.clone(),reason:reason.into()}))
@@ -1133,10 +1176,9 @@ impl Cohorts{
         let policy=bank.engine().policy();let (books,hashes)=package_admission::native_books(bank,scope,now,policy["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;let Some(book)=books.get(exchange)else{return Ok(None)};
         let cap=owned.min(r.maximum_quantity).min(policy["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?);
         let passive=reason=="refreshed_value_exit"&&(c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange);
-        let(n,limit)=if passive{
+        let mut fifo_cost=None;let(n,limit)=if passive{
             if !passive_exit_clear(bank,log,exchange,None,false)?{return Ok(None)}
-            let Some(limit)=passive_value_limit(r,policy)?else{return Ok(None)};
-            (cap.min(r.passive_value_exit.as_ref().unwrap().maximum_quantity),limit)
+            let Some((n,limit,cost))=passive_terms(r,bank,exchange,c,cap,if r.side=="YES"{book.yes_asks.first()}else{book.no_asks.first()}.map(|l|l.price))?else{return Ok(None)};fifo_cost=cost;(n,limit)
         }else{
             let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let mut n=0u64;let mut limit=None;
             for l in levels{if reason=="refreshed_value_exit"&&l.price<payout{break}let take=(cap-n).min(l.quantity);if take>0{n+=take;limit=Some(l.price)}if n==cap{break}}
@@ -1148,6 +1190,10 @@ impl Cohorts{
         if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
         let mut event=json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":r.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":digest(&bank.engine().report()?)?,"exchangeId":exchange,"marketId":r.market_id,"side":r.side,"quantity":n,"limitPrice":money(limit),"expiresAt":daily_windows::iso(expires)?,"originSha256":c.origin_sha()?,"reviewSha256":digest(r)?,"expectedPositionSha256":digest(&bank.engine().wallet.positions()[exchange])?,"bookSha256":hashes.get(exchange).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reason":reason,"expectedPayout":money(payout),"reviewCurrentUntilMs":until,"holdingDeadlineMs":deadline,"revoked":r.revoke_existing});
         if passive{event["executionMode"]=json!("passiveValueLimit");event["maximumPassiveQuantity"]=json!(r.passive_value_exit.as_ref().unwrap().maximum_quantity);event["modelSha256"]=json!(execution_model_sha(r)?);event["sourceSha256"]=json!(digest(&r.sources)?);}
+        if let Some(cost)=fifo_cost{let basis=fifo_basis(r,&event["bankHead"],&event["expectedPositionSha256"],&event["bookSha256"],n,&cost)?;
+            event["reason"]=json!("reviewed_fifo_profit_turnover");event["pricingObjective"]=serde_json::to_value(r.passive_value_exit.as_ref().unwrap().pricing_objective.as_ref().unwrap())?;
+            event["minimumNetSalePrice"]=basis["minimumNetSalePrice"].clone();event["forecastExpectedPayout"]=event["expectedPayout"].clone();event["modelSha256"]=json!(passive_model_sha(r,&basis)?);event["pricingBasis"]=basis;
+        }
         if let Some(origin)=&c.existing{event["adoptionRef"]=origin.adoption_ref.clone();event["adoptionReceiptHash"]=json!(origin.approval.adoption_receipt_sha256);}
         else{event["type"]=json!("reviewed_cohort_exit_reserved_v1");let Some(proof)=self.cohort_exit_origin(bank,log,exchange,c)?else{return Ok(None)};event["cohortOrigin"]=proof;}
         need(queue_view(transport)?==queue,"FUNDAMENTAL_EXISTING_QUEUE_CHANGED")?;Ok(Some(ExistingExit{event}))
@@ -1483,7 +1529,8 @@ impl Cohorts{
         if r.revoke_existing{return Ok(true)}
         let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
         if (c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&books.contains_key(exchange)
-            &&passive_exit_clear(bank,log,exchange,None,true)?&&passive_value_limit(r,bank.engine().policy())?.is_some(){return Ok(true)}
+            &&passive_exit_clear(bank,log,exchange,None,true)?{
+            let book=&books[exchange];if passive_terms(r,bank,exchange,c,self.owned(bank,exchange,c)?.min(r.maximum_quantity).min(bank.engine().policy()["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?),if r.side=="YES"{book.yes_asks.first()}else{book.no_asks.first()}.map(|l|l.price))?.is_some(){return Ok(true)}}
         let value=add(structure(r)?,amount(&r.margin_per_share)?)?;
         Ok(books.get(exchange).and_then(|b|if r.side=="YES"{b.yes_bids.first()}else{b.no_bids.first()}).is_some_and(|l|l.price>=value))
     }
@@ -1626,16 +1673,23 @@ impl Cohorts{
                 need((c.existing.is_some()||c.entry.is_some())&&bank.engine().managed_inventory_planning_excludes(ex)&&n<=p.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_ORIGIN_OR_QUANTITY")?;
                 if !approved||r.revoke_existing||liquidation_due(r,c,now){return Ok(hold("current_passive_value_review_required"))}
                 let payout=add(ceiling,amount(&r.margin_per_share)?)?.max(0);let metadata=&q["reviewedInventoryExit"];
-                need(metadata["reason"]=="refreshed_value_exit"&&metadata["reviewSha256"]==digest(r)?&&metadata["originSha256"]==c.origin_sha()?
-                    &&metadata["minimumNetValue"]==money(payout)&&metadata["maximumPassiveQuantity"]==p.maximum_quantity
-                    &&metadata["modelSha256"]==execution_model_sha(r)?&&metadata["sourceSha256"]==digest(&r.sources)?,"FUNDAMENTAL_PASSIVE_EXIT_PROVENANCE")?;
+                let fifo=fifo_gain(r)?.is_some();let (floor,reason)=if fifo{
+                    let cost=cohort_fifo_cost(bank,ex,c,&r.side,n)?;let basis=&metadata["pricingBasis"];
+                    let expected=fifo_basis(r,&basis["bankHead"],&json!(digest(&bank.engine().wallet.positions()[ex])?),&metadata["bookSha256"],n,&cost)?;
+                    need(basis==&expected&&metadata["pricingObjective"]==serde_json::to_value(p.pricing_objective.as_ref().unwrap())?
+                        &&metadata["minimumNetSalePrice"]==basis["minimumNetSalePrice"]&&metadata["forecastExpectedPayout"]==money(payout)
+                        &&metadata["modelSha256"]==passive_model_sha(r,basis)?&&metadata.get("minimumNetValue").is_none(),"FUNDAMENTAL_FIFO_PROFIT_PROVENANCE")?;
+                    (amount(basis["minimumNetSalePrice"].as_str().ok_or("FUNDAMENTAL_FIFO_COST")?)?,"reviewed_fifo_profit_turnover")
+                }else{need(metadata["minimumNetValue"]==money(payout)&&metadata["modelSha256"]==execution_model_sha(r)?&&metadata.get("pricingObjective").is_none(),"FUNDAMENTAL_PASSIVE_EXIT_PROVENANCE")?;(payout,"refreshed_value_exit")};
+                need(metadata["reason"]==reason&&metadata["reviewSha256"]==digest(r)?&&metadata["originSha256"]==c.origin_sha()?
+                    &&metadata["maximumPassiveQuantity"]==p.maximum_quantity&&metadata["sourceSha256"]==digest(&r.sources)?,"FUNDAMENTAL_PASSIVE_EXIT_PROVENANCE")?;
                 let policy=bank.engine().policy();let bps=u32::try_from(policy["feeBps"].as_u64().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
                 let fee=moloch_replay::fee(price,1,bps,amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?)?;
-                need(price.checked_sub(fee).is_some_and(|net|net>=payout),"FUNDAMENTAL_PASSIVE_EXIT_NET_VALUE")?;
+                need(price.checked_sub(fee).is_some_and(|net|net>=floor),"FUNDAMENTAL_PASSIVE_EXIT_NET_VALUE")?;
                 if !passive_exit_clear(bank,log,ex,Some(qid),false)?{return Ok(hold("passive_value_exit_competing_liability"))}
                 // A value limit is authorization to rest, never evidence of a
                 // maker fill or of full currently executable bid depth.
-                return Ok(Decision::Exit{reason:"refreshed_value_exit".into(),owned_quantity:owned})
+                return Ok(Decision::Exit{reason:reason.into(),owned_quantity:owned})
             }
             // Verify actual depth, not the last print or nominal quote price.
             let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};
