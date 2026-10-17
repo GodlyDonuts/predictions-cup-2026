@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "handoff": "owned-fill-calibration-20261017",
+  "declaredAtUtc": "2026-10-17T06:56:36Z",
+  "sourceBaseCommit": "e9ace6c8195bb0369db71cb49b199d749457f373",
+  "executionAuthority": false,
+  "modelActivation": false,
+  "denominator": "Original actually ACK-placed orders; complete original terminal+later complete fill tape+durable closed required for zero/partial/full. Open, unknown, no-network and never-sent are separate statuses.",
+  "groupings": [
+    "ordinary unhedged BUY",
+    "covered opposite BUY or coverage unknown",
+    "ordinary risk/profit SELL",
+    "reviewed fundamental BUY by original execution mode",
+    "reviewed SELL",
+    "package or unclassified"
+  ],
+  "features": "Only original scope/order/book/known-own-liquidity evidence available strictly before original POST ACK.requestStartedAt; no response, fill, terminal or future-book feature.",
+  "bookVersion": "Original (sequence,asOf.at), exact pair conflicts/rollback refused; original source/receipt/processing/earliest availability remain distinct.",
+  "markoutHorizonsMs": [
+    1000,
+    5000,
+    30000,
+    120000
+  ],
+  "postSourceAndReceiptWindowMs": 5000,
+  "maximumSourceAgeMs": 10000,
+  "label": "First original same-scope full book whose source is in [actual execution+h,execution+h+5s]; invalid/stale/late/shallow first candidate remains missing, never replaced favorably. Full actual fill quantity at genuine depth; YES/NO complement; recorded entry fees exact, future exit fee unknown unless independently witnessed.",
+  "unavailable": "Report absent, late, stale, invalid, shallow, gap, clock conflict and right censoring separately; no missing/censored-to-zero.",
+  "fitConditions": {
+    "minimumCompletedOrders": 100,
+    "minimumEarlierTrainingTimeBlocks": 20,
+    "minimumLaterTestTimeBlocks": 5,
+    "blockMs": 120000,
+    "minimumPerZeroPartialFullClass": 1,
+    "requiredEconomicLabelCoverageBps": 10000,
+    "split": "First two thirds of original ACK time blocks for training, final third for test; training terminal and mark labels must have been available before first test ACK start; no tuning or fitted threshold search."
+  },
+  "fitMeaning": "At most a simple same-stratum zero/partial/full Dirichlet baseline and filled-fraction/conditional markout diagnostic; cancellation and closure selection informative, no independent censoring or live calibration assumed.",
+  "limitations": [
+    "Historical markouts are displayed-depth execution-quality labels, not actual hypothetical fills or realizable portfolio profit.",
+    "Immediate-vs-rested-after-ACK is not venue maker/taker classification.",
+    "Short-horizon fundamental marks do not value terminal settlement holdings.",
+    "Time blocks/markets may remain correlated; no IID fills/pairs confidence claim.",
+    "No inferred party mapping, unknown fee, source clock renewal, new API/client, or financial authority."
+  ]
+}
