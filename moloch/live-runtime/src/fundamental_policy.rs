@@ -325,14 +325,14 @@ fn fifo_remaining(lots:&Value,mut closed:u64)->Result<Value>{
 }
 fn no_existing_liability(bank:&Session,log:&DispatchLog,ex:&str)->Result<()>{
     log.require_resolved_attempts()?;
-    let orders=bank.engine().order_records();
-    for id in bank.engine().live_order_bindings().keys(){let q=orders.iter().find(|q|q["id"]==*id).ok_or("FUNDAMENTAL_UNMAPPED_ACTUAL_BINDING")?;
+    let snapshot=crate::order_snapshot::snapshot(bank);let orders=snapshot.records();
+    for id in bank.engine().live_order_bindings().keys(){let q=snapshot.quote(*id).ok_or("FUNDAMENTAL_UNMAPPED_ACTUAL_BINDING")?;
         need(q["exchangeId"]!=ex||log.closed.contains(id),"FUNDAMENTAL_EXISTING_ACTUAL_NOT_CLOSED")?;}
     for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
-        let q=orders.iter().find(|q|q["id"]==*id).ok_or("FUNDAMENTAL_UNMAPPED_OPEN_ACK")?;need(q["exchangeId"]!=ex,"FUNDAMENTAL_EXISTING_LIABILITY")?;
+        let q=snapshot.quote(*id).ok_or("FUNDAMENTAL_UNMAPPED_OPEN_ACK")?;need(q["exchangeId"]!=ex,"FUNDAMENTAL_EXISTING_LIABILITY")?;
     }
-    need(!bank.engine().order_records().iter().any(|q|q["exchangeId"]==ex&&q["retired"]==false)
-        &&!log.acknowledgments.keys().any(|id|!log.closed.contains(id)&&bank.engine().order_records().iter().any(|q|q["id"]==*id&&q["exchangeId"]==ex))
+    need(!orders.iter().any(|q|q["exchangeId"]==ex&&q["retired"]==false)
+        &&!log.acknowledgments.keys().any(|id|!log.closed.contains(id)&&orders.iter().any(|q|q["id"]==*id&&q["exchangeId"]==ex))
         &&!bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true
             &&(p["legs"].as_array().is_some_and(|a|a.iter().any(|l|l["exchangeId"]==ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|a|a.iter().any(|x|x==ex)))),"FUNDAMENTAL_EXISTING_LIABILITY")
 }
@@ -859,12 +859,12 @@ impl Cohorts{
         let owned=self.owned(bank,ex,c)?;let cost=bank.engine().wallet.market_cost(ex);
         if owned==0||owned>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
         let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_TOP_UP_FIFO_CHANGED")?;
-        let orders=bank.engine().order_records();let mut proof=Vec::new();
+        let snapshot=crate::order_snapshot::snapshot(bank);let orders=snapshot.records();let mut proof=Vec::new();
         if prior.iter().any(|b|!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)){return Ok(None)}
         let wanted=prior.iter().map(|b|b.qid).collect();let records=self.original_closed_records(log,&wanted)?.0;
         for b in prior{if !log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid){return Ok(None)}
             let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{return Ok(None)};
-            let q=orders.iter().find(|q|q["id"]==b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
+            let q=snapshot.quote(b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
             if q["retired"]!=true{return Ok(None)}
             let filled=bank.engine().fills().iter().filter(|f|f["orderId"]==b.qid).try_fold(0u64,|n,f|n.checked_add(f["quantity"].as_u64().ok_or("FUNDAMENTAL_FILL_QUANTITY")?).ok_or("FUNDAMENTAL_RANGE"))?;
             need(q["filled"]==filled,"FUNDAMENTAL_TOP_UP_FILLED_MISMATCH")?;
