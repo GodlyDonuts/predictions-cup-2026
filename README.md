@@ -6,6 +6,8 @@ Snapshot463299 preserves all380 prior financial fill rows: cash3,597.585, owned 
 
 This worker combines the negative-only unprofitable-exit read veto, live Profit hints and genuine native successor planning after the final accepted book. Actual ARM64 worker134/lifecycle14/unchanged-library21 checks and optimized release pass; all263 packaged sources independently verified. The single upgrade required about21minutes until its first captured restored heartbeat. [Build proof](research/moloch-profit-exit-timing-20261017/build-proof/README.md). Original source/model/activation clocks and rate limits remain unchanged.
 
+**Task165 is investigating entry cash reuse:** at the authenticated09:36 boundary, four unreviewed ordinary BUY drafts reserved3,593.940 of3,597.585cash, leaving3.645 for the cash-side comparison bound. Positive lifecycle proof is still required before any release; no quarantine is implemented by this evidence update. [Exact reservation census](research/moloch-entry-capital-quarantine-20261017/README.md).
+
 The frozen 08:34 inherited-depth census found only exchange 948 positive among 14 unmanaged inherited sides. The other 13 fail the gain floor; eight also have stale books. This historical diagnostic is not an extra order or additional realized profit. [Census](research/moloch-profit-exit-timing-20261017/FROZEN_DEPTH_CENSUS.md).
 
 Moloch is the human-selected production system for the 2026 SIG Predictions Cup. The Rust runtime is in [moloch/live-runtime](moloch/live-runtime/README.md); financial replay is in [moloch/native](moloch/native/RUST_MIGRATION.md). Start research with [the current baseline](docs/MOLOCH_RESEARCH_BASELINE.md) and [dated production evidence](docs/CURRENT_STATE.md).
