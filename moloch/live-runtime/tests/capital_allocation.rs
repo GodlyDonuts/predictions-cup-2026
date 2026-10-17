@@ -1,6 +1,6 @@
 #![cfg(unix)]
 //! Offline real Session/queue/log fixtures. The one Transport uses loopback
-//! configuration and DisabledCredentials; no test invokes a network method.
+//! configuration. The final-guard fixture invokes place but proves that no socket send occurs.
 use moloch_live_runtime::{authority,dispatch,feedback,package_dispatch};
 #[path="../src/collateral_feedback.rs"]mod collateral_feedback;
 use collateral_feedback::{Boundary,RetainedReceipt,ReceiptStore};
@@ -55,6 +55,36 @@ fn sources(a:&[RetainedReceipt;4])->Sources<'_>{Sources{account:&a[0],collateral
  f.bank.accept("no-network",1,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","receivedAt":iso(2753),"processedAt":iso(2753),"orderId":qid,"confirmedNetworkAttempts":0,"receiptHash":hash(proof.evidence()),"deferPlanningForPackage":true})).unwrap();
  let replacement=dispatch::DispatchLog::open(&f.root.join("replacement.ndjson")).unwrap();drop(std::mem::replace(&mut f.ordinary,replacement));f.ordinary=dispatch::DispatchLog::open(&f.root.join("dispatch.ndjson")).unwrap();assert!(!f.ordinary.proved_no_network(qid));assert!(prepare(&f.bank,&boundary!(f),&mandate,sources(&a),&iso(3000)).is_err(),"serialized proof is not an opaque SDK verification");
  f.ordinary.verify_aborted_before_admission(qid,&proof).unwrap();let b=boundary!(f);prepare(&f.bank,&b,&mandate,sources(&a),&iso(3000)).unwrap().commit(&mut f.bank,&b,&iso(3001)).unwrap();assert!(f.ordinary.attempted.contains(&qid)&&!f.ordinary.closed.contains(&qid)&&!f.ordinary.never_attempted(qid)&&f.ordinary.acknowledgments.is_empty());
+}
+
+
+#[cfg(target_os="linux")]
+#[test]fn only_opaque_final_guard_proof_and_zero_fill_native_retirement_cross_allocation_boundary(){
+ use baal_transport_service::{Authority,Clock,Order,Permit,RequestSpec,TransportError};
+ use std::{os::unix::fs::PermissionsExt,sync::{Arc,atomic::{AtomicU64,Ordering}}};
+ struct FixedClock(Arc<AtomicU64>);
+ impl Clock for FixedClock{fn now_ms(&self)->u64{self.0.load(Ordering::SeqCst)}fn sleep_ms(&mut self,n:u64)->baal_transport_service::Result<()>{self.0.fetch_add(n,Ordering::SeqCst);Ok(())}}
+ struct FinalGuard(AtomicU64);
+ impl Authority for FinalGuard{
+  fn can_read(&self,_:&Scope)->bool{true}fn owns_order(&self,_:&str)->bool{false}
+  fn authorize(&self,_:&Scope,_:&RequestSpec,_:&Permit,network:bool,_:u64)->baal_transport_service::Result<()>{if network&&self.0.fetch_add(1,Ordering::SeqCst)>0{Err(TransportError{code:"LIVE_CONTRACT_OR_BOOK_STALE".into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None})}else{Ok(())}}
+ }
+ let mut f=F::new();let q=f.bank.engine().order_records().into_iter().find(|q|q["side"]=="YES").unwrap();let qid=q["id"].as_u64().unwrap();let n=q["quantity"].as_u64().unwrap();let at=chrono::DateTime::parse_from_rfc3339(&iso(2750)).unwrap().timestamp_millis()as u64;
+ // Synthetic fixture credentials never leave this private temporary directory.
+ let dir=f.root.join("synthetic-credentials");fs::create_dir(&dir).unwrap();fs::set_permissions(&dir,fs::Permissions::from_mode(0o700)).unwrap();let file=dir.join("synthetic");fs::write(&file,b"ace_synthetic_fixture_only_00000000").unwrap();fs::set_permissions(&file,fs::Permissions::from_mode(0o600)).unwrap();
+ let scope=f.transport.scope().clone();let replacement=Transport::new_for_mock(Config{queue_dir:f.root.join("replacement-queue"),account_scope:"replacement".into(),scope:scope.clone(),maximum_pages:20,writes_enabled:false},Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:1/api/v1".into()).unwrap();drop(std::mem::replace(&mut f.transport,replacement));
+ let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();listener.set_nonblocking(true).unwrap();f.transport=Transport::new_for_mock(Config{queue_dir:f.root.join("account-queue"),account_scope:"fixture-account".into(),scope,maximum_pages:20,writes_enabled:true},Box::new(baal_transport_service::credentials::UnixFileCredentials::approved_file(file).unwrap()),Box::new(FixedClock(Arc::new(AtomicU64::new(at)))),Box::new(FinalGuard(AtomicU64::new(0))),format!("http://{}/api/v1",listener.local_addr().unwrap())).unwrap();
+ let order=Order{idempotency_key:format!("capital-fixture:{qid}"),exchange_id:q["exchangeId"].as_str().unwrap().into(),side:"yes".into(),action:"buy".into(),quantity:n as u32,price:"0.400000".into(),expiration_date:iso(10000),tournament_id:T.into()};
+ let body=json!({"idempotencyKey":order.idempotency_key,"exchangeId":order.exchange_id,"side":order.side,"action":order.action,"quantity":order.quantity,"price":serde_json::Number::from_string_unchecked(order.price.clone()),"expirationDate":order.expiration_date,"tournamentId":order.tournament_id});let spec=RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body_json:Some(body.to_string()),body:Some(body)};
+ let permit=Permit{run_id:"capital-fixture".into(),intent_id:qid.to_string(),owner:"Codex".into(),expires_at_ms:at+10000,maximum_quantity:n as u32,maximum_cost:moloch_replay::money(400000*n as i128)};
+ for e in [json!({"kind":"intent","qid":qid,"quote":q,"spec":spec,"permit":permit}),json!({"kind":"attempt","qid":qid,"at":iso(2750),"captureAtMs":at})]{f.ordinary.append(e).unwrap();}
+ let error=f.transport.place(order,permit.clone()).unwrap_err();assert_eq!(error.code,"LIVE_CONTRACT_OR_BOOK_STALE");assert!(!error.may_have_executed);assert_eq!(listener.accept().unwrap_err().kind(),std::io::ErrorKind::WouldBlock);f.ordinary.append(json!({"kind":"error","qid":qid,"at":iso(2751),"error":error})).unwrap();
+ let proof=f.transport.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error).unwrap();f.ordinary.append_local_final_guard_no_http(qid,&proof,&iso(2752)).unwrap();assert!(f.ordinary.aborted_records().is_empty());assert_eq!(f.ordinary.local_final_guard_records().len(),1);
+ let a=f.sources();let mandate=f.mandate();assert!(prepare(&f.bank,&boundary!(f),&mandate,sources(&a),&iso(3000)).is_err(),"no-network proof does not itself retire native reservation");
+ f.bank.accept("no-network",1,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","receivedAt":iso(2753),"processedAt":iso(2753),"orderId":qid,"confirmedNetworkAttempts":0,"receiptHash":hash(proof.evidence().unwrap()),"deferPlanningForPackage":true})).unwrap();
+ assert!(collateral_feedback::prepare(&f.bank,&boundary!(f),collateral_feedback::Operation::Baseline{after:collateral_feedback::Snapshot{account:&a[0],collateral:&a[1]}},&iso(3000)).is_err(),"ordinary collateral boundary remains strict");
+ let replacement=dispatch::DispatchLog::open(&f.root.join("replacement.ndjson")).unwrap();drop(std::mem::replace(&mut f.ordinary,replacement));f.ordinary=dispatch::DispatchLog::open(&f.root.join("dispatch.ndjson")).unwrap();assert!(!f.ordinary.proved_no_network(qid));assert!(prepare(&f.bank,&boundary!(f),&mandate,sources(&a),&iso(3000)).is_err(),"serialized local-guard record cannot hydrate opaque authority");
+ f.ordinary.verify_local_final_guard_no_http(qid,&proof).unwrap();let b=boundary!(f);let captured=collateral_feedback::allocation_boundary(&f.bank,&b,chrono::DateTime::parse_from_rfc3339(&iso(3000)).unwrap().timestamp_millis()).unwrap();assert_eq!(captured["provedNoNetworkOrderIds"],json!([qid]));prepare(&f.bank,&b,&mandate,sources(&a),&iso(3000)).unwrap().commit(&mut f.bank,&b,&iso(3001)).unwrap();assert!(f.ordinary.attempted.contains(&qid)&&!f.ordinary.closed.contains(&qid)&&!f.ordinary.never_attempted(qid)&&f.ordinary.acknowledgments.is_empty());
 }
 
 fn full_settings(f:&mut F)->Settings{

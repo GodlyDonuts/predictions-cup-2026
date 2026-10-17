@@ -67,18 +67,18 @@ pub enum Operation<'a>{
 /// JSON. These must borrow its ORIGINAL held objects; opening a copy is not a
 /// new source of execution authority. Transport rechecks its actual authority.
 pub struct Boundary<'a>{pub root:&'a Path,pub owner_lock_path:&'a Path,pub owner_lease:&'a ExclusiveLock,pub transport:&'a Transport,pub ordinary:&'a DispatchLog,pub packages:&'a PackageDispatchLog}
-struct Journal {sha256:String,acks:BTreeSet<String>,attempted:BTreeSet<u64>,closed:BTreeSet<u64>,acknowledged:BTreeSet<u64>,aborted:BTreeMap<u64,Value>}
+struct Journal {sha256:String,acks:BTreeSet<String>,attempted:BTreeSet<u64>,closed:BTreeSet<u64>,acknowledged:BTreeSet<u64>,aborted:BTreeMap<u64,Value>,local_final_guard:BTreeMap<u64,Value>}
 /// Stream the original retained chain with bounded rows; compare its actual
 /// head to the held object before and after scanning. Never repairs a tail.
 fn journal(path:&Path,held:&Value,package:bool)->Result<Journal>{
  pin(path,held)?;need(held["bytes"].as_u64().is_some_and(|n|n<=MAX_JOURNAL),"COLLATERAL_JOURNAL_SIZE")?;
  let f=File::open(path)?;let opened=metadata(&f.metadata()?)?;for k in ["schemaVersion","device","inode","bytes"]{need(opened[k]==held[k],"COLLATERAL_DESCRIPTOR_CHANGED")?;}pin(path,&opened)?;let mut r=BufReader::new(f);let(mut seq,mut previous)=(0u64,"0".repeat(64));let mut digest=Sha256::new();let mut size=0u64;
- let mut out=Journal{sha256:String::new(),acks:BTreeSet::new(),attempted:BTreeSet::new(),closed:BTreeSet::new(),acknowledged:BTreeSet::new(),aborted:BTreeMap::new()};
+ let mut out=Journal{sha256:String::new(),acks:BTreeSet::new(),attempted:BTreeSet::new(),closed:BTreeSet::new(),acknowledged:BTreeSet::new(),aborted:BTreeMap::new(),local_final_guard:BTreeMap::new()};
  loop{let mut row=Vec::new();let n=Read::take(&mut r,MAX_RECEIPT+1).read_until(b'\n',&mut row)?;if n==0{break}need(n as u64<=MAX_RECEIPT&&row.last()==Some(&b'\n'),"COLLATERAL_JOURNAL_TAIL_OR_ROW")?;size=size.checked_add(n as u64).ok_or("COLLATERAL_RANGE")?;need(size<=MAX_JOURNAL,"COLLATERAL_JOURNAL_SIZE")?;digest.update(&row);
   let mut v:Value=serde_json::from_slice(&row)?;let claimed=v.as_object_mut().ok_or("COLLATERAL_JOURNAL_ROW")?.remove("hash").ok_or("COLLATERAL_JOURNAL_HASH")?;
   need(v["sequence"]==seq+1&&v["previous"]==previous&&claimed==hash(&v)?,"COLLATERAL_JOURNAL_CHAIN")?;seq+=1;previous=claimed.as_str().ok_or("COLLATERAL_JOURNAL_HASH")?.into();let e=&v["event"];
   if e["kind"]=="ack"{let receipt:Receipt=serde_json::from_value(e["receipt"].clone())?;out.acks.insert(feedback::digest(&receipt)?);}
-  if !package{let q=e["qid"].as_u64().ok_or("COLLATERAL_JOURNAL_QID")?;match e["kind"].as_str(){Some("attempt")=>{out.attempted.insert(q);},Some("ack"|"recovered_ack")=>{out.acknowledged.insert(q);},Some("closed")=>{out.closed.insert(q);},Some("aborted_before_admission")=>{out.aborted.insert(q,e.clone());},_=>{}}}
+  if !package{let q=e["qid"].as_u64().ok_or("COLLATERAL_JOURNAL_QID")?;match e["kind"].as_str(){Some("attempt")=>{out.attempted.insert(q);},Some("ack"|"recovered_ack")=>{out.acknowledged.insert(q);},Some("closed")=>{out.closed.insert(q);},Some("aborted_before_admission")=>{out.aborted.insert(q,e.clone());},Some("local_final_guard_no_http")=>{out.local_final_guard.insert(q,e.clone());},_=>{}}}
  }
  need(seq==held["sequence"].as_u64().ok_or("COLLATERAL_JOURNAL_HEAD")?&&held["previous"]==previous&&held["bytes"]==size,"COLLATERAL_JOURNAL_HEAD")?;
  pin(path,held)?;out.sha256=format!("{:x}",digest.finalize());Ok(out)
@@ -96,9 +96,9 @@ fn capture_checked(bank:&Session,b:&Boundary<'_>,at:i64,allow_proved:bool)->Resu
  let o=journal(&root.join("dispatch.ndjson"),&ordinary,false)?;let p=journal(&root.join("package-dispatch/package-dispatch.ndjson"),&packages,true)?;
  b.ordinary.require_resolved_attempts()?;need(o.attempted==b.ordinary.attempted&&o.acknowledged==b.ordinary.acknowledgments.keys().copied().collect()&&o.closed==b.ordinary.closed,"COLLATERAL_DISPATCH_PROJECTION")?;
  let mut allocation_aborted=BTreeSet::new();
- if allow_proved{need(o.aborted==*b.ordinary.aborted_records(),"CAPITAL_ABORT_PROJECTION")?;for q in o.attempted.difference(&o.closed){
+ if allow_proved{need(o.aborted==*b.ordinary.aborted_records(),"CAPITAL_ABORT_PROJECTION")?;need(o.local_final_guard==*b.ordinary.local_final_guard_records(),"CAPITAL_LOCAL_GUARD_PROJECTION")?;for q in o.attempted.difference(&o.closed){
   let original=bank.engine().order_records().into_iter().find(|r|r["id"]==*q).ok_or("CAPITAL_ABORT_NATIVE_QUOTE")?;
-  need(b.ordinary.proved_no_network(*q)&&o.aborted.contains_key(q)&&original["retired"]==true&&!b.ordinary.acknowledgments.contains_key(q)&&!bank.engine().live_order_bindings().contains_key(q)&&!bank.engine().fills().iter().any(|f|f["orderId"]==*q),"CAPITAL_UNVERIFIED_ABORT")?;allocation_aborted.insert(*q);
+  need(b.ordinary.proved_no_network(*q)&&(o.aborted.contains_key(q)||o.local_final_guard.contains_key(q))&&original["retired"]==true&&original["filled"]==0&&!b.ordinary.acknowledgments.contains_key(q)&&!bank.engine().live_order_bindings().contains_key(q)&&!bank.engine().fills().iter().any(|f|f["orderId"]==*q),"CAPITAL_UNVERIFIED_ABORT")?;allocation_aborted.insert(*q);
  }}
  need(o.attempted.iter().all(|q|o.closed.contains(q)||allocation_aborted.contains(q))&&!b.packages.unresolved()&&!bank.engine().package_blocks_new_submissions(),"COLLATERAL_UNRESOLVED_EXECUTION")?;
  let pending:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).map(|q|q["id"].as_u64().ok_or("COLLATERAL_QUOTE_ID")).collect::<std::result::Result<_,_>>()?;
