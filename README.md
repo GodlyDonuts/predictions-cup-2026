@@ -1,7 +1,8 @@
 # Moloch — official production bot
 
 Latest research handoff: [October17 current state, Paper7 gaps and next strategy work](docs/MOLOCH_RESEARCH_HANDOFF_20261017.md).
-Updated 2026-10-17 03:59:35 UTC: 338 official fill rows, 79,347.690 SUSQies owned cost and 16,092.385 cash. Release a557c779 / 7d44e839, worker 607949, is verified trading at 03:57:59 UTC with healthy realtime. No new post-upgrade fill or measured performance gain is claimed.
+Updated 2026-10-17 04:02:31 UTC: **347 official fill rows, 85,801.675 SUSQies owned cost and 9,638.400 cash**. Release a557c779 / 7d44e839, worker 607949, is verified trading at 04:01:26 UTC; two post-upgrade buys added 7,438 shares / 6,453.985 principal.
+[Earlier 338-fill FIFO attribution](research/moloch-realized-attribution-20261017/README.md): ordinary −184.97 realized, reviewed fundamental 0 realized with 57,011.775 held principal, inherited +45.13 realized; combined −139.84. Owned cost now uses about 89.90% of cash plus owned cost and is not profit.
 It separates actual production/fills, disabled strategies and missing economics.
 Infrastructure work is deferred unless essential.
 

@@ -1,3 +1,32 @@
+# October 17, 04:01 UTC — actual post-upgrade buys; about 89.90% at cost basis
+
+Sole 607949 is verified trading/realtimeHealthy/noSTOP at 04:01:26 UTC. Since
+R19 it filled two reviewed fundamental BUY orders: 865 YES 7,437 shares and
+872 YES one share, 6,453.985 total principal /nine official rows. Ledger now
+347 fills/cash 9,638.400/owned cost 85,801.675/combined realized −139.840.
+Owned cost/(cash+owned cost) is 89.90%; holdings are not realized profit.
+All original bridge/model bytes and eleven policies remain unchanged.
+[Actual new-process fill proof](../research/moloch-throughput-capital-20261017/entry-strategy-fill-proof/live-verification.json).
+
+Causal speed/profit improvement remains unproved. The earlier 338-fill FIFO
+audit below isolates ordinary realized losses; it is not a 347-fill re-audit.
+Current strategy gaps and research priorities: [handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md).
+Infrastructure work remains deferred unless essential.
+
+# October 17, 04:00 UTC — exact realized attribution for research
+
+Independent FIFO reconstruction of all 338 actual fill rows matches native cash,
+positions, cost and realized accounting. All −184.97 new-trading realized loss
+comes from ordinary entries. Reviewed fundamental positions have 0 realized and
+57,011.775 held principal; inherited lots have +45.13 realized and 22,335.915 held.
+Maximum-age ordinary SELL closes lost 216.415; actual opposite-BUY netting gained
+31.445. These are realized mechanisms, not a forward profit forecast.
+[Actual finite audit and source pins](../research/moloch-realized-attribution-20261017/README.md).
+
+Production 607949 is verified trading at 03:57:59 UTC. No post-upgrade fill or
+latency/profit improvement was yet verified. Strategy economics remain the
+priority; infrastructure work is deferred unless essential.
+
 # October 17, 03:57 UTC — sizing/preparation release verified trading
 
 Sole worker **607949**, source **a557c779**, binary **7d44e839**, native **7a74f8c3**,

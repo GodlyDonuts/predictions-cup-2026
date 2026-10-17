@@ -1,3 +1,18 @@
+# October 17, 04:01 UTC — actual post-upgrade buys; about 89.90% at cost basis
+
+Sole 607949 is verified trading/realtimeHealthy/noSTOP at 04:01:26 UTC. Since
+R19 it filled two reviewed fundamental BUY orders: 865 YES 7,437 shares and
+872 YES one share, 6,453.985 total principal /nine official rows. Ledger now
+347 fills/cash 9,638.400/owned cost 85,801.675/combined realized −139.840.
+Owned cost/(cash+owned cost) is 89.90%; holdings are not realized profit.
+All original bridge/model bytes and eleven policies remain unchanged.
+[Actual new-process fill proof](entry-strategy-fill-proof/live-verification.json).
+
+Causal speed/profit improvement remains unproved. The earlier 338-fill FIFO
+audit below isolates ordinary realized losses; it is not a 347-fill re-audit.
+Current strategy gaps and research priorities: [handoff](../../docs/MOLOCH_RESEARCH_HANDOFF_20261017.md).
+Infrastructure work remains deferred unless essential.
+
 # October 17, 03:57 UTC — sizing/preparation release verified trading
 
 Sole worker **607949**, source **a557c779**, binary **7d44e839**, native **7a74f8c3**,

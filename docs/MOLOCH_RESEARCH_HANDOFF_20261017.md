@@ -1,37 +1,53 @@
 # Moloch: current research handoff
 
-**Updated 2026-10-17 03:59:35 UTC; financial audit boundary 396960 / 338 fills; live verification 03:57:59 UTC.** This is the current baseline. Older dated reports are history. No paper is declared fully implemented.
+**Updated 2026-10-17 04:02:31 UTC; live financial proof 04:01:26 UTC / 347 fills; independent FIFO audit boundary 396960 / 338 fills.** This is the current baseline. Older dated reports are history. No paper is declared fully implemented.
 
 ## Production and actual capital
 
-Installed source **a557c779**, binary **7d44e839**, native **7a74f8c3**. Sole worker **607949** is **verified trading at 03:57:59 UTC**, with fresh progress from that process, healthy realtime and no active STOP. All 14 financial bridge bytes, four original model records and eleven policies recovered unchanged. [Actual live verification](../research/moloch-throughput-capital-20261017/entry-strategy-live-proof/live-verification.json). The original [03:43:30 installation receipt](../research/moloch-throughput-capital-20261017/entry-strategy-deployment/production-rollout-summary.json) correctly records its earlier restoring state. The latest proof has 338 actual fill rows and zero new post-upgrade fills; it does not establish the fixes' performance or profit benefit.
+Installed source **a557c779**, binary **7d44e839**, native **7a74f8c3**. Sole worker **607949** is **verified trading at 04:01:26 UTC**, with fresh progress from that process, healthy realtime and no active STOP. All 14 financial bridge bytes, four original model records and eleven policies recovered unchanged. [Actual live/fill verification](../research/moloch-throughput-capital-20261017/entry-strategy-fill-proof/live-verification.json). After the upgrade it filled **two reviewed fundamental BUY orders / 7,438 shares / 6,453.985 principal / nine official rows**: 865 YES 7,437 shares and 872 YES one share. These establish actual resumed trading and capital use, not a causal latency improvement or profit from the fixes. The [03:43:30 installation receipt](../research/moloch-throughput-capital-20261017/entry-strategy-deployment/production-rollout-summary.json) and [03:57:59 first-trading proof](../research/moloch-throughput-capital-20261017/entry-strategy-live-proof/live-verification.json) retain their original earlier statuses.
 
-This release fixes active bounded quantity under-sizing at the final marginal ask, removes unconditional waiting before actual native preview, and reconstructs expensive hint proofs only for the selected target. 836 checks and optimized ARM64 release pass; reuse of unchanged compiled checks is explicit. Production latency improvement, additional fills and profit from these fixes remain unproved. No native/SDK/cadence/source-clock/probability/risk/activation change was made.
+This release fixes active bounded quantity under-sizing at the final marginal ask, removes unconditional waiting before actual native preview, and reconstructs expensive hint proofs only for the selected target. 836 checks and optimized ARM64 release pass; reuse of unchanged compiled checks is explicit. Production latency improvement and profit attributable to these fixes remain unproved; additional fills are verified above. No native/SDK/cadence/source-clock/probability/risk/activation change was made.
 
 An earlier disk-full interruption was recovered before this upgrade. Essential retention preserved the original histories in verified compressed archives; current queue generations and recovery proofs were excluded. About 8.2 GiB was free at 03:55 UTC. This is a dated capacity observation, not an uptime guarantee. [Recovery evidence](../research/moloch-throughput-capital-20261017/current-research-proof/same-release-recovery-review.json) and [preservation receipt](../research/moloch-throughput-capital-20261017/entry-strategy-proof/superseded-queue-preservation-summary.json). Infrastructure work remains deferred unless required to keep existing production operating.
 
-|Financial observation |338 fills; audit sequence 396960, live sequence 397271 |
+|Financial observation |Live sequence 397790 / 04:01:26 UTC |
 | --- | ---: |
 |Total authorized allocation |95,579.915 SUSQies |
-|Cash |16,092.385 |
-|Owned position cost |79,347.690 |
+|Cash |9,638.400 |
+|Owned position cost |85,801.675 |
 |Combined attributed realized P&L |−139.840 |
 |New-trading realized / inherited gross |−184.970 /45.130 |
-|Official ledger fill rows |338 |
-|Filled BUY orders since cache release |14 |
-|Shares / principal in those fourteen buys |39,152 /32,685.115 |
-|Owned cost / (cash + owned cost) |83.14% |
-|Native modeled reserved cash, separate from owned cost |3,741.075 |
+|Official ledger fill rows |347 |
+|Filled BUY orders since sizing/preparation release |2 |
+|Shares / principal in those two buys |7,438 /6,453.985 |
+|Owned cost / (cash + owned cost) |89.90% |
+|Native modeled reserved cash, separate from owned cost |8913.260000 |
 
 The allocation ratio uses cost basis. It is not liquidation value, gross exposure, reserved-capital usage or return. Open acquisitions are not realized profit. Dashboard daily P&L, whole-account liquidation P&L and current leaderboard rank remain unverified here. Fill rows, logical orders and shares are different volume measures.
 
-At the earlier03:19 observation, seven of the later fourteen BUY orders since the cache release were977 NO8,430;851 NO9,909;885 YES3,856;977 NO148;851 NO648;977 NO3;1051 NO10,000. The proof records each principal, official-row count and receipt hash. At the stopped boundary there are55 new rows since cache release:49 BUY rows in14 orders (39,152shares/32,685.115principal), and6 SELL rows in3orders (1,082shares/715.920proceeds). [Exact aggregation](../research/moloch-throughput-capital-20261017/entry-strategy-deployment/capital-aggregation.json). These buys establish additional capital deployment; they do not isolate a causal latency gain from the cache.
+At the earlier03:19 observation, seven of the later fourteen BUY orders since the cache release were977 NO8,430;851 NO9,909;885 YES3,856;977 NO148;851 NO648;977 NO3;1051 NO10,000. The proof records each principal, official-row count and receipt hash. At the historical stopped boundary there were 55 new rows since cache release:49 BUY rows in14 orders (39,152shares/32,685.115principal), and6 SELL rows in3orders (1,082shares/715.920proceeds). [Exact aggregation](../research/moloch-throughput-capital-20261017/entry-strategy-deployment/capital-aggregation.json). These buys establish additional capital deployment; they do not isolate a causal latency gain from the cache.
 
 [Current installed release](../research/moloch-throughput-capital-20261017/entry-strategy-deployment/production-rollout-summary.json), [836-check source/build evidence](../research/moloch-throughput-capital-20261017/entry-strategy-proof/strategy-check-summary.json), and [earlier fills/generations](../research/moloch-throughput-capital-20261017/native-upgrade-live-proof/live-capital-verification.json). Passing checks establish implementation behavior, not trading alpha. The repository's `data/portfolio/latest.json` is an October 3 historical snapshot; it is not the financial source for this report.
 
+## Where actual realized losses came from
+
+The earlier [finite FIFO audit](../research/moloch-realized-attribution-20261017/README.md) reconstructs the sealed 338-fill report at sequence 396960 and matches every endpoint position, lot, cash flow, fee and realized total. Root independently regenerated its exact derived summary and ran six checks plus wrong-source rejection. This is accounting reconstruction, not independent receipt authentication or a full native journal replay.
+
+|Original entry class |Realized gross |Still-held principal |
+| --- | ---: | ---: |
+|Ordinary |−184.970 |0.000 |
+|Reviewed fundamental |0.000 |57,011.775 |
+|Inherited lots |+45.130 |22,335.915 |
+
+Fees are zero in this source. Ordinary maximum-age SELL closes account for −216.415, offset by +31.445 from actual opposite-BUY netting. All filled inventory from 41 ordinary BUY groups is closed: 22 losing, 4 winning and 15 flat. That statement does not certify outstanding unfilled order quantities. The reviewed fundamental book has not realized a gain; its terminal outcomes remain open.
+
+Actual maximum-age SELL matches have quantity-weighted execution holding age 816.206 seconds. The 60-second policy is not a 60-second execution guarantee; this audit does not identify the causal share of discovery, source freshness, scheduling or pricing. One 579-share netting match has an inverted execution-clock label and is excluded from holding-age measurement, while its accounting remains intact. Native commit order is preserved throughout.
+
+The 95,579.915 allocation is original 40,000 capital plus a separately dated 55,579.915 owner contribution. Contributions and open principal are not profit. The immediate research priority is improving the ordinary entry/exit economics that produced these losses, alongside qualification of fundamental value and acquisition-mode choice.
+
 ## Actual entry strategy and allocation
 
-Current recovered generation **b27c4699** has eleven reviewed fundamental policies. Exact settings and all four original model records are verified unchanged in worker 607949. Repeat purchases and capital deployment preceded this release; no additional fill from the new worker is claimed at the latest proof.
+Current recovered generation **b27c4699** has eleven reviewed fundamental policies. Exact settings and all four original model records are verified unchanged in worker 607949. Repeat purchases and capital deployment were verified before this release; two further reviewed BUY orders filled afterward at the latest proof.
 
 - V1:1042 YES/max400 principal;1068 YES/max10,000. Original V1 history/deadlines remain distinct.
 - V2 terminal:966 YES,977 NO,1067 YES,865 YES,993 YES,885 YES,1051 NO and851 NO each max10,000 principal;872 YES max3,000.
@@ -46,7 +62,7 @@ Earliest current review expiry:977 at**October17 12:37:03UTC**; others expire la
 
 The optional empirically qualified maker gate is absent/OFF; **ordinary paired-spread entries remain enabled**. Installed executionModel is null and ordinarySideEdge=enforce. Native spread/flow/depth/funding checks and a fresh microprice proxy edge of.001 permit entries; this is not a calibrated filled-value or profitable maker model. Native quantity starts at10,000 and clips to depth, paired funding, cash and exposure room.
 
-Unmanaged ordinary inventory normally seeks.005/share gain, but its60-second maximum-age policy may override that floor and exit at current executable bids. Fundamental V2 terminal cohorts use their distinct reviewed holding objective. Actual ordinary1033 NO60 cost39.90 and later proceeds39.90: realized0, despite a sell limit allowing a loss. This single trade does not explain the earlier−181.36 aggregate. Original entry depth/room and fill execution/observation clocks are required to explain exact sizing/age latency; quote-to-quote time alone cannot. [Ordinary guard](../moloch/live-runtime/src/ordinary_side_edge.rs), [worker](../moloch/live-runtime/src/worker.rs), [native strategy](../moloch/native/src/engine.rs).
+Unmanaged ordinary inventory normally seeks.005/share gain, but its60-second maximum-age policy may override that floor and exit at current executable bids. Fundamental V2 terminal cohorts use their distinct reviewed holding objective. Actual ordinary1033 NO60 cost39.90 and later proceeds39.90: realized0, despite a sell limit allowing a loss. This flat trade does not explain the aggregate loss; the FIFO audit above attributes the complete −184.97 new-trading result. Original entry depth/room and fill execution/observation clocks are required to explain exact sizing/age latency; quote-to-quote time alone cannot. [Ordinary guard](../moloch/live-runtime/src/ordinary_side_edge.rs), [worker](../moloch/live-runtime/src/worker.rs), [native strategy](../moloch/native/src/engine.rs).
 
 ## Exchange capabilities and activation
 
@@ -87,7 +103,7 @@ The cache did not eliminate every entry expiry. Actual993 diagnostics at02:58:59
 
 A second active defect was found in bounded sizing: quantity was clipped at the reviewed ceiling, then the actual limit was lowered without re-expanding quantity. With budget2.16, ceiling.44 and asks2@.42+3@.43, five shares are fully fundable at final limit.43/reserve2.15; old sizing selected four. This is a genuine Session regression fixture, not an observed missed live fill.
 
-Installed strategy release **a557c779** combines immediate native preview/one bounded genuine-budget wait, target-only expensive hint reconstruction and maximum fully limit-funded quantity across actual ask prefixes. Equal quantities retain the lower limit. All existing value ceilings, cash/market/depth/FIFO/top-up/native constraints remain; join/improve behavior is unchanged. Twelve added regressions cover the affected paths, including genuine seven receipts and native reservation. **836 ARM64 checks and the optimized release/engine probe pass**; unchanged compiled-library/worker/SDK/native checks are explicitly reused. All262 built source files match published Git bytes exactly or by CRLF normalization. Binary 7d44e839 is now **verified trading as 607949**; additional fills and economic benefit from this worker remain unproved. [Actual checks, retained failed fixture and reuse/source evidence](../research/moloch-throughput-capital-20261017/entry-strategy-proof/strategy-check-summary.json). The initial native-reservation fixture failed the unchanged write-gap rule; the corrected fixture first proves denial, then rebuilds after the real gap using the same original receipts. Original failure logs and the earlier interrupted build are retained. No native/SDK/pacing/source-clock/probability/risk changes are included.
+Installed strategy release **a557c779** combines immediate native preview/one bounded genuine-budget wait, target-only expensive hint reconstruction and maximum fully limit-funded quantity across actual ask prefixes. Equal quantities retain the lower limit. All existing value ceilings, cash/market/depth/FIFO/top-up/native constraints remain; join/improve behavior is unchanged. Twelve added regressions cover the affected paths, including genuine seven receipts and native reservation. **836 ARM64 checks and the optimized release/engine probe pass**; unchanged compiled-library/worker/SDK/native checks are explicitly reused. All262 built source files match published Git bytes exactly or by CRLF normalization. Binary 7d44e839 is **verified trading as 607949**, with two additional filled BUY orders; economic and latency benefit attributable to these fixes remains unproved. [Actual checks, retained failed fixture and reuse/source evidence](../research/moloch-throughput-capital-20261017/entry-strategy-proof/strategy-check-summary.json). The initial native-reservation fixture failed the unchanged write-gap rule; the corrected fixture first proves denial, then rebuilds after the real gap using the same original receipts. Original failure logs and the earlier interrupted build are retained. No native/SDK/pacing/source-clock/probability/risk changes are included.
 
 The [actual acquisition audit](../research/moloch-acquisition-audit-20261017/README.md) independently reproduces its exact derived summary from a pinned private four-order snapshot. Selected orders took13.494–16.365s from native quote creation to physical attempt; attempt-to-first-execution0.492–1.220s, full execution up to6.589s. First executions reached their original REST receipts8.409–8.918s later. These clocks are distinct; neither reservation time nor observation delay is venue fill latency. All four use boundedLimitMayRest and still hold22,343 shares costing19,428.305;85.300 improvement versus frozen limits is not profit. The incomplete selected sample cannot estimate fill probability or compare modes. No raw account receipts are published.
 
@@ -95,8 +111,9 @@ The [actual acquisition audit](../research/moloch-acquisition-audit-20261017/REA
 
 The human directs infrastructure work to stop unless essential. Production trading is verified; prioritize the strategy work below:
 
-1. Compare source-bound join/improve/bounded acquisition outcomes: actual quantity, zero/partial/full fills, timing, pending censoring and reserved/owned capital time. Anonymous prints do not prove hypothetical passive fills; unknown counterfactuals stay unknown.
-2. Fit/qualify acquisition probability and conditional value separately from terminal forecasts. Use executable marginal gain, capital time, failures and existing inventory to improve mode choice/allocation.
-3. Close posterior/whole-account gaps. New research should supply causal clocks, exact contract/settlement semantics, training/holdout chronology, uncertainty, executable depth and a concrete integration point.
+1. Improve ordinary entry and exit economics against the actual −184.97 realized result. Separate expected exit value, maximum-age losses, execution delay, spread crossing and capital recycling; do not treat turnover alone as an edge.
+2. Compare source-bound join/improve/bounded acquisition outcomes: actual quantity, zero/partial/full fills, timing, pending censoring and reserved/owned capital time. Anonymous prints do not prove hypothetical passive fills; unknown counterfactuals stay unknown.
+3. Fit/qualify acquisition probability and conditional value separately from terminal forecasts. Use executable marginal gain, capital time, failures and existing inventory to improve mode choice/allocation.
+4. Close posterior/whole-account gaps. New research should supply causal clocks, exact contract/settlement semantics, training/holdout chronology, uncertainty, executable depth and a concrete integration point.
 
 Research agents should start from this handoff and the eight-row traceability table, not historical completion headlines. No paper is declared fully implemented and no winning strategy or reconciled whole-account profitability is established.

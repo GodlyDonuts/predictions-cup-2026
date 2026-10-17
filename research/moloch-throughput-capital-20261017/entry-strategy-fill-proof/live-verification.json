@@ -1,0 +1,95 @@
+{
+  "observedAt": "2026-10-17T04:01:26.616369+00:00",
+  "actualWorkerPid": 607949,
+  "sourceCommit": "a557c7793077faae1b3a0703d9690998625f7644",
+  "binarySha256": "7d44e8392abc47d80151cc3215faf0e71ec9f12d0299a0d3a5a6c1dd20b35ee7",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "actualRelease": "/home/archon/apps/moloch/releases/throughput-capital-7d44e8392abc/moloch-live-runtime",
+  "freshTradingVerified": true,
+  "realtimeHealthy": true,
+  "activeStopExists": false,
+  "originalLedgerRestoredByWorker": true,
+  "stoppedFinancialSequence": 396960,
+  "previousWorkerPid": 601007,
+  "settingsOrActivationRenewed": false,
+  "financialBridgeEntries": 14,
+  "all14BridgeBytesUnchanged": true,
+  "originalFourModelGenerationsRecoveredUnchanged": true,
+  "originalGenerations": [
+    {
+      "rowRawSha256": "53eb96c069f03fcf584ac5467e9b88c6fc62fc293a8cb38f04a06e7a0f43e1fe",
+      "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68"
+    },
+    {
+      "rowRawSha256": "c2b33f6b868e7699e90eab069704830328bdd34a47ce57c96d5d838e7caaab82",
+      "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1"
+    },
+    {
+      "rowRawSha256": "16c02f0c0f6985945499974014b78283e747a0431a266a579f31c1a107941026",
+      "generationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31"
+    },
+    {
+      "rowRawSha256": "04c3c402f2901713c13a3259ca2301d578d69090a5a4e4bba5f2ab3fe4b4364d",
+      "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17"
+    }
+  ],
+  "activeGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "managedReviewCount": 11,
+  "baseControlSha256": "de32bc2d0f5cbf99a15a9dae599d5a4ec39de31498414704124859ab6bb4239f",
+  "progress": {
+    "actualFills": 346,
+    "actualOrders": 1456,
+    "at": "2026-10-17T04:01:12.676Z",
+    "completedReadScopes": 8,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 607949,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 40,
+    "terminalOrders": 1454
+  },
+  "financialReportSha256": "aef7bf479309f2165cabe4362cde8e0dd084857ffba52a75819534c3341b11a3",
+  "financialSequence": 397790,
+  "officialFillRows": 347,
+  "cash": "9638.400000",
+  "ownedCost": "85801.675000",
+  "combinedAttributedRealized": "-139.840000",
+  "newTradingRealized": "-184.970000",
+  "inheritedRealizedGross": "45.130000",
+  "newOfficialRowsSinceEntryStrategyUpgrade": 9,
+  "newFillGroupsSinceEntryStrategyUpgrade": [
+    {
+      "qid": 12333,
+      "exchangeId": "865",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 7437,
+      "principal": "6453.525000",
+      "officialRows": 8,
+      "receiptSha256": [
+        "acce0cc5418843873aede8e8ef3d24dff9bdc1e5802198417d1b97349b305e09"
+      ],
+      "entryClass": "reviewed_fundamental"
+    },
+    {
+      "qid": 12346,
+      "exchangeId": "872",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 1,
+      "principal": "0.460000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "82a1868e74e302271d3c7200333597df8bcc724f37d18d14766eb6d4487689f8"
+      ],
+      "entryClass": "reviewed_fundamental"
+    }
+  ],
+  "nativeModeledReservedCash": "8913.260000",
+  "costBasisAllocationPercent": "89.90109762591867200439647601",
+  "entryStrategyProductionLatencyImprovementVerified": false,
+  "profitabilityEstablished": false,
+  "wholeAccountOrRankPnlVerified": false,
+  "noNewAccountClientOrCadenceMode": true
+}

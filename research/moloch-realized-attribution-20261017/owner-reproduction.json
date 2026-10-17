@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-17 04:00:49 UTC",
+  "childCommit": "e4e57ed5074a26b5fa551ab8a122aff7f9d15e01",
+  "summarySha256": "9c94f824d01fed009b9b323f75eb63c37b73dd6f55951d50e8651c489f13adaa",
+  "analyzerSha256": "130582056d6ef922db3d033583ec8153560982e7c1ada776d7dc2452c47489c5",
+  "privateSourceSha256": "0e3d3f84f2557ee63ab426ec556cb3934edae81a39e543efda7aca996f33d491",
+  "privateSourceManifestSha256": "e56f8a5cbed0baf49510553cd658b452ca116e857674be7090b52caf2f751d7c",
+  "exactByteRegenerationFromPinnedSource": true,
+  "meaningfulTestsPassed": 6,
+  "wrongSourcePinRejectedWithoutOutput": true,
+  "privateRawAccountPayloadPublished": false,
+  "independentReceiptAuthentication": false,
+  "fullNativeBankChainReplay": false,
+  "productionChangedByAudit": false
+}
