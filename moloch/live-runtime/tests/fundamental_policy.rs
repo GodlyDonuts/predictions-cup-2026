@@ -159,10 +159,13 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
             Self::setup(true,"cup")
         }
         fn setup(install:bool,tournament:&str)->Self{
+            Self::setup_quantity(install,tournament,2)
+        }
+        fn setup_quantity(install:bool,tournament:&str,quantity:u64)->Self{
             static NEXT:std::sync::atomic::AtomicU64=std::sync::atomic::AtomicU64::new(0);
             let root=std::env::temp_dir().join(format!("fundamental-fixture-{}-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos(),NEXT.fetch_add(1,std::sync::atomic::Ordering::Relaxed)));
             std::fs::create_dir(&root).unwrap();let owner=Arc::new(ExclusiveLock::acquire(&root.join("owner.lock")).unwrap());
-            let policy=json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumMarkets":3,"quantity":2,"minimumSpreadTicks":2,"entryStopAt":iso(NOW+3600000),"inventoryExitMode":"fixedGain","maximumInventoryAgeMs":60000,"inventoryMinimumGain":"0.005000","inventoryAgeClock":"execution"});
+            let policy=json!({"initialCash":"1000.000000","maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumMarkets":3,"quantity":quantity,"minimumSpreadTicks":2,"entryStopAt":iso(NOW+3600000),"inventoryExitMode":"fixedGain","maximumInventoryAgeMs":60000,"inventoryMinimumGain":"0.005000","inventoryAgeClock":"execution"});
             let seed=json!({"runId":"fundamental-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(NOW-10000)});
             let bank=Session::open_live(&root.join("bank"),&policy,&seed).unwrap();let log=dispatch::DispatchLog::open(&root.join("dispatch.ndjson")).unwrap();
             let mut review=horizon_input(bank.manifest_hash().as_str().unwrap(),NOW);review.tournament_id=tournament.into();set_deadline_cash(&mut review,"0.940500");let scope=Scope{tournament_id:tournament.into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"201".into())].into()};
@@ -341,8 +344,11 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
     }
 
     fn entry_fixture()->(F,baal_transport_service::Transport,moloch_live_runtime::authority::SnapshotSet){
+        entry_fixture_quantity(2)
+    }
+    fn entry_fixture_quantity(quantity:u64)->(F,baal_transport_service::Transport,moloch_live_runtime::authority::SnapshotSet){
         use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport,Receipt};
-        let mut f=F::setup(true,"11111111-1111-1111-1111-111111111111");let tid=f.scope.tournament_id.clone();
+        let mut f=F::setup_quantity(true,"11111111-1111-1111-1111-111111111111",quantity);let tid=f.scope.tournament_id.clone();
         let receipt=|i:u64,endpoint:String,data:Value|Receipt{endpoint,status:200,request_started_at:iso(NOW+10+i*2),received_at:iso(NOW+11+i*2),data};
         let facts=moloch_live_runtime::authority::SnapshotSet{
             account:receipt(0,format!("/tournaments/{}",f.scope.tournament_slug),json!({"id":tid,"slug":f.scope.tournament_slug,"status":"active"})),
@@ -357,6 +363,41 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         for (i,e) in events.iter().enumerate(){f.bank.accept("original-preflight-book",i as u64+1,e).unwrap();}
         f.retire_drafts(NOW+24);
         let transport=Transport::new_for_mock(Config{queue_dir:f.root.join("original-account-queue"),account_scope:"synthetic-entry-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false},Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();(f,transport,facts)
+    }
+    // A second independently source-bound review and genuine normalized book,
+    // sharing this exact Session/dispatch/SDK queue. No network is contacted.
+    fn other_entry_packet(f:&mut F,mut facts:moloch_live_runtime::authority::SnapshotSet,at:u64)->(baal_transport_service::Transport,moloch_live_runtime::authority::SnapshotSet){
+        use baal_transport_service::{Config,DisabledCredentials,ReadOnlyAuthority,SystemClock,Transport};
+        let mut r=f.review.clone();r.exchange_id="102".into();r.market_id="202".into();r.contract_id="302".into();r.reviewed_at_ms=at;
+        let mut node:Value=serde_json::from_slice(ORIGINALS[2]).unwrap();node["market_id"]=json!("202");node["root"]["node_id"]=json!("302");node["root"]["contract_id"]=json!("302");
+        let node_bytes=serde_json::to_vec(&node).unwrap();r.official_contract_root_sha256=official_contract_root_sha256(&node).unwrap();r.sources[2].sha256=sha(&node_bytes);set_deadline_cash(&mut r,"0.940500");
+        let mut originals=originals_for(&r);originals[2]=node_bytes;let hashes=originals.iter().map(|b|sha(b)).collect::<Vec<_>>();let sources=originals.iter().enumerate().map(|(i,b)|SourceBytes{sha256:&hashes[i],bytes:b}).collect::<Vec<_>>();f.trust.insert(review_sha256(&r).unwrap());
+        let reviewed=Reviewed::verify(r,&sources,&f.trust,at).unwrap();f.store.as_mut().unwrap().install(reviewed,&f.bank,&f.log,at).unwrap();f.scope.exchanges.insert("102".into(),"202".into());
+        for(i,r)in [&mut facts.account,&mut facts.positions,&mut facts.open_orders,&mut facts.cash_balance,&mut facts.market,&mut facts.contract,&mut facts.book].into_iter().enumerate(){r.request_started_at=iso(at+10+i as u64*2);r.received_at=iso(at+11+i as u64*2);}
+        let tid=&f.scope.tournament_id;facts.market.endpoint=format!("/markets/202?tournamentId={tid}");facts.market.data["id"]=json!("202");facts.contract.endpoint=format!("/markets/202/nodes?tournamentId={tid}");facts.contract.data=node;
+        facts.book.endpoint=format!("/markets/202/orderbook?tournamentId={tid}&depth=20");let raw=&mut facts.book.data["contexts"][0]["orderbook"]["exchanges"][0];raw["exchangeId"]=json!("102");raw["asOf"]=json!({"sequence":1,"at":iso(at+23)});raw["bids"][0]["price"]=json!(0.10);raw["asks"][0]["price"]=json!(0.12);
+        let b=&facts.book;let events=moloch_replay::source::receipt_events(&json!({"source":"official_sig_api_v1","kind":"book","tournamentId":tid,"marketId":"202","exchangeId":"102","endpoint":b.endpoint,"status":b.status,"requestStartedAt":b.request_started_at,"receivedAt":b.received_at,"data":b.data})).unwrap();for(i,e)in events.iter().enumerate(){f.bank.accept("other-original-preflight-book",i as u64+1,e).unwrap();}f.retire_drafts(at+24);
+        let t=Transport::new_for_mock(Config{queue_dir:f.root.join("original-account-queue"),account_scope:"synthetic-entry-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:false},Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();(t,facts)
+    }
+    #[test]fn target_hint_prepare_matches_public_eligibility_without_rebuilding_unselected_top_up(){
+        let(mut f,t,facts,_)=top_up_fixture();drop(t);let(t,facts)=other_entry_packet(&mut f,facts,NOW+8500);let authority=f.authority();let store=f.store.as_ref().unwrap();
+        let hints=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+8525).unwrap();assert_eq!(hints.iter().map(|h|h.exchange_id.as_str()).collect::<Vec<_>>(),vec!["101","102"]);let hint=hints.into_iter().find(|h|h.exchange_id=="102").unwrap();
+        let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+8525).unwrap().unwrap();let expected=plan.event().clone();drop(plan);
+        let old=f.log.acknowledgments.keys().copied().next().unwrap();f.log.acknowledgments.get_mut(&old).unwrap()["endpoint"]=json!("/not-original-orders");
+        assert!(store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+8525).is_err(),"public enumeration still reconstructs every eligible top-up");
+        let head=f.bank.durable_head();let report=f.bank.engine().report().unwrap();let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+8525).unwrap().unwrap();assert_eq!(plan.event(),&expected);plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+8525).unwrap();assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),report);assert!(!f.log.intents.values().any(|i|i["quote"]["exchangeId"]=="102"));
+    }
+    #[test]fn target_hint_prepare_preserves_all_eligible_review_scope_checks(){
+        let(mut f,t,facts)=entry_fixture();drop(t);let(t,facts)=other_entry_packet(&mut f,facts,NOW+30);let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+55).unwrap().into_iter().find(|h|h.exchange_id=="102").unwrap();let mut scope=f.scope.clone();scope.exchanges.remove("101");
+        let error=store.prepare_entry(&f.bank,&f.log,&t,&scope,&hint,&facts,&authority,NOW+55).err().expect("unselected eligible review still requires exact scope");assert_eq!(error.to_string(),"FUNDAMENTAL_ENTRY_SCOPE");
+    }
+    #[test]fn target_hint_prepare_still_blocks_global_unknown_before_target_packet(){
+        let(mut f,t,facts)=entry_fixture();let authority=f.authority();let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);f.log.append(json!({"kind":"intent","qid":9999})).unwrap();f.log.append(json!({"kind":"attempt","qid":9999})).unwrap();let head=f.bank.durable_head();let bytes=std::fs::read(f.root.join("dispatch.ndjson")).unwrap();
+        assert!(f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).is_err());assert_eq!(f.bank.durable_head(),head);assert_eq!(std::fs::read(f.root.join("dispatch.ndjson")).unwrap(),bytes);assert!(f.log.attempted.contains(&9999));assert!(!f.log.closed.contains(&9999));
+    }
+    #[test]fn target_hint_prepare_still_requires_selected_top_up_original_closure(){
+        let(mut f,t,facts,first)=top_up_fixture();let authority=f.authority();let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+8525).unwrap().remove(0);let id=first["id"].as_u64().unwrap();f.log.closed.remove(&id);let head=f.bank.durable_head();let count=f.log.intents.len();
+        assert!(f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+8525).unwrap().is_none());assert_eq!(f.bank.durable_head(),head);assert_eq!(f.log.intents.len(),count);assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),2);
     }
     #[test]fn independent_entry_hint_survives_missing_book_and_no_live_native_quote(){
         let mut f=F::new();f.retire_drafts(NOW);f.event(json!({"type":"gap","exchangeId":"101","receivedAt":iso(NOW+1)}));
@@ -594,11 +635,27 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
     }
     #[test]fn action_comparison_checks_actual_pinned_authority_and_preserves_diagnostic_funding_limits(){
         let(mut f,_,_)=entry_fixture();let mut review=f.review.clone();review.reviewed_at_ms=NOW+24;review.maximum_principal="0.910000".into();review.maximum_quantity=1;f.install(review,NOW+24);let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);
-        let compared=store.compare_entry_actions_with_authority(&f.bank,&f.scope,&hint,&authority,NOW+25).unwrap().unwrap();assert!(compared.candidates.iter().all(|c|c.gross_funding()<=910_000));assert!(compared.deferred.iter().any(|d|d.mode==moloch_live_runtime::alpha_proposal::Mode::BoundedLimitMayRest&&d.reason=="insufficient_fully_funded_capital"));
+        let compared=store.compare_entry_actions_with_authority(&f.bank,&f.scope,&hint,&authority,NOW+25).unwrap().unwrap();assert!(compared.candidates.iter().all(|c|c.gross_funding()<=910_000));let bounded=compared.candidates.iter().find(|c|c.mode()==moloch_live_runtime::alpha_proposal::Mode::BoundedLimitMayRest).unwrap();assert_eq!((bounded.quantity(),bounded.limit_price(),bounded.gross_funding()),(1,900_000,900_000),"fund the actual ask limit even when the unused reviewed ceiling exceeds the budget");
         std::fs::write(f.root.join("review-authority.json"),b"changed pinned review approval").unwrap();assert!(store.compare_entry_actions_with_authority(&f.bank,&f.scope,&hint,&authority,NOW+25).is_err());
     }
     fn reviewed_mode_fixture(modes:Vec<ExecutionMode>)->(F,baal_transport_service::Transport,moloch_live_runtime::authority::SnapshotSet,ReviewAuthority,EntryPlan){
         let(mut f,t,facts)=entry_fixture();let mut r=f.review.clone();r.reviewed_at_ms=NOW+24;r.execution_policy=Some(ExecutionPolicy{version:1,allowed_modes:modes});f.install(r.clone(),NOW+24);f.review=r;let authority=f.authority();let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+25).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+25).unwrap().unwrap();(f,t,facts,authority,plan)
+    }
+    #[test]fn bounded_marginal_sizing_reaches_genuine_seven_receipt_plan_and_native_reservation(){
+        for(budget,quantity,reserved)in [("2.160000",5,2_150_000),("2.100000",4,1_720_000)]{
+            let(mut f,t,mut facts)=entry_fixture_quantity(5);let mut review=f.review.clone();review.reviewed_at_ms=NOW+24;review.maximum_principal=budget.into();review.maximum_quantity=5;review.execution_policy=Some(ExecutionPolicy{version:1,allowed_modes:vec![ExecutionMode::BoundedLimitMayRest]});set_deadline_cash(&mut review,"0.450000");f.install(review.clone(),NOW+24);f.review=review;
+            // Original YES bids .58/.57 are the target NO asks .42/.43.
+            // The independent NO bid has enough genuine liquidation capacity.
+            facts.book.request_started_at=iso(NOW+32);facts.book.received_at=iso(NOW+33);let raw=&mut facts.book.data["contexts"][0]["orderbook"]["exchanges"][0];raw["asOf"]=json!({"sequence":100,"at":iso(NOW+33)});raw["bids"]=json!([{"price":0.58,"quantity":2},{"price":0.57,"quantity":3}]);raw["asks"]=json!([{"price":0.60,"quantity":20}]);
+            let b=&facts.book;let events=moloch_replay::source::receipt_events(&json!({"source":"official_sig_api_v1","kind":"book","tournamentId":f.scope.tournament_id,"marketId":"201","exchangeId":"101","endpoint":b.endpoint,"status":b.status,"requestStartedAt":b.request_started_at,"receivedAt":b.received_at,"data":b.data})).unwrap();for(i,e)in events.iter().enumerate(){f.bank.accept("marginal-original-book",i as u64+1,e).unwrap();}f.retire_drafts(NOW+34);
+            let authority=f.authority();let store=f.store.as_ref().unwrap();let hint=store.entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+35).unwrap().remove(0);let original_facts=serde_json::to_value([&facts.account,&facts.positions,&facts.open_orders,&facts.cash_balance,&facts.market,&facts.contract,&facts.book]).unwrap();let head=f.bank.durable_head();let cash=f.bank.engine().wallet.cash;
+            let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+35).unwrap().unwrap();assert_eq!(plan.event()["executionMode"],"boundedLimitMayRest");assert_eq!(plan.event()["limitPrice"],"0.430000");assert_eq!(plan.event()["acquisitionCeiling"],"0.440000");assert_eq!(plan.event()["reviewMaximumQuantity"],quantity);assert_eq!(plan.event()["reviewMaximumPrincipal"],budget);plan.validate_current(&f.bank,&f.log,&t,&authority,NOW+35).unwrap();assert_eq!(f.bank.durable_head(),head);assert_eq!(serde_json::to_value([&facts.account,&facts.positions,&facts.open_orders,&facts.cash_balance,&facts.market,&facts.contract,&facts.book]).unwrap(),original_facts);
+            // The new source book created an ordinary draft at+33. Its real
+            // planning write still consumes the unchanged native write gap.
+            let before=f.bank.engine().report().unwrap();let mut preview=f.bank.engine().clone();assert_eq!(preview.advance(plan.event()).unwrap_err(),"REVIEWED_ENTRY_WRITE_BUDGET");assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),before);drop(plan);
+            let later=NOW+35+f.bank.engine().policy()["writeGapMs"].as_u64().unwrap();let plan=store.prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,later).unwrap().unwrap();plan.validate_current(&f.bank,&f.log,&t,&authority,later).unwrap();assert_eq!(plan.event()["reviewMaximumQuantity"],quantity);assert_eq!(plan.event()["limitPrice"],"0.430000");assert_eq!(serde_json::to_value([&facts.account,&facts.positions,&facts.open_orders,&facts.cash_balance,&facts.market,&facts.contract,&facts.book]).unwrap(),original_facts);
+            f.bank.accept("marginal-reviewed-reservation",1,plan.event()).unwrap();let q=f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some()).unwrap();assert_eq!(q["quantity"],quantity);assert_eq!(q["price"],"0.430000");assert_eq!(f.bank.engine().wallet.reserved().unwrap(),reserved);assert_eq!(f.bank.engine().wallet.cash,cash);assert!(f.bank.engine().fills().is_empty());assert!(f.log.attempted.is_empty());assert!(f.log.intents.is_empty());
+        }
     }
     #[test]fn separately_reviewed_modes_reserve_real_whole_actions_and_only_bounded_token_can_cross(){
         for(mode,price)in [(ExecutionMode::JoinBid,"0.880000"),(ExecutionMode::ImproveOneTick,"0.885000"),(ExecutionMode::BoundedLimitMayRest,"0.900000")]{let(mut f,_,_,authority,plan)=reviewed_mode_fixture(vec![mode]);assert_eq!(plan.event()["limitPrice"],price);if mode==ExecutionMode::JoinBid{assert!(plan.event().get("executionMode").is_none());}else{assert!(plan.event()["modelSha256"].as_str().is_some_and(|s|s.len()==64));assert_eq!(plan.event()["sourceSha256"],sha(&serde_json::to_vec(&f.review.sources).unwrap()));assert_eq!(plan.event()["acquisitionCeiling"],"0.930000");}
