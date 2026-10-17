@@ -1,0 +1,96 @@
+{
+  "oldQuote": {
+    "action": "sell",
+    "activationAt": 1792224853963,
+    "barrier": {
+      "endAt": 1792224863963,
+      "sequence": "187139656"
+    },
+    "createdAt": 1792224850963,
+    "exchangeId": "948",
+    "executionStyle": "inventoryAON",
+    "expiresAt": 1792224863963,
+    "filled": 0,
+    "id": 14579,
+    "marketId": "259",
+    "participationCredit": 0,
+    "price": "0.900000",
+    "quantity": 1422,
+    "retired": true,
+    "side": "NO"
+  },
+  "rootCliReportedOwnedRefreshCompletedAt": "2026-10-17T08:14:21.052Z",
+  "completionClockAuthenticatedByThisArchive": false,
+  "completionClockLimitation": "Earlier root CLI observation; the original overwritten status file was not retained. The finite capture began at 08:23:53. Quote clocks and absence of an intent/attempt are authenticated; 2911ms is arithmetic using the reported completion, not an independently preserved completion witness.",
+  "originalExpiryHeadroomMsAtThatCompletion": 2911,
+  "physicalPreflightMinimumHeadroomMsExclusive": 5000,
+  "noIntentOrAttemptOrAckForOldQid": true,
+  "coincidentAdmissions": [
+    {
+      "sequence": 445921,
+      "type": "book",
+      "exchangeId": "993",
+      "processedAt": "2026-10-17T08:14:10.963Z",
+      "receivedAt": "2026-10-17T08:14:02.459Z",
+      "sourceAt": "2026-10-17T08:14:01.413519100Z",
+      "sourceRef": {
+        "hash": "d2b4e01b93b5f132339962c2411da398ae6345b3d6b4b593561d8ce6c5c07da0",
+        "id": "moloch-live",
+        "sequence": 445913
+      }
+    },
+    {
+      "sequence": 445922,
+      "type": "book",
+      "exchangeId": "977",
+      "processedAt": "2026-10-17T08:14:10.963Z",
+      "receivedAt": "2026-10-17T08:14:02.459Z",
+      "sourceAt": "2026-10-17T08:14:01.413519100Z",
+      "sourceRef": {
+        "hash": "81a614980982f0308b859723eea40ce1d7fb1841c77ed25014a45048fd7cb7d6",
+        "id": "moloch-live",
+        "sequence": 445914
+      }
+    },
+    {
+      "sequence": 445923,
+      "type": "book",
+      "exchangeId": "979",
+      "processedAt": "2026-10-17T08:14:10.963Z",
+      "receivedAt": "2026-10-17T08:14:02.459Z",
+      "sourceAt": "2026-10-17T08:14:01.413519100Z",
+      "sourceRef": {
+        "hash": "ed9f402f7a64bcc740ceb6e22df71736c95dca7cd0682d44ce22d15a251b0a2f",
+        "id": "moloch-live",
+        "sequence": 445915
+      }
+    },
+    {
+      "sequence": 445924,
+      "type": "book",
+      "exchangeId": "948",
+      "processedAt": "2026-10-17T08:14:10.963Z",
+      "receivedAt": "2026-10-17T08:14:02.459Z",
+      "sourceAt": "2026-10-17T08:14:01.413519100Z",
+      "sourceRef": {
+        "hash": "877310aaf1abf1678ff28a8a702266546bf227f75f703a36afc0455649bbbc9c",
+        "id": "moloch-live",
+        "sequence": 445916
+      }
+    },
+    {
+      "sequence": 445925,
+      "type": "book",
+      "exchangeId": "1041",
+      "processedAt": "2026-10-17T08:14:10.963Z",
+      "receivedAt": "2026-10-17T08:14:02.459Z",
+      "sourceAt": "2026-10-17T08:14:01.413519100Z",
+      "sourceRef": {
+        "hash": "8b9a911b2ead3c0c669402a270da0f9b4bdf2dd59fb4166ce99d4e9b835ee878",
+        "id": "moloch-live",
+        "sequence": 445917
+      }
+    }
+  ],
+  "noCounterfactualFillOrAdditiveOpportunityClaim": true
+}

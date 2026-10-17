@@ -1,3 +1,15 @@
+# October 17, 08:54 UTC - R22 active; another profitable exit verified
+
+Observed October 17, 08:54 UTC: **R22, source 55fc4533, binary 34fbc560, sole PID 636242 is trading with healthy realtime and no active STOP.** Native ledger: 380 fill rows, cash 3,597.585, owned principal 91,867.840, reserved cash 3,596.925 and combined attributed realized P&L -114.490. Holdings plus reservations use almost all recorded capital; owned principal is not profit.
+
+**Another inherited exit realized +7.535:** 1,382 NO shares on exchange 948 sold for 1,244.425 against 1,236.890 FIFO basis, zero recorded fees. Original ACK, complete terminal and all five signed official fill rows were independently matched. New-trading realized remains -184.970; inherited gross realized is +70.480. [Source-bound audit](../research/moloch-profit-exit-timing-20261017/actual-exit/independent-verification.json).
+
+**Next worker source 43b0341a is checked but not deployed.** Its 134 worker checks and unchanged 21 exit-refresh library checks pass; final integration and optimized release qualification continue. It combines the earlier negative-read veto with live Profit read hints and genuine post-final-book native planning. Original quote windows, current profit/ownership checks, physical liabilities, rate limits and model clocks stay intact. [Implementation and limits](../research/moloch-profit-exit-timing-20261017/README.md).
+
+The frozen 08:34 inherited-depth census found only exchange 948 positive among 14 unmanaged inherited sides. The other 13 fail the gain floor; eight also have stale books. This historical diagnostic is not an extra order or additional realized profit. [Census](../research/moloch-profit-exit-timing-20261017/FROZEN_DEPTH_CENSUS.md).
+
+# Earlier dated observations
+
 # October17 - R22 trading, marked-account observation and checked speed candidate
 
 October17,07:56UTC: **official cash2,901.76 + position marks91,633.33 =94,535.09**, about1,044.825 below reconciled native capital95,579.915. All24 official side quantities/cash match native; native realized-122.025,373fillrows/owned principal92,556.130. [Exact source-bound marked observation](../research/moloch-current-marked-account-20261017/README.md) preserves API basis discrepancy-245.03 and unrealized arithmetic difference+.04. This is not daily P&L, executable liquidation or scoreboard rank. Current R22/sole636242 remains trading.

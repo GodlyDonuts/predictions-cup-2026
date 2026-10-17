@@ -1,0 +1,60 @@
+{
+  "allManifestFilesVerified": 57,
+  "archiveSha256": "11167216c88850ff5414f16415f57e00e4924e255dce2174518c1c9f2b40432f",
+  "baselineSequence": 440934,
+  "currentEconomics": {
+    "cash": "3597.585000",
+    "inheritedRealizedGross": "70.480000",
+    "newTradingRealized": "-184.970000",
+    "ownedCost": "91867.840000",
+    "realized": "-114.490000"
+  },
+  "currentSequence": 452287,
+  "evidenceManifestSha256": "7f5a83e317d49abf3b58f4e8fee73a9b6729a7cb767156613cc695074b943bfe",
+  "exitFillRows": 5,
+  "exitNativeQid": 14627,
+  "exitProceeds": "1244.425000",
+  "exitRealizedGain": "7.535000",
+  "exitShares": 1382,
+  "fifoBasisReleased": "1236.890000",
+  "fullOriginalDispatch": {
+    "firstSequence": 1,
+    "genesisIndependentlyChecked": true,
+    "initialPrevious": "0000000000000000000000000000000000000000000000000000000000000000",
+    "lastHash": "27bdac022f5aeb505418bb257948cc187dfe12e8436d2ef6b0a95438403fa25a",
+    "lastSequence": 20883,
+    "rawSha256": "80ddf3f62a0160fe43fcd8ea34ffe04d168d697350c3b5391c054572bafc5829",
+    "rows": 20883
+  },
+  "nativeSuffix": {
+    "firstSequence": 439479,
+    "genesisIndependentlyChecked": false,
+    "initialPrevious": "885e9874470ff4f51bb706ec7f6ef9064072341826198729c25fefe9624fcb2e",
+    "lastHash": "68fb004c24e0bf1b0c7f064591a479d9d213871fd0a74575100b70c1eef5795b",
+    "lastSequence": 452287,
+    "rawSha256": "d5e78b731d4e7986b79e6008726ea712d9e1ef508542488dfd0b96b4477e4206",
+    "rows": 12809
+  },
+  "newFillRows": 7,
+  "otherBuyPrincipal": "548.600000",
+  "otherBuyRows": 2,
+  "pass_": true,
+  "qualifications": {
+    "fullNativePrefixReplayed": false,
+    "noCandidateDeploymentAttribution": true,
+    "noCausalPerformanceClaim": true,
+    "noMissedFillClaim": true,
+    "typedRustReceiptDigestsRecreated": false
+  },
+  "recordedFees": "0.000000",
+  "timing": {
+    "completionClockIndependentOriginalWitnessPresent": false,
+    "completionClockSource": "derived timing-diagnosis.json only in this ZIP",
+    "expiryHeadroomArithmeticMs": 2911,
+    "noOriginalIntentAttemptAck": true,
+    "oldNativeQid": 14579,
+    "physicalPreflightMinimumExclusiveMs": 5000
+  },
+  "unchangedPriorFillRawTokens": 373,
+  "verifierSha256": "9c9524c43350a471d31cf515f55b0deb5f9169bc8e525b3c769780ac34539c44"
+}

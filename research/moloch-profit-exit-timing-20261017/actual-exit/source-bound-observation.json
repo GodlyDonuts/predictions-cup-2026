@@ -1,0 +1,56 @@
+{
+  "observedAt": "2026-10-17T08:37:15.346817+00:00",
+  "executingRelease": "R22",
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "candidateNotDeployed": true,
+  "actualOrderId": "44915493",
+  "nativeQid": 14627,
+  "exchangeId": "948",
+  "marketId": "259",
+  "side": "NO",
+  "action": "sell",
+  "executedAt": "2026-10-17T08:22:16.186Z",
+  "quantity": 1382,
+  "fillRows": 5,
+  "proceeds": "1244.425000",
+  "basisReleased": "1236.890",
+  "recordedFees": "0",
+  "realizedGain": "7.535000",
+  "before": {
+    "fills": 373,
+    "cash": "2901.760000",
+    "ownedCost": "92556.130000",
+    "realized": "-122.025000",
+    "inheritedRealizedGross": "62.945000"
+  },
+  "after": {
+    "fills": 380,
+    "cash": "3597.585000",
+    "ownedCost": "91867.840000",
+    "realized": "-114.490000",
+    "inheritedRealizedGross": "70.480000"
+  },
+  "interveningOtherPurchasePrincipal": "548.600000",
+  "allPrior373FillRowsUnchanged": true,
+  "allFiveOfficialFillRowsMatched": true,
+  "actualAckAndCompleteTerminalMatched": true,
+  "fullOriginalDispatchChainVerified": {
+    "rows": 20883,
+    "lastSequence": 20883,
+    "lastHash": "27bdac022f5aeb505418bb257948cc187dfe12e8436d2ef6b0a95438403fa25a"
+  },
+  "originalNativeSuffixVerified": {
+    "firstSequence": 439479,
+    "lastSequence": 452287,
+    "rows": 12809,
+    "baseline373BoundaryMatched": true,
+    "current380BoundaryMatched": true
+  },
+  "notClaimed": [
+    "new strategy profitability",
+    "whole account current liquidation profit",
+    "candidate production gain",
+    "rank",
+    "missed fills from expired drafts"
+  ]
+}

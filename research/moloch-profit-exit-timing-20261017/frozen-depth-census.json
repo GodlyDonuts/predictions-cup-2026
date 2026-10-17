@@ -1,0 +1,702 @@
+{
+  "kind": "historical_non_additive_inherited_profit_depth_census",
+  "asOfOriginalEngineAt": "2026-10-17T08:34:33.355Z",
+  "nativeSequence": 452287,
+  "nativeFillRows": 380,
+  "sourcePins": {
+    "current.original.json": {
+      "bytes": 4974369,
+      "sha256": "8adc022a94c8716c8670473f8a78a06b7539c03eed09607ace9766cf7881e54f"
+    },
+    "native-through-snapshot.original.jsonl": {
+      "bytes": 50258260,
+      "sha256": "d5e78b731d4e7986b79e6008726ea712d9e1ef508542488dfd0b96b4477e4206"
+    },
+    "dispatch-full-original.jsonl": {
+      "bytes": 10237868,
+      "sha256": "80ddf3f62a0160fe43fcd8ea34ffe04d168d697350c3b5391c054572bafc5829"
+    }
+  },
+  "verifiedNativeSuffix": {
+    "firstSequence": 439479,
+    "lastSequence": 452287,
+    "rows": 12809,
+    "tailMatchedReport": true
+  },
+  "verifiedDispatchRows": 20883,
+  "policyFields": {
+    "feeBps": 0,
+    "feePerShare": "0.000000",
+    "inventoryMinimumGain": "0.005000",
+    "bookAgeMs": 10000,
+    "quantity": 10000,
+    "inventoryExitDepthBps": 5000
+  },
+  "policyProvenance": {
+    "source": "root independently observed pinned actual R22 Control; full normalized policy not in ZIP",
+    "controlRawSha256": "81ddfa2d30bc4385e709dbeea3af0250cb8a808df8c60fe89cb13acfc9595b51",
+    "reportPolicySha256": "7025870102e5e2e3449fc0381cc22558a7731c50a9837eac2c59782e9a96a74d",
+    "fullPolicyHashRecomputed": false
+  },
+  "managedExchangeIds": [
+    "1042",
+    "1051",
+    "1067",
+    "1068",
+    "851",
+    "865",
+    "872",
+    "885",
+    "966",
+    "977",
+    "993"
+  ],
+  "nativePackageSummaryAbsentMeansEmpty": true,
+  "classificationCounts": {
+    "stale_book": 8,
+    "minimum_gain_or_depth_failure": 5,
+    "positive_depth_current_observation": 1
+  },
+  "positiveCandidates": [
+    {
+      "exchangeId": "948",
+      "marketId": "259",
+      "side": "NO",
+      "heldQuantity": 3954,
+      "worstLotPrice": "0.895000",
+      "activeNativeQuoteIds": [
+        14719
+      ],
+      "nativeSellReservations": 69,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "ee1b46faa8e6d0f35aaee67d7f97741df04cf3bcf90db368ee9a3d515e40810d",
+      "bookRowSequence": 452269,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:29.9299526+00:00",
+        "requestStartedAt": "2026-10-17T08:34:29.767Z",
+        "receivedAt": "2026-10-17T08:34:30.050Z"
+      },
+      "bookTransport": "REST",
+      "lastObservedGapSequence": 445780,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "3425.0474000",
+        "requestStartedAt": "3588.000",
+        "receivedAt": "3305.000"
+      },
+      "freshAtFrozenEngineClock": true,
+      "bestOwnBid": "0.900000",
+      "bestMarginalNetOverWorstLot": "0.005000",
+      "profitableCapturedDepth": 110,
+      "depthSliceQuantity": 55,
+      "classification": "positive_depth_current_observation",
+      "edgeTestPassIgnoringFreshness": true,
+      "selectedLevels": [
+        {
+          "quantity": 55,
+          "price": "0.900000"
+        }
+      ],
+      "conservativeLimit": "0.900000",
+      "depthProceedsAtObservedLevels": "49.500000",
+      "principalReleasedFIFO": "49.225000",
+      "markedNetAboveFIFO": "0.275000",
+      "worstLotGainLowerBoundAtLimit": "0.275000",
+      "remainingHeldAfterHypotheticalSale": 3899
+    }
+  ],
+  "allInheritedUnmanagedSides": [
+    {
+      "exchangeId": "1002",
+      "marketId": "313",
+      "side": "NO",
+      "heldQuantity": 78,
+      "worstLotPrice": "0.280000",
+      "activeNativeQuoteIds": [
+        14706
+      ],
+      "nativeSellReservations": 78,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "5d21f4e74eec02fed7c84592be6581891e3a079a68dd78c2f040173ad176eae4",
+      "bookRowSequence": 452104,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:33:57.103907900Z",
+        "requestStartedAt": "2026-10-17T08:33:57.811Z",
+        "receivedAt": "2026-10-17T08:33:57.811Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 445845,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "36251.092100000",
+        "requestStartedAt": "35544.000",
+        "receivedAt": "35544.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.260000",
+      "bestMarginalNetOverWorstLot": "-0.020000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "1004",
+      "marketId": "315",
+      "side": "YES",
+      "heldQuantity": 1000,
+      "worstLotPrice": "0.240000",
+      "activeNativeQuoteIds": [
+        14658
+      ],
+      "nativeSellReservations": 1000,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "486caf4900d1e1e268a1f83d2ff5d0d8b0fbfc3ba738db7a08a3400a7c352a5c",
+      "bookRowSequence": 452099,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:33:57.103907900Z",
+        "requestStartedAt": "2026-10-17T08:33:57.811Z",
+        "receivedAt": "2026-10-17T08:33:57.811Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 445949,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "36251.092100000",
+        "requestStartedAt": "35544.000",
+        "receivedAt": "35544.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.215000",
+      "bestMarginalNetOverWorstLot": "-0.025000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "1048",
+      "marketId": "359",
+      "side": "NO",
+      "heldQuantity": 93,
+      "worstLotPrice": "0.685000",
+      "activeNativeQuoteIds": [
+        14662
+      ],
+      "nativeSellReservations": 93,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "624709dd286b481c0a9fc16d3e99683426600d12b162261d140d2cf0c8008fea",
+      "bookRowSequence": 452283,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:29.987711600Z",
+        "requestStartedAt": "2026-10-17T08:34:30.384Z",
+        "receivedAt": "2026-10-17T08:34:30.384Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 446253,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "3367.288400000",
+        "requestStartedAt": "2971.000",
+        "receivedAt": "2971.000"
+      },
+      "freshAtFrozenEngineClock": true,
+      "bestOwnBid": "0.605000",
+      "bestMarginalNetOverWorstLot": "-0.080000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "minimum_gain_or_depth_failure",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "1058",
+      "marketId": "369",
+      "side": "YES",
+      "heldQuantity": 3455,
+      "worstLotPrice": "0.295000",
+      "activeNativeQuoteIds": [
+        14674
+      ],
+      "nativeSellReservations": 3455,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "9810a61db2b8fe88bcf697c5e5b3e8311f5cd4f3f147c97b171b7b34e7393c71",
+      "bookRowSequence": 452240,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:18.958684300Z",
+        "requestStartedAt": "2026-10-17T08:34:19.134Z",
+        "receivedAt": "2026-10-17T08:34:19.134Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 446596,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "14396.315700000",
+        "requestStartedAt": "14221.000",
+        "receivedAt": "14221.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.260000",
+      "bestMarginalNetOverWorstLot": "-0.035000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "1066",
+      "marketId": "377",
+      "side": "NO",
+      "heldQuantity": 100,
+      "worstLotPrice": "0.310000",
+      "activeNativeQuoteIds": [
+        14680
+      ],
+      "nativeSellReservations": 100,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "53d01f9aa8e17c02204d30192b39f372334e265bcb78b859d61abf2886a02d24",
+      "bookRowSequence": 452259,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:23.989473600Z",
+        "requestStartedAt": "2026-10-17T08:34:24.694Z",
+        "receivedAt": "2026-10-17T08:34:24.694Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 446819,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "9365.526400000",
+        "requestStartedAt": "8661.000",
+        "receivedAt": "8661.000"
+      },
+      "freshAtFrozenEngineClock": true,
+      "bestOwnBid": "0.295000",
+      "bestMarginalNetOverWorstLot": "-0.015000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "minimum_gain_or_depth_failure",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "1071",
+      "marketId": "382",
+      "side": "NO",
+      "heldQuantity": 41,
+      "worstLotPrice": "0.830000",
+      "activeNativeQuoteIds": [
+        14713
+      ],
+      "nativeSellReservations": 41,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "5cd35da535d9c1ff40ae83e55782e9490f1044ea96f99a0a8c33602686c8088c",
+      "bookRowSequence": 452234,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:17.960457400Z",
+        "requestStartedAt": "2026-10-17T08:34:18.854Z",
+        "receivedAt": "2026-10-17T08:34:18.854Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 445692,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "15394.542600000",
+        "requestStartedAt": "14501.000",
+        "receivedAt": "14501.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.825000",
+      "bestMarginalNetOverWorstLot": "-0.005000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "1075",
+      "marketId": "386",
+      "side": "NO",
+      "heldQuantity": 2,
+      "worstLotPrice": "0.895000",
+      "activeNativeQuoteIds": [
+        14712
+      ],
+      "nativeSellReservations": 2,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "d8f9ce7294f0f80567e9461942bfb92afc5ecc08c4bf49b4ba168b1e8991676a",
+      "bookRowSequence": 452149,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:02.965022700Z",
+        "requestStartedAt": "2026-10-17T08:34:03.920Z",
+        "receivedAt": "2026-10-17T08:34:03.920Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 445705,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "30389.977300000",
+        "requestStartedAt": "29435.000",
+        "receivedAt": "29435.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.895000",
+      "bestMarginalNetOverWorstLot": "0.000000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "1076",
+      "marketId": "387",
+      "side": "YES",
+      "heldQuantity": 6161,
+      "worstLotPrice": "0.900000",
+      "activeNativeQuoteIds": [
+        14718
+      ],
+      "nativeSellReservations": 6161,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "0b833f66a564ef2d703cca4bd0fe31edfd1c54d4eb52dad0a74eaf903846bf4a",
+      "bookRowSequence": 452263,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:24.989015800Z",
+        "requestStartedAt": "2026-10-17T08:34:25.182Z",
+        "receivedAt": "2026-10-17T08:34:25.182Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 448235,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "8365.984200000",
+        "requestStartedAt": "8173.000",
+        "receivedAt": "8173.000"
+      },
+      "freshAtFrozenEngineClock": true,
+      "bestOwnBid": "0.880000",
+      "bestMarginalNetOverWorstLot": "-0.020000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "minimum_gain_or_depth_failure",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "900",
+      "marketId": "211",
+      "side": "NO",
+      "heldQuantity": 5,
+      "worstLotPrice": "0.690000",
+      "activeNativeQuoteIds": [
+        14664
+      ],
+      "nativeSellReservations": 5,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "2d369cab4afabbaea338a8def6381eba16f3ee11ba17b728df8ece7d960a58d4",
+      "bookRowSequence": 452248,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:20.957597000Z",
+        "requestStartedAt": "2026-10-17T08:34:21.351Z",
+        "receivedAt": "2026-10-17T08:34:21.351Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 449255,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "12397.403000000",
+        "requestStartedAt": "12004.000",
+        "receivedAt": "12004.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.675000",
+      "bestMarginalNetOverWorstLot": "-0.015000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "938",
+      "marketId": "249",
+      "side": "NO",
+      "heldQuantity": 7,
+      "worstLotPrice": "0.535000",
+      "activeNativeQuoteIds": [
+        14667
+      ],
+      "nativeSellReservations": 7,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "d58e93adb7720c5fa018df59bc9c385539942ecef1b96dfbb938e1726d1115e1",
+      "bookRowSequence": 452264,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:24.989015800Z",
+        "requestStartedAt": "2026-10-17T08:34:25.182Z",
+        "receivedAt": "2026-10-17T08:34:25.182Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 449401,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "8365.984200000",
+        "requestStartedAt": "8173.000",
+        "receivedAt": "8173.000"
+      },
+      "freshAtFrozenEngineClock": true,
+      "bestOwnBid": "0.495000",
+      "bestMarginalNetOverWorstLot": "-0.040000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "minimum_gain_or_depth_failure",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "948",
+      "marketId": "259",
+      "side": "NO",
+      "heldQuantity": 3954,
+      "worstLotPrice": "0.895000",
+      "activeNativeQuoteIds": [
+        14719
+      ],
+      "nativeSellReservations": 69,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "ee1b46faa8e6d0f35aaee67d7f97741df04cf3bcf90db368ee9a3d515e40810d",
+      "bookRowSequence": 452269,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:29.9299526+00:00",
+        "requestStartedAt": "2026-10-17T08:34:29.767Z",
+        "receivedAt": "2026-10-17T08:34:30.050Z"
+      },
+      "bookTransport": "REST",
+      "lastObservedGapSequence": 445780,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "3425.0474000",
+        "requestStartedAt": "3588.000",
+        "receivedAt": "3305.000"
+      },
+      "freshAtFrozenEngineClock": true,
+      "bestOwnBid": "0.900000",
+      "bestMarginalNetOverWorstLot": "0.005000",
+      "profitableCapturedDepth": 110,
+      "depthSliceQuantity": 55,
+      "classification": "positive_depth_current_observation",
+      "edgeTestPassIgnoringFreshness": true,
+      "selectedLevels": [
+        {
+          "quantity": 55,
+          "price": "0.900000"
+        }
+      ],
+      "conservativeLimit": "0.900000",
+      "depthProceedsAtObservedLevels": "49.500000",
+      "principalReleasedFIFO": "49.225000",
+      "markedNetAboveFIFO": "0.275000",
+      "worstLotGainLowerBoundAtLimit": "0.275000",
+      "remainingHeldAfterHypotheticalSale": 3899
+    },
+    {
+      "exchangeId": "967",
+      "marketId": "278",
+      "side": "NO",
+      "heldQuantity": 48,
+      "worstLotPrice": "0.935000",
+      "activeNativeQuoteIds": [
+        14678
+      ],
+      "nativeSellReservations": 48,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "c808d283be5e52fe4df4adde1ac45c189095eb2bf68a2e5810527ad6be36056f",
+      "bookRowSequence": 452227,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:17.960457400Z",
+        "requestStartedAt": "2026-10-17T08:34:18.854Z",
+        "receivedAt": "2026-10-17T08:34:18.854Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 450018,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "15394.542600000",
+        "requestStartedAt": "14501.000",
+        "receivedAt": "14501.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.885000",
+      "bestMarginalNetOverWorstLot": "-0.050000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "979",
+      "marketId": "290",
+      "side": "NO",
+      "heldQuantity": 47,
+      "worstLotPrice": "0.175000",
+      "activeNativeQuoteIds": [
+        14720
+      ],
+      "nativeSellReservations": 47,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "652893043453af3d702716ea81a2b1ae64a80fece2172ab7217241d0b2658a5f",
+      "bookRowSequence": 452255,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:34:23.989473600Z",
+        "requestStartedAt": "2026-10-17T08:34:24.694Z",
+        "receivedAt": "2026-10-17T08:34:24.694Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 445831,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "9365.526400000",
+        "requestStartedAt": "8661.000",
+        "receivedAt": "8661.000"
+      },
+      "freshAtFrozenEngineClock": true,
+      "bestOwnBid": "0.165000",
+      "bestMarginalNetOverWorstLot": "-0.010000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "minimum_gain_or_depth_failure",
+      "edgeTestPassIgnoringFreshness": false
+    },
+    {
+      "exchangeId": "986",
+      "marketId": "297",
+      "side": "NO",
+      "heldQuantity": 16438,
+      "worstLotPrice": "0.115000",
+      "activeNativeQuoteIds": [
+        14693
+      ],
+      "nativeSellReservations": 10000,
+      "nativeOppositeBuyReservations": 0,
+      "activeIntentOrPhysicalQids": [],
+      "nonAdditiveReplacementDiagnostic": true,
+      "bookRowSha256": "e9c697e08fe7b17e934996617f1d070e45710b375678491a44322c9475a084e1",
+      "bookRowSequence": 451977,
+      "bookOriginalClocks": {
+        "sourceAt": "2026-10-17T08:33:37.016970800Z",
+        "requestStartedAt": "2026-10-17T08:33:37.346Z",
+        "receivedAt": "2026-10-17T08:33:37.346Z"
+      },
+      "bookTransport": "official_sig_realtime",
+      "lastObservedGapSequence": 450680,
+      "currentNativeValidAfterLastGap": true,
+      "independentCompleteTapeProof": false,
+      "originalAgeMs": {
+        "sourceAt": "56338.029200000",
+        "requestStartedAt": "56009.000",
+        "receivedAt": "56009.000"
+      },
+      "freshAtFrozenEngineClock": false,
+      "bestOwnBid": "0.070000",
+      "bestMarginalNetOverWorstLot": "-0.045000",
+      "profitableCapturedDepth": 0,
+      "depthSliceQuantity": 0,
+      "classification": "stale_book",
+      "edgeTestPassIgnoringFreshness": false
+    }
+  ],
+  "excluded": [
+    {
+      "exchangeId": "1042",
+      "side": "YES",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "1051",
+      "side": "NO",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "1067",
+      "side": "YES",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "1068",
+      "side": "YES",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "851",
+      "side": "NO",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "865",
+      "side": "YES",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "872",
+      "side": "YES",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "885",
+      "side": "YES",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "977",
+      "side": "NO",
+      "reason": "managed"
+    },
+    {
+      "exchangeId": "993",
+      "side": "YES",
+      "reason": "managed"
+    }
+  ],
+  "limitations": [
+    "Finite original suffix accepted-native-book reconstruction, with every subsequent gap/invalid book invalidating; no independent raw receipt/tape completeness certification.",
+    "All prices/clocks historical asynchronous observations at engine clock, not current execution authority.",
+    "One counterfactual per exchange/side, not additive across timestamps or existing native quotes; existing SELL reservations are displayed, not released.",
+    "Captured dispatch chain is operationally paired with report but has untimestamped closed rows; cannot establish exact wall-clock closure cutoffs independently.",
+    "No simulated fills, guaranteed proceeds/profit, fresh account authority, or permission to retire/replace/submit."
+  ]
+}
