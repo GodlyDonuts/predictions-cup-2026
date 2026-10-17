@@ -1,5 +1,7 @@
 # Moloch research baseline
 
+**October17,12:40 UTC readback:** sole651324 remains trading with healthy realtime; progress382fills. [Oregon node-only review committed](../research/moloch-oregon-node-refresh-20261017/README.md) through the same worker, without a restart: fifth generation64b373ce atnative482298, preserving the original four generations and other ten reviews. Actual four account facts and36original files independently verify. Forecast/ballot/probability/caps unchanged; review ends18:34:55.251UTC. The [complete five-minute comparison](../research/moloch-source-latency-20261017/clock-comparison-readme.md#root-computed-complete-comparison) shows no measured latency benefit; a facts-map COW candidate is being measured, not deployed.
+
 **October17,12:13:44 UTC: R26 is verified trading with healthy realtime as sole worker651324.** Source6295e22c/binary97aeaf63/native5b61 match the checked release. [Actual restored-operation proof](../research/moloch-source-latency-20261017/live-proof/README.md). Original381 fill tokens,15 bridge records,four generations and eleven reviews are preserved. Ledger now382 fills/cash3,613.785/owned91,851.730/attributed realized-114.400. The extra row is the known sell executed11:20 while the old worker was stopped; it adds .010 inherited gain, not R26 strategy profit. The [complete fixed-window comparison](../research/moloch-source-latency-20261017/clock-comparison-readme.md#root-computed-complete-comparison) shows no observed speed benefit: median9311ms before versus14588ms after. Processing delay remains unresolved.
 
 ## Earlier R25 observation
@@ -14,7 +16,7 @@ Historical R24's16-share948NO sale at09:42:44.410UTC realized+0.080 against reco
 
 ## Active strategy and feature state
 
-- Reviewed terminal-value entries and same-side top-ups operate under the original four model generations and eleven reviews. Managed exits follow their original entry objective, current value, deadline and revocation. Point forecasts remain assumptions rather than a calibrated joint 2026 election posterior.
+- Reviewed terminal-value entries and same-side top-ups operate under five model generations and eleven current reviews; the fifth changes only genuine Oregon node evidence, preserving the original four generation rows. Managed exits follow their original entry objective, current value, deadline and revocation. Point forecasts remain assumptions rather than a calibrated joint 2026 election posterior.
 - R25 quarantines unqualified ordinary new exposure while preserving reviewed decisions and fully covered inventory reductions; actual cleanup is verified. The fixed 355-fill audit attributed -184.970 realized to ordinary trading; sparse causal markouts were also negative. [Owned-fill audit](../research/moloch-owned-fill-calibration-20261017/README.md).
 - Inherited inventory is managed separately using verified remaining FIFO lots. The latest audited profitable exit belongs to inherited inventory, not new-strategy alpha.
 - Empirical maker/execution models remain OFF. Collateral accounting is OFF; no trusted package certificates or reviewed package allocations establish a live package strategy. Earlier-year joint-model diagnostics and prospective traces did not establish a new deployable edge.

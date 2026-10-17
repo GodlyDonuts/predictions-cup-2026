@@ -1,3 +1,5 @@
+**October17,12:40 UTC readback:** sole651324 remains trading with healthy realtime; progress382fills. [Oregon node-only review committed](../research/moloch-oregon-node-refresh-20261017/README.md) through the same worker, without a restart: fifth generation64b373ce atnative482298, preserving the original four generations and other ten reviews. Actual four account facts and36original files independently verify. Forecast/ballot/probability/caps unchanged; review ends18:34:55.251UTC. The [complete five-minute comparison](../research/moloch-source-latency-20261017/clock-comparison-readme.md#root-computed-complete-comparison) shows no measured latency benefit; a facts-map COW candidate is being measured, not deployed.
+
 # October17,12:13:44 UTC - R26 verified trading
 
 **Sole worker651324/source6295e22c/binary97aeaf63/native5b61 is verified trading with healthy realtime.** Actual process/executable/control/model channel match fresh12:13:33.595 progress. [Original new-process operation and root verification](../research/moloch-source-latency-20261017/live-proof/README.md). This supersedes the earlier restoration status.

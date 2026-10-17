@@ -1,4 +1,12 @@
-# Retained Oregon node: offline provenance only
+# Retained Oregon node: committed without a restart
+
+**Committed and independently reproduced:** generation `64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda` was installed by the existing sole worker651324. The actual CLI returned committed at native482298, after captured native482297 and four fresh account facts. [Original committed proof](committed-root-verification.json), [offline verifier](verify_committed.py). Root reviewed and reran the verifier; its parsed aggregate exactly matches the checked result.
+
+All36original files, raw sealed suffix481282..483807, exact original four-generation prefix and actual request/facts digests verify. The four receipt request ages at commit were6258/5212/4229/3353ms. Actual OR account quantity10675NO matches recorded lots, remaining FIFO principal9999.685 stays within10000; there was no OR open or unresolved recorded physical order. Other ten reviews, original26 approval hashes,15bridge bytes, financial control and forecast/ballot clocks remain unchanged. Captured12:28:17.218 progress is trading/realtimeHealthy and matches the model channel. This is dated evidence, not a continuous current-health claim.
+
+No worker rebuild/restart, forecast/probability/cap increase or material new buying opportunity. The unchanged forecast limits this review to **October17 18:34:55.251UTC**. No profit is established. The proof reader does not independently replay the financial Session, reauthenticate the provider or reverify SDK network archives. Runtime hot reload performed its existing typed checks through the same account queue.
+
+## Earlier candidate evidence
 
 **Root candidate status, October17 12:07 UTC:** a new immutable OR review and
 settings packet passes actual Rust review/settings validation and independent
