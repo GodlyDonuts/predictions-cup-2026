@@ -1,0 +1,11 @@
+{
+  "archiveSha256": "51248eddfa18d728ff4a3b2c9e8ee6d00a15bf4406cd29dc8ac6bfde0e34b22c",
+  "archiveBytes": 633850246,
+  "allOriginalBytesVerifiedInArchive": true,
+  "onlyRedundantOfflineCopiesArchived": true,
+  "preservedFileCount": 57,
+  "archiveSourceDirectoryCount": 3,
+  "productionAccountHistoryRemoved": false,
+  "inactiveRegenerableBuildTargetsRemoved": true,
+  "diskBoundedRetentionImplemented": false
+}

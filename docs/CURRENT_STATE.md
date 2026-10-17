@@ -1,3 +1,19 @@
+# October17,03:06UTC — actual capital deployment; same-release disk recovery
+
+Hash-verified ledger324fills/cash19,449.715/owned75,993.970/combined attributed
+realized−136.23. After the cache release:seven BUY orders/32,994shares/41rows/
+28,611.865principal, including repeat851/977 top-ups. Owned cost/(cash+owned
+cost)=79.62%; open holdings are not realized profit. Entry expiry still occurs.
+
+Worker595256 stopped03:02:44UTC on ENOSPC. Inactive build caches were removed;
+original histories/14bridges/four generations and quiet SDK/zero unknown
+attempts verified. Same binaryb398c7e7/sourcef21c8b5f restarted as601007 at03:06:17.
+**New-PID trading is not yet verified; restoration is in progress.** No new
+strategy, pacing mode, source clock, risk budget or activation was introduced.
+The focused timing candidate is uncompiled/unactivated. Infrastructure work
+remains deferred except essential existing-service recovery.
+[Current research handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md).
+
 # October17,02:31UTC — replacement trading verified; capital benefit pending
 
 Sole595256/sourcef21c8b5f/binaryb398c7e7/native7a74f8c3 recovered the original

@@ -1,0 +1,135 @@
+{
+  "observedAt": "2026-10-17T03:01:20.708076+00:00",
+  "actualWorkerPid": 595256,
+  "progress": {
+    "actualFills": 324,
+    "actualOrders": 1439,
+    "at": "2026-10-17T03:00:42.121Z",
+    "completedReadScopes": 2,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 595256,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 40,
+    "terminalOrders": 1438
+  },
+  "activeStopExists": false,
+  "binarySha256": "b398c7e75436a94799b5fd968ed3c131d65d6dce0e0a530ccd10feaf277432af",
+  "financialReportSha256": "74c5a0ced68b4322872b91ee5945e35a7024a56ccb1f6fbb4888ae06a314f0fe",
+  "financialSequence": 391508,
+  "officialFillRows": 324,
+  "cash": "19449.715000",
+  "ownedCost": "75993.970000",
+  "combinedAttributedRealized": "-136.230000",
+  "newTradingRealized": "-181.360000",
+  "inheritedRealizedGross": "45.130000",
+  "baseControlSha256": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+  "activeGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "latestEntryPlanValidation": {
+    "at": "2026-10-17T02:58:59.414Z",
+    "diagnosticOnly": true,
+    "exchangeId": "993",
+    "expired": true,
+    "freshnessRemainingMs": 0,
+    "mintedAt": "2026-10-17T02:58:53.084Z",
+    "physicalAttempted": false,
+    "reason": "FUNDAMENTAL_ENTRY_PLAN_CHANGED",
+    "stage": "current",
+    "validUntilMs": 1792205937543,
+    "validationAtMs": 1792205939414
+  },
+  "newOfficialFillRowsSinceCacheUpgrade": 41,
+  "profitabilityEstablished": false,
+  "noRuntimeOrSettingsChangesInThisAudit": true,
+  "financialObservedAt": "2026-10-17T03:02:10.723416+00:00",
+  "reportHashVerified": true,
+  "newFillGroupsSinceCacheUpgrade": [
+    {
+      "qid": 11680,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 8430,
+      "principal": "7908.410000",
+      "officialRows": 10,
+      "receiptSha256": [
+        "f701e2d53016059e833a64b5dfc2c092d058c5497ec01262207cc9f9a133ad81"
+      ]
+    },
+    {
+      "qid": 11762,
+      "exchangeId": "851",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 9909,
+      "principal": "8648.215000",
+      "officialRows": 6,
+      "receiptSha256": [
+        "07bd4f4c4eb88a892402582530d2bf6dffd80d363debf2d06ac4c688e9b9232a"
+      ]
+    },
+    {
+      "qid": 11793,
+      "exchangeId": "885",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 3856,
+      "principal": "2732.560000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "70f51da0f36c9d9d772a8dfab656cf2b3edb829ca6263af866080f4413cb5675"
+      ]
+    },
+    {
+      "qid": 11813,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 148,
+      "principal": "139.120000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "1ab97c5c93511c235525502693e6c66ad09893b4cfa3cff97ba32731cbbe1c80"
+      ]
+    },
+    {
+      "qid": 11919,
+      "exchangeId": "851",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 648,
+      "principal": "567.000000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "458ca64e69c8e780aaa7bf294f138a6ee913e8455440237f5479e973d7c47c4c"
+      ]
+    },
+    {
+      "qid": 11967,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 3,
+      "principal": "2.835000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "312c0351a96a16c5d7f8d3ee14bbc3ccef479f83b09491a856d5bc5fcb73a062"
+      ]
+    },
+    {
+      "qid": 11985,
+      "exchangeId": "1051",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 10000,
+      "principal": "8613.725000",
+      "officialRows": 19,
+      "receiptSha256": [
+        "0868ea94b836f769d7f527a2a6399e48d6710e069b71b0484d1e1dc17fee3ef4"
+      ]
+    }
+  ],
+  "capitalUtilizationDefinition": "ownedCost/(cash+ownedCost); cost basis, not market value or reserved capital",
+  "capitalUtilizationCostBasisPct": "79.62178954008324385212075582"
+}

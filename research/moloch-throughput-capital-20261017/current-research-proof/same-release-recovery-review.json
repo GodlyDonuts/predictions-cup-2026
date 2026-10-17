@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-17T03:05:32.391550+00:00",
+  "oldPid": 595256,
+  "oldPidAbsent": true,
+  "queueQuiet": {
+    "active": null,
+    "globalUnknownCount": 0,
+    "manualReview": false
+  },
+  "dispatch": {
+    "sequence": 17809,
+    "hash": "5f392744d40f739e3effad5f5b759f217a4d5b8153df3f42d04c6ad8e872383a",
+    "acknowledged": 1440,
+    "provedAborted": {
+      "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7",
+      "10701": "0f8e3dead33ceabb887af2ac321a2e295c83d7cf2e1d16eb70e62882b168f41c"
+    },
+    "unknownOrdinaryAttempts": 0
+  },
+  "tailsTerminated": {
+    "events.jsonl": true,
+    "dispatch.ndjson": true,
+    "fundamental.ndjson": true
+  },
+  "financialSequence": 391577,
+  "fills": 324,
+  "cash": "19449.715000",
+  "ownedCost": "75993.970000",
+  "combinedAttributedRealized": "-136.230000",
+  "stopSha256": "dda6dd1b8ba09a36bfff79b70b09b4850e83b299aac065628be183d4bdc64b55",
+  "controlSha256": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+  "sameBinaryRecoveryOnly": true
+}

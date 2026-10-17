@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-10-17T03:07:43.498117+00:00",
+  "actualWorkerPid": 601007,
+  "sourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+  "binarySha256": "b398c7e75436a94799b5fd968ed3c131d65d6dce0e0a530ccd10feaf277432af",
+  "activeStopExists": false,
+  "progress": {
+    "actualFills": 324,
+    "actualOrders": 1440,
+    "at": "2026-10-17T03:02:01.036Z",
+    "completedReadScopes": 5,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 595256,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 40,
+    "terminalOrders": 1439
+  },
+  "freshTradingVerified": false,
+  "freeMiB": 4749,
+  "recovery": {
+    "at": "2026-10-17T03:06:16.945123+00:00",
+    "executionOwnerReviewed": true,
+    "reason": "same-binary-same-control-recovery-after-confirmed-ENOSPC",
+    "originalStopSha256": "dda6dd1b8ba09a36bfff79b70b09b4850e83b299aac065628be183d4bdc64b55",
+    "originalStopArchived": "/home/archon/apps/moloch/shared/live-production-v1/EXECUTION_STOP.enospc-20261017T030244-preserved.json",
+    "controlSha256": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+    "binarySha256": "b398c7e75436a94799b5fd968ed3c131d65d6dce0e0a530ccd10feaf277432af",
+    "unchanged14FinancialBridges": true,
+    "unchangedFourOriginalGenerations": true,
+    "queueQuiet": true,
+    "unknownDispatchAttempts": 0,
+    "financialSequence": 391577,
+    "fills": 324,
+    "settingsOrActivationRenewed": false
+  }
+}
