@@ -34,3 +34,25 @@ Verify all full bytes/hashes/regular-single-link identities BEFORE outcomes, the
 Bounds:2GiB journal/1million rows/16MiB row/1024scopes/2048scalar history points per scope/1024pending/50000examples/32768public IDs/50000owned identities/1024active known own orders. Three fixed fitting folds and constant-bounded histories/scans keep finite processing linear, without per-event financial-state clones. Output is create-new; raw books/orders/fills remain private. Source failures reject rather than minting successful results.
 
 Original outcomes were not examined while implementing/freezing this reader. Prior zero-after-cost v9 selections/nonpositive sparse owned-maker marks remain unchanged. This is one new fixed prospective-style offline diagnostic, not a retuning of those results.
+
+## Actual frozen suffix result
+
+Source747d5087 and protocol df2cf12b6f3e2e783b7f412d5ad45eeb3e0bd7dc5fa2fb52257681b154bc80d2 were committed/sent to root BEFORE accessing original outcomes. Eighteen synthetic checks passed. Root's original manifest7cbe837f was preserved; new reader wrapper630a7ccd adds only explicit sealed:true/named boundary aliases, retaining the original manifest pin. Root separately authenticated both original stopped boundaries/full-prefix fingerprints; this reader verifies raw suffix linkage and seals, not the financial engine.
+
+One unchanged-source local run: exit0/3,550ms. Exact15,381 rows462977..478357/58,303,777bytes match anchor/final report and head. Actual processed event span is09:33:11.782-10:32:24.826UTC on October17 (59m13.044s), including observation interruptions. The stopped anchor predates that first event; this is not80minutes of continuous coverage.
+
+| Measurement | Actual count |
+| --- | ---: |
+| Original book/gap/public trade/coverage events | 13,520 /1,055 /517 /118 |
+| Fresh-book first scope/time blocks | 1,433 |
+| Blocks missing at least one mandatory lag anchor | 1,431 |
+| Missing1s /5s /30s anchors (overlapping reasons) | 1,280 /1,286 /1,337 |
+| Original books classified stale /invalid | 6,540 /84 |
+| Eligible hypothetical entry nominations | 2 |
+| Nominations with complete unsigned volume | 0 |
+| Entry unavailable: no timely observation /first book source too old | 1 /1 |
+| Completed common-cohort labels /OOS /selected | 0 /0 /0 |
+
+No ridge/local model was fitted; no MSE or after-cost economic return can be estimated. Empty sums are not observed zero returns, and zero selection is not a fitted model-negative conclusion. The fixed100OOS/100selected requirements fail. Semantic groups, raw source-body membership, original pre-anchor own orders and actual SDK admission remain unavailable. There is no model/execution approval or candidate alpha supported by this run. Do not loosen windows or replace missing anchors after seeing this result.
+
+[report.json](report.json) is the exact aggregate output; raw SHA48548aec279bcceb1627999f74dd5cfe7a07311db357ef218ed2e5a760d4f8ac. [run.json](run.json) records frozen source/protocol/input/run pins. Original native/account rows remain private. Root owns independent review and publication; no SSH/API/build/runtime changes occurred.

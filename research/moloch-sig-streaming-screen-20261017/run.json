@@ -1,0 +1,18 @@
+{
+  "sourceFreezeCommit": "747d5087c011b2cfbe44ade5c2b495f3d9a2e945",
+  "protocolSha256": "df2cf12b6f3e2e783b7f412d5ad45eeb3e0bd7dc5fa2fb52257681b154bc80d2",
+  "analyzerSha256": "8e171d01697f2c3f67e7d11a9e819534e2d16578cce74bfe824c36064e2d7017",
+  "inputManifestSha256": "630a7ccd25bde974dc19222b4999d12520c0b3926ebe1488cf30e174db5f2173",
+  "originalManifestSha256": "7cbe837f3f8c6394c6c12528a04477b4004ef8fbae13b767a49046011ce14fa6",
+  "originalZipSha256": "907558086adc070e543490b5bbb505b8ab8c07ff3495418ba5365cfa86ba63ba",
+  "resultSha256": "48548aec279bcceb1627999f74dd5cfe7a07311db357ef218ed2e5a760d4f8ac",
+  "exitCode": 0,
+  "wallElapsedMs": 3550,
+  "targetedTestsPassed": 18,
+  "sourceChangesAfterOutcomeAccess": false,
+  "observedNativeSpanStart": "2026-10-17T09:33:11.782Z",
+  "observedNativeSpanEnd": "2026-10-17T10:32:24.826Z",
+  "financialReplayPerformed": false,
+  "executionAuthority": false,
+  "modelApproval": false
+}

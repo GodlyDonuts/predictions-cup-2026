@@ -1,0 +1,158 @@
+{
+  "protocolSha256": "df2cf12b6f3e2e783b7f412d5ad45eeb3e0bd7dc5fa2fb52257681b154bc80d2",
+  "sourceCodeSha256": "8e171d01697f2c3f67e7d11a9e819534e2d16578cce74bfe824c36064e2d7017",
+  "inputManifestSha256": "630a7ccd25bde974dc19222b4999d12520c0b3926ebe1488cf30e174db5f2173",
+  "inputPins": {
+    "journal": {
+      "bytes": 58303777,
+      "sha256": "f32963477d94c202e603e7b157a877708ab626846869b4da941f57402c65860b"
+    },
+    "anchorHead": {
+      "bytes": 254,
+      "sha256": "46327c139e6d3275b69388670584469fd05c5a93c6c5a428930b3ef716f901cb"
+    },
+    "report": {
+      "bytes": 5079678,
+      "sha256": "c36c9a51d67b3d88691f2cdd533b5381b85bda6330a6f3be1dabb0c681a1260c"
+    },
+    "bankManifest": {
+      "bytes": 16090,
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    },
+    "finalHead": {
+      "bytes": 254,
+      "sha256": "26c5845b4b1ed985e6b079d2bf6772855a9445ce2169d165fbe4dfa40fe7990c"
+    },
+    "boundary": {
+      "bytes": 2142,
+      "sha256": "441614d7ef79fcbaf481633393945a55905ec02ec92e3e2152e4db5e61bb09ef"
+    },
+    "anchorBoundary": {
+      "bytes": 2147,
+      "sha256": "d3b9a87f33892a78fd72990f0f9899830076b5a51c6e5e9c44821a030c5a8174"
+    }
+  },
+  "nativeSuffix": {
+    "firstSequence": 462977,
+    "lastSequence": 478357,
+    "rows": 15381,
+    "exactTailMatched": true
+  },
+  "counts": {
+    "events_managed_inventory_planning_v1": 1,
+    "events_gap": 1055,
+    "events_tick": 4,
+    "events_trade": 517,
+    "old_trade": 280,
+    "events_coverage": 118,
+    "events_book": 13520,
+    "unavailable_book_invalidated_book": 84,
+    "first_scope_blocks": 1433,
+    "block_missing_lag_anchors": 1431,
+    "missing_anchor_1s": 1280,
+    "missing_anchor_5s": 1286,
+    "missing_anchor_30s": 1337,
+    "events_unsubmitted_intent_retired": 141,
+    "unavailable_book_stale_clock": 6540,
+    "duplicate_book_version": 22,
+    "events_actual_order_ack": 13,
+    "events_actual_fill": 1,
+    "events_actual_order_terminal": 10,
+    "duplicate_trade": 120,
+    "volume_missing": 2,
+    "nominations": 2,
+    "censored_entry_no_timely_book": 1,
+    "censored_entry_first_book_clock": 1,
+    "events_reviewed_fundamental_entry_reserved_v1": 1
+  },
+  "pendingAtCutoff": 0,
+  "pendingByStage": {},
+  "completedCommonCohort": 0,
+  "completedMarkets": 0,
+  "commonCohortNonzeroFeatureCounts": {
+    "micropriceMinusMidpoint": 0,
+    "imbalance": 0,
+    "spread": 0,
+    "midpointDelta1s": 0,
+    "midpointDelta5s": 0,
+    "midpointDelta30s": 0
+  },
+  "semanticGroupsAvailable": false,
+  "groupMapCoverageMarkets": 0,
+  "cohortSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "evaluation": {
+    "status": "UNQUALIFIED_RESEARCH",
+    "folds": [],
+    "models": {
+      "unchanged_bbo": {
+        "leaveOneSelectedGroupOutMeanUnitsRange": null,
+        "largestSelectedGroupFraction": null,
+        "statisticalIndependenceClaimed": false,
+        "oosClusters": 0,
+        "selectedClusters": 0,
+        "selectedNetCrossingUnits": 0,
+        "mse": null,
+        "selectedMarkets": 0,
+        "selectedGroups": 0,
+        "equalGroupMeanUnits": null,
+        "heldOutGroupOosClusters": 0,
+        "heldOutGroupSelectedClusters": 0,
+        "heldOutGroupSelectedNetUnits": 0,
+        "sampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "selectionIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "minimumCountPass": false
+      },
+      "sig_local_imbalance_spread": {
+        "leaveOneSelectedGroupOutMeanUnitsRange": null,
+        "largestSelectedGroupFraction": null,
+        "statisticalIndependenceClaimed": false,
+        "oosClusters": 0,
+        "selectedClusters": 0,
+        "selectedNetCrossingUnits": 0,
+        "mse": null,
+        "selectedMarkets": 0,
+        "selectedGroups": 0,
+        "equalGroupMeanUnits": null,
+        "heldOutGroupOosClusters": 0,
+        "heldOutGroupSelectedClusters": 0,
+        "heldOutGroupSelectedNetUnits": 0,
+        "sampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "selectionIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "minimumCountPass": false
+      },
+      "sig_six_features": {
+        "leaveOneSelectedGroupOutMeanUnitsRange": null,
+        "largestSelectedGroupFraction": null,
+        "statisticalIndependenceClaimed": false,
+        "oosClusters": 0,
+        "selectedClusters": 0,
+        "selectedNetCrossingUnits": 0,
+        "mse": null,
+        "selectedMarkets": 0,
+        "selectedGroups": 0,
+        "equalGroupMeanUnits": null,
+        "heldOutGroupOosClusters": 0,
+        "heldOutGroupSelectedClusters": 0,
+        "heldOutGroupSelectedNetUnits": 0,
+        "sampleIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "selectionIdsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "minimumCountPass": false
+      }
+    },
+    "executionAuthority": false,
+    "modelApproval": false,
+    "profitabilityEstablished": false
+  },
+  "sourceBodyMembershipIndependentlyVerified": false,
+  "initialOwnOrderSnapshotAvailable": false,
+  "actualSdkBudgetVerified": false,
+  "executionAuthority": false,
+  "modelApproval": false,
+  "profitabilityEstablished": false,
+  "limitations": [
+    "Original native suffix membership/hash linkage is not financial Session replay or independent raw-source-body authentication.",
+    "Virtual pacing assumes no competing account load and zero HTTP duration; these are displayed one-share counterfactuals, never fills.",
+    "Pre-anchor own resting order state unavailable; only suffix-known owned depth removed.",
+    "Missing observations/coverage are selective; market/time blocks and held-out markets do not remove common election/factor correlation."
+  ]
+}
