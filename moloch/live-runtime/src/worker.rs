@@ -2074,7 +2074,7 @@ fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadt
  let mut pending=QueuedSourceBatch::default();
  let account=stream.account_signal();let generation=||account.as_ref().map(|s|s.generation());
  let mut catchup=realtime_book_catchup::Drain::new(generation());
- let emit=|pending:&mut QueuedSourceBatch,bank:&mut Session,rows:Vec<realtime_book_catchup::Stamped>|->Result<()>{for(event,at)in rows{pending.push_at(bank,std::slice::from_ref(&event),at)?;}Ok(())};
+ let emit=|pending:&mut QueuedSourceBatch,bank:&mut Session,rows:Vec<realtime_book_catchup::Stamped>|->Result<()>{for(event,_normalized_at)in rows{pending.push_at(bank,std::slice::from_ref(&event),now())?;}Ok(())};
  for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{
   catchup.observe_generation(generation());
   if let Err(error)=require_stream(stream){emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}let Ok(input)=stream.incoming.try_recv()else{break};match input{
@@ -2088,6 +2088,8 @@ fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadt
  }}
  // Last observed account generation immediately precedes the first selected
  // native admission. Later private updates still invalidate physical authority.
+ // Buffered normalization stamps are diagnostic only; actual native queue
+ // admission above uses the current clock, preserving all original book clocks.
  if let Err(error)=require_stream(stream){emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}
  emit(&mut pending,bank,catchup.finish(&generation,true))?;
  pending.finish(bank,Ok(()))
