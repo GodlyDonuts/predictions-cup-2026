@@ -1,0 +1,209 @@
+{
+  "pid": 690857,
+  "firstTradingProgressAt": "2026-10-17T19:09:17.033Z",
+  "windowNs": 300000000000,
+  "windowStartNs": "1792264157033000000",
+  "windowEndExclusiveNs": "1792264457033000000",
+  "fullFiveMinuteWindowCovered": true,
+  "firstProgressOriginal": {
+    "zipSha256": "0906a063ba8f1cf5fc8362e6551ec079777a05aa296013ba3e4329ceff9641d4",
+    "member": "first-trading-progress.original.json",
+    "bytes": 264,
+    "sha256": "bc1e9523d9020ba38bfb5839b6e68b6bf1090c2240fd0b4fc814679748398ab5"
+  },
+  "packetZipSha256": "0906a063ba8f1cf5fc8362e6551ec079777a05aa296013ba3e4329ceff9641d4",
+  "packetMemberManifestSha256": "01f68928f342bb4edfd85abfbcb94f9cdead6c26af199c720a42a2c826dbc919",
+  "allOriginalZipMembersAuthenticated": true,
+  "memberPins": {
+    "anchor-head.original.json": {
+      "bytes": 254,
+      "sha256": "964ff762bf28d1a22ac2d93a8b2733e03efc1a368426837c7931818edc1f9e97"
+    },
+    "bank-manifest.original.json": {
+      "bytes": 16090,
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    },
+    "bridge.original.json": {
+      "bytes": 27780970,
+      "sha256": "3ce54840aa80a31aa2d16baccc7a92b31a01d2178e8c61c672dc2353451a9861"
+    },
+    "capture.json": {
+      "bytes": 275,
+      "sha256": "0c8f38ac4917630f4f3fd99beee3332ecf372f22a7943d56a8ea94b5a42c23fd"
+    },
+    "control.original.json": {
+      "bytes": 21390,
+      "sha256": "6de844a4bd4dc7e1fd2e6b451dbecf83e83eb27e5430f8ea421da895bd2944f4"
+    },
+    "dispatch.original.ndjson": {
+      "bytes": 11013795,
+      "sha256": "37b69cbf907cdf4007bb318c5568cf4da1f0b8d3faffe7da5ac3f51b1975a2f2"
+    },
+    "first-trading-progress.original.json": {
+      "bytes": 264,
+      "sha256": "bc1e9523d9020ba38bfb5839b6e68b6bf1090c2240fd0b4fc814679748398ab5"
+    },
+    "fundamental.original.jsonl": {
+      "bytes": 615788,
+      "sha256": "9bf6d8b397df43f3112fceeb50d36f6b7c50f36076031c53cfc6536980522e65"
+    },
+    "head.original.json": {
+      "bytes": 254,
+      "sha256": "94ecf0dd095cf2b22e461f61ec335edce440b5645e6fc7b3b19de431c786836a"
+    },
+    "model-status.original.json": {
+      "bytes": 616,
+      "sha256": "e66d9b02c83677ec38779ac335e7e76b775bc446ea90f40c024c07cbbbd311da"
+    },
+    "native.suffix.jsonl": {
+      "bytes": 1113943,
+      "sha256": "f5c02bc22ce64f1cc0a92d73c5d95a21d986317d6302dfd6c6c8e566d153373d"
+    },
+    "production-rollout.original.json": {
+      "bytes": 314381,
+      "sha256": "53bd1895a5949022d556ecdb5119e003b6655efb381e0ef160f7346457f052d2"
+    },
+    "report.original.json": {
+      "bytes": 5531853,
+      "sha256": "4b0144a5a84b444bd0c022688afe340c21142b8b934c441cf62fe4336a575263"
+    }
+  },
+  "nativeSuffix": {
+    "firstSequence": 523603,
+    "lastSequence": 524509,
+    "rows": 907,
+    "firstProcessedNs": "1792263949798000000",
+    "lastProcessedNs": "1792264478859000000",
+    "exactRawSealsAndFinalTailVerified": true
+  },
+  "windowNativeEvents": 282,
+  "windowEventTypes": {
+    "gap": 56,
+    "book": 187,
+    "coverage": 9,
+    "unsubmitted_intent_retired": 27,
+    "trade": 3
+  },
+  "windowGapEvents": 56,
+  "bookMetrics": {
+    "all": {
+      "counts": {
+        "bookEvents": 187,
+        "missingOrUnparseableBookFields": 0,
+        "missingOrInvalidBook": 8,
+        "explicitNativeInvalidBook": 8,
+        "invalidTemporalClockBooks": 0,
+        "originalClockMismatch": 0,
+        "receivedAfterProcessed": 0,
+        "sourceAfterReceipt": 0,
+        "sourceAfterProcessed": 0,
+        "requestAfterReceipt": 0,
+        "staleAnyOriginalClockAtProcessing": 87,
+        "staleNativeClockAtProcessing": 87,
+        "staleDespiteSourceFreshAtReceipt": 87,
+        "staleWithReceiptToProcessingOver10000ms": 86,
+        "receiptToProcessingOver10000ms": 86,
+        "parserStatus_valid": 179,
+        "parserStatus_invalidated_book": 8
+      },
+      "receiptToProcessing": {
+        "count": 187,
+        "medianMs": "7326",
+        "p90Ms": "29394",
+        "maxMs": "65954"
+      },
+      "sourceToReceipt": {
+        "count": 187,
+        "medianMs": "467.392",
+        "p90Ms": "790.3714",
+        "maxMs": "4116.8219"
+      },
+      "sourceToProcessing": {
+        "count": 187,
+        "medianMs": "8116.3714",
+        "p90Ms": "29647.5028",
+        "maxMs": "66839.2444"
+      }
+    },
+    "official_sig_realtime": {
+      "counts": {
+        "bookEvents": 166,
+        "missingOrUnparseableBookFields": 0,
+        "missingOrInvalidBook": 0,
+        "explicitNativeInvalidBook": 0,
+        "invalidTemporalClockBooks": 0,
+        "originalClockMismatch": 0,
+        "receivedAfterProcessed": 0,
+        "sourceAfterReceipt": 0,
+        "sourceAfterProcessed": 0,
+        "requestAfterReceipt": 0,
+        "staleAnyOriginalClockAtProcessing": 87,
+        "staleNativeClockAtProcessing": 87,
+        "staleDespiteSourceFreshAtReceipt": 87,
+        "staleWithReceiptToProcessingOver10000ms": 86,
+        "receiptToProcessingOver10000ms": 86,
+        "parserStatus_valid": 166
+      },
+      "receiptToProcessing": {
+        "count": 166,
+        "medianMs": "10885.5",
+        "p90Ms": "31853",
+        "maxMs": "65954"
+      },
+      "sourceToReceipt": {
+        "count": 166,
+        "medianMs": "503.6965",
+        "p90Ms": "790.3714",
+        "maxMs": "4116.8219"
+      },
+      "sourceToProcessing": {
+        "count": 166,
+        "medianMs": "11334.4031",
+        "p90Ms": "32212.4475",
+        "maxMs": "66839.2444"
+      }
+    },
+    "official_sig_api_v1": {
+      "counts": {
+        "bookEvents": 21,
+        "missingOrUnparseableBookFields": 0,
+        "missingOrInvalidBook": 8,
+        "explicitNativeInvalidBook": 8,
+        "invalidTemporalClockBooks": 0,
+        "originalClockMismatch": 0,
+        "receivedAfterProcessed": 0,
+        "sourceAfterReceipt": 0,
+        "sourceAfterProcessed": 0,
+        "requestAfterReceipt": 0,
+        "staleAnyOriginalClockAtProcessing": 0,
+        "staleNativeClockAtProcessing": 0,
+        "staleDespiteSourceFreshAtReceipt": 0,
+        "staleWithReceiptToProcessingOver10000ms": 0,
+        "receiptToProcessingOver10000ms": 0,
+        "parserStatus_invalidated_book": 8,
+        "parserStatus_valid": 13
+      },
+      "receiptToProcessing": {
+        "count": 21,
+        "medianMs": "110",
+        "p90Ms": "989",
+        "maxMs": "1049"
+      },
+      "sourceToReceipt": {
+        "count": 21,
+        "medianMs": "148.5807",
+        "p90Ms": "281.0528",
+        "maxMs": "295.795"
+      },
+      "sourceToProcessing": {
+        "count": 21,
+        "medianMs": "356.8375",
+        "p90Ms": "1256.1666",
+        "maxMs": "1285.404"
+      }
+    }
+  },
+  "sourceBodyMembershipIndependentlyVerified": false,
+  "financialReplayPerformed": false,
+  "executionAuthority": false
+}

@@ -1,5 +1,7 @@
 # R31 startup: older base policy correctly rejected
 
+**Verified recovery, October17 19:14:27UTC:** actual sole PID690857 is fresh trading/realtime healthy. [Root original-file verification](live-root-verification.json) checks first progress19:09:17.033 and later19:13:56.535, exact executable/arguments/startticks, immutable control6de844a4, preserved source86619d82/binary60c1d34d/native8012cc9f, all382 raw fill tokens,624 new sealed rows through524226, original dispatch/model prefixes, eight generations and all16 unchanged financial bridge bytes. Original corrected Control equals the authentic G8 overlay except its binary binding. Dated report19:08:13.825 has cash3613.785/reserved0/owned91851.730/realized−114.400 and **zero new fills**. Private original proof5,582,095bytes/SHA02a286aef87be9fb8e0a47d313dde9ae7ec9656dbd9b6afcf9e7a3794c5f7249. This establishes recovery, not profit or an execution-speed benefit.
+
 **Owner correction applied18:42:02 UTC; fresh trading remains unverified.** Sole worker690857/startticks23217665 uses the same checked binary60c1d34d/source86619d82 and unchanged native8012cc9f. New immutable control SHA256 `6de844a4bd4dc7e1fd2e6b451dbecf83e83eb27e5430f8ea421da895bd2944f4` equals the authentic G8 overlay in every parsed field except its binary hash. Root checked every review/source/authority pin, the full unchanged1,724,459,085-byte ledger SHA541b5dea, unchanged complete dispatch/fundamental bytes and16 bridge bytes before the owner correction/start. The exact incident STOP and previous control/unit were archived; original sources, deadlines, financial limits and activation were preserved. A separate finite file observer awaits actual fresh690857 progress.
 
 The diagnosis below predates this applied correction and grants no runtime authority.
@@ -34,3 +36,9 @@ The private deployment ZIP is 9,062,887 bytes, SHA256 `9d32ccb0986eb9a1430a396df
 | Actual `worker.rs`, Git LF | `d1c1d3b1988e50eef70f918fadaa94bde11ed17f7108872ca6b42a10f052d35b` |
 
 No code, account/API call, SSH operation, runtime file, STOP, ledger, or authority was changed by this audit. Recovery success must be recorded separately after actual owner verification.
+
+## First five minutes after verified recovery
+
+The independently anchored [clock measurement](first-300s-clock-verification.json) covers19:09:17.033–19:14:17.033UTC and verifies all13 packet members and907 sealed native suffix rows through524509/19:14:38.859. It includes187 book events and56 explicit gap events. Eight books are explicitly invalid;87/187 exceed the10s original-clock bound, including86 with receipt-to-processing over10s. Receipt-to-processing median7326ms/p9029394ms/max65954ms; source-to-receipt median467.392ms/p90790.3714ms. Source arrival and worker processing remain separate bottlenecks. This window does not prove a speed improvement or current physical account completeness.
+
+The existing FIFO cohort attribution tool correctly refused this truncated packet with `original_reservation_not_uniquely_in_suffix`: the report retains earlier FIFO reservations whose creation predates this523602 anchor. The refusal is retained, rather than reported as a complete zero-cohort analysis. Independent raw fill-token parity establishes zero added fills at the checked fresh-operation proof; no new profit is claimed.
