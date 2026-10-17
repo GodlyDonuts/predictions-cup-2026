@@ -100,6 +100,10 @@ pub struct DeadlineLiquidationEvidence {
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct SameSideTopUps {pub version:u32,pub maximum_entries:u32}
+/// Explicit inherited-inventory value limit; it may rest without a fill claim.
+#[derive(Clone,Debug,Serialize,Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+pub struct PassiveValueExit {pub version:u32,pub maximum_quantity:u64}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct ReviewInput {
@@ -111,6 +115,8 @@ pub struct ReviewInput {
     pub official_contract_root_sha256:String,
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub existing_origin:Option<ExistingApproval>,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub passive_value_exit:Option<PassiveValueExit>,
     /// Omitted legacy reviews retain exactly their original bytes/hash. When
     /// present, principal/quantity cap ALL held cohort lots plus the new order.
     #[serde(default,skip_serializing_if="Option::is_none")]
@@ -133,6 +139,7 @@ pub struct ReviewInput {
 }
 pub fn review_sha256(input:&ReviewInput)->Result<String>{digest(input)}
 fn structure(r:&ReviewInput)->Result<i128>{
+    if let Some(p)=&r.passive_value_exit{need(p.version==1&&r.existing_origin.is_some()&&p.maximum_quantity>0&&p.maximum_quantity<=r.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_POLICY")?;}
     if let Some(p)=&r.same_side_top_ups{need(p.version==1&&(2..=16).contains(&p.maximum_entries)&&r.version==2&&r.existing_origin.is_none(),"FUNDAMENTAL_TOP_UP_POLICY")?;}
     if let Some(p)=&r.execution_policy{need(p.version==1&&!p.allowed_modes.is_empty()&&p.allowed_modes.len()<=3,"FUNDAMENTAL_EXECUTION_POLICY")?;
         for(i,m)in p.allowed_modes.iter().enumerate(){need(!p.allowed_modes[..i].contains(m),"FUNDAMENTAL_DUPLICATE_EXECUTION_MODE")?;}}
@@ -342,6 +349,34 @@ fn no_existing_liability(bank:&Session,log:&DispatchLog,ex:&str)->Result<()>{
 fn physical_pending(bank:&Session,log:&DispatchLog,id:u64)->bool{
     !log.closed.contains(&id)&&(bank.engine().live_order_bindings().contains_key(&id)||log.acknowledgments.contains_key(&id)
         ||(log.attempted.contains(&id)&&!log.proved_no_network(id)))
+}
+// The active value-exit floor is structure + margin: structure already removed
+// that margin. Do not add it twice or substitute the inherited FIFO cost floor.
+fn passive_value_limit(r:&ReviewInput,policy:&Value)->Result<Option<i128>>{
+    let floor=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
+    let bps=u32::try_from(policy["feeBps"].as_u64().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
+    let share=amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
+    // A one-share fee floor also covers every positive partial-fill quantity:
+    // ceil(n*x) <= n*ceil(x), with the same original nonnegative fixed fees.
+    for tick in 1..200{let price=tick*5000;let fee=moloch_replay::fee(price,1,bps,share)?;
+        if price.checked_sub(fee).is_some_and(|net|net>=floor){return Ok(Some(price))}}
+    Ok(None)
+}
+fn passive_exit_clear(bank:&Session,log:&DispatchLog,ex:&str,current:Option<u64>,allow_drafts:bool)->Result<bool>{
+    if !bank.engine().managed_inventory_planning_excludes(ex)
+        ||log.attempted.iter().any(|id|Some(*id)!=current&&!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id))
+        ||bank.engine().package_blocks_submissions()
+        ||bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|generation_package_protects(p,ex)){return Ok(false)}
+    let snapshot=crate::order_snapshot::snapshot(bank);
+    for id in bank.engine().live_order_bindings().keys().filter(|id|Some(**id)!=current&&!log.closed.contains(id)){
+        let q=snapshot.quote(*id).ok_or("FUNDAMENTAL_UNMAPPED_ACTUAL_BINDING")?;if q["exchangeId"]==ex{return Ok(false)}
+    }
+    for id in log.acknowledgments.keys().filter(|id|Some(**id)!=current&&!log.closed.contains(id)){
+        let q=snapshot.quote(*id).ok_or("FUNDAMENTAL_UNMAPPED_OPEN_ACK")?;if q["exchangeId"]==ex{return Ok(false)}
+    }
+    Ok(!snapshot.records().iter().any(|q|q["exchangeId"]==ex&&q["id"].as_u64()!=current
+        &&(q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))
+            ||q["retired"]==false&&(!allow_drafts||q["id"].as_u64().is_none_or(|id|!log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id))))))
 }
 fn queue_view(transport:&Transport)->Result<Value>{let q=transport.package_queue_quiet()?;Ok(json!({"sequence":q.sequence,"previous":q.previous}))}
 impl ExistingSnapshot{
@@ -1020,7 +1055,8 @@ impl Cohorts{
             else if r.revoke_existing{"reviewed_source_revocation"}
             else{let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
                 if let Some(book)=books.get(exchange){let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let payout=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
-                    if levels.first().is_none_or(|l|l.price<payout){return Ok(None)}"refreshed_value_exit"
+                    if c.existing.is_some()&&r.passive_value_exit.is_some()&&passive_exit_clear(bank,log,exchange,None,true)?&&passive_value_limit(r,bank.engine().policy())?.is_some(){"reviewed_passive_value_exit"}
+                    else{if levels.first().is_none_or(|l|l.price<payout){return Ok(None)}"refreshed_value_exit"}
                 }else{"reviewed_inventory_book_refresh"}};
         Ok(Some(ExistingExitHint{exchange_id:exchange.into(),market_id:r.market_id.clone(),contract_id:r.contract_id.clone(),side:r.side.clone(),reason:reason.into()}))
     }
@@ -1048,14 +1084,23 @@ impl Cohorts{
         let deadline=c.hold_until_ms.min(r.hold_until_ms);let approved=trusted.contains(&digest(r)?)&&current(r,now);let payout=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
         let reason=if liquidation_due(r,c,now){"reviewed_holding_deadline"}else if approved&&r.revoke_existing{"reviewed_source_revocation"}else if approved{"refreshed_value_exit"}else{return Ok(None)};
         let policy=bank.engine().policy();let (books,hashes)=package_admission::native_books(bank,scope,now,policy["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;let Some(book)=books.get(exchange)else{return Ok(None)};
-        let cap=owned.min(r.maximum_quantity).min(policy["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?);let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let mut n=0u64;let mut limit=None;
-        for l in levels{if reason=="refreshed_value_exit"&&l.price<payout{break}let take=(cap-n).min(l.quantity);if take>0{n+=take;limit=Some(l.price)}if n==cap{break}}
-        let Some(limit)=limit else{return Ok(None)};need(n>0,"FUNDAMENTAL_EXISTING_DEPTH")?;
+        let cap=owned.min(r.maximum_quantity).min(policy["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?);
+        let passive=reason=="refreshed_value_exit"&&c.existing.is_some()&&r.passive_value_exit.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange);
+        let(n,limit)=if passive{
+            if !passive_exit_clear(bank,log,exchange,None,false)?{return Ok(None)}
+            let Some(limit)=passive_value_limit(r,policy)?else{return Ok(None)};
+            (cap.min(r.passive_value_exit.as_ref().unwrap().maximum_quantity),limit)
+        }else{
+            let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let mut n=0u64;let mut limit=None;
+            for l in levels{if reason=="refreshed_value_exit"&&l.price<payout{break}let take=(cap-n).min(l.quantity);if take>0{n+=take;limit=Some(l.price)}if n==cap{break}}
+            let Some(limit)=limit else{return Ok(None)};(n,limit)
+        };need(n>0,"FUNDAMENTAL_EXISTING_DEPTH")?;
         let until=r.sources.iter().try_fold(r.expires_at_ms,|end,s|Ok::<_,Box<dyn std::error::Error>>(end.min(s.observed_at_ms.checked_add(s.maximum_age_ms).ok_or("FUNDAMENTAL_SOURCE_CLOCK_RANGE")?)))?;
         let mut expires=now.checked_add(policy["lifetimeMs"].as_u64().ok_or("FUNDAMENTAL_LIFETIME")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?;
         if reason!="reviewed_holding_deadline"{expires=expires.min(until);if !terminal_hold(r){expires=expires.min(deadline);}}
         if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
         let mut event=json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":r.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":digest(&bank.engine().report()?)?,"exchangeId":exchange,"marketId":r.market_id,"side":r.side,"quantity":n,"limitPrice":money(limit),"expiresAt":daily_windows::iso(expires)?,"originSha256":c.origin_sha()?,"reviewSha256":digest(r)?,"expectedPositionSha256":digest(&bank.engine().wallet.positions()[exchange])?,"bookSha256":hashes.get(exchange).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reason":reason,"expectedPayout":money(payout),"reviewCurrentUntilMs":until,"holdingDeadlineMs":deadline,"revoked":r.revoke_existing});
+        if passive{event["executionMode"]=json!("passiveValueLimit");event["maximumPassiveQuantity"]=json!(r.passive_value_exit.as_ref().unwrap().maximum_quantity);event["modelSha256"]=json!(execution_model_sha(r)?);event["sourceSha256"]=json!(digest(&r.sources)?);}
         if let Some(origin)=&c.existing{event["adoptionRef"]=origin.adoption_ref.clone();event["adoptionReceiptHash"]=json!(origin.approval.adoption_receipt_sha256);}
         else{event["type"]=json!("reviewed_cohort_exit_reserved_v1");let Some(proof)=self.cohort_exit_origin(bank,log,exchange,c)?else{return Ok(None)};event["cohortOrigin"]=proof;}
         need(queue_view(transport)?==queue,"FUNDAMENTAL_EXISTING_QUEUE_CHANGED")?;Ok(Some(ExistingExit{event}))
@@ -1390,6 +1435,8 @@ impl Cohorts{
         // original entry binding or repeatedly preempt acquisitions on hash alone.
         if r.revoke_existing{return Ok(true)}
         let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
+        if c.existing.is_some()&&r.passive_value_exit.is_some()&&books.contains_key(exchange)
+            &&passive_exit_clear(bank,log,exchange,None,true)?&&passive_value_limit(r,bank.engine().policy())?.is_some(){return Ok(true)}
         let value=add(structure(r)?,amount(&r.margin_per_share)?)?;
         Ok(books.get(exchange).and_then(|b|if r.side=="YES"{b.yes_bids.first()}else{b.no_bids.first()}).is_some_and(|l|l.price>=value))
     }
@@ -1526,6 +1573,23 @@ impl Cohorts{
             need(n==native,"FUNDAMENTAL_EXIT_MUST_MATCH_NATIVE_QUANTITY")?;
             if c.pending_entry(log)||c.exits.keys().any(|id|*id!=qid&&log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(hold("prior_owned_order_reconciliation_required"))}
             need(n<=owned,"FUNDAMENTAL_UNCOVERED_EXIT")?;
+            if let Some(mode)=q["reviewedInventoryExit"].get("executionMode"){
+                need(mode=="passiveValueLimit","FUNDAMENTAL_PASSIVE_EXIT_MODE")?;
+                let p=r.passive_value_exit.as_ref().ok_or("FUNDAMENTAL_PASSIVE_EXIT_NOT_APPROVED")?;
+                need(c.existing.is_some()&&bank.engine().managed_inventory_planning_excludes(ex)&&n<=p.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_ORIGIN_OR_QUANTITY")?;
+                if !approved||r.revoke_existing||liquidation_due(r,c,now){return Ok(hold("current_passive_value_review_required"))}
+                let payout=add(ceiling,amount(&r.margin_per_share)?)?.max(0);let metadata=&q["reviewedInventoryExit"];
+                need(metadata["reason"]=="refreshed_value_exit"&&metadata["reviewSha256"]==digest(r)?&&metadata["originSha256"]==c.origin_sha()?
+                    &&metadata["minimumNetValue"]==money(payout)&&metadata["maximumPassiveQuantity"]==p.maximum_quantity
+                    &&metadata["modelSha256"]==execution_model_sha(r)?&&metadata["sourceSha256"]==digest(&r.sources)?,"FUNDAMENTAL_PASSIVE_EXIT_PROVENANCE")?;
+                let policy=bank.engine().policy();let bps=u32::try_from(policy["feeBps"].as_u64().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?;
+                let fee=moloch_replay::fee(price,1,bps,amount(policy["feePerShare"].as_str().ok_or("FUNDAMENTAL_PASSIVE_EXIT_FEES")?)?)?;
+                need(price.checked_sub(fee).is_some_and(|net|net>=payout),"FUNDAMENTAL_PASSIVE_EXIT_NET_VALUE")?;
+                if !passive_exit_clear(bank,log,ex,Some(qid),false)?{return Ok(hold("passive_value_exit_competing_liability"))}
+                // A value limit is authorization to rest, never evidence of a
+                // maker fill or of full currently executable bid depth.
+                return Ok(Decision::Exit{reason:"refreshed_value_exit".into(),owned_quantity:owned})
+            }
             // Verify actual depth, not the last print or nominal quote price.
             let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};
             let mut left=n;let mut proceeds=0i128;
@@ -1614,7 +1678,9 @@ impl Cohorts{
                     let event=if let Some(recovered)=log.recovered.get(&b.qid){let fills:Receipt=serde_json::from_value(recovered["fills"].clone())?;need(fills.endpoint==format!("/orders/{actual}/fills?limit=200"),"FUNDAMENTAL_COHORT_CANCEL_ACK_ENDPOINT")?;crate::feedback::recovered_acknowledgment(&b.quote,actual,&r.tournament_id,&ack,&fills,&fills.received_at)?}else{need(ack.endpoint=="/orders","FUNDAMENTAL_COHORT_CANCEL_ACK_ENDPOINT")?;crate::feedback::acknowledgment(&b.quote,&ack,&ack.received_at)?};
                     self.validate_acknowledgment(b.qid,&event)?;need(event["actualOrderId"]==*actual,"FUNDAMENTAL_COHORT_CANCEL_ACK_CHANGED")?;
                 }
-                if digest(r)?!=b.review_sha256||((!trusted.contains(&digest(r)?)||!current(r,now))&&b.quote["reviewedInventoryExit"]["reason"]!="reviewed_holding_deadline"){out.push(b.qid);}
+                let passive=b.quote["reviewedInventoryExit"]["executionMode"]=="passiveValueLimit";
+                if digest(r)?!=b.review_sha256||((!trusted.contains(&digest(r)?)||!current(r,now))&&b.quote["reviewedInventoryExit"]["reason"]!="reviewed_holding_deadline")
+                    ||passive&&(liquidation_due(r,c,now)||r.revoke_existing||r.passive_value_exit.is_none()||!bank.engine().managed_inventory_planning_excludes(ex)){out.push(b.qid);}
             }
         }Ok(out)
     }
