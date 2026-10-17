@@ -94,7 +94,7 @@ export class ReadClient {
       try {
         for (;;) { const { done, value } = await reader.read(); if (done) break; bytes += value.length; if (bytes > this.maximumBodyBytes) throw Error('POLYMARKET_BODY_BOUND'); chunks.push(value); }
       } catch (e) { await reader.cancel().catch(() => {}); throw e; }
-      const bodyText = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)); const receivedAt = new Date().toISOString();
+      const bodyText = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.concat(chunks)); const receivedAt = new Date().toISOString();
       const receipt = { source: origin === CLOB ? 'polymarket_clob_public' : 'polymarket_gamma_public', endpoint: u.href, requestStartedAt, receivedAt, status: response.status, bodyText, bodySha256: sha256(bodyText), bodyBytes: bytes, sourceTimestamp: null };
       if (requestBodyText !== undefined) Object.assign(receipt, { method, requestBodyText, requestBodySha256: sha256(requestBodyText) });
       if (!response.ok) throw Object.assign(Error('POLYMARKET_HTTP_' + response.status), { code: response.status, receipt });

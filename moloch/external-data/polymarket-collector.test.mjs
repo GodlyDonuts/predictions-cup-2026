@@ -48,3 +48,13 @@ test('paired batch maps out-of-order response exactly and retains whole original
   assert.equal(result.admissions, 1); assert.equal(result.stats.successfulBooks, 2); assert.equal(result.completeMarketCoverage, 1); assert.equal(calls[0].body, '[{"token_id":"1"},{"token_id":"2"}]');
   const row = JSON.parse(await fs.readFile(path.join(root, 'cache', 'latest', '1.json'))); assert.equal(retained(row, outcome('1')).bodyIndex, 1); assert.equal(row.receipt.body.length, 2); assert.throws(() => retained({ ...row, bodyIndex: 0 }, outcome('1')), /IDENTITY/);
 }));
+test('equal-version depth conflict remains withdrawn across restart; stopping hook drains originals', async () => temp(async root => {
+  const universe = path.join(root, 'universe.json'), cache = path.join(root, 'cache'), identity = outcome('1'); await fs.writeFile(universe, JSON.stringify({ schemaVersion: 1, source: 'polymarket_gamma_public', outcomes: [identity] }));
+  const client = new ReadClient({ fetcher: async () => { throw Error('NO_HTTP_EXPECTED'); } }); let record, sourceAt = Date.now() - 1000;
+  const row = price => { const now = new Date().toISOString(), body = { asset_id: '1', market: conditionId, timestamp: String(sourceAt), bids: [{ price, size: '2' }], asks: [{ price: '0.8', size: '2' }] }, bodyText = JSON.stringify(body); return { identity, receipt: { source: 'polymarket_clob_public', endpoint: 'https://clob.polymarket.com/book?token_id=1', requestStartedAt: now, receivedAt: now, status: 200, body, bodyText, bodySha256: sha256(bodyText) } }; };
+  await run({ cache, universe, port: '0' }, { client, onReady: async x => { record = x.recordEvent; await x.onEvent(row('0.4')); await x.onEvent(row('0.5')); await x.onEvent(row('0.4')); assert.equal(x.status().cachedBooks, 0); x.stop(); }, onStopping: async () => { await record({ source: 'synthetic_ws_stop', invalid: true }); } });
+  assert.equal(JSON.parse(await fs.readFile(path.join(cache, 'latest', '1.json'))).invalidReason, 'POLYMARKET_BOOK_CONFLICT');
+  await run({ cache, universe, port: '0' }, { client, onReady: async x => { assert.equal(x.status().cachedBooks, 0); await x.onEvent(row('0.4')); assert.equal(x.status().cachedBooks, 0); sourceAt++; await x.onEvent(row('0.4')); assert.equal(x.status().cachedBooks, 1); x.stop(); } });
+  assert.equal(client.stats.admissions, 0); await assert.rejects(record({ late: true }), /JOURNAL_CLOSED/);
+  const lines = (await Promise.all((await fs.readdir(path.join(cache, 'journal'))).map(async n => gunzipSync(await fs.readFile(path.join(cache, 'journal', n))).toString()))).join('').trim().split('\n').map(JSON.parse); assert.ok(lines.some(x => x.source === 'synthetic_ws_stop' && x.invalid));
+}));

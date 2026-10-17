@@ -53,7 +53,7 @@ export function validateUniverse(value) {
   return value;
 }
 export class Journal {
-  constructor(root, { maximumBytes = 2 * 1024 ** 3, segmentBytes = 32 * 1024 ** 2 } = {}) { Object.assign(this, { root, maximumBytes, segmentBytes }); this.total = 0; this.segment = 0; this.file = null; this.tail = Promise.resolve(); this.prunedSegments = 0; this.prunedBytes = 0; }
+  constructor(root, { maximumBytes = 2 * 1024 ** 3, segmentBytes = 32 * 1024 ** 2 } = {}) { Object.assign(this, { root, maximumBytes, segmentBytes }); this.total = 0; this.segment = 0; this.file = null; this.tail = Promise.resolve(); this.prunedSegments = 0; this.prunedBytes = 0; this.closed = false; }
   async initialize() {
     await fs.mkdir(this.root, { recursive: true, mode: 0o700 }); const names = await fs.readdir(this.root);
     if (names.length > 8192) throw Error('POLYMARKET_JOURNAL_FILES_BOUND');
@@ -75,6 +75,7 @@ export class Journal {
     if (this.total + incoming > this.maximumBytes) throw Error('POLYMARKET_JOURNAL_BOUND');
   }
   append(value) {
+    if (this.closed) return Promise.reject(Error('POLYMARKET_JOURNAL_CLOSED'));
     const operation = this.tail.then(async () => {
       const raw = Buffer.from(JSON.stringify(value) + '\n'); if (raw.length > 20 * 1024 ** 2) throw Error('POLYMARKET_JOURNAL_ROW_BOUND');
       const compressed = gzipSync(raw, { level: 1 }); if (this.total + compressed.length > this.maximumBytes || this.files >= 8192) await this.prune(compressed.length);
@@ -82,7 +83,7 @@ export class Journal {
       await fs.appendFile(this.file, compressed); this.total += compressed.length; this.segment += raw.length;
     }); this.tail = operation; return operation;
   }
-  async close() { await this.tail; }
+  async close() { this.closed = true; await this.tail; }
 }
 export function retained(row, identity) {
   if (row?.identity?.assetId !== identity.assetId || row.identity.conditionId !== identity.conditionId || row.receipt?.status !== 200 || row.receipt.source !== 'polymarket_clob_public' || sha256(row.receipt.bodyText ?? '') !== row.receipt.bodySha256) throw Error('POLYMARKET_RETAINED_RECEIPT');
@@ -105,7 +106,7 @@ export async function run(options, dependencies = {}) {
   if (!options.universe || !Number.isInteger(port) || port < 0 || port > 65535 || !Number.isInteger(concurrency) || concurrency < 1 || concurrency > 64 || !Number.isInteger(batchSize) || batchSize < 1 || batchSize > 20 || !Number.isInteger(rps) || rps < 1 || rps > 30 || !Number.isFinite(duration) || duration < 0 || duration > 86400) throw Error('POLYMARKET_CONFIGURATION');
   const universeBytes = await fs.readFile(options.universe); if (universeBytes.length > 16 * 1024 ** 2) throw Error('POLYMARKET_UNIVERSE_BOUND');
   const universe = validateUniverse(JSON.parse(universeBytes)); const release = await acquire(cache); const controller = new AbortController();
-  const latest = new Map(), tasks = new Set(), markets = new Map();
+  const latest = new Map(), conflicted = new Map(), tasks = new Set(), markets = new Map();
   for (const identity of universe.outcomes) { if (!markets.has(identity.conditionId)) markets.set(identity.conditionId, []); markets.get(identity.conditionId).push(identity); }
   const states = [...markets.values()].flatMap(ids => Array.from({ length: Math.ceil(ids.length / batchSize) }, (_, n) => ({ identities: ids.slice(n * batchSize, (n + 1) * batchSize), pending: false })));
   let cursor = 0, stopped = false, fatal, server, statusTimer, durationTimer;
@@ -121,16 +122,20 @@ export async function run(options, dependencies = {}) {
     catch (e) { stats.invalidBooks++; stats.lastError = e.message; await journal.append({ identity, receipt, invalid: e.message }); return; }
     const previous = latest.get(identity.assetId); const content = sha256(JSON.stringify({ bids: book.bids, asks: book.asks }));
     await journal.append({ identity, receipt, book, ...(bodyIndex === undefined ? {} : { bodyIndex }) });
+    if (conflicted.has(identity.assetId) && Number(book.sourceTimestamp) <= Number(conflicted.get(identity.assetId))) { stats.conflicts++; return; }
     if (previous && Number(book.sourceTimestamp) < Number(previous.book.sourceTimestamp)) { stats.oldBooks++; return; }
-    if (previous && book.sourceTimestamp === previous.book.sourceTimestamp && content !== previous.contentSha256) { stats.conflicts++; latest.delete(identity.assetId); await fs.unlink(path.join(cache, 'latest', identity.assetId + '.json')).catch(e => { if (e.code !== 'ENOENT') throw e; }); return; }
+    if (previous && book.sourceTimestamp === previous.book.sourceTimestamp && content !== previous.contentSha256) {
+      stats.conflicts++; conflicted.set(identity.assetId, book.sourceTimestamp); latest.delete(identity.assetId);
+      await atomicJson(path.join(cache, 'latest', identity.assetId + '.json'), { ...previous, invalidReason: 'POLYMARKET_BOOK_CONFLICT' }); return;
+    }
     const row = { identity, receipt, book, ...(bodyIndex === undefined ? {} : { bodyIndex }), contentSha256: content, firstAvailableAt: previous && book.sourceTimestamp === previous.book.sourceTimestamp ? previous.firstAvailableAt : receipt.receivedAt };
-    retained(row, identity); await atomicJson(path.join(cache, 'latest', identity.assetId + '.json'), row); latest.set(identity.assetId, row); stats.successfulBooks++; await dependencies.onEvent?.(row);
+    retained(row, identity); await atomicJson(path.join(cache, 'latest', identity.assetId + '.json'), row); conflicted.delete(identity.assetId); latest.set(identity.assetId, row); stats.successfulBooks++; await dependencies.onEvent?.(row);
   }
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
   try {
     await fs.mkdir(path.join(cache, 'latest'), { recursive: true, mode: 0o700 }); await journal.initialize();
     try { const b = JSON.parse(await fs.readFile(path.join(cache, 'backoff.json'), 'utf8')); const until = Date.parse(b.blockedUntil); if (!Number.isFinite(until)) throw Error('POLYMARKET_BACKOFF_STATE'); maximumBackoff = until; admission.backoff(Math.max(0, until - Date.now())); } catch (e) { if (e.code !== 'ENOENT') throw e; }
-    for (const identity of universe.outcomes) { try { const row = retained(JSON.parse(await fs.readFile(path.join(cache, 'latest', identity.assetId + '.json'), 'utf8')), identity); latest.set(identity.assetId, row); } catch (e) { if (e.code !== 'ENOENT') throw e; } }
+    for (const identity of universe.outcomes) { try { const row = retained(JSON.parse(await fs.readFile(path.join(cache, 'latest', identity.assetId + '.json'), 'utf8')), identity); if (row.invalidReason === 'POLYMARKET_BOOK_CONFLICT') conflicted.set(identity.assetId, row.book.sourceTimestamp); else if (row.invalidReason !== undefined) throw Error('POLYMARKET_CACHE_INVALID_REASON'); else latest.set(identity.assetId, row); } catch (e) { if (e.code !== 'ENOENT') throw e; } }
     // The prior dead owner's last rolling second must expire before ANY new
     // public admission. This does not renew cached receipt/source clocks.
     admission.backoff(1000);
@@ -163,9 +168,15 @@ export async function run(options, dependencies = {}) {
       })().catch(e => { fatal ??= e; stop(); }).finally(() => { found.pending = false; tasks.delete(task); });
       tasks.add(task); stats.maximumInFlight = Math.max(stats.maximumInFlight, tasks.size);
     }
-  } finally {
+  } catch (error) { fatal ??= error; }
+  finally {
     stop(); clearInterval(statusTimer); clearTimeout(durationTimer); process.removeListener('SIGINT', stop); process.removeListener('SIGTERM', stop);
-    try { await Promise.all([...tasks]); await backoffTail; await journal.close(); await publishStatus(); }
+    try {
+      try { await Promise.all([...tasks]); await backoffTail; } catch (e) { fatal ??= e; }
+      try { await dependencies.onStopping?.(); } catch (e) { fatal ??= e; }
+      try { await journal.close(); } catch (e) { fatal ??= e; }
+      try { await publishStatus(); } catch (e) { fatal ??= e; }
+    }
     finally { try { if (server) { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); } } finally { await release(); } }
   }
   if (fatal) throw fatal; return status();
