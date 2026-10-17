@@ -39,6 +39,8 @@ const UNIT:i128=1_000_000;
 // One bounded generation may contain all32 original reviewed inputs.
 const MAX_ROW:usize=3*1024*1024;
 const MAX_LOG:u64=16*1024*1024;
+// One original source may use the entire unchanged per-review source budget.
+const MAX_SOURCE_BYTES:usize=16*1024*1024;
 fn need(ok:bool, why:&'static str)->Result<()> {if ok {Ok(())} else {Err(why.into())}}
 fn digest<T:Serialize+?Sized>(v:&T)->Result<String>{Ok(format!("{:x}",Sha256::digest(serde_json::to_vec(v)?)))}
 fn bytes_sha(b:&[u8])->String{format!("{:x}",Sha256::digest(b))}
@@ -260,7 +262,7 @@ fn verify_snapshot(input:ReviewInput,originals:&[SourceBytes<'_>],trusted:&BTree
     need(originals.len()==input.sources.len(),"FUNDAMENTAL_ORIGINAL_SOURCES")?;
     for s in &input.sources{
         let found=originals.iter().filter(|v|v.sha256==s.sha256).collect::<Vec<_>>();
-        need(found.len()==1&&!found[0].bytes.is_empty()&&found[0].bytes.len()<=8*1024*1024
+        need(found.len()==1&&!found[0].bytes.is_empty()&&found[0].bytes.len()<=MAX_SOURCE_BYTES
             &&bytes_sha(found[0].bytes)==s.sha256,"FUNDAMENTAL_ORIGINAL_SOURCE_HASH")?;
         if s.kind=="official_contract_node"{
             let original:Value=serde_json::from_slice(found[0].bytes)?;
@@ -580,8 +582,8 @@ impl Settings{
             let input:ReviewInput=serde_json::from_slice(&read_file(&pin.file,pin.maximum)?)?;
             need(exchanges.insert(input.exchange_id.clone())&&r.source_files.len()==input.sources.len(),"FUNDAMENTAL_DUPLICATE_SETTING_OR_SOURCES")?;
             let mut data=Vec::new();let mut total=0usize;
-            for s in &r.source_files{let p=FilePin::open(&s.path,&s.sha256,8*1024*1024)?;let bytes=read_file(&p.file,p.maximum)?;
-                total=total.checked_add(bytes.len()).ok_or("FUNDAMENTAL_SOURCE_BOUND")?;need(total<=16*1024*1024,"FUNDAMENTAL_SOURCE_BOUND")?;p.validate()?;data.push(bytes);pins.push(p);}
+            for s in &r.source_files{let p=FilePin::open(&s.path,&s.sha256,MAX_SOURCE_BYTES as u64)?;let bytes=read_file(&p.file,p.maximum)?;
+                total=total.checked_add(bytes.len()).ok_or("FUNDAMENTAL_SOURCE_BOUND")?;need(total<=MAX_SOURCE_BYTES,"FUNDAMENTAL_SOURCE_BOUND")?;p.validate()?;data.push(bytes);pins.push(p);}
             let sources=r.source_files.iter().zip(&data).map(|(s,b)|SourceBytes{sha256:&s.sha256,bytes:b}).collect::<Vec<_>>();
             reviews.push(verify_snapshot(input,&sources,authority.trusted())?);pin.validate()?;pins.push(pin);
         }authority.validate()?;Ok(LoadedSettings{authority,reviews,initialize:self.allow_initialization,pins,settings_sha:digest(self)?})
