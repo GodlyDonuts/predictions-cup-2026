@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-17T04:19:28.362412+00:00",
+  "childCommit": "15c4b25aa4fd82d4f9c671b043e76fc9d4ebb17f",
+  "exactSummarySha256": "28aedc869a58aac305d34de2621171899cddc56fb8ca3d00eb8ce3d117338aa3",
+  "independentExactRegeneration": true,
+  "meaningfulTestsPassed": 5,
+  "wrongSourcePinRejectedWithoutOutput": true,
+  "releaseEraIsNotPerEntryAdmissionProof": true,
+  "causalGuardEffectEstablished": false,
+  "runtimeChanged": false
+}

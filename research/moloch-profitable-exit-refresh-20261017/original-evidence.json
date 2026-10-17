@@ -1,0 +1,152 @@
+{
+  "observedAt": "2026-10-17T04:12:41.222304+00:00",
+  "sourceFinancialSequence": 396960,
+  "sourceFinancialReportSha256": "0e3d3f84f2557ee63ab426ec556cb3934edae81a39e543efda7aca996f33d491",
+  "sourceDispatchPrefixSequence": 18127,
+  "sourceDispatchPrefixSha256": "724c885826eb5d9d1ca803d22437e67eeb7aab78240c732981d7985da82e57fe",
+  "sourceNativePrefixBytes": 1258635132,
+  "sourceNativePrefixSha256": "1ac50e1c13d782601f0fabdb42737b76b1f0791d31536255c2763ed7081f2b66",
+  "nativeSliceStartByte": 1234639372,
+  "nativeSliceBytes": 23995760,
+  "nativeSliceSha256": "13dbadfe58e78d7fdd9b84a3cf09edf1bea17fb33ab3fd09052fc97cccf74153",
+  "exchangeId": "948",
+  "side": "NO",
+  "ownedSharesAtFrozenBoundary": 7603,
+  "ownedWorstLotPrice": "0.895000",
+  "feeAssumptionAtSource": "0.000000",
+  "originalMinimumGain": "0.005000",
+  "noActualFillOrProfitClaim": true,
+  "overlappingOpportunitiesMustNotBeAdded": true,
+  "bookSnapshotsDoNotGuaranteeCounterfactualFills": true,
+  "codeBarrier": "maximumAge-only read-hint and refreshed candidate identity excludes profit-only inventoryAON drafts",
+  "runtimeChangedByAudit": false,
+  "allDraftRowsPrivateSha256": "91d49e3c337053e6d301993c301935398e20b8ad7935a621223003f292491c2e",
+  "expiredProfitOnlyDraftCount": 1301,
+  "durableNeverSentCount": 1301,
+  "attemptedCount": 0,
+  "originalLifetimeRangeMs": [
+    13000,
+    13000
+  ],
+  "lastEightDrafts": [
+    {
+      "nativeQid": 11816,
+      "quantity": 1480,
+      "limit": "0.900000",
+      "createdAtMs": 1792205244263,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "7.400000"
+    },
+    {
+      "nativeQid": 11884,
+      "quantity": 1494,
+      "limit": "0.900000",
+      "createdAtMs": 1792205513167,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "7.470000"
+    },
+    {
+      "nativeQid": 11910,
+      "quantity": 1494,
+      "limit": "0.900000",
+      "createdAtMs": 1792205619385,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "7.470000"
+    },
+    {
+      "nativeQid": 11920,
+      "quantity": 1494,
+      "limit": "0.900000",
+      "createdAtMs": 1792205663311,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "7.470000"
+    },
+    {
+      "nativeQid": 11961,
+      "quantity": 1494,
+      "limit": "0.900000",
+      "createdAtMs": 1792205847777,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "lastStrictlyEarlierNativeObservation": {
+        "sequence": 390052,
+        "kind": "book",
+        "rowSha256": "121b0c1d434921acb9117c671d8557cc3ff73984c8d9abd767460b95c6da17f1",
+        "freshAtQuoteCreation": true,
+        "bookSourceAt": "2026-10-17T02:57:22.528445300Z",
+        "bookReceivedAt": "2026-10-17T02:57:23.387Z",
+        "qualifyingNoBidDepthAtFrozenLimit": 2988,
+        "fullFrozenQuantityDisplayed": true
+      },
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "7.470000"
+    },
+    {
+      "nativeQid": 11978,
+      "quantity": 1494,
+      "limit": "0.900000",
+      "createdAtMs": 1792205919428,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "lastStrictlyEarlierNativeObservation": {
+        "sequence": 390498,
+        "kind": "book",
+        "rowSha256": "cd06f5887bf9c7dc2b697fe55d73dc4f8d4eed62831b99435164a2f90c56d3a5",
+        "freshAtQuoteCreation": false,
+        "bookSourceAt": "2026-10-17T02:58:27.951476300Z",
+        "bookReceivedAt": "2026-10-17T02:58:28.521Z",
+        "qualifyingNoBidDepthAtFrozenLimit": 2960,
+        "fullFrozenQuantityDisplayed": true
+      },
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "7.470000"
+    },
+    {
+      "nativeQid": 12205,
+      "quantity": 696,
+      "limit": "0.900000",
+      "createdAtMs": 1792208086800,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "lastStrictlyEarlierNativeObservation": {
+        "sequence": 391694,
+        "kind": "gap",
+        "rowSha256": "81ed11fe0731616085e3547924aa255ad0f36fcb3c14283c9cefdff19dd93933"
+      },
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "3.480000"
+    },
+    {
+      "nativeQid": 12265,
+      "quantity": 1697,
+      "limit": "0.900000",
+      "createdAtMs": 1792208379158,
+      "originalLifetimeMs": 13000,
+      "durableNotSent": true,
+      "physicalAttempted": false,
+      "lastStrictlyEarlierNativeObservation": {
+        "sequence": 396412,
+        "kind": "book",
+        "rowSha256": "9a0104007c5ba9a1f279bf2d73a1cf11930904d0716acd0e0bdc448d9c7e947f",
+        "freshAtQuoteCreation": false,
+        "bookSourceAt": "2026-10-17T03:39:29.027636000Z",
+        "bookReceivedAt": "2026-10-17T03:39:29.253Z",
+        "qualifyingNoBidDepthAtFrozenLimit": 3394,
+        "fullFrozenQuantityDisplayed": true
+      },
+      "hypotheticalGrossAtFrozenLimitUsingBoundaryWorstLot": "8.485000"
+    }
+  ],
+  "boundedSliceCoverageOnly": true,
+  "strictlyEarlierFreshFullDepthObserved": 1,
+  "frozenBoundaryBasisNotHistoricalPerDraftBasisProof": true,
+  "schemaNote": "Last-eight projections use worst basis at the frozen338-fill boundary, not an independent per-draft historical basis reconstruction. No gains summed, fill counterfactuals or source-clock relief."
+}
