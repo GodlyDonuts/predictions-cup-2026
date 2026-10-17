@@ -1,0 +1,552 @@
+{
+  "protocolRawSha256": "93996f8df439b7648d6f4655775b29226b1bbb81f79dc54e5536d747a78bee71",
+  "protocolLfSha256": "7f73d1cd6a2bfeddbe97539d26722c3f1dd4b84d7aaa9d8c9d3e27b31e950619",
+  "algorithmLfSha256": "1fbc599e16417778d4aa48545eb2c7af9c3073875fd4ffb26f72c0333443a34b",
+  "generationReaderLfSha256": "63ca51eb5f4f9d00b25c8518cd2892dbde0f3ff78013929eeff3a57892997e35",
+  "wrapperRawSha256": "bfd052444098b587419a9f683aa13bc23c348df7f3ca43703a724afdd64dd166",
+  "oldOutcomeAlreadyInspected": true,
+  "confirmatory": false,
+  "comparisonPerformed": true,
+  "new": {
+    "pid": 661886,
+    "firstTradingProgressAt": "2026-10-17T15:23:08.392Z",
+    "windowNs": 300000000000,
+    "windowStartNs": "1792250588392000000",
+    "windowEndExclusiveNs": "1792250888392000000",
+    "fullFiveMinuteWindowCovered": true,
+    "firstProgressOriginal": {
+      "zipSha256": "bbc76c2aad0315513c658ef63092bcd61da770d33e8eb0fc5f37716b22f77264",
+      "member": "first-trading-progress.original.json",
+      "bytes": 264,
+      "sha256": "af2bfcaf86343c4c0e3637f39d8c48fdbf710ed466a89d8ee803ad89b8195aed"
+    },
+    "packetZipSha256": "a6cdee921d9593a097d7e0dddf288e93843df8c42a34e0a8471209b206d7f559",
+    "packetMemberManifestSha256": "d43eeebffb6c29a8695d1c218ab4ba4c98b75ebaadbe3bfefa0e841407e61a69",
+    "allOriginalZipMembersAuthenticated": true,
+    "memberPins": {
+      "anchor-head.original.json": {
+        "bytes": 254,
+        "sha256": "b88260769446db7fb39c13ad7eafe599e728fd789596d9299297b4a51e167f6a"
+      },
+      "bank-manifest.original.json": {
+        "bytes": 16090,
+        "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+      },
+      "bridge.original.json": {
+        "bytes": 22325580,
+        "sha256": "b54830b219fba35238792927fc0c123c582a91b4311cb86a3b100f305f4c32e8"
+      },
+      "capture.json": {
+        "bytes": 275,
+        "sha256": "5c4e693af7dc3755ed3d0336851f0147c97c4bca1e788b9e6c472b6b4da2e015"
+      },
+      "control.original.json": {
+        "bytes": 21302,
+        "sha256": "64dcee5feb31449d4862f801986f2edac68106e428691529525b70a45bd865d8"
+      },
+      "dispatch.original.ndjson": {
+        "bytes": 10666564,
+        "sha256": "7bbf09a2c2fb044199f49bdc64d46a1130821bab255666815bfd6c10c24dbbe4"
+      },
+      "first-trading-progress.original.json": {
+        "bytes": 264,
+        "sha256": "af2bfcaf86343c4c0e3637f39d8c48fdbf710ed466a89d8ee803ad89b8195aed"
+      },
+      "fundamental.original.jsonl": {
+        "bytes": 493714,
+        "sha256": "e294520aff0a0b2571e0b7f57a98aff0f7c7a4026b70bdcf15d7f6176a4650f2"
+      },
+      "head.original.json": {
+        "bytes": 254,
+        "sha256": "eabad3cd08fefde85ddbf182f10911b0803c9cbe97906ca3ca264ed535848824"
+      },
+      "model-status.original.json": {
+        "bytes": 616,
+        "sha256": "0cb86a566c0a6ff84b9b4d5948ed49c67d93e6693f08918c72743e9deaf3dba5"
+      },
+      "native.suffix.jsonl": {
+        "bytes": 1558871,
+        "sha256": "09a51529fce967dcb2d5d1a19a8fb8a0b022b397174ea79064c02ddb46130a89"
+      },
+      "production-rollout.original.json": {
+        "bytes": 937,
+        "sha256": "88e656772e1f35bd8fdf5a72b13587f140fbefd3e45025e49faa61b261d380d7"
+      },
+      "report.original.json": {
+        "bytes": 5254166,
+        "sha256": "ea76bfc80a21fbd2ea75230b9173705e81bd43d3adefb9c556460c225b06977a"
+      }
+    },
+    "nativeSuffix": {
+      "firstSequence": 492482,
+      "lastSequence": 493125,
+      "rows": 644,
+      "firstProcessedNs": "1792250490962000000",
+      "lastProcessedNs": "1792250906793000000",
+      "exactRawSealsAndFinalTailVerified": true
+    },
+    "windowNativeEvents": 333,
+    "windowEventTypes": {
+      "book": 280,
+      "coverage": 11,
+      "unsubmitted_intent_retired": 33,
+      "trade": 9
+    },
+    "windowGapEvents": 0,
+    "bookMetrics": {
+      "all": {
+        "counts": {
+          "bookEvents": 280,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 10,
+          "explicitNativeInvalidBook": 10,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 148,
+          "staleNativeClockAtProcessing": 148,
+          "staleDespiteSourceFreshAtReceipt": 148,
+          "staleWithReceiptToProcessingOver10000ms": 143,
+          "receiptToProcessingOver10000ms": 143,
+          "parserStatus_valid": 270,
+          "parserStatus_invalidated_book": 10
+        },
+        "receiptToProcessing": {
+          "count": 280,
+          "medianMs": "11054",
+          "p90Ms": "30598",
+          "maxMs": "36102"
+        },
+        "sourceToReceipt": {
+          "count": 280,
+          "medianMs": "491.03785",
+          "p90Ms": "884.0116",
+          "maxMs": "8934.9142"
+        },
+        "sourceToProcessing": {
+          "count": 280,
+          "medianMs": "11302.3694",
+          "p90Ms": "31000.5828",
+          "maxMs": "36794.3628"
+        }
+      },
+      "official_sig_realtime": {
+        "counts": {
+          "bookEvents": 256,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 0,
+          "explicitNativeInvalidBook": 0,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 148,
+          "staleNativeClockAtProcessing": 148,
+          "staleDespiteSourceFreshAtReceipt": 148,
+          "staleWithReceiptToProcessingOver10000ms": 143,
+          "receiptToProcessingOver10000ms": 143,
+          "parserStatus_valid": 256
+        },
+        "receiptToProcessing": {
+          "count": 256,
+          "medianMs": "12475",
+          "p90Ms": "31287",
+          "maxMs": "36102"
+        },
+        "sourceToReceipt": {
+          "count": 256,
+          "medianMs": "525.4376",
+          "p90Ms": "899.2123",
+          "maxMs": "8934.9142"
+        },
+        "sourceToProcessing": {
+          "count": 256,
+          "medianMs": "12852.93235",
+          "p90Ms": "32146.0956",
+          "maxMs": "36794.3628"
+        }
+      },
+      "official_sig_api_v1": {
+        "counts": {
+          "bookEvents": 24,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 10,
+          "explicitNativeInvalidBook": 10,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 0,
+          "staleNativeClockAtProcessing": 0,
+          "staleDespiteSourceFreshAtReceipt": 0,
+          "staleWithReceiptToProcessingOver10000ms": 0,
+          "receiptToProcessingOver10000ms": 0,
+          "parserStatus_invalidated_book": 10,
+          "parserStatus_valid": 14
+        },
+        "receiptToProcessing": {
+          "count": 24,
+          "medianMs": "128",
+          "p90Ms": "469",
+          "maxMs": "492"
+        },
+        "sourceToReceipt": {
+          "count": 24,
+          "medianMs": "104.18885",
+          "p90Ms": "238.689",
+          "maxMs": "590.4297"
+        },
+        "sourceToProcessing": {
+          "count": 24,
+          "medianMs": "265.5776",
+          "p90Ms": "595.7244",
+          "maxMs": "635.4297"
+        }
+      }
+    },
+    "sourceBodyMembershipIndependentlyVerified": false,
+    "financialReplayPerformed": false,
+    "executionAuthority": false,
+    "firstObservedFreshAt": "2026-10-17T15:23:08.971441+00:00",
+    "observerEventsSha256": "5c1e1f110bc3e5b9069b963219e0cb593a55350ce4b6f42bbc23bf0057c4925d",
+    "firstPacketZipSha256": "bbc76c2aad0315513c658ef63092bcd61da770d33e8eb0fc5f37716b22f77264",
+    "firstPacketCaptureOriginal": {
+      "member": "capture.json",
+      "bytes": 270,
+      "sha256": "250331a6357369dfec6a0e890fad06e8fccbe7b5d54282091e31d1ff3640c612"
+    },
+    "productionRolloutOriginal": {
+      "member": "production-rollout.original.json",
+      "bytes": 937,
+      "sha256": "88e656772e1f35bd8fdf5a72b13587f140fbefd3e45025e49faa61b261d380d7"
+    },
+    "generations": [
+      {
+        "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+        "atMs": 1792196338073,
+        "rowSha256": "072da94d69ace63bbc5dcd01ed3638b039768601e170339251cc5d0525c5f189"
+      },
+      {
+        "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+        "atMs": 1792198837936,
+        "rowSha256": "99eadd90c43507844889a5550b1d2110db2b966b4072d796ca38e9c360610057"
+      },
+      {
+        "generationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31",
+        "atMs": 1792201335653,
+        "rowSha256": "f082069ca57a73904a6b765565e8dbc00545f2b01cffbffcac9a33061f669944"
+      },
+      {
+        "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+        "atMs": 1792201423196,
+        "rowSha256": "cbc8ca71294ae4dea48252eb5694b3d0d7f72c93a256946ba2ba6fe8151d6e54"
+      },
+      {
+        "generationSha256": "64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda",
+        "atMs": 1792239721653,
+        "rowSha256": "0eadebbf1cf7093a4645caec33b30daa4e5d8055924ced757afdc889d643d843"
+      },
+      {
+        "generationSha256": "813f85a7a6da473c52152d7acbdd0b88102f288380c95199bd5d23360b0ff12a",
+        "atMs": 1792246046800,
+        "rowSha256": "d29366fc9ea369d4d050298c65c732ea38a1a374e1aad5f61a483e711a7d155b"
+      }
+    ],
+    "wholeOriginalSixGenerationPrefixRetained": true,
+    "noSeventhGeneration": true
+  },
+  "old": {
+    "pid": 654706,
+    "firstTradingProgressAt": "2026-10-17T13:59:43.091Z",
+    "windowNs": 300000000000,
+    "windowStartNs": "1792245583091000000",
+    "windowEndExclusiveNs": "1792245883091000000",
+    "fullFiveMinuteWindowCovered": true,
+    "firstProgressOriginal": {
+      "zipSha256": "d988c4042c34299a3e31fc28c8915590184b4fa681ba02d9d79e11bd8fd5419d",
+      "member": "first-trading-progress.original.json",
+      "bytes": 264,
+      "sha256": "80919f75f7b272a5ddc09518a072e3e5436f68c607c6620b0202e11de5224a99"
+    },
+    "packetZipSha256": "d988c4042c34299a3e31fc28c8915590184b4fa681ba02d9d79e11bd8fd5419d",
+    "packetMemberManifestSha256": "c60ab878a9a28421224cc93be36377886d0b82e6a0a83fb12701d5fd1d4be338",
+    "allOriginalZipMembersAuthenticated": true,
+    "memberPins": {
+      "anchor-head.original.json": {
+        "bytes": 254,
+        "sha256": "0cae93dd384a59239e4419768309378eefa38ddb7a3029955956fb15355df5aa"
+      },
+      "bank-manifest.original.json": {
+        "bytes": 16090,
+        "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+      },
+      "bridge.original.json": {
+        "bytes": 22325580,
+        "sha256": "b54830b219fba35238792927fc0c123c582a91b4311cb86a3b100f305f4c32e8"
+      },
+      "capture.json": {
+        "bytes": 275,
+        "sha256": "ad9a9dcd1985d5b2c0ec4bbefad648daab1ef565dfd5dfadc4b5805682093ca6"
+      },
+      "control.original.json": {
+        "bytes": 21405,
+        "sha256": "916e8ca33b837a1846db27458adf8daac29f3910746bc2bf9da773aef094488f"
+      },
+      "dispatch.original.ndjson": {
+        "bytes": 10615504,
+        "sha256": "39633c4b2b94543202d1de276606ac0197ed267fd90d8e116bbbd968344c5fa1"
+      },
+      "first-trading-progress.original.json": {
+        "bytes": 264,
+        "sha256": "80919f75f7b272a5ddc09518a072e3e5436f68c607c6620b0202e11de5224a99"
+      },
+      "fundamental.original.jsonl": {
+        "bytes": 439504,
+        "sha256": "f0ecddca82bceb8582c176f4eccf76e4f8d3d19f3e6993fa3111914f045fc056"
+      },
+      "head.original.json": {
+        "bytes": 254,
+        "sha256": "535a4a6c5a1256d62c49c2f968e1a85031d80800e7bafcbfd3654919e91c1834"
+      },
+      "model-status.original.json": {
+        "bytes": 5,
+        "sha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed"
+      },
+      "native.suffix.jsonl": {
+        "bytes": 1960426,
+        "sha256": "f78ed8145d1b7417f8be4cb6b33f5e03390c6cbea1c2bcd6f2cb9727f93d42ba"
+      },
+      "production-rollout.original.json": {
+        "bytes": 919,
+        "sha256": "53075f543d20ba4a1c2348033cc9eceabcc65b2f450b1950995b992186a6b88a"
+      },
+      "report.original.json": {
+        "bytes": 5210880,
+        "sha256": "e7e925af83b8bfef47f680ab87cdf3a7580cff72f24e5f2a3898e09680bfa3f0"
+      }
+    },
+    "nativeSuffix": {
+      "firstSequence": 489339,
+      "lastSequence": 490191,
+      "rows": 853,
+      "firstProcessedNs": "1792245491426000000",
+      "lastProcessedNs": "1792245906450000000",
+      "exactRawSealsAndFinalTailVerified": true
+    },
+    "windowNativeEvents": 439,
+    "windowEventTypes": {
+      "coverage": 11,
+      "book": 389,
+      "unsubmitted_intent_retired": 28,
+      "trade": 10,
+      "reviewed_fundamental_entry_reserved_v1": 1
+    },
+    "windowGapEvents": 0,
+    "bookMetrics": {
+      "all": {
+        "counts": {
+          "bookEvents": 389,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 10,
+          "explicitNativeInvalidBook": 10,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 172,
+          "staleNativeClockAtProcessing": 172,
+          "staleDespiteSourceFreshAtReceipt": 172,
+          "staleWithReceiptToProcessingOver10000ms": 167,
+          "receiptToProcessingOver10000ms": 167,
+          "parserStatus_invalidated_book": 10,
+          "parserStatus_valid": 379
+        },
+        "receiptToProcessing": {
+          "count": 389,
+          "medianMs": "8212",
+          "p90Ms": "27160",
+          "maxMs": "34041"
+        },
+        "sourceToReceipt": {
+          "count": 389,
+          "medianMs": "585.3537",
+          "p90Ms": "1130.7716",
+          "maxMs": "1621.8071"
+        },
+        "sourceToProcessing": {
+          "count": 389,
+          "medianMs": "8492.4932",
+          "p90Ms": "27809.8544",
+          "maxMs": "35131.5638"
+        }
+      },
+      "official_sig_api_v1": {
+        "counts": {
+          "bookEvents": 25,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 10,
+          "explicitNativeInvalidBook": 10,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 0,
+          "staleNativeClockAtProcessing": 0,
+          "staleDespiteSourceFreshAtReceipt": 0,
+          "staleWithReceiptToProcessingOver10000ms": 0,
+          "receiptToProcessingOver10000ms": 0,
+          "parserStatus_invalidated_book": 10,
+          "parserStatus_valid": 15
+        },
+        "receiptToProcessing": {
+          "count": 25,
+          "medianMs": "46",
+          "p90Ms": "540",
+          "maxMs": "737"
+        },
+        "sourceToReceipt": {
+          "count": 25,
+          "medianMs": "104.0545",
+          "p90Ms": "146.9427",
+          "maxMs": "292.5284"
+        },
+        "sourceToProcessing": {
+          "count": 25,
+          "medianMs": "154.5872",
+          "p90Ms": "832.5284",
+          "maxMs": "883.9427"
+        }
+      },
+      "official_sig_realtime": {
+        "counts": {
+          "bookEvents": 364,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 0,
+          "explicitNativeInvalidBook": 0,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 172,
+          "staleNativeClockAtProcessing": 172,
+          "staleDespiteSourceFreshAtReceipt": 172,
+          "staleWithReceiptToProcessingOver10000ms": 167,
+          "receiptToProcessingOver10000ms": 167,
+          "parserStatus_valid": 364
+        },
+        "receiptToProcessing": {
+          "count": 364,
+          "medianMs": "8315",
+          "p90Ms": "27160",
+          "maxMs": "34041"
+        },
+        "sourceToReceipt": {
+          "count": 364,
+          "medianMs": "708.9332",
+          "p90Ms": "1130.7716",
+          "maxMs": "1621.8071"
+        },
+        "sourceToProcessing": {
+          "count": 364,
+          "medianMs": "9410.7826",
+          "p90Ms": "28072.812",
+          "maxMs": "35131.5638"
+        }
+      }
+    },
+    "sourceBodyMembershipIndependentlyVerified": false,
+    "financialReplayPerformed": false,
+    "executionAuthority": false
+  },
+  "incident": {
+    "zipSha256": "7ee0a95b75500d732e2568a1962eb1491cd525125284a495f39bc14d38666af4",
+    "originalFundamental": {
+      "member": "fundamental.original.jsonl",
+      "bytes": 493714,
+      "sha256": "e294520aff0a0b2571e0b7f57a98aff0f7c7a4026b70bdcf15d7f6176a4650f2"
+    },
+    "generations": [
+      {
+        "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+        "atMs": 1792196338073,
+        "rowSha256": "072da94d69ace63bbc5dcd01ed3638b039768601e170339251cc5d0525c5f189"
+      },
+      {
+        "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+        "atMs": 1792198837936,
+        "rowSha256": "99eadd90c43507844889a5550b1d2110db2b966b4072d796ca38e9c360610057"
+      },
+      {
+        "generationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31",
+        "atMs": 1792201335653,
+        "rowSha256": "f082069ca57a73904a6b765565e8dbc00545f2b01cffbffcac9a33061f669944"
+      },
+      {
+        "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+        "atMs": 1792201423196,
+        "rowSha256": "cbc8ca71294ae4dea48252eb5694b3d0d7f72c93a256946ba2ba6fe8151d6e54"
+      },
+      {
+        "generationSha256": "64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda",
+        "atMs": 1792239721653,
+        "rowSha256": "0eadebbf1cf7093a4645caec33b30daa4e5d8055924ced757afdc889d643d843"
+      },
+      {
+        "generationSha256": "813f85a7a6da473c52152d7acbdd0b88102f288380c95199bd5d23360b0ff12a",
+        "atMs": 1792246046800,
+        "rowSha256": "d29366fc9ea369d4d050298c65c732ea38a1a374e1aad5f61a483e711a7d155b"
+      }
+    ]
+  },
+  "oldGenerations": [
+    {
+      "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+      "atMs": 1792196338073,
+      "rowSha256": "072da94d69ace63bbc5dcd01ed3638b039768601e170339251cc5d0525c5f189"
+    },
+    {
+      "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+      "atMs": 1792198837936,
+      "rowSha256": "99eadd90c43507844889a5550b1d2110db2b966b4072d796ca38e9c360610057"
+    },
+    {
+      "generationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31",
+      "atMs": 1792201335653,
+      "rowSha256": "f082069ca57a73904a6b765565e8dbc00545f2b01cffbffcac9a33061f669944"
+    },
+    {
+      "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+      "atMs": 1792201423196,
+      "rowSha256": "cbc8ca71294ae4dea48252eb5694b3d0d7f72c93a256946ba2ba6fe8151d6e54"
+    },
+    {
+      "generationSha256": "64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda",
+      "atMs": 1792239721653,
+      "rowSha256": "0eadebbf1cf7093a4645caec33b30daa4e5d8055924ced757afdc889d643d843"
+    }
+  ],
+  "limitations": [
+    "Old outcomes already inspected; observational diagnostic, not confirmatory or randomized.",
+    "No causal attribution: periods, market activity, cache state, restored history size and possible concurrent R29 build differ.",
+    "First observed freshness is relative to the known finite observer and retained observation trace, not independently witnessed first internal worker transition.",
+    "Original native admitted records/seals do not independently authenticate raw provider source-body membership or continuous feed coverage.",
+    "Full300s source-clock coverage is mandatory; missing/truncated/failed/changed-generation windows remain unavailable, never replaced by a favorable later interval.",
+    "Latency metrics establish neither executable edge, financial authority nor profitability."
+  ],
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "causalBenefitEstablished": false
+}

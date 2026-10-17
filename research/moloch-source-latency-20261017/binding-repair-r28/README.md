@@ -1,5 +1,7 @@
 # R28: original binding expiry repair
 
+**Fresh operation independently verified15:34UTC:** [actual live proof](live-proof/README.md). The [complete fixed first300s](../r28-first-300s-result.md) shows no measured latency improvement; no new fills/profit are established.
+
 Checked source is `069a85a478942eb8148c354df368e369e940eb7e`. R28 was installed at15:00:15.643UTC as the sole worker661886 after the original R27 failure at14:21:28UTC. The new process is restoring; fresh trading, fills and profit are not yet verified.
 
 The original generic `FUNDAMENTAL_NOT_ELIGIBLE` originates in `bind_quantity`, before R27's physical-decision catch. The new pre-intent helper wraps **both actual binding and physical token minting**. It defers only the exact stale-book codes after proving the current quote has no intent, physical attempt, acknowledgment, binding or fill; the SDK queue must positively have zero unknowns/no active operation/no manual review, and the actual target native book must be unavailable under the unchanged ten-second policy. Fresh ineligibility, file/proof errors, queue uncertainty and any post-intent failure retain their original stop behavior.
