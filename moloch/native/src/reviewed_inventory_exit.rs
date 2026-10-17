@@ -33,6 +33,17 @@ impl Engine {
         let ex=id(&e["exchangeId"])?;let market=id(&e["marketId"])?;let tournament=string(&e["bankScope"]["tournamentId"])?;
         let side=match e["side"].as_str(){Some("YES")=>Side::Yes,Some("NO")=>Side::No,_=>return Err("REVIEWED_EXIT_SIDE")};
         let cohort=e["type"]=="reviewed_cohort_exit_reserved_v1";
+        // Default keeps the historical executable-depth event and record exact.
+        // The opted-in limit may rest OR execute partially; no depth is promised.
+        let passive=match e.get("executionMode"){None=>false,Some(Value::String(mode)) if mode=="executableDepth"=>false,
+            Some(Value::String(mode)) if mode=="passiveValueLimit"=>true,_=>return Err("REVIEWED_EXIT_EXECUTION_MODE")};
+        if passive{
+            if cohort||e["reason"]!="refreshed_value_exit"{return Err("REVIEWED_PASSIVE_EXIT_INHERITED_VALUE_ONLY")}
+            // Prevent ordinary planning from creating a competing SELL/hedge
+            // on later books or partial fills while this limit remains open.
+            if !self.managed_inventory_planning_excludes(&ex){return Err("REVIEWED_PASSIVE_EXIT_MANAGED_PLANNING_REQUIRED")}
+            for key in ["modelSha256","sourceSha256"]{if e[key].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_PASSIVE_EXIT_PROOF")}}
+        }
         for key in ["originSha256","reviewSha256","bookSha256","expectedPositionSha256"]{
             if e[key].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_EXIT_PROOF")}
         }
@@ -48,6 +59,14 @@ impl Engine {
         let n=e["quantity"].as_u64().filter(|n|*n>0&&*n<=self.policy.quantity&&*n<=self.wallet.quantity(&ex,side)).ok_or("REVIEWED_EXIT_QUANTITY")?;
         let limit=price(dec(&e["limitPrice"])?)?;let payout=dec(&e["expectedPayout"])?;
         if !(0..=SCALE).contains(&payout){return Err("REVIEWED_EXIT_VALUE")}
+        if passive{
+            let maximum=e["maximumPassiveQuantity"].as_u64().filter(|n|*n>0&&*n<=1_000_000).ok_or("REVIEWED_PASSIVE_EXIT_SLICE")?;
+            // The reviewed payout already restores the margin subtracted by the
+            // runtime entry ceiling. Do NOT add the margin a second time.
+            // One-share rounded fees upper-bound every possible partial fill.
+            if n>maximum{return Err("REVIEWED_PASSIVE_EXIT_SLICE")}
+            if limit.checked_sub(self.policy.fee(limit,1)?).ok_or("REVIEWED_PASSIVE_EXIT_RANGE")?<payout{return Err("REVIEWED_PASSIVE_EXIT_NET_VALUE")}
+        }
         match e["reason"].as_str(){
             Some("refreshed_value_exit") if limit>=payout&&e["reviewCurrentUntilMs"].as_i64().is_some_and(|t|t>at)=>{},
             Some("reviewed_source_revocation") if e["revoked"]==true&&e["reviewCurrentUntilMs"].as_i64().is_some_and(|t|t>at)=>{},
@@ -56,16 +75,23 @@ impl Engine {
         }
         let b=self.books.get(&ex).ok_or("REVIEWED_EXIT_BOOK")?;
         if b.market!=market||b.tournament!=tournament||!b.fresh(&self.policy,at)||hash(&b.raw)!=e["bookSha256"]{return Err("REVIEWED_EXIT_BOOK")}
-        let mut left=n;let mut marginal=None;
-        for (yes,quantity) in if side==Side::Yes{&b.bids}else{&b.asks}{let px=if side==Side::Yes{*yes}else{SCALE-*yes};let take=left.min(*quantity);if take>0{left-=take;marginal=Some(px)}if left==0{break}}
-        if left!=0||marginal!=Some(limit){return Err("REVIEWED_EXIT_EXECUTABLE_DEPTH")}
+        if !passive{
+            let mut left=n;let mut marginal=None;
+            for (yes,quantity) in if side==Side::Yes{&b.bids}else{&b.asks}{let px=if side==Side::Yes{*yes}else{SCALE-*yes};let take=left.min(*quantity);if take>0{left-=take;marginal=Some(px)}if left==0{break}}
+            if left!=0||marginal!=Some(limit){return Err("REVIEWED_EXIT_EXECUTABLE_DEPTH")}
+        }
         let expires=ms(&e["expiresAt"])?;
         if expires<=at.checked_add(self.policy.latency).ok_or("REVIEWED_EXIT_CLOCK")?||expires-at>self.policy.lifetime{return Err("REVIEWED_EXIT_CLOCK")}
+        if passive&&e["reviewCurrentUntilMs"].as_i64().is_none_or(|until|expires>until){return Err("REVIEWED_PASSIVE_EXIT_REVIEW_EXPIRY")}
         self.writes.retain(|t|at-*t<60000);
         if self.writes.len()>=self.policy.writes||self.writes.last().is_some_and(|t|at-*t<self.policy.write_gap){return Err("REVIEWED_EXIT_WRITE_BUDGET")}
         let qid=self.prior_orders+self.orders.len() as u64+1;let (same,better)=Self::visible(b,side,false,limit);
         self.orders.push(Order{id:qid,market,exchange:ex,tournament,side,buy:false,quantity:n,filled:0,limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same,better,visible_same:same,visible_better:better,touch_remainder:0,aon:false,age_reason:false,through:false,participation:100,conditional:false,touch_bps:0});
         self.reviewed_inventory_exits.insert(qid,json!({"originSha256":e["originSha256"],"reviewSha256":e["reviewSha256"],"reason":e["reason"],"bookSha256":e["bookSha256"],"adoptionReceiptHash":e["adoptionReceiptHash"]}));
+        if passive{let record=self.reviewed_inventory_exits.get_mut(&qid).ok_or("REVIEWED_PASSIVE_EXIT_RECORD")?;
+            for key in ["executionMode","maximumPassiveQuantity","modelSha256","sourceSha256"]{record[key]=e[key].clone();}
+            record["minimumNetValue"]=json!(money(payout));
+        }
         if cohort{let record=self.reviewed_inventory_exits.get_mut(&qid).ok_or("REVIEWED_COHORT_RECORD")?;record.as_object_mut().unwrap().remove("adoptionReceiptHash");record["originKind"]=json!("original_entry_cohort");record["cohortOriginSha256"]=json!(hash(&e["cohortOrigin"]));}
         self.writes.push(at);self.count("reviewedInventoryExitReservations");Ok(())
     }
