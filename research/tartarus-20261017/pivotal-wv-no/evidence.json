@@ -12,10 +12,10 @@
   "model_activation": false,
   "decision_at": null,
   "bank_head": {
-    "sequence": 523602,
-    "hash": "914186a4c2f24a3057355f7c5668506e3c21104e0a6cc307e776418b263f2ba4",
-    "at": "2026-10-17T18:13:47.933Z",
-    "manifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325"
+    "hash": "3f5df5f6789ae7fad1851c0984ef0f9a01a8033120e86bb04beaeaf75c08b73d",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "cbd7f48ed0cc8809f4c81d43c9105dcd409daf83e38d0ea73df4427b60c84c20",
+    "sequence": 523602
   },
   "privateAccountSource": {
     "archiveName": "moloch-r31-deployment-original-proof-20261017.zip",
@@ -47,6 +47,19 @@
       "feePerShare": "0.000000",
       "reportAggregateFees": "0.000000",
       "futureFeesMustBeRechecked": true
+    },
+    "reportSealSha256": "914186a4c2f24a3057355f7c5668506e3c21104e0a6cc307e776418b263f2ba4",
+    "reportAtUtc": "2026-10-17T18:13:47.933Z",
+    "stoppedHeadMember": "stopped-head.original.json",
+    "stoppedHeadRawSha256": "964ff762bf28d1a22ac2d93a8b2733e03efc1a368426837c7931818edc1f9e97",
+    "stoppedHeadBytes": 254,
+    "originalRawSealVerification": {
+      "verifierPath": "research/moloch-profit-exit-timing-20261017/verify-original-evidence.py",
+      "verifierGitLfSha256": "9c9524c43350a471d31cf515f55b0deb5f9169bc8e525b3c769780ac34539c44",
+      "headAndReportOriginalRawTokenSealsVerified": true,
+      "headAndReportPacketMemberPinsVerified": true,
+      "headAndReportSequenceManifestAndTailAgree": true,
+      "financialPrefixReplayPerformed": false
     }
   },
   "contract_ids": [
