@@ -950,7 +950,7 @@ fn negative_profit_preparation(bank:&Session,scope:&Scope,log:&DispatchLog,old:&
 }
 fn exit_recovery_from(source:&RestSource,market:&str,prior_window:u64)->Option<u64>{source.recovery_start_ms(market).map(|from|from.min(prior_window))}
 fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
- use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,RefreshPlan,RefreshStage};
+ use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,PostBookPlanning,RefreshPlan,RefreshStage};
  atomic_json(&c.root.join("exit-refresh-nominee.json"),&json!({"at":iso(now()),"qid":old["id"],"exchangeId":old["exchangeId"],"side":old["side"],"reason":old["inventoryExitReason"],"physicalAttempted":false,"expiryExtended":false}))?;
  refresh_controls(c,authority,stream)?;
  // A fresh book alone cannot unblock a source after a real delivery gap. Recover
@@ -978,7 +978,10 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   if negative_profit_preparation(bank,&c.scope,log,old,hint,&initial,&admitted,&admitted_head,target_managed,now()){
    return refresh_deferred(c,"preparation_negative",&"CURRENT_GROSS_BID_BELOW_NATIVE_PROFIT_MINIMUM")
   }
-  if !profit_successor_exists(bank,old,hint,maximum_qid_before,now())?{
+  // A current unused inherited draft will be reconsidered AFTER the final
+  // packet. Waiting for a successor before those reads only ages that draft.
+  if !profit_successor_exists(bank,old,hint,maximum_qid_before,now())?
+   &&profit_replan_draft(bank,log,&c.scope,hint,maximum_qid_before,flow_started,now())?.is_none(){
    let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_PROFIT_REFRESH_WRITE_GAP")?;
    if gap>3000{return refresh_deferred(c,"preparation",&"NATIVE_GAP_EXCEEDS_BOUNDED_PREPARATION")}
    let ready=now().checked_add(gap).ok_or("LIVE_PROFIT_REFRESH_CLOCK_RANGE")?;
@@ -1005,7 +1008,34 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  }else{candidates};
  for q in &candidates{if q["exchangeId"]==old["exchangeId"]&&q["side"]==old["side"]&&q["action"]=="sell"{safety.insert(q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,refresh_safety(c,bank,log,authority,stream,q,unknown)?);}}
  let plan=match RefreshPlan::select(&bound,&acceptance,&candidates,maximum_qid_before,flow_started,completed,now(),|id|*safety.get(&id).expect("validated native candidate safety")){
-  Ok(v)=>v,Err(e)=>{refresh_deferred(c,"candidate_ineligible",e.as_ref())?;return Ok(())}
+  Ok(v)=>v,
+  Err(e)if hint.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit&&matches!(e.to_string().as_str(),"EXIT_REFRESH_NO_FRESH_CANDIDATE"|"EXIT_REFRESH_EXPIRY_HEADROOM")=>{
+   let Some(draft)=profit_replan_draft(bank,log,&c.scope,hint,maximum_qid_before,flow_started,now())?else{return refresh_deferred(c,"candidate_ineligible",e.as_ref())};
+   let unknown=queue_has_unknown(t)?;let checked=refresh_safety(c,bank,log,authority,stream,&draft,unknown)?;
+   let at=now();let guard=if draft["expiresAt"].as_u64().is_some_and(|end|end>at){moloch_live_runtime::exit_refresh::ReadHint::from_live_profit(&draft,checked,at)}
+    else{moloch_live_runtime::exit_refresh::ReadHint::from_expired_kind(&draft,checked,at,moloch_live_runtime::exit_refresh::ReadKind::Profit)};
+   if let Err(error)=guard{return refresh_deferred(c,"replan_ineligible",error.as_ref())}
+   if checked.owned_quantity.checked_sub(checked.reserved_sell_quantity).is_none_or(|n|draft["quantity"].as_u64().is_none_or(|q|q>n))
+    ||checked.native_head_fingerprint!=head||native_head(c)?!=head{return refresh_deferred(c,"replan_ineligible",&"EXIT_REFRESH_CURRENT_COVERAGE_OR_HEAD_CHANGED")}
+   let planning_started=now();
+   // Existing durable zero-network proof + native normal reconciliation only.
+   // This never cancels/replaces a physical order or extends the old deadline.
+   retire_never_sent(bank,log,&draft)?;
+   let planning_completed=now();
+   let planning=match PostBookPlanning::from_session(&bound,&acceptance,bank,planning_started,planning_completed,native_head(c)?){
+    Ok(v)=>v,Err(error)=>return refresh_deferred(c,"post_book_planning_ineligible",error.as_ref())
+   };
+   let current=bank.engine().order_records();let mut checked_candidates=std::collections::BTreeMap::new();
+   for q in &current{if q["id"].as_u64().is_some_and(|id|id>maximum_qid_before)&&q["exchangeId"]==hint.exchange()&&q["side"]==hint.side()&&q["action"]=="sell"&&q["retired"]==false{
+    checked_candidates.insert(q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,refresh_safety(c,bank,log,authority,stream,q,unknown)?);
+   }}
+   let plan=match RefreshPlan::select_after_planning(&bound,&planning,bank,maximum_qid_before,now(),|id|*checked_candidates.get(&id).expect("validated post-book candidate safety")){
+    Ok(v)=>v,Err(error)=>return refresh_deferred(c,"post_book_candidate_ineligible",error.as_ref())
+   };
+   atomic_json(&c.root.join("exit-refresh-replan.json"),&json!({"at":iso(now()),"exchangeId":hint.exchange(),"side":hint.side(),"retiredUnusedQid":draft["id"],"newNativeQid":plan.quote()["id"],"planningStartedAt":iso(planning_started),"planningCompletedAt":iso(planning_completed),"originalBookReceivedAt":facts.book.received_at,"nativeHead":bank.durable_head(),"physicalAttempted":false,"expiryExtended":false}))?;
+   plan
+  },
+  Err(e)=>{refresh_deferred(c,"candidate_ineligible",e.as_ref())?;return Ok(())}
  };
  let qid=plan.quote()["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
  loop{
@@ -1045,10 +1075,49 @@ fn profit_refresh_protected(scope:&Scope,packages:&Value)->Result<std::collectio
   if let Some(xs)=p["portfolio"]["componentExchanges"].as_array(){for ex in xs{if let Some(ex)=ex.as_str(){protected.insert(ex.to_owned());}}}
  }Ok(protected)
 }
+/// This new timing lane is restricted to the already adopted, unclocked lots.
+/// Reviewed holdings and executed new-entry cohorts keep their own objectives.
+fn unused_inherited_profit_draft(bank:&Session,log:&DispatchLog,scope:&Scope,q:&Value)->Result<bool>{
+ use moloch_live_runtime::exit_refresh::ReadKind;
+ if ReadKind::from_quote(q)!=Some(ReadKind::Profit)||q["retired"]!=false||q["filled"].as_u64()!=Some(0)
+  ||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())
+  ||q.get("reviewedInventoryExit").is_some_and(|v|!v.is_null())||q.get("reviewedFundamentalEntry").is_some_and(|v|!v.is_null()){return Ok(false)}
+ let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let ex=q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?;let side=q["side"].as_str().ok_or("LIVE_SIDE")?;
+ if scope.exchanges.get(ex).map(String::as_str)!=q["marketId"].as_str()||!log.never_attempted(id)||log.intents.contains_key(&id)
+  ||log.acknowledgments.contains_key(&id)||bank.engine().is_package_order(id)||bank.engine().live_order_bindings().contains_key(&id)
+  ||bank.engine().fills().iter().any(|f|f["orderId"]==id)
+  ||bank.engine().ordinary_entry_exclusions().contains(ex)||bank.engine().managed_inventory_planning_excludes(ex)
+  ||!profit_hint_scope_allowed(q,&Default::default(),&profit_refresh_protected(scope,&bank.engine().package_records())?){return Ok(false)}
+ let positions=bank.engine().wallet.positions();let Some(lots)=positions.get(ex).and_then(|p|p.get(side)).and_then(Value::as_array)else{return Ok(false)};
+ if lots.is_empty()||lots.iter().any(|l|l["quantity"].as_u64().is_none_or(|n|n==0)||l.get("executedAt").is_some_and(|v|!v.is_null())){return Ok(false)}
+ let inherited=bank.engine().report()?["inheritedInventory"].clone();
+ Ok(inherited["basis"]=="verified_open_lot_principal_fifo"&&inherited["adoptedExchangeIds"].as_array().is_some_and(|ids|ids.iter().any(|id|id==ex)))
+}
+/// Select at most one CURRENT unused draft. Never retire a physical order,
+/// intent, partial fill or sibling just to force a successor into existence.
+fn profit_replan_draft(bank:&Session,log:&DispatchLog,scope:&Scope,hint:&moloch_live_runtime::exit_refresh::ReadHint,cutoff:u64,flow_started:u64,at:u64)->Result<Option<Value>>{
+ use moloch_live_runtime::exit_refresh::{ReadKind,current_profit_qualified};
+ if hint.kind()!=ReadKind::Profit{return Ok(None)}
+ log.require_resolved_attempts()?;let mut matching=Vec::new();
+ for q in bank.engine().order_records(){
+  if q["retired"]==false&&q["marketId"]==hint.market()&&q["exchangeId"]==hint.exchange()&&q["action"]=="sell"{
+   // A different side/kind or occupied sibling is a reason to defer, not clean up.
+   if q["side"]!=hint.side()||!unused_inherited_profit_draft(bank,log,scope,&q)?{return Ok(None)}
+   matching.push(q);
+  }
+ }
+ if matching.len()!=1{return Ok(None)}let q=matching.remove(0);
+ let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let created=q["createdAt"].as_u64().ok_or("LIVE_QUOTE_CLOCK")?;
+ let short=q["expiresAt"].as_u64().ok_or("LIVE_EXPIRY")?<=at.saturating_add(3000);
+ if !(id<=cutoff||created<flow_started||short)||!current_profit_qualified(bank,&q)?{return Ok(None)}
+ Ok(Some(q))
+}
 fn latest_refresh_hints(orders:&[Value],at:u64,eligible:impl Fn(u64)->bool)->Result<std::collections::BTreeMap<String,Value>>{
  let mut latest=std::collections::BTreeMap::<String,Value>::new();
  for q in orders{
-  if moloch_live_runtime::exit_refresh::ReadKind::from_quote(q).is_none()||q["filled"].as_u64()!=Some(0)||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|t>at){continue}
+  let kind=moloch_live_runtime::exit_refresh::ReadKind::from_quote(q);
+  let live_profit=kind==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit)&&q["retired"]==false;
+  if kind.is_none()||q["filled"].as_u64()!=Some(0)||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|t>at&&!live_profit){continue}
   let id=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if !eligible(id){continue}
   let mut key=format!("{}:{}:sell",q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?,q["side"].as_str().ok_or("LIVE_SIDE")?);
   // Distinct historical kinds must not hide one another before current age checks.
@@ -1091,15 +1160,23 @@ fn prepare_expired_exit_hints(
 )->Result<(std::collections::BTreeMap<String,(Value,moloch_live_runtime::exit_refresh::ReadHint)>,bool)>{
  let latest=latest_refresh_hints(orders,at,eligible)?;let mut candidates=Vec::new();let mut hints=std::collections::BTreeMap::new();
  if latest.is_empty(){return Ok((hints,false))}
- let live_sells:std::collections::BTreeSet<_>=orders.iter().filter(|q|q["action"]=="sell"&&q["retired"]==false&&q["expiresAt"].as_u64().is_some_and(|t|t>at))
-  .filter_map(|q|Some(format!("{}:{}:sell",q["exchangeId"].as_str()?,q["side"].as_str()?))).collect();
+ let mut live_sells=std::collections::BTreeMap::<String,Vec<u64>>::new();
+ for q in orders.iter().filter(|q|q["action"]=="sell"&&q["retired"]==false&&q["expiresAt"].as_u64().is_some_and(|t|t>at)){
+  let key=format!("{}:{}:sell",q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?,q["side"].as_str().ok_or("LIVE_SIDE")?);
+  live_sells.entry(key).or_default().push(q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?);
+ }
  for(key,old)in latest{
   let ex=old["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;let side=old["side"].as_str().ok_or("LIVE_SIDE")?;
-  if owned(ex,side)?==0||live_sells.contains(&format!("{ex}:{side}:sell"))||!policy_allows(ex)?||(old["inventoryExitReason"]=="maximumAge"&&!age_due(ex,side)?){continue}candidates.push((key,old));
+  let other_live=live_sells.get(&format!("{ex}:{side}:sell")).is_some_and(|ids|ids.iter().any(|id|Some(*id)!=old["id"].as_u64()));
+  if owned(ex,side)?==0||other_live||!policy_allows(ex)?||(old["inventoryExitReason"]=="maximumAge"&&!age_due(ex,side)?){continue}candidates.push((key,old));
  }
  if candidates.is_empty(){return Ok((hints,false))}
  let unknown=queue_unknown()?;
- for(key,old)in candidates{let checked=safety(&old,unknown)?;if let Ok(hint)=moloch_live_runtime::exit_refresh::ReadHint::from_expired_kind(&old,checked,at,moloch_live_runtime::exit_refresh::ReadKind::from_quote(&old).ok_or("LIVE_EXIT_REFRESH_KIND")?){hints.insert(key,(old,hint));}}
+ for(key,old)in candidates{let checked=safety(&old,unknown)?;
+  let hint=if old["expiresAt"].as_u64().is_some_and(|end|end>at){moloch_live_runtime::exit_refresh::ReadHint::from_live_profit(&old,checked,at)}
+   else{moloch_live_runtime::exit_refresh::ReadHint::from_expired_kind(&old,checked,at,moloch_live_runtime::exit_refresh::ReadKind::from_quote(&old).ok_or("LIVE_EXIT_REFRESH_KIND")?)};
+  if let Ok(hint)=hint{hints.insert(key,(old,hint));}
+ }
  Ok((hints,unknown))
 }
 fn existing_exit_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->Result<()>{
@@ -1649,10 +1726,13 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let flow_started=now();let maximum_qid_before=orders.iter().filter_map(|q|q["id"].as_u64()).max().unwrap_or(0);
  let managed_refresh=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
  let protected_refresh=profit_refresh_protected(&c.scope,&bank.engine().package_records())?;
- let refresh_eligible:std::collections::BTreeSet<_>=orders.iter().filter_map(|q|{
-  let id=q["id"].as_u64()?;
-  (log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().is_package_order(id)&&profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh)).then_some(id)
- }).collect();
+ let mut refresh_eligible=std::collections::BTreeSet::new();
+ for q in &orders{
+  let Some(id)=q["id"].as_u64()else{continue};
+  if !log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().is_package_order(id)||!profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh){continue}
+  if q["expiresAt"].as_u64().is_some_and(|end|end>flow_started)&&moloch_live_runtime::exit_refresh::ReadKind::from_quote(q)==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit)&&!unused_inherited_profit_draft(bank,log,&c.scope,q)?{continue}
+  refresh_eligible.insert(id);
+ }
  let mut age_positions=None;let mut age_inherited=None;
  let(hints,refresh_unknown)=if allow_new_submissions{prepare_expired_exit_hints(&orders,flow_started,
   |id|refresh_eligible.contains(&id),
@@ -1788,6 +1868,19 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
    else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}return Ok(())
   }
  };
+ // A covered inherited Profit quote must not be frozen while seven real GETs
+ // consume its short original lifetime. Use it only to nominate fresh reads;
+ // the final book/planner must provide a genuinely new native quote afterward.
+ let nominated=&quotes[chosen_index];
+ if unused_inherited_profit_draft(bank,log,&c.scope,nominated)?{
+  if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[chosen_index].clone());
+  let unknown=queue_has_unknown(t)?;
+  let checked=refresh_safety(c,bank,log,authority,stream,nominated,unknown)?;
+  let hint=match moloch_live_runtime::exit_refresh::ReadHint::from_live_profit(nominated,checked,now()){
+   Ok(v)=>v,Err(e)=>return refresh_deferred(c,"live_hint_ineligible",e.as_ref())
+  };
+  refresh_exit(t,c,bank,log,authority,source,stream,nominated,&hint,flow_started,maximum_qid_before,unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe,None)?;return Ok(())
+ }
  ranked.retain(|(_,index)|*index==chosen_index);
  for(_,index)in ranked{let q=quotes[index].clone();
   let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if bank.engine().is_package_order(qid){continue}
@@ -2529,6 +2622,34 @@ pub fn main()->Result<()>{
   let log=DispatchLog::open(&temp.0.join("dispatch.ndjson")).unwrap();let mut source=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"}]),TID,&iso(old)).unwrap();source.accept(&wrap(&initial)).unwrap();
   accept_source_events(&mut bank,&source.accept(&json!({"kind":"trades","source":"official_sig_api_v1","status":200,"marketId":"201","exchangeId":"101","tournamentId":TID,"requestStartedAt":iso(old+1000),"receivedAt":iso(old+1000),"endpoint":format!("/exchanges/101/trades?tournamentId={TID}&from={}&to={}",iso(old-1),iso(old+1000)),"data":{"marketId":"201","exchangeId":"101","from":iso(old-1),"to":iso(old+1000),"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":1}}})).unwrap()).unwrap();
   (temp,bank,log,c,source,oldq,hint)
+ }
+ #[test]fn live_profit_too_short_for_frozen_preflight_still_nominates_one_read_packet(){
+  let mut q=expired_hint_quote(2,"1012");q.as_object_mut().unwrap().remove("inventoryExitReason");q["retired"]=json!(false);q["createdAt"]=json!(18000);q["activationAt"]=json!(21000);q["expiresAt"]=json!(31000);
+  assert!(!physical_preflight_ready(&q,true,false,28500));
+  let mut history=q.clone();history["id"]=json!(1);history["retired"]=json!(true);history["createdAt"]=json!(0);history["activationAt"]=json!(3000);history["expiresAt"]=json!(13000);
+  let(hints,_)=prepare_expired_exit_hints(&[history,q.clone()],28500,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(false),||Ok(false),|_,u|Ok(hint_safety(u))).unwrap();
+  assert_eq!(hints.len(),1);assert_eq!(hints["1012:NO:sell:profit"].1.old_qid(),2);assert_eq!(hints["1012:NO:sell:profit"].0,q);
+  for case in ["intent","unknown","physical","other_sell","age"]{
+   let mut orders=vec![q.clone()];if case=="other_sell"{let mut sibling=q.clone();sibling["id"]=json!(3);orders.push(sibling)}
+   if case=="age"{orders[0]["inventoryExitReason"]=json!("maximumAge")}
+   let(hints,_)=prepare_expired_exit_hints(&orders,28500,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||Ok(case=="unknown"),|_,u|Ok(moloch_live_runtime::exit_refresh::Safety{has_intent:case=="intent",same_exchange_pending_physical_order:case=="physical",..hint_safety(u)})).unwrap();assert!(hints.is_empty(),"{case}");
+  }
+ }
+ #[test]fn post_book_replan_nomination_is_unused_inherited_only_and_never_mutates_bank(){
+  for side in ["YES","NO"]{
+   let(_temp,bank,mut log,c,_source,old,hint)=negative_profit_fixture(side);let id=old["id"].as_u64().unwrap();let head=bank.durable_head();let descriptor=log.descriptor_identity().unwrap();
+   assert!(unused_inherited_profit_draft(&bank,&log,&c.scope,&old).unwrap());
+   assert_eq!(profit_replan_draft(&bank,&log,&c.scope,&hint,id,now(),now()).unwrap(),Some(old.clone()));
+   let created=old["createdAt"].as_u64().unwrap();assert!(profit_replan_draft(&bank,&log,&c.scope,&hint,0,created,created+4000).unwrap().is_none(),"a still fresh in-flow quote does not justify retirement");
+   assert_eq!(bank.durable_head(),head);assert_eq!(log.descriptor_identity().unwrap(),descriptor);
+   log.intents.insert(id,json!({"quote":old}));assert!(profit_replan_draft(&bank,&log,&c.scope,&hint,id,now(),now()).unwrap().is_none(),"zero attempts with an intent is still occupied");log.intents.remove(&id);
+   let mut changed=old.clone();changed["filled"]=json!(1);assert!(!unused_inherited_profit_draft(&bank,&log,&c.scope,&changed).unwrap());changed=old.clone();changed["reviewedInventoryExit"]=json!({"protected":true});assert!(!unused_inherited_profit_draft(&bank,&log,&c.scope,&changed).unwrap());
+  }
+ }
+ #[test]fn native_ack_blocks_unused_profit_retirement_even_if_dispatch_attempt_is_absent(){
+  let(_temp,mut bank,log,c,_source,old,hint)=negative_profit_fixture("NO");let id=old["id"].as_u64().unwrap();
+  accept(&mut bank,&json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"a".repeat(64),"orderId":id,"actualOrderId":"901","exchangeId":"101","marketId":"201","side":"NO","action":"sell","quantity":old["quantity"],"price":old["price"],"receivedAt":iso(now())})).unwrap();
+  assert!(log.never_attempted(id));assert!(profit_replan_draft(&bank,&log,&c.scope,&hint,id,now(),now()).unwrap().is_none());assert_eq!(bank.engine().live_order_bindings().get(&id).map(String::as_str),Some("901"));
  }
  #[test]fn negative_profit_preparation_uses_actual_yes_no_admission_and_never_mutates_lifecycle(){
   for side in ["YES","NO"]{let(temp,mut bank,log,c,mut source,old,hint)=negative_profit_fixture(side);let r=negative_profit_receipt(side,490000,now(),2);let events=accept_fresh_book(&mut bank,&c,&old,&r,&mut source).unwrap();let head=bank.durable_head();let report=bank.engine().report().unwrap();let bytes=fs::read(temp.0.join("bank/events.jsonl")).unwrap();let descriptor=log.descriptor_identity().unwrap();
