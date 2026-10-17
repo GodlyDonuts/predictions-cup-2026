@@ -1,6 +1,6 @@
 # Reviewed SELL expiry recovery
 
-October17,20:46UTC: sole production worker699384 is active and restoring its original bank. Fresh trading, additional fills, a whole-worker latency benefit and new profit remain unverified.
+October17,21:04:47UTC: sole production worker699384 is independently verified fresh trading with healthy realtime. [Original operation proof](first-live-root-verification.json) verifies the actual process and all retained original financial/model history. First fresh progress21:02:56.026; later21:04:25.049. The dated first capture contains382fills, zero additional fills. A whole-worker latency or new profit benefit remains unverified.
 
 ## Actual incident and repair
 
