@@ -7,6 +7,7 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { gunzipSync } from 'node:zlib';
 import crypto from 'node:crypto';
+import { setTimeout as sleep } from 'node:timers/promises';
 import { acquire, atomicJson, Journal, retained, run, validateUniverse } from './polymarket-collector.mjs';
 import { Admission, ReadClient, normalizeBook, sha256 } from './polymarket-client.mjs';
 const conditionId = '0x' + 'a'.repeat(64);
@@ -26,10 +27,33 @@ test('universe exact asset-condition mapping and no pricing/equivalence authorit
   const u = { schemaVersion: 1, source: 'polymarket_gamma_public', outcomes: [outcome('1'), outcome('2')] }; assert.equal(validateUniverse(u), u); assert.throws(() => validateUniverse({ ...u, outcomes: [outcome('1'), outcome('1')] })); assert.throws(() => validateUniverse({ ...u, outcomes: [{ ...outcome('1'), pricingAuthority: true }] }));
 });
 test('compressed retention prunes only old closed owned segments and preserves current', async () => temp(async root => {
-  const j = new Journal(root, { maximumBytes: 90, segmentBytes: 5 }); await j.initialize(); await j.append({ row: 1 }); await j.append({ row: 2 }); const names = await fs.readdir(root); assert.equal(names.length, 2);
+  const j = new Journal(root, { maximumBytes: 90, segmentBytes: 5 }); await j.initialize(); await j.append({ row: 1 }); await j.flush(); await j.append({ row: 2 }); await j.flush(); const names = await fs.readdir(root); assert.equal(names.length, 2);
   const decoded = await Promise.all(names.map(async n => JSON.parse(gunzipSync(await fs.readFile(path.join(root, n)))))); assert.deepEqual(decoded.sort((a, b) => a.row - b.row), [{ row: 1 }, { row: 2 }]);
-  await j.append({ row: 3 }); await j.append({ row: 4 }); assert.equal(j.prunedSegments, 1); assert.ok(j.prunedBytes > 0); assert.equal((await fs.readdir(root)).length, 3); assert.ok((await fs.readdir(root)).includes(path.basename(j.file)));
-  await assert.rejects(j.append({ random: crypto.randomBytes(500).toString('hex') }), /BOUND/);
+  await j.append({ row: 3 }); await j.flush(); await j.append({ row: 4 }); await j.flush(); assert.equal(j.prunedSegments, 1); assert.ok(j.prunedBytes > 0); assert.equal((await fs.readdir(root)).length, 3); assert.ok((await fs.readdir(root)).includes(path.basename(j.file)));
+  await j.append({ random: crypto.randomBytes(500).toString('hex') }); await assert.rejects(j.flush(), /BOUND/); await assert.rejects(j.close(), /BOUND/);
+}));
+test('100 original records share one gzip append; close flushes the final record in exact order', async () => temp(async root => {
+  const j = new Journal(root); await j.initialize();
+  const records = Array.from({ length: 100 }, (_, sequence) => ({ sequence, bodyText: '{"original":"unchanged ' + sequence + '"}', receivedAt: '2026-10-17T19:00:00.000Z' }));
+  for (const row of records) await j.append(row); assert.equal(j.acceptedRows, 100); assert.equal(j.appendedRows, 0); assert.ok(j.bufferBytes <= 1024 ** 2); assert.equal((await fs.readdir(root)).length, 0);
+  await j.flush(); assert.equal(j.flushes, 1); assert.equal(j.appendedRows, 100); await j.append({ sequence: 100, stopped: true }); await j.close(); assert.equal(j.flushes, 2); assert.equal(j.appendedRows, 101);
+  const raw = gunzipSync(await fs.readFile(j.file)).toString(); assert.equal(raw, [...records, { sequence: 100, stopped: true }].map(x => JSON.stringify(x) + '\n').join('')); await assert.rejects(j.append({ late: true }), /CLOSED/);
+}));
+test('100ms timer flushes quiet data and an asynchronous write failure poisons the shared journal', async () => temp(async root => {
+  const j = new Journal(root); await j.initialize(); await j.append({ original: 1 }); await sleep(150); await j.flush(); assert.equal(j.appendedRows, 1); await j.close();
+  const sub = path.join(root, 'fail'); const errors = []; const failed = new Journal(sub, { flushMs: 5, onError: e => errors.push(e) }); await failed.initialize();
+  const original = fs.appendFile; fs.appendFile = async file => { if (String(file).startsWith(sub)) throw Error('TEST_DISK_FAILURE'); throw Error('UNEXPECTED_PATH'); };
+  try { await failed.append({ original: 'accepted_not_durable' }); await sleep(30); assert.equal(failed.acceptedRows, 1); assert.equal(failed.appendedRows, 0); assert.equal(errors.length, 1); await assert.rejects(failed.append({ later: true }), /TEST_DISK_FAILURE/); await assert.rejects(failed.close(), /TEST_DISK_FAILURE/); }
+  finally { fs.appendFile = original; }
+}));
+test('slow append backpressures a full bounded buffer without reordering or concurrent writes', async () => temp(async root => {
+  const j = new Journal(root, { bufferBytes: 80, flushMs: 100 }); await j.initialize();
+  const original = fs.appendFile; let release, reached; const blocked = new Promise(r => { reached = r; }); const gate = new Promise(r => { release = r; }); let active = 0, peak = 0;
+  fs.appendFile = async (...args) => { active++; peak = Math.max(peak, active); reached(); await gate; try { return await original(...args); } finally { active--; } };
+  try {
+    await j.append({ n: 0, original: 'a'.repeat(30) }); const second = j.append({ n: 1, original: 'b'.repeat(30) }); await blocked; let finished = false; second.then(() => { finished = true; }); await sleep(10); assert.equal(finished, false); assert.ok(j.bufferBytes <= 80); assert.equal(peak, 1); release(); await second; await j.close(); assert.equal(peak, 1);
+    const lines = gunzipSync(await fs.readFile(j.file)).toString().trim().split('\n').map(JSON.parse); assert.deepEqual(lines.map(x => x.n), [0, 1]);
+  } finally { release?.(); fs.appendFile = original; }
 }));
 test('retained cache validates original body/hash/identity and never renews its clocks', () => {
   const identity = outcome('1'), at = '2026-10-16T00:00:00.000Z', body = { market: conditionId, asset_id: '1', timestamp: String(Date.parse(at)), bids: [], asks: [] }, bodyText = JSON.stringify(body), receipt = { source: 'polymarket_clob_public', endpoint: 'https://clob.polymarket.com/book?token_id=1', requestStartedAt: at, receivedAt: at, status: 200, bodyText, bodySha256: sha256(bodyText), body };

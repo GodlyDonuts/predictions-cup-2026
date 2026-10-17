@@ -2,12 +2,15 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import http from 'node:http';
-import { gzipSync } from 'node:zlib';
+import { gzip } from 'node:zlib';
+import { promisify } from 'node:util';
 import { setTimeout as sleep } from 'node:timers/promises';
 import { pathToFileURL } from 'node:url';
 import { Admission, ReadClient, assetId, CONDITION, normalizeBook, sha256 } from './polymarket-client.mjs';
 
 const publications = new Map();
+const compress = promisify(gzip);
+function ageSummary(values) { values.sort((a, b) => a - b); return { minimum: values[0] ?? null, median: values[Math.floor(values.length / 2)] ?? null, maximum: values.at(-1) ?? null }; }
 export async function atomicJson(file, value) {
   const key = path.resolve(file), prior = publications.get(key) ?? Promise.resolve();
   const next = prior.catch(() => {}).then(async () => {
@@ -53,7 +56,11 @@ export function validateUniverse(value) {
   return value;
 }
 export class Journal {
-  constructor(root, { maximumBytes = 2 * 1024 ** 3, segmentBytes = 32 * 1024 ** 2 } = {}) { Object.assign(this, { root, maximumBytes, segmentBytes }); this.total = 0; this.segment = 0; this.file = null; this.tail = Promise.resolve(); this.prunedSegments = 0; this.prunedBytes = 0; this.closed = false; }
+  constructor(root, { maximumBytes = 2 * 1024 ** 3, segmentBytes = 32 * 1024 ** 2, bufferBytes = 1024 ** 2, flushMs = 100, onError } = {}) {
+    if (!Number.isInteger(bufferBytes) || bufferBytes < 1 || bufferBytes > 1024 ** 2 || !Number.isInteger(flushMs) || flushMs < 1 || flushMs > 100) throw Error('POLYMARKET_JOURNAL_BUFFER_BOUND');
+    Object.assign(this, { root, maximumBytes, segmentBytes, maximumBufferBytes: bufferBytes, flushMs, onError }); this.total = 0; this.segment = 0; this.file = null; this.tail = Promise.resolve(); this.prunedSegments = 0; this.prunedBytes = 0; this.closed = false;
+    this.buffer = []; this.bufferBytes = 0; this.bufferRows = 0; this.queued = 0; this.flushing = null; this.timer = null; this.error = null; this.acceptedRows = 0; this.appendedRows = 0; this.flushes = 0;
+  }
   async initialize() {
     await fs.mkdir(this.root, { recursive: true, mode: 0o700 }); const names = await fs.readdir(this.root);
     if (names.length > 8192) throw Error('POLYMARKET_JOURNAL_FILES_BOUND');
@@ -74,16 +81,50 @@ export class Journal {
     }
     if (this.total + incoming > this.maximumBytes) throw Error('POLYMARKET_JOURNAL_BOUND');
   }
+  fail(error) { if (!this.error) { this.error = error; this.onError?.(error); } }
+  async write(raw, rows) {
+    const compressed = await compress(raw, { level: 1 });
+    if (this.total + compressed.length > this.maximumBytes || this.files >= 8192) await this.prune(compressed.length);
+    if (!this.file || this.segment + raw.length > this.segmentBytes) { if (this.files >= 8192) throw Error('POLYMARKET_JOURNAL_FILES_BOUND'); this.file = path.join(this.root, 'books-' + crypto.randomUUID() + '.ndjson.gz'); await fs.writeFile(this.file, '', { flag: 'wx', mode: 0o600 }); this.files++; this.segment = 0; }
+    await fs.appendFile(this.file, compressed); this.total += compressed.length; this.segment += raw.length; this.appendedRows += rows; this.flushes++;
+  }
+  flushBuffer() {
+    clearTimeout(this.timer); this.timer = null;
+    if (this.error) return Promise.reject(this.error);
+    // At most one compression/write plus one <=1MiB collection buffer. A slow
+    // disk applies backpressure; it cannot create an unbounded chunk queue.
+    if (this.flushing) return this.flushing.then(() => this.flushBuffer());
+    if (!this.bufferBytes) return Promise.resolve();
+    const raw = Buffer.concat(this.buffer, this.bufferBytes), rows = this.bufferRows;
+    this.buffer = []; this.bufferBytes = 0; this.bufferRows = 0;
+    const operation = this.write(raw, rows).catch(e => { this.fail(e); throw e; }).finally(() => { if (this.flushing === operation) this.flushing = null; });
+    this.flushing = operation; return operation;
+  }
   append(value) {
     if (this.closed) return Promise.reject(Error('POLYMARKET_JOURNAL_CLOSED'));
+    if (this.error) return Promise.reject(this.error);
+    if (this.queued >= 64) { const e = Error('POLYMARKET_JOURNAL_QUEUE_BOUND'); this.fail(e); return Promise.reject(e); }
+    this.queued++;
+    // Resolution means bounded in-memory acceptance, NOT durable persistence.
+    // flush()/close() await actual append completion. Original JSON lines and
+    // their invocation order are unchanged; no data is coalesced or dropped.
     const operation = this.tail.then(async () => {
+      if (this.error) throw this.error;
       const raw = Buffer.from(JSON.stringify(value) + '\n'); if (raw.length > 20 * 1024 ** 2) throw Error('POLYMARKET_JOURNAL_ROW_BOUND');
-      const compressed = gzipSync(raw, { level: 1 }); if (this.total + compressed.length > this.maximumBytes || this.files >= 8192) await this.prune(compressed.length);
-      if (!this.file || this.segment + raw.length > this.segmentBytes) { if (this.files >= 8192) throw Error('POLYMARKET_JOURNAL_FILES_BOUND'); this.file = path.join(this.root, 'books-' + crypto.randomUUID() + '.ndjson.gz'); await fs.writeFile(this.file, '', { flag: 'wx', mode: 0o600 }); this.files++; this.segment = 0; }
-      await fs.appendFile(this.file, compressed); this.total += compressed.length; this.segment += raw.length;
-    }); this.tail = operation; return operation;
+      if (raw.length > this.maximumBufferBytes) {
+        // One individually bounded existing large REST/frame record bypasses
+        // the small buffer; producers await its write before another enqueue.
+        await this.flushBuffer(); await this.write(raw, 1); this.acceptedRows++; return;
+      }
+      if (this.bufferBytes + raw.length > this.maximumBufferBytes) await this.flushBuffer();
+      this.buffer.push(raw); this.bufferBytes += raw.length; this.bufferRows++; this.acceptedRows++;
+      if (this.bufferBytes === this.maximumBufferBytes) await this.flushBuffer();
+      else if (!this.timer) this.timer = setTimeout(() => { this.timer = null; this.flushBuffer().catch(e => this.fail(e)); }, this.flushMs);
+    }).catch(e => { this.fail(e); throw e; }).finally(() => { this.queued--; });
+    this.tail = operation; return operation;
   }
-  async close() { this.closed = true; await this.tail; }
+  async flush() { await this.tail; await this.flushBuffer(); }
+  async close() { this.closed = true; clearTimeout(this.timer); this.timer = null; await this.tail; await this.flushBuffer(); if (this.error) throw this.error; }
 }
 export function retained(row, identity) {
   if (row?.identity?.assetId !== identity.assetId || row.identity.conditionId !== identity.conditionId || row.receipt?.status !== 200 || row.receipt.source !== 'polymarket_clob_public' || sha256(row.receipt.bodyText ?? '') !== row.receipt.bodySha256) throw Error('POLYMARKET_RETAINED_RECEIPT');
@@ -114,8 +155,8 @@ export async function run(options, dependencies = {}) {
   const startedAt = new Date().toISOString(); const stop = () => { stopped = true; controller.abort(); }; let maximumBackoff = 0, backoffTail = Promise.resolve();
   const admission = dependencies.client?.admission ?? new Admission({ rps });
   const client = dependencies.client ?? new ReadClient({ admission, onBackoff: value => { maximumBackoff = Math.max(maximumBackoff, Date.parse(value.blockedUntil)); backoffTail = backoffTail.then(() => atomicJson(path.join(cache, 'backoff.json'), { ...value, blockedUntil: new Date(maximumBackoff).toISOString() })); return backoffTail; } });
-  const journal = new Journal(path.join(cache, 'journal'), dependencies.journalOptions);
-  const status = () => { const now = Date.now(), ages = [...latest.values()].map(x => now - Number(x.book.sourceTimestamp)).sort((a, b) => a - b); return { source: 'polymarket_clob_public', pricingAuthority: false, resolutionEquivalenceVerified: false, pid: process.pid, startedAt, at: new Date(now).toISOString(), state: fatal ? 'failed' : stopped ? 'stopped' : 'running', universeSha256: sha256(universeBytes), outcomes: universe.outcomes.length, markets: markets.size, cachedBooks: latest.size, completeMarketCoverage: [...markets.values()].filter(xs => xs.every(x => latest.has(x.assetId))).length, inFlight: tasks.size, configuredMaximumRps: rps, concurrency, batchSize, journalRetention: { maximumBytes: journal.maximumBytes, prunedSegments: journal.prunedSegments, prunedBytes: journal.prunedBytes }, blockedUntil: new Date(Date.now() + Math.max(0, admission.blockedUntil - admission.clock())).toISOString(), admissions: client.stats.admissions, completions: client.stats.completions, client: client.stats, stats: { ...stats }, sourceAgeMs: { minimum: ages[0] ?? null, median: ages[Math.floor(ages.length / 2)] ?? null, maximum: ages.at(-1) ?? null } }; };
+  const journal = new Journal(path.join(cache, 'journal'), { ...dependencies.journalOptions, onError: error => { fatal ??= error; stop(); } });
+  const status = () => { const now = Date.now(), ages = [...latest.values()].map(x => now - Number(x.book.sourceTimestamp)).sort((a, b) => a - b); return { source: 'polymarket_clob_public', pricingAuthority: false, resolutionEquivalenceVerified: false, pid: process.pid, startedAt, at: new Date(now).toISOString(), state: fatal ? 'failed' : stopped ? 'stopped' : 'running', universeSha256: sha256(universeBytes), outcomes: universe.outcomes.length, markets: markets.size, cachedBooks: latest.size, completeMarketCoverage: [...markets.values()].filter(xs => xs.every(x => latest.has(x.assetId))).length, inFlight: tasks.size, configuredMaximumRps: rps, concurrency, batchSize, journalRetention: { maximumBytes: journal.maximumBytes, prunedSegments: journal.prunedSegments, prunedBytes: journal.prunedBytes }, blockedUntil: new Date(Date.now() + Math.max(0, admission.blockedUntil - admission.clock())).toISOString(), admissions: client.stats.admissions, completions: client.stats.completions, client: client.stats, stats: { ...stats }, sourceAgeMs: { minimum: ages[0] ?? null, median: ages[Math.floor(ages.length / 2)] ?? null, maximum: ages.at(-1) ?? null }, receiptAgeMs: ageSummary([...latest.values()].map(x => now - Date.parse(x.receipt.receivedAt))), journalBuffer: { acceptedRows: journal.acceptedRows, appendedRows: journal.appendedRows, bufferedBytes: journal.bufferBytes, queuedProducers: journal.queued, flushes: journal.flushes, appendAcknowledgment: "bounded_memory_acceptance_not_durable", flushAcknowledgment: "append_completed_not_fsynced" } }; };
   const publishStatus = () => atomicJson(path.join(cache, 'status.json'), status());
   async function ingest({ identity, receipt, bodyIndex }) {
     let book; try { book = normalizeBook(bodyIndex === undefined ? receipt.body : receipt.body[bodyIndex], identity); if (Number(book.sourceTimestamp) > Date.parse(receipt.receivedAt) + 5000) throw Error('POLYMARKET_BOOK_FUTURE'); }
