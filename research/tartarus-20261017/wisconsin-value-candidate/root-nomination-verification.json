@@ -1,0 +1,78 @@
+{
+  "result": "PASS",
+  "verifiedAt": "2026-10-17T21:43:44.903587+00:00",
+  "capturedAt": "2026-10-17T21:34:45.225867+00:00",
+  "pid": 699384,
+  "reportAt": "2026-10-17T21:34:35.484Z",
+  "financialSequence": 542115,
+  "nativeSuffixRowsVerified": 9112,
+  "completeJournalRowsVerified": {
+    "dispatch.original.ndjson": 23449,
+    "fundamental.original.jsonl": 89
+  },
+  "all382OriginalFillTokensUnchanged": true,
+  "all16BridgeBytesUnchanged": true,
+  "originalEightGenerationsPreserved": true,
+  "privateProofBytes": 10202044,
+  "privateProofSha256": "abf428c3505bf697f33a26d6b091462bca05ed1e83955ea5e7765bc10b39ca59",
+  "zeroAccountCallsByCaptureAndVerifier": true,
+  "currentExecutableDepthClaimed": false,
+  "profitabilityEstablished": false,
+  "classification": "dated_source_nomination_not_executable_instruction",
+  "originalReportRawSha256": "8f762f33dc11e525e9da3002945c765e752295d82a13363cd09f9a4f7faf3994",
+  "exchangeId": "1004",
+  "marketId": "315",
+  "side": "YES",
+  "heldQuantity": 1000,
+  "remainingFifoPrincipal": "240.000000",
+  "remainingOriginalLots": [
+    {
+      "price": "0.240000",
+      "quantity": 632
+    },
+    {
+      "price": "0.240000",
+      "quantity": 368
+    }
+  ],
+  "nativePlanningReservedCash": "0.000000",
+  "book": {
+    "sourceAt": "2026-10-17T21:31:52.931101800Z",
+    "requestStartedAt": "2026-10-17T21:31:53.487Z",
+    "receivedAt": "2026-10-17T21:31:53.487Z",
+    "processedAt": "2026-10-17T21:32:10.461Z",
+    "sourceRef": {
+      "hash": "103411e64895c6ce3781d930f350177334b5adb2501b3d477ed3370800450960",
+      "id": "moloch-live",
+      "sequence": 541561
+    },
+    "firstBid": {
+      "price": "0.215000",
+      "quantity": 3334
+    },
+    "firstThreeAsks": [
+      {
+        "price": "0.220000",
+        "quantity": 384
+      },
+      {
+        "price": "0.225000",
+        "quantity": 3834
+      },
+      {
+        "price": "0.230000",
+        "quantity": 3063
+      }
+    ],
+    "firstThreeAskShares": 7281,
+    "firstThreeAskGrossCost": "1651.620000",
+    "capturedFullVenueDepthClaimed": false,
+    "receiptToProcessingMs": 16974,
+    "staleAtOriginalProcessing": true
+  },
+  "fourDossierOriginalSourceBodiesIndependentlyRehashed": true,
+  "currentCashClaimedFromOfficialAccount": false,
+  "sourceForecastCalibrated": false,
+  "ownerReviewOrActivationCreated": false,
+  "nextRequirement": "Original physical facts and source-reviewed genuine inherited-origin capability; no stale-book trade."
+}
