@@ -24,6 +24,20 @@ pub fn only_fundamental_changed(base:&[u8],next:&[u8])->Result<Settings>{
     let settings:Settings=serde_json::from_value(policy)?;
     need(!settings.allow_initialization,"RELOAD_INITIALIZATION_FORBIDDEN")?;Ok(settings)
 }
+/// Recovery-only comparison against the ORIGINAL pinned ACTIVE overlay. This
+/// never approves a new model or financial mandate and never rewrites history.
+fn only_binary_changed(active:&[u8],next_base:&[u8])->Result<Settings>{
+    let mut a:Value=serde_json::from_slice(active)?;let mut b:Value=serde_json::from_slice(next_base)?;
+    need(a.is_object()&&b.is_object(),"RELOAD_REBASE_CONTROL_OBJECT")?;
+    for v in [&mut a,&mut b]{
+        let activation=v.get_mut("activation").and_then(Value::as_object_mut).ok_or("RELOAD_REBASE_BINARY_REQUIRED")?;
+        let binary=activation.remove("binarySha256").ok_or("RELOAD_REBASE_BINARY_REQUIRED")?;
+        need(binary.as_str().is_some_and(hex),"RELOAD_REBASE_BINARY_HASH")?;
+    }
+    need(a==b,"RELOAD_REBASE_NONBINARY_CONTROL_CHANGED")?;
+    let settings:Settings=serde_json::from_value(a.get("fundamentalPolicy").cloned().ok_or("RELOAD_POLICY_REQUIRED")?)?;
+    need(!settings.allow_initialization,"RELOAD_INITIALIZATION_FORBIDDEN")?;Ok(settings)
+}
 pub struct ControlPin{file:File,path:PathBuf,identity:Value,bytes:u64,hash:String,version:Value}
 impl ControlPin{
     fn open(path:&Path,expected:&str)->Result<Self>{
@@ -82,26 +96,33 @@ pub fn quiescent(log:&DispatchLog)->Result<()>{
 }
 /// Immutable installed overlay. Constructed only after the held Cohorts log has
 /// accepted or replayed the exact generation. No Deserialize or public mint.
-pub struct Active{pin:ControlPin,metadata:Value,exchanges:std::collections::BTreeSet<String>,files:crate::fundamental_policy::GenerationFiles}
+pub struct Active{pin:ControlPin,metadata:Value,recovery:Value,exchanges:std::collections::BTreeSet<String>,files:crate::fundamental_policy::GenerationFiles}
 impl Active{
     pub fn validate(&self)->Result<()>{self.pin.validate_metadata()?;self.files.validate()}
     pub fn validate_full(&self)->Result<()>{self.pin.validate()?;self.files.validate_full()}
     pub fn generation_sha(&self)->&str{self.metadata["generationSha256"].as_str().unwrap()}
+    /// Diagnostic provenance only: the current Control/binary still require the
+    /// existing independent owner rollout/ProductionAuthority checks.
+    pub fn recovery_receipt(&self)->&Value{&self.recovery}
     pub fn previous_sha(&self)->&str{self.metadata["request"]["previousGenerationSha256"].as_str().unwrap()}
     pub fn exchanges(&self)->&std::collections::BTreeSet<String>{&self.exchanges}
     pub fn recover(store:&Cohorts,base:&[u8])->Result<Option<(Self,LoadedSettings)>>{
         let Some(meta)=store.active_generation()else{return Ok(None)};
         let request:Request=serde_json::from_value(meta["request"].clone())?;
-        need(request.base_control_sha256==sha(base),"RELOAD_BASE_CHANGED")?;
+        let current_base=sha(base);
         let pin=ControlPin::open(&request.control_path,&request.control_sha256)?;
         need(pin.identity==meta["controlIdentity"],"RELOAD_CONTROL_REPLACED")?;
-        let loaded=only_fundamental_changed(base,&pin.read()?)?.load()?;
-        store.validate_generation_settings(&loaded)?;
-        Ok(Some((Self{pin,metadata:meta.clone(),exchanges:store.managed_exchanges(),files:loaded.retained_files()?},loaded)))
+        let original_active=pin.read()?;
+        let rebased=request.base_control_sha256!=current_base;
+        let settings=if rebased{only_binary_changed(&original_active,base)?}else{only_fundamental_changed(base,&original_active)?};
+        let loaded=settings.load()?;store.validate_generation_settings(&loaded)?;pin.validate()?;
+        let recovery=json!({"originalBaseSha256":request.base_control_sha256,"currentBaseSha256":current_base,"recoveredGenerationSha256":meta["generationSha256"],"binaryOnlyRebase":rebased});
+        Ok(Some((Self{pin,metadata:meta.clone(),recovery,exchanges:store.managed_exchanges(),files:loaded.retained_files()?},loaded)))
     }
     pub fn installed(store:&Cohorts,approved:Approved,loaded:&LoadedSettings)->Result<Self>{
         need(store.active_generation()==Some(&approved.metadata()),"RELOAD_GENERATION_NOT_DURABLE")?;
-        Ok(Self{pin:approved.pin,metadata:store.active_generation().unwrap().clone(),exchanges:store.managed_exchanges(),files:loaded.retained_files()?})
+        let recovery=json!({"originalBaseSha256":approved.request.base_control_sha256,"currentBaseSha256":approved.request.base_control_sha256,"recoveredGenerationSha256":approved.raw_sha,"binaryOnlyRebase":false});
+        Ok(Self{pin:approved.pin,metadata:store.active_generation().unwrap().clone(),recovery,exchanges:store.managed_exchanges(),files:loaded.retained_files()?})
     }
 }
 #[cfg(target_os="linux")]

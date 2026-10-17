@@ -845,8 +845,9 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
             Settings{version:1,authority_path,authority_sha256:sha(&authority_bytes),reviews:vec![ReviewFile{path,file_sha256:sha(&bytes),source_files}],allow_initialization:false}
         }
         fn base()->Vec<u8>{serde_json::to_vec(&json!({"fundamentalReload":true,"fundamentalPolicy":null,"activation":{"maximumCommitted":"1000.000000"},"accountScope":"fixture"})).unwrap()}
-        fn approved(f:&F,settings:&Settings,at:u64)->reload::Approved{
-            let base=base();let mut control:Value=serde_json::from_slice(&base).unwrap();control["fundamentalPolicy"]=serde_json::to_value(settings).unwrap();
+        fn approved(f:&F,settings:&Settings,at:u64)->reload::Approved{approved_against(f,settings,at,&base())}
+        fn approved_against(f:&F,settings:&Settings,at:u64,base:&[u8])->reload::Approved{
+            let mut control:Value=serde_json::from_slice(base).unwrap();control["fundamentalPolicy"]=serde_json::to_value(settings).unwrap();
             let bytes=serde_json::to_vec(&control).unwrap();let control_path=f.root.join(format!("reload-control-{}.json",sha(&bytes)));if !control_path.exists(){std::fs::write(&control_path,&bytes).unwrap();}
             let channel=reload::Channel::bind(&f.root,f.owner.clone()).unwrap();let status=channel.status(&base,&f.bank,f.store.as_ref().unwrap().generation_sha()).unwrap();
             let request=json!({"version":1,"requestId":format!("fixture-{}",sha(&bytes)),"workerPid":status["workerPid"],"workerStartTicks":status["workerStartTicks"],"ownerLease":status["ownerLease"],"baseControlSha256":sha(&base),"bankManifestSha256":f.bank.manifest_hash(),"runId":"fundamental-fixture","previousGenerationSha256":f.store.as_ref().unwrap().generation_sha(),"controlPath":control_path,"controlSha256":sha(&bytes),"issuedAtMs":at,"expiresAtMs":at+60000});
@@ -907,6 +908,30 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
             f.reopen();let(active,loaded)=reload::Active::recover(f.store.as_ref().unwrap(),&base()).unwrap().unwrap();assert_eq!(wanted,active.generation_sha());assert_eq!(head,f.bank.durable_head());assert_eq!(loaded.settings_sha().len(),64);
             let before=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();drop(active);let _=reload::Active::recover(f.store.as_ref().unwrap(),&base()).unwrap().unwrap();assert_eq!(before,std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),"recovery cannot append/remint or reset history");
             assert!(reload::Active::recover(f.store.as_ref().unwrap(),b"{}").is_err());
+        }
+        #[test]fn genuine_generation_binary_only_restart_preserves_original_approval_and_rejects_all_other_drift(){
+            let mut f=F::new();let r=revised(&f);let settings=files(&f,&r);
+            let mut initial:Value=serde_json::from_slice(&base()).unwrap();initial["activation"]["binarySha256"]=json!("a".repeat(64));initial["activation"]["quantity"]=json!(5);initial["activation"]["entryUntilMs"]=json!(NOW+600000);initial["scope"]=serde_json::to_value(&f.scope).unwrap();initial["credentials"]=json!("/immutable/credentials");let initial=serde_json::to_vec(&initial).unwrap();
+            let proof=approved_against(&f,&settings,NOW+10,&initial);let loaded=proof.load(&initial).unwrap();let packet=facts(&f,NOW+10);
+            f.store.as_mut().unwrap().install_generation(&proof,&loaded,&f.bank,&f.log,&f.scope,&packet,&initial,NOW+10,||Ok(())).unwrap();
+            let metadata=f.store.as_ref().unwrap().active_generation().unwrap().clone();let original_control=proof.control_bytes().unwrap();drop(proof);drop(loaded);let original_history=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();let head=f.bank.durable_head();f.reopen();
+            let mut upgraded:Value=serde_json::from_slice(&original_control).unwrap();upgraded["activation"]["binarySha256"]=json!("b".repeat(64));let bytes=serde_json::to_vec(&upgraded).unwrap();
+            let(active,loaded)=reload::Active::recover(f.store.as_ref().unwrap(),&bytes).unwrap().unwrap();active.validate_full().unwrap();loaded.validate_files().unwrap();
+            assert_eq!(active.recovery_receipt(),&json!({"originalBaseSha256":sha(&initial),"currentBaseSha256":sha(&bytes),"recoveredGenerationSha256":metadata["generationSha256"],"binaryOnlyRebase":true}));
+            assert_eq!(f.store.as_ref().unwrap().active_generation(),Some(&metadata));assert_eq!(metadata["request"]["baseControlSha256"],sha(&initial));assert_eq!(std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),original_history);assert_eq!(f.bank.durable_head(),head);drop(active);drop(loaded);
+            for case in ["cash","quantity","deadline","scope","credentials","unknown","reviewpath","authority","source","model","binary","missingbinary"]{
+                let mut bad=upgraded.clone();match case{
+                    "cash"=>bad["activation"]["maximumCommitted"]=json!("1001.000000"),"quantity"=>bad["activation"]["quantity"]=json!(6),"deadline"=>bad["activation"]["entryUntilMs"]=json!(NOW+600001),
+                    "scope"=>bad["scope"]["tournamentId"]=json!("wrong"),"credentials"=>bad["credentials"]=json!("/different"),"unknown"=>bad["unapprovedFutureField"]=json!(true),
+                    "reviewpath"=>bad["fundamentalPolicy"]["reviews"][0]["path"]=json!("/different-review"),"authority"=>bad["fundamentalPolicy"]["authoritySha256"]=json!("c".repeat(64)),
+                    "source"=>bad["fundamentalPolicy"]["reviews"][0]["sourceFiles"][0]["sha256"]=json!("c".repeat(64)),"model"=>bad["fundamentalPolicy"]["reviews"][0]["fileSha256"]=json!("c".repeat(64)),
+                    "binary"=>bad["activation"]["binarySha256"]=json!("not-a-hash"),_=>{bad["activation"].as_object_mut().unwrap().remove("binarySha256");}
+                }
+                assert!(reload::Active::recover(f.store.as_ref().unwrap(),&serde_json::to_vec(&bad).unwrap()).is_err(),"{case}");
+            }
+            // Same-original-base behavior is unchanged, and never upgrades the
+            // recorded request to the new binary/control's authority.
+            let(active,_)=reload::Active::recover(f.store.as_ref().unwrap(),&initial).unwrap().unwrap();assert_eq!(active.recovery_receipt()["binaryOnlyRebase"],false);assert_eq!(f.store.as_ref().unwrap().active_generation(),Some(&metadata));
         }
         #[test]fn active_pins_detect_mutation_and_financial_control_diff_is_never_reloadable(){
             let mut f=F::new();let r=revised(&f);let(settings,proof)=commit(&mut f,&r,NOW+10);let loaded=proof.load(&base()).unwrap();let active=reload::Active::installed(f.store.as_ref().unwrap(),proof,&loaded).unwrap();active.validate().unwrap();std::fs::write(&settings.reviews[0].source_files[0].path,b"mutated sourcebytes").unwrap();assert!(active.validate().is_err(),"source mutation changes pinned Unix metadata");
