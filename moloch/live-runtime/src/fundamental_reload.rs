@@ -50,6 +50,26 @@ fn recovery_settings(active:&[u8],next_base:&[u8])->Result<(Settings,bool)>{
         Ok((only_binary_changed(active,&serde_json::to_vec(&b)?)?,true))
     }else{Ok((only_binary_changed(active,next_base)?,false))}
 }
+/// A first explicit Tartarus opt-in adds only private owner input locations.
+/// Those files still require the independent runtime owner approvals and pins;
+/// this comparison cannot approve a campaign, change limits, or renew entries.
+fn recovery_rank_opt_in(active:&[u8],next_base:&[u8])->Result<(Vec<u8>,bool)>{
+    let a:Value=serde_json::from_slice(active)?;let mut b:Value=serde_json::from_slice(next_base)?;
+    if a.get("rankCampaign").is_some()||b.get("rankCampaign").is_none(){return Ok((next_base.to_vec(),false))}
+    let rank=b.get("rankCampaign").and_then(Value::as_object).ok_or("RELOAD_RANK_CONFIGURATION")?;
+    need(rank.len()==3,"RELOAD_RANK_CONFIGURATION")?;
+    let root=Path::new(b.get("root").and_then(Value::as_str).ok_or("RELOAD_RANK_ROOT")?);
+    need(root.is_absolute(),"RELOAD_RANK_ROOT")?;let private=root.join("rank-campaign-owner");
+    let mut paths=std::collections::BTreeSet::new();
+    for key in ["nominationPath","ownerApprovalPath","originalsDirectory"]{
+        let path=Path::new(rank.get(key).and_then(Value::as_str).ok_or("RELOAD_RANK_CONFIGURATION")?);
+        need(path.is_absolute()&&path.starts_with(&private)&&path!=private
+            &&!path.components().any(|c|matches!(c,std::path::Component::ParentDir|std::path::Component::CurDir))
+            &&paths.insert(path.to_path_buf()),"RELOAD_RANK_OWNER_PATH")?;
+    }
+    b.as_object_mut().ok_or("RELOAD_REBASE_CONTROL_OBJECT")?.remove("rankCampaign");
+    Ok((serde_json::to_vec(&b)?,true))
+}
 pub struct ControlPin{file:File,path:PathBuf,identity:Value,bytes:u64,hash:String,version:Value}
 impl ControlPin{
     fn open(path:&Path,expected:&str)->Result<Self>{
@@ -126,10 +146,12 @@ impl Active{
         need(pin.identity==meta["controlIdentity"],"RELOAD_CONTROL_REPLACED")?;
         let original_active=pin.read()?;
         let rebased=request.base_control_sha256!=current_base;
-        let(settings,planning_opt_in)=if rebased{recovery_settings(&original_active,base)?}else{(only_fundamental_changed(base,&original_active)?,false)};
+        let(normalized_base,rank_opt_in)=if rebased{recovery_rank_opt_in(&original_active,base)?}else{(base.to_vec(),false)};
+        let(settings,planning_opt_in)=if rebased{recovery_settings(&original_active,&normalized_base)?}else{(only_fundamental_changed(base,&original_active)?,false)};
         let loaded=settings.load()?;store.validate_generation_settings(&loaded)?;pin.validate()?;
-        let mut recovery=json!({"originalBaseSha256":request.base_control_sha256,"currentBaseSha256":current_base,"recoveredGenerationSha256":meta["generationSha256"],"binaryOnlyRebase":rebased&&!planning_opt_in});
+        let mut recovery=json!({"originalBaseSha256":request.base_control_sha256,"currentBaseSha256":current_base,"recoveredGenerationSha256":meta["generationSha256"],"binaryOnlyRebase":rebased&&!planning_opt_in&&!rank_opt_in});
         if planning_opt_in{recovery["managedInventoryPlanningOptIn"]=json!(true);}
+        if rank_opt_in{recovery["rankCampaignOwnerPathsOptIn"]=json!(true);}
         Ok(Some((Self{pin,metadata:meta.clone(),recovery,exchanges:store.managed_exchanges(),files:loaded.retained_files()?},loaded)))
     }
     pub fn installed(store:&Cohorts,approved:Approved,loaded:&LoadedSettings)->Result<Self>{
@@ -204,6 +226,19 @@ mod linux{
 #[cfg(test)]mod tests{
  use super::*;
  fn settings()->Value{json!({"version":1,"authorityPath":"/immutable/authority.json","authoritySha256":"a".repeat(64),"reviews":[],"allowInitialization":false})}
+ #[test]fn rank_owner_path_migration_preserves_financial_and_generation_controls(){
+  let old=json!({"root":"/bank","activation":{"binarySha256":"b".repeat(64),"maximumCommitted":"95579.915000"},"fundamentalPolicy":settings()});
+  let original=serde_json::to_vec(&old).unwrap();let mut next=old.clone();next["activation"]["binarySha256"]=json!("c".repeat(64));
+  next["rankCampaign"]=json!({"nominationPath":"/bank/rank-campaign-owner/nomination.json","ownerApprovalPath":"/bank/rank-campaign-owner/approval.json","originalsDirectory":"/bank/rank-campaign-owner/originals"});
+  let check=|v:&Value|->Result<()> {let(normalized,opt)=recovery_rank_opt_in(&original,&serde_json::to_vec(v)?)?;need(opt,"TEST_OPT_IN")?;recovery_settings(&original,&normalized)?;Ok(())};
+  check(&next).unwrap();let mut combined=next.clone();combined["managedInventoryPlanning"]=json!(true);check(&combined).unwrap();
+  for key in ["activation","root","fundamentalPolicy","scope","dailyEntryWindows","credentials","ownerCapitalAllocation"]{let mut bad=next.clone();bad[key]=json!("changed");assert!(check(&bad).is_err(),"{key}");}
+  for path in ["/elsewhere/nomination.json","/bank/rank-campaign-owner/../escape","/bank/rank-campaign-owner","relative.json","/bank/rank-campaign-owner/approval.json"]{let mut bad=next.clone();bad["rankCampaign"]["nominationPath"]=json!(path);assert!(check(&bad).is_err(),"{path}");}
+  for value in [Value::Null,json!(true),json!({"nominationPath":"/bank/rank-campaign-owner/n"})]{let mut bad=next.clone();bad["rankCampaign"]=value;assert!(check(&bad).is_err());}
+  let enabled=serde_json::to_vec(&next).unwrap();let mut replaced=next.clone();replaced["rankCampaign"]["nominationPath"]=json!("/bank/rank-campaign-owner/replacement.json");
+  let(normalized,opt)=recovery_rank_opt_in(&enabled,&serde_json::to_vec(&replaced).unwrap()).unwrap();assert!(!opt);assert!(recovery_settings(&enabled,&normalized).is_err());
+  assert_eq!(serde_json::from_slice::<Value>(&original).unwrap(),old);
+ }
  #[test]fn recovery_opt_in_preserves_every_other_original_field_and_settings(){
   for explicit_false in [false,true]{
    let mut old=json!({"activation":{"binarySha256":"b".repeat(64),"maximumCommitted":"95579.915000"},"scope":{"tournamentId":"cup"},"fundamentalReload":true,"fundamentalPolicy":settings()});if explicit_false{old["managedInventoryPlanning"]=json!(false);}
