@@ -7,7 +7,7 @@ fn iso(at:u64)->String{chrono::DateTime::from_timestamp_millis(at as i64).unwrap
 struct Temp(PathBuf);impl Temp{fn new()->Self{let p=std::env::temp_dir().join(format!("order-snapshot-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));Self(p)}}impl Drop for Temp{fn drop(&mut self){let _=std::fs::remove_dir_all(&self.0);}}
 fn policy()->Value{json!({"quantity":5,"maximumMarkets":3,"entryStopAt":iso(NOW+600000)})}
 fn seed()->Value{json!({"runId":"order-cache-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(NOW-1000)})}
-fn book()->Value{json!({"type":"book","receivedAt":iso(NOW),"book":{"marketId":"101","exchangeId":"101","sequence":"1","sourceAt":iso(NOW),"requestStartedAt":iso(NOW),"receivedAt":iso(NOW),"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})}
+fn book()->Value{json!({"type":"book","receivedAt":iso(NOW),"book":{"tournamentId":"cup","marketId":"101","exchangeId":"101","sequence":"1","sourceAt":iso(NOW),"requestStartedAt":iso(NOW),"receivedAt":iso(NOW),"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})}
 fn fixture(path:&std::path::Path)->Session{let mut b=Session::open_live(path,&policy(),&seed()).unwrap();assert!(b.accept("original-books",1,&book()).unwrap());b}
 #[test]fn same_exact_head_reuses_one_render_and_single_quotes_equal_original_native_rows(){
  let t=Temp::new();let b=fixture(&t.0);let head=b.durable_head();let journal=std::fs::read(t.0.join("events.jsonl")).unwrap();let s=snapshot(&b);let again=snapshot(&b);assert!(Arc::ptr_eq(&s,&again));assert_eq!(s.records(),b.engine().order_records());assert!(!s.records().is_empty());
@@ -23,7 +23,7 @@ fn fixture(path:&std::path::Path)->Session{let mut b=Session::open_live(path,&po
 }
 #[test]fn actual_ack_fill_and_retirement_never_reuse_old_zero_fill_or_funded_quote(){
  let t=Temp::new();let mut b=fixture(&t.0);let before=snapshot(&b);let q=before.records().iter().find(|q|q["side"]=="YES").unwrap().clone();let id=q["id"].as_u64().unwrap();let n=q["quantity"].as_u64().unwrap();let at=q["activationAt"].as_u64().unwrap();
- let mut e=json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"b".repeat(64),"orderId":id,"actualOrderId":"901","marketId":q["marketId"],"exchangeId":q["exchangeId"],"side":q["side"],"action":"buy","quantity":n,"price":q["price"],"receivedAt":iso(at+1)});
+ let mut e=json!({"type":"actual_order_ack","source":"official_sig_api_v1","receiptHash":"b".repeat(64),"orderId":id,"actualOrderId":"901","tournamentId":"cup","marketId":q["marketId"],"exchangeId":q["exchangeId"],"side":q["side"],"action":"buy","quantity":n,"price":q["price"],"receivedAt":iso(at+1)});
  b.accept("owned-original",1,&e).unwrap();let ack=snapshot(&b);assert!(!Arc::ptr_eq(&before,&ack));assert_eq!(quote(&b,id),b.engine().order_records().into_iter().find(|q|q["id"]==id));
  e["type"]=json!("actual_fill");e["fillId"]=json!("1001");e["fee"]=json!("0.000000");e["executedAt"]=json!(iso(at+2));e["receivedAt"]=json!(iso(at+3));b.accept("owned-original",2,&e).unwrap();let filled=snapshot(&b);assert!(!Arc::ptr_eq(&ack,&filled));assert_eq!(filled.quote(id).unwrap()["filled"],n);assert_eq!(before.quote(id).unwrap()["filled"],0);assert!(!before.validate_current(&b));assert_eq!(filled.records(),b.engine().order_records());
  assert_eq!(b.engine().wallet.quantity("101",moloch_replay::Side::Yes),n);
