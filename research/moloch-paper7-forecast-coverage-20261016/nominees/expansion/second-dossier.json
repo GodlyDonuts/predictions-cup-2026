@@ -1,0 +1,998 @@
+{
+  "accountOrSshCalls": 0,
+  "allocationAuthority": false,
+  "baseCoverageCommit": "6a9fb00b6a7c607f98308c5a21e23fb808227bf0",
+  "candidateCount": 5,
+  "candidates": [
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.234",
+          "name": "Annie Andrews",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.766",
+          "name": "Darline Graham",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": null,
+          "name": "Other",
+          "reportedParty": "O",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": true
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "291",
+      "exchangeId": "979",
+      "executionAuthority": false,
+      "firstForecastPublicationIndependentlyVerified": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.234",
+        "name": "Annie Andrews",
+        "reportedParty": "D",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 213209,
+        "file": "senate-south-carolina.html",
+        "headersSha256": "227727d14fbec5c73ed2c0840d9c72d97f8b0a01b82a7403443a7941c2039c82",
+        "httpDate": "Fri, 16 Oct 2026 22:01:57 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:27.922921+00:00",
+        "requestStartedAt": "2026-10-16T22:51:27.606317+00:00",
+        "sha256": "319c968a4b479826cbd184987b37e394be283bd1214bfaf7f439c5cc20b5c04e",
+        "status": 200,
+        "url": "https://www.callthemap.com/senate/south-carolina"
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 1488420,
+        "artifact": "orderbook/market-290-2e4a2896d4e38bb1.json",
+        "currentExecutable": false,
+        "exchangeId": "979",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.17",
+        "noAskDepth": "3117",
+        "originalAsOf": {
+          "at": "2026-10-16T22:26:05.5794668+00:00",
+          "sequence": 183084947
+        },
+        "receivedAt": "2026-10-16T22:26:05.716Z",
+        "requestStartedAt": "2026-10-16T22:26:05.363Z",
+        "sourceSha256": "2e4a2896d4e38bb1d4df282362b57796ca8f6b80e7390b8d598308ab4b868eef",
+        "yesAsk": "0.835",
+        "yesAskDepth": "4896"
+      },
+      "historicalSelectedAsk": "0.17",
+      "historicalSelectedTopDepth": "3117",
+      "historicalTopPrincipalWith10kShareIllustration": "529.89",
+      "marketId": "290",
+      "nodeOlderThan24hAtPreparation": false,
+      "nodeReferenceAgeAtPreparationMs": 63509461,
+      "office": "senate",
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "291",
+        "marketId": "290",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "Federal",
+          "raceId": "62979",
+          "raceName": "U.S. Senate South Carolina",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "98109",
+          "usState": "SC",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 923,
+          "endpoint": "/markets/290/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-290-1f8c0feb120699bf.json",
+          "receivedAt": "2026-10-16T06:22:31.355Z",
+          "requestStartedAt": "2026-10-16T06:22:31.068Z",
+          "sha256": "1f8c0feb120699bf08251d2d05660f20747d6e9a834a7bfb81f909a89a3bc96a"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "74b0637bc9e51410e30305cd44d0c065a4d35794624794707a70dd0fa4b08a69"
+      },
+      "partyPredicate": "Republican Party",
+      "primaryNominee": {
+        "originalNomineeRowsVerified": false,
+        "originalSources": [
+          {
+            "bytes": 13760,
+            "contentType": "text/html; charset=utf-8",
+            "exitCode": 0,
+            "file": "sc-official-candidate-search.html",
+            "headersSha256": "82cdf0b0f8bee9f36c8b25144ec95901e55cfed0349ae67a9150ad7f3df77453",
+            "httpDate": "Fri, 16 Oct 2026 23:58:25 GMT",
+            "httpLastModified": null,
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:58:25.832704+00:00",
+            "requestStartedAt": "2026-10-16T23:58:22.301348+00:00",
+            "sha256": "2945a4be94c99d485da50f5ae1cba202ca8feacc36b75db084a0b0a8ece89058",
+            "url": "https://vrems.scvotes.sc.gov/Candidate/CandidateSearch?electionId=22596"
+          }
+        ],
+        "safeExtractedRows": [],
+        "status": "partial_search_shell_only_no_nominee_rows"
+      },
+      "risks": [
+        "Current original state search form establishes election date but contains no nominee rows. SC is PARTIAL, no original nominee/party/full-field witness. No JavaScript-internal API or arbitrary query was invoked.",
+        "Annie Andrews Democratic victory is only an assumed ordinary subset of Republican Party Winner NO, not one minus Republican probability or a complete non-Republican partition. Exact candidate/current party and replacement/resolver/refund/fusion contingencies still need independent primary confirmation."
+      ],
+      "side": "NO",
+      "sourceAgeExtensionApproved": false,
+      "sourceClocksRenewed": false,
+      "state": "SC",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.21060",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.030",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.200"
+        },
+        {
+          "assumedPayoutPerShare": "0.18720",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.005",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.175"
+        }
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.004",
+          "name": "Marquita Bradshaw",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.996",
+          "name": "Bill Hagerty",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "363",
+      "exchangeId": "1051",
+      "executionAuthority": false,
+      "firstForecastPublicationIndependentlyVerified": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.996",
+        "name": "Bill Hagerty",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 168340,
+        "file": "senate-tennessee.html",
+        "headersSha256": "cf91142106cfaf40431423f72b8990a172c814ba84ad522d362e8e017f025897",
+        "httpDate": "Fri, 16 Oct 2026 22:17:22 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:28.460968+00:00",
+        "requestStartedAt": "2026-10-16T22:51:28.122127+00:00",
+        "sha256": "2c2b9cc99ea4ecb1751e49d47f95a6523739f6a9ab702c9a1723c1df3d613c0c",
+        "status": 200,
+        "url": "https://www.callthemap.com/senate/tennessee"
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 4633613,
+        "artifact": "orderbook/market-362-3e065529f3250cbf.json",
+        "currentExecutable": false,
+        "exchangeId": "1051",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.865",
+        "noAskDepth": "58010",
+        "originalAsOf": {
+          "at": "2026-10-16T21:33:40.3864717+00:00",
+          "sequence": 182593567
+        },
+        "receivedAt": "2026-10-16T21:33:40.509Z",
+        "requestStartedAt": "2026-10-16T21:33:40.202Z",
+        "sourceSha256": "3e065529f3250cbf6e7863aff57d2ad7b88ad9d13e0add1ac98efcd3bab667f4",
+        "yesAsk": "0.14",
+        "yesAskDepth": "2363"
+      },
+      "historicalSelectedAsk": "0.865",
+      "historicalSelectedTopDepth": "58010",
+      "historicalTopPrincipalWith10kShareIllustration": "8650.000",
+      "marketId": "362",
+      "nodeOlderThan24hAtPreparation": false,
+      "nodeReferenceAgeAtPreparationMs": 10448928,
+      "office": "senate",
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "363",
+        "marketId": "362",
+        "party": "Democratic Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "Federal",
+          "raceId": "62981",
+          "raceName": "U.S. Senate Tennessee",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "98111",
+          "usState": "TN",
+          "winnerName": "Democratic Party"
+        },
+        "receipt": {
+          "bytes": 913,
+          "endpoint": "/markets/362/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-362-98ef4baf78679e3d.json",
+          "receivedAt": "2026-10-16T21:06:51.888Z",
+          "requestStartedAt": "2026-10-16T21:06:51.482Z",
+          "sha256": "98ef4baf78679e3d711f54c8dae8e86c16760c5d76f6b415728b8880ea53557b"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "40d8eb10e71ab0829b11fb16fdc87142a274c99aec89a30dbae612e077f9830f"
+      },
+      "partyPredicate": "Democratic Party",
+      "primaryNominee": {
+        "originalNomineeRowsVerified": true,
+        "originalSources": [
+          {
+            "bytes": 694547,
+            "contentType": "application/pdf",
+            "exitCode": 0,
+            "file": "tn-official-shelby-general-ballot.pdf",
+            "headersSha256": "f15821754a5165d2b9b15a4a6ade8527fa64c125618eccb70de87db3b3ddeb17",
+            "httpDate": "Fri, 16 Oct 2026 23:58:25 GMT",
+            "httpLastModified": "Wed, 23 Sep 2026 14:22:57 GMT",
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:58:25.904754+00:00",
+            "requestStartedAt": "2026-10-16T23:58:23.653751+00:00",
+            "sha256": "75a97b128701bf32f3846db713ed5b583ade45654da3c4c65acf2ebf8ed331cb",
+            "url": "https://www.electionsshelbytn.gov/wp-content/uploads/2026/09/Nov-3-2026-Official-Sample-2026-State-and-Federal-General-Election-and-Municipal-Elections-Paper-Ver-2.pdf"
+          }
+        ],
+        "safeExtractedRows": [
+          {
+            "name": "Bill Hagerty",
+            "party": "Republican Party Nominee"
+          },
+          {
+            "name": "Marquita Bradshaw",
+            "party": "Democratic Party Nominee"
+          },
+          {
+            "name": "Tharon Chandler",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Andrew Gerena",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Jeremy Dean Hearn",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Robert Jones",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "James William Macon III",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Yoshi D. Matthews",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "David Sutman, Jr.",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Catherine Barcel \"Barcy\" Whitson",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Write-in",
+            "party": "not specified"
+          }
+        ],
+        "status": "original_current_nominee_source_available"
+      },
+      "risks": [
+        "Official ballot prints10 named candidates plus write-in. CTM visible table omits individual win probabilities for the8 independent candidates; none are assigned zero.",
+        "Hagerty Republican victory is treated only as an ordinary subset of Democratic Party Winner NO; no complete complement or candidate-to-party semantic certificate is minted."
+      ],
+      "side": "NO",
+      "sourceAgeExtensionApproved": false,
+      "sourceClocksRenewed": false,
+      "state": "TN",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.89640",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.020",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.885"
+        },
+        {
+          "assumedPayoutPerShare": "0.79680",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.080",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.785"
+        }
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.988",
+          "name": "Xavier Becerra",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.012",
+          "name": "Steve Hilton",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "163",
+      "exchangeId": "851",
+      "executionAuthority": false,
+      "firstForecastPublicationIndependentlyVerified": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.988",
+        "name": "Xavier Becerra",
+        "reportedParty": "D",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 182318,
+        "file": "governors-california.html",
+        "headersSha256": "b70821dd072ecadf4cc300ad706c223b14699614cb8d7b296880959bbce85d85",
+        "httpDate": "Fri, 16 Oct 2026 22:48:44 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:10.747438+00:00",
+        "requestStartedAt": "2026-10-16T22:51:10.448953+00:00",
+        "sha256": "36bc477a217953bc5686edd0e1445c6f6a3cd6184e3a12a569a5e20fddd7ac26",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/california"
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 5604839,
+        "artifact": "orderbook/market-162-f558cacd3c778676.json",
+        "currentExecutable": false,
+        "exchangeId": "851",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.87",
+        "noAskDepth": "30",
+        "originalAsOf": {
+          "at": "2026-10-16T21:17:29.160372+00:00",
+          "sequence": 182453647
+        },
+        "receivedAt": "2026-10-16T21:17:29.271Z",
+        "requestStartedAt": "2026-10-16T21:17:28.945Z",
+        "sourceSha256": "f558cacd3c778676d11f0754427f0865d9a43e5edac7a9fd08eb041a5496f1c8",
+        "yesAsk": "0.135",
+        "yesAskDepth": "1925"
+      },
+      "historicalSelectedAsk": "0.87",
+      "historicalSelectedTopDepth": "30",
+      "historicalTopPrincipalWith10kShareIllustration": "26.10",
+      "marketId": "162",
+      "nodeOlderThan24hAtPreparation": false,
+      "nodeReferenceAgeAtPreparationMs": 50811662,
+      "office": "governors",
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "163",
+        "marketId": "162",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "State",
+          "raceId": "76628",
+          "raceName": "Governor of California",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "118831",
+          "usState": "CA",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 916,
+          "endpoint": "/markets/162/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-162-aeb09a9fe3ae3cb4.json",
+          "receivedAt": "2026-10-16T09:54:09.154Z",
+          "requestStartedAt": "2026-10-16T09:54:08.876Z",
+          "sha256": "aeb09a9fe3ae3cb469759fd70af8bdbfb5a5ea77d444793c4f27177c1446d9c6"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "c6ca35eb6ce94b2a8c687a7a588478a3da6cbc7b319cc8f3de5925c0096d60ef"
+      },
+      "partyPredicate": "Republican Party",
+      "primaryNominee": {
+        "originalNomineeRowsVerified": true,
+        "originalSources": [
+          {
+            "bytes": 14833345,
+            "contentType": "application/pdf",
+            "exitCode": 0,
+            "file": "ca-official-general-certification.pdf",
+            "headersSha256": "4757574b45b64cde0f2e8d4903493692b2bbbb877d8a9d8b3baebf4c116ad8de",
+            "httpDate": "Fri, 16 Oct 2026 23:51:13 GMT",
+            "httpLastModified": "Fri, 28 Aug 2026 00:38:33 GMT",
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:58:23.215009+00:00",
+            "requestStartedAt": "2026-10-16T23:58:22.301348+00:00",
+            "sha256": "0e514ae7b14378b1837bcea99c07e6a05ce35baa9db4c3d3a2297704dc7e6017",
+            "url": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf"
+          },
+          {
+            "bytes": 12551,
+            "contentType": "text/html",
+            "exitCode": 0,
+            "file": "ca-official-governor-guide.html",
+            "headersSha256": "7c10e5981a27c1666be5ba3fb7a4b5e9d3498e8da955d5002eb35e2a25d2301f",
+            "httpDate": "Fri, 16 Oct 2026 23:58:24 GMT",
+            "httpLastModified": "Wed, 07 Oct 2026 23:00:08 GMT",
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:58:23.616222+00:00",
+            "requestStartedAt": "2026-10-16T23:58:23.228009+00:00",
+            "sha256": "28c29f3de403040a9ec393f1e3c4cebac94335fc43959b7c2bdaf814856a404c",
+            "url": "https://voterguide.sos.ca.gov/candidates/governor-candidate-statements.htm"
+          }
+        ],
+        "safeExtractedRows": [
+          {
+            "name": "Xavier Becerra",
+            "party": "Democratic"
+          },
+          {
+            "name": "Steve Hilton",
+            "party": "Republican"
+          }
+        ],
+        "status": "original_current_nominee_source_available"
+      },
+      "risks": [
+        "State final certified list gives Becerra Democratic/Hilton Republican for Governor. Top-two origin does not itself prove the tournament resolution. Official party preference is retained, no ongoing affiliation guarantee.",
+        "Becerra Democratic victory is an assumed ordinary subset of Republican Party Winner NO. The old NOask.870 top30 has only26.10 principal; a cheaper historical side is not an extra independent trade. Existing DemocraticYES counterpart is the same candidate event, not diversification."
+      ],
+      "side": "NO",
+      "sourceAgeExtensionApproved": false,
+      "sourceClocksRenewed": false,
+      "state": "CA",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.88920",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "0.005",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": true,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.875"
+        },
+        {
+          "assumedPayoutPerShare": "0.79040",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.090",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.780"
+        }
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.015",
+          "name": "Jerri Green",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.985",
+          "name": "Marsha Blackburn",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "312",
+      "exchangeId": "1000",
+      "executionAuthority": false,
+      "firstForecastPublicationIndependentlyVerified": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.985",
+        "name": "Marsha Blackburn",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 169685,
+        "file": "governors-tennessee.html",
+        "headersSha256": "b8f21493f584ba1a21803fd9066f890c3681bc15019ed4a02d08f616718194b4",
+        "httpDate": "Fri, 16 Oct 2026 18:32:41 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:17.984451+00:00",
+        "requestStartedAt": "2026-10-16T22:51:17.751360+00:00",
+        "sha256": "a10b57863ffb837604d3564d46701443d80f779ba20a731ea07f178fcf6e1f65",
+        "status": 200,
+        "url": "https://www.callthemap.com/governors/tennessee"
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 3553317,
+        "artifact": "orderbook/market-311-e3544b7932bc35f1.json",
+        "currentExecutable": false,
+        "exchangeId": "1000",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.12",
+        "noAskDepth": "22519",
+        "originalAsOf": {
+          "at": "2026-10-16T21:51:40.6823555+00:00",
+          "sequence": 182771605
+        },
+        "receivedAt": "2026-10-16T21:51:41.045Z",
+        "requestStartedAt": "2026-10-16T21:51:40.467Z",
+        "sourceSha256": "e3544b7932bc35f17a8765e2e155385efc37834e80bbec523aa0c91a8dc239c7",
+        "yesAsk": "0.885",
+        "yesAskDepth": "67022"
+      },
+      "historicalSelectedAsk": "0.885",
+      "historicalSelectedTopDepth": "67022",
+      "historicalTopPrincipalWith10kShareIllustration": "8850.000",
+      "marketId": "311",
+      "nodeOlderThan24hAtPreparation": false,
+      "nodeReferenceAgeAtPreparationMs": 7921178,
+      "office": "governors",
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "312",
+        "marketId": "311",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "State",
+          "raceId": "76844",
+          "raceName": "Governor of Tennessee",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "119047",
+          "usState": "TN",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 914,
+          "endpoint": "/markets/311/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-311-c16dcfdb9bc32902.json",
+          "receivedAt": "2026-10-16T21:48:59.638Z",
+          "requestStartedAt": "2026-10-16T21:48:59.362Z",
+          "sha256": "c16dcfdb9bc329025214899dee933e02ca8262058f13bc92f44cd321cafd1a4c"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "fe98ba27077b7a10587e284d199323f7a1dfcdfed39cad24fbc13da7ba85ec65"
+      },
+      "partyPredicate": "Republican Party",
+      "primaryNominee": {
+        "originalNomineeRowsVerified": true,
+        "originalSources": [
+          {
+            "bytes": 694547,
+            "contentType": "application/pdf",
+            "exitCode": 0,
+            "file": "tn-official-shelby-general-ballot.pdf",
+            "headersSha256": "f15821754a5165d2b9b15a4a6ade8527fa64c125618eccb70de87db3b3ddeb17",
+            "httpDate": "Fri, 16 Oct 2026 23:58:25 GMT",
+            "httpLastModified": "Wed, 23 Sep 2026 14:22:57 GMT",
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:58:25.904754+00:00",
+            "requestStartedAt": "2026-10-16T23:58:23.653751+00:00",
+            "sha256": "75a97b128701bf32f3846db713ed5b583ade45654da3c4c65acf2ebf8ed331cb",
+            "url": "https://www.electionsshelbytn.gov/wp-content/uploads/2026/09/Nov-3-2026-Official-Sample-2026-State-and-Federal-General-Election-and-Municipal-Elections-Paper-Ver-2.pdf"
+          }
+        ],
+        "safeExtractedRows": [
+          {
+            "name": "Marsha Blackburn",
+            "party": "Republican Party Nominee"
+          },
+          {
+            "name": "Jerri Green",
+            "party": "Democratic Party Nominee"
+          },
+          {
+            "name": "Misam Abidi",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Dean Brewer",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Ray Brown",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "David Hatley",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Wendell Jackson",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Charles Van Morgan",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Eddie Lee Murphy",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Lauren Pinkston",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Victor L. Scoggin",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Dave Seeman",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Karl Knox Smithson",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "L. Webb Taylor",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Robert C. Vick",
+            "party": "Independent Candidate"
+          },
+          {
+            "name": "Write-in",
+            "party": "not specified"
+          }
+        ],
+        "status": "original_current_nominee_source_available"
+      },
+      "risks": [
+        "Official ballot prints15 named governor candidates plus write-in. CTM visible major-candidate points do not independently supply the full independent/write-in win distribution.",
+        "Republican named-candidate victory to Party Winner YES remains an ordinary-mapping assumption. At the old ask the10% and20% chosen stress cases FAIL."
+      ],
+      "side": "YES",
+      "sourceAgeExtensionApproved": false,
+      "sourceClocksRenewed": false,
+      "state": "TN",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.88650",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.010",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.875"
+        },
+        {
+          "assumedPayoutPerShare": "0.78800",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.110",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.775"
+        }
+      ]
+    },
+    {
+      "allOriginalVisibleForecastCandidates": [
+        {
+          "candidateWinModelPoint": "0.918",
+          "name": "Kurt Alme",
+          "reportedParty": "R",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.081",
+          "name": "Seth Bodnar",
+          "reportedParty": "I",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": "0.001",
+          "name": "Alani Bankhead",
+          "reportedParty": "D",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": false
+        },
+        {
+          "candidateWinModelPoint": null,
+          "name": "Other (minor parties / write-ins)",
+          "reportedParty": "O",
+          "strictLowerIfCensored": null,
+          "strictUpperIfCensored": null,
+          "unpublishedProbability": true
+        }
+      ],
+      "allocationAuthority": false,
+      "contractId": "276",
+      "exchangeId": "964",
+      "executionAuthority": false,
+      "firstForecastPublicationIndependentlyVerified": false,
+      "forecastCandidate": {
+        "candidateWinModelPoint": "0.918",
+        "name": "Kurt Alme",
+        "reportedParty": "R",
+        "strictLowerIfCensored": null,
+        "strictUpperIfCensored": null,
+        "unpublishedProbability": false
+      },
+      "forecastPageDateModified": "2026-10-16T17:57:26.000Z",
+      "forecastSource": {
+        "bytes": 235215,
+        "file": "senate-montana.html",
+        "headersSha256": "e7ec8b18729a28a85638bff1344ba97d457f4206fc5b0a1567008bb19c65ce7e",
+        "httpDate": "Fri, 16 Oct 2026 21:39:43 GMT",
+        "lastModified": null,
+        "receivedAt": "2026-10-16T22:51:25.004931+00:00",
+        "requestStartedAt": "2026-10-16T22:51:24.749350+00:00",
+        "sha256": "1ce8f10eb60c0cb1c014d11049f557c03299027971238b72ea7c7f0ac7469c67",
+        "status": 200,
+        "url": "https://www.callthemap.com/senate/montana"
+      },
+      "historicalReferenceBook": {
+        "ageAtOriginalBundleExtractionMs": 3420026,
+        "artifact": "orderbook/market-275-b45419194a2c67dc.json",
+        "currentExecutable": false,
+        "exchangeId": "964",
+        "fullProviderContinuityVerified": false,
+        "noAskComplement": "0.175",
+        "noAskDepth": "3530",
+        "originalAsOf": {
+          "at": "2026-10-16T21:53:53.972919+00:00",
+          "sequence": 182792423
+        },
+        "receivedAt": "2026-10-16T21:53:54.101Z",
+        "requestStartedAt": "2026-10-16T21:53:53.705Z",
+        "sourceSha256": "b45419194a2c67dc9aef3afff7e849f98956f732ecc50d056a7e1298f8270fe4",
+        "yesAsk": "0.835",
+        "yesAskDepth": "5486"
+      },
+      "historicalSelectedAsk": "0.835",
+      "historicalSelectedTopDepth": "5486",
+      "historicalTopPrincipalWith10kShareIllustration": "4580.810",
+      "marketId": "275",
+      "nodeOlderThan24hAtPreparation": false,
+      "nodeReferenceAgeAtPreparationMs": 7969545,
+      "office": "senate",
+      "operatorApproval": false,
+      "originalContract": {
+        "contractId": "276",
+        "marketId": "275",
+        "party": "Republican Party",
+        "predicate": {
+          "contractType": "Election Outcome",
+          "electionDate": "2026-11-03",
+          "officeLevel": "Federal",
+          "raceId": "62970",
+          "raceName": "U.S. Senate Montana",
+          "raceStage": "General",
+          "resolutionType": "Party Winner",
+          "stageId": "98100",
+          "usState": "MT",
+          "winnerName": "Republican Party"
+        },
+        "receipt": {
+          "bytes": 909,
+          "endpoint": "/markets/275/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "path": "nodes/market-275-122aa3f8272c7011.json",
+          "receivedAt": "2026-10-16T21:48:11.271Z",
+          "requestStartedAt": "2026-10-16T21:48:10.876Z",
+          "sha256": "122aa3f8272c70116a08063aa98cf7b0bcb99afffd836461842e0fa13a8ca7dc"
+        },
+        "scheduledSettlementAt": "2026-11-04T17:00:00.000Z",
+        "semanticRootSha256": "087c9faa020bd29d614bcc2cda4a564c7d94647c889bb92c4166b0d363126820"
+      },
+      "partyPredicate": "Republican Party",
+      "primaryNominee": {
+        "originalNomineeRowsVerified": true,
+        "originalSources": [
+          {
+            "bytes": 168382,
+            "contentType": "text/html; charset=utf-8",
+            "exitCode": 0,
+            "file": "mt-official-federal-general-list.html",
+            "headersSha256": "c4f6d7ff1bd922073f6bf03caff191f48ffe45c85d814972222aa77ca10e5ea2",
+            "httpDate": "Fri, 16 Oct 2026 23:58:30 GMT",
+            "httpLastModified": null,
+            "httpStatus": 200,
+            "receivedAt": "2026-10-16T23:58:31.442787+00:00",
+            "requestStartedAt": "2026-10-16T23:58:25.847730+00:00",
+            "sha256": "8785ed8027d7966c91d9076fc52bdce637082ad908340f61577231da1ec25bce",
+            "url": "https://candidatefiling.mt.gov/candidatefiling/CandidateList.aspx?e=450002987"
+          }
+        ],
+        "safeExtractedRows": [
+          {
+            "name": "KURT ALME",
+            "office": "UNITED STATES SENATOR",
+            "party": "REP",
+            "status": "FILED",
+            "termType": "REGULAR",
+            "termYears": "6"
+          },
+          {
+            "name": "KYLE AUSTIN",
+            "office": "UNITED STATES SENATOR",
+            "party": "LIB",
+            "status": "FILED",
+            "termType": "REGULAR",
+            "termYears": "6"
+          },
+          {
+            "name": "ALANI BANKHEAD",
+            "office": "UNITED STATES SENATOR",
+            "party": "DEM",
+            "status": "FILED",
+            "termType": "REGULAR",
+            "termYears": "6"
+          },
+          {
+            "name": "SETH BODNAR",
+            "office": "UNITED STATES SENATOR",
+            "party": "IND",
+            "status": "FILED",
+            "termType": "REGULAR",
+            "termYears": "6"
+          },
+          {
+            "name": "JAMI DEE WOODMAN",
+            "office": "UNITED STATES SENATOR",
+            "party": "NON",
+            "status": "FILED",
+            "termType": "REGULAR",
+            "termYears": "6"
+          }
+        ],
+        "status": "original_current_nominee_source_available"
+      },
+      "risks": [
+        "Current official FEDERAL GENERAL2026 list includes AlmeREP,AustinLIB,BankheadDEM,BodnarIND,WoodmanNON/write-in. Status is FILED, not a new ballot-certification assertion. Private contact columns are excluded.",
+        "CTM censored/unpublished minor-candidate probabilities remain as originally reported. At the old ask10%/20% stress cases FAIL; more capital does not change that arithmetic."
+      ],
+      "side": "YES",
+      "sourceAgeExtensionApproved": false,
+      "sourceClocksRenewed": false,
+      "state": "MT",
+      "stressScenarios": [
+        {
+          "assumedPayoutPerShare": "0.82620",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.020",
+          "exceptionAllowanceAssumption": "0.10",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.815"
+        },
+        {
+          "assumedPayoutPerShare": "0.73440",
+          "calibratedProbabilityBound": false,
+          "ceilingMinusHistoricalAsk": "-0.115",
+          "exceptionAllowanceAssumption": "0.20",
+          "exceptionPayoutAssumption": "0",
+          "margin": "0.01",
+          "passesHistoricalPriceArithmeticOnly": false,
+          "tick": "0.005",
+          "tickFlooredResearchCeiling": "0.720"
+        }
+      ]
+    }
+  ],
+  "executionAuthority": false,
+  "frozenFirstPacketCommit": "6f29c50e7d49d1a2a19c8ae05c61aea483c9bb27",
+  "kind": "second_finite_five_nominee_research_screen",
+  "limits": [
+    "Model points and ordinary-conditional interpretation unvalidated; exception10%/20%,zero exceptional payout,zero fee,.01margin/.005tick are unestimated scenarios, not calibrated bounds.",
+    "All prices/depth/times are original historical references, not current execution or fills. A72h node age would need separate root review; this dossier approves no extension and renews no timestamp.",
+    "Candidate victory is only an ordinary party mapping/subset, not a complete complement/refund floor or deterministic guaranteed value.",
+    "Same-publisher/national/party error correlations and replacement/fusion/tie/refund/cancellation/finality/delay remain. Scheduled Nov4 time is not cash-release certainty.",
+    "Raw candidate contact columns remain private. No approvals,allocation,Settings,authority,account reads,SSH or deployment."
+  ],
+  "operatorApproval": false,
+  "originalNomineeRowsVerified": 4,
+  "partialNomineeRows": 1,
+  "preparedAt": "2026-10-17T00:01:00.816716+00:00",
+  "privateOriginalDirectoryBasename": "moloch-paper7-nominee-expansion-second-20261016",
+  "privateOriginalManifestSha256": "550248ff51f624128f1f6e1e8a7214406f9a452e61d93640ed1d8ca393f26a4f",
+  "remaining20PercentPassingHistoricalRows": [
+    {
+      "marketId": "290",
+      "office": "senate",
+      "side": "NO",
+      "state": "SC"
+    }
+  ],
+  "runtimeReviewOrSettingsCreated": false,
+  "schemaVersion": 1,
+  "selection": "Only remaining20%-stress passing historical lane is SC RepublicanNO; lead with it, then remaining largest3%-historical-gap simple-party candidate lanes TNsenate,CAgovernor,TNgovernor,MTsenate. RI multi-candidate mixture skipped. No five20%-robust allocations exist in this retained screen."
+}
