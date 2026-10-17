@@ -1,0 +1,10 @@
+{
+  "archiveSha256": "193b07796ae5ed4a7b8ea199b66c35e401680b5e99a3d9e2c1848dc587181c8d",
+  "sourceBundleSha256": "b5290d4b15c72c9939bd253bb5432e2d51545df1eefb19ff7f8fe7f6b46cb99f",
+  "originalInputShaBeforeAndAfterVerified": true,
+  "exactFullModelMseOosIdsCountsAndSelectionParity": true,
+  "unchangedAnalyzers": true,
+  "modelApproval": false,
+  "executionAuthority": false,
+  "profitEstablished": false
+}

@@ -4,6 +4,12 @@
 
 Newest research: [Victory Directive and evidence-to-code map](../research/moloch-victory-directive-20261017/README.md). Original paper is preserved exactly. Its main698969d5 audit predates the checked profitable-exit release.
 
+## New strategy evidence at05:42UTC
+
+[Profit preparation candidateb796e2c1](../research/moloch-profitable-preparation-20261017/build-proof/README.md) passes850 checks and optimized release; all262 actual source files independently matchGit exactly or byCRLF. Not yet deployed at this observation; sole611948 R20 remains active. Fresh05:40:03 progress is trading/realtimeHealthy with352 official rows; cash9,274.510/owned86,165.565/combined realized−139.840. This adds one fill row since the stopped351 boundary; a new-order/group/profit claim requires attribution.
+
+[New finite prospective cohort](../research/moloch-victory-directive-20261017/prospective-v2/README.md) supplies17,349 decisions/23,697 labels across234 markets, sealed after actual process exit and gzip/JSON/hash verification. Unchanged full/local/BBO comparisons select zero after-cost trades at all horizons. External MSE improves locally at three of five horizons, insufficient to qualify alpha. Missing/censored labels and raw-input authentication limits remain. The original04:45 no-live-cohort intake is historical; this separate05:04–05:34 capture genuinely ran and has now stopped. No new source/model authority.
+
 ## Latest verified production and financial observation
 
 Source **4bbeae46 /binary c734ca4c /native 7a74f8c3**, sole worker **611948**, is **verified trading/realtimeHealthy/noSTOP at04:54:38UTC**. [Actual fresh-process proof](../research/moloch-profitable-exit-refresh-20261017/live-proof/live-verification.json). The earlier [installation receipt](../research/moloch-profitable-exit-refresh-20261017/deployment/production-rollout-summary.json) does not claim fresh trading or fills. Original fourteen bridge bytes/four model generations/eleven settings remain unchanged. At the controlled stopped boundary: **351 fills/cash9,463.510/owned85,976.565/combined attributed realized−139.840**; new−184.970/inherited+45.130. Owned cost and model reserves are separate from profit. [Boundary evidence](../research/moloch-profitable-exit-refresh-20261017/deployment/boundary-summary.json). The new proof verifies actual611948 progress/executable/model channel. It records zero new fill rows since the upgrade; the prior worker's progress was not attributed to611948.

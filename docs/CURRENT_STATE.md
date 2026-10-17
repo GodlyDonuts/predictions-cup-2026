@@ -1,3 +1,9 @@
+# October17,05:42UTC — profit preparation checked; production remains R20
+
+Candidateb796e2c1/binary70f16b21 passes850 checks/optimized ARM64 release/unchanged native probe. All262 actual source files independently matchGit exactly or byCRLF; eleven settings/four original generations verified. One real early book and bounded native-gap wait/tick precede the unchanged final seven receipts. **Checked, not deployed**; sole611948 remains R20 and was trading/realtimeHealthy at05:40:03UTC. Ledger then352 fills/cash9,274.510/owned86,165.565/combined realized−139.840. [Build proof](../research/moloch-profitable-preparation-20261017/build-proof/README.md).
+
+[New prospective cohort](../research/moloch-victory-directive-20261017/prospective-v2/README.md):17,349 actual file decisions/23,697 labels/234 markets; all five horizons/all fixed comparators select zero after-cost trades. Final-status versus trailing-file count differences and incomplete raw-input authentication are explicit. No live alpha/model activation inferred. Essential verified superseded-file preservation restored about12GiB headroom; queue policy/rates unchanged. Next existing controlled binary-only upgrade, then actual new-process/fill verification.
+
 # October 17, 04:54 UTC — profitable-exit release verified trading
 
 Sole611948/source4bbeae46/binaryc734ca4c/native7a74f8c3 verified trading/realtimeHealthy/noSTOP at04:54:38UTC. Actual unit PID/executable/progress/model channel agree; fourteen bridge bytes/four original model generation rows/eleven settings preserved. Ledger351fills/cash9,463.510/owned85,976.565/combined attributed realized−139.840. **Zero post-upgrade fill rows at this proof**; a profitable exit or causal latency/economic benefit remains unverified. [Actual new-process evidence](../research/moloch-profitable-exit-refresh-20261017/live-proof/live-verification.json). Initial installation below correctly retains restoring status.

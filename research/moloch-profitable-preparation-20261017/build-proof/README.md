@@ -1,0 +1,7 @@
+# Genuine profit-exit preparation: checked build
+
+Candidate b796e2c1 passes850 checks, optimized ARM64 release and unchanged native-identity probe. Nine lifecycle checks and126 worker checks ran for the change; explicitly listed unchanged compiled-source groups reuse their actual passing R20 logs. All262 staged source files were independently compared with Git, allowing only CRLF normalization. Original four model generations and all eleven typed review policies/source bundles remain unchanged and verified.
+
+One genuine early target-book read and at most one real policy-gap wait/tick precede the unchanged final seven-fact packet. Native planning/ranking and original profit, new-qid, ownership, expiry, activation, unknown, STOP and final dispatch authority still apply. No native/SDK/rate/risk/model/source-clock/activation change. One gap does not guarantee a target quote, fill or profit.
+
+The retained initial compile and two synthetic-fixture failures are published with original logs/checkpoints; fixes used the actual quote-side API and original adoption/book-receipt guards. No financial guard was relaxed. Earlier capacity/archive-normalization failures occurred before tests and remain private operational records. Build success does not establish production deployment or profitable exits. See strategy-check-summary.json, independent-review.json and root-independent-source-verification.json.

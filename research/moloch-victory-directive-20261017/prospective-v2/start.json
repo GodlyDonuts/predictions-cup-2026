@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-17T05:04:30.389040+00:00",
+  "observerPid": 612336,
+  "productionPid": 611948,
+  "producerPath": "/home/archon/apps/moloch/sidecars/crossvenue-observer-3d3b5d43a6c79293.py",
+  "producerSha256": "3d3b5d43a6c79293d28b424fc4ab31626267acdd1c1b71918d9cdefd94824cd7",
+  "testedSourceSha256": "83733121085c962c32dadeb12a08eba6dbf8562e1e9e188d91607176534017b5",
+  "testedSourceSameExceptCRLF": true,
+  "focusedObserverChecksPassed": 58,
+  "output": "/home/archon/apps/moloch/shared/crossvenue-victory-book-v2-20261017",
+  "journal": "/home/archon/apps/moloch/shared/live-production-v1/breadth-611948-1792212822321.jsonl",
+  "originalMappingSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+  "durationSeconds": 1800,
+  "samplingMode": "book",
+  "originalInputTrace": false,
+  "inputAuthenticationLimitation": "existing bounded observed-feature format; full original-input trace refused unchanged 10 GiB minimum free-space; no model/order authority granted",
+  "priorTraceAttemptPid": 612296,
+  "priorTraceAttemptTerminalReason": "TRACE_MINIMUM_FREE_SPACE",
+  "noNewAccountClientOrCollector": true,
+  "executionAuthority": false,
+  "financialOrPolicyChanges": false,
+  "captureLimitPolicyUnchanged": true
+}

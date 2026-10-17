@@ -18,6 +18,10 @@ The referenced holdings CSV was not included with this attachment, so its
 An independent current native-lot calculation below supplies a different,
 explicitly dated basis.
 
+## New follow-through at05:42UTC
+
+The [new prospective cohort](prospective-v2/README.md) ran05:04–05:34UTC and is now sealed after process exit. Actual files contain17,349 decisions/23,697 labels/234 observed markets. All fixed price/local/BBO comparisons select zero after-cost trades; modest MSE improvements do not qualify alpha. Original status versus trailing-file counts and incomplete raw-input authentication remain explicit. This supersedes only the intake's no-live-observer observation; prior cohorts are not relabeled. [Profit preparationb796e2c1](../moloch-profitable-preparation-20261017/build-proof/README.md) passes850/release and is checked, not deployed at this observation. R20 stays active. The next need remains qualified economic evidence, without an infrastructure rewrite.
+
 ## Assessment against current evidence
 
 The central diagnosis is supported: capital deployment is no longer the main

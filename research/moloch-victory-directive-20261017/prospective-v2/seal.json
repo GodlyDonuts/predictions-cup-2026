@@ -1,0 +1,127 @@
+{
+  "sealedAt": "2026-10-17T05:38:27.913983+00:00",
+  "observerPid": 612336,
+  "processAbsent": true,
+  "status": {
+    "at": "2026-10-17T05:34:32.034Z",
+    "captureSegment": 1,
+    "counters": {
+      "coverageBoundaries": 116,
+      "externalDuplicates": 407183,
+      "externalInvalidOrOneSided": 5756,
+      "externalPolls": 2306,
+      "externalSourceChanges": 22750,
+      "externalStaleOrFuture": 70981,
+      "externalUnavailable": 1,
+      "externalWsWithdrawn": 1160,
+      "labels": 23692,
+      "labelsMissingTimelyBook": 55782,
+      "noCurrentExternal": 226,
+      "samples": 17215,
+      "sigBooks": 53001
+    },
+    "executionAuthority": false,
+    "format": "breadth",
+    "historyPrefixVerified": false,
+    "journalPosition": 128579959,
+    "journalSequence": 1127,
+    "observedMarkets": 234,
+    "originalJournalHash": "16c2389817e8d7d1fb20f8529dd481dad29cd035be8bfb7e0bf1b09d52dccefb",
+    "pendingSamples": 1133,
+    "pid": 612336,
+    "readOnly": true,
+    "state": "stopped"
+  },
+  "statusSha256": "077a915fa6af42cdd34af1875c917776f00ae014ad867c6c2d52259f13ccabed",
+  "startSha256": "113eada7db2d358aa14484ab24220a68603369d8b6da158c53869c9e68f97083",
+  "files": [
+    {
+      "name": "20261017T05-1792213477510312422.jsonl.gz",
+      "bytes": 7813298,
+      "sha256": "49d2d0bf1c0434970d320b24021f836bd2e527925c46ab5df101306e754cd329",
+      "completeJsonRows": 28343,
+      "types": {
+        "decision_features": 11818,
+        "horizon_label": 16525
+      },
+      "firstKeys": [
+        "decisionAt",
+        "decisionMs",
+        "exchangeId",
+        "executionAuthority",
+        "external",
+        "externalLagAnchors",
+        "externalLogitChanges",
+        "externalTradeFlow",
+        "horizonsMs",
+        "kind",
+        "marketId",
+        "pricingAuthority",
+        "sampleId",
+        "sig"
+      ],
+      "lastKeys": [
+        "decisionAt",
+        "decisionMs",
+        "exchangeId",
+        "executionAuthority",
+        "external",
+        "externalLagAnchors",
+        "externalLogitChanges",
+        "externalTradeFlow",
+        "horizonsMs",
+        "kind",
+        "marketId",
+        "pricingAuthority",
+        "sampleId",
+        "sig"
+      ]
+    },
+    {
+      "name": "20261017T05-1792214607771094349.jsonl.gz",
+      "bytes": 3624039,
+      "sha256": "c7cf65502764194f8ec289dd2d0c6317448a54a69d82717e125ca78928e1128d",
+      "completeJsonRows": 12703,
+      "types": {
+        "decision_features": 5531,
+        "horizon_label": 7172
+      },
+      "firstKeys": [
+        "decisionAt",
+        "decisionMs",
+        "exchangeId",
+        "executionAuthority",
+        "external",
+        "externalLagAnchors",
+        "externalLogitChanges",
+        "externalTradeFlow",
+        "horizonsMs",
+        "kind",
+        "marketId",
+        "pricingAuthority",
+        "sampleId",
+        "sig"
+      ],
+      "lastKeys": [
+        "decisionAt",
+        "decisionMs",
+        "exchangeId",
+        "executionAuthority",
+        "external",
+        "externalLagAnchors",
+        "externalLogitChanges",
+        "externalTradeFlow",
+        "horizonsMs",
+        "kind",
+        "marketId",
+        "pricingAuthority",
+        "sampleId",
+        "sig"
+      ]
+    }
+  ],
+  "producerSha256": "3d3b5d43a6c79293d28b424fc4ab31626267acdd1c1b71918d9cdefd94824cd7",
+  "gzipFooterAndCompleteJsonVerified": true,
+  "rawInputAuthentication": false,
+  "executionAuthority": false
+}

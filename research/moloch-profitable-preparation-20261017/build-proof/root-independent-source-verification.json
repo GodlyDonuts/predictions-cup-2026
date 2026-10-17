@@ -1,0 +1,12 @@
+{
+  "sourceCommit": "b796e2c1ddb219ebd36cff97428db99a8de780ed",
+  "checkedSourceCount": 262,
+  "comparison": {
+    "exact": 68,
+    "CRLFonly": 194
+  },
+  "allGitBytesExactOrCRLFOnly": true,
+  "originalRawSourceManifestSha256": "4fef066f53a2787089d740fe5c5a0c29d84e18e7a2ff4b7fc3e7fd7643afe854",
+  "sourceArchiveSha256": "87a943727a41d30d84c27ebbcd117613265c013bc37494b09c81bf8a7346927e",
+  "productionChangedByVerification": false
+}

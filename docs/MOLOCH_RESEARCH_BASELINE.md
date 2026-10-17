@@ -1,5 +1,7 @@
 # Moloch research baseline
 
+New05:42UTC: [b796e2c1 profit preparation](../research/moloch-profitable-preparation-20261017/build-proof/README.md) checked850/release, not yet deployed; R20 remains sole611948. [New prospective price cohort](../research/moloch-victory-directive-20261017/prospective-v2/README.md):17,349 decisions/23,697 labels, zero selected after-cost trades across all horizons/comparators. No alpha/model activation. Dated observations below remain historical.
+
 Latest: source4bbeae46 /binaryc734ca4c /sole611948 **verified trading/realtimeHealthy/noSTOP at04:54:38UTC**, zero post-upgrade fills at that proof. [Fresh-process evidence](../research/moloch-profitable-exit-refresh-20261017/live-proof/live-verification.json). Exact stopped boundary351fills/cash9,463.510/owned85,976.565/combined attributed realized−139.840. [Actual installation](../research/moloch-profitable-exit-refresh-20261017/deployment/README.md); [new Victory Directive and evidence map](../research/moloch-victory-directive-20261017/README.md). Prior verified R19 trading observation follows.
 
 Read [the current research handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md) first. It separates deployed strategies, source-only components, missing economics, capital/fill evidence and next work. Older dated reports are history; previous baseline versions remain in Git.
