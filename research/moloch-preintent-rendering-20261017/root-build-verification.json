@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "verifiedAt": "2026-10-17T20:18:56.273331+00:00",
+  "sourceCommit": "f15eac0d2b859ca935276add6d713a3850e14771",
+  "sourceFiles": 273,
+  "rawGitExact": 221,
+  "gitLineEndingEquivalent": 52,
+  "changedSourceComparedToR31": [
+    "moloch/live-runtime/src/fundamental_policy.rs",
+    "moloch/live-runtime/src/order_snapshot.rs",
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "actualTestCounts": {
+    "snapshot-unit": [
+      3
+    ],
+    "fundamental-integration": [
+      9,
+      6,
+      9,
+      128,
+      2,
+      7,
+      6
+    ],
+    "worker": [
+      164
+    ],
+    "release": []
+  },
+  "distinctTests": 334,
+  "binarySha256": "d382d9f10c280a8856129e19a44b802499ea7268bcf4bc687fa9da6da8503842",
+  "nativeIdentity": "8012cc9fb2c4feef68f1759ce65a37dc7afcf62a843cfb7a28493d8ac58e1ab6",
+  "allNativeAndSessionSourceBytesUnchanged": true,
+  "nativeBridgeRequired": false,
+  "qualificationPhase": "checked-release-complete",
+  "privateArchiveBytes": 7459119,
+  "privateArchiveSha256": "40ba7c65967828cfbbe327e454c3cdbd5e526e9a8795a3585911caa211548c81",
+  "originalMembersVerified": 281,
+  "productionChangedByVerifier": false,
+  "profitabilityEstablished": false
+}

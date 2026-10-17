@@ -1,0 +1,10 @@
+{
+  "reportRawSha256": "3f95693ad82bba9e03863e12bffa2402d4c0b68a6e7afecb0388a76aa505f178",
+  "rows": 16601,
+  "nativeCacheMaximumRows": 100000,
+  "conservativeEncodedByteBound": 19378541,
+  "nativeCacheMaximumEncodedBytes": 67108864,
+  "capturedRowsWithinExistingCacheBounds": true,
+  "heapBytesMeasured": false,
+  "financialOrAuthorityProof": false
+}

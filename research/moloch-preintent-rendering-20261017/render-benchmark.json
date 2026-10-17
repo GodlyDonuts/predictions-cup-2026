@@ -1,0 +1,124 @@
+{
+  "actualRows": 16601,
+  "allRowsExactlyEqual": true,
+  "allocationMeaning": "alloc/alloc_zeroed/realloc requested counts and bytes, not peak live bytes or system calls",
+  "alternatingFirstVariant": true,
+  "archiveRawBytesVerifiedByThisRun": false,
+  "archiveSha256": "9d32ccb0986eb9a1430a396df03bd2c8df7abce6475f302a0344c16afa3aa5e2",
+  "canonicalRowsSha256": "e50815560179ab00b2e8591c952c84c1b462546ff24fc98e8917351613e3e142",
+  "declaredQueries": 11,
+  "engineGitLfSha256": "888e21a66be9a3fb9effa618bdb03f2475f8049dc4200c8a6baf5e0fe9ed0a72",
+  "executionAuthority": false,
+  "financialReplayPerformed": false,
+  "kind": "actual_captured_orders_render_only_differential",
+  "liveSpeedupClaimed": false,
+  "medianNew": {
+    "allocationRequestedBytes": "46525293",
+    "allocationRequests": "620021",
+    "elapsedNs": "137538544"
+  },
+  "medianOld": {
+    "allocationRequestedBytes": "511778113",
+    "allocationRequests": "6820221",
+    "elapsedNs": "1073230356"
+  },
+  "nativeRendererGitLfSha256": "943c7a5421fda00d360b2ae98bc6a311ef7a7152f305d297f0dd693a411f00b7",
+  "nativeSequence": 523602,
+  "newRendersPerRound": 1,
+  "newRounds": [
+    {
+      "allocationRequestedBytes": 46525293,
+      "allocationRequests": 620021,
+      "elapsedNs": "137538544"
+    },
+    {
+      "allocationRequestedBytes": 46525293,
+      "allocationRequests": 620021,
+      "elapsedNs": "137748373"
+    },
+    {
+      "allocationRequestedBytes": 46525293,
+      "allocationRequests": 620021,
+      "elapsedNs": "141454990"
+    },
+    {
+      "allocationRequestedBytes": 46525293,
+      "allocationRequests": 620021,
+      "elapsedNs": "142925393"
+    },
+    {
+      "allocationRequestedBytes": 46525293,
+      "allocationRequests": 620021,
+      "elapsedNs": "136066956"
+    },
+    {
+      "allocationRequestedBytes": 46525293,
+      "allocationRequests": 620021,
+      "elapsedNs": "136262129"
+    },
+    {
+      "allocationRequestedBytes": 46525293,
+      "allocationRequests": 620021,
+      "elapsedNs": "135299641"
+    }
+  ],
+  "oldRendersPerRound": 11,
+  "oldRounds": [
+    {
+      "allocationRequestedBytes": 511778113,
+      "allocationRequests": 6820221,
+      "elapsedNs": "1076089147"
+    },
+    {
+      "allocationRequestedBytes": 511778113,
+      "allocationRequests": 6820221,
+      "elapsedNs": "1073230356"
+    },
+    {
+      "allocationRequestedBytes": 511778113,
+      "allocationRequests": 6820221,
+      "elapsedNs": "1103524173"
+    },
+    {
+      "allocationRequestedBytes": 511778113,
+      "allocationRequests": 6820221,
+      "elapsedNs": "1082252204"
+    },
+    {
+      "allocationRequestedBytes": 511778113,
+      "allocationRequests": 6820221,
+      "elapsedNs": "1061157710"
+    },
+    {
+      "allocationRequestedBytes": 511778113,
+      "allocationRequests": 6820221,
+      "elapsedNs": "1059929487"
+    },
+    {
+      "allocationRequestedBytes": 511778113,
+      "allocationRequests": 6820221,
+      "elapsedNs": "1059529765"
+    }
+  ],
+  "omittedTimedWork": [
+    "Session restore/admission/poison/authority",
+    "physical_pending and all financial/source/dispatch proofs",
+    "order_snapshot key checks, bounded cache/index build and cache misses after mutation",
+    "stream, HTTP, disk persistence, policy inference"
+  ],
+  "queriesAreObservedRuntimeCallCount": false,
+  "queryResultsSha256": "adc89588b1ac22e87e665e02e6f35adbbc8bf90a5c8e98e18e2f2319bc0d2c62",
+  "reportAt": "2026-10-17T18:13:47.933Z",
+  "reportRawSha256": "3f95693ad82bba9e03863e12bffa2402d4c0b68a6e7afecb0388a76aa505f178",
+  "reportSealSha256": "914186a4c2f24a3057355f7c5668506e3c21104e0a6cc307e776418b263f2ba4",
+  "roundsPerVariant": 7,
+  "schemaVersion": 1,
+  "unsupportedCapturedVariantsRefused": [
+    "conditional queue fields",
+    "through-fill capacity",
+    "nondefault participation",
+    "unknown order fields",
+    "malformed/null native review metadata"
+  ],
+  "warmupsPerVariant": 2
+}

@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-10-17T20:17:18.435362+00:00",
+  "completedAt": "2026-10-17T20:17:45.284893+00:00",
+  "exitCode": 0,
+  "sourceCommit": "8f4ccbdd",
+  "benchmarkGitLfSha256": "55f2b5e943f9a9ae393c76ad9c7a442318bc057fddccc33c200ef03b425332dc",
+  "command": [
+    "nice",
+    "-n",
+    "19",
+    "cargo",
+    "run",
+    "--release",
+    "--locked",
+    "--offline",
+    "--example",
+    "render_bench",
+    "--",
+    "--report",
+    "/tmp/moloch-passive-retry-priority-r31-20261017/stopped-report.original.json",
+    "--engine-source",
+    "/tmp/moloch-r32-engine-git-lf-20261017.rs",
+    "--loops",
+    "11"
+  ],
+  "productionChanged": false,
+  "resultSha256": "97f5c6b742e3ebf955a4e1874117a5404423e3fb42647ffe4c92df9c1a0ec271",
+  "medians": {
+    "medianOld": {
+      "allocationRequestedBytes": "511778113",
+      "allocationRequests": "6820221",
+      "elapsedNs": "1073230356"
+    },
+    "medianNew": {
+      "allocationRequestedBytes": "46525293",
+      "allocationRequests": "620021",
+      "elapsedNs": "137538544"
+    }
+  }
+}
