@@ -1,0 +1,37 @@
+{
+  "rootVerified": true,
+  "sourceCommit": "a9612284edd6b9f7cb4fafc3baa22cd07f9fc873",
+  "privateArchiveBytes": 5537660,
+  "privateArchiveSha256": "75f40f9d50785d405e7b652e74af23e503d679349b694dba5fe79d2bebf803f5",
+  "originalMembers": 277,
+  "sourceFiles": 267,
+  "exactGitInputs": 68,
+  "equivalentLineEndingInputs": 199,
+  "compiledTestBinarySha256": "992a651ee68324a4fe6f0491d1aa1c2e00974994a571448716880991db9498b5",
+  "actualCacheTestsPassed": 10,
+  "actualBenchmarkPassed": true,
+  "separatePassiveAssertionFailed": true,
+  "overallReleaseQualified": false,
+  "benchmark": {
+    "coldNs": 452832105,
+    "financialAuthority": false,
+    "fullParsePasses": 1,
+    "originalBytes": 10652764,
+    "originalSequence": 21894,
+    "originalUncachedNs": 443453640,
+    "rowsSha256": "26d0421d43a5be22ae6d7566fb5c3acd1dfdd90d6691c0fb5c09a7a6eeeb663a",
+    "wanted": [
+      14854,
+      14992,
+      15178,
+      15500
+    ],
+    "warmFullFileHashRequired": true,
+    "warmMedianNs": 70083317,
+    "warmRounds": 7,
+    "wholeWorkerSpeedupMeasured": false
+  },
+  "productionChanged": false,
+  "wholeWorkerSpeedupEstablished": false,
+  "profitabilityEstablished": false
+}
