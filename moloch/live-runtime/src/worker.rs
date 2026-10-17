@@ -185,7 +185,93 @@ fn paper5_nodes(scope:&Scope)->std::collections::BTreeMap<String,Receipt>{PAPER5
  #[test]fn original_node_clock_is_not_refreshed_and_foreign_scope_is_not_imported(){PAPER5_NODE_CACHE.with(|c|c.borrow_mut().clear());let original=receipt("2026-10-16T05:00:00Z");cache_original_node(&original);cache_original_node(&receipt("2026-10-16T04:00:00Z"));let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:[("966".into(),"277".into()),("foreign".into(),"999".into())].into()};let nodes=paper5_nodes(&scope);assert_eq!(nodes.len(),1);assert_eq!(nodes["966"].received_at,original.received_at);assert_eq!(nodes["966"].data,original.data);}
  #[test]fn receipt_cache_is_bounded_and_failed_or_nonnode_reads_are_ignored(){PAPER5_NODE_CACHE.with(|c|c.borrow_mut().clear());for id in 1..=600{let mut r=receipt("2026-10-16T05:00:00Z");r.endpoint=format!("/markets/{id}/nodes?tournamentId=cup");cache_original_node(&r);}assert_eq!(PAPER5_NODE_CACHE.with(|c|c.borrow().len()),512);let mut r=receipt("2026-10-16T06:00:00Z");r.status=500;cache_original_node(&r);r.status=200;r.endpoint="/markets/277/orderbook?tournamentId=cup&depth=20".into();cache_original_node(&r);assert_eq!(PAPER5_NODE_CACHE.with(|c|c.borrow()["277"].received_at.clone()),"2026-10-16T05:00:00Z");}
 }
-fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}cache_original_node(r);Ok(())}
+fn record_receipt(root:&Path,r:&Receipt)->Result<()> {let p=root.join("receipts").join(format!("{}.json",feedback::digest(r)?));if !p.exists(){atomic_json(&p,&serde_json::to_value(r)?)?}cache_original_node(r);cache_snapshot_receipt(root,r,&p);Ok(())}
+// Four latest successful original receipts only, <=8MiB each. No reads are
+// requested for research and neither original source nor receipt clocks change.
+struct SnapshotReceiptCache{root:PathBuf,rows:[Option<Receipt>;4]}
+thread_local!{static SNAPSHOT_RECEIPTS:std::cell::RefCell<Option<SnapshotReceiptCache>>=const{std::cell::RefCell::new(None)};}
+fn snapshot_receipt_slot(endpoint:&str)->Option<usize>{
+ if endpoint.starts_with("/account?tournamentId="){Some(0)}else if endpoint.starts_with("/tournaments/")&&endpoint.ends_with("/portfolio/positions"){Some(1)}else if endpoint.starts_with("/orders?status=open&limit=200&tournamentId="){Some(2)}else if endpoint.starts_with("/portfolio/collateral?tournamentId="){Some(3)}else{None}
+}
+fn cache_snapshot_receipt(root:&Path,r:&Receipt,path:&Path){
+ let Some(slot)=snapshot_receipt_slot(&r.endpoint)else{return};if r.status!=200||!path.metadata().is_ok_and(|m|m.is_file()&&m.len()<=8*1024*1024){return}
+ SNAPSHOT_RECEIPTS.with(|cache|{let mut cache=cache.borrow_mut();let c=cache.get_or_insert_with(||SnapshotReceiptCache{root:root.into(),rows:std::array::from_fn(|_|None)});if c.root!=root{*c=SnapshotReceiptCache{root:root.into(),rows:std::array::from_fn(|_|None)};}c.rows[slot]=Some(r.clone());});
+}
+#[derive(Deserialize)]#[serde(rename_all="camelCase",deny_unknown_fields)]
+struct SnapshotRequest{version:u32,id:String,expected_control_sha256:String,expected_generation_sha256:String,research_only:bool,execution_authority:bool}
+#[derive(Default)]struct SnapshotRequestState{last_version:Option<Value>,last_request_sha256:Option<String>,seen:std::collections::BTreeSet<String>,attempts:usize}
+fn snapshot_atom(s:&str)->bool{!s.is_empty()&&s.len()<=64&&s.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_')}
+fn snapshot_hex(s:&str)->bool{s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))}
+fn snapshot_file_version(m:&fs::Metadata)->Value{use std::os::unix::fs::MetadataExt;json!({"dev":m.dev(),"ino":m.ino(),"bytes":m.len(),"mtime":m.mtime(),"mtimeNs":m.mtime_nsec(),"ctime":m.ctime(),"ctimeNs":m.ctime_nsec()})}
+fn snapshot_private_new(path:&Path,bytes:&[u8])->Result<()>{use std::{io::Write,os::unix::fs::OpenOptionsExt};let mut f=fs::OpenOptions::new().write(true).create_new(true).mode(0o600).open(path)?;f.write_all(bytes)?;f.sync_all()?;Ok(())}
+fn snapshot_immutable_source(path:&Path,bytes:&[u8])->Result<()>{
+ if path.exists(){let m=fs::symlink_metadata(path)?;if !m.is_file()||m.file_type().is_symlink()||m.len()!=bytes.len()as u64||fs::read(path)?!=bytes{return Err("TARTARUS_GENERATION_SOURCE_CHANGED".into())}Ok(())}else{snapshot_private_new(path,bytes)}
+}
+fn snapshot_request(root:&Path,state:&mut SnapshotRequestState)->Result<Option<(String,SnapshotRequest)>>{
+ use std::{io::Read,os::unix::fs::MetadataExt};
+ if state.attempts>=4{return Ok(None)}let path=root.join("tartarus-snapshot-request.json");let m=match fs::symlink_metadata(&path){Ok(m)=>m,Err(e)if e.kind()==std::io::ErrorKind::NotFound=>return Ok(None),Err(e)=>return Err(e.into())};
+ let version=snapshot_file_version(&m);if state.last_version.as_ref()==Some(&version){return Ok(None)}state.last_version=Some(version.clone());
+ if !m.is_file()||m.file_type().is_symlink()||m.nlink()!=1||m.uid()!=fs::metadata(root)?.uid()||m.mode()&0o077!=0||m.len()>4096{state.attempts+=1;return Err("TARTARUS_PRIVATE_REQUEST_BOUND".into())}
+ let mut raw=Vec::new();fs::File::open(&path)?.take(4097).read_to_end(&mut raw)?;
+ if raw.len()>4096||snapshot_file_version(&fs::symlink_metadata(&path)?)!=version{return Err("TARTARUS_REQUEST_CHANGED".into())}
+ let sha=format!("{:x}",Sha256::digest(&raw));state.last_request_sha256=Some(sha.clone());if !state.seen.insert(sha.clone()){return Ok(None)}
+ let attempts=root.join("tartarus-snapshot-attempts");private_dir(&attempts)?;
+ let marker=attempts.join(format!("{sha}.json"));if marker.exists(){return Ok(None)}
+ if fs::read_dir(&attempts)?.take(4).count()>=4{return Err("TARTARUS_TOTAL_REQUEST_LIMIT".into())}
+ state.attempts+=1;let mut proof=serde_json::to_vec(&json!({"at":iso(now()),"requestSha256":sha,"researchOnly":true,"executionAuthority":false,"attemptedOnce":true}))?;proof.push(b'\n');snapshot_private_new(&marker,&proof)?;
+ let request:SnapshotRequest=serde_json::from_slice(&raw)?;
+ if request.version!=1||!snapshot_atom(&request.id)||!snapshot_hex(&request.expected_control_sha256)||!snapshot_hex(&request.expected_generation_sha256)||!request.research_only||request.execution_authority{return Err("TARTARUS_RESEARCH_REQUEST".into())}
+ Ok(Some((sha,request)))
+}
+// Explicit end-of-cycle service only: no live physical permit or operation is
+// held. Errors are research diagnostics, never new trading/STOP authority.
+#[allow(clippy::too_many_arguments)]
+fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8],bank:&Session,t:&Transport,ordinary:&DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&ProductionAuthority,f:Option<&FundamentalRuntime>,state:&mut SnapshotRequestState){
+ let result=(||->Result<Option<Value>>{
+  let Some((request_sha,request))=snapshot_request(&c.root,state)?else{return Ok(None)};
+  if !authority.can_read(&c.scope)||fs::read(control_path)?!=original_control||format!("{:x}",Sha256::digest(original_control))!=request.expected_control_sha256{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}
+  let generation=f.map(|f|f.cohorts.generation_sha()).unwrap_or(moloch_live_runtime::fundamental_reload::ZERO);
+  if generation!=request.expected_generation_sha256{return Err("TARTARUS_CURRENT_GENERATION_REQUIRED".into())}if let Some(f)=f{f.authority.validate()?;}
+  let rows=SNAPSHOT_RECEIPTS.with(|cache|cache.borrow().as_ref().filter(|v|v.root==c.root).map(|v|v.rows.clone())).ok_or("TARTARUS_ORIGINAL_RECEIPTS_UNAVAILABLE")?;
+  use moloch_live_runtime::{tartarus_snapshot as ts,collateral_feedback::{Boundary,RetainedReceipt,ReceiptStore}};
+  let account=RetainedReceipt::open(&c.root,rows[0].as_ref().ok_or("TARTARUS_ACCOUNT_UNAVAILABLE")?,ReceiptStore::Ordinary)?;
+  let positions=RetainedReceipt::open(&c.root,rows[1].as_ref().ok_or("TARTARUS_POSITIONS_UNAVAILABLE")?,ReceiptStore::Ordinary)?;
+  let open=RetainedReceipt::open(&c.root,rows[2].as_ref().ok_or("TARTARUS_OPEN_ORDERS_UNAVAILABLE")?,ReceiptStore::Ordinary)?;
+  let collateral=rows[3].as_ref().map(|r|RetainedReceipt::open(&c.root,r,ReceiptStore::Ordinary)).transpose()?;
+  let mut sources=vec![ts::SourceFile{label:"control",root:control_path.parent().ok_or("TARTARUS_CONTROL_PATH")?,relative:Path::new(control_path.file_name().ok_or("TARTARUS_CONTROL_PATH")?),sha256:&request.expected_control_sha256},ts::SourceFile{label:"snapshot-request",root:&c.root,relative:Path::new("tartarus-snapshot-request.json"),sha256:&request_sha}];
+  let mut generation_file=None;let mut generation_control=None;let mut generation_control_sha=None;
+  if generation!=moloch_live_runtime::fundamental_reload::ZERO{
+   let meta=f.and_then(|f|f.cohorts.active_generation()).ok_or("TARTARUS_GENERATION_ORIGINAL_UNAVAILABLE")?;
+   let raw=meta["requestBodyText"].as_str().filter(|s|s.len()<=16384).ok_or("TARTARUS_GENERATION_ORIGINAL_UNAVAILABLE")?;
+   if format!("{:x}",Sha256::digest(raw.as_bytes()))!=generation||serde_json::from_str::<Value>(raw)?!=meta["request"]{return Err("TARTARUS_GENERATION_ORIGINAL_CHANGED".into())}
+   let dir=c.root.join("tartarus-snapshot-sources");private_dir(&dir)?;let path=dir.join(format!("{generation}.json"));snapshot_immutable_source(&path,raw.as_bytes())?;generation_file=Some(path);
+   generation_control=Some(PathBuf::from(meta["request"]["controlPath"].as_str().ok_or("TARTARUS_GENERATION_CONTROL")?));generation_control_sha=Some(meta["request"]["controlSha256"].as_str().ok_or("TARTARUS_GENERATION_CONTROL")?.to_owned());
+  }
+  if let Some(path)=&generation_file{sources.push(ts::SourceFile{label:"generation-request",root:path.parent().unwrap(),relative:Path::new(path.file_name().unwrap()),sha256:generation});}
+  if let(Some(path),Some(sha))=(&generation_control,&generation_control_sha){sources.push(ts::SourceFile{label:"generation-control",root:path.parent().ok_or("TARTARUS_GENERATION_CONTROL")?,relative:Path::new(path.file_name().ok_or("TARTARUS_GENERATION_CONTROL")?),sha256:sha});}
+  let boundary=Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary,packages};
+  let packet=ts::capture(bank,&boundary,ts::Receipts{account:&account,positions:&positions,open_orders:&open,collateral:collateral.as_ref()},ts::Pins{files:&sources,generation_sha256:generation},i64::try_from(now())?)?;
+  let name=format!("{}-{}",request.id,&request_sha[..16]);let path=packet.write_new(bank,&boundary,&name)?;
+  let metadata_raw=fs::read(path.join("metadata.json"))?;
+  Ok(Some(json!({"at":iso(now()),"state":"captured_original_evidence","requestSha256":request_sha,"packetPath":path,"metadataSha256":format!("{:x}",Sha256::digest(&metadata_raw)),"expectedControlSha256":request.expected_control_sha256,"expectedGenerationSha256":generation,"sourceObservationMs":packet.metadata()["sourceObservationMs"],"originalReceipts":packet.metadata()["originalReceipts"],"economicFreshnessQualified":false,"researchOnly":true,"executionAuthority":false,"networkRequests":0})))
+ })();
+ match result{Ok(Some(value))=>{let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);},Ok(None)=>{},Err(error)=>{let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&json!({"at":iso(now()),"state":"unavailable","requestSha256":state.last_request_sha256,"reason":error.to_string(),"researchOnly":true,"executionAuthority":false,"networkRequests":0,"retryAutomatic":false}));}}
+}
+#[cfg(test)]mod tartarus_snapshot_worker_tests{
+ use super::*;
+ struct Temp(PathBuf);impl Temp{fn new()->Self{let p=std::env::temp_dir().join(format!("tartarus-worker-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));private_dir(&p).unwrap();Self(p)}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ fn request_value(id:&str)->Value{json!({"version":1,"id":id,"expectedControlSha256":"a".repeat(64),"expectedGenerationSha256":moloch_live_runtime::fundamental_reload::ZERO,"researchOnly":true,"executionAuthority":false})}
+ fn put(root:&Path,v:&Value){snapshot_private_new(&root.join("tartarus-snapshot-request.json"),&serde_json::to_vec(v).unwrap()).unwrap();}
+ #[test]fn absent_request_has_no_output_or_attempt_work(){let t=Temp::new();let mut state=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert_eq!(state.attempts,0);assert_eq!(fs::read_dir(&t.0).unwrap().count(),0);}
+ #[test]fn exact_request_is_once_only_including_restart_and_original_raw_sha(){
+  let t=Temp::new();let v=request_value("audit-one");put(&t.0,&v);let raw=fs::read(t.0.join("tartarus-snapshot-request.json")).unwrap();let mut state=SnapshotRequestState::default();let(sha,r)=snapshot_request(&t.0,&mut state).unwrap().unwrap();assert_eq!(sha,format!("{:x}",Sha256::digest(&raw)));assert_eq!(r.id,"audit-one");assert_eq!(state.attempts,1);assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(snapshot_request(&t.0,&mut SnapshotRequestState::default()).unwrap().is_none());assert_eq!(fs::read(t.0.join("tartarus-snapshot-request.json")).unwrap(),raw);assert_eq!(fs::read_dir(t.0.join("tartarus-snapshot-attempts")).unwrap().count(),1);
+ }
+ #[test]fn permission_claim_or_path_id_never_authorizes_research_export(){for(change,value)in [("executionAuthority",json!(true)),("researchOnly",json!(false)),("id",json!("../escape"))]{let t=Temp::new();let mut v=request_value("audit");v[change]=value;put(&t.0,&v);let mut state=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(!t.0.join("tartarus-snapshots").exists());assert!(!t.0.join("EXECUTION_STOP").exists());}}
+ #[test]fn changed_requests_cannot_grow_unbounded_disk_attempts(){let t=Temp::new();let mut state=SnapshotRequestState::default();for i in 0..5{let path=t.0.join("tartarus-snapshot-request.json");if path.exists(){fs::remove_file(&path).unwrap();}put(&t.0,&request_value(&format!("audit-{i}")));assert_eq!(snapshot_request(&t.0,&mut state).unwrap().is_some(),i<4);}assert_eq!(state.attempts,4);assert_eq!(fs::read_dir(t.0.join("tartarus-snapshot-attempts")).unwrap().count(),4);}
+ #[test]fn oversized_or_public_request_is_diagnostic_once_without_source_read(){use std::os::unix::fs::PermissionsExt;let t=Temp::new();let p=t.0.join("tartarus-snapshot-request.json");snapshot_private_new(&p,&vec![b'x';4097]).unwrap();let mut state=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(state.last_request_sha256.is_none());fs::remove_file(&p).unwrap();put(&t.0,&request_value("private"));fs::set_permissions(&p,fs::Permissions::from_mode(0o644)).unwrap();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(!t.0.join("tartarus-snapshot-attempts").exists());}
+ #[test]fn cache_keeps_exact_original_clocks_only_for_successful_matching_surfaces(){let t=Temp::new();private_dir(&t.0.join("receipts")).unwrap();SNAPSHOT_RECEIPTS.with(|v|*v.borrow_mut()=None);let r=Receipt{endpoint:"/account?tournamentId=fixture".into(),status:200,request_started_at:iso(1000),received_at:iso(1001),data:json!({"balance":42})};record_receipt(&t.0,&r).unwrap();let mut bad=r.clone();bad.status=503;bad.received_at=iso(2000);record_receipt(&t.0,&bad).unwrap();let mut other=r.clone();other.endpoint="/markets/1/orderbook".into();record_receipt(&t.0,&other).unwrap();SNAPSHOT_RECEIPTS.with(|cache|{let c=cache.borrow();let c=c.as_ref().unwrap();assert_eq!(serde_json::to_value(c.rows[0].as_ref().unwrap()).unwrap(),serde_json::to_value(&r).unwrap());assert!(c.rows[1..].iter().all(Option::is_none));});let bytes=fs::read(t.0.join("receipts").join(format!("{}.json",feedback::digest(&r).unwrap()))).unwrap();assert_eq!(serde_json::from_slice::<Value>(&bytes).unwrap(),serde_json::to_value(r).unwrap());}
+ #[test]fn hash_named_generation_source_is_create_new_or_exact_not_overwritten(){let t=Temp::new();let p=t.0.join("original.json");snapshot_immutable_source(&p,b"original bytes").unwrap();snapshot_immutable_source(&p,b"original bytes").unwrap();assert!(snapshot_immutable_source(&p,b"different bytes").is_err());assert_eq!(fs::read(p).unwrap(),b"original bytes");}
+}
 fn validate_collateral_accounting(c:&Control)->Result<()>{
  // Ordinary passive partial/late fills require a separately verified native
  // continuation before this mixed worker may enable ALL accounting.
@@ -2275,7 +2361,7 @@ pub fn main()->Result<()>{
   if let Some(u)=&mut universe{u.observe("stream_reset",&json!({"localBoundary":true}),&joined_at)?;}
   let mut windows:std::collections::BTreeMap<String,u64>=c.scope.exchanges.keys().map(|e|(e.clone(),start.saturating_sub(60000))).collect();
   let reload_channel=if c.fundamental_reload{Some(moloch_live_runtime::fundamental_reload::Channel::bind(&c.root,lease.clone())?)}else{None};
-  let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();let mut collateral_last_check=0u64;
+  let mut cycles=0u64;let mut reconciliation_cache=Reconciler::default();let mut collateral_last_check=0u64;let mut tartarus_snapshot_requests=SnapshotRequestState::default();
   let paper5_runtime=c.paper5.as_ref().and_then(|settings|match moloch_live_runtime::paper5_runtime::Runtime::load(settings){Ok(runtime)=>Some(runtime),Err(error)=>{let _=atomic_json(&c.root.join("paper5-proposals.json"),&json!({"at":iso(now()),"state":"unavailable","reason":error.to_string(),"executionAuthority":false}));None}});let mut paper5_last_evaluation=0u64;let mut paper5_last_opportunity=0u64;
   let mut owned_age_reads=moloch_live_runtime::owned_age_reads::Scheduler::new(&c.scope)?;
   loop{
@@ -2347,6 +2433,7 @@ pub fn main()->Result<()>{
    }
    cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
+   service_tartarus_snapshot(&c,&path,&original_control_bytes,&bank,&t,&log,&packages,lease.as_ref(),&authority,fundamental.as_ref(),&mut tartarus_snapshot_requests);
    // Ordinary trading precedes optional discovery. Empty certificate approval
    // must not freeze official relationship/collateral discovery until restart.
    // Four logical surfaces plus <=3 rotating graph roots share the actual
