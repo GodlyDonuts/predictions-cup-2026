@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "candidate_id": "wv-republican-no-pivotal-source-20261017",
+  "family": "pivotal_source_continuation",
+  "classification": "unqualified_conditional_sensitivity",
+  "evidence_class": "original_public_sources_and_frozen_private_aggregate",
+  "main_sha": "4f3683ab0a46235a4359353e071a2894c0f1c2d9",
+  "analysisAsOfUtc": "2026-10-17T19:26:11.092Z",
+  "deployed_sha": null,
+  "execution_authority": false,
+  "calibrated_probability": false,
+  "model_activation": false,
+  "decision_at": null,
+  "bank_head": {
+    "sequence": 523602,
+    "hash": "914186a4c2f24a3057355f7c5668506e3c21104e0a6cc307e776418b263f2ba4",
+    "at": "2026-10-17T18:13:47.933Z",
+    "manifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325"
+  },
+  "privateAccountSource": {
+    "archiveName": "moloch-r31-deployment-original-proof-20261017.zip",
+    "archiveSha256": "9d32ccb0986eb9a1430a396df03bd2c8df7abce6475f302a0344c16afa3aa5e2",
+    "archiveBytes": 9062887,
+    "reportMember": "stopped-report.original.json",
+    "reportRawSha256": "3f95693ad82bba9e03863e12bffa2402d4c0b68a6e7afecb0388a76aa505f178",
+    "reportBytes": 5523097,
+    "originalReportSealIndependentlyReplayedHere": false,
+    "rawPrivateDataPublished": false,
+    "selectedPosition": {
+      "marketId": "297",
+      "exchangeId": "986",
+      "contractId": "298",
+      "side": "NO",
+      "quantity": 16438,
+      "nativeRemainingPrincipal": "1890.370000",
+      "basisClassification": "reported_discrepancy",
+      "lotPrice": "0.115000",
+      "inheritedAcquisitionFeesIndependentlyKnown": false,
+      "unretiredQuotesInFrozenReport": 0
+    },
+    "referenceCash": "3613.785000",
+    "cashIsCurrent": false,
+    "historicalFeePolicy": {
+      "controlMember": "control.current.original.json",
+      "controlRawSha256": "8aa4db9d0dd51af45c2265bce365c8fa4c1b660e7172cca2ab7ac834eba073fb",
+      "feeBps": 0,
+      "feePerShare": "0.000000",
+      "reportAggregateFees": "0.000000",
+      "futureFeesMustBeRechecked": true
+    }
+  },
+  "contract_ids": [
+    "298"
+  ],
+  "contractPredicate": {
+    "marketId": "297",
+    "exchangeId": "986",
+    "contractId": "298",
+    "rootJsonPointer": "/data/root",
+    "details": {
+      "contractType": "Election Outcome",
+      "electionDate": "2026-11-03",
+      "officeLevel": "Federal",
+      "raceId": "62984",
+      "raceName": "U.S. Senate West Virginia",
+      "raceStage": "General",
+      "resolutionType": "Party Winner",
+      "stageId": "98114",
+      "usState": "WV",
+      "winnerName": "Republican Party"
+    },
+    "scheduledSettlementUtc": "2026-11-04T17:00:00.000Z",
+    "scheduledSettlementGuaranteesCashTime": false,
+    "explicitFullResolverClausesPresent": false,
+    "originalReceiptManifestSha256": "9579856dcdfc084b75d6f6a4defcec8dab20ed817c97ae056a9a956aba500e17",
+    "retainedOriginalReceipts": [
+      {
+        "marketId": "297",
+        "kind": "nodes",
+        "path": "nodes/market-297-aef6fdfcd2933d44.json",
+        "sha256": "aef6fdfcd2933d441c90ab62568e29975e284649a01d1797959494d736997f8b",
+        "bytes": 921,
+        "endpoint": "/markets/297/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "requestStartedAt": "2026-10-16T02:27:13.874Z",
+        "receivedAt": "2026-10-16T02:27:14.132Z",
+        "status": 200
+      },
+      {
+        "marketId": "297",
+        "kind": "orderbook",
+        "path": "orderbook/market-297-d4b9ec79c60aaf2d.json",
+        "sha256": "d4b9ec79c60aaf2d90b86e79bdebf8d7fa7f0745693ab067ca272e13602e5a96",
+        "bytes": 3062,
+        "endpoint": "/markets/297/orderbook?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20",
+        "requestStartedAt": "2026-10-16T22:26:43.492Z",
+        "receivedAt": "2026-10-16T22:26:43.863Z",
+        "status": 200
+      }
+    ],
+    "referenceSourceClocksRenewed": false
+  },
+  "publicCapture": {
+    "privateDirectoryBasename": "moloch-tartarus-pivotal-wv-no-20261017-8c1gfiot",
+    "manifestSha256": "a76fa7acc9e54fe1c83dcdb858305eee839a4c3080d453a2a170c598711819ba",
+    "method": "curl.exe HTTPS ordinary public URLs, identity encoding, bounded bytes, no auth",
+    "sources": [
+      {
+        "url": "https://www.callthemap.com/senate/west-virginia",
+        "finalUrl": "https://www.callthemap.com/senate/west-virginia",
+        "status": 200,
+        "requestStartedAt": "2026-10-17T19:26:03.911Z",
+        "receivedAt": "2026-10-17T19:26:04.206Z",
+        "bytes": 160005,
+        "sha256": "7c91cb3c6a48d5bdc0294899d964b416bfa27ecbc133e218d4d2dd212290c3c8",
+        "headersSha256": "1fe402d38182ca615b2371e145b37cbdae3b8f8f07b44f2e7efd68318828dca9",
+        "publishedAtUtc": null,
+        "privateCaptureRelativePath": "ctm-wv-current.html",
+        "privateHeadersRelativePath": "ctm-wv-current.html.headers",
+        "initialPublicationTimeKnown": false,
+        "publisherDateModified": "2026-10-17T16:54:37.000Z",
+        "publisherDateModifiedIsFirstAvailability": false,
+        "selectedResponseHeaders": {
+          "age": "477",
+          "cache-control": "public, s-maxage=300, stale-while-revalidate=86400",
+          "date": "Sat, 17 Oct 2026 19:18:06 GMT",
+          "etag": "\"d9kfbb5b7p3f7z\""
+        }
+      },
+      {
+        "url": "https://apps.sos.wv.gov/elections/2026GeneralSampleBallots/SAMPLE%20-%20WV%20Boone%20261103%20General%20-%2014inch.pdf",
+        "finalUrl": "https://apps.sos.wv.gov/elections/2026GeneralSampleBallots/SAMPLE%20-%20WV%20Boone%20261103%20General%20-%2014inch.pdf",
+        "status": 200,
+        "requestStartedAt": "2026-10-17T19:26:04.459Z",
+        "receivedAt": "2026-10-17T19:26:05.168Z",
+        "bytes": 869931,
+        "sha256": "7ae7069995b0c9eb82540fdd736161abea1547d77d9154cfcfdf2316133440ab",
+        "headersSha256": "e49eeae7a8c61624cc9d4420527fd33dc3b23987b6c219060ffdecd775a529a9",
+        "publishedAtUtc": null,
+        "privateCaptureRelativePath": "wv-boone-general-original.pdf",
+        "privateHeadersRelativePath": "wv-boone-general-original.pdf.headers",
+        "initialPublicationTimeKnown": false,
+        "selectedResponseHeaders": {
+          "last-modified": "Fri, 25 Sep 2026 13:30:16 GMT",
+          "etag": "\"b975430f24cdd1:0\"",
+          "date": "Sat, 17 Oct 2026 19:26:04 GMT"
+        }
+      },
+      {
+        "url": "https://sig.thesuper.market/docs/settlement-and-payouts",
+        "finalUrl": "https://sig.thesuper.market/docs/settlement-and-payouts",
+        "status": 200,
+        "requestStartedAt": "2026-10-17T19:26:05.177Z",
+        "receivedAt": "2026-10-17T19:26:05.717Z",
+        "bytes": 45299,
+        "sha256": "feaecf6029fcb0f76924f5139bba8a6651b15b71620326b85e32556a1bf62b6f",
+        "headersSha256": "7bb7d2733cd42170c6f5d6834e5153c2d38cb853bb518c21bb1b13a971f3156d",
+        "publishedAtUtc": null,
+        "privateCaptureRelativePath": "sig-settlement-original.html",
+        "privateHeadersRelativePath": "sig-settlement-original.html.headers",
+        "initialPublicationTimeKnown": false,
+        "selectedResponseHeaders": {
+          "age": "0",
+          "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "date": "Sat, 17 Oct 2026 19:26:05 GMT"
+        }
+      },
+      {
+        "url": "https://code.wvlegislature.gov/3-5-19/",
+        "finalUrl": "https://code.wvlegislature.gov/3-5-19/",
+        "status": 200,
+        "requestStartedAt": "2026-10-17T19:26:05.829Z",
+        "receivedAt": "2026-10-17T19:26:11.092Z",
+        "bytes": 50848,
+        "sha256": "5a6d94b02b91534657effffe2198062885572860034c23878a5d232d198ccd41",
+        "headersSha256": "7de3ec634b5db7e70f488ea81c47271246143a90e6a7254001ba3519648bd274",
+        "publishedAtUtc": null,
+        "privateCaptureRelativePath": "wv-replacement-statute-original.html",
+        "privateHeadersRelativePath": "wv-replacement-statute-original.html.headers",
+        "initialPublicationTimeKnown": false,
+        "selectedResponseHeaders": {
+          "date": "Sat, 17 Oct 2026 19:26:09 GMT"
+        }
+      }
+    ],
+    "rawBodiesPublished": false
+  },
+  "forecast": {
+    "source": "Call the Map",
+    "url": "https://www.callthemap.com/senate/west-virginia",
+    "editionDate": "2026-10-17",
+    "namedCandidate": "Shelley Moore Capito",
+    "partyLabel": "R",
+    "winPoint": "0.996",
+    "otherNamedCandidate": "Rachel Fetty Anderson",
+    "otherNamedWinPoint": "0.004",
+    "fullOfficialFieldModeledByNamedRows": false,
+    "otherVoteShareIsNotWinProbability": "0.034",
+    "currentNomineeMatchedPollAverageAvailableAccordingToPublisher": false,
+    "independentValidationPerformed": false,
+    "earlierOriginalEdition": {
+      "sha256": "b3f1fccc708b31a0468737af13c547ca6f6aab42e65830a80a3d3659207aef30",
+      "requestStartedAt": "2026-10-16T22:51:28.750202+00:00",
+      "receivedAt": "2026-10-16T22:51:29.116864+00:00",
+      "publisherDateModified": "2026-10-16T17:57:26.000Z",
+      "winPoint": "0.996"
+    }
+  },
+  "ballot": {
+    "office": "U.S. Senator",
+    "electionDate": "2026-11-03",
+    "electionStage": "General",
+    "jurisdiction": "West Virginia; official Boone County sample ballot",
+    "pageInspected": 1,
+    "pdfPages": 26,
+    "renderedAndVisuallyChecked": true,
+    "printedCandidates": [
+      {
+        "name": "Shelley Moore Capito",
+        "party": "REP"
+      },
+      {
+        "name": "Rachel Fetty Anderson",
+        "party": "DEM"
+      },
+      {
+        "name": "S. Marshall Wilson",
+        "party": "CST"
+      }
+    ],
+    "printedNoNomineePartyLabels": [
+      "LBN",
+      "MTN"
+    ],
+    "writeInLinePresent": true,
+    "certifiedWriteInListIndependentlyVerified": false,
+    "latestPossibleCorrectionExcluded": false,
+    "personalAddressesPublished": false
+  },
+  "correspondence": {
+    "conditionalImplication": "Capito wins => Republican Party YES resolves, only under the same ordinary election/winner/party predicate",
+    "ordinaryNoScenarioUpperFormula": "1 - 0.996 = 0.004",
+    "fullEquivalenceClaimed": false,
+    "unresolvedExceptions": [
+      "party affiliation at resolver-relevant time",
+      "replacement or substituted nominee treatment",
+      "write-in winner affiliation",
+      "fusion or cross-endorsement treatment",
+      "tie or contested result",
+      "cancellation/N/A/refund and principal treatment",
+      "configured official result source and administrator override",
+      "settlement delay and market availability"
+    ],
+    "stateStatuteIsVenueResolverProof": false
+  },
+  "depth_breakpoints": {
+    "kind": "historical_asynchronous_reference_only",
+    "sourceAt": "2026-10-16T22:26:43.7196265+00:00",
+    "sourceSequence": 183090432,
+    "requestStartedAt": "2026-10-16T22:26:43.492Z",
+    "receivedAt": "2026-10-16T22:26:43.863Z",
+    "yesAsk": "0.930000",
+    "yesAskQuantity": 24671,
+    "noBidFormula": "1 - YES ask",
+    "noBid": "0.070000",
+    "noBidQuantity": 24671,
+    "positionComparisonQuantity": 16438,
+    "positionHistoricalGrossSaleReference": "1150.660000",
+    "perOrderQuantityLimitsStillBind": true,
+    "currentExecutable": false,
+    "hypotheticalSaleIsActualFill": false,
+    "causalTradingBacktest": false
+  },
+  "sensitivity": {
+    "ordinaryNoDeclaredScenarioUpper": "0.004000",
+    "exceptionMassEstimated": false,
+    "favorableExceptionalPayoutAssumption": "1.000000",
+    "formula": "u(e)=(1-e)*0.004+e*1=0.004+0.996*e",
+    "historicalZeroFeeGrossSaleReferencePerShare": "0.070000",
+    "breakEvenFormula": "(0.070-0.004)/0.996",
+    "breakEvenFraction": "11/166",
+    "breakEvenDecimal": "0.06626506024096385542168674699",
+    "breakEvenMeaning": "worst-case favorable payout-one mixture sensitivity, not empirical probability or calibrated confidence bound",
+    "scenarios": [
+      {
+        "assumedFavorableExceptionalMixtureMass": "0",
+        "exceptionalPayoutPerShare": "1.000000",
+        "ordinaryNoScenarioUpperPerShare": "0.004000",
+        "mixturePayoutScenarioUpperPerShare": "0.004000",
+        "positionPayoutScenarioUpper": "65.752000",
+        "historicalGrossSaleMinusScenarioUpper": "1084.908000",
+        "empiricalExceptionProbability": null,
+        "confidenceBound": false
+      },
+      {
+        "assumedFavorableExceptionalMixtureMass": "0.03",
+        "exceptionalPayoutPerShare": "1.000000",
+        "ordinaryNoScenarioUpperPerShare": "0.004000",
+        "mixturePayoutScenarioUpperPerShare": "0.033880",
+        "positionPayoutScenarioUpper": "556.919440",
+        "historicalGrossSaleMinusScenarioUpper": "593.740560",
+        "empiricalExceptionProbability": null,
+        "confidenceBound": false
+      },
+      {
+        "assumedFavorableExceptionalMixtureMass": "0.10",
+        "exceptionalPayoutPerShare": "1.000000",
+        "ordinaryNoScenarioUpperPerShare": "0.004000",
+        "mixturePayoutScenarioUpperPerShare": "0.103600",
+        "positionPayoutScenarioUpper": "1702.976800",
+        "historicalGrossSaleMinusScenarioUpper": "-552.316800",
+        "empiricalExceptionProbability": null,
+        "confidenceBound": false
+      }
+    ],
+    "actualRefundMustUseRemainingOriginalPrincipal": true,
+    "sunkBasisDeterminesContinuationDecision": false
+  },
+  "decisionImpact": {
+    "falsifier": "An authentic governing resolver predicate under which a Capito victory does not resolve Republican YES invalidates the ordinary implication and removes the 0.004 scenario restriction.",
+    "candidateChangeIfSupported": "Enumerate hold versus confirmed bounded sale using genuine current bid/depth, joint exception/rival models and source-qualified replacement actions.",
+    "decisionTaken": false,
+    "monetaryPreferenceDoesNotEstablishRankPreference": true,
+    "rankRiskTailMayFavorHolding": true,
+    "minimumMissingEvidence": [
+      "complete governing resolver/party exception evidence",
+      "genuine current target bid/depth and fresh physical liabilities",
+      "reviewed joint scenario weights and rival threshold models",
+      "source-qualified replacement depth and deadline if any",
+      "confirmed sale fills/cash before replacement funding"
+    ]
+  },
+  "whole_account_wealth_before": null,
+  "whole_account_wealth_after": null,
+  "monetary_expectation": null,
+  "first_place_range": null,
+  "expected_prize_range": null,
+  "losing_state_wealth": null,
+  "omitted_state_statement": "Finite selected-position sensitivity only; no fitted whole-account joint posterior, full rival field, target hit, or exhaustive resolver state set.",
+  "full_gross_funding": null,
+  "current_cash": null,
+  "sale_confirmation_dependencies": [
+    "Original sale ACK does not credit cash.",
+    "Only confirmed fills/reconciled proceeds may fund a separately qualified replacement.",
+    "Partial fills and retained holdings must remain in the full-account baseline."
+  ],
+  "fill_scenarios": [
+    "no sale",
+    "partial confirmed sale",
+    "full confirmed sale; not assumed atomic with replacement"
+  ],
+  "capital_time": null,
+  "validity_deadline": null,
+  "actual_authorization_reference": null,
+  "rejection_reason": "No current executable target receipt or complete resolver/joint/rival qualification; source audit does not authorize a trade."
+}
