@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "declaredAtUtc": "2026-10-17T13:07:00Z",
+  "declaredAtUtc": "2026-10-17T13:06:35Z",
   "task": 167,
   "oldProcess": "R26/651324",
   "oldWindowStartUtc": "2026-10-17T13:09:00Z",
@@ -20,5 +20,7 @@
     "No profitability or fill-frequency improvement follows from latency alone."
   ],
   "executionAuthority": false,
-  "publicationCorrection": "First public comment appeared13:06:08, eight seconds after the original13:06 start. No window outcome was computed or inspected. This corrected wholly future13:09 window replaces it before starting."
+  "publicationCorrection": "First public comment appeared13:06:08, eight seconds after the original13:06 start. No window outcome was computed or inspected. This corrected wholly future13:09 window replaces it before starting.",
+  "status": "ABORTED_BEFORE_WINDOW: actual R26 natural stop12:53:40 discovered13:07; no declared13:09 window can be measured.",
+  "noWindowResultProduced": true
 }

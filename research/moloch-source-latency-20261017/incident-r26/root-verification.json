@@ -1,0 +1,38 @@
+{
+  "result": "PASS_ORIGINAL_R26_PREINTENT_BOOK_EXPIRY_INCIDENT",
+  "privateArchiveSha256": "8c09fd1aaa589dd0e4e55da09188b5b5aa7f19c9ea3378c779155da534dc02d3",
+  "privateArchiveBytes": 7606062,
+  "originalFilesVerified": 16,
+  "nativeSuffixFirstSequence": 483808,
+  "nativeSuffixLastSequence": 489338,
+  "nativeSuffixRows": 5531,
+  "dispatchRows": 21748,
+  "prior382RawFillTokensUnchanged": true,
+  "fiveGenerationOriginalPrefixPreserved": true,
+  "stopSha256": "7f09eeab56111382f320c6fec69bc25a545657f615d22a708cfa7a7cce0a6d88",
+  "stoppedAt": "2026-10-17T12:53:40.377Z",
+  "reason": "FUNDAMENTAL_NOT_ELIGIBLE",
+  "qid": 15469,
+  "noOriginalDispatchOrActualNativeOperationForQid": true,
+  "queueUnknownCount": 0,
+  "queueActive": null,
+  "queueManualReview": false,
+  "bookAgeAtStopMs": {
+    "sourceAt": "12061.0032000",
+    "requestStartedAt": "12259.0000000",
+    "receivedAt": "11967.0000000"
+  },
+  "wholeNativePrefix": {
+    "bytes": 1595581816,
+    "sha256": "79330c4692a78b6020f8109dc6e9794ce55986287e97adebf874cf4c6111cf7e"
+  },
+  "financialReplayPerformed": false,
+  "newAccountRequests": 0,
+  "profitabilityEstablished": false,
+  "finalOriginalBookClocks": {
+    "sourceAt": "2026-10-17T12:53:28.3159968+00:00",
+    "requestStartedAt": "2026-10-17T12:53:28.118Z",
+    "receivedAt": "2026-10-17T12:53:28.410Z"
+  },
+  "publicationProjection": "Raw book depth omitted from private verifier output; all other aggregate fields unchanged."
+}

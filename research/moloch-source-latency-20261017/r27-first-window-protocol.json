@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "task": 167,
+  "oldProcess": "R26/651324",
+  "oldPacketSha256": "ff6d775e6f90d4e08cae42442e99165188411738ea8687def119311096045bba",
+  "oldWindowStartUtc": "2026-10-17T12:13:33.595Z",
+  "oldOutcomeAlreadyInspected": true,
+  "oldSelection": "Previously frozen original first300s under clock-comparison-protocol.json; preserve all original books and original negative result",
+  "newProcess": "R27 actual PID from root-verified rollout",
+  "newWindowStart": "First captured fresh trading/realtimeHealthy progress.at belonging to actual R27 PID",
+  "windowMs": 300000,
+  "policyMaximumBookAgeMs": 10000,
+  "metrics": "Exact unchanged compare_book_clocks.py measure/distribution and raw-seal/member validation; all/realtime/REST, explicit invalid, missing, clocks and stale counts",
+  "newGenerationRequirement": "Entire stopped R26 five-generation sidecar prefix and current eleven economic reviews retained; no sixth generation during new window",
+  "oldNewModelDifference": "R26 old window precedes node-only OR fifth generation. OR probability/forecast/ballot/caps unchanged, actual contract-node evidence and source observation differ. Do not claim identical generation counts across old/new windows.",
+  "limitations": [
+    "Old outcome was already inspected; this is a diagnostic comparison, not confirmatory or randomized causal evidence.",
+    "The planned13:09 old window was aborted after discovering R26 had stopped12:53; no such observations exist.",
+    "Same first300s selection on each restored process, differing live times and one node-only generation difference remain.",
+    "No source-body coverage, trade-frequency or profitability improvement follows from latency alone."
+  ],
+  "executionAuthority": false
+}

@@ -1,0 +1,152 @@
+{
+  "sourceIncidentArchiveSha256": "8c09fd1aaa589dd0e4e55da09188b5b5aa7f19c9ea3378c779155da534dc02d3",
+  "generationSha256": "64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda",
+  "reviews": [
+    {
+      "marketId": "176",
+      "exchangeId": "865",
+      "reviewSha256": "3e51b025da7116c5ea1b6d86836c82ba41f59fe7036d05251126beed1b16399a",
+      "expiresAtMs": 1792249441431,
+      "expiresAtUtc": "2026-10-17T15:04:01.431000+00:00",
+      "limitingSources": [
+        {
+          "kind": "official_contract_node",
+          "sha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499"
+        }
+      ]
+    },
+    {
+      "marketId": "183",
+      "exchangeId": "872",
+      "reviewSha256": "2c7f70c5a3769fd61fde04279479c6c1749637bd5ccded61dfc2c87bc69e365d",
+      "expiresAtMs": 1792261417746,
+      "expiresAtUtc": "2026-10-17T18:23:37.746000+00:00",
+      "limitingSources": [
+        {
+          "kind": "official_contract_node",
+          "sha256": "13b18d2b206b4deed547ef4694dd5d261594c0de21889f0f9189d2cc565366eb"
+        }
+      ]
+    },
+    {
+      "marketId": "288",
+      "exchangeId": "977",
+      "reviewSha256": "73147d66718c43d1747a0fc50b596cfffce5f8a5f08a57c531fdc7857c1732b7",
+      "expiresAtMs": 1792262095251,
+      "expiresAtUtc": "2026-10-17T18:34:55.251000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "7e6f07c53525903c7ae12ef2fb6e344028539d2f3ee8d8c498f17c07125563d1"
+        }
+      ]
+    },
+    {
+      "marketId": "378",
+      "exchangeId": "1067",
+      "reviewSha256": "8a334562126ea3e76478edae56c4f321b6d5697c6fa0342b733d8f0f028b1a92",
+      "expiresAtMs": 1792263776239,
+      "expiresAtUtc": "2026-10-17T19:02:56.239000+00:00",
+      "limitingSources": [
+        {
+          "kind": "official_contract_node",
+          "sha256": "38ad364b1d91ae1825a38e3e8c135ba49d2a79554fd46210e835772ef40b19c0"
+        }
+      ]
+    },
+    {
+      "marketId": "162",
+      "exchangeId": "851",
+      "reviewSha256": "6ca9fe65f4c808115be7b67d8eb65f32cb484ce28f02bf030f438535ac6460ab",
+      "expiresAtMs": 1792277470747,
+      "expiresAtUtc": "2026-10-17T22:51:10.747000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "36bc477a217953bc5686edd0e1445c6f6a3cd6184e3a12a569a5e20fddd7ac26"
+        }
+      ]
+    },
+    {
+      "marketId": "304",
+      "exchangeId": "993",
+      "reviewSha256": "1c5d6925413733b78bb89c9e3ebedaf51c78dfd6648ce603209b958c25c776d9",
+      "expiresAtMs": 1792277473090,
+      "expiresAtUtc": "2026-10-17T22:51:13.090000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "c3dce92c2aadb4657f3d6a7934cda2c59076f3b558d844ff75d5d86ff80f2f86"
+        }
+      ]
+    },
+    {
+      "marketId": "196",
+      "exchangeId": "885",
+      "reviewSha256": "2f9f4fbab2ab257e93ad7c13e64027181fe5835947997a7f2516fa66e7c4a0c7",
+      "expiresAtMs": 1792277478506,
+      "expiresAtUtc": "2026-10-17T22:51:18.506000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "3d40246e1a227206c6d690e9626ea0009449ef1417aeccac64878f70fd32388f"
+        }
+      ]
+    },
+    {
+      "marketId": "353",
+      "exchangeId": "1042",
+      "reviewSha256": "08184c725897810271f3278e60043cf3f3ffc58c409aa1fe2647daa96295d6d9",
+      "expiresAtMs": 1792277480939,
+      "expiresAtUtc": "2026-10-17T22:51:20.939000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "3583f14a0e669eb46cfd4c7eb02f32e40e114708d9f40220fe891a512498fc89"
+        }
+      ]
+    },
+    {
+      "marketId": "379",
+      "exchangeId": "1068",
+      "reviewSha256": "d4d74cacf8e72b90ea4243fbec38dc45c152368a01cb81a52f2132b43406fab6",
+      "expiresAtMs": 1792277483996,
+      "expiresAtUtc": "2026-10-17T22:51:23.996000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "4f40a1f47a9aefbffc89a5f0651355a7fcb774a79277ed102c593ae5f22f845b"
+        }
+      ]
+    },
+    {
+      "marketId": "277",
+      "exchangeId": "966",
+      "reviewSha256": "ef3f52ca40fc7370edee3d77e5aa962956d63783274d778ce8d4862aa9cda473",
+      "expiresAtMs": 1792277486285,
+      "expiresAtUtc": "2026-10-17T22:51:26.285000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "7d363c14643375a1770f7a46b6805b30cb86c308e574c086052c4aa528448419"
+        }
+      ]
+    },
+    {
+      "marketId": "362",
+      "exchangeId": "1051",
+      "reviewSha256": "779d29538e097d25a88ed5f20f5e7ef08d1811c2e94f91148b6b1ab372342545",
+      "expiresAtMs": 1792277488460,
+      "expiresAtUtc": "2026-10-17T22:51:28.460000+00:00",
+      "limitingSources": [
+        {
+          "kind": "forecast",
+          "sha256": "2c2b9cc99ea4ecb1751e49d47f95a6523739f6a9ab702c9a1723c1df3d613c0c"
+        }
+      ]
+    }
+  ],
+  "note": "q15469 reviewCurrentUntil14:44:34.413 equals the daily entry-window boundary, not CA851 source expiry; no renewal follows from this census.",
+  "newAccountRequests": 0,
+  "executionAuthority": false
+}
