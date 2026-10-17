@@ -6,7 +6,7 @@ The repair services queued original frames during routine book reads and narrowl
 
 Authenticated native481539 preserves all381 prior fill tokens and books one recovered known fill:1075NO SELL2/qid15156/order45189675, executed11:20:34.423 while old worker was stopped, reconciled12:12:25. This is not a new R26 execution. Ledger382fills/cash3,613.785/owned91,851.730/realized-114.400(new-184.970/inherited70.570). Actual new unused ordinary drafts release .995 localreservation; snapshot reservedCash0. These are not current executable marks or daily dashboardPnL.
 
-One worker/account queue, original15 bridge bytes/four generations/eleven reviews and source/model/rate/risk/activation clocks remain unchanged. The fixed five-minute clock comparison is pending. [Genuine retained-node OR review candidate](../research/moloch-oregon-node-refresh-20261017/README.md) passes typed checks/root verification but remains inactive; no restart or new forecast/cap change. No causal latency/profit improvement is established.
+One worker/account queue, original15 bridge bytes/four generations/eleven reviews and source/model/rate/risk/activation clocks remain unchanged. The [fixed five-minute comparison](../research/moloch-source-latency-20261017/clock-comparison-readme.md#root-computed-complete-comparison) is negative: median9311ms before versus14588ms after. Processing delay remains unresolved. [Genuine retained-node OR review candidate](../research/moloch-oregon-node-refresh-20261017/README.md) passes typed checks/root verification but remains inactive; no restart or new forecast/cap change. No causal latency/profit improvement is established.
 
 ## Earlier R25 operation and reservation cleanup
 

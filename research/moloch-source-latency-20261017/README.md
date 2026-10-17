@@ -1,3 +1,7 @@
+# Current measurement: no observed latency benefit
+
+The [frozen complete five-minute comparison](clock-comparison-readme.md#root-computed-complete-comparison) is negative: median receipt-to-processing rises from9311ms to14588ms; realtime12863.5ms to17467.5ms. R26 remains operating; restored uptime does not prove faster execution or profit. Task167 remains active. A source-sized facts-map copy-on-write candidate is being measured separately before any release.
+
 # Source availability delay
 
 **R26 is verified trading/realtimeHealthy as sole worker651324 at12:13:44UTC.** [Actual restored operation](live-proof/README.md). Source6295e22c/binary97aeaf63/native5b61 match. The original R25 stale-book STOP is archived intact; known two-share sell has reconciled. Original models/clocks and financial history remain. Actual processing-delay benefit is still being measured.
@@ -26,7 +30,7 @@ Periodic source acquisition previously blocked the original Session through a pu
 
 All three source-acquisition callers use the adapter: selected-market refresh, owned-age refresh and the optional Paper5 source loop before any context/plan/permit. No callback is added to a frozen-plan acceptance or returned owned-fill commit. The Transport/limiter is unchanged and exclusively borrowed; task completion/failure is joined before reuse, source admission stays on the original thread and existing typed service failures remain fatal to the read path. The same helper already serves ordinary/reviewed preflight.
 
-Only worker.rs and its five focused inline fixtures change. Tests cover exact tape-before-hook order, original book clocks, invalid tape, service failures before/after tape and during book wait, book failure without a trailing callback, and a genuine normalized stream gap during the pending book that the earlier REST request cannot clear. The helper allowlist, SDK/native source, monetary/model/risk/TTL/rate/activation policy and original financial ledger are unchanged. ARM64 qualification and actual post-install measurements remain pending; no speed or profit benefit is claimed.
+Only worker.rs and its five focused inline fixtures change. Tests cover exact tape-before-hook order, original book clocks, invalid tape, service failures before/after tape and during book wait, book failure without a trailing callback, and a genuine normalized stream gap during the pending book that the earlier REST request cannot clear. The helper allowlist, SDK/native source, monetary/model/risk/TTL/rate/activation policy and original financial ledger are unchanged. ARM64 qualification passed143worker checks and the optimized build; the complete post-install comparison above shows no observed speed benefit.
 
 ## Incident correction
 

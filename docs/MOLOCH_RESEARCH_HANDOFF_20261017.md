@@ -1,6 +1,6 @@
 # Moloch: current research handoff
 
-**October17,12:13:44 UTC: R26 is verified trading with healthy realtime as sole worker651324.** Source6295e22c/binary97aeaf63/native5b61 match the checked release. [Actual restored-operation proof](../research/moloch-source-latency-20261017/live-proof/README.md). Original381 fill tokens,15 bridge records,four generations and eleven reviews are preserved. Ledger now382 fills/cash3,613.785/owned91,851.730/attributed realized-114.400. The extra row is the known sell executed11:20 while the old worker was stopped; it adds .010 inherited gain, not R26 strategy profit. Processing-delay measurement remains pending.
+**October17,12:13:44 UTC: R26 is verified trading with healthy realtime as sole worker651324.** Source6295e22c/binary97aeaf63/native5b61 match the checked release. [Actual restored-operation proof](../research/moloch-source-latency-20261017/live-proof/README.md). Original381 fill tokens,15 bridge records,four generations and eleven reviews are preserved. Ledger now382 fills/cash3,613.785/owned91,851.730/attributed realized-114.400. The extra row is the known sell executed11:20 while the old worker was stopped; it adds .010 inherited gain, not R26 strategy profit. The [complete fixed-window comparison](../research/moloch-source-latency-20261017/clock-comparison-readme.md#root-computed-complete-comparison) shows no observed speed benefit: median9311ms before versus14588ms after. Processing delay remains unresolved.
 
 ## Earlier R25 observation
 

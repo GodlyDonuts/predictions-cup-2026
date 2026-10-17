@@ -31,3 +31,15 @@ For explicit old-side validation before the new packet exists, replace both new-
 Original old packet SHA9c530759b0f07429b5053e00acf199200553648eaafca7670e66ebde822d75be and separate first-progress proof ZIP SHA3ccb2b313594e0ec7a8af8a9346a0d9ba9dc8bd1f7b51b2aaba2010d2aa9dd71 both verify all members. First progress is10:56:24.123UTC; full window ends11:01:24.123 exclusive. Original anchored suffix478358..479094 contains737 rows and extends through11:02:31.257, so the entire fixed window is covered. There are292 native events/245 books/zero gap events in the window:218 realtime and27 REST;11 REST books explicitly invalid.
 
 Old aggregate:124 timing-stale books,123 stale despite source-fresh receipt,122 stale with receipt-to-processing over10s. All-book receipt-to-processing median9311ms/p9026198/max29503; source-to-receipt median546.0275ms/p901143.4356/max27944.3708. Realtime receipt-to-processing median12863.5ms/p9026569/max29503; REST median77ms/p90194/max197. These are distinct cohorts and invalid flags are not suppressed. Syntax compilation and genuine old-only anchored computation passed. No new packet existed or was measured at this handoff. Root owns both capture and later comparison/result publication. No API/SSH/build/runtime/model change occurred.
+
+## Root-computed complete comparison
+
+[Both authenticated windows and all metrics](five-minute-clock-comparison.json) were computed under the frozen protocol. R25 first300s10:56:24.123–11:01:24.123 contains245books (218realtime/27REST); R26 first300s12:13:33.595–12:18:33.595 contains213books (190realtime/23REST). The closed new packet preserves the four original model generations; the later Oregon hot reload occurred after this window.
+
+| Receipt to processing | R25 median / p90 / max ms | R26 median / p90 / max ms |
+| --- | --- | --- |
+| All books | 9311 / 26198 / 29503 | 14588 / 31432 / 64508 |
+| Realtime | 12863.5 / 26569 / 29503 | 17467.5 / 31432 / 64508 |
+| REST | 77 / 194 / 197 | 95 / 478 / 507 |
+
+**No observed speed benefit:** the new sample is slower. Of213new books121are timing-stale, all121source-fresh at receipt;119waited over10s. Ten REST books are explicitly invalid. All-book source-to-receipt median501.6629ms is a separate distribution. No missing/unparseable original clocks occur. Different live windows are diagnostic observations, not a randomized causal experiment. This result does not establish more profit or permit weaker freshness checks. The narrow pre-intent uptime repair remains separate from the unresolved processing bottleneck.
