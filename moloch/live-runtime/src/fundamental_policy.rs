@@ -403,19 +403,31 @@ pub struct AbandonHint{pub exchange_id:String,pub qid:u64,pub binding_sha256:Str
 /// Positive original-journal + committed-native-retirement evidence. This only
 /// permits one sidecar archive transition, never an order or native mutation.
 pub struct AbandonPlan{event:Value,head:Value,report_sha:String,dispatch:Value,queue:Value,scope_sha:String,account_sha:String,
-    minted:u64,until:u64,sidecar:FilePin,marker:FilePin,ordinary:FilePin,_owner:Arc<ExclusiveLock>}
+    minted:u64,until:u64,sidecar:FilePin,marker:FilePin,ordinary:FilePin,sdk_archive:Option<FilePin>,_owner:Arc<ExclusiveLock>}
 impl AbandonPlan{
     pub fn exchange_id(&self)->&str{self.event["exchangeId"].as_str().expect("validated plan")}
     pub fn qid(&self)->u64{self.event["qid"].as_u64().expect("validated plan")}
     pub fn valid_until_ms(&self)->u64{self.until}
     fn validate(&self,bank:&Session,log:&DispatchLog,transport:&Transport,now:u64)->Result<()>{
         self.sidecar.validate()?;self.marker.validate()?;self.ordinary.validate()?;
+        if let Some(pin)=&self.sdk_archive{pin.validate()?;}
         need(now>=self.minted&&now<self.until&&bank.durable_head()==self.head&&digest(&bank.engine().report()?)?==self.report_sha
             &&log.descriptor_identity()?==self.dispatch&&queue_view(transport)?==self.queue&&digest(transport.scope())?==self.scope_sha
             &&bytes_sha(transport.account_scope().as_bytes())==self.account_sha,"FUNDAMENTAL_ABANDON_PLAN_CHANGED")?;
-        let physical=if self.event["kind"]=="rearm_closed_zero"{log.attempted.contains(&self.qid())&&log.closed.contains(&self.qid())&&bank.engine().live_order_bindings().get(&self.qid()).is_some_and(|id|self.event["closedZeroEvidence"]["actualId"]==*id)}else{log.never_attempted(self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())};
+        let physical=if self.event["kind"]=="rearm_closed_zero"{log.attempted.contains(&self.qid())&&log.closed.contains(&self.qid())&&bank.engine().live_order_bindings().get(&self.qid()).is_some_and(|id|self.event["closedZeroEvidence"]["actualId"]==*id)}else if self.event["kind"]=="abandon_proved_no_network"{log.proved_no_network(self.qid())&&log.attempted.contains(&self.qid())&&!log.acknowledgments.contains_key(&self.qid())&&!log.closed.contains(&self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())}else{log.never_attempted(self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())};
         need(physical&&!bank.engine().fills().iter().any(|f|f["orderId"]==self.qid()),"FUNDAMENTAL_ABANDON_PHYSICAL_EVENT")
     }
+}
+/// Requires this process's opaque SDK hydration; JSON presence never suffices.
+fn aborted_archive(log:&DispatchLog,qid:u64)->Result<FilePin>{
+    need(log.proved_no_network(qid)&&log.attempted.contains(&qid)&&!log.acknowledgments.contains_key(&qid)&&!log.closed.contains(&qid)&&!log.recovered.contains_key(&qid)&&!log.cancel_attempted(qid),"FUNDAMENTAL_ABORT_PROOF_REQUIRED")?;
+    let row=log.aborted_records().get(&qid).ok_or("FUNDAMENTAL_ABORT_ORIGINAL_ROW")?;
+    let intent=log.intents.get(&qid).ok_or("FUNDAMENTAL_ABORT_INTENT")?;let attempt=log.original_attempt(qid).ok_or("FUNDAMENTAL_ABORT_ATTEMPT")?;let error=log.original_error(qid).ok_or("FUNDAMENTAL_ABORT_ERROR")?;
+    need(row["originalIntentSha256"]==digest(intent)?&&row["originalAttemptSha256"]==digest(attempt)?&&row["originalErrorSha256"]==digest(error)?,"FUNDAMENTAL_ABORT_ORIGINAL_CHANGED")?;
+    let proof=&row["proof"];let directory=PathBuf::from(proof["queueDirectory"].as_str().ok_or("FUNDAMENTAL_ABORT_QUEUE")?);let name=proof["sourceArchive"].as_str().ok_or("FUNDAMENTAL_ABORT_ARCHIVE")?;
+    need(directory.is_absolute()&&Path::new(name).file_name().and_then(|s|s.to_str())==Some(name)&&name.starts_with("ordinary-unadmitted-")&&name.ends_with(".json"),"FUNDAMENTAL_ABORT_ARCHIVE_PATH")?;
+    let expected=proof["sourceArchiveSha256"].as_str().filter(|s|hex(s)).ok_or("FUNDAMENTAL_ABORT_ARCHIVE_HASH")?;
+    FilePin::open(&directory.join(name),expected,768*1024*1024)
 }
 /// Read-only hint for a previously attempted, acknowledged and independently
 /// closed entry with zero actual fills. This is never retry permission.
@@ -488,6 +500,7 @@ pub struct Cohorts{
     _owner:Arc<ExclusiveLock>,manifest:String,run:String,
     sequence:u64,previous:String,clock:u64,poisoned:bool,generation:Option<Value>,
     policies:BTreeMap<String,ReviewInput>,cohorts:BTreeMap<String,Cohort>,abandoned:BTreeMap<u64,AbandonedCohort>,
+    aborted_archives:std::sync::Mutex<BTreeMap<u64,FilePin>>,
 }
 #[cfg(unix)]fn identity(file:&File)->Result<Value>{use std::os::unix::fs::MetadataExt;let m=file.metadata()?;Ok(json!({"device":m.dev(),"inode":m.ino()}))}
 #[cfg(not(unix))]fn identity(_file:&File)->Result<Value>{Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
@@ -656,7 +669,7 @@ impl Cohorts{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
         for(ex,c)in &self.cohorts{let Some(b)=&c.entry else{continue};
             need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_ABANDON_SCOPE")?;
-            if c.existing.is_some()||!c.top_ups.is_empty()||!c.exits.is_empty()||!log.never_attempted(b.qid)||bank.engine().live_order_bindings().contains_key(&b.qid)
+            if c.existing.is_some()||!c.top_ups.is_empty()||!c.exits.is_empty()||!(log.never_attempted(b.qid)||log.proved_no_network(b.qid))||bank.engine().live_order_bindings().contains_key(&b.qid)
                 ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
             out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});
         }
@@ -666,7 +679,7 @@ impl Cohorts{
         }}Ok(out)
     }
     fn original_not_sent_records(&self,log:&DispatchLog,wanted:&BTreeSet<u64>)->Result<(BTreeMap<u64,Value>,FilePin)>{
-        need(wanted.len()<=4096&&wanted.iter().all(|qid|log.never_attempted(*qid)),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
+        need(wanted.len()<=4096&&wanted.iter().all(|qid|log.never_attempted(*qid)||log.proved_no_network(*qid)),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
         let before=log.descriptor_identity()?;let pin=FilePin::from_held(File::open(&self.ordinary_path)?,self.ordinary_path.clone(),64*1024*1024,None)?;
         need(pin.identity==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
         let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_ABANDON_DISPATCH_TORN")?;
@@ -676,9 +689,13 @@ impl Cohorts{
             let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_ABANDON_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_ABANDON_DISPATCH_HASH")?;
             need(row["sequence"]==sequence+1&&row["previous"]==previous&&sha==digest(&row)?,"FUNDAMENTAL_ABANDON_DISPATCH_CHAIN")?;
             if let Some(qid)=row["event"]["qid"].as_u64().filter(|id|wanted.contains(id)){
+                if log.proved_no_network(qid){
+                    need(!matches!(row["event"]["kind"].as_str(),Some("ack"|"recovered_ack"|"closed"|"cancel_attempt"|"cancel_ack")),"FUNDAMENTAL_ABORT_PHYSICAL_EVENT")?;
+                    if row["event"]["kind"]=="aborted_before_admission"{need(!found.contains_key(&qid)&&log.aborted_records().get(&qid)==Some(&row["event"]),"FUNDAMENTAL_ABORT_ORIGINAL_ROW")?;let _=aborted_archive(log,qid)?;found.insert(qid,original);}
+                }else{
                 need(!matches!(row["event"]["kind"].as_str(),Some("attempt"|"ack"|"recovered_ack")),"FUNDAMENTAL_ABANDON_ATTEMPTED")?;
                 if row["event"]["kind"]=="not_sent"{let proof=&row["event"]["proof"];
-                    need(!found.contains_key(&qid)&&*proof==json!({"qid":qid,"chain":previous,"sequence":sequence,"networkAttempts":0}),"FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT")?;found.insert(qid,original);}
+                    need(!found.contains_key(&qid)&&*proof==json!({"qid":qid,"chain":previous,"sequence":sequence,"networkAttempts":0}),"FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT")?;found.insert(qid,original);}}
             }
             sequence+=1;previous=sha.as_str().ok_or("FUNDAMENTAL_ABANDON_DISPATCH_HASH")?.into();
         }
@@ -695,6 +712,17 @@ impl Cohorts{
         let q=crate::order_snapshot::quote(bank,hint.qid).ok_or("FUNDAMENTAL_ABANDON_QUOTE")?;
         need(q["retired"]==true&&q["filled"]==0,"FUNDAMENTAL_ABANDON_NATIVE_RETIREMENT_REQUIRED")?;
         let(mut not_sents,ordinary)=self.original_not_sent_records(log,&[hint.qid].into())?;let not_sent=not_sents.remove(&hint.qid).ok_or("FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED")?;
+        let proved_abort=log.proved_no_network(hint.qid);
+        let sdk_archive=if proved_abort{
+            need(!top_up&&log.intents.get(&hint.qid).is_some_and(|v|v.get("fundamental")==self.durable_tag(hint.qid).as_ref()),"FUNDAMENTAL_ABORT_ORIGINAL_TAG")?;
+            let(spec,permit,attempt,error)=log.pre_admission_originals(hint.qid)?;
+            need(digest(&spec)?==b.spec_sha256&&not_sent["event"]==log.aborted_records()[&hint.qid],"FUNDAMENTAL_ABORT_ORIGINAL_REQUEST")?;
+            for key in ["id","marketId","exchangeId","side","action","quantity","price"]{need(log.intents[&hint.qid]["quote"][key]==b.quote[key]&&q[key]==b.quote[key],"FUNDAMENTAL_ABORT_ORIGINAL_QUOTE")?;}
+            let proof=&not_sent["event"]["proof"];
+            let config=baal_transport_service::Config{queue_dir:PathBuf::from(proof["queueDirectory"].as_str().ok_or("FUNDAMENTAL_ABORT_QUEUE")?),account_scope:transport.account_scope().into(),scope:scope.clone(),maximum_pages:1,writes_enabled:false};
+            let verified=baal_transport_service::verify_retained_ordinary_pre_admission(&config,&spec,&permit,attempt,&error,proof)?;
+            verified.validate_binding(&spec,&permit,attempt,&error)?;Some(aborted_archive(log,hint.qid)?)
+        }else{None};
         let mut event=retirement.clone();let reference=event.as_object_mut().ok_or("FUNDAMENTAL_ABANDON_RETIREMENT")?.remove("sourceRef");let sha=digest(&event)?;
         need(sequence>0&&bank.committed_source_hash(source_id,sequence)==Some(sha.as_str())&&reference.is_none_or(|r|r==json!({"id":source_id,"sequence":sequence,"hash":sha}))
             &&event["type"]=="unsubmitted_intent_retired"&&event["source"]=="moloch_live_dispatcher"&&event["orderId"]==hint.qid&&event["confirmedNetworkAttempts"]==0
@@ -710,9 +738,9 @@ impl Cohorts{
         need(owned==0||position_seen,"FUNDAMENTAL_TOP_UP_POSITION_MISSING")?;
         for row in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_ABANDON_ORDERS")?{need(row["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_ABANDON_OPEN_ORDER")?;}
         need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_ABANDON_CASH")?;
-        let plan=AbandonPlan{event:json!({"kind":if top_up{"abandon_top_up_never_sent"}else{"abandon_never_sent"},"exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"originalNotSent":not_sent,"committedRetirement":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
+        let plan=AbandonPlan{event:json!({"kind":if proved_abort{"abandon_proved_no_network"}else if top_up{"abandon_top_up_never_sent"}else{"abandon_never_sent"},"exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"originalNotSent":not_sent,"committedRetirement":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
             head:bank.durable_head(),report_sha:digest(&bank.engine().report()?)?,dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
-            sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,_owner:self._owner.clone()};
+            sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,sdk_archive,_owner:self._owner.clone()};
         plan.validate(bank,log,transport,now)?;Ok(plan)
     }
     /// Consumes the opaque plan once, archives historical tags, and changes NO
@@ -765,7 +793,7 @@ impl Cohorts{
         need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_REARM_CASH")?;
         let inner=AbandonPlan{event:json!({"kind":"rearm_closed_zero","exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"closedZeroEvidence":proof,"committedTerminal":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
             head:bank.durable_head(),report_sha:digest(&bank.engine().report()?)?,dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
-            sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,_owner:self._owner.clone()};inner.validate(bank,log,transport,now)?;Ok(RearmPlan{inner})
+            sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,sdk_archive:None,_owner:self._owner.clone()};inner.validate(bank,log,transport,now)?;Ok(RearmPlan{inner})
     }
     pub fn apply_rearm(&mut self,plan:RearmPlan,bank:&Session,log:&DispatchLog,transport:&Transport,now:u64)->Result<()>{
         self.check(bank,log)?;plan.inner.validate(bank,log,transport,now)?;
@@ -1050,7 +1078,7 @@ impl Cohorts{
             marker,
             manifest:bank.manifest_hash().as_str().ok_or("FUNDAMENTAL_MANIFEST")?.into(),
             run:bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"].as_str().ok_or("FUNDAMENTAL_RUN")?.into(),
-            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new()};
+            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new(),aborted_archives:Default::default()};
         let mut reader=BufReader::new(out.file.try_clone()?);let mut line=Vec::new();
         loop{line.clear();let n=reader.by_ref().take((MAX_ROW+1) as u64).read_until(b'\n',&mut line)?;if n==0{break}
             need(line.len()<=MAX_ROW&&line.last()==Some(&b'\n'),"FUNDAMENTAL_TORN_OR_OVERSIZED_ROW")?;
@@ -1121,7 +1149,7 @@ impl Cohorts{
                     &&event["originalNotSent"].is_object()&&event["committedRetirement"].is_object(),"FUNDAMENTAL_TOP_UP_ABANDON_EVENT")?;
                 self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?.retired_top_ups.insert(id,RetiredTopUp{not_sent:event["originalNotSent"].clone(),retirement:event["committedRetirement"].clone()});
             },
-            Some("abandon_never_sent")=>{
+            Some("abandon_never_sent"|"abandon_proved_no_network")=>{
                 let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let id=event["qid"].as_u64().ok_or("FUNDAMENTAL_QID")?;
                 let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
                 need(c.entry_id()==Some(id)&&c.existing.is_none()&&c.top_ups.is_empty()&&c.exits.is_empty()&&event["cohortSha256"]==digest(c)?
@@ -1177,7 +1205,17 @@ impl Cohorts{
                 validate_zero_closure(b,proof,&retirement["event"])?;true
             }else{
                 need(retirement["event"]["type"]=="unsubmitted_intent_retired"&&retirement["event"]["receiptHash"]==digest(&a.not_sent["event"]["proof"])? ,"FUNDAMENTAL_ABANDONED_SOURCE_CHANGED")?;
-                log.never_attempted(*id)&&!bank.engine().live_order_bindings().contains_key(id)
+                let original=&a.not_sent["event"];
+                let no_network=if original["kind"]=="aborted_before_admission"{
+                    need(log.proved_no_network(*id)&&log.aborted_records().get(id)==Some(original),"FUNDAMENTAL_ABORT_PROOF_REQUIRED")?;
+                    // Full raw archive verification at open/mint; cheap held-file
+                    // identity/version checks thereafter, under the same-UID
+                    // owner boundary. Do not hash SDK history on every quote.
+                    let mut pins=self.aborted_archives.lock().map_err(|_|"FUNDAMENTAL_ABORT_ARCHIVE_LOCK")?;
+                    if !pins.contains_key(id){pins.insert(*id,aborted_archive(log,*id)?);}
+                    pins.get(id).ok_or("FUNDAMENTAL_ABORT_ARCHIVE_REQUIRED")?.validate_metadata()?;true
+                }else{log.never_attempted(*id)};
+                no_network&&!bank.engine().live_order_bindings().contains_key(id)
             };
             need(b.qid==*id&&a.cohort.existing.is_none()&&a.cohort.top_ups.is_empty()&&a.cohort.exits.is_empty()&&physical
                 &&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_ABANDONED_LATE_PHYSICAL_EVENT")?;
