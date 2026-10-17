@@ -51,6 +51,12 @@ admission, order, fill/non-fill, exit/settlement and strategy attribution.
 | Choose SELL / opposite BUY / HOLD | Direct SELL and opposite-BUY netting are real existing operations; +31.445 netting versus -216.415 maximum-age SELL result is historical selection, not causal comparison. | Compare the same position/time with executable depth, origin-specific hold value, capital time and uncertainty. Existing terminal cohorts and inherited lots retain their distinct objectives. |
 | Collateral recycling | Defensive parser/accounting exists; installed collateral accounting OFF. | Use only original platform-recognized component capacity/liability after reconciliation. No imagined loan, independent floor or realized profit. |
 
+## Ordinary-entry policy review: source only
+
+A bounded independent review of main4008470f found no existing control that implements the paper's strict quarantine while retaining reviewed entries and covered opposite-BUY reductions. ordinarySideEdge Enforce is a conditional microprice filter, not empirical qualification. The existing maker policy permits separately bounded unqualified exploration; fabricating a zero exploration budget or a reached-loss baseline would misrepresent its authority. Native entriesEnabled or entry-window shutdown also blocks reviewed entries, and the original bank policy must not be rewritten.
+
+The narrow proposed strategy change is an explicit runtime ordinary-risk mode, filtered before shared rotation/preflight and rechecked at common submission and physical authorization. A reviewed exemption must use a genuine current Fundamental PhysicalDecision, not simply membership in a managed exchange. An opposite-BUY exemption requires the entire frozen quantity to be covered by free opposite inventory after existing SELL and BUY pledges, with current bank/dispatch binding; existing coverage checks alone do not prove gain. Covered SELLs, reconciliation, owned ACK/cancel handling and unknown-order guards remain. Resting orders can still fill. No such new mode is implemented or activated by this review, and no model is fabricated. This is a separate strategy/control change after actual R21 production verification, not an infrastructure redesign.
+
 ## Two corrections that affect implementation
 
 The semantic compiler is not absent. The [existing actual-rule audit](../moloch-semantic-floor-20261016/README.md)

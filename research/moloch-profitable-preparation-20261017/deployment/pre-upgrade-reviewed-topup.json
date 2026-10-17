@@ -1,0 +1,39 @@
+{
+  "observedAt": "2026-10-17T05:49:53.692769+00:00",
+  "sourceFinancialSequence": 420144,
+  "sourceFinancialReportRawSha256": "61e441c445f1af6e4b1d446e9cdab396899c150d8bdff18780b5150c3ef4a4ac",
+  "previousSequence": 409030,
+  "previousReportRawSha256": "1be5f111bdab8ed0cd11f2a330ae04f52e2a446864a5c62d61b590874b6d28d1",
+  "allPrior351FillRowsIdentical": true,
+  "officialFillRowsAdded": 1,
+  "fill": {
+    "orderId": 13293,
+    "exchangeId": "851",
+    "side": "NO",
+    "action": "buy",
+    "quantity": 216,
+    "price": "0.875000",
+    "receiptHash": "8d7ad1b82abedd4c536c0dbde33ea7b1b1f8aef41e1c65228fceed3d6c1e9c2b",
+    "counterfactual": false
+  },
+  "reviewedFundamentalEntry": {
+    "reviewSha256": "6ca9fe65f4c808115be7b67d8eb65f32cb484ce28f02bf030f438535ac6460ab",
+    "originSha256": "f9822cc515e314e0bdf7f523c465f02d6f32003b707d9d78c5354af2b52006be",
+    "modelSha256": "1942dd06ef5fc2420242e65b31d1185dd083a48c5009b37d22cf267ba34c1309",
+    "sourceSha256": "f0067fa8883175786d49f31bf82403f862b8e96b510153c0450059e801906ab8",
+    "bookSha256": "5eb31d1bd448ec9ea2ec64b9e6563e603b84ca8e52668faa494b0d1be95af9fa",
+    "executionMode": "boundedLimitMayRest",
+    "expectedPayout": "0.889200",
+    "grossLimitPrincipal": "189.000000"
+  },
+  "actualPrincipal": "189.000000",
+  "cash": "9274.510000",
+  "ownedCost": "86165.565000",
+  "combinedAttributedRealized": "-139.840000",
+  "newTradingRealized": "-184.970000",
+  "expectedPayoutIsReviewedAssumptionNotCalibration": true,
+  "actualFillPredatesR21Installation": true,
+  "realizedProfitFromThisAcquisition": false,
+  "nativeAttributedEvidenceNotNewIndependentServerAuthentication": true,
+  "noAccountRequestOrMutation": true
+}

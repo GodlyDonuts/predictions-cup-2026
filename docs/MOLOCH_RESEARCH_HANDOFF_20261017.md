@@ -6,6 +6,8 @@ Latest05:45UTC: **R21 sole616815/sourceb796e2c1/binary70f16b21 installed, restor
 
 Newest research: [Victory Directive and evidence-to-code map](../research/moloch-victory-directive-20261017/README.md). Original paper is preserved exactly. Its main698969d5 audit predates the checked profitable-exit release.
 
+The exact pre-R21 additional fill is now attributed:851 NO216 at0.875,189.000 principal, a reviewed fundamental bounded-limit top-up. All351 prior fill rows match; cost/cash move189 with no realized change. [Source-bound attribution](../research/moloch-profitable-preparation-20261017/deployment/pre-upgrade-reviewed-topup.json). Independent ordinary-entry policy review identifies a separate runtime risk gate as the narrow future strategy change; current side-edge/maker controls cannot honestly express strict quarantine while preserving reviewed/covered reductions. Source review only; no silent policy activation.
+
 ## New strategy evidence at05:42UTC
 
 [Profit preparation candidateb796e2c1](../research/moloch-profitable-preparation-20261017/build-proof/README.md) passes850 checks and optimized release; all262 actual source files independently matchGit exactly or byCRLF. Not yet deployed at this observation; sole611948 R20 remains active. Fresh05:40:03 progress is trading/realtimeHealthy with352 official rows; cash9,274.510/owned86,165.565/combined realized−139.840. This adds one fill row since the stopped351 boundary; a new-order/group/profit claim requires attribution.
