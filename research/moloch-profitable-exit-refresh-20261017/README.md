@@ -30,7 +30,7 @@ remain authoritative. No native engine, rate limit, source clock, monetary cap
 or profit floor changes.
 
 **Status: source 4bbeae46 /binary c734ca4c installed at 04:39:58 UTC as
-worker 611948; restoring, fresh trading pending.** The prior worker stopped
+worker 611948; verified trading/realtimeHealthy/noSTOP at04:54:38UTC.** The prior worker stopped
 at exact sequence409030 /351 fills. [Actual installation evidence](deployment/README.md).
 The [build proof](build-proof/strategy-check-summary.json) records 849 actual
 passing checks, including explicitly reused unchanged checks, the native identity
@@ -39,7 +39,7 @@ Two earlier test-fixture failures and their corrections are retained. Root
 independently compared all 262 built source files with committed source; the
 read-only independent review found no concrete blocker. Original 13-second
 windows can still expire during serialized preparation, so no latency or fill
-improvement is claimed. A source fix is not a fill or a profit result. Fresh new-process trading/fill evidence will be added separately. Infrastructure
+improvement is claimed. A source fix is not a fill or a profit result. [Fresh new-process proof](live-proof/live-verification.json) records zero new fill rows since upgrade; no profitable exit or latency benefit is yet verified. Infrastructure
 work remains deferred unless essential.
 
 `original-audit-source.py` is the exact one-off owner audit used on retained

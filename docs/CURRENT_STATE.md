@@ -1,3 +1,9 @@
+# October 17, 04:54 UTC — profitable-exit release verified trading
+
+Sole611948/source4bbeae46/binaryc734ca4c/native7a74f8c3 verified trading/realtimeHealthy/noSTOP at04:54:38UTC. Actual unit PID/executable/progress/model channel agree; fourteen bridge bytes/four original model generation rows/eleven settings preserved. Ledger351fills/cash9,463.510/owned85,976.565/combined attributed realized−139.840. **Zero post-upgrade fill rows at this proof**; a profitable exit or causal latency/economic benefit remains unverified. [Actual new-process evidence](../research/moloch-profitable-exit-refresh-20261017/live-proof/live-verification.json). Initial installation below correctly retains restoring status.
+
+[Newest paper intake](../research/moloch-victory-directive-20261017/README.md) now includes independently reproduced current cost concentration:24 holdings/top5 56.43%/top10 92.14%, 90.08% owned cost/(cash+owned cost). Existing census has no recognized relationships/floors and incomplete graph coverage; recorded prospective cohorts are finite and currently stopped. These are dated data-quality observations, not a proof that no opportunities exist. No new-paper model or allocation is silently activated; infrastructure stays deferred unless essential.
+
 # October 17, 04:39 UTC — profitable-exit strategy installed; restoring
 
 Source4bbeae46 /binaryc734ca4c installed as sole611948 using the existing controlled binary-only upgrade. Exact stopped boundary409030 /351fillrows: cash9,463.510/owned85,976.565/combined attributed realized−139.840. All fourteen bridge bytes/four original model generations preserved; no model/rate/activation renewal. **Fresh trading and fills from this new worker are not yet verified.** Old607949 progress remains historical. [Actual installation evidence](../research/moloch-profitable-exit-refresh-20261017/deployment/README.md).

@@ -1,0 +1,260 @@
+{
+  "observedAt": "2026-10-17T04:45:54.930254+00:00",
+  "method": "read existing private status/census files and exact PID state only; no SIG or external API request, process or policy mutation",
+  "census": {
+    "completedAtMs": 1792210646262,
+    "rawSha256": "7ed2fd6ee11626e37cf00eb9f5b9deb49dbfc4499a0e8d2a2663454cf14507c3",
+    "activeRelationshipCount": 0,
+    "exhaustiveRelationshipCount": 0,
+    "knownFloorComponentCount": 0,
+    "unknownFloorComponentCount": 0,
+    "feedComplete": true,
+    "graphDiscovery": {
+      "allGraphsComplete": false,
+      "executionAuthority": false,
+      "maximumRootsPerCensus": 3,
+      "observedRoots": [
+        "292",
+        "293",
+        "294"
+      ],
+      "requestedRoots": [
+        "292",
+        "293",
+        "294"
+      ],
+      "rotationStateError": null
+    },
+    "endpointObservations": {
+      "relationships": {
+        "availability": "empty",
+        "httpStatus": 200,
+        "rowCount": 0,
+        "source": {
+          "privateFile": "relationship-census-1792210640353-607949-0-relationships.json",
+          "receiptSha256": "ea9960a78fed5a23726b92755576a75d8eaf979db1a687cdececdde91f4bd6a5",
+          "receivedAt": "2026-10-17T04:17:20.353Z",
+          "requestStartedAt": "2026-10-17T04:17:20.125Z",
+          "status": 200
+        }
+      },
+      "constraints": {
+        "availability": "empty",
+        "httpStatus": 200,
+        "rowCount": 0,
+        "source": {
+          "privateFile": "relationship-census-1792210641253-607949-1-constraints.json",
+          "receiptSha256": "ba9043362208749932d5a61a6efc6e79500c99a4febc747edbdcad6685216335",
+          "receivedAt": "2026-10-17T04:17:21.253Z",
+          "requestStartedAt": "2026-10-17T04:17:21.000Z",
+          "status": 200
+        }
+      },
+      "collateral": {
+        "availability": "empty",
+        "httpStatus": 200,
+        "rowCount": 0,
+        "source": {
+          "privateFile": "relationship-census-1792210642083-607949-2-collateral.json",
+          "receiptSha256": "5ccdfa3d83bc95548adc111d7014bb944ca6ce94fd353a4caef3858ce492616b",
+          "receivedAt": "2026-10-17T04:17:22.083Z",
+          "requestStartedAt": "2026-10-17T04:17:21.893Z",
+          "status": 200
+        }
+      }
+    },
+    "zeroCountsAreNotProofNoSemanticOpportunityExists": true
+  },
+  "finiteProspectiveCohorts": [
+    {
+      "cohort": "crossvenue-observer-trade-trace-v2",
+      "statusAt": "2026-10-16T16:31:39.322Z",
+      "statusState": "stopped",
+      "recordedPid": 519214,
+      "pidExists": false,
+      "procState": null,
+      "samples": 1,
+      "labels": 1,
+      "statusRawSha256": "6bf3279885624d228e30d7027f9673d5255387c7318ddb0212eae2f15bd6c239"
+    },
+    {
+      "cohort": "crossvenue-observer-trade-trace-v3",
+      "statusAt": "2026-10-16T17:05:12.684Z",
+      "statusState": "stopped",
+      "recordedPid": 519257,
+      "pidExists": false,
+      "procState": null,
+      "samples": 3,
+      "labels": 7,
+      "statusRawSha256": "4fbd4094a5ee70de494ef80bea22794424e441db3b4c2c8a643d90015d2c481c"
+    },
+    {
+      "cohort": "crossvenue-observer-trade-trace-v4",
+      "statusAt": "2026-10-16T17:38:09.405Z",
+      "statusState": "stopped",
+      "recordedPid": 525623,
+      "pidExists": false,
+      "procState": null,
+      "samples": 2,
+      "labels": 4,
+      "statusRawSha256": "b38621d4b4377059b674de8641ed9e669acd96aeaf99d691724e87ca040f6353"
+    },
+    {
+      "cohort": "crossvenue-observer-trade-trace-v5",
+      "statusAt": "2026-10-16T18:38:11.905Z",
+      "statusState": "stopped",
+      "recordedPid": 526213,
+      "pidExists": false,
+      "procState": null,
+      "samples": 8,
+      "labels": 15,
+      "statusRawSha256": "81238d47c85de71af9011bdaa694c0ef93bce4b1110fd48ecf3b2a1630b43222"
+    },
+    {
+      "cohort": "crossvenue-observer-trade-trace-v6",
+      "statusAt": "2026-10-16T20:30:59.281Z",
+      "statusState": "stopped",
+      "recordedPid": 542436,
+      "pidExists": false,
+      "procState": null,
+      "samples": 3,
+      "labels": 6,
+      "statusRawSha256": "d00fe734624715b999c7435ae41dcd06949832a54ccdda14d71f9d5e8bf0a492"
+    },
+    {
+      "cohort": "crossvenue-observer-trade-trace-v7",
+      "statusAt": "2026-10-16T21:32:53.303Z",
+      "statusState": "capture_stopped",
+      "recordedPid": 545515,
+      "pidExists": false,
+      "procState": null,
+      "samples": null,
+      "labels": null,
+      "statusRawSha256": "ea55934a5cacf3350abda952c0cbabf5c13110c1352c717212b3a03441c6c742"
+    },
+    {
+      "cohort": "crossvenue-observer-trade-trace-v8",
+      "statusAt": "2026-10-16T23:55:00.922Z",
+      "statusState": "stopped",
+      "recordedPid": 569117,
+      "pidExists": false,
+      "procState": null,
+      "samples": 20,
+      "labels": 48,
+      "statusRawSha256": "129c0d243f2e352e699ec3bd6e6a51dab65a47304b2257b60e2e549ca08bca52"
+    },
+    {
+      "cohort": "crossvenue-observer-trade-v1",
+      "statusAt": "2026-10-16T15:49:48.883Z",
+      "statusState": "stopped",
+      "recordedPid": 516505,
+      "pidExists": false,
+      "procState": null,
+      "samples": 4,
+      "labels": 4,
+      "statusRawSha256": "54f38a1f8e603d102e277f9da25d0dd4315a2d972385f2a15f12664c99d1e3eb"
+    },
+    {
+      "cohort": "crossvenue-observer-v1",
+      "statusAt": "2026-10-16T09:51:29.093Z",
+      "statusState": "observing",
+      "recordedPid": 466266,
+      "pidExists": false,
+      "procState": null,
+      "samples": 8,
+      "labels": null,
+      "statusRawSha256": "fc7521e6ab4498c09454935524f44181e06d8fc5593012cb689da1e4236d155d"
+    },
+    {
+      "cohort": "crossvenue-observer-v10",
+      "statusAt": "2026-10-16T15:05:33.169Z",
+      "statusState": "stopped",
+      "recordedPid": 516305,
+      "pidExists": false,
+      "procState": null,
+      "samples": 6144,
+      "labels": 7336,
+      "statusRawSha256": "596dfb3cd064d2e9d46c3855989b3316b7e78b570d4107f4b31ff08ea7b2e603"
+    },
+    {
+      "cohort": "crossvenue-observer-v2",
+      "statusAt": "2026-10-16T10:21:08.153Z",
+      "statusState": "observing",
+      "recordedPid": 468513,
+      "pidExists": false,
+      "procState": null,
+      "samples": 200,
+      "labels": 291,
+      "statusRawSha256": "5a0bb6a64503e73b917c945f51d3a70cd5128fcd35cdf0944e1adba30c92aa4e"
+    },
+    {
+      "cohort": "crossvenue-observer-v4",
+      "statusAt": "2026-10-16T11:01:04.552Z",
+      "statusState": "stopped",
+      "recordedPid": 484242,
+      "pidExists": false,
+      "procState": null,
+      "samples": 84,
+      "labels": 132,
+      "statusRawSha256": "f70152fde53e9fb7b9ada52ad143e8e88cddff2c319e0262132f1b55db41a43d"
+    },
+    {
+      "cohort": "crossvenue-observer-v5",
+      "statusAt": "2026-10-16T11:48:16.098Z",
+      "statusState": "stopped",
+      "recordedPid": 487833,
+      "pidExists": false,
+      "procState": null,
+      "samples": 113,
+      "labels": 151,
+      "statusRawSha256": "77a4b4fddd7cebae6c843c0a2e6b56e39d3c97a5faec73094dd51c2622afea6a"
+    },
+    {
+      "cohort": "crossvenue-observer-v6",
+      "statusAt": "2026-10-16T12:01:33.407Z",
+      "statusState": "stopped",
+      "recordedPid": 496337,
+      "pidExists": false,
+      "procState": null,
+      "samples": 1348,
+      "labels": 1903,
+      "statusRawSha256": "c223f7f37eedfd9d7ba9b37f5d18903b33432c3347feea4c2e2f6dc374e16d61"
+    },
+    {
+      "cohort": "crossvenue-observer-v7",
+      "statusAt": "2026-10-16T12:41:17.287Z",
+      "statusState": "stopped",
+      "recordedPid": 496491,
+      "pidExists": false,
+      "procState": null,
+      "samples": 3883,
+      "labels": 5837,
+      "statusRawSha256": "2496d838b305f150ef91c2d73940de2fdf82bf8ae3893b97aba83e1548797504"
+    },
+    {
+      "cohort": "crossvenue-observer-v8",
+      "statusAt": "2026-10-16T13:39:35.373Z",
+      "statusState": "stopped",
+      "recordedPid": 503257,
+      "pidExists": false,
+      "procState": null,
+      "samples": 4930,
+      "labels": 7948,
+      "statusRawSha256": "ee917bf31e5271791223a3e2fe81140e4c56c8ca27e5baf0ec4ce9f21151919a"
+    },
+    {
+      "cohort": "crossvenue-observer-v9",
+      "statusAt": "2026-10-16T14:38:18.267Z",
+      "statusState": "stopped",
+      "recordedPid": 510713,
+      "pidExists": false,
+      "procState": null,
+      "samples": 22579,
+      "labels": 35457,
+      "statusRawSha256": "bf721a9c8a03957033f9ca54885763bfa9be5bbf539185396b8538064aeaa59e"
+    }
+  ],
+  "activeRecordedObserverPids": 0,
+  "collectorOrCacheHealthNotInferredFromObserverState": true,
+  "financialOrPolicyChanges": false
+}

@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-10-17T04:46:51.718545+00:00",
+  "sourceFinancialSequence": 409030,
+  "sourceFinancialReportRawSha256": "1be5f111bdab8ed0cd11f2a330ae04f52e2a446864a5c62d61b590874b6d28d1",
+  "sourceFinancialReportSealedHash": "0b77846debd75c1fb682d9d9d1a223aebaf0355d11ba973001844a614b9e3b7e",
+  "boundaryRawSha256": "7f2f918461c2996157b0fb074a3a1f6904920ac7abc113bdf9f0131845c7c5db",
+  "holdingCount": 24,
+  "ownedCost": "85976.565000",
+  "cash": "9463.510000",
+  "topFiveOwnedCost": "48517.895000",
+  "topTenOwnedCost": "79219.145000",
+  "topFivePercentOfOwnedCost": "56.43153456991448774442198289731626286768",
+  "topTenPercentOfOwnedCost": "92.14039314085181235142390254832814034848",
+  "ownedCostPercentOfCashPlusCost": "90.08434350035873295363609049971932649885",
+  "basis": "exact remaining native lot quantity times acquisition price, sums exactly to ownedCost; no supplied CSV used",
+  "notLiquidationOrExpectedTerminalValue": true,
+  "doesNotMeasureJointElectionScenarioConcentration": true,
+  "isNotProfit": true,
+  "noAPIOrFinancialMutation": true
+}

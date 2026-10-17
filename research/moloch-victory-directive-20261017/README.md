@@ -6,12 +6,17 @@ audit of main 698969d5 is historical. Checked profitable-exit source 4bbeae46
 was published before receipt and installed at 04:39:58 UTC as worker 611948.
 At the initial installation observation it is restoring history, **not yet
 verified trading**. [Actual installation evidence](../moloch-profitable-exit-refresh-20261017/deployment/production-rollout-summary.json).
+The later [04:54:38UTC new-process proof](../moloch-profitable-exit-refresh-20261017/live-proof/live-verification.json)
+verifies healthy trading, unchanged original generations and 351 fills, with
+zero post-upgrade fill rows at that observation. No strategy benefit is claimed.
 
 The paper is research input. Its embedded file/search citation tokens are not
 accessible original sources. Its proposed mandates, schedules and allocation
 percentages do not themselves change production authority, limits or models.
 The referenced holdings CSV was not included with this attachment, so its
 60.2%/92.0% concentration calculations have not been independently reproduced.
+An independent current native-lot calculation below supplies a different,
+explicitly dated basis.
 
 ## Assessment against current evidence
 
@@ -56,6 +61,39 @@ Prospective data collection is also not absent. Existing first-available/source
 clocks and cohort evaluation need more useful coverage and qualified models.
 Repeating the first selected historical gaps or applying an arbitrary haircut
 does not fit or validate a catch-up model. No calibrated alpha is claimed.
+
+## New intake observations
+
+At the exact stopped sequence409030 /351-fill boundary, 24 remaining holdings
+sum to **85,976.565** actual native lot cost. The five largest contain
+**48,517.895 /56.4315%**; the ten largest **79,219.145 /92.1404%**.
+Owned cost is **90.0843%** of cash plus owned cost. These are independently
+computed from remaining lot quantities/prices, with exact equality to native
+ownedCost, not from the paper's unavailable CSV. The
+[original one-off audit](current-cost-audit-source.py) pins the sealed report
+and stopped boundary. This measures cost concentration, not current liquidation
+value, expected wealth, shared national-factor risk or calibrated joint loss.
+The [exact original result](current-cost-concentration.json) and
+[separate reproduction](reproduced-cost-concentration.json) retain source hashes.
+The same calculation was rerun against a privately retained original report
+and exactly reproduced every economic/source field; only observation time
+differs. Reproduction is offline and creates a new output:
+
+```text
+python current-cost-audit-source.py --input ORIGINAL_SEQUENCE409030_REPORT --boundary ORIGINAL_R20_BOUNDARY --output NEW_RESULT.json
+```
+
+A read-only 04:45:54UTC intake check found that the existing venue census
+completed04:17:26UTC with zero active/exhaustive relationships and zero known
+or unknown floor components. Graph discovery examined three roots and explicitly
+reports incomplete coverage. These observations do not prove the absence of
+semantic opportunities elsewhere. Across seventeen retained prospective-observer
+cohort statuses, none of their recorded PIDs is alive; these are historical finite
+cohorts, not evidence of an active continuous prospective study. That does not
+establish whether the independent Kalshi collector/cache is healthy. Original
+status/census hashes and observed times are retained separately from model results.
+See the [actual intake evidence](current-intake.json). Its observations predate
+the later new-worker trading verification and do not renew any source clocks.
 
 ## Independently checked primary rules
 
