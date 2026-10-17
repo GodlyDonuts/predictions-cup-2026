@@ -1333,7 +1333,12 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  };let _=atomic_json(&c.root.join("fundamental-actions.json"),&json!({"at":iso(now()),"exchangeId":ex,"result":comparison}));
  let mut yielded=Vec::new();let event=loop{
   let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};
-  if let Err(e)=plan.validate_current(bank,log,t,&f.authority,now()){if expected_fundamental_entry_denial(&e.to_string()){return fundamental_entry_deferred(c,ex,"current",&e.to_string())}return Err(e)}
+  let validation_at=now();
+  if let Err(e)=plan.validate_current(bank,log,t,&f.authority,validation_at){
+   let until=plan.valid_until_ms();
+   let _=atomic_json(&c.root.join("fundamental-entry-plan-validation.json"),&json!({"at":iso(validation_at),"exchangeId":ex,"stage":"current","reason":e.to_string(),"validationAtMs":validation_at,"validUntilMs":until,"freshnessRemainingMs":until.saturating_sub(validation_at),"expired":validation_at>=until,"mintedAt":plan.event()["receivedAt"],"physicalAttempted":false,"diagnosticOnly":true}));
+   if expected_fundamental_entry_denial(&e.to_string()){return fundamental_entry_deferred(c,ex,"current",&e.to_string())}return Err(e)
+  }
   let mut event=plan.event().clone();event["processedAt"]=json!(iso(now()));let mut preview=bank.engine().clone();
   match preview.advance(&event){Ok(())=>break event,Err("REVIEWED_ENTRY_FRESH_MARKET_CAP")if yielded.len()<3=>{
    if let Some(other)=retire_flat_draft_competitor(bank,log,&f.cohorts.managed_exchanges())?{yielded.push(other);continue}return fundamental_entry_deferred(c,ex,"native","REVIEWED_ENTRY_FRESH_MARKET_CAP_NO_PROVED_FLAT_DRAFT")
