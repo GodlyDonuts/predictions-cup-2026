@@ -1,0 +1,11 @@
+{
+  "requestPath": "/home/archon/apps/moloch/shared/fundamental-paper7-capital-expanded-20261017/owner-request-001.json",
+  "requestSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "exitCode": 0,
+  "logSha256": "ff51e59b6be0d1a81034f23f859d6720f779f581baeee1f91df0e286ff4ad2da",
+  "logBytes": 412,
+  "sourceWorkerPid": 592183,
+  "baseControlUnchanged": true,
+  "notExchangeOrderRetry": true,
+  "newScopeFreshPhysicalFactsEnforcedByOriginalWorker": true
+}

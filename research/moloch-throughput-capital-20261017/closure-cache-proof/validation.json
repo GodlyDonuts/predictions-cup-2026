@@ -1,0 +1,163 @@
+{
+  "sourceCommit": "e2115d1037d9276cbc4d5b4645bcb07434062d22",
+  "sourceManifestSha256": "ac6e94273068b6b09cdba6342a7eb07282f93573058e264f6365c65f38339792",
+  "sourceFiles": 262,
+  "expectedEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "productionChanged": false,
+  "startedAt": "2026-10-17T01:56:45.961870+00:00",
+  "checks": {
+    "sdk-library": {
+      "exitCode": 0,
+      "seconds": 25.253784310014453,
+      "logSha256": "1aa2d540ba66aefbe9aecd2bd1e04997d4c3417f867fb06ca21eaee472fcdf74",
+      "logBytes": 24978,
+      "testResults": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "native-library": {
+      "exitCode": 0,
+      "seconds": 18.354853102006018,
+      "logSha256": "143fd5dcd257e4bfbdf4aa977aa505dc15a6d65b7b039612fafa1e97561ec167",
+      "logBytes": 13220,
+      "testResults": [
+        [
+          "98",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "runtime-library": {
+      "exitCode": 0,
+      "seconds": 63.41671915902407,
+      "logSha256": "9c87278ac096ee8dc8eada618a18b2056ef0fa17633a5bdf54b6932bc8292561",
+      "logBytes": 36168,
+      "testResults": [
+        [
+          "237",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 56.412995841004886,
+      "logSha256": "0fd0a4b6112f82484eecd8dd9d8d62957970f0887b7fa8793f371627767cb12a",
+      "logBytes": 25572,
+      "testResults": [
+        [
+          "119",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_policy": {
+      "exitCode": 0,
+      "seconds": 68.56819115599501,
+      "logSha256": "a200612faddcef71aac8007bb8bfe63fe955367017363b997e5e7d4d4974a975",
+      "logBytes": 24272,
+      "testResults": [
+        [
+          "114",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_quantity": {
+      "exitCode": 0,
+      "seconds": 2.7532303189800587,
+      "logSha256": "a545a99d2796812d3a4a68d271ad03cd880466d5c33fae2a0b7732c48ba51a5e",
+      "logBytes": 11854,
+      "testResults": [
+        [
+          "2",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_source_bounds": {
+      "exitCode": 0,
+      "seconds": 17.36914332100423,
+      "logSha256": "235678d5c5836ad925233e2fde5dfd5b271449e4f62fcda4969da969d079ae1f",
+      "logBytes": 12244,
+      "testResults": [
+        [
+          "7",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "original-prefix-cache-benchmark": {
+      "exitCode": 0,
+      "seconds": 14.380401167989476,
+      "logSha256": "e34c40b7e663a5b6b7c3c1694f08a6568debedecc5e3fc8ddb639e642d3d5884",
+      "logBytes": 12466,
+      "testResults": [
+        [
+          "1",
+          "0",
+          "0",
+          "0",
+          "237"
+        ]
+      ]
+    },
+    "release": {
+      "exitCode": 0,
+      "seconds": 326.7840298850206,
+      "logSha256": "c87a13b594ad568384c2da2003628c2972762ac0382107e31f12f836dec26f44",
+      "logBytes": 188523
+    },
+    "engine-probe-build": {
+      "exitCode": 0,
+      "seconds": 1.6331865980173461,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0
+    },
+    "engine-probe-run": {
+      "exitCode": 0,
+      "seconds": 0.00818334097857587,
+      "logSha256": "c4e8b5d3dd2e0b12d6ff7e518738bc554659685d5b2c22d8c5a780e26b6a1779",
+      "logBytes": 65
+    }
+  },
+  "reusedChecks": {
+    "sdk-library": "All SDK and queue source bytes exact unchanged; actual R16 233-check raw log retained.",
+    "native-library": "All native source bytes exact unchanged; actual R16 98-check raw log retained. No new financial bridge."
+  },
+  "retainedHarnessFailure": {
+    "originalCheckpoint": "checkpoint-invalid-test-target.json",
+    "originalWorkerLog": "worker-invalid-test-target.log",
+    "reason": "worker tests are binary target, not integration-test target; no failed code assertion"
+  },
+  "engineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "binarySha256": "1fd058fb6e503cd6a68931486f18d5e32de6757fac16d517f72ab34b41f0b125",
+  "binaryBytes": 13814248,
+  "nativeRlib": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libmoloch_replay-984cb748742b2b4a.rlib",
+  "nativeRlibSha256": "bbc16810b0bd4467bb96ede0776bf8a0b3e1806c0dfa3bcbb87648ec557e6ca9",
+  "finishedAt": "2026-10-17T02:06:52.709049+00:00"
+}

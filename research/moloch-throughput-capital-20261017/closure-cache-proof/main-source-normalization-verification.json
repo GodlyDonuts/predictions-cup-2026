@@ -1,0 +1,11 @@
+{
+  "actualBuildSourceCommit": "e2115d1037d9276cbc4d5b4645bcb07434062d22",
+  "mainSourceCommit": "e2115d1037d9276cbc4d5b4645bcb07434062d22",
+  "sourceFiles": 262,
+  "sourceArchiveSha256": "78aa50b857329be27195648c1907a4bad0d8ee42ebc5f013ce5e79e36af3563e",
+  "allFilesExactOrCrlfOnly": true,
+  "counts": {
+    "exact": 64,
+    "crlfOnly": 198
+  }
+}

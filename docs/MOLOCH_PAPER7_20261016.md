@@ -1,3 +1,46 @@
+# October17,02:10UTC — closure cache checked; replacement release pending
+
+The verified-closure cache sourcee2115d10 passed811 checks, including retained
+unchanged SDK/native checks, and an optimized ARM64 release. Original8,597,641
+byte prefix verification returned identical records: test-build cold5,838.69ms,
+warm1,218.56ms with full-file hashing. This is a component benchmark, not actual
+order latency. The worker-only exact-expiry diagnosticf21c8b5f separately passed
+119 checks; its final optimized replacement is still building. **Neither cache
+binary is deployed**; current592183 continues trading. [Raw cache build/source evidence](../research/moloch-throughput-capital-20261017/closure-cache-proof/validation.json).
+
+# October17,01:51UTC — trading verified; larger eleven-market allocation active
+
+Sole worker **592183**, source7c11cd1c (main source4b5dcfd6), binaryfb303ba7,
+native7a74f8c3, has passed the mandatory original-bank startup validation and
+resumed actual trading. All14 financial bridges and the four original model
+generation records remain intact. Healthy realtime and no active STOP were
+verified. The larger eleven-review generation **b27c4699 is active**: existing
+V2 principal budgets are10,000 except Nevada3,000; cumulative quantity is1m,
+with at most16 separately closed ACK-backed entries and10,000 per order.
+New Tennessee1051 NO and California851 NO passed the continuing worker's
+fresh flatness/account checks. Existing SC979/WI1004 remain withheld.
+
+The exact ledger has **283 official fill rows**, cash**48,061.58**, owned cost
+**47,382.105**, and combined attributed realized**−136.23**. The native upgrade
+has produced another10,000 Alaska YES shares for3,113.77 principal across18
+official rows. Since the earlier speed upgrade, five filled BUY orders total
+38,885 shares/42 rows/**22,701.27 principal**. These open positions have not
+realized profit; whole-account or leaderboard P&L is not verified here.
+
+Repeat purchases still defer with `FUNDAMENTAL_ENTRY_PLAN_CHANGED`. One actual
+preparation took5.606s with a10s book-age limit; repeated full closure-journal
+parsing appears to consume the window. A bounded verified-row cache is under
+ARM64 validation, **not deployed**. Every cache hit still hashes original
+bytes; fresh account, book, lifecycle, native and funding checks remain.
+The latest single order trace is8,498ms from first preflight to applied ACK,
+with538ms policy/risk and101ms intent recording. This is not a controlled
+speed gain or maximum sustained rate. Current read/write pacing is unchanged.
+
+Actual hot-reload logs, derived ledger/fill aggregates, original receipt hashes,
+generation records and artifact checksums are in [the frozen live proof](../research/moloch-throughput-capital-20261017/native-upgrade-live-proof/live-capital-verification.json). Original probabilities,
+source clocks, deadlines, full capital allocation and daily windows are
+preserved; the model probabilities remain uncalibrated assumptions.
+
 # October17,01:34UTC — native upgrade installed, startup validation pending
 
 Current sole592183/source7c11cd1c/binaryfb303ba7/native7a74f8c3 is restoring the

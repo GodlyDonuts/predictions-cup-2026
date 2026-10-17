@@ -1,0 +1,34 @@
+{
+  "at": "2026-10-17T01:07:20.782639+00:00",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "sourceCommitOfActualTypedValidator": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "validatorRawSha256": "c65f479f54b05359effd9ed2ec9470fa12f3072f008f5d391e642adbb42dc6a7",
+  "sourceClocksUnchanged": true,
+  "canonicalReviewSha256": {
+    "1042": "08184c725897810271f3278e60043cf3f3ffc58c409aa1fe2647daa96295d6d9",
+    "1068": "d4d74cacf8e72b90ea4243fbec38dc45c152368a01cb81a52f2132b43406fab6",
+    "966": "ef3f52ca40fc7370edee3d77e5aa962956d63783274d778ce8d4862aa9cda473",
+    "977": "b32de5206f69525b6c63a371b99b31356634a4ff252ce61e96b7529588ca79aa",
+    "1067": "8a334562126ea3e76478edae56c4f321b6d5697c6fa0342b733d8f0f028b1a92",
+    "865": "3e51b025da7116c5ea1b6d86836c82ba41f59fe7036d05251126beed1b16399a",
+    "872": "2c7f70c5a3769fd61fde04279479c6c1749637bd5ccded61dfc2c87bc69e365d",
+    "993": "1c5d6925413733b78bb89c9e3ebedaf51c78dfd6648ce603209b958c25c776d9",
+    "885": "2f9f4fbab2ab257e93ad7c13e64027181fe5835947997a7f2516fa66e7c4a0c7",
+    "1051": "779d29538e097d25a88ed5f20f5e7ef08d1811c2e94f91148b6b1ab372342545",
+    "851": "6ca9fe65f4c808115be7b67d8eb65f32cb484ce28f02bf030f438535ac6460ab"
+  },
+  "newSelectedScopes": [
+    "1051",
+    "851"
+  ],
+  "withheldExistingScope": "979",
+  "prospectivePrincipalLimitsAreNotCurrentSpendOrProfit": true,
+  "settingsRawSha256": "4f0212bd1bfc31f9cc2789ec358b540788e07983e95e5ef0deb501d868546ee2",
+  "genuineVerificationExitCodes": [
+    0,
+    0
+  ],
+  "runtimeActivated": false,
+  "requiresActualNewNative": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "freshPhysicalNewScopeEligibilityStillRequired": true
+}

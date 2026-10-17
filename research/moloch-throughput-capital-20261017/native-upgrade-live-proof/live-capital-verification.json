@@ -1,0 +1,350 @@
+{
+  "observedAt": "2026-10-17T01:51:31.420451+00:00",
+  "sourceCommit": "7c11cd1c49579deb71ab98afe77114ccc6798f12",
+  "binarySha256": "fb303ba7dabebe991e20983d1e289c779deea45869d27e77cdd69383d9711b5f",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "actualWorkerPid": 592183,
+  "actualRelease": "/home/archon/apps/moloch/releases/throughput-capital-fb303ba7dabe/moloch-live-runtime",
+  "freshTradingVerified": true,
+  "realtimeHealthy": true,
+  "activeStopExists": false,
+  "finalStoppedPrefixParityVerifiedByActualNativeStartup": true,
+  "finalStoppedPrefixSequence": 370275,
+  "proofOfStartupReturn": "actual pinned worker reached new-PID trading progress/channel after Session::open_live mandatory full14-prefix checks",
+  "financialBridgeEntries": 14,
+  "originalThirteenBridgeEntriesUnchanged": true,
+  "originalTwoGenerationRawRowsAndMetadataUnchanged": true,
+  "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "allGenerations": [
+    {
+      "sequence": 20,
+      "rowRawSha256": "53eb96c069f03fcf584ac5467e9b88c6fc62fc293a8cb38f04a06e7a0f43e1fe",
+      "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+      "allExchangeIds": [
+        "1042",
+        "1068",
+        "966",
+        "977",
+        "1067",
+        "865",
+        "872",
+        "993",
+        "885"
+      ]
+    },
+    {
+      "sequence": 26,
+      "rowRawSha256": "c2b33f6b868e7699e90eab069704830328bdd34a47ce57c96d5d838e7caaab82",
+      "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1",
+      "allExchangeIds": [
+        "1042",
+        "1068",
+        "966",
+        "977",
+        "1067",
+        "865",
+        "872",
+        "993",
+        "885"
+      ]
+    },
+    {
+      "sequence": 30,
+      "rowRawSha256": "16c02f0c0f6985945499974014b78283e747a0431a266a579f31c1a107941026",
+      "generationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31",
+      "allExchangeIds": [
+        "1042",
+        "1068",
+        "966",
+        "977",
+        "1067",
+        "865",
+        "872",
+        "993",
+        "885"
+      ]
+    },
+    {
+      "sequence": 32,
+      "rowRawSha256": "04c3c402f2901713c13a3259ca2301d578d69090a5a4e4bba5f2ab3fe4b4364d",
+      "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+      "allExchangeIds": [
+        "1042",
+        "1068",
+        "966",
+        "977",
+        "1067",
+        "865",
+        "872",
+        "993",
+        "885",
+        "1051",
+        "851"
+      ]
+    }
+  ],
+  "managedReviewCount": 11,
+  "baseFinancialControlSha256": "3aa9027834c0ca6c25568507a1baa26b4866da60d169feb0ff0c4c25a856f33b",
+  "baseFinancialControlUnchangedByHotReload": true,
+  "progress": {
+    "actualFills": 283,
+    "actualOrders": 1409,
+    "at": "2026-10-17T01:51:20.460Z",
+    "completedReadScopes": 22,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 592183,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 40,
+    "terminalOrders": 1405
+  },
+  "financialReportSequence": 372487,
+  "financialReportEnvelopeSha256": "058730dfa93c2a5e0cd90137738d8516d6d57cd9c28af38cc47ba94e0b43ca6d",
+  "cash": "48061.580000",
+  "ownedCost": "47382.105000",
+  "reservedCashIncludesDrafts": "2717.970000",
+  "realized": "-136.230000",
+  "newTradingRealized": "-181.360000",
+  "inheritedRealizedGross": "45.130000",
+  "actualFillRows": 283,
+  "newOfficialFillRowsSinceNativeUpgrade": 18,
+  "newLogicalFillGroupsSinceNativeUpgrade": [
+    {
+      "qid": 11190,
+      "exchangeId": "1067",
+      "marketId": "378",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 10000,
+      "principal": "3113.770000",
+      "fees": "0.000000",
+      "officialFillRows": 18,
+      "receiptSha256": [
+        "0d4c16c556aee52cb09f799afd305ee87b9b09c6ee0279095c49875160002899"
+      ],
+      "firstExecutedAt": "2026-10-17T01:43:22.002Z"
+    }
+  ],
+  "newAcquisitionsNotRealizedProfit": true,
+  "profitabilityEstablished": false,
+  "wholeAccountOrRankProfitVerified": false,
+  "capitalReviewModels": [
+    {
+      "exchangeId": "1042",
+      "side": "YES",
+      "version": 1,
+      "maximumPrincipal": "400.000000",
+      "maximumQuantity": 10000,
+      "sameSideTopUps": null,
+      "reviewedAtMs": 1792197507308,
+      "expiresAtMs": 1792277480939,
+      "holdUntilMs": 1792429200000,
+      "valuationObjective": null
+    },
+    {
+      "exchangeId": "1068",
+      "side": "YES",
+      "version": 1,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 10000,
+      "sameSideTopUps": null,
+      "reviewedAtMs": 1792197507308,
+      "expiresAtMs": 1792277483996,
+      "holdUntilMs": 1792429200000,
+      "valuationObjective": null
+    },
+    {
+      "exchangeId": "966",
+      "side": "YES",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792277486285,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "1d91331b147ffb78e759f7555ebf971f71077caf866558ca7e4d11ae8228012f",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "977",
+      "side": "NO",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792240623505,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "1067",
+      "side": "YES",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792263776239,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "38ad364b1d91ae1825a38e3e8c135ba49d2a79554fd46210e835772ef40b19c0",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "865",
+      "side": "YES",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792249441431,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "fc46cb639d50b0714af5bc8af7e48271ee6e98ae4565f55d830a6171272cf499",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "872",
+      "side": "YES",
+      "version": 2,
+      "maximumPrincipal": "3000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792261417746,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "13b18d2b206b4deed547ef4694dd5d261594c0de21889f0f9189d2cc565366eb",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "993",
+      "side": "YES",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792277473090,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "feb9412053603d24db5e8004a926f991a33512b910d9e33b57b9a628c58a368d",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "885",
+      "side": "YES",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792277478506,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "b62aa0be1caf88b6fc49fad807ef60462fb6c8e5e26ce21d9e0547cb596209d2",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "1051",
+      "side": "NO",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792277488460,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "98ef4baf78679e3d711f54c8dae8e86c16760c5d76f6b415728b8880ea53557b",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    },
+    {
+      "exchangeId": "851",
+      "side": "NO",
+      "version": 2,
+      "maximumPrincipal": "10000.000000",
+      "maximumQuantity": 1000000,
+      "sameSideTopUps": {
+        "version": 1,
+        "maximumEntries": 16
+      },
+      "reviewedAtMs": 1792198512182,
+      "expiresAtMs": 1792277470747,
+      "holdUntilMs": 1793811600000,
+      "valuationObjective": {
+        "kind": "terminalSettlement",
+        "timingSourceSha256": "aeb09a9fe3ae3cb469759fd70af8bdbfb5a5ea77d444793c4f27177c1446d9c6",
+        "timingJsonPointer": "/data/root/settlement_date",
+        "scheduledSettlementAtMs": 1793811600000,
+        "delayPolicy": "holdForActualSettlement"
+      }
+    }
+  ],
+  "perOrderQuantityLimitUnchanged": 10000,
+  "oneSerializedAccountWorker": true,
+  "oldQid10701StillRetiredZeroFill": true
+}

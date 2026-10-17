@@ -1,0 +1,11 @@
+{
+  "requestPath": "/home/archon/apps/moloch/shared/fundamental-paper7-capital-nine-20261017/owner-request-001.json",
+  "requestSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31",
+  "exitCode": 0,
+  "logSha256": "46aed408f8a99de1f2d667b76a1e0f1def4a8db3578d5ace2e29a2c42e5440ad",
+  "logBytes": 412,
+  "sourceWorkerPid": 592183,
+  "baseControlUnchanged": true,
+  "notExchangeOrderRetry": true,
+  "newScopeFreshPhysicalFactsEnforcedByOriginalWorker": true
+}

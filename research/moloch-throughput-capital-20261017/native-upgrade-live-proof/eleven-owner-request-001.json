@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "workerPid": 592183,
+  "workerStartTicks": 17029432,
+  "ownerLease": {
+    "bytes": 44,
+    "device": 66305,
+    "inode": 12355017,
+    "schemaVersion": 1
+  },
+  "baseControlSha256": "3aa9027834c0ca6c25568507a1baa26b4866da60d169feb0ff0c4c25a856f33b",
+  "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+  "runId": "moloch-live-20261015-v1",
+  "previousGenerationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31",
+  "requestId": "paper7-capital-eleven-20261017-004",
+  "controlPath": "/home/archon/apps/moloch/shared/fundamental-paper7-capital-expanded-20261017/next-control-root-reviewed.json",
+  "controlSha256": "5478dab3b905ad1ea75cff6fa1e9c4a59ab646bc9e85be5d4a5872f96499036a",
+  "issuedAtMs": 1792201412095,
+  "expiresAtMs": 1792201472095
+}
