@@ -1,0 +1,23 @@
+{
+  "rootReviewed": true,
+  "at": "2026-10-17T05:43:17.358000+00:00",
+  "sourceCommit": "b796e2c1ddb219ebd36cff97428db99a8de780ed",
+  "binarySha256": "70f16b21b4fc19a4f575042eb1e0e64f1f5c89061c1c0626a46e8f981871f9a1",
+  "operatorSha256": "4bacd51d53453f79c77fa910a246683e848f4d245224a8ccf583bc7951922d4f",
+  "stagingSha256": "b3af9122a4d87e7a7ffb78f0e7a791376d0ac209a4e77241be8960a192ff5b02",
+  "rootIndependentLocalGitComparison": {
+    "sourceCommit": "b796e2c1ddb219ebd36cff97428db99a8de780ed",
+    "count": 262,
+    "exact": 68,
+    "CRLFOnly": 194,
+    "mismatches": 0
+  },
+  "actualPassCount": 850,
+  "actualCurrentPid": 611948,
+  "originalBridgeEntries": 14,
+  "originalGenerations": 4,
+  "typedSettingsAndSources": 11,
+  "noModelRateRiskClockOrActivationRenewal": true,
+  "productionChangedByReview": false,
+  "sourceManifestSha256": "4fef066f53a2787089d740fe5c5a0c29d84e18e7a2ff4b7fc3e7fd7643afe854"
+}

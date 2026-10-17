@@ -1,5 +1,7 @@
 # Moloch: current research handoff
 
+Latest05:45UTC: **R21 sole616815/sourceb796e2c1/binary70f16b21 installed, restoring; fresh trading not yet verified.** [Actual controlled installation](../research/moloch-profitable-preparation-20261017/deployment/README.md). Exact420144/352 boundary/cash9,274.510/owned86,165.565/realized−139.840; all14 bridge bytes/four original generations/eleven policies preserved. No source/model/rate/risk/activation renewal. Prior dated observations remain historical.
+
 **Updated October 17: R20 verified trading 04:54:38 UTC /351 fills; zero post-upgrade fills at that proof. Independent FIFO audit 396960 /338 fills.** Older dated reports retain their original status. No paper is declared fully implemented.
 
 Newest research: [Victory Directive and evidence-to-code map](../research/moloch-victory-directive-20261017/README.md). Original paper is preserved exactly. Its main698969d5 audit predates the checked profitable-exit release.

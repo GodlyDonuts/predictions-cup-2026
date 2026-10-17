@@ -1,5 +1,7 @@
 # Moloch — official production bot
 
+Latest05:45UTC: **R21 sole616815/sourceb796e2c1/binary70f16b21 installed, restoring; fresh trading not yet verified.** [Actual controlled installation](research/moloch-profitable-preparation-20261017/deployment/README.md). Exact420144/352 boundary/cash9,274.510/owned86,165.565/realized−139.840; all14 bridge bytes/four original generations/eleven policies preserved. No source/model/rate/risk/activation renewal. Prior dated observations remain historical.
+
 New05:42UTC: [profit preparationb796e2c1](research/moloch-profitable-preparation-20261017/build-proof/README.md) checked850/release, not yet deployed; R20 remains active. [New prospective data/results](research/moloch-victory-directive-20261017/prospective-v2/README.md):17,349 decisions/23,697 labels, zero after-cost selected trades; no alpha/model approval.
 
 Newest paper: [Victory Directive, current-code map and evidence requirements](research/moloch-victory-directive-20261017/README.md).

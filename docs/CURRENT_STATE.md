@@ -1,3 +1,9 @@
+# October17,05:45UTC — R21 profit preparation installed; restoring
+
+Existing service started sole616815/sourceb796e2c1/binary70f16b21/native7a74f8c3 at05:45:02.709UTC. Actual PID/executable/release and control66707270 verified. **Ledger restoring; fresh new-process trading not yet verified.** Old611948 progress is not assigned to616815. [Actual installation proof](../research/moloch-profitable-preparation-20261017/deployment/README.md).
+
+The quiet exact420144 boundary preserves352 official rows/cash9,274.510/owned86,165.565/combined realized−139.840, all14 bridge bytes/four original generations/eleven policies. Zero unknown acceptances/no active request/manualReviewfalse. Root separately approved exact stopped hashes; existing lifecycle unchanged. Only binary binding changed, with850 source-bound checks/release/probe and root262-file comparison. No forecast/source-clock/rate/risk/activation renewal or new collector. New-process trading and any exit/profit benefit require later evidence.
+
 # October17,05:42UTC — profit preparation checked; production remains R20
 
 Candidateb796e2c1/binary70f16b21 passes850 checks/optimized ARM64 release/unchanged native probe. All262 actual source files independently matchGit exactly or byCRLF; eleven settings/four original generations verified. One real early book and bounded native-gap wait/tick precede the unchanged final seven receipts. **Checked, not deployed**; sole611948 remains R20 and was trading/realtimeHealthy at05:40:03UTC. Ledger then352 fills/cash9,274.510/owned86,165.565/combined realized−139.840. [Build proof](../research/moloch-profitable-preparation-20261017/build-proof/README.md).

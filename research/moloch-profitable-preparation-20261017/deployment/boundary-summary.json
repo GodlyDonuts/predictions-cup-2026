@@ -1,0 +1,44 @@
+{
+  "cash": "9274.510000",
+  "ownedCost": "86165.565000",
+  "reservedCash": "3248.365000",
+  "newTradingRealized": "-184.970000",
+  "inheritedRealizedGross": "45.130000",
+  "derivedAggregateOnly": true,
+  "originalPrivateBoundarySha256": "4e552766409c142c0612317bae39fcad2ee4f5bc6d9f77b3da366250835203e0",
+  "operator": "moloch-profitable-preparation-20261017-r21",
+  "at": "2026-10-17T05:43:59.605136+00:00",
+  "stagingSha256": "b3af9122a4d87e7a7ffb78f0e7a791376d0ac209a4e77241be8960a192ff5b02",
+  "requestSha256": "f9e35d2a99a6a75bf9208e2d53e8f0470be550e19ea7d1d1364d57b3f4b7e7de",
+  "stopSha256": "9eedfb51fd392c4b1e21f4a27725c8d736f191e498499207d60c57d4df01489e",
+  "workerStatusSha256": "34d86c377a38cb8f419eadc61306135b22fa4f937d8587a3dafffa0d1f14180c",
+  "stoppedFinancialHead": {
+    "hash": "0a85dc4021c9cf5f0de7be5f1fac399542d1d77011ad3c9b7d4b3b19413bf338",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "77126d816dfa248110a321317a4efb65b0382f5409e45cb924d2fe68645fb22a",
+    "sequence": 420144
+  },
+  "financialJournalBytes": 1342544379,
+  "financialJournalSha256": "3920821c626583f1a6b87fcd5cfce29be8bd9b6e3fc14b7dab838b089528fa56",
+  "financialReportSha256": "61e441c445f1af6e4b1d446e9cdab396899c150d8bdff18780b5150c3ef4a4ac",
+  "officialFillRows": 352,
+  "combinedAttributedRealized": "-139.840000",
+  "dispatch": {
+    "sequence": 19425,
+    "hash": "5f95c60c632e958908546b097012c1f5000611729a49dccb40746f8864213cb8",
+    "acknowledged": 1492,
+    "provedAborted": {
+      "3411": "c9c4bb4bade0edf0f52f1ae5d41d93f4518770f99844578f8a3a319a75d94de7",
+      "10701": "0f8e3dead33ceabb887af2ac321a2e295c83d7cf2e1d16eb70e62882b168f41c"
+    },
+    "unknownOrdinaryAttempts": 0
+  },
+  "queueQuiet": {
+    "globalUnknownCount": 0,
+    "active": null,
+    "manualReview": false
+  },
+  "allFinancialHistoryAnd14BridgeBytesPreserved": true,
+  "original4ModelGenerationsPreserved": true,
+  "privateRawAccountAndStatusOmitted": true
+}

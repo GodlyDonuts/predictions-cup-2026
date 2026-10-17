@@ -1,0 +1,15 @@
+{
+  ".gitattributes": "ffe82f3c5b968ed009c2577fa38f32c83be167799ee565d40a18e3440c57b342",
+  "auxiliary-validation.json": "527a19c87e9118599f43908e6c0ca12fbfe98d75d916fd1524bf46dc6af55b2a",
+  "boundary-summary.json": "cfc0367a9428e3e928a6cf3473979bf2af9be5ced78f29c4be31f7498487a46a",
+  "initial-restoring-health.json": "4668049ade987b5606b79f97fe187007a15f71c1b9112d5f0b182655423b9d68",
+  "operator-freeze.json": "84def26401abb69f8588dca8a17b5b7ab7ee6ae4b6a26a14ab0da9cdae51a2fe",
+  "operator.py": "4bacd51d53453f79c77fa910a246683e848f4d245224a8ccf583bc7951922d4f",
+  "production-rollout-summary.json": "2e3115c41da26c47218ff0c0e3b3f50c3d1397959aa212e875f219e95bf9922a",
+  "README.md": "c77f5aaf75c4a89b31d91847270790e842b03dfad780029627479c342384c82e",
+  "root-approval.json": "9a628d0b82f4bbee3389d048f4d1cadd8b0c683d594ed902e22488eb1e7dfc39",
+  "root-independent-prestop-review.json": "b6a989103ef17905e7e7dd79185ab177da944fe348e38706770537470f022670",
+  "staging.json": "b3af9122a4d87e7a7ffb78f0e7a791376d0ac209a4e77241be8960a192ff5b02",
+  "typed-settings-verification.log": "8c25c4a85ed29b669bc38adbce2a371b8d3a12426f21f8dad2a2c5cb5cad5e81",
+  "typed-source-verification.log": "ea8ca5268c803906d86ffcecf9303d6cfa0cb3a2e015105add6f9623b55d99b3"
+}
