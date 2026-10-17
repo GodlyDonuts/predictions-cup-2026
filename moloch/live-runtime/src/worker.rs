@@ -2311,7 +2311,7 @@ pub fn main()->Result<()>{
   let(hints,_)=prepare_expired_exit_hints(&[age,profit],20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||Ok(false),|_,u|Ok(hint_safety(u))).unwrap();assert_eq!(hints.len(),2);assert_eq!(hints["1012:NO:sell"].1.kind(),moloch_live_runtime::exit_refresh::ReadKind::MaximumAge);
  }
  #[test]fn covered_profit_preempts_speculation_but_never_a_risk_exit_even_out_of_order(){
-  let entries=vec![entry("966")];let profit_keys=vec!["948:NO:sell:profit".into()];
+  let entries=vec![fundamental::EntryHint{exchange_id:"966".into(),market_id:"277".into(),contract_id:"278".into(),side:"YES".into(),review_sha256:"a".repeat(64)}];let profit_keys=vec!["948:NO:sell:profit".into()];
   let covered=[4usize].into();let physical=vec![("948:NO:sell".into(),4,false),("999:YES:sell".into(),5,true)];
   assert_eq!(shared_preflight_with_profit(&[],&entries,&profit_keys,&physical,&covered,None).unwrap().0,SharedPreflight::Physical(5));
   assert_eq!(shared_preflight_with_profit(&[],&entries,&profit_keys,&physical[..1],&covered,None).unwrap().0,SharedPreflight::Physical(4));
