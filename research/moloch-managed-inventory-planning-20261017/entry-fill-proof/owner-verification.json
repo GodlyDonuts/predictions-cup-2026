@@ -1,0 +1,20 @@
+{
+  "verifiedBy": "Rhaegal/Viserion-paper6-20261016 root",
+  "originalPacketSha256": "debe20bcfdec11ce5734dcce963f6e8af764650ba280b13e22f77e6da9beb644",
+  "originalPacketFilesVerified": 10,
+  "fullOriginalDispatchPrefixRawSha256": "a1dfa0949fb8924e538c591000b40b4cfb6f37650771888cd3261410d5c828c7",
+  "dispatchPrefix": {
+    "rows": 20456,
+    "lastSequence": 20456,
+    "lastHash": "a528212c5eba856b9970a6b66ee5e836bb4b2d033ad68b40007d6d60dc827f7e",
+    "completeChain": true
+  },
+  "verifierSourceSha256": "bed345b754529048b4044830a5c2e3323e9a1401e516a03da536a930c29c27f1",
+  "allNewFillIdsQuantityPriceSideClocksMatchActualCompleteScopedTapes": true,
+  "ackTerminalAndNativeAdmittedQuantityAgree": true,
+  "allPrior362NativeFillRowsUnchanged": true,
+  "exactDecimalCashAndOwnedCostDeltasMatchActualNewPurchases": true,
+  "typedRustReceiptDigestReimplementationClaimed": false,
+  "rawAccountPacketRetainedPrivately": true,
+  "modelOrRuntimeOrAccountChangesByThisAudit": false
+}

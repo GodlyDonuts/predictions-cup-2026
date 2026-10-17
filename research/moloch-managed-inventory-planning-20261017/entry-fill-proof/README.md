@@ -1,0 +1,7 @@
+# Actual R22 purchase fills
+
+After the actual new process resumed, it completed two genuine reviewed same-side top-ups:1051NO1,602shares for1,385.730 at07:42:31UTC, then1067YES9,529shares for3,122.440 at07:43:40UTC. Total11,131shares/4,508.170 principal/zero fees across nine official fill rows. These are real bounded-limit marketable purchases, not passive maker calibration or realized profit.
+
+Root independently downloaded the original private packet, verified every file hash and the full original dispatch hash-chain prefix. Each original POST ACK, actual terminal order and complete scoped fill tape agrees with every native fill ID/quantity/price/side/execution clock. All original362rows remain unchanged; exact-decimal cash and owned-cost changes reconcile. The existing checked owned-fill auditor supplies the same strict receipt/tape checks; raw JSON file SHA256 is kept distinct from Rust's typed Receipt digest.
+
+The371-fill report has3,598.085 cash/91,859.805 owned cost, about96.2307% allocated by cash plus recorded cost. Combined attributed realized remains−122.025 (new−184.970/inherited+62.945). This is capital deployment, not whole-account NAV, profit, rank or proof of causal latency improvement. The original11 reviewed CTM/operator assumptions and deadlines are unchanged. Existing sole636242 is trading with healthy realtime; the audit made no API call or runtime change.

@@ -1,5 +1,8 @@
 # Moloch — official production bot
 
+October17,07:45UTC: **two actual post-R22 orders verified:11,131shares/4,508.170 principal/zero fees across nine official fill rows.** Reviewed same-side top-ups1051NO1,602shares and1067YES9,529shares match original ACKs, terminal orders and complete scoped tapes. Ledger371fills/cash3,598.085/owned91,859.805 (**96.2307% recorded-cost allocation**); realized−122.025 unchanged. [Actual fill proof](research/moloch-managed-inventory-planning-20261017/entry-fill-proof/README.md). These are purchases, not realized profit or proof of passive maker quality. Original362fillrows and four generations/eleven policies preserved; sole636242 remains executing. Earlier zero-post-upgrade-fill proof below is historical.
+
+
 October17,07:41UTC: **R22/source55fc4533/binary34fbc560/native5b61d3cb, sole636242 verified trading/realtimeHealthy/noSTOP.** Actual new-process PID/executable/progress/model channel agree; original four generations/eleven policies/fifteen bridge bytes and final437096/362-fill prefix restored. Ledger437378:362 fills/cash8,106.255/owned87,351.635/realized−122.025 (new−184.970/inherited+62.945), zero post-upgrade fills at this proof. [Actual fresh-process evidence](research/moloch-managed-inventory-planning-20261017/live-proof/README.md). Managed generic age churn is suppressed while genuine reviewed original-entry/top-up exits preserve current value/deadline/revocation and physical liabilities. Causal latency/profit benefit remains unverified. Ordinary spread active/empirical makerOFF; collateralOFF/no trusted package certificates. Infrastructure deferred unless essential.
 
 
