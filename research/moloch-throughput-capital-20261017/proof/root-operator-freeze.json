@@ -1,0 +1,114 @@
+{
+  "at": "2026-10-17T00:30:55.703710+00:00",
+  "executionOwnerReviewed": true,
+  "sourceDraftSha256": "f26a51519e8a046110a786c2bc42e6eee8464c65c2ff529781c76607c2d48c3e",
+  "operatorSha256": "a46ac46a1004e7cd0e09e9ac06a29fef0f1821a17accffbcce272cea0f498000",
+  "pins": {
+    "SOURCE": "027abb60eef2c1c5e03f077b9eb9d0778aa53b9b",
+    "VALIDATION_SHA": "84dcef2f1f716814dbd8eb13b3b0cfa3dbd4665015c988140e9de715a01d51d6",
+    "PRIOR_SHA": "889c0a47f311c71bfa3e18830c4f706761579fcf6eaef528664550afd4b2a0b8",
+    "PRIOR_STAGE_PATH": "/tmp/moloch-paper7-generation-recovered-10701-r4-staging.json",
+    "PRIOR_STAGE_SHA": "3e9fda7c83bb64d0127f68351216cc3bf4b4935bedbd0259f56061a8eb52d67a",
+    "REVIEW_BUNDLE_SHA": "7e781ecaf7c57f5f1fd10aeb4f29382d80dbef145e563f14ce2bfceacc00aec8",
+    "EXPECTED_TEST_RESULTS": {
+      "native-library": [
+        [
+          "90",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "sdk-library": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "runtime-library": [
+        [
+          "230",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "worker": [
+        [
+          "119",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "order_snapshot": [
+        [
+          "6",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "quote_priority": [
+        [
+          "15",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "maker_policy": [
+        [
+          "33",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "execution_distribution": [
+        [
+          "25",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_acquisition": [
+        [
+          "10",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_policy": [
+        [
+          "111",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "release": null,
+      "engine-probe-build": null,
+      "engine-probe-run": null
+    },
+    "GENERATION_SHA": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+    "ACTIVE_OVERLAY_SHA": "32be077587d31069734e13cb1b834a60b625cad6781c00b0ff2851f5cf8985a0",
+    "ORIGINAL_REQUEST_SHA": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68"
+  },
+  "onlyBinaryChangesRelativeToOriginalActiveOverlay": true,
+  "modesExecuted": false
+}

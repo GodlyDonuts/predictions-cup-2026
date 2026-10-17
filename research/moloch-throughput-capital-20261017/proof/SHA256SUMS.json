@@ -1,0 +1,66 @@
+{
+  "validation.json": {
+    "sha256": "84dcef2f1f716814dbd8eb13b3b0cfa3dbd4665015c988140e9de715a01d51d6",
+    "bytes": 5663
+  },
+  "integrated-source-manifest.json": {
+    "sha256": "adc4b52f97ae74882e83cddc2324792e42d5c0eabe9a0cf62a6bcbfe1c291214",
+    "bytes": 31625
+  },
+  "root-operator-freeze.json": {
+    "sha256": "d06fd1d1105a31898c677f40a6ad020aed55a2a19db91c9d3b869cf067ddfe9f",
+    "bytes": 2586
+  },
+  "native-library.log": {
+    "sha256": "dc1cd687e48abfb3109e86246fb035e2a3a1f6bb37303b7c4ec336c9ad7fa14a",
+    "bytes": 12267
+  },
+  "sdk-library.log": {
+    "sha256": "1aa2d540ba66aefbe9aecd2bd1e04997d4c3417f867fb06ca21eaee472fcdf74",
+    "bytes": 24978
+  },
+  "runtime-library.log": {
+    "sha256": "cc97c6f2a2d70744329f993e38d26f905ac3fcbf0c65bc79ce44763f642d01d2",
+    "bytes": 34661
+  },
+  "worker.log": {
+    "sha256": "0f425a3e388159a0a3e7149f11f0e8a086c772424bb3ad1c197c34a48267eb34",
+    "bytes": 25195
+  },
+  "order_snapshot.log": {
+    "sha256": "2ff6eeb1c2fa6ba69986bc85fa594a4873ad71530f4e1ca7e86d40674a298e7f",
+    "bytes": 12145
+  },
+  "quote_priority.log": {
+    "sha256": "96fc33ff3f37d42d06191d8b715f6d98725e0047bdb71e42073bc85aaad49771",
+    "bytes": 12478
+  },
+  "maker_policy.log": {
+    "sha256": "11ae4d1c0f14705976a183bc71e841eb17359edbf02319c2c48d2a5a045bffec",
+    "bytes": 13856
+  },
+  "execution_distribution.log": {
+    "sha256": "5d1d96f143eaaeb61cff2e0ebc2d059b549ff532503dfb2be5e2bb60149feba9",
+    "bytes": 13506
+  },
+  "fundamental_acquisition.log": {
+    "sha256": "995ef5ab85e4e33e75e7bb1163372a70a4dd3abe61e9dcbd4d3d7038819e0b66",
+    "bytes": 12525
+  },
+  "fundamental_policy.log": {
+    "sha256": "98052e90250b203300820a067f1e706504a2ca3beb7701ac96e4c879276a7209",
+    "bytes": 23458
+  },
+  "release.log": {
+    "sha256": "10d84c04049d64dae269a2c5bdc44aa671933f83da2b5a0b1198347f8078bc68",
+    "bytes": 188247
+  },
+  "engine-probe-build.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "engine-probe-run.log": {
+    "sha256": "80f79583bc1ba42e61d5826b6f17a05bfd04f0a9a42eaef7c51fa56b48b5f2ca",
+    "bytes": 65
+  }
+}
