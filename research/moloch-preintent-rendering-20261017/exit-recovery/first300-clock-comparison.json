@@ -1,0 +1,449 @@
+{
+  "verifiedAt": "2026-10-17T21:10:04.876177+00:00",
+  "sourceCodeSha256": "be0c02312f96526cf1f51800be488c12a01f515e9249c83609043ed247aa5954",
+  "windowMs": 300000,
+  "maximumBookAgeMs": 10000,
+  "old": {
+    "pid": 690857,
+    "firstTradingProgressAt": "2026-10-17T19:09:17.033Z",
+    "windowNs": 300000000000,
+    "windowStartNs": "1792264157033000000",
+    "windowEndExclusiveNs": "1792264457033000000",
+    "fullFiveMinuteWindowCovered": true,
+    "firstProgressOriginal": {
+      "zipSha256": "0906a063ba8f1cf5fc8362e6551ec079777a05aa296013ba3e4329ceff9641d4",
+      "member": "first-trading-progress.original.json",
+      "bytes": 264,
+      "sha256": "bc1e9523d9020ba38bfb5839b6e68b6bf1090c2240fd0b4fc814679748398ab5"
+    },
+    "packetZipSha256": "0906a063ba8f1cf5fc8362e6551ec079777a05aa296013ba3e4329ceff9641d4",
+    "packetMemberManifestSha256": "01f68928f342bb4edfd85abfbcb94f9cdead6c26af199c720a42a2c826dbc919",
+    "allOriginalZipMembersAuthenticated": true,
+    "memberPins": {
+      "anchor-head.original.json": {
+        "bytes": 254,
+        "sha256": "964ff762bf28d1a22ac2d93a8b2733e03efc1a368426837c7931818edc1f9e97"
+      },
+      "bank-manifest.original.json": {
+        "bytes": 16090,
+        "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+      },
+      "bridge.original.json": {
+        "bytes": 27780970,
+        "sha256": "3ce54840aa80a31aa2d16baccc7a92b31a01d2178e8c61c672dc2353451a9861"
+      },
+      "capture.json": {
+        "bytes": 275,
+        "sha256": "0c8f38ac4917630f4f3fd99beee3332ecf372f22a7943d56a8ea94b5a42c23fd"
+      },
+      "control.original.json": {
+        "bytes": 21390,
+        "sha256": "6de844a4bd4dc7e1fd2e6b451dbecf83e83eb27e5430f8ea421da895bd2944f4"
+      },
+      "dispatch.original.ndjson": {
+        "bytes": 11013795,
+        "sha256": "37b69cbf907cdf4007bb318c5568cf4da1f0b8d3faffe7da5ac3f51b1975a2f2"
+      },
+      "first-trading-progress.original.json": {
+        "bytes": 264,
+        "sha256": "bc1e9523d9020ba38bfb5839b6e68b6bf1090c2240fd0b4fc814679748398ab5"
+      },
+      "fundamental.original.jsonl": {
+        "bytes": 615788,
+        "sha256": "9bf6d8b397df43f3112fceeb50d36f6b7c50f36076031c53cfc6536980522e65"
+      },
+      "head.original.json": {
+        "bytes": 254,
+        "sha256": "94ecf0dd095cf2b22e461f61ec335edce440b5645e6fc7b3b19de431c786836a"
+      },
+      "model-status.original.json": {
+        "bytes": 616,
+        "sha256": "e66d9b02c83677ec38779ac335e7e76b775bc446ea90f40c024c07cbbbd311da"
+      },
+      "native.suffix.jsonl": {
+        "bytes": 1113943,
+        "sha256": "f5c02bc22ce64f1cc0a92d73c5d95a21d986317d6302dfd6c6c8e566d153373d"
+      },
+      "production-rollout.original.json": {
+        "bytes": 314381,
+        "sha256": "53bd1895a5949022d556ecdb5119e003b6655efb381e0ef160f7346457f052d2"
+      },
+      "report.original.json": {
+        "bytes": 5531853,
+        "sha256": "4b0144a5a84b444bd0c022688afe340c21142b8b934c441cf62fe4336a575263"
+      }
+    },
+    "nativeSuffix": {
+      "firstSequence": 523603,
+      "lastSequence": 524509,
+      "rows": 907,
+      "firstProcessedNs": "1792263949798000000",
+      "lastProcessedNs": "1792264478859000000",
+      "exactRawSealsAndFinalTailVerified": true
+    },
+    "windowNativeEvents": 282,
+    "windowEventTypes": {
+      "gap": 56,
+      "book": 187,
+      "coverage": 9,
+      "unsubmitted_intent_retired": 27,
+      "trade": 3
+    },
+    "windowGapEvents": 56,
+    "bookMetrics": {
+      "all": {
+        "counts": {
+          "bookEvents": 187,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 8,
+          "explicitNativeInvalidBook": 8,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 87,
+          "staleNativeClockAtProcessing": 87,
+          "staleDespiteSourceFreshAtReceipt": 87,
+          "staleWithReceiptToProcessingOver10000ms": 86,
+          "receiptToProcessingOver10000ms": 86,
+          "parserStatus_valid": 179,
+          "parserStatus_invalidated_book": 8
+        },
+        "receiptToProcessing": {
+          "count": 187,
+          "medianMs": "7326",
+          "p90Ms": "29394",
+          "maxMs": "65954"
+        },
+        "sourceToReceipt": {
+          "count": 187,
+          "medianMs": "467.392",
+          "p90Ms": "790.3714",
+          "maxMs": "4116.8219"
+        },
+        "sourceToProcessing": {
+          "count": 187,
+          "medianMs": "8116.3714",
+          "p90Ms": "29647.5028",
+          "maxMs": "66839.2444"
+        }
+      },
+      "official_sig_realtime": {
+        "counts": {
+          "bookEvents": 166,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 0,
+          "explicitNativeInvalidBook": 0,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 87,
+          "staleNativeClockAtProcessing": 87,
+          "staleDespiteSourceFreshAtReceipt": 87,
+          "staleWithReceiptToProcessingOver10000ms": 86,
+          "receiptToProcessingOver10000ms": 86,
+          "parserStatus_valid": 166
+        },
+        "receiptToProcessing": {
+          "count": 166,
+          "medianMs": "10885.5",
+          "p90Ms": "31853",
+          "maxMs": "65954"
+        },
+        "sourceToReceipt": {
+          "count": 166,
+          "medianMs": "503.6965",
+          "p90Ms": "790.3714",
+          "maxMs": "4116.8219"
+        },
+        "sourceToProcessing": {
+          "count": 166,
+          "medianMs": "11334.4031",
+          "p90Ms": "32212.4475",
+          "maxMs": "66839.2444"
+        }
+      },
+      "official_sig_api_v1": {
+        "counts": {
+          "bookEvents": 21,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 8,
+          "explicitNativeInvalidBook": 8,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 0,
+          "staleNativeClockAtProcessing": 0,
+          "staleDespiteSourceFreshAtReceipt": 0,
+          "staleWithReceiptToProcessingOver10000ms": 0,
+          "receiptToProcessingOver10000ms": 0,
+          "parserStatus_invalidated_book": 8,
+          "parserStatus_valid": 13
+        },
+        "receiptToProcessing": {
+          "count": 21,
+          "medianMs": "110",
+          "p90Ms": "989",
+          "maxMs": "1049"
+        },
+        "sourceToReceipt": {
+          "count": 21,
+          "medianMs": "148.5807",
+          "p90Ms": "281.0528",
+          "maxMs": "295.795"
+        },
+        "sourceToProcessing": {
+          "count": 21,
+          "medianMs": "356.8375",
+          "p90Ms": "1256.1666",
+          "maxMs": "1285.404"
+        }
+      }
+    },
+    "sourceBodyMembershipIndependentlyVerified": false,
+    "financialReplayPerformed": false,
+    "executionAuthority": false
+  },
+  "new": {
+    "pid": 699384,
+    "firstTradingProgressAt": "2026-10-17T21:02:56.026Z",
+    "windowNs": 300000000000,
+    "windowStartNs": "1792270976026000000",
+    "windowEndExclusiveNs": "1792271276026000000",
+    "fullFiveMinuteWindowCovered": true,
+    "firstProgressOriginal": {
+      "zipSha256": "59234146328016d3437a734e6d8c532ba36c8253eaba773f94a5b9763a2c06d3",
+      "member": "first-trading-progress.original.json",
+      "bytes": 264,
+      "sha256": "e33dcc2d764bea3bffa2a88f5f93447088fe0022ce628ea7179ddb3b277ee351"
+    },
+    "packetZipSha256": "59234146328016d3437a734e6d8c532ba36c8253eaba773f94a5b9763a2c06d3",
+    "packetMemberManifestSha256": "f356df6b47b3ccd2b6cf59de0c668551d92d5cc42916848d52384e10d1cd53ec",
+    "allOriginalZipMembersAuthenticated": true,
+    "memberPins": {
+      "anchor-head.original.json": {
+        "bytes": 254,
+        "sha256": "37bc9392f7965f96452400c525b096d6ae7aa312d7dcd4e618d01fbec49c8621"
+      },
+      "bank-manifest.original.json": {
+        "bytes": 16090,
+        "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+      },
+      "bridge.original.json": {
+        "bytes": 27780970,
+        "sha256": "3ce54840aa80a31aa2d16baccc7a92b31a01d2178e8c61c672dc2353451a9861"
+      },
+      "capture.json": {
+        "bytes": 275,
+        "sha256": "c93e0f2f703182cc81c3a527b701ee7365578f84f4290b89bc5fd2abe8d3bb1a"
+      },
+      "control.original.json": {
+        "bytes": 21390,
+        "sha256": "5afb8d0f0da221a70ad78c84b36bcc3a74236d1207f870d14e9f8d1d075d2113"
+      },
+      "dispatch.original.ndjson": {
+        "bytes": 11111430,
+        "sha256": "79fc0118df14b7d41d8f663e9702e56b62a9a3cb28fbc8907e856ae49f9e37e0"
+      },
+      "first-trading-progress.original.json": {
+        "bytes": 264,
+        "sha256": "e33dcc2d764bea3bffa2a88f5f93447088fe0022ce628ea7179ddb3b277ee351"
+      },
+      "fundamental.original.jsonl": {
+        "bytes": 626909,
+        "sha256": "5bc106f6946f19ec11fa336f46187b15d2edab34661b6be7a5a354a1052f1afd"
+      },
+      "head.original.json": {
+        "bytes": 254,
+        "sha256": "81e5b6848ba75cf41c66c064594b9c90423542501f3ed900bdd7641f8e0419bb"
+      },
+      "model-status.original.json": {
+        "bytes": 616,
+        "sha256": "fd7767eebd5e9a827ec07aa29072a3070b746855154d4332e999aec4e650aa01"
+      },
+      "native.suffix.jsonl": {
+        "bytes": 2054370,
+        "sha256": "18e3085fe4cc1a92b57f5162832ed4ee7a783bb12f1470eb7d5a75486c5cbb8e"
+      },
+      "production-rollout.original.json": {
+        "bytes": 320231,
+        "sha256": "b9c04e3d6ce45c47106628382357fa8a796618001f7f6b16ff2555cd01231046"
+      },
+      "report.original.json": {
+        "bytes": 5615866,
+        "sha256": "30f07a0595f263bb78065b376dac2bcff02fb8e36b43078c0138697aef5ad614"
+      }
+    },
+    "nativeSuffix": {
+      "firstSequence": 533004,
+      "lastSequence": 533816,
+      "rows": 813,
+      "firstProcessedNs": "1792270915115000000",
+      "lastProcessedNs": "1792271283833000000",
+      "exactRawSealsAndFinalTailVerified": true
+    },
+    "windowNativeEvents": 514,
+    "windowEventTypes": {
+      "coverage": 11,
+      "book": 418,
+      "unsubmitted_intent_retired": 50,
+      "trade": 35
+    },
+    "windowGapEvents": 0,
+    "bookMetrics": {
+      "all": {
+        "counts": {
+          "bookEvents": 418,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 9,
+          "explicitNativeInvalidBook": 9,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 39,
+          "staleNativeClockAtProcessing": 39,
+          "staleDespiteSourceFreshAtReceipt": 38,
+          "staleWithReceiptToProcessingOver10000ms": 31,
+          "receiptToProcessingOver10000ms": 31,
+          "parserStatus_invalidated_book": 9,
+          "parserStatus_valid": 409
+        },
+        "receiptToProcessing": {
+          "count": 418,
+          "medianMs": "1303",
+          "p90Ms": "9293",
+          "maxMs": "14620"
+        },
+        "sourceToReceipt": {
+          "count": 418,
+          "medianMs": "508.89825",
+          "p90Ms": "969.5161",
+          "maxMs": "14281.1879"
+        },
+        "sourceToProcessing": {
+          "count": 418,
+          "medianMs": "1818.5518",
+          "p90Ms": "9848.567",
+          "maxMs": "14990.4737"
+        }
+      },
+      "official_sig_api_v1": {
+        "counts": {
+          "bookEvents": 29,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 9,
+          "explicitNativeInvalidBook": 9,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 0,
+          "staleNativeClockAtProcessing": 0,
+          "staleDespiteSourceFreshAtReceipt": 0,
+          "staleWithReceiptToProcessingOver10000ms": 0,
+          "receiptToProcessingOver10000ms": 0,
+          "parserStatus_invalidated_book": 9,
+          "parserStatus_valid": 20
+        },
+        "receiptToProcessing": {
+          "count": 29,
+          "medianMs": "192",
+          "p90Ms": "1006",
+          "maxMs": "1197"
+        },
+        "sourceToReceipt": {
+          "count": 29,
+          "medianMs": "189.7775",
+          "p90Ms": "275.2237",
+          "maxMs": "2561.5627"
+        },
+        "sourceToProcessing": {
+          "count": 29,
+          "medianMs": "453.3907",
+          "p90Ms": "1445.0842",
+          "maxMs": "2609.5627"
+        }
+      },
+      "official_sig_realtime": {
+        "counts": {
+          "bookEvents": 389,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 0,
+          "explicitNativeInvalidBook": 0,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 39,
+          "staleNativeClockAtProcessing": 39,
+          "staleDespiteSourceFreshAtReceipt": 38,
+          "staleWithReceiptToProcessingOver10000ms": 31,
+          "receiptToProcessingOver10000ms": 31,
+          "parserStatus_valid": 389
+        },
+        "receiptToProcessing": {
+          "count": 389,
+          "medianMs": "1414",
+          "p90Ms": "9667",
+          "maxMs": "14620"
+        },
+        "sourceToReceipt": {
+          "count": 389,
+          "medianMs": "528.2714",
+          "p90Ms": "970.3662",
+          "maxMs": "14281.1879"
+        },
+        "sourceToProcessing": {
+          "count": 389,
+          "medianMs": "2173.0834",
+          "p90Ms": "10220.4609",
+          "maxMs": "14990.4737"
+        }
+      }
+    },
+    "sourceBodyMembershipIndependentlyVerified": false,
+    "financialReplayPerformed": false,
+    "executionAuthority": false
+  },
+  "executionAuthority": false,
+  "profitabilityEstablished": false,
+  "causalBenefitEstablished": false,
+  "limitations": [
+    "Different chronological windows and market/event mix; this is an observation, not randomized causal attribution.",
+    "First300s after genuine fresh progress is unchanged; all admitted books retained, no selected fast-only subset.",
+    "Admitted clocks do not independently authenticate provider bodies or establish financial execution eligibility.",
+    "Private Task175 compiler starts only after the new window packet finished."
+  ],
+  "newFinancialBoundary": {
+    "sequence": 533816,
+    "reportAt": "2026-10-17T21:08:03.833Z",
+    "original382RawFillTokensPreserved": true,
+    "officialFillRows": 382,
+    "additionalFillRows": 0,
+    "cash": "3613.785000",
+    "reservedCash": "3612.845000",
+    "ownedCost": "91851.730000",
+    "realized": "-114.400000",
+    "generations": 8,
+    "all16BridgeBytesUnchanged": true,
+    "completeJournalRowsVerified": {
+      "dispatch.original.ndjson": 23210,
+      "fundamental.original.jsonl": 81
+    }
+  }
+}

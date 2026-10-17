@@ -19,3 +19,10 @@ The stopped native533003 prefix is1,753,398,670bytes, SHA256 `994a66dbe2773b8d40
 A finite file-only observer checks the actual new process and awaits fresh trading, then captures the same first300-second clock window used for R31. It makes no account calls or financial writes. Old progress does not prove new-process trading. The [rendering benchmark](../README.md) remains a component measurement, not evidence of complete-worker speed or profitability.
 
 Original private source/account packets remain outside Git; these public files contain aggregate verification and immutable packet hashes. Task[174](https://github.com/GodlyDonuts/predictions-cup-2026/issues/174); execution/publication owner Rhaegal/Viserion-paper6-20261016.
+
+
+## Observed first five minutes and first accepted order
+
+[Independent raw-clock comparison](first300-clock-comparison.json) verifies both complete first300-second windows. Median receipt-to-processing delay was7.326s in R31 and1.303s in R33; p9029.394s versus9.293s. Stale admitted books were87/187 versus39/418. All original source/request/receipt/processing clocks are retained. Windows differ chronologically and in market/event mix; this does not isolate a causal cache effect. The private Task175 compiler started only after the R33 window packet finished. No additional fill or profit occurred in that window.
+
+[First original execution verification](first-execution-root-verification.json), completed21:14UTC, verifies one stable intent/attempt/official HTTP200 ACK for10,000Tennessee Democratic-NO SELL shares at.870, received21:09:31.130. Quoted notional8,700 is not cash received. The official response was open with zero quantity traded; the native21:11:25.163 report still contains382fills and zero additional fills. Complete original dispatch/fundamental chains,1,622-row native suffix, all382 prior raw fill tokens, eight generations and16 bridges are preserved. Actual venue order identity was checked privately. This is an accepted passive quote, not a fill or realized gain.
