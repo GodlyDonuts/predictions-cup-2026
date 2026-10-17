@@ -1,0 +1,462 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "4e33725f798ef5b30bb924ac9938e74df39b9d83",
+  "binarySha256": "259ffd08c56e5a263f8e1bacb45276907a02afa56d60d08e27c2e520045184e4",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "sourceFilesVerified": 263,
+  "sourceByteMatches": 62,
+  "sourceCrLfEquivalent": 201,
+  "changedSourcePaths": [
+    "moloch/live-runtime/src/fundamental_policy.rs",
+    "moloch/live-runtime/src/worker.rs",
+    "moloch/native/src/source.rs"
+  ],
+  "actualTestCounts": {
+    "fundamental-tests": 8,
+    "order-snapshot-tests": 2,
+    "worker": 143,
+    "top-up-integration": 9,
+    "target-hint-integration": 1
+  },
+  "targetHintFilterOverlapsTopUpFilter": true,
+  "distinctProductionCandidateTests": 162,
+  "sourceAdapterChecks": 6,
+  "differentialHarnessChecks": 14,
+  "optimizedBuildPassed": true,
+  "originalPacketMembersVerified": 303,
+  "privateBuildArchiveBytes": 10953359,
+  "privateBuildArchiveSha256": "c92a8c66f9cb917886e5c7df0a1733872fa7039dacc4ecdbd15d477531efd0e9",
+  "rootVerificationRawSha256": "53301e7fb03bde11098a0611a91308151ff0dc03ba41be56dec73dd3c60539bf",
+  "benchmarkResults": {
+    "v1Rest": {
+      "allocationMetric": "alloc/alloc_zeroed requested size plus each realloc NEW requested size; includes failed requests, not peak/live/RSS",
+      "cases": [
+        {
+          "emittedBooks": 2,
+          "emittedTrades": 0,
+          "exactParity": true,
+          "followupSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "followupSteps": 0,
+          "name": "book_only",
+          "new": {
+            "allocationCalls": {
+              "maximum": 2072,
+              "median": 2072,
+              "minimum": 2072
+            },
+            "allocationRequestedBytes": {
+              "maximum": 259015,
+              "median": 259015,
+              "minimum": 259015
+            },
+            "wallNanoseconds": {
+              "maximum": 347816,
+              "median": 304359,
+              "minimum": 245669
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 120484,
+              "median": 120484,
+              "minimum": 120484
+            },
+            "allocationRequestedBytes": {
+              "maximum": 10064531,
+              "median": 10064531,
+              "minimum": 10064531
+            },
+            "wallNanoseconds": {
+              "maximum": 12975999,
+              "median": 12489796,
+              "minimum": 12292687
+            }
+          },
+          "resultSha256": "e8818a631c53e5129cbc81e7eae6363de9def536323415b816d241b7d2a221a8",
+          "steps": 1
+        },
+        {
+          "emittedBooks": 0,
+          "emittedTrades": 1,
+          "exactParity": true,
+          "followupSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "followupSteps": 0,
+          "name": "duplicate_trade",
+          "new": {
+            "allocationCalls": {
+              "maximum": 1006,
+              "median": 1006,
+              "minimum": 1006
+            },
+            "allocationRequestedBytes": {
+              "maximum": 67666,
+              "median": 67666,
+              "minimum": 67666
+            },
+            "wallNanoseconds": {
+              "maximum": 264869,
+              "median": 215812,
+              "minimum": 164612
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 119418,
+              "median": 119418,
+              "minimum": 119418
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9873182,
+              "median": 9873182,
+              "minimum": 9873182
+            },
+            "wallNanoseconds": {
+              "maximum": 12688055,
+              "median": 12284159,
+              "minimum": 12203309
+            }
+          },
+          "resultSha256": "6551837a061c727996649bbf6cf85f84dca831b20e9ebbf2f4403cf21b6d8507",
+          "steps": 1
+        },
+        {
+          "emittedBooks": 0,
+          "emittedTrades": 1,
+          "exactParity": true,
+          "followupSha256": "d39bae315bdf20391901d5a0c46db020fef2dc45b9560f6d37d6450e3158f006",
+          "followupSteps": 1,
+          "name": "new_trade",
+          "new": {
+            "allocationCalls": {
+              "maximum": 119423,
+              "median": 119423,
+              "minimum": 119423
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9873280,
+              "median": 9873280,
+              "minimum": 9873280
+            },
+            "wallNanoseconds": {
+              "maximum": 7865070,
+              "median": 7764875,
+              "minimum": 7614375
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 119422,
+              "median": 119422,
+              "minimum": 119422
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9873240,
+              "median": 9873240,
+              "minimum": 9873240
+            },
+            "wallNanoseconds": {
+              "maximum": 11888262,
+              "median": 11415052,
+              "minimum": 11345083
+            }
+          },
+          "resultSha256": "ee4d8d483263fcf3116f36c034321efbc4c5d8568993b2257103625015f887d6",
+          "steps": 1
+        },
+        {
+          "emittedBooks": 0,
+          "emittedTrades": 0,
+          "exactParity": true,
+          "followupSha256": "1d57ade05e35c96a458185e31ada1e0070966a2b40de734d7e127f6c3edefd62",
+          "followupSteps": 1,
+          "name": "insert_then_conflict",
+          "new": {
+            "allocationCalls": {
+              "maximum": 119499,
+              "median": 119499,
+              "minimum": 119499
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9876038,
+              "median": 9876038,
+              "minimum": 9876038
+            },
+            "wallNanoseconds": {
+              "maximum": 11824453,
+              "median": 11680577,
+              "minimum": 11364858
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 119498,
+              "median": 119498,
+              "minimum": 119498
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9875998,
+              "median": 9875998,
+              "minimum": 9875998
+            },
+            "wallNanoseconds": {
+              "maximum": 11738018,
+              "median": 11657649,
+              "minimum": 11589183
+            }
+          },
+          "resultSha256": "d39bae315bdf20391901d5a0c46db020fef2dc45b9560f6d37d6450e3158f006",
+          "steps": 1
+        }
+      ],
+      "executionAuthority": false,
+      "factJsonProjectionBytes": 3915273,
+      "factProjectionIsRustHeapMeasurement": false,
+      "harnessSha256": "603fc08c12936c0b9fd2cf7452fd432cc5379499a9c1b900e8588e439e346df3",
+      "inputSha256": "072f25ac63698a93248fc4fbf74d0aadb3774ee58f6a9a4d1ba65bcdccd834bd",
+      "knownKeysAfterPrime": 22919,
+      "newSourceSha256": "abf8291ba1de37a736a5c45eb51d1248f0c51a060176f05305d95858cd9634d4",
+      "oldSourceSha256": "1e9f417acae14921d59da13abbbfb62ca3f71a0f6478dcc5c302a7ed6a08fa04",
+      "primeResultSha256": "6551837a061c727996649bbf6cf85f84dca831b20e9ebbf2f4403cf21b6d8507",
+      "primeSteps": 1,
+      "provenanceSha256": "ac6483afc4eb59cc4d131e70b1a0677e0d79dfa13ec1828318a310ae65836122",
+      "rounds": 20,
+      "schemaVersion": 1,
+      "scopes": 237,
+      "seedEvents": 22918,
+      "timedRegion": "steps only; excludes base clone/setup, seed/prime, checks/hashes, followup and owner/result drop",
+      "uniqueSeedKeys": 22918,
+      "warmups": 2,
+      "wholeWorkerSpeedupMeasured": false
+    },
+    "v2RestAndWebsocket": {
+      "allocationMetric": "alloc/alloc_zeroed requested size plus each realloc NEW requested size; includes failed requests, not peak/live/RSS",
+      "cases": [
+        {
+          "emittedBooks": 3,
+          "emittedTrades": 0,
+          "exactParity": true,
+          "followupSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "followupSteps": 0,
+          "name": "book_only",
+          "new": {
+            "allocationCalls": {
+              "maximum": 55875,
+              "median": 55875,
+              "minimum": 55875
+            },
+            "allocationRequestedBytes": {
+              "maximum": 8762876,
+              "median": 8762876,
+              "minimum": 8762876
+            },
+            "wallNanoseconds": {
+              "maximum": 7379298,
+              "median": 7177581,
+              "minimum": 6963673
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 292699,
+              "median": 292699,
+              "minimum": 292699
+            },
+            "allocationRequestedBytes": {
+              "maximum": 28373908,
+              "median": 28373908,
+              "minimum": 28373908
+            },
+            "wallNanoseconds": {
+              "maximum": 33253180,
+              "median": 33111048,
+              "minimum": 32807250
+            }
+          },
+          "resultSha256": "c01e18f094cf73e1ca9ddf987232394fe7ac9901451c1cfbddde7ffc275d30ea",
+          "steps": 2
+        },
+        {
+          "emittedBooks": 0,
+          "emittedTrades": 1,
+          "exactParity": true,
+          "followupSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "followupSteps": 0,
+          "name": "duplicate_trade",
+          "new": {
+            "allocationCalls": {
+              "maximum": 1006,
+              "median": 1006,
+              "minimum": 1006
+            },
+            "allocationRequestedBytes": {
+              "maximum": 67666,
+              "median": 67666,
+              "minimum": 67666
+            },
+            "wallNanoseconds": {
+              "maximum": 263206,
+              "median": 216309,
+              "minimum": 156388
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 119418,
+              "median": 119418,
+              "minimum": 119418
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9873182,
+              "median": 9873182,
+              "minimum": 9873182
+            },
+            "wallNanoseconds": {
+              "maximum": 12700696,
+              "median": 12303759,
+              "minimum": 12192780
+            }
+          },
+          "resultSha256": "6551837a061c727996649bbf6cf85f84dca831b20e9ebbf2f4403cf21b6d8507",
+          "steps": 1
+        },
+        {
+          "emittedBooks": 0,
+          "emittedTrades": 1,
+          "exactParity": true,
+          "followupSha256": "d39bae315bdf20391901d5a0c46db020fef2dc45b9560f6d37d6450e3158f006",
+          "followupSteps": 1,
+          "name": "new_trade",
+          "new": {
+            "allocationCalls": {
+              "maximum": 119423,
+              "median": 119423,
+              "minimum": 119423
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9873280,
+              "median": 9873280,
+              "minimum": 9873280
+            },
+            "wallNanoseconds": {
+              "maximum": 7895405,
+              "median": 7783659,
+              "minimum": 7686313
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 119422,
+              "median": 119422,
+              "minimum": 119422
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9873240,
+              "median": 9873240,
+              "minimum": 9873240
+            },
+            "wallNanoseconds": {
+              "maximum": 11521886,
+              "median": 11418395,
+              "minimum": 11274424
+            }
+          },
+          "resultSha256": "ee4d8d483263fcf3116f36c034321efbc4c5d8568993b2257103625015f887d6",
+          "steps": 1
+        },
+        {
+          "emittedBooks": 0,
+          "emittedTrades": 0,
+          "exactParity": true,
+          "followupSha256": "1d57ade05e35c96a458185e31ada1e0070966a2b40de734d7e127f6c3edefd62",
+          "followupSteps": 1,
+          "name": "insert_then_conflict",
+          "new": {
+            "allocationCalls": {
+              "maximum": 119499,
+              "median": 119499,
+              "minimum": 119499
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9876038,
+              "median": 9876038,
+              "minimum": 9876038
+            },
+            "wallNanoseconds": {
+              "maximum": 12056713,
+              "median": 11719458,
+              "minimum": 11420155
+            }
+          },
+          "old": {
+            "allocationCalls": {
+              "maximum": 119498,
+              "median": 119498,
+              "minimum": 119498
+            },
+            "allocationRequestedBytes": {
+              "maximum": 9875998,
+              "median": 9875998,
+              "minimum": 9875998
+            },
+            "wallNanoseconds": {
+              "maximum": 11997064,
+              "median": 11649184,
+              "minimum": 11547070
+            }
+          },
+          "resultSha256": "d39bae315bdf20391901d5a0c46db020fef2dc45b9560f6d37d6450e3158f006",
+          "steps": 1
+        }
+      ],
+      "executionAuthority": false,
+      "factJsonProjectionBytes": 3915273,
+      "factProjectionIsRustHeapMeasurement": false,
+      "harnessSha256": "603fc08c12936c0b9fd2cf7452fd432cc5379499a9c1b900e8588e439e346df3",
+      "inputSha256": "f0a2320255cbf1b307d5b5b35f72f7ef30b114dba14bdfd13efa0a41b58f1293",
+      "knownKeysAfterPrime": 22919,
+      "newSourceSha256": "abf8291ba1de37a736a5c45eb51d1248f0c51a060176f05305d95858cd9634d4",
+      "oldSourceSha256": "1e9f417acae14921d59da13abbbfb62ca3f71a0f6478dcc5c302a7ed6a08fa04",
+      "primeResultSha256": "6551837a061c727996649bbf6cf85f84dca831b20e9ebbf2f4403cf21b6d8507",
+      "primeSteps": 1,
+      "provenanceSha256": "ac6483afc4eb59cc4d131e70b1a0677e0d79dfa13ec1828318a310ae65836122",
+      "rounds": 20,
+      "schemaVersion": 1,
+      "scopes": 237,
+      "seedEvents": 22918,
+      "timedRegion": "steps only; excludes base clone/setup, seed/prime, checks/hashes, followup and owner/result drop",
+      "uniqueSeedKeys": 22918,
+      "warmups": 2,
+      "wholeWorkerSpeedupMeasured": false
+    },
+    "originalAcknowledgmentLookup": {
+      "exactOrderedOriginalRowParity": true,
+      "executionAuthority": false,
+      "existingColdSnapshotIndexAndLookupMedianNs": 24542213,
+      "existingHotSnapshotLookupMedianNs": 247270,
+      "harnessSha256": "c13735b459a155b92eb46f21b9eb3dbdcf0ec523e1f5b4eabfb746baf960e0d4",
+      "inputSha256": "de591daa15f0638bb5b6438fc19dc8f9a769ae296d859e8335553b75bf486d13",
+      "instrumentation": "Original order_snapshot.rs unchanged prefix plus benchmark-only constructor; checks actual retention bound and invokes original first_indices/quote",
+      "limitations": [
+        "Original ACK ID lookup workload, not independent native binding-map authentication.",
+        "Excludes order rendering, financial Session recovery, file pins, full liability policy, network and complete worker timing.",
+        "Cold measurement includes exact conservative cache-bound check and first-index construction; setup Vec clone excluded.",
+        "Reduced-priority live-host CPU sharing and cache noise remain."
+      ],
+      "missingAndLaterDuplicateFirstMatchParity": true,
+      "oldLinearLookupMedianNs": 1059157462,
+      "orderSnapshotOriginalSourceSha256": "ee8dea1fc673b57074d43c66389058e17a1fd4589ef8e3441b36732727ee492c",
+      "orders": 15299,
+      "originalAcknowledgedQids": 1573,
+      "profitabilityEstablished": false,
+      "resultSha256": "727f9b5f4073ffebee1bcebeb88773c8a122021f6b2ab4e558c3c95fcfea5bf5",
+      "rounds": 7,
+      "warmups": 2,
+      "wholeWorkerSpeedupMeasured": false
+    }
+  },
+  "wholeWorkerSpeedupMeasured": false,
+  "profitabilityEstablished": false,
+  "sdkTestsRerun": false,
+  "financialAuthority": false,
+  "deploymentProofIncluded": false
+}
