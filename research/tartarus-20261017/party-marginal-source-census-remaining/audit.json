@@ -1,0 +1,1449 @@
+{
+  "schema_version": 1,
+  "evidence_class": "remaining_primary_publisher_party_marginal_source_census",
+  "compiled_at": "2026-10-17T21:19:11.044452+00:00",
+  "scope": {
+    "remaining_identity_count": 15,
+    "new_unique_race_page_limit": 15,
+    "new_unique_race_pages_captured": 13,
+    "reused_wv_pages_without_new_retrieval": 1,
+    "shared_alaska_senate_page_identity_count": 2,
+    "total_identity_source_witnesses_after_join": 23,
+    "full_terminal_party_model_established": false,
+    "selection_uses_account_quantities": false
+  },
+  "first_census": {
+    "audit_git_lf_sha256": "85b0582b3ffc04dc2f1c0664ee6747f292dc05bc7494e85423ab27831c9baab4",
+    "source_commit": "495f11fec6b0154d93e2261920e0edfe8fc71444",
+    "unchanged": true
+  },
+  "registry_sha256": "1078098e929949df0af0727d5e3f341041f5f9af384eb1c42ab4a5bf29ad75d4",
+  "private_capture": {
+    "directory_name": "moloch-party-marginal-remaining-20261017-w3hy7kh2",
+    "manifest_sha256": "96d2dce86f3070862746c5097b635ec0adc244a4d4d0ed6912075923dda25b2d",
+    "raw_html_published": false,
+    "method": "unauthenticated public HTTPS GET; primary browser pages separately inspected",
+    "no_wv_new_get": true
+  },
+  "rows": [
+    {
+      "exchange_id": "851",
+      "market_id": "162",
+      "contract_id": "163",
+      "held_side": "NO",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "aeb09a9fe3ae3cb469759fd70af8bdbfb5a5ea77d444793c4f27177c1446d9c6",
+        "received_at": "2026-10-16T09:54:09.154Z",
+        "endpoint": "/markets/162/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the California Governor?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "State",
+            "raceId": "76628",
+            "raceName": "Governor of California",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "118831",
+            "usState": "CA",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/governors/california",
+        "final_url": "https://www.callthemap.com/governors/california",
+        "request_started_at": "2026-10-17T21:15:58.000260+00:00",
+        "received_at": "2026-10-17T21:15:58.301569+00:00",
+        "status": 200,
+        "bytes": 180725,
+        "sha256": "440aea7cf1dc355649e0ae3934d2680bb4d569b15e79cb18c66deca1065cdcdf",
+        "headers": {
+          "Age": "181",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:12:56 GMT",
+          "Etag": "\"qw712fhipi3v5b\""
+        },
+        "private_member": "california.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "California \u00b7 Governor",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Xavier Becerra",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.989"
+        },
+        {
+          "candidate": "Steve Hilton",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.011"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Xavier Becerra",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Steve Hilton",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Corrected visible opponent Hilton coexists with an outdated Bianco field paragraph; final ballot independently unverified.",
+        "Browser renderer supplied older Oct16 .988; this audit uses ONLY retained direct raw Oct17 .989."
+      ]
+    },
+    {
+      "exchange_id": "865",
+      "market_id": "176",
+      "contract_id": "177",
+      "held_side": "YES",
+      "contract_party": "Democratic Party",
+      "official_node": {
+        "raw_sha256": "edacd07108be8ec5f30a8bf7b9c6ca4b1796e72985616e7f249ea8a5b683cf80",
+        "received_at": "2026-10-16T22:10:17.648Z",
+        "endpoint": "/markets/176/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Democratic Party win the Maine Governor?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "State",
+            "raceId": "76716",
+            "raceName": "Governor of Maine",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "118919",
+            "usState": "ME",
+            "winnerName": "Democratic Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/governors/maine",
+        "final_url": "https://www.callthemap.com/governors/maine",
+        "request_started_at": "2026-10-17T21:15:58.001258+00:00",
+        "received_at": "2026-10-17T21:15:58.303570+00:00",
+        "status": 200,
+        "bytes": 205846,
+        "sha256": "65b3105afb95ce1d8f45747226dd5eae34a650feaad0fe37d5cf0dbe7386e8eb",
+        "headers": {
+          "Age": "212",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:12:25 GMT",
+          "Etag": "\"r44kz3wwqj4eji\""
+        },
+        "private_member": "maine.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Maine \u00b7 Governor",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Hannah Pingree",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.954"
+        },
+        {
+          "candidate": "Bobby Charles",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.046"
+        },
+        {
+          "candidate": "Rick Bennett",
+          "publisher_party": "I",
+          "display_operator": "<",
+          "display_probability": "0.001"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Hannah Pingree",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Bobby Charles",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Rick Bennett",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Bennett is Independent with <.001 win output. Other minor-party/write-in row gives vote share without win probability."
+      ]
+    },
+    {
+      "exchange_id": "872",
+      "market_id": "183",
+      "contract_id": "184",
+      "held_side": "YES",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "13b18d2b206b4deed547ef4694dd5d261594c0de21889f0f9189d2cc565366eb",
+        "received_at": "2026-10-16T18:23:37.746Z",
+        "endpoint": "/markets/183/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the Nevada Governor?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "State",
+            "raceId": "76762",
+            "raceName": "Governor of Nevada",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "118965",
+            "usState": "NV",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/governors/nevada",
+        "final_url": "https://www.callthemap.com/governors/nevada",
+        "request_started_at": "2026-10-17T21:15:58.001258+00:00",
+        "received_at": "2026-10-17T21:15:58.345659+00:00",
+        "status": 200,
+        "bytes": 191570,
+        "sha256": "7416a0f2ebbd9af62b5182cf9ef1ecf8c8f8868fe7b7185c5aa7399c7576e74c",
+        "headers": {
+          "Age": "3040",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 20:25:18 GMT",
+          "Etag": "\"vvwr8dw1xe43ec\""
+        },
+        "private_member": "nevada.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Nevada \u00b7 Governor",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Aaron Ford",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.218"
+        },
+        {
+          "candidate": "Joe Lombardo",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.782"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Aaron Ford",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Joe Lombardo",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": []
+    },
+    {
+      "exchange_id": "885",
+      "market_id": "196",
+      "contract_id": "197",
+      "held_side": "YES",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "b62aa0be1caf88b6fc49fad807ef60462fb6c8e5e26ce21d9e0547cb596209d2",
+        "received_at": "2026-10-15T14:45:27.480Z",
+        "endpoint": "/markets/196/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the Texas Governor?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "State",
+            "raceId": "76845",
+            "raceName": "Governor of Texas",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "119048",
+            "usState": "TX",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/governors/texas",
+        "final_url": "https://www.callthemap.com/governors/texas",
+        "request_started_at": "2026-10-17T21:15:58.002259+00:00",
+        "received_at": "2026-10-17T21:15:58.447701+00:00",
+        "status": 200,
+        "bytes": 237250,
+        "sha256": "fe1a8fffa6d6e08d27a3b7c9055f58eba38e09f14cebcb5df0ae3f3bf2221b86",
+        "headers": {
+          "Age": "328",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:10:29 GMT",
+          "Etag": "\"2x9hq4owi252oh\""
+        },
+        "private_member": "texas.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Texas \u00b7 Governor",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Gina Hinojosa",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.138"
+        },
+        {
+          "candidate": "Greg Abbott",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.862"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Gina Hinojosa",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Greg Abbott",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Browser renderer supplied older Oct16 Abbott .864; this audit uses ONLY retained direct raw Oct17 .862."
+      ]
+    },
+    {
+      "exchange_id": "900",
+      "market_id": "211",
+      "contract_id": "212",
+      "held_side": "NO",
+      "contract_party": "Democratic Party",
+      "official_node": {
+        "raw_sha256": "f60df0bd233ca5e735b2b6f4ad3beb19f54bd427be80f13d01ec5f3fb3f4b3f9",
+        "received_at": "2026-10-16T04:51:50.537Z",
+        "endpoint": "/markets/211/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Democratic Party win the FL-09 House race?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "64336",
+            "raceName": "U.S. House Florida District 9",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "99645",
+            "usState": "FL",
+            "winnerName": "Democratic Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/house/fl-09",
+        "final_url": "https://www.callthemap.com/house/fl-09",
+        "request_started_at": "2026-10-17T21:15:58.301569+00:00",
+        "received_at": "2026-10-17T21:15:58.538951+00:00",
+        "status": 200,
+        "bytes": 171957,
+        "sha256": "d16bf309064c79110ebbb1b58c8c235edb72e5fae8ece61f1c5fdcfbae8f2f1a",
+        "headers": {
+          "Age": "3098",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 20:24:19 GMT",
+          "Etag": "\"y70zqidfjc3ofy\""
+        },
+        "private_member": "fl-09.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "FL-09 \u00b7 U.S. House",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Darren Soto",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.254"
+        },
+        {
+          "candidate": "Dan Green",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.746"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Darren Soto",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Dan Green",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": []
+    },
+    {
+      "exchange_id": "938",
+      "market_id": "249",
+      "contract_id": "250",
+      "held_side": "NO",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "8dbe1e96c8c0e51aa61c7b9c20eb98fe75a254785f565c9ed513d778415901be",
+        "received_at": "2026-10-16T06:15:31.258Z",
+        "endpoint": "/markets/249/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the VA-01 House race?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "64647",
+            "raceName": "U.S. House Virginia District 1",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "99955",
+            "usState": "VA",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/house/va-01",
+        "final_url": "https://www.callthemap.com/house/va-01",
+        "request_started_at": "2026-10-17T21:15:58.304569+00:00",
+        "received_at": "2026-10-17T21:15:58.578630+00:00",
+        "status": 200,
+        "bytes": 191747,
+        "sha256": "aa2ad5576b66a1989071ac93bb47b1502aa01fb567fd50ea41e0aaf37d0c51ce",
+        "headers": {
+          "Age": "0",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 20:14:22 GMT",
+          "Etag": "\"40i1dgzxji43nx\""
+        },
+        "private_member": "va-01.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "VA-01 \u00b7 U.S. House",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Shannon Taylor",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.543"
+        },
+        {
+          "candidate": "Rob Wittman",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.457"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Shannon Taylor",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Rob Wittman",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": []
+    },
+    {
+      "exchange_id": "948",
+      "market_id": "259",
+      "contract_id": "260",
+      "held_side": "NO",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "7ec2eec565892821520f577c4fd3fc612fe0217931d2b838f57d7aa5b038768b",
+        "received_at": "2026-10-16T21:30:48.218Z",
+        "endpoint": "/markets/259/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the Georgia Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62958",
+            "raceName": "U.S. Senate Georgia",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98088",
+            "usState": "GA",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/georgia",
+        "final_url": "https://www.callthemap.com/senate/georgia",
+        "request_started_at": "2026-10-17T21:15:58.348786+00:00",
+        "received_at": "2026-10-17T21:15:58.594139+00:00",
+        "status": 200,
+        "bytes": 230858,
+        "sha256": "acc58e05a90891ed5967028884ae6a6e15a2e5bdd597d9ca4b91e6b3bae34d01",
+        "headers": {
+          "Age": "18",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:15:39 GMT",
+          "Etag": "\"bnlysw6o3i4xov\""
+        },
+        "private_member": "georgia.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Georgia \u00b7 U.S. Senate",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "terminal_win_probability_unavailable_horizon_mismatch",
+      "candidate_measure": "November finish-ahead chance, NOT final victory",
+      "candidate_rows": [
+        {
+          "candidate": "Jon Ossoff",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.928"
+        },
+        {
+          "candidate": "Mike Collins",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.072"
+        }
+      ],
+      "ordinary_conditional_inclusions": [],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "November finish-ahead measure explicitly excludes December1 runoff. Ultimate party-winner probability UNAVAILABLE."
+      ]
+    },
+    {
+      "exchange_id": "967",
+      "market_id": "278",
+      "contract_id": "279",
+      "held_side": "NO",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "714c564c1fb5dc6e271ea90288ed9ed516c70798c3b2a75d6ac2f0c06075ea45",
+        "received_at": "2026-10-16T06:19:25.442Z",
+        "endpoint": "/markets/278/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the North Carolina Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62975",
+            "raceName": "U.S. Senate North Carolina",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98105",
+            "usState": "NC",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/north-carolina",
+        "final_url": "https://www.callthemap.com/senate/north-carolina",
+        "request_started_at": "2026-10-17T21:15:58.448699+00:00",
+        "received_at": "2026-10-17T21:15:58.734033+00:00",
+        "status": 200,
+        "bytes": 259861,
+        "sha256": "7d3db54e1fd08fe2fd5de1d54b3ec946baac7cfb2b234f6e4b7b6a0696dbc02b",
+        "headers": {
+          "Age": "18",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:15:39 GMT",
+          "Etag": "\"dj6tw3g1bm5k6h\""
+        },
+        "private_member": "north-carolina.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "North Carolina \u00b7 U.S. Senate",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Roy Cooper",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.920"
+        },
+        {
+          "candidate": "Michael Whatley",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.080"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Roy Cooper",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Michael Whatley",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Dublin/Bray combined Other vote-share row supplies no individual win probabilities."
+      ]
+    },
+    {
+      "exchange_id": "977",
+      "market_id": "288",
+      "contract_id": "289",
+      "held_side": "NO",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "e6d1b884d628881ffda0fdf86a8ac3ec3b8c974ec60ba5635c4641a7deff664f",
+        "received_at": "2026-10-16T19:17:11.799Z",
+        "endpoint": "/markets/288/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the Oregon Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62977",
+            "raceName": "U.S. Senate Oregon",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98107",
+            "usState": "OR",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/oregon",
+        "final_url": "https://www.callthemap.com/senate/oregon",
+        "request_started_at": "2026-10-17T21:15:58.538951+00:00",
+        "received_at": "2026-10-17T21:15:58.801718+00:00",
+        "status": 200,
+        "bytes": 157424,
+        "sha256": "52266739c9201b2a46ed2dd47a90553e8c3a6aa645ee8c8237ab8cb651295874",
+        "headers": {
+          "Age": "13",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 20:09:41 GMT",
+          "Etag": "\"pk1crbihkq3d8k\""
+        },
+        "private_member": "oregon.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Oregon \u00b7 U.S. Senate",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Jeff Merkley",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.995"
+        },
+        {
+          "candidate": "David Brock Smith",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.005"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Jeff Merkley",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "David Brock Smith",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": []
+    },
+    {
+      "exchange_id": "979",
+      "market_id": "290",
+      "contract_id": "291",
+      "held_side": "NO",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "1f8c0feb120699bf08251d2d05660f20747d6e9a834a7bfb81f909a89a3bc96a",
+        "received_at": "2026-10-16T06:22:31.355Z",
+        "endpoint": "/markets/290/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the South Carolina Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62979",
+            "raceName": "U.S. Senate South Carolina",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98109",
+            "usState": "SC",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/south-carolina",
+        "final_url": "https://www.callthemap.com/senate/south-carolina",
+        "request_started_at": "2026-10-17T21:15:58.579631+00:00",
+        "received_at": "2026-10-17T21:15:58.819536+00:00",
+        "status": 200,
+        "bytes": 212950,
+        "sha256": "8563e8b1194b89af9f7c2a147c85ece841cfcc294d42d664f3ba8c1b29e7215d",
+        "headers": {
+          "Age": "12",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:15:45 GMT",
+          "Etag": "\"ymc46s6l9m4jxf\""
+        },
+        "private_member": "south-carolina.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "South Carolina \u00b7 U.S. Senate",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Annie Andrews",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.235"
+        },
+        {
+          "candidate": "Darline Graham",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.765"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Annie Andrews",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Darline Graham",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Publisher names Darline Graham and describes death/replacement/open-seat events. That narrative and governing nominee/affiliation treatment are not independently verified here.",
+        "Hackett/Whitener Other row gives vote share without win probabilities."
+      ]
+    },
+    {
+      "exchange_id": "986",
+      "market_id": "297",
+      "contract_id": "298",
+      "held_side": "NO",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "aef6fdfcd2933d441c90ab62568e29975e284649a01d1797959494d736997f8b",
+        "received_at": "2026-10-16T02:27:14.132Z",
+        "endpoint": "/markets/297/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the West Virginia Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62984",
+            "raceName": "U.S. Senate West Virginia",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98114",
+            "usState": "WV",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/west-virginia",
+        "finalUrl": "https://www.callthemap.com/senate/west-virginia",
+        "status": 200,
+        "requestStartedAt": "2026-10-17T19:26:03.911Z",
+        "receivedAt": "2026-10-17T19:26:04.206Z",
+        "bytes": 160005,
+        "sha256": "7c91cb3c6a48d5bdc0294899d964b416bfa27ecbc133e218d4d2dd212290c3c8",
+        "headersSha256": "1fe402d38182ca615b2371e145b37cbdae3b8f8f07b44f2e7efd68318828dca9",
+        "publishedAtUtc": null,
+        "privateCaptureRelativePath": "ctm-wv-current.html",
+        "privateHeadersRelativePath": "ctm-wv-current.html.headers",
+        "initialPublicationTimeKnown": false,
+        "publisherDateModified": "2026-10-17T16:54:37.000Z",
+        "publisherDateModifiedIsFirstAvailability": false,
+        "selectedResponseHeaders": {
+          "age": "477",
+          "cache-control": "public, s-maxage=300, stale-while-revalidate=86400",
+          "date": "Sat, 17 Oct 2026 19:18:06 GMT",
+          "etag": "\"d9kfbb5b7p3f7z\""
+        }
+      },
+      "source_status": "reused_original_dossier_no_new_retrieval",
+      "candidate_measure": "candidate final election win chance",
+      "candidate_rows": [
+        {
+          "candidate": "Shelley Moore Capito",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.996"
+        },
+        {
+          "candidate": "Rachel Fetty Anderson",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.004"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Shelley Moore Capito",
+          "held_outcome_relation": "q_R_NO <= 1-p_Capito",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "not_statistical_bounds": true,
+      "reused_dossier": {
+        "path": "../pivotal-wv-no/evidence.json",
+        "git_lf_sha256": "f16e7d14ff175d65d401fbf4592771151c7f28db35e5a80bf5b81fd8799e22cc",
+        "capture_manifest_sha256": "a76fa7acc9e54fe1c83dcdb858305eee839a4c3080d453a2a170c598711819ba",
+        "raw_forecast_reverified": true
+      },
+      "notes": [
+        "Existing dossier checked dated official sample ballot. No new source observation here.",
+        "Wilson CST/write-ins remain outside named win rows. Other vote share is not win probability."
+      ]
+    },
+    {
+      "exchange_id": "993",
+      "market_id": "304",
+      "contract_id": "305",
+      "held_side": "YES",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "feb9412053603d24db5e8004a926f991a33512b910d9e33b57b9a628c58a368d",
+        "received_at": "2026-10-16T16:23:17.885Z",
+        "endpoint": "/markets/304/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the Kansas Governor?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "State",
+            "raceId": "76703",
+            "raceName": "Governor of Kansas",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "118906",
+            "usState": "KS",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/governors/kansas",
+        "final_url": "https://www.callthemap.com/governors/kansas",
+        "request_started_at": "2026-10-17T21:15:58.595132+00:00",
+        "received_at": "2026-10-17T21:15:58.833695+00:00",
+        "status": 200,
+        "bytes": 179242,
+        "sha256": "524680e216647d68c068627c7853b4226cd8f19925be9c3f6be38dc6a41eaf77",
+        "headers": {
+          "Age": "18",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:15:39 GMT",
+          "Etag": "\"iws09ivci43tyr\""
+        },
+        "private_member": "kansas.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Kansas \u00b7 Governor",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "candidate_source_present_nominee_conditioning_unresolved",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Cindy Holscher",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.160"
+        },
+        {
+          "candidate": "Ty Masterson",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.840"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Cindy Holscher",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Ty Masterson",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "October17 page still calls its candidates primary leaders rather than settled nominees. Unconditional final-nominee conditioning unresolved."
+      ]
+    },
+    {
+      "exchange_id": "1066",
+      "market_id": "377",
+      "contract_id": "378",
+      "held_side": "NO",
+      "contract_party": "Democratic Party",
+      "official_node": {
+        "raw_sha256": "3a66a77006f707c5e71e2b7699c0d0fba5a0fe8549a7498045b2f69b0cd06f69",
+        "received_at": "2026-10-16T06:07:29.500Z",
+        "endpoint": "/markets/377/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Democratic Party win the Alaska Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62954",
+            "raceName": "U.S. Senate Alaska",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98084",
+            "usState": "AK",
+            "winnerName": "Democratic Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/alaska",
+        "final_url": "https://www.callthemap.com/senate/alaska",
+        "request_started_at": "2026-10-17T21:15:58.734033+00:00",
+        "received_at": "2026-10-17T21:15:58.965036+00:00",
+        "status": 200,
+        "bytes": 257857,
+        "sha256": "b73fa227765511ed7c6a2b3da2d360142491bdc434fa6eb7094cd1bf6af26c7c",
+        "headers": {
+          "Age": "3159",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 20:23:19 GMT",
+          "Etag": "\"pisho2417s5ikx\""
+        },
+        "private_member": "alaska.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Alaska \u00b7 U.S. Senate",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Mary Peltola",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.497"
+        },
+        {
+          "candidate": "Dan S. Sullivan",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.503"
+        },
+        {
+          "candidate": "Daniel J. Sullivan Jr.",
+          "publisher_party": "O",
+          "display_operator": "<",
+          "display_probability": "0.001"
+        },
+        {
+          "candidate": "Gerald L. Heikes",
+          "publisher_party": "R",
+          "display_operator": "<",
+          "display_probability": "0.001"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Mary Peltola",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Dan S. Sullivan",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Gerald L. Heikes",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Ranked-choice final winning chances, not first-choice shares.",
+        "Publisher Daniel J Sullivan Jr O label conflicts with retained official Republican registration. Do not infer O=non-Republican.",
+        "Separate Heikes R <.001 and omitted candidate mass remain nonzero/unknown; rounded major rows summing1 prove no exhaustion."
+      ]
+    },
+    {
+      "exchange_id": "1067",
+      "market_id": "378",
+      "contract_id": "379",
+      "held_side": "YES",
+      "contract_party": "Republican Party",
+      "official_node": {
+        "raw_sha256": "7d53c449bc2805391ff8a49789459c9211bd442687bcc75d428754b2e12636a9",
+        "received_at": "2026-10-16T22:30:34.489Z",
+        "endpoint": "/markets/378/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Republican Party win the Alaska Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62954",
+            "raceName": "U.S. Senate Alaska",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98084",
+            "usState": "AK",
+            "winnerName": "Republican Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/alaska",
+        "final_url": "https://www.callthemap.com/senate/alaska",
+        "request_started_at": "2026-10-17T21:15:58.734033+00:00",
+        "received_at": "2026-10-17T21:15:58.965036+00:00",
+        "status": 200,
+        "bytes": 257857,
+        "sha256": "b73fa227765511ed7c6a2b3da2d360142491bdc434fa6eb7094cd1bf6af26c7c",
+        "headers": {
+          "Age": "3159",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 20:23:19 GMT",
+          "Etag": "\"pisho2417s5ikx\""
+        },
+        "private_member": "alaska.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Alaska \u00b7 U.S. Senate",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Mary Peltola",
+          "publisher_party": "D",
+          "display_operator": "=",
+          "display_probability": "0.497"
+        },
+        {
+          "candidate": "Dan S. Sullivan",
+          "publisher_party": "R",
+          "display_operator": "=",
+          "display_probability": "0.503"
+        },
+        {
+          "candidate": "Daniel J. Sullivan Jr.",
+          "publisher_party": "O",
+          "display_operator": "<",
+          "display_probability": "0.001"
+        },
+        {
+          "candidate": "Gerald L. Heikes",
+          "publisher_party": "R",
+          "display_operator": "<",
+          "display_probability": "0.001"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Mary Peltola",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Dan S. Sullivan",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "Gerald L. Heikes",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Ranked-choice final winning chances, not first-choice shares.",
+        "Publisher Daniel J Sullivan Jr O label conflicts with retained official Republican registration. Do not infer O=non-Republican.",
+        "Separate Heikes R <.001 and omitted candidate mass remain nonzero/unknown; rounded major rows summing1 prove no exhaustion."
+      ]
+    },
+    {
+      "exchange_id": "1068",
+      "market_id": "379",
+      "contract_id": "380",
+      "held_side": "YES",
+      "contract_party": "Democratic Party",
+      "official_node": {
+        "raw_sha256": "90b45b8b974f03051f11e4c90337abc779a519fe816d6acc732c066c8ab66a4a",
+        "received_at": "2026-10-16T06:24:11.981Z",
+        "endpoint": "/markets/379/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "predicate": {
+          "contract_type": "Election Outcome",
+          "node_type": "contract",
+          "title": "Will the Democratic Party win the Massachusetts Senate?",
+          "contract_details": {
+            "contractType": "Election Outcome",
+            "electionDate": "2026-11-03",
+            "officeLevel": "Federal",
+            "raceId": "62966",
+            "raceName": "U.S. Senate Massachusetts",
+            "raceStage": "General",
+            "resolutionType": "Party Winner",
+            "stageId": "98096",
+            "usState": "MA",
+            "winnerName": "Democratic Party"
+          },
+          "settlement_date": "2026-11-04T17:00:00.000Z",
+          "settled_with": null
+        }
+      },
+      "publisher_source": {
+        "url": "https://www.callthemap.com/senate/massachusetts",
+        "final_url": "https://www.callthemap.com/senate/massachusetts",
+        "request_started_at": "2026-10-17T21:15:58.802721+00:00",
+        "received_at": "2026-10-17T21:15:59.119039+00:00",
+        "status": 200,
+        "bytes": 204163,
+        "sha256": "bf0a462232bcfb9456d0c8e4f3215811a2337c1182a9349c72f2d2fed51a9492",
+        "headers": {
+          "Age": "272",
+          "Content-Type": "text/html; charset=utf-8",
+          "Date": "Sat, 17 Oct 2026 21:11:26 GMT",
+          "Etag": "\"fhma4f16ka4d6r\""
+        },
+        "private_member": "massachusetts.html",
+        "publisher_date_modified": "2026-10-17T16:54:37.000Z",
+        "visible_edition": "2026-10-17",
+        "h1": "Massachusetts \u00b7 U.S. Senate",
+        "raw_bytes_reverified": true
+      },
+      "source_status": "conditional_candidate_to_party_sensitivity_only",
+      "candidate_measure": "candidate final election win chance (AK includes ranked-choice transfers)",
+      "candidate_rows": [
+        {
+          "candidate": "Ed Markey",
+          "publisher_party": "D",
+          "display_operator": ">",
+          "display_probability": "0.999"
+        },
+        {
+          "candidate": "John Deaton",
+          "publisher_party": "R",
+          "display_operator": "<",
+          "display_probability": "0.001"
+        }
+      ],
+      "ordinary_conditional_inclusions": [
+        {
+          "candidate": "Ed Markey",
+          "ordinary_contract_outcome_if_candidate_wins": "YES",
+          "held_outcome_relation": "held_probability >= P(candidate wins)",
+          "conditional_only": true
+        },
+        {
+          "candidate": "John Deaton",
+          "ordinary_contract_outcome_if_candidate_wins": "NO",
+          "held_outcome_relation": "held_probability <= 1-P(candidate wins)",
+          "conditional_only": true
+        }
+      ],
+      "terminal_party_probability": null,
+      "candidate_field_exhaustive": false,
+      "other_win_probability": null,
+      "rounding_not_reconstructed": true,
+      "not_statistical_bounds": true,
+      "independent_final_ballot_verified_here": false,
+      "notes": [
+        "Strict >.999/<.001 output operators retained; no active review or calibrated-tail change."
+      ]
+    }
+  ],
+  "retained_counterevidence": {
+    "alaska_official_candidate_page": {
+      "name": "ak-ballot",
+      "url": "https://www.elections.alaska.gov/candidates/?election=26genr",
+      "finalUrl": "https://www.elections.alaska.gov/candidates/?election=26genr",
+      "requestStartedAt": "2026-10-17T17:28:30.790091+00:00",
+      "receivedAt": "2026-10-17T17:28:33.158098+00:00",
+      "status": 200,
+      "bytes": 243779,
+      "sha256": "45eeed66311fd8a5fb142d52793f536cd9f6854c287b61b9ba99c061bde496dd",
+      "selectedResponseHeaders": {
+        "Content-Type": "text/html; charset=UTF-8",
+        "Date": "Sat, 17 Oct 2026 17:20:31 GMT",
+        "Age": "482"
+      }
+    },
+    "raw_member": "ak-ballot.original.html",
+    "raw_sha256": "45eeed66311fd8a5fb142d52793f536cd9f6854c287b61b9ba99c061bde496dd",
+    "archive_sha256": "1c7969c413a8ef6925eaaae0502b1da8368b466acdc020df2e86b29e39efba3f",
+    "interpretation": "Official Republican registration of Daniel J Sullivan Jr conflicts with CTM Other; never interpret O as non-Republican."
+  },
+  "coverage_gaps": [
+    "GA948 ultimate party-winner probability unavailable: November finish-ahead only, December runoff omitted.",
+    "KS993 final nominee conditioning unresolved in publisher text.",
+    "CA851 corrected visible opponent coexists with outdated field paragraph.",
+    "SC979 death/replacement narrative and governing party/nominee treatment unverified here.",
+    "Complete resolver/exception/refund/delayed-settlement rules absent; candidate events are not exhaustive party models.",
+    "Single publisher does not establish calibration, independent forecasts or joint dependence.",
+    "Rounded outputs/strict thresholds are not statistical confidence bounds or true probability claims.",
+    "No Other win probability, omitted candidate0 or vote-share-to-win conversion.",
+    "No current books, liabilities, active reviews, source deadlines or model generations changed."
+  ],
+  "execution_authority": false,
+  "calibrated_probability_claimed": false,
+  "optimizer_ready_party_probabilities": false,
+  "strategy_profit_claimed": false
+}
