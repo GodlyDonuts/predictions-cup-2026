@@ -1,0 +1,24 @@
+{
+  "result": "PASS_CANDIDATE_ONLY",
+  "privateArchiveBytes": 1079094,
+  "privateArchiveSha256": "b34e2a40aaacd606feb824bcf8a0de9a3dd6a79b45c8d10b1af3e544a7ba8785",
+  "originalFilesVerified": 36,
+  "baseControlSha256": "916e8ca33b837a1846db27458adf8daac29f3910746bc2bf9da773aef094488f",
+  "nextControlSha256": "02b24e720a61d7dfa856e82f7d676c37349003fa28ead47c8efdbbab4dc39a1f",
+  "newCanonicalReviewHashes": [
+    "2f3acf006fdba3149342bd031b92459d5552fa048373a18bb389556d22c1227d",
+    "5de3e94596b6e93f8a39caeb7da529c7694b5a897e117058d5e56aa25b183c2a"
+  ],
+  "changedReviewExchanges": [
+    "1067",
+    "865"
+  ],
+  "otherNineReviewReferencesUnchanged": true,
+  "all27HistoricalTrustedHashesPreserved": true,
+  "actualTypedReviewAndSettingsPassed": true,
+  "forecastBallotProbabilityEconomicObjectiveClocksUnchanged": true,
+  "actualLaterNodeDataExactPriorSemantics": true,
+  "runtimeActivated": false,
+  "mustWaitUntilR27ClockWindowClosed": true,
+  "newModelOrProfitEstablished": false
+}

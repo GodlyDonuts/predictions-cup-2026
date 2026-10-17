@@ -1,5 +1,7 @@
 # Offline ME/AK node continuity preparation
 
+**Owner candidate checked, not activated (Oct17,13:50UTC):** actual retained Rust review/settings checks and independent root verification of36 original files passed. [Candidate proof](candidate-root-verification.json) preserves all27 historical approval hashes and the other nine review references; only genuinely later ME/AK node evidence and explicitly reviewed expiry/provenance change. The private first preparation failed its reviewer-identifier character check and remained inactive; the corrected immutable second candidate passed. No forecast/economic/risk change or sixth generation has been installed. Runtime submission explicitly waits until the first R27 five-minute clock window closes.
+
 Status: **unapproved preparation only**. No settings, authority, Control, generation request or runtime change was created. The execution owner must independently approve any new review and obtain actual typed verification before use. This is source continuity, not a new forecast or demonstrated profit.
 
 The active originals come from the fifth committed generation `64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda`, retained in incident ZIP SHA256 `8c09fd1aaa589dd0e4e55da09188b5b5aa7f19c9ea3378c779155da534dc02d3`. Later original receipts are pinned by the node inventory manifest SHA256 `9579856dcdfc084b75d6f6a4defcec8dab20ed817c97ae056a9a956aba500e17`. File modification times are not observation evidence.
