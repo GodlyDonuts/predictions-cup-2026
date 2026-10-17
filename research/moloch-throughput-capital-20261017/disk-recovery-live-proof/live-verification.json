@@ -1,0 +1,154 @@
+{
+  "observedAt": "2026-10-17T03:19:50.202132+00:00",
+  "actualWorkerPid": 601007,
+  "sourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+  "binarySha256": "b398c7e75436a94799b5fd968ed3c131d65d6dce0e0a530ccd10feaf277432af",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "actualRelease": "/home/archon/apps/moloch/releases/throughput-capital-b398c7e75436/moloch-live-runtime",
+  "freshTradingVerified": true,
+  "realtimeHealthy": true,
+  "activeStopExists": false,
+  "nativeOriginalStoppedPrefixValidationPassed": true,
+  "stoppedFinancialSequence": 391577,
+  "sameReleaseRecovery": true,
+  "previousWorkerPid": 595256,
+  "stopCause": "ENOSPC",
+  "originalStopPreserved": true,
+  "settingsOrActivationRenewed": false,
+  "financialBridgeEntries": 14,
+  "all14BridgeBytesUnchanged": true,
+  "originalFourModelGenerationsRecoveredUnchanged": true,
+  "originalGenerations": [
+    {
+      "rowRawSha256": "53eb96c069f03fcf584ac5467e9b88c6fc62fc293a8cb38f04a06e7a0f43e1fe",
+      "generationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68"
+    },
+    {
+      "rowRawSha256": "c2b33f6b868e7699e90eab069704830328bdd34a47ce57c96d5d838e7caaab82",
+      "generationSha256": "1bda14d8f71e80987792e36827f3e70c1338dc63f52ae8103d511238f088bee1"
+    },
+    {
+      "rowRawSha256": "16c02f0c0f6985945499974014b78283e747a0431a266a579f31c1a107941026",
+      "generationSha256": "c34104cb39c3bd22a98980e0fb87d219d0cce8936fcb401c7f0f532fad666a31"
+    },
+    {
+      "rowRawSha256": "04c3c402f2901713c13a3259ca2301d578d69090a5a4e4bba5f2ab3fe4b4364d",
+      "generationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17"
+    }
+  ],
+  "activeGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "managedReviewCount": 11,
+  "baseControlSha256": "213e492935dc291cc1c46c1b581b44f7f39f645ae03eb07bc47f7828f5b52f3d",
+  "progress": {
+    "actualFills": 324,
+    "actualOrders": 1441,
+    "at": "2026-10-17T03:19:45.656Z",
+    "completedReadScopes": 3,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 601007,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 38,
+    "terminalOrders": 1440
+  },
+  "financialReportSha256": "29d4cc7fdd8ad36a18383699c9363b8963747bd744f60094289b78e88211fb41",
+  "financialSequence": 391890,
+  "officialFillRows": 324,
+  "cash": "19449.715000",
+  "ownedCost": "75993.970000",
+  "combinedAttributedRealized": "-136.230000",
+  "newTradingRealized": "-181.360000",
+  "inheritedRealizedGross": "45.130000",
+  "newOfficialRowsSinceCacheUpgrade": 41,
+  "newFillGroupsSinceCacheUpgrade": [
+    {
+      "qid": 11680,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 8430,
+      "principal": "7908.410000",
+      "officialRows": 10,
+      "receiptSha256": [
+        "f701e2d53016059e833a64b5dfc2c092d058c5497ec01262207cc9f9a133ad81"
+      ]
+    },
+    {
+      "qid": 11762,
+      "exchangeId": "851",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 9909,
+      "principal": "8648.215000",
+      "officialRows": 6,
+      "receiptSha256": [
+        "07bd4f4c4eb88a892402582530d2bf6dffd80d363debf2d06ac4c688e9b9232a"
+      ]
+    },
+    {
+      "qid": 11793,
+      "exchangeId": "885",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 3856,
+      "principal": "2732.560000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "70f51da0f36c9d9d772a8dfab656cf2b3edb829ca6263af866080f4413cb5675"
+      ]
+    },
+    {
+      "qid": 11813,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 148,
+      "principal": "139.120000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "1ab97c5c93511c235525502693e6c66ad09893b4cfa3cff97ba32731cbbe1c80"
+      ]
+    },
+    {
+      "qid": 11919,
+      "exchangeId": "851",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 648,
+      "principal": "567.000000",
+      "officialRows": 2,
+      "receiptSha256": [
+        "458ca64e69c8e780aaa7bf294f138a6ee913e8455440237f5479e973d7c47c4c"
+      ]
+    },
+    {
+      "qid": 11967,
+      "exchangeId": "977",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 3,
+      "principal": "2.835000",
+      "officialRows": 1,
+      "receiptSha256": [
+        "312c0351a96a16c5d7f8d3ee14bbc3ccef479f83b09491a856d5bc5fcb73a062"
+      ]
+    },
+    {
+      "qid": 11985,
+      "exchangeId": "1051",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 10000,
+      "principal": "8613.725000",
+      "officialRows": 19,
+      "receiptSha256": [
+        "0868ea94b836f769d7f527a2a6399e48d6710e069b71b0484d1e1dc17fee3ef4"
+      ]
+    }
+  ],
+  "cacheProductionLatencyImprovementVerified": false,
+  "profitabilityEstablished": false,
+  "wholeAccountOrRankPnlVerified": false,
+  "noNewAccountClientOrCadenceMode": true
+}

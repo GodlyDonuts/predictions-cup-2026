@@ -1,14 +1,14 @@
 # Moloch: current research handoff
 
-**Updated 2026-10-17 03:09 UTC; financial observations 03:01–03:02 UTC.** This is the current baseline. Older dated reports are history. No paper is declared fully implemented.
+**Updated 2026-10-17 03:22 UTC; recovery/trading observation03:19:50 UTC.** This is the current baseline. Older dated reports are history. No paper is declared fully implemented.
 
 ## Production and actual capital
 
 Installed source **f21c8b5f**, binary **b398c7e7**, native **7a74f8c3**. Worker595256 traded after the cache release and added **seven BUY orders /32,994 shares /28,611.865 principal /41 official fill rows**. This includes repeat top-ups on851 and977. The previous02:31 snapshot's zero-new-fill statement is historical and superseded by [hash-verified actual fill evidence](../research/moloch-throughput-capital-20261017/current-research-proof/financial-and-entry-snapshot.json).
 
-**Operational interruption:**595256 stopped03:02:44UTC on disk exhaustion. The owner interrupted the offline candidate build, removed inactive regenerable build caches, and restarted the **same installed release/control as601007 at03:06:17UTC**. Fresh trading by601007 is **not yet verified**; ledger restoration/reconciliation is in progress. The original stop is preserved. SDK active=null/globalUnknown0/manualReview=false, all1,440 dispatch ACKs/zero unknown attempts, intact journal tails, all14 original bridge bytes and all four original model generations were verified before restart. [Recovery review](../research/moloch-throughput-capital-20261017/current-research-proof/same-release-recovery-review.json) and [new-PID observation](../research/moloch-throughput-capital-20261017/current-research-proof/recovery-observation.json) preserve this distinction. No financial history, position, loss, forecast, source clock, deadline or activation was reset. No extra account client or new pacing mode was introduced. Inactive build targets were removed and57 files from three redundant offline benchmark directories were preserved byte-for-byte in a633,850,246-byte compressed archive, freeing space; account/native histories remain untouched. The03:07 observation had4,749MiB free. Existing account-queue history occupied about95GiB before recovery, so this cleanup does not establish bounded future storage or high uptime. [Preservation proof](../research/moloch-throughput-capital-20261017/current-research-proof/offline-copy-preservation.json).
+**Operational interruption:**595256 stopped03:02:44UTC on disk exhaustion. The owner interrupted the offline candidate build, removed inactive regenerable build caches, and restarted the **same installed release/control as601007 at03:06:17UTC**. Fresh trading by601007 is now **verified**, with healthy realtime/no active STOP, new-PID progress and order count1,441 versus1,440 at the stopped boundary. [Fresh same-release recovery proof](../research/moloch-throughput-capital-20261017/disk-recovery-live-proof/live-verification.json). The original stop is preserved. SDK active=null/globalUnknown0/manualReview=false, all1,440 dispatch ACKs/zero unknown attempts, intact journal tails, all14 original bridge bytes and all four original model generations were verified before restart. [Recovery review](../research/moloch-throughput-capital-20261017/current-research-proof/same-release-recovery-review.json) and [new-PID observation](../research/moloch-throughput-capital-20261017/current-research-proof/recovery-observation.json) preserve this distinction. No financial history, position, loss, forecast, source clock, deadline or activation was reset. No extra account client or new pacing mode was introduced. Inactive build targets were removed and57 files from three redundant offline benchmark directories were preserved byte-for-byte in a633,850,246-byte compressed archive, freeing space; account/native histories remain untouched. The03:07 observation had4,749MiB free. Existing account-queue history occupied about95GiB before recovery, so this cleanup does not establish bounded future storage or high uptime. [Preservation proof](../research/moloch-throughput-capital-20261017/current-research-proof/offline-copy-preservation.json).
 
-|Financial observation |Verified at sequence391508; stopped boundary391577 agrees |
+|Financial observation |Verified at sequence391890 /03:19:50UTC |
 | --- | ---: |
 |Initial authorized allocation |95,579.915 SUSQies |
 |Cash |19,449.715 |
@@ -28,7 +28,7 @@ The seven orders since the cache release were977 NO8,430;851 NO9,909;885 YES3,85
 
 ## Actual entry strategy and allocation
 
-Current recovered generation **b27c4699** has eleven reviewed fundamental policies. Exact settings and all four original records were recovered unchanged by595256 and verified again before the same-release restart. Actual repeat purchases and capital deployment are now verified;601007 recovery remains pending.
+Current recovered generation **b27c4699** has eleven reviewed fundamental policies. Exact settings and all four original records were recovered unchanged by595256 and verified again before the same-release restart. Actual repeat purchases and capital deployment are verified;601007 has completed restoration and resumed trading.
 
 - V1:1042 YES/max400 principal;1068 YES/max10,000. Original V1 history/deadlines remain distinct.
 - V2 terminal:966 YES,977 NO,1067 YES,865 YES,993 YES,885 YES,1051 NO and851 NO each max10,000 principal;872 YES max3,000.
@@ -66,15 +66,19 @@ SDK settings remain100 reads/minute with600ms completion pacing and24 total writ
 
 Separate header-bound cadence sourceb2b3a8aa/3347be98 is **uncompiled, unactivated and deferred**. No rate increase or performance gain is claimed.
 
-## Remaining execution blocker and candidate status
+## Remaining execution blockers and candidate status
 
 The cache did not eliminate every entry expiry. Actual993 diagnostics at02:58:59.414UTC show plan minted02:58:53.084, validUntil02:58:57.543, validation1,871ms late, with **physicalAttempted=false**. The same snapshot retains exact millisecond clocks. This is a genuine rejected attempt alongside the seven successful buys.
 
-Two focused local candidates remove an unconditional2.5s wait before native preview and avoid reconstructing expensive ownership proofs for unrelated entry hints. Native-budget denial still permits only one bounded wait against the original source packet; the selected policy and global unknown/scope checks remain. They are isolated on local branch codex/entry-strategy-20261017, source038d75c5, with seven new regression tests **authored but not executed**. The ARM64 build was interrupted when disk exhaustion was discovered; no candidate pass, release or deployment is claimed. They do not alter native accounting, SDK pacing, source freshness, probabilities or risk budgets. Infrastructure/cadence expansion remains deferred.
+A second active defect was found in bounded sizing: quantity was clipped at the reviewed ceiling, then the actual limit was lowered without re-expanding quantity. With budget2.16, ceiling.44 and asks2@.42+3@.43, five shares are fully fundable at final limit.43/reserve2.15; old sizing selected four. This is a genuine Session regression fixture, not an observed missed live fill.
+
+Local strategy candidate **453fead6** combines immediate native preview/one bounded genuine-budget wait, target-only expensive hint reconstruction and maximum fully limit-funded quantity across actual ask prefixes. Equal quantities retain the lower limit. All existing value ceilings, cash/market/depth/FIFO/top-up/native constraints remain; join/improve behavior is unchanged. Twelve added regressions cover the affected paths, including genuine seven receipts and native reservation. **ARM64 checks/build are in progress; no pass, release or activation is claimed yet.** The earlier interrupted build remains retained. No native/SDK/pacing/source-clock/probability/risk changes are included.
+
+The [actual acquisition audit](../research/moloch-acquisition-audit-20261017/README.md) independently reproduces its exact derived summary from a pinned private four-order snapshot. Selected orders took13.494–16.365s from native quote creation to physical attempt; attempt-to-first-execution0.492–1.220s, full execution up to6.589s. First executions reached their original REST receipts8.409–8.918s later. These clocks are distinct; neither reservation time nor observation delay is venue fill latency. All four use boundedLimitMayRest and still hold22,343 shares costing19,428.305;85.300 improvement versus frozen limits is not profit. The incomplete selected sample cannot estimate fill probability or compare modes. No raw account receipts are published.
 
 ## Next: strategy economics
 
-The human directs infrastructure work to stop unless essential. Disk recovery is essential for existing production uptime; no new infrastructure program is authorized by this report. Once actual601007 trading is verified:
+The human directs infrastructure work to stop unless essential. Disk recovery is essential for existing production uptime; no new infrastructure program is authorized by this report. Actual601007 trading is verified. Continue with:
 
 1. Compare source-bound join/improve/bounded acquisition outcomes: actual quantity, zero/partial/full fills, timing, pending censoring and reserved/owned capital time. Anonymous prints do not prove hypothetical passive fills; unknown counterfactuals stay unknown.
 2. Fit/qualify acquisition probability and conditional value separately from terminal forecasts. Use executable marginal gain, capital time, failures and existing inventory to improve mode choice/allocation.

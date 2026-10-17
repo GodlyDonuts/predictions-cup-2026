@@ -1,3 +1,18 @@
+# October17,03:22UTC — same-release recovery now verified trading
+
+Actual601007 progress at03:19:50UTC is trading/realtimeHealthy/noSTOP, with
+1,441orders versus1,440 at the stopped boundary. Same installed sourcef21c8b5f/
+binaryb398c7e7/native7a74f8c3, all14 bridge bytes/four original model generations
+and11policies recovered. Ledger324fills/cash19,449.715/owned75,993.970/realized
+−136.230; no new post-restart fill claimed at this observation. The prior
+restoring-only status is historical. [Actual same-release proof](disk-recovery-live-proof/live-verification.json).
+
+Candidate453fead6 fixes active bounded quantity under-sizing and entry-preparation
+waste without native/SDK/cadence/value/risk changes; ARM64 checks are in progress,
+not a pass or deployment. [Source-bound actual acquisition timing](../moloch-acquisition-audit-20261017/README.md)
+separates pre-dispatch delay, actual fills and delayed receipts. Infrastructure
+work remains deferred except essential existing-production needs.
+
 # October17,03:06UTC — actual capital deployment; same-release disk recovery
 
 Hash-verified ledger324fills/cash19,449.715/owned75,993.970/combined attributed

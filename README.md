@@ -1,7 +1,7 @@
 # Moloch — official production bot
 
 Latest research handoff: [October17 current state, Paper7 gaps and next strategy work](docs/MOLOCH_RESEARCH_HANDOFF_20261017.md).
-Updated October17 03:09UTC:324 official fill rows,75,993.970 SUSQies owned cost,19,449.715 cash. Same-release disk recovery601007 is restoring; fresh resumed trading is not yet verified.
+Updated October17 03:22UTC:324 official fill rows,75,993.970 SUSQies owned cost,19,449.715 cash. Same-release recovery601007 is verified trading at03:19:50UTC, healthy realtime/noSTOP.
 It separates actual production/fills, disabled strategies and missing economics.
 Infrastructure work is deferred unless essential.
 
