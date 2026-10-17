@@ -79,6 +79,15 @@ class ExactAccounting(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "AVAILABLE_CASH"):
             evaluate_candidate(*f, {})
 
+    def test_held_binary_unit_cost_above_one_is_corrupt_even_if_baseline_matches(self):
+        f = fixture(cash=100 * U); a = f[0]
+        a["holdings"] = [{"contract_id": "c", "exchange_id": "x", "side": "YES", "quantity": 1,
+                           "lots": [{"quantity": 1, "unit_cost_micros": U + 1}], "source_sha256": SHA}]
+        a["scenario_payouts"][0]["c"] = "refund_principal"
+        a["baseline_wealth_micros"] = [101 * U + 1, 100 * U]
+        with self.assertRaisesRegex(ValueError, "LOT_COST"):
+            evaluate_candidate(*f, {})
+
     def test_exact_prefix_cost_depth_quantity_clock_identity(self):
         f = fixture(cash=10 * U)
         f[1][0]["levels"] = [{"quantity": 3, "unit_cost_micros": 100_000}, {"quantity": 5, "unit_cost_micros": 200_000}]
@@ -117,6 +126,16 @@ class ExactAccounting(unittest.TestCase):
 
 @unittest.skipUnless(HAS_SCIPY, "Optional private SciPy environment unavailable")
 class FiniteMILP(unittest.TestCase):
+    def test_already_winning_zero_weight_states_force_hit_one_for_mean_and_min_cost(self):
+        f = fixture(cash=2_000_000 * U, probability=0)
+        out = solve_frontier(*f)
+        self.assertTrue(all(r.get("exact_integer_recheck") == "passed" for r in out["solver_runs"]), out["solver_runs"])
+        for r in out["solver_runs"]:
+            self.assertEqual(r["solver_status"], 0)
+        self.assertEqual(out["baseline"]["targets"]["six|fixed"]["strict_hit_ppm"], U)
+        self.assertTrue(any(r["goal"] == "mean" for r in out["solver_runs"]))
+        self.assertTrue(any(r["goal"] == "minimum_cost_target" for r in out["solver_runs"]))
+
     def test_negative_mean_rank_survives_and_minimum_target_quantity(self):
         out = solve_frontier(*fixture())
         reached = [c for c in out["candidates"] if c["targets"]["six|fixed"]["strict_hit_ppm"]]

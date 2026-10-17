@@ -95,7 +95,7 @@ def prepare(account, actions, probabilities, rivals, constraints):
         lots = h.get("lots")
         need(isinstance(lots, list) and lots, "HOLDING_LOTS")
         principal = sum(integer(l.get("quantity"), "LOT_QUANTITY", 1)
-                        * integer(l.get("unit_cost_micros"), "LOT_COST", 0) for l in lots)
+                        * integer(l.get("unit_cost_micros"), "LOT_COST", 0, UNIT) for l in lots)
         need(sum(l["quantity"] for l in lots) == quantity, "HOLDING_BASIS_MISMATCH")
         for i, row in enumerate(payouts):
             kind = row[key[0]]
