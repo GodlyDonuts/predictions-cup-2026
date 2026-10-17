@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "verification": "pinned_retained_node_provenance_only",
+  "oldNodeRawSha256": "9bca4722d2a06e32e0d86360b43c6aae6e4336876dec40a5a50b4cb70f9568f1",
+  "newNodeRawSha256": "e6d1b884d628881ffda0fdf86a8ac3ec3b8c974ec60ba5635c4641a7deff664f",
+  "newNodeBytes": 907,
+  "extractionManifestSha256": "9579856dcdfc084b75d6f6a4defcec8dab20ed817c97ae056a9a956aba500e17",
+  "activePacketSha256": "ddf08bca7c2f15d20875983ae0ffb414cddc06de38a04d94d97b050555bc48ee",
+  "originalSidecarSha256": "f5b1e36977e81dc15d2d434272846359e4b262328a38a2a556f5f36df022529e",
+  "originalGenerationSha256": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+  "originalDeclaredReviewSha256": "b32de5206f69525b6c63a371b99b31356634a4ff252ce61e96b7529588ca79aa",
+  "originalReviewTypedHashIndependentlyRecomputed": false,
+  "newNodeTypedReceiptSha256": "906ba379ab9b8d8dd1497e11fdc32bbd3290cf6e77f6a59816411310fc6ed664",
+  "typedDigestConvention": "Receipt field order endpoint/requestStartedAt/receivedAt/status/data; nested Value keys sorted",
+  "marketId": "288",
+  "exchangeId": "977",
+  "contractId": "289",
+  "side": "NO",
+  "endpoint": "/markets/288/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "status": 200,
+  "semanticRootSha256": "ebe719c4fc2796abfc66e2669db45e84abf9c1c7310e00dc298f05f5c2c60d15",
+  "rootExactEqual": true,
+  "newRequestStartedAt": "2026-10-16T19:17:11.545Z",
+  "newReceivedAt": "2026-10-16T19:17:11.799Z",
+  "publicationTimeRenewed": false,
+  "settlementDate": "2026-11-04T17:00:00.000Z",
+  "delayPolicy": "holdForActualSettlement",
+  "unchangedSourceRefs": {
+    "forecast": {
+      "kind": "forecast",
+      "maximumAgeMs": 86400000,
+      "observedAtMs": 1792175695251,
+      "publishedAtMs": 1792173446000,
+      "sha256": "7e6f07c53525903c7ae12ef2fb6e344028539d2f3ee8d8c498f17c07125563d1",
+      "url": "https://www.callthemap.com/senate/oregon"
+    },
+    "official_ballot": {
+      "kind": "official_ballot",
+      "maximumAgeMs": 86400000,
+      "observedAtMs": 1792175699736,
+      "publishedAtMs": 0,
+      "sha256": "82753be8eb22a0741fe402c0cb841b37f187cad0fef50c65e3ddd6c8bb4a9f64",
+      "url": "https://www.co.umatilla.or.us/departments/elections/general-election/contest-and-candidate-listing-for-the-november-3-2026-general-election"
+    }
+  },
+  "unchangedSourceExpiryMs": {
+    "forecast": 1792262095251,
+    "official_ballot": 1792262099736
+  },
+  "newNode48hObservationEndMs": 1792351031799,
+  "otherSourcesWouldStillLimitReviewUntilMs": 1792262095251,
+  "newForecast": false,
+  "candidateGenerated": false,
+  "authorityChanged": false,
+  "activation": false,
+  "accountRequests": 0,
+  "profitabilityEstablished": false
+}
