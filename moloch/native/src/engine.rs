@@ -10,6 +10,8 @@ mod collateral;
 mod reviewed_inventory_exit;
 #[path = "reviewed_fundamental_entry.rs"]
 mod reviewed_fundamental_entry;
+#[path = "reviewed_rank_campaign.rs"]
+mod reviewed_rank_campaign;
 #[path = "ordinary_entry_exclusions.rs"]
 mod ordinary_entry_exclusions;
 #[path = "live_market_capacity.rs"]
@@ -457,6 +459,7 @@ pub struct Engine {
     package_orders: BTreeMap<u64,String>,
     reviewed_inventory_exits: BTreeMap<u64,Value>,
     reviewed_fundamental_entries: BTreeMap<u64,Value>,
+    reviewed_rank_campaigns: BTreeMap<u64,Value>,
     ordinary_entry_exclusions: Option<Value>,
     profitable_depth_mode: Option<Value>,
     managed_inventory_planning: Option<Value>,
@@ -745,6 +748,7 @@ impl Engine {
             package_orders: BTreeMap::new(),
             reviewed_inventory_exits: BTreeMap::new(),
             reviewed_fundamental_entries: BTreeMap::new(),
+            reviewed_rank_campaigns: BTreeMap::new(),
             ordinary_entry_exclusions: None,
             profitable_depth_mode: None,
             managed_inventory_planning: None,
@@ -875,7 +879,7 @@ impl Engine {
             // A reviewed resting BUY owns this flat scope's entry selection.
             // Filled inventory still uses normal exit generation, with runtime
             // review authority controlling every physical disposition.
-            if !self.reviewed_fundamental_entries.is_empty()&&yes==0&&no==0&&self.orders.iter().any(|q|q.exchange==b.exchange&&!q.retired&&self.reviewed_fundamental_entries.contains_key(&q.id)){continue;}
+            if (!self.reviewed_fundamental_entries.is_empty()||!self.reviewed_rank_campaigns.is_empty())&&yes==0&&no==0&&self.orders.iter().any(|q|q.exchange==b.exchange&&!q.retired&&(self.reviewed_fundamental_entries.contains_key(&q.id)||self.reviewed_rank_campaigns.contains_key(&q.id))){continue;}
             if yes > 0 || no > 0 {
                 if self.managed_inventory_planning_excludes(&b.exchange){continue;}
                 if p.raw["repriceProfitableHedge"] != true {
@@ -1251,7 +1255,7 @@ impl Engine {
         }
         for i in 0..self.orders.len() {
             let q = &self.orders[i];
-            if self.is_package_order(q.id)||self.reviewed_inventory_exits.contains_key(&q.id)||self.reviewed_fundamental_entries.contains_key(&q.id) {continue;}
+            if self.is_package_order(q.id)||self.reviewed_inventory_exits.contains_key(&q.id)||self.reviewed_fundamental_entries.contains_key(&q.id)||self.reviewed_rank_campaigns.contains_key(&q.id) {continue;}
             // Planning exclusion cannot manufacture cancellation or release old liabilities.
             if self.managed_inventory_planning_excludes(&q.exchange){continue;}
             // Installing a planning exclusion cannot cancel an already physical
@@ -1523,6 +1527,7 @@ impl Engine {
             "reviewed_inventory_exit_reserved_v1"|"reviewed_cohort_exit_reserved_v1" => self.reserve_reviewed_inventory_exit(e,at)?,
             "managed_inventory_planning_v1" => self.apply_managed_inventory_planning(e,at)?,
             "reviewed_fundamental_entry_reserved_v1" => self.reserve_reviewed_fundamental_entry(e,at)?,
+            "reviewed_rank_campaign_reserved_v1" => self.reserve_reviewed_rank_campaign(e,at)?,
             "ordinary_profitable_depth_mode_v1" => self.apply_profitable_depth_mode(e,at)?,
             "ordinary_entry_exclusions_v1" => self.apply_ordinary_entry_exclusions(e,at)?,
             "live_market_capacity_v1" => self.apply_live_market_capacity(e,at)?,
@@ -1852,7 +1857,7 @@ impl Engine {
         // No persistent state is set: a subsequent tick/book plans normally.
         if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
         let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
-        if kind!="managed_inventory_planning_v1"&&kind!="reviewed_cohort_exit_reserved_v1"&&kind!="ordinary_profitable_depth_mode_v1"&&kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="live_owner_mandate_revision_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
+        if kind!="managed_inventory_planning_v1"&&kind!="reviewed_cohort_exit_reserved_v1"&&kind!="ordinary_profitable_depth_mode_v1"&&kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="live_owner_mandate_revision_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&kind!="reviewed_rank_campaign_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -1888,6 +1893,7 @@ impl Engine {
         let mut report = json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"executionMode":if self.live_mode{"live"}else{"paper"},"fillModel":if self.live_mode{"actualAccountFills"}else if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":if self.live_mode{self.live_orders.len()}else{0},"networkRequests":0,"profitabilityEstablished":false});
         if !self.reviewed_inventory_exits.is_empty(){report["reviewedInventoryExitReservations"]=json!(self.reviewed_inventory_exits);}
         if !self.reviewed_fundamental_entries.is_empty(){report["reviewedFundamentalEntryReservations"]=json!(self.reviewed_fundamental_entries);}
+        if !self.reviewed_rank_campaigns.is_empty(){report["reviewedRankCampaignReservations"]=json!(self.reviewed_rank_campaigns);}
         if let Some(record)=&self.profitable_depth_mode{report["profitableDepthMode"]=record.clone();}
         if let Some(record)=&self.managed_inventory_planning{report["managedInventoryPlanning"]=record.clone();}
         if let Some(record)=&self.ordinary_entry_exclusions{report["ordinaryEntryExclusions"]=record.clone();}
@@ -2003,6 +2009,7 @@ impl Engine {
         self.orders.iter().map(|q|{let mut v=json!({"id":q.id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":q.quantity,"filled":q.filled,"price":money(q.limit),"createdAt":q.created,"activationAt":q.activation,"expiresAt":q.expires,"retired":q.retired,"participationCredit":q.credit,"barrier":q.barrier.map(|(sequence,end)|json!({"sequence":sequence.to_string(),"endAt":end}))});
         if let Some(proof)=self.reviewed_inventory_exits.get(&q.id){v["reviewedInventoryExit"]=proof.clone();}
         if let Some(proof)=self.reviewed_fundamental_entries.get(&q.id){v["reviewedFundamentalEntry"]=proof.clone();}
+        if let Some(proof)=self.reviewed_rank_campaigns.get(&q.id){v["reviewedRankCampaign"]=proof.clone();}
         if let Some(at)=q.cancel{v["cancelEffectiveAt"]=json!(at)}if q.aon{v["executionStyle"]=json!("inventoryAON")}if q.age_reason{v["inventoryExitReason"]=json!("maximumAge")}if q.participation!=100{v["participationBps"]=json!(q.participation)}if q.through{v["throughFillCapacity"]=json!(true)}if q.conditional{v["fillModel"]=json!("conditionalFifo");v["touchAttributionBps"]=json!(q.touch_bps);v["queueAhead"]=json!((q.same+q.better).to_string());v["queueSame"]=json!(q.same.to_string());v["queueBetter"]=json!(q.better.to_string());v["queueVisibleSame"]=json!(q.visible_same.to_string());v["queueVisibleBetter"]=json!(q.visible_better.to_string());v["touchRemainder"]=json!(q.touch_remainder)}v}).collect()
     }
 }

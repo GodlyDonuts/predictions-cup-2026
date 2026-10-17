@@ -74,3 +74,5 @@ pub mod fundamental_reload;
 
 pub mod order_snapshot;
 pub mod tartarus_snapshot;
+
+pub mod rank_campaign;
