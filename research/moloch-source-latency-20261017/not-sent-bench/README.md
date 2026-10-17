@@ -47,3 +47,19 @@ Independent expected-output comparisons occur outside timing. Median
 components need not sum to the median total. A seven-call entry-path estimate
 would be arithmetic, not a measured production latency or proof of causality.
 No timing, speedup or production result is claimed by this source handoff.
+
+## Actual original-work measurement
+
+Root compiled and ran the frozen helper on the ARM64 VPS using the exact runtime dependency archives. The first link omitted thin LTO and failed; its original log remains retained. Adding `-C lto=thin -C codegen-units=1` matches those release archives; the corrected compile and run both exited zero. No benchmark source or input was changed. Three independent candidate targets were compiling concurrently on the six-core host, so this is a component observation under that load.
+
+[Root-verified aggregate](aggregate.json) authenticates fifteen proof members, the original frozen helper and input, seven measured rounds after two warmups, and every reported median. The original 21,894-row / 10,652,764-byte dispatch and four retired-top-up selections are verified by the helper before timing.
+
+| Component | Median |
+|---|---:|
+| Initial held-file pin/read/hash |69.907ms|
+| Additional parser input read |4.318ms|
+| Whole-chain parse, clone, canonical digest and selection |267.981ms|
+| Final full pin/hash and descriptor checks |70.088ms|
+| Total invocation |412.409ms|
+
+Seven calls multiply to2,886.862ms arithmetically; that is **not** a measured worker phase or causal attribution of the observed book delay. No cache speedup is established. The separate candidate will retain a full file hash on every cache hit and reevaluate original path/version/current descriptor and attempted-order predicates; only repeated parsing may be reused. SDK-abort archives stay on their original full verification path. No account requests, Session replay, production changes or profit follow from this measurement.

@@ -1,0 +1,99 @@
+{
+  "rootVerified": true,
+  "sourceCommit": "35959a81eaee375511c847c9e32fe2f79e08d8a1",
+  "privateArchiveBytes": 15470,
+  "privateArchiveSha256": "5b4f6833ad01fcde33b3b338c66279c7b6d18af0aee88f4e3bf19cc5a81b4a63",
+  "originalProofMembers": 15,
+  "compileExitCode": 0,
+  "runExitCode": 0,
+  "concurrentRustBuild": true,
+  "logicalCPUs": 6,
+  "originalFailedNonLtoLinkRetained": true,
+  "sevenCallArithmeticMs": 2886.8621390000003,
+  "sevenCallEstimateIsNotMeasuredWorkerAttribution": true,
+  "benchmark": {
+    "actualCurrentFunctionExecuted": false,
+    "copiedNormalNeverAttemptedBranch": true,
+    "dispatchBytes": 10652764,
+    "dispatchPrevious": "353e297cfeef9bd7113678f51571fe54f2e52b9c94bb25b2c299f5adc7c16c1f",
+    "dispatchSequence": 21894,
+    "dispatchSha256": "266808aa7e3996d22320ceeb5f7a1ad22c44e1c32ca51bde8ccb874ed68afab6",
+    "executionAuthority": false,
+    "financialReplay": false,
+    "fundamentalSha256": "e294520aff0a0b2571e0b7f57a98aff0f7c7a4026b70bdcf15d7f6176a4650f2",
+    "inputSha256": "12673dbab55e22ba706bfb3d52848c798c321fd15c0d0785af85a1434556957d",
+    "medianMs": {
+      "chainParseCloneDigestSelectionMs": 267.981068,
+      "finalPinAndDescriptorMs": 70.087545,
+      "initialPinMs": 69.906677,
+      "parseReadMs": 4.317902,
+      "totalMs": 412.408877
+    },
+    "networkRequests": 0,
+    "roundCount": 7,
+    "rounds": [
+      {
+        "chainParseCloneDigestSelectionMs": 268.173522,
+        "finalPinAndDescriptorMs": 70.04341699999999,
+        "initialPinMs": 69.874036,
+        "parseReadMs": 4.317902,
+        "totalMs": 412.408877
+      },
+      {
+        "chainParseCloneDigestSelectionMs": 267.981068,
+        "finalPinAndDescriptorMs": 70.07529,
+        "initialPinMs": 69.79045,
+        "parseReadMs": 4.292526,
+        "totalMs": 412.139334
+      },
+      {
+        "chainParseCloneDigestSelectionMs": 268.472377,
+        "finalPinAndDescriptorMs": 70.162715,
+        "initialPinMs": 69.906677,
+        "parseReadMs": 4.334511,
+        "totalMs": 412.87628
+      },
+      {
+        "chainParseCloneDigestSelectionMs": 268.121713,
+        "finalPinAndDescriptorMs": 70.087545,
+        "initialPinMs": 69.955319,
+        "parseReadMs": 4.299181,
+        "totalMs": 412.46375800000004
+      },
+      {
+        "chainParseCloneDigestSelectionMs": 267.975596,
+        "finalPinAndDescriptorMs": 70.047257,
+        "initialPinMs": 69.914133,
+        "parseReadMs": 4.337839,
+        "totalMs": 412.274825
+      },
+      {
+        "chainParseCloneDigestSelectionMs": 267.70918900000004,
+        "finalPinAndDescriptorMs": 70.172124,
+        "initialPinMs": 69.88126799999999,
+        "parseReadMs": 4.309582,
+        "totalMs": 412.072163
+      },
+      {
+        "chainParseCloneDigestSelectionMs": 267.91041,
+        "finalPinAndDescriptorMs": 70.170716,
+        "initialPinMs": 70.209981,
+        "parseReadMs": 4.333903,
+        "totalMs": 412.62501000000003
+      }
+    ],
+    "schemaVersion": 1,
+    "sdkProvedNoNetworkBranchBenchmarked": false,
+    "selectedNotSentSha256": "26d0421d43a5be22ae6d7566fb5c3acd1dfdd90d6691c0fb5c09a7a6eeeb663a",
+    "sessionOpened": false,
+    "sourceSha256": "d67f33fdf05a328563d225323da2644c033778d7077a65930606f1dd74a72e7b",
+    "totalLoopSpeedupEstablished": false,
+    "wantedQids": [
+      14854,
+      14992,
+      15178,
+      15500
+    ],
+    "warmups": 2
+  }
+}
