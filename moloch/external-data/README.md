@@ -1,3 +1,7 @@
+# External reference data for Moloch
+
+The new [public Polymarket feed](../../research/moloch-polymarket-feed-20261017/README.md) is live on the production host. Its latest268.9-second interval measured29.54requests/second,59.08outcome-book updates/second,189complete binary markets and378stream books with zero observed drops/reconnects/HTTP errors. REST and streaming preserve separate source/receipt clocks. These are reference observations; Polymarket is not yet an activated Rust valuation model. SIG and Kalshi budgets remain separate.
+
 # Kalshi reference data for Moloch
 
 The continuous collector uses the existing local read-only Ed25519 key. It targets20 total authenticated GETs/second with a single shared200-token/second admission bucket, a20-request rolling ceiling, bounded concurrency, actual endpoint costs and persisted Retry-After. Market, initialization and mapping-discovery reads share this budget. It places no Kalshi orders and creates no SIG client.
