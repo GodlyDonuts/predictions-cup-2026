@@ -5,7 +5,55 @@ use super::*;
 impl Engine{
  // Positive native ownership evidence, not queue absence. Runtime must also
  // prove original ACK+complete terminal closure and the approved review/cohort.
+ // Version 2 is explicit mixed inherited/entry ownership. Snapshot lots are
+ // derived from the ORIGINAL adopted position, then native accepted fill order
+ // is replayed exactly; no timestamp sorting, averaging or sale-credit funding.
+ pub(super) fn reviewed_inherited_cohort_state(&self,p:&Value,ex:&str,market:&str,side:Side)->Result<(u64,i128)>{
+  if p["version"]!=2||!self.managed_inventory_planning_excludes(ex){return Err("REVIEWED_INHERITED_COHORT_VERSION")}
+  for k in ["cohortSha256","positionsSha256"]{if p[k].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_INHERITED_COHORT_PROOF")}}
+  let origin=&p["inheritedOrigin"];let inherited=self.inherited.as_ref().ok_or("REVIEWED_INHERITED_COHORT_ORIGIN")?;
+  let source=inherited.source_positions.as_array().ok_or("REVIEWED_INHERITED_COHORT_ORIGIN")?;
+  let adopted=&origin["adoptedPosition"];
+  if origin["receiptHash"]!=inherited.receipt_hash||!source.iter().any(|r|r==adopted)||adopted["exchangeId"]!=ex||adopted["marketId"]!=market{return Err("REVIEWED_INHERITED_COHORT_ORIGIN")}
+  let signed=adopted["quantity"].as_i64().filter(|n|*n!=0&&*n!=i64::MIN).ok_or("REVIEWED_INHERITED_COHORT_ORIGIN")?;
+  if (signed>0)!=(side==Side::Yes){return Err("REVIEWED_INHERITED_COHORT_ORIGIN")}
+  let start=origin["firstFillIndex"].as_u64().and_then(|n|usize::try_from(n).ok()).filter(|n|*n<=self.fills.len()).ok_or("REVIEWED_INHERITED_COHORT_PREFIX")?;
+  if hash(&json!(&self.fills[..start]))!=origin["priorFillsSha256"]{return Err("REVIEWED_INHERITED_COHORT_PREFIX")}
+  let mut lots:Vec<Value>=origin["snapshotLots"].as_array().filter(|ls|!ls.is_empty()).ok_or("REVIEWED_INHERITED_COHORT_LOTS")?.clone();
+  let mut initial=0u64;for l in &lots{initial=initial.checked_add(l["quantity"].as_u64().filter(|n|*n>0).ok_or("REVIEWED_INHERITED_COHORT_LOTS")?).ok_or("REVIEWED_ENTRY_RANGE")?;if l.get("executedAt").is_some(){return Err("REVIEWED_INHERITED_COHORT_LOTS")}}
+  let mut skip=signed.unsigned_abs().checked_sub(initial).ok_or("REVIEWED_INHERITED_COHORT_LOTS")?;let mut original=Vec::new();
+  for l in adopted["lots"].as_array().ok_or("REVIEWED_INHERITED_COHORT_LOTS")?{let n=l["quantity"].as_u64().ok_or("REVIEWED_INHERITED_COHORT_LOTS")?;let take=n.min(skip);skip-=take;if take<n{original.push(json!({"quantity":n-take,"price":money(dec(&l["entryPrice"])?)}));}}
+  if skip!=0||json!(original)!=json!(lots){return Err("REVIEWED_INHERITED_COHORT_LOTS")}
+  let mut ids=BTreeMap::new();for(buy,key,cap)in [(true,"priorEntries",16usize),(false,"priorExits",4096usize)]{let mut previous=0;
+   for row in p[key].as_array().filter(|rs|rs.len()<=cap).ok_or("REVIEWED_INHERITED_COHORT_ORDERS")?{let id=row["qid"].as_u64().filter(|id|*id>previous).ok_or("REVIEWED_INHERITED_COHORT_ORDERS")?;previous=id;
+    if row["closedDispatchSha256"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_INHERITED_COHORT_ORDERS")}
+    let q=self.orders.iter().find(|q|q.id==id).ok_or("REVIEWED_INHERITED_COHORT_ORDERS")?;
+    if q.exchange!=ex||q.market!=market||q.side!=side||q.buy!=buy||!q.retired||self.is_package_order(id)||self.live_orders.get(&id).is_none_or(|a|row["actualOrderId"]!=*a)||row["filledQuantity"].as_u64()!=Some(q.filled)||ids.insert(id,(buy,q.filled)).is_some(){return Err("REVIEWED_INHERITED_COHORT_ORDERS")}
+   }
+  }
+  let mut counts=BTreeMap::<u64,u64>::new();for f in &self.fills[start..]{if f["exchangeId"]!=ex{continue}let id=f["orderId"].as_u64().ok_or("REVIEWED_INHERITED_COHORT_FILL")?;let(buy,_)=ids.get(&id).ok_or("REVIEWED_INHERITED_COHORT_FOREIGN_FILL")?;
+   let mut n=f["quantity"].as_u64().filter(|n|*n>0).ok_or("REVIEWED_INHERITED_COHORT_FILL")?;
+   if f["counterfactual"]!=false||f["marketId"]!=market||f["side"]!=label(side)||f["action"]!=(if *buy{"buy"}else{"sell"})||!f["executedAt"].is_string()||self.live_orders.get(&id).is_none_or(|a|f["actualOrderId"]!=*a){return Err("REVIEWED_INHERITED_COHORT_FILL")}
+   let count=counts.entry(id).or_default();*count=count.checked_add(n).ok_or("REVIEWED_ENTRY_RANGE")?;
+   if *buy{lots.push(json!({"quantity":n,"price":f["price"],"executedAt":f["executedAt"]}));}else{while n>0{let l=lots.first_mut().ok_or("REVIEWED_INHERITED_COHORT_OVERSELL")?;let q=l["quantity"].as_u64().ok_or("REVIEWED_INHERITED_COHORT_LOTS")?;let take=n.min(q);n-=take;if q==take{lots.remove(0);}else{l["quantity"]=json!(q-take);}}}
+  }
+  for(id,(_,n))in ids{if counts.get(&id).copied().unwrap_or(0)!=n{return Err("REVIEWED_INHERITED_COHORT_FILL_TOTAL")}}
+  let inherited_lots:Vec<Value>=inherited.remaining.get(&(ex.into(),side)).into_iter().flatten().map(|l|json!({"quantity":l.quantity,"price":money(l.price)})).collect();
+  let remaining:Vec<Value>=lots.iter().filter(|l|l.get("executedAt").is_none()).cloned().collect();
+  let positions=self.wallet.positions();let held=self.wallet.quantity(ex,side);let cost=self.wallet.market_cost(ex);
+  if remaining!=inherited_lots||positions[ex][label(side)]!=json!(lots)||self.wallet.quantity(ex,side.other())!=0||hash(&positions[ex])!=p["positionsSha256"]||p["heldQuantity"].as_u64()!=Some(held)||dec(&p["heldCost"])?!=cost{return Err("REVIEWED_INHERITED_COHORT_OWNERSHIP")}
+  Ok((held,cost))
+ }
  fn reviewed_top_up_state(&self,p:&Value,ex:&str,market:&str,side:Side)->Result<(u64,i128,u64)>{
+  if p["version"]==2{
+   if p.as_object().is_none_or(|o|o.len()!=10){return Err("REVIEWED_ENTRY_TOP_UP_SCHEMA")}
+   let cap=p["maximumEntries"].as_u64().filter(|n|(2..=16).contains(n)).ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;
+   let entries=p["priorEntries"].as_array().ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;
+   if entries.len()+1>=cap as usize{return Err("REVIEWED_ENTRY_TOP_UP_ENTRIES")}
+   let total=p["maximumTotalQuantity"].as_u64().filter(|n|*n>0&&*n<=1_000_000).ok_or("REVIEWED_ENTRY_TOP_UP_CAP")?;
+   let(held,cost)=self.reviewed_inherited_cohort_state(p,ex,market,side)?;
+   if held==0||held>=total{return Err("REVIEWED_ENTRY_TOP_UP_CAP")}return Ok((held,cost,total))
+  }
   if p.as_object().is_none_or(|o|o.len()!=8)||p["version"]!=1{return Err("REVIEWED_ENTRY_TOP_UP_SCHEMA")}
   for k in ["cohortSha256","positionsSha256"]{if p[k].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_ENTRY_TOP_UP_PROOF")}}
   let entries=p["priorEntries"].as_array().ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;
@@ -42,7 +90,7 @@ impl Engine{
   if !self.policy.entry(&ex,at){return Err("REVIEWED_ENTRY_DEADLINE")}
   let top_up=match e.get("sameSideTopUp"){None=>None,Some(proof)=>Some(self.reviewed_top_up_state(proof,&ex,&market,side)?)};
   if (top_up.is_none()&&(self.wallet.quantity(&ex,Side::Yes)!=0||self.wallet.quantity(&ex,Side::No)!=0))||self.package_protects_exchange(&ex)||self.package_blocks_submissions()
-   ||self.orders.iter().any(|q|q.exchange==ex&&!q.retired)||self.inherited.as_ref().is_some_and(|i|i.remaining.iter().any(|((x,_),lots)|x==&ex&&!lots.is_empty())){return Err("REVIEWED_ENTRY_EXISTING_EXPOSURE")}
+   ||self.orders.iter().any(|q|q.exchange==ex&&!q.retired)||(e["sameSideTopUp"]["version"]!=2&&self.inherited.as_ref().is_some_and(|i|i.remaining.iter().any(|((x,_),lots)|x==&ex&&!lots.is_empty()))){return Err("REVIEWED_ENTRY_EXISTING_EXPOSURE")}
   let limit=price(dec(&e["limitPrice"])?)?;let payout=dec(&e["expectedPayout"])?;let margin=dec(&e["marginPerShare"])?;
   let principal=dec(&e["reviewMaximumPrincipal"])?;let maximum=e["reviewMaximumQuantity"].as_u64().filter(|n|*n>0&&*n<=9_007_199_254_740_991).ok_or("REVIEWED_ENTRY_REVIEW_CAP")?;
   if !(0..=SCALE).contains(&payout)||margin<0||margin>SCALE||principal<=0||limit.checked_add(self.policy.fee(limit,1)?).and_then(|n|n.checked_add(margin)).is_none_or(|n|n>payout){return Err("REVIEWED_ENTRY_VALUE")}
@@ -180,5 +228,20 @@ impl Engine{
   let cash=f.b().engine().wallet.cash;let mut top=f.top_up(id);top["limitPrice"]=json!("0.170000");top["reviewMaximumQuantity"]=json!(1_000_000);top["reviewMaximumPrincipal"]=json!("2000.000000");top["sameSideTopUp"]["maximumTotalQuantity"]=json!(1_000_000);top["sameSideTopUp"]["heldQuantity"]=json!(10000);top["sameSideTopUp"]["heldCost"]=json!("1700.000000");top["sameSideTopUp"]["priorEntries"][0]["filledQuantity"]=json!(10000);
   f.reserve(&top).unwrap();let q=f.b().engine().order_records().into_iter().find(|q|q["reviewedFundamentalEntry"].get("sameSideTopUp").is_some()).unwrap();assert_eq!(q["quantity"],1764);assert_eq!(f.b().engine().wallet.cash,cash);assert_eq!(f.b().engine().wallet.quantity("101",Side::Yes),10000);assert_eq!(f.b().engine().wallet.market_cost("101"),1_700_000_000);assert_eq!(f.b().engine().wallet.reserved().unwrap(),299_880_000);
  }
+
+ impl F{
+  fn inherited_v2(&mut self){let e=json!({"type":"actual_position_adoption","source":"official_sig_api_v1","authority":"human_moloch_inherited_management_20261015","complete":true,"receiptHash":"d".repeat(64),"tournamentId":"cup","receivedAt":iso(0),"requestStartedAt":iso(0),"openingCost":"1.800000","effectiveMaximumMarkets":4,"positions":[{"marketId":"201","exchangeId":"101","quantity":3,"lotPrincipal":"1.800000","reportedCostBasis":"1.800000","reportedMinusLotPrincipal":"0.000000","basisClassification":"exact","lots":[{"lotId":"801","quantity":1,"side":"YES","entryPrice":"0.200000","openedAt":iso(-20000)},{"lotId":"802","quantity":2,"side":"YES","entryPrice":"0.800000","openedAt":iso(-10000)}]}]});self.bank.as_mut().unwrap().accept("adoption",1,&e).unwrap();
+   let mode=json!({"type":"managed_inventory_planning_v1","source":"moloch_live_dispatcher","receivedAt":iso(0),"bankScope":{"runId":"reviewed-entry-fixture","bankManifestHash":self.b().manifest_hash(),"tournamentId":"cup"},"bankHead":self.b().durable_head(),"expectedReportSha256":hash(&self.b().engine().report().unwrap()),"managedExchangeIds":["101"],"approvedReviewSetSha256":"b".repeat(64),"generationSha256":"0".repeat(64),"controlSha256":"c".repeat(64),"expectedPreviousModeSha256":null});self.bank.as_mut().unwrap().accept("mode",1,&mode).unwrap();
+  }
+  fn v2_proof(&self)->Value{let rows=self.b().engine().order_records();let mut entries=Vec::new();let mut exits=Vec::new();for q in rows{if let Some(actual)=self.b().engine().live_order_bindings().get(&q["id"].as_u64().unwrap()){let row=json!({"qid":q["id"],"actualOrderId":actual,"filledQuantity":q["filled"],"closedDispatchSha256":"f".repeat(64)});if q["action"]=="buy"{entries.push(row)}else{exits.push(row)}}}
+   json!({"version":2,"cohortSha256":"a".repeat(64),"positionsSha256":hash(&self.b().engine().wallet.positions()["101"]),"heldQuantity":self.b().engine().wallet.quantity("101",Side::Yes),"heldCost":money(self.b().engine().wallet.market_cost("101")),"priorEntries":entries,"priorExits":exits,"maximumEntries":4,"maximumTotalQuantity":5,"inheritedOrigin":{"receiptHash":"d".repeat(64),"adoptedPosition":self.b().engine().report().unwrap()["inheritedInventory"]["sourcePositions"][0],"snapshotLots":[{"quantity":1,"price":"0.200000"},{"quantity":2,"price":"0.800000"}],"firstFillIndex":0,"priorFillsSha256":hash(&json!([]))}})
+  }
+  fn v2_entry(&self,t:i64)->Value{let mut e=self.event();e["receivedAt"]=json!(iso(t));e["processedAt"]=json!(iso(t));e["reviewMaximumQuantity"]=json!(5);e["reviewMaximumPrincipal"]=json!("10.000000");e["sameSideTopUp"]=self.v2_proof();e}
+  fn actual_close(&mut self,q:&Value,at:i64,n:u64,actual:&str){let base=json!({"source":"official_sig_api_v1","receiptHash":"e".repeat(64),"orderId":q["id"],"actualOrderId":actual,"marketId":"201","exchangeId":"101","side":"YES","action":q["action"],"price":q["price"],"quantity":q["quantity"],"receivedAt":iso(at)});let mut ack=base.clone();ack["type"]=json!("actual_order_ack");let seq=self.b().last_source_sequence("actual")+1;self.bank.as_mut().unwrap().accept("actual",seq,&ack).unwrap();let mut fill=base.clone();fill["type"]=json!("actual_fill");fill["fillId"]=json!(format!("{actual}1"));fill["quantity"]=json!(n);fill["executedAt"]=json!(iso(at));fill["fee"]=json!("0.000000");self.bank.as_mut().unwrap().accept("actual",seq+1,&fill).unwrap();let mut end=base;end["type"]=json!("actual_order_terminal");end["status"]=json!("canceled");end["filledQuantity"]=json!(n);end["fillsComplete"]=json!(true);self.bank.as_mut().unwrap().accept("actual",seq+2,&end).unwrap();}
+  fn new_book(&mut self,t:i64){let mut b=self.b().engine().live_package_books()[0].clone();b["sourceAt"]=json!(iso(t));b["receivedAt"]=json!(iso(t));b["requestStartedAt"]=json!(iso(t));let seq=self.b().last_source_sequence("books")+1;b["sequence"]=json!(seq.to_string());self.bank.as_mut().unwrap().accept("books",seq,&json!({"type":"book","receivedAt":iso(t),"book":b})).unwrap();}
+ }
+ #[test]fn inherited_v2_addition_preserves_original_lots_cash_and_total_caps(){let mut f=F::new(json!({}));f.inherited_v2();let cash=f.b().engine().wallet.cash;let e=f.v2_entry(3000);f.reserve(&e).unwrap();let q=f.b().engine().order_records()[0].clone();assert_eq!(q["quantity"],2);assert_eq!(f.b().engine().wallet.cash,cash);assert_eq!(f.b().engine().wallet.reserved().unwrap(),800000);f.actual_close(&q,6000,2,"901");assert_eq!(f.b().engine().wallet.positions()["101"]["YES"],json!([{"quantity":1,"price":"0.200000"},{"quantity":2,"price":"0.800000"},{"quantity":2,"price":"0.400000","executedAt":iso(6000)}]));assert!(f.b().engine().reviewed_inherited_cohort_state(&f.v2_proof(),"101","201",Side::Yes).is_ok());for case in ["missing","actual","filled","side"]{let mut p=f.v2_proof();match case{"missing"=>p["priorEntries"]=json!([]),"actual"=>p["priorEntries"][0]["actualOrderId"]=json!("999"),"filled"=>p["priorEntries"][0]["filledQuantity"]=json!(1),_=>p["inheritedOrigin"]["adoptedPosition"]["quantity"]=json!(-3)}assert!(f.b().engine().reviewed_inherited_cohort_state(&p,"101","201",Side::Yes).is_err(),"{case}");}let report=f.b().engine().report().unwrap();let head=f.b().durable_head();f.bank.take();let b=Session::open_live(&f.root.join("bank"),&f.policy,&f.seed).unwrap();assert_eq!(b.durable_head(),head);assert_eq!(b.engine().report().unwrap(),report);}
+ #[test]fn inherited_v2_bound_sell_partial_consumes_original_fifo_then_can_add_again(){let mut f=F::new(json!({}));f.inherited_v2();let e=f.v2_entry(3000);f.reserve(&e).unwrap();let q=f.b().engine().order_records()[0].clone();f.actual_close(&q,6000,2,"901");f.new_book(9000);let mut e=f.v2_entry(9000);e["type"]=json!("reviewed_cohort_exit_reserved_v1");e.as_object_mut().unwrap().remove("sameSideTopUp");e["quantity"]=json!(3);e["limitPrice"]=json!("0.400000");e["expectedPayout"]=json!("0.300000");e["expectedPositionSha256"]=json!(hash(&f.b().engine().wallet.positions()["101"]));e["executionMode"]=json!("passiveValueLimit");e["maximumPassiveQuantity"]=json!(3);e["modelSha256"]=json!("c".repeat(64));e["sourceSha256"]=json!("d".repeat(64));e["reason"]=json!("refreshed_value_exit");e["holdingDeadlineMs"]=json!(BASE+100000);let mut p=f.v2_proof();p["originSha256"]=e["originSha256"].clone();e["cohortOrigin"]=p;f.reserve(&e).unwrap();let sell=f.b().engine().order_records()[1].clone();f.actual_close(&sell,12000,2,"902");assert_eq!(f.b().engine().wallet.positions()["101"]["YES"],json!([{"quantity":1,"price":"0.800000"},{"quantity":2,"price":"0.400000","executedAt":iso(6000)}]));f.new_book(15000);let e=f.v2_entry(15000);f.reserve(&e).unwrap();assert_eq!(f.b().engine().order_records()[2]["quantity"],2);}
+ #[test]fn inherited_v2_origin_prefix_fifo_actual_and_caps_reject_without_financial_mutation(){for case in ["origin","prefix","lots","positions","entries","cap","version"]{let mut f=F::new(json!({}));f.inherited_v2();let mut e=f.v2_entry(3000);match case{"origin"=>e["sameSideTopUp"]["inheritedOrigin"]["receiptHash"]=json!("0".repeat(64)),"prefix"=>e["sameSideTopUp"]["inheritedOrigin"]["priorFillsSha256"]=json!("0".repeat(64)),"lots"=>e["sameSideTopUp"]["inheritedOrigin"]["snapshotLots"][0]["price"]=json!("0.100000"),"positions"=>e["sameSideTopUp"]["positionsSha256"]=json!("0".repeat(64)),"entries"=>e["sameSideTopUp"]["priorEntries"]=json!([{"qid":999}]),"cap"=>e["reviewMaximumPrincipal"]=json!("1.800000"),_=>e["sameSideTopUp"]["version"]=json!(1)}let head=f.b().durable_head();let report=f.b().engine().report().unwrap();assert!(f.reserve(&e).is_err(),"{case}");assert_eq!(f.b().durable_head(),head);assert_eq!(f.b().engine().report().unwrap(),report);}}
 
 }

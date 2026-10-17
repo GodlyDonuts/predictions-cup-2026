@@ -4,7 +4,12 @@
 use super::*;
 impl Engine {
     fn verify_reviewed_cohort_exit_origin(&self,e:&Value,ex:&str,market:&str,side:Side)->Result<()> {
-        let p=&e["cohortOrigin"];if p["version"]!=1||p["originSha256"]!=e["originSha256"]||p["positionsSha256"]!=e["expectedPositionSha256"]{return Err("REVIEWED_COHORT_ORIGIN")}
+        let p=&e["cohortOrigin"];
+        if p["version"]==2{
+            if p["originSha256"]!=e["originSha256"]||p["positionsSha256"]!=e["expectedPositionSha256"]{return Err("REVIEWED_COHORT_ORIGIN")}
+            self.reviewed_inherited_cohort_state(p,ex,market,side)?;return Ok(())
+        }
+        if p["version"]!=1||p["originSha256"]!=e["originSha256"]||p["positionsSha256"]!=e["expectedPositionSha256"]{return Err("REVIEWED_COHORT_ORIGIN")}
         let entries=p["entries"].as_array().filter(|a|!a.is_empty()&&a.len()<=16).ok_or("REVIEWED_COHORT_ENTRIES")?;
         let exits=p["exits"].as_array().filter(|a|a.len()<=4096).ok_or("REVIEWED_COHORT_EXITS")?;
         let mut ids=BTreeMap::new();
@@ -136,7 +141,7 @@ impl Engine {
             if fifo{for key in ["pricingObjective","pricingBasis","minimumNetSalePrice","forecastExpectedPayout"]{record[key]=e[key].clone();}}
             else{record["minimumNetValue"]=json!(money(payout));}
         }
-        if cohort{let record=self.reviewed_inventory_exits.get_mut(&qid).ok_or("REVIEWED_COHORT_RECORD")?;record.as_object_mut().unwrap().remove("adoptionReceiptHash");record["originKind"]=json!("original_entry_cohort");record["cohortOriginSha256"]=json!(hash(&e["cohortOrigin"]));}
+        if cohort{let record=self.reviewed_inventory_exits.get_mut(&qid).ok_or("REVIEWED_COHORT_RECORD")?;record.as_object_mut().unwrap().remove("adoptionReceiptHash");record["originKind"]=json!(if e["cohortOrigin"]["version"]==2{"reviewed_inherited_cohort"}else{"original_entry_cohort"});record["cohortOriginSha256"]=json!(hash(&e["cohortOrigin"]));}
         self.writes.push(at);self.count("reviewedInventoryExitReservations");Ok(())
     }
 }
