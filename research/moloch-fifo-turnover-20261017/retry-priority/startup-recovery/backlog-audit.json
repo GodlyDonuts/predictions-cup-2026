@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "sourceCodeSha256": "9dff5d0f8e968bb98114e94ee19931cc023a1e1d7727ae8bf8f0e28cebbaf222",
+  "readerLfSha256": "1fbc599e16417778d4aa48545eb2c7af9c3073875fd4ffb26f72c0333443a34b",
+  "frozenClockMeasurement": {
+    "pid": 690857,
+    "firstTradingProgressAt": "2026-10-17T19:09:17.033Z",
+    "windowNs": 300000000000,
+    "windowStartNs": "1792264157033000000",
+    "windowEndExclusiveNs": "1792264457033000000",
+    "fullFiveMinuteWindowCovered": true,
+    "firstProgressOriginal": {
+      "zipSha256": "0906a063ba8f1cf5fc8362e6551ec079777a05aa296013ba3e4329ceff9641d4",
+      "member": "first-trading-progress.original.json",
+      "bytes": 264,
+      "sha256": "bc1e9523d9020ba38bfb5839b6e68b6bf1090c2240fd0b4fc814679748398ab5"
+    },
+    "packetZipSha256": "0906a063ba8f1cf5fc8362e6551ec079777a05aa296013ba3e4329ceff9641d4",
+    "packetMemberManifestSha256": "01f68928f342bb4edfd85abfbcb94f9cdead6c26af199c720a42a2c826dbc919",
+    "allOriginalZipMembersAuthenticated": true,
+    "memberPins": {
+      "anchor-head.original.json": {
+        "bytes": 254,
+        "sha256": "964ff762bf28d1a22ac2d93a8b2733e03efc1a368426837c7931818edc1f9e97"
+      },
+      "bank-manifest.original.json": {
+        "bytes": 16090,
+        "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+      },
+      "bridge.original.json": {
+        "bytes": 27780970,
+        "sha256": "3ce54840aa80a31aa2d16baccc7a92b31a01d2178e8c61c672dc2353451a9861"
+      },
+      "capture.json": {
+        "bytes": 275,
+        "sha256": "0c8f38ac4917630f4f3fd99beee3332ecf372f22a7943d56a8ea94b5a42c23fd"
+      },
+      "control.original.json": {
+        "bytes": 21390,
+        "sha256": "6de844a4bd4dc7e1fd2e6b451dbecf83e83eb27e5430f8ea421da895bd2944f4"
+      },
+      "dispatch.original.ndjson": {
+        "bytes": 11013795,
+        "sha256": "37b69cbf907cdf4007bb318c5568cf4da1f0b8d3faffe7da5ac3f51b1975a2f2"
+      },
+      "first-trading-progress.original.json": {
+        "bytes": 264,
+        "sha256": "bc1e9523d9020ba38bfb5839b6e68b6bf1090c2240fd0b4fc814679748398ab5"
+      },
+      "fundamental.original.jsonl": {
+        "bytes": 615788,
+        "sha256": "9bf6d8b397df43f3112fceeb50d36f6b7c50f36076031c53cfc6536980522e65"
+      },
+      "head.original.json": {
+        "bytes": 254,
+        "sha256": "94ecf0dd095cf2b22e461f61ec335edce440b5645e6fc7b3b19de431c786836a"
+      },
+      "model-status.original.json": {
+        "bytes": 616,
+        "sha256": "e66d9b02c83677ec38779ac335e7e76b775bc446ea90f40c024c07cbbbd311da"
+      },
+      "native.suffix.jsonl": {
+        "bytes": 1113943,
+        "sha256": "f5c02bc22ce64f1cc0a92d73c5d95a21d986317d6302dfd6c6c8e566d153373d"
+      },
+      "production-rollout.original.json": {
+        "bytes": 314381,
+        "sha256": "53bd1895a5949022d556ecdb5119e003b6655efb381e0ef160f7346457f052d2"
+      },
+      "report.original.json": {
+        "bytes": 5531853,
+        "sha256": "4b0144a5a84b444bd0c022688afe340c21142b8b934c441cf62fe4336a575263"
+      }
+    },
+    "nativeSuffix": {
+      "firstSequence": 523603,
+      "lastSequence": 524509,
+      "rows": 907,
+      "firstProcessedNs": "1792263949798000000",
+      "lastProcessedNs": "1792264478859000000",
+      "exactRawSealsAndFinalTailVerified": true
+    },
+    "windowNativeEvents": 282,
+    "windowEventTypes": {
+      "gap": 56,
+      "book": 187,
+      "coverage": 9,
+      "unsubmitted_intent_retired": 27,
+      "trade": 3
+    },
+    "windowGapEvents": 56,
+    "bookMetrics": {
+      "all": {
+        "counts": {
+          "bookEvents": 187,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 8,
+          "explicitNativeInvalidBook": 8,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 87,
+          "staleNativeClockAtProcessing": 87,
+          "staleDespiteSourceFreshAtReceipt": 87,
+          "staleWithReceiptToProcessingOver10000ms": 86,
+          "receiptToProcessingOver10000ms": 86,
+          "parserStatus_valid": 179,
+          "parserStatus_invalidated_book": 8
+        },
+        "receiptToProcessing": {
+          "count": 187,
+          "medianMs": "7326",
+          "p90Ms": "29394",
+          "maxMs": "65954"
+        },
+        "sourceToReceipt": {
+          "count": 187,
+          "medianMs": "467.392",
+          "p90Ms": "790.3714",
+          "maxMs": "4116.8219"
+        },
+        "sourceToProcessing": {
+          "count": 187,
+          "medianMs": "8116.3714",
+          "p90Ms": "29647.5028",
+          "maxMs": "66839.2444"
+        }
+      },
+      "official_sig_realtime": {
+        "counts": {
+          "bookEvents": 166,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 0,
+          "explicitNativeInvalidBook": 0,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 87,
+          "staleNativeClockAtProcessing": 87,
+          "staleDespiteSourceFreshAtReceipt": 87,
+          "staleWithReceiptToProcessingOver10000ms": 86,
+          "receiptToProcessingOver10000ms": 86,
+          "parserStatus_valid": 166
+        },
+        "receiptToProcessing": {
+          "count": 166,
+          "medianMs": "10885.5",
+          "p90Ms": "31853",
+          "maxMs": "65954"
+        },
+        "sourceToReceipt": {
+          "count": 166,
+          "medianMs": "503.6965",
+          "p90Ms": "790.3714",
+          "maxMs": "4116.8219"
+        },
+        "sourceToProcessing": {
+          "count": 166,
+          "medianMs": "11334.4031",
+          "p90Ms": "32212.4475",
+          "maxMs": "66839.2444"
+        }
+      },
+      "official_sig_api_v1": {
+        "counts": {
+          "bookEvents": 21,
+          "missingOrUnparseableBookFields": 0,
+          "missingOrInvalidBook": 8,
+          "explicitNativeInvalidBook": 8,
+          "invalidTemporalClockBooks": 0,
+          "originalClockMismatch": 0,
+          "receivedAfterProcessed": 0,
+          "sourceAfterReceipt": 0,
+          "sourceAfterProcessed": 0,
+          "requestAfterReceipt": 0,
+          "staleAnyOriginalClockAtProcessing": 0,
+          "staleNativeClockAtProcessing": 0,
+          "staleDespiteSourceFreshAtReceipt": 0,
+          "staleWithReceiptToProcessingOver10000ms": 0,
+          "receiptToProcessingOver10000ms": 0,
+          "parserStatus_invalidated_book": 8,
+          "parserStatus_valid": 13
+        },
+        "receiptToProcessing": {
+          "count": 21,
+          "medianMs": "110",
+          "p90Ms": "989",
+          "maxMs": "1049"
+        },
+        "sourceToReceipt": {
+          "count": 21,
+          "medianMs": "148.5807",
+          "p90Ms": "281.0528",
+          "maxMs": "295.795"
+        },
+        "sourceToProcessing": {
+          "count": 21,
+          "medianMs": "356.8375",
+          "p90Ms": "1256.1666",
+          "maxMs": "1285.404"
+        }
+      }
+    },
+    "sourceBodyMembershipIndependentlyVerified": false,
+    "financialReplayPerformed": false,
+    "executionAuthority": false
+  },
+  "wsAdmissionDelayBuckets": {
+    "0_to_1000ms": 33,
+    "1000_to_10000ms": 47,
+    "10000_to_30000ms": 69,
+    "over_30000ms": 17
+  },
+  "staleWsBooks": 87,
+  "staleWsDistinctProcessedStamps": 23,
+  "staleWsImmediateNativePredecessorTypes": {
+    "gap": 10,
+    "book": 72,
+    "coverage": 2,
+    "unsubmitted_intent_retired": 3
+  },
+  "processedStampGroups": {
+    "distinctStamps": 107,
+    "eventCountPerStamp": {
+      "1": 60,
+      "2": 23,
+      "3": 4,
+      "4": 1,
+      "5": 1,
+      "6": 6,
+      "7": 4,
+      "8": 3,
+      "9": 1,
+      "10": 2,
+      "16": 1,
+      "22": 1
+    },
+    "interStampInterval": {
+      "count": 106,
+      "medianMs": "1153.5",
+      "p90Ms": "3040",
+      "maxMs": "34853"
+    },
+    "maximumEventsAtOneStamp": 22
+  },
+  "longestProcessedStampIntervals": [
+    {
+      "previousSequence": 524299,
+      "nextSequence": 524300,
+      "previousType": "unsubmitted_intent_retired",
+      "nextType": "gap",
+      "previousProcessedAt": "2026-10-17T19:09:31.753Z",
+      "nextProcessedAt": "2026-10-17T19:10:06.606Z",
+      "processedStampIntervalMs": "34853",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 6,
+      "staleWsBooksAdmittedAtNextStamp": 4
+    },
+    {
+      "previousSequence": 524336,
+      "nextSequence": 524337,
+      "previousType": "unsubmitted_intent_retired",
+      "nextType": "trade",
+      "previousProcessedAt": "2026-10-17T19:11:01.030Z",
+      "nextProcessedAt": "2026-10-17T19:11:32.513Z",
+      "processedStampIntervalMs": "31483",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 19,
+      "staleWsBooksAdmittedAtNextStamp": 0
+    },
+    {
+      "previousSequence": 524316,
+      "nextSequence": 524317,
+      "previousType": "unsubmitted_intent_retired",
+      "nextType": "trade",
+      "previousProcessedAt": "2026-10-17T19:10:14.705Z",
+      "nextProcessedAt": "2026-10-17T19:10:45.142Z",
+      "processedStampIntervalMs": "30437",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 5,
+      "staleWsBooksAdmittedAtNextStamp": 0
+    },
+    {
+      "previousSequence": 524467,
+      "nextSequence": 524468,
+      "previousType": "unsubmitted_intent_retired",
+      "nextType": "book",
+      "previousProcessedAt": "2026-10-17T19:13:23.587Z",
+      "nextProcessedAt": "2026-10-17T19:13:49.179Z",
+      "processedStampIntervalMs": "25592",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 26,
+      "staleWsBooksAdmittedAtNextStamp": 1
+    },
+    {
+      "previousSequence": 524369,
+      "nextSequence": 524370,
+      "previousType": "unsubmitted_intent_retired",
+      "nextType": "book",
+      "previousProcessedAt": "2026-10-17T19:11:48.570Z",
+      "nextProcessedAt": "2026-10-17T19:12:13.949Z",
+      "processedStampIntervalMs": "25379",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 25,
+      "staleWsBooksAdmittedAtNextStamp": 2
+    },
+    {
+      "previousSequence": 524414,
+      "nextSequence": 524415,
+      "previousType": "unsubmitted_intent_retired",
+      "nextType": "book",
+      "previousProcessedAt": "2026-10-17T19:12:40.671Z",
+      "nextProcessedAt": "2026-10-17T19:12:57.665Z",
+      "processedStampIntervalMs": "16994",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 9,
+      "staleWsBooksAdmittedAtNextStamp": 2
+    },
+    {
+      "previousSequence": 524413,
+      "nextSequence": 524414,
+      "previousType": "unsubmitted_intent_retired",
+      "nextType": "unsubmitted_intent_retired",
+      "previousProcessedAt": "2026-10-17T19:12:29.085Z",
+      "nextProcessedAt": "2026-10-17T19:12:40.671Z",
+      "processedStampIntervalMs": "11586",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 13,
+      "staleWsBooksAdmittedAtNextStamp": 0
+    },
+    {
+      "previousSequence": 524338,
+      "nextSequence": 524339,
+      "previousType": "coverage",
+      "nextType": "book",
+      "previousProcessedAt": "2026-10-17T19:11:32.514Z",
+      "nextProcessedAt": "2026-10-17T19:11:38.859Z",
+      "processedStampIntervalMs": "6345",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 2,
+      "staleWsBooksAdmittedAtNextStamp": 3
+    },
+    {
+      "previousSequence": 524497,
+      "nextSequence": 524498,
+      "previousType": "book",
+      "nextType": "book",
+      "previousProcessedAt": "2026-10-17T19:13:51.054Z",
+      "nextProcessedAt": "2026-10-17T19:13:55.793Z",
+      "processedStampIntervalMs": "4739",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 0,
+      "staleWsBooksAdmittedAtNextStamp": 0
+    },
+    {
+      "previousSequence": 524318,
+      "nextSequence": 524319,
+      "previousType": "coverage",
+      "nextType": "book",
+      "previousProcessedAt": "2026-10-17T19:10:45.142Z",
+      "nextProcessedAt": "2026-10-17T19:10:48.364Z",
+      "processedStampIntervalMs": "3222",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 0,
+      "staleWsBooksAdmittedAtNextStamp": 2
+    },
+    {
+      "previousSequence": 524440,
+      "nextSequence": 524441,
+      "previousType": "book",
+      "nextType": "book",
+      "previousProcessedAt": "2026-10-17T19:12:57.669Z",
+      "nextProcessedAt": "2026-10-17T19:13:00.709Z",
+      "processedStampIntervalMs": "3040",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 1,
+      "staleWsBooksAdmittedAtNextStamp": 0
+    },
+    {
+      "previousSequence": 524334,
+      "nextSequence": 524335,
+      "previousType": "book",
+      "nextType": "unsubmitted_intent_retired",
+      "previousProcessedAt": "2026-10-17T19:10:56.851Z",
+      "nextProcessedAt": "2026-10-17T19:10:59.637Z",
+      "processedStampIntervalMs": "2786",
+      "admittedWsBooksWhoseReceiptFallsInInterval": 0,
+      "staleWsBooksAdmittedAtNextStamp": 0
+    }
+  ],
+  "interStampIntervalsByLastPrecedingNativeType": {
+    "book": {
+      "interval": {
+        "count": 69,
+        "medianMs": "1081",
+        "p90Ms": "2148",
+        "maxMs": "4739"
+      },
+      "over10000ms": 0
+    },
+    "coverage": {
+      "interval": {
+        "count": 9,
+        "medianMs": "1424",
+        "p90Ms": "6345",
+        "maxMs": "6345"
+      },
+      "over10000ms": 0
+    },
+    "gap": {
+      "interval": {
+        "count": 1,
+        "medianMs": "603",
+        "p90Ms": "603",
+        "maxMs": "603"
+      },
+      "over10000ms": 0
+    },
+    "trade": {
+      "interval": {
+        "count": 1,
+        "medianMs": "1",
+        "p90Ms": "1",
+        "maxMs": "1"
+      },
+      "over10000ms": 0
+    },
+    "unsubmitted_intent_retired": {
+      "interval": {
+        "count": 26,
+        "medianMs": "1335.5",
+        "p90Ms": "30437",
+        "maxMs": "34853"
+      },
+      "over10000ms": 7
+    }
+  },
+  "limitations": [
+    "Original admitted-event receipt and processed clocks measure admission backlog, not socket callback, drain entry/exit or durable commit completion.",
+    "Groups of equal processedAt are not independently proved Session batch boundaries.",
+    "Native predecessor adjacency is not causal CPU/fsync attribution; unjournaled work may occur between stamps.",
+    "Only books eventually admitted in this finite window are counted; superseded, queued beyond cutoff and dropped observations are unavailable.",
+    "Raw receipt-body membership and complete market/source coverage are not independently authenticated by these native seals.",
+    "No financial replay, runtime change, profitability or causal optimization benefit is established."
+  ],
+  "executionAuthority": false,
+  "financialReplayPerformed": false,
+  "causalProcessingCostAttributed": false
+}
