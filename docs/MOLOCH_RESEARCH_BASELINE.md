@@ -1,5 +1,10 @@
 # Moloch research baseline
 
+New checked source: [managed inventory planning/original-cohort exits](../research/moloch-managed-inventory-planning-20261017/README.md), actual native320/fundamental128/SDK233 pass; remaining release/runtime/full-prefix qualification in progress. **Not deployed**; R21 remains active.
+
+October17,06:28UTC: **actual profitable exit verified**. R21 sold2,267 inherited948 NO shares for2,046.780 against2,028.965 recorded basis, zero fees: **+17.815 realized**. [Official fill/accounting evidence](../research/moloch-profitable-preparation-20261017/actual-profit-exit/README.md). Ledger355 fills/cash11,321.290/owned84,136.600/combined realized−122.025; new-trading stays−184.970, inherited+62.945. R21 sole616815 remains the executing release; R22 managed-planning/original-cohort exits are being compiled, not deployed. This does not prove new-strategy profitability or causal latency improvement.
+
+
 October17,06:18UTC: R21 remains sole616815, trading/realtimeHealthy/noSTOP. The verified dispatcher chain contains **six post-upgrade ACKs and zero new fills**; ledger352/cash9,274.510/owned86,165.565/combined realized−139.840. [Actual execution observation](../research/moloch-profitable-preparation-20261017/execution-observation/README.md). Observer619883 stopped06:10:55 at its unchanged disk floor; original gzip/footer/hash/seal preserved, complete:false/pendingInputs:1, no model qualification. [Earlier-year Atlas joint diagnostic](../research/atlas_model/chronological-joint-20261017/README.md) passes15 real-data checks independently:5,640 pairs/15 cycles, no joint advantage. [Task161](https://github.com/GodlyDonuts/predictions-cup-2026/issues/161) is a source-only fix for ineligible managed age drafts consuming planning capacity; original-cohort reviewed exits must preserve value/deadline/revocation and all physical liabilities. No strategy profit or latency gain claimed.
 
 

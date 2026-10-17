@@ -1,0 +1,14 @@
+{
+  "reviewedSourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "reviewedOperatorDraftSha256": "decad64c39aec3a43b28140dbb0fc82a8ba4f1d7360be7949b6b517c7609c96c",
+  "reviewer": "existing main_takeover read-only child",
+  "findingsCorrected": [
+    "cohort resting partial-SELL cancellation",
+    "strict original-generation recovery opt-in",
+    "pending-entry hint/reservation consistency"
+  ],
+  "remainingActionableBlockerFound": false,
+  "scope": "source and draft only, no SSH/API/execution",
+  "actualProofPinsFrozen": false,
+  "promotionApproval": false
+}

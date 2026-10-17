@@ -1,0 +1,12 @@
+{
+  ".gitattributes": "ffe82f3c5b968ed009c2577fa38f32c83be167799ee565d40a18e3440c57b342",
+  "actual-source.zip": "7b5baf832d410216a7e70a4b6c574846f956632fc21d92558eacbf2c5ba3720d",
+  "checkpoint.json": "344fbd2ee8c2caa5fdebc33616a97721ee42954affa66f161be8ce5e6814ece9",
+  "export-observation.json": "a7de98e1e9fd66438d68fedeccce25ab6e3dec5a86ba3f5c0b405758c3f1e111",
+  "fundamental_policy.log": "28e5aa9d7d9666f00e7b91bd2622cc587656da480cea79ddd588fc76d512dfd5",
+  "integrated-source-manifest.json": "344505a2c4a429181569d7c7499bdfd7c796323a46c89f885eec1c2f65812557",
+  "managed_inventory_planning.log": "c5b5b18b30b961a6fcbb28352efdda1e2512fe74fed64081ea35388fe3ac69fe",
+  "native-full.log": "876810486ad97638b7f9cb90a0ab75c936016860bca3d4ef17d532b910763def",
+  "owner-verification.json": "ffd8cad05995bdda586ff99758dd8478e2f9d0fff0c27abaa6c73779afe42088",
+  "sdk-library.log": "a76680437e61077c89bcffb586407a8a17de8e9f28627222835e8a7b3a901213"
+}

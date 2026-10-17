@@ -1,5 +1,8 @@
 # Victory Directive: evidence and integration map
 
+Latest06:28UTC: [actual948 NO sale](../moloch-profitable-preparation-20261017/actual-profit-exit/README.md) realizes+17.815 on inherited recorded basis;355 fills/cash11,321.290/owned84,136.600. New-trading realized remains−184.970; no calibrated alpha/competitive-profit claim. R21 continues; R22 source/build is separate.
+
+
 Latest06:18UTC: [R21 actual execution](../moloch-profitable-preparation-20261017/execution-observation/README.md) verifies six post-upgrade ACKs, zero new fills and healthy trading. Full-trace observer619883 stopped06:10:55 at the unchanged disk floor; preserved but incomplete/unqualified. [Earlier-year joint Atlas test](../atlas_model/chronological-joint-20261017/README.md) finds no established joint advantage. [Task161](https://github.com/GodlyDonuts/predictions-cup-2026/issues/161) addresses ineligible managed age drafts while adding genuinely reviewed original-cohort exits; source-only pending ARM64 checks and identity bridge.
 
 

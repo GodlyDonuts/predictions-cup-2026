@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-17T06:28:19.268063+00:00",
+  "reportSha256": "0c7a59d9be907b606bc38801eb23e618a8a1a898557903a296db0a64f862397d",
+  "sequence": 426568,
+  "financial": {
+    "cash": "11321.290000",
+    "ownedCost": "84136.600000",
+    "realized": "-122.025000",
+    "newTradingRealized": "-184.970000",
+    "inheritedRealizedGross": "62.945000",
+    "reservedCash": "233.640000"
+  },
+  "newFills": [
+    {
+      "action": "sell",
+      "actualOrderId": "44727674",
+      "at": "2026-10-17T06:23:40.402Z",
+      "counterfactual": false,
+      "exchangeId": "948",
+      "executedAt": "2026-10-17T06:23:28.358Z",
+      "fee": "0.000000",
+      "marketId": "259",
+      "orderId": 13742,
+      "price": "0.900000",
+      "quantity": 796,
+      "receiptHash": "a6fc373ca5d36cb2994012307b9784a045ab13518706e9196ba225920d85fa3e",
+      "side": "NO",
+      "sourceId": "186421378"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "44727674",
+      "at": "2026-10-17T06:23:40.860Z",
+      "counterfactual": false,
+      "exchangeId": "948",
+      "executedAt": "2026-10-17T06:23:28.358Z",
+      "fee": "0.000000",
+      "marketId": "259",
+      "orderId": 13742,
+      "price": "0.900000",
+      "quantity": 175,
+      "receiptHash": "a6fc373ca5d36cb2994012307b9784a045ab13518706e9196ba225920d85fa3e",
+      "side": "NO",
+      "sourceId": "186421373"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "44727674",
+      "at": "2026-10-17T06:23:41.334Z",
+      "counterfactual": false,
+      "exchangeId": "948",
+      "executedAt": "2026-10-17T06:23:28.358Z",
+      "fee": "0.000000",
+      "marketId": "259",
+      "orderId": 13742,
+      "price": "0.905000",
+      "quantity": 1296,
+      "receiptHash": "a6fc373ca5d36cb2994012307b9784a045ab13518706e9196ba225920d85fa3e",
+      "side": "NO",
+      "sourceId": "186421368"
+    }
+  ]
+}

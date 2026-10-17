@@ -1,0 +1,46 @@
+{
+  "observedAt": "2026-10-17T06:28:19.268063+00:00",
+  "sourceObservationSha256": "c9d29072a48240f5d7aeeda656ad65a91b349a76b2af0ab7ff52371fdcd71b60",
+  "priorObservedBoundary": {
+    "fills": 352,
+    "cash": "9274.510",
+    "ownedCost": "86165.565",
+    "realized": "-139.840",
+    "newTradingRealized": "-184.970",
+    "inheritedRealizedGross": "45.130"
+  },
+  "laterObservedBoundary": {
+    "fills": 355,
+    "cash": "11321.290",
+    "ownedCost": "84136.600",
+    "realized": "-122.025",
+    "newTradingRealized": "-184.970",
+    "inheritedRealizedGross": "62.945"
+  },
+  "actualOrderId": "44727674",
+  "nativeQid": 13742,
+  "exchangeId": "948",
+  "side": "NO",
+  "action": "sell",
+  "quantity": 2267,
+  "fillRows": 3,
+  "proceeds": "2046.780",
+  "attributedBasisReleased": "2028.965",
+  "realizedGain": "17.815",
+  "fees": "0.000",
+  "checks": [
+    "exact decimal fill proceeds",
+    "cash delta equals proceeds",
+    "owned cost delta equals attributed basis",
+    "realized delta equals proceeds minus basis",
+    "new-trading realized unchanged",
+    "inherited realized delta exactly17.815"
+  ],
+  "notClaimed": [
+    "new strategy profitability",
+    "whole-account liquidation NAV",
+    "rank",
+    "causal release latency benefit",
+    "success of future R22 deployment"
+  ]
+}

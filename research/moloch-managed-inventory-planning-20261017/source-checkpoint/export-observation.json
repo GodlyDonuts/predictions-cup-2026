@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-10-17T06:42:42.100956+00:00",
+  "sourceCommit": "55fc4533ef855d7c0edaebcfe615202663b3ae40",
+  "productionChanged": false,
+  "deployed": false,
+  "completeReleaseQualification": false,
+  "passedCheckNames": [
+    "managed_inventory_planning",
+    "fundamental_policy",
+    "sdk-library",
+    "native-full"
+  ],
+  "ongoingFullBuild": true,
+  "note": "Completed actual checks only; remaining native/runtime/worker/release/bridge gates are not presumed passed."
+}
