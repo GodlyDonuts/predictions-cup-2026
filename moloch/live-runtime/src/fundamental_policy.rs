@@ -1550,7 +1550,7 @@ impl Cohorts{
         if let Some(proof)=&top_up{let held=proof["heldQuantity"].as_u64().ok_or("FUNDAMENTAL_TOP_UP_QUANTITY")?;let cost=amount(proof["heldCost"].as_str().ok_or("FUNDAMENTAL_TOP_UP_COST")?)?;
             need(held.checked_add(n).is_some_and(|n|n<=r.maximum_quantity)&&add(cost,mul(price,n as i128)?)?<=amount(&r.maximum_principal)?,"FUNDAMENTAL_TOP_UP_TOTAL_CAP")?;}
         if log.attempted.iter().any(|id|!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id)){return Ok(hold("unknown_physical_acceptance"))}
-        if bank.engine().order_records().iter().any(|other|other["exchangeId"]==ex
+        if crate::order_snapshot::snapshot(bank).records().iter().any(|other|other["exchangeId"]==ex
             &&other["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){return Ok(hold("same_exchange_physical_order_open"))}
         if bank.engine().package_blocks_submissions(){return Ok(hold("unresolved_package"))}
         if now>=daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("FUNDAMENTAL_ENTRY_DEADLINE")?)?{return Ok(hold("original_entry_window_expired"))}
