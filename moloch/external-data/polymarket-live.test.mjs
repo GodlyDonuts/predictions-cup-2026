@@ -7,19 +7,19 @@ import {EventEmitter} from 'node:events';
 import {run,args} from './polymarket-live.mjs';
 const conditionId='0x'+'a'.repeat(64),outcomes=[{assetId:'1',conditionId,pricingAuthority:false,resolutionEquivalenceVerified:false}];
 const turn=()=>new Promise(resolve=>setTimeout(resolve,10));
-async function harness(action,{recordFailure=false,scope=outcomes}={}){
+async function harness(action,{recordFailure=false,scope=outcomes,writeCache}={}){
  const cache=await fs.mkdtemp(path.join(os.tmpdir(),'poly-live-'));let at=1000,socket,stopped=false,journalClosed=false;const recorded=[];
  class Socket extends EventEmitter{send(){}terminate(){}close(){}}
  const rest=async(_options,hooks)=>{let resolve;const stoppedPromise=new Promise(r=>resolve=r);try{await hooks.onReady({outcomes:scope,stop:()=>{stopped=true;resolve();},recordEvent:async row=>{assert.equal(journalClosed,false);if(recordFailure)throw Error('DISK_FULL');recorded.push(row);},status:()=>({})});await stoppedPromise;}finally{await hooks.onStopping();journalClosed=true;}return{stopped:true};};
- try{return await run({cache,'ws-port':0},{runRest:rest,now:()=>at,streamOptions:{now:()=>at,webSocketFactory:()=>{socket=new Socket();return socket;},reconnectBaseMs:60000},onReady:async ready=>{await action({ready,cache,recorded,socket,setTime:n=>at=n,get stopped(){return stopped;}});}});}finally{await fs.rm(cache,{recursive:true,force:true});}
+ try{return await run({cache,'ws-port':0},{runRest:rest,writeCache,now:()=>at,streamOptions:{now:()=>at,webSocketFactory:()=>{socket=new Socket();return socket;},reconnectBaseMs:60000},onReady:async ready=>{await action({ready,cache,recorded,socket,setTime:n=>at=n,get stopped(){return stopped;}});}});}finally{await fs.rm(cache,{recursive:true,force:true});}
 }
 const raw=()=>JSON.stringify({event_type:'book',asset_id:'1',market:conditionId,timestamp:'1000',hash:'venue',bids:[{price:'0.4',size:'8'}],asks:[{price:'0.6',size:'9'}]});
 const get=async(port,route)=>{const r=await fetch(`http://127.0.0.1:${port}${route}`);return{status:r.status,value:await r.json()};};
 test('actual WS frame is original-journaled, cached separately, and HTTP view expires without clock renewal',async()=>{
- await harness(async({ready,socket,recorded,cache,setTime})=>{socket.emit('open');const body=raw();socket.emit('message',Buffer.from(body));await turn();const first=await get(ready.port,'/book?assetId=1');assert.equal(first.value.book.valid,true);assert.equal(first.value.book.bestBid,'0.4');assert.equal(recorded[0].bodyText,body);assert.equal(recorded[0].source,'polymarket_clob_ws_public');const stored=JSON.parse(await fs.readFile(path.join(cache,'ws-latest/1.json')));assert.equal(stored.receivedAt,'1970-01-01T00:00:01.000Z');setTime(31001);const stale=await get(ready.port,'/book?assetId=1');assert.equal(stale.value.book.valid,false);assert.equal(stale.value.book.receivedAt,first.value.book.receivedAt);ready.stop();});
+ await harness(async({ready,socket,recorded,cache,setTime})=>{socket.emit('open');const body=raw();socket.emit('message',Buffer.from(body));await turn();const first=await get(ready.port,'/book?assetId=1');assert.equal(first.value.book.valid,true);assert.equal(first.value.book.bestBid,'0.4');assert.equal(recorded[0].bodyText,body);assert.equal(recorded[0].source,'polymarket_clob_ws_public');await new Promise(resolve=>setTimeout(resolve,230));const stored=JSON.parse(await fs.readFile(path.join(cache,'ws-latest/1.json')));assert.equal(stored.receivedAt,'1970-01-01T00:00:01.000Z');setTime(31001);const stale=await get(ready.port,'/book?assetId=1');assert.equal(stale.value.book.valid,false);assert.equal(stale.value.book.receivedAt,first.value.book.receivedAt);ready.stop();});
 });
 test('network disconnect invalidates disk and export, records boundary, but keeps REST alive',async()=>{
- await harness(async ctx=>{const{ready,socket,recorded,cache}=ctx;socket.emit('open');socket.emit('message',Buffer.from(raw()));await turn();socket.emit('close');await turn();assert.equal(ctx.stopped,false);const q=await get(ready.port,'/book?assetId=1');assert.equal(q.value.book.valid,false);const stored=JSON.parse(await fs.readFile(path.join(cache,'ws-latest/1.json')));assert.equal(stored.normalized.valid,false);assert.equal(stored.streamEpoch,1);assert.equal(recorded.at(-1).eventType,'stream_invalidated');assert.equal(recorded.at(-1).bodyText,null);ready.stop();});
+ await harness(async ctx=>{const{ready,socket,recorded,cache}=ctx;socket.emit('open');socket.emit('message',Buffer.from(raw()));await turn();socket.emit('close');await turn();assert.equal(ctx.stopped,false);const q=await get(ready.port,'/book?assetId=1');assert.equal(q.value.book.valid,false);await new Promise(resolve=>setTimeout(resolve,230));const stored=JSON.parse(await fs.readFile(path.join(cache,'ws-latest/1.json')));assert.equal(stored.normalized.valid,false);assert.equal(stored.streamEpoch,1);assert.equal(recorded.at(-1).eventType,'stream_invalidated');assert.equal(recorded.at(-1).bodyText,null);ready.stop();});
 });
 test('REST stop drains WS invalidations into journal before closure',async()=>{
  const result=await harness(async({ready,socket})=>{socket.emit('open');socket.emit('message',Buffer.from(raw()));await turn();ready.stop();});assert.equal(result.rest.stopped,true);assert.equal(result.ws.stream.stopped,true);
@@ -48,3 +48,12 @@ test('real REST collector lifecycle shares bounded original journal and awaits f
  }finally{await fs.rm(root,{recursive:true,force:true});}
 });
 
+
+test('burst coalesces disk publications but journals every original mutation and serves exact latest state',async()=>{
+ let writes=0;const {atomicJson}=await import('./polymarket-collector.mjs');
+ await harness(async({ready,socket,recorded})=>{socket.emit('open');socket.emit('message',Buffer.from(raw()));for(let i=1;i<=50;i++)socket.emit('message',Buffer.from(JSON.stringify({event_type:'price_change',market:conditionId,timestamp:'1000',price_changes:[{asset_id:'1',side:'BUY',price:'0.4',size:String(8+i)}]})));await turn();assert.equal(recorded.length,51);const q=await get(ready.port,'/book?assetId=1');assert.equal(q.value.book.bids[0].size,'58');assert.equal(ready.status().pendingCoalesced,1);assert.ok(ready.status().cacheCoalesced>=49);assert.equal(writes,0);await new Promise(resolve=>setTimeout(resolve,230));assert.equal(writes,1);socket.emit('close');await turn();assert.equal((await get(ready.port,'/book?assetId=1')).value.book.valid,false);ready.stop();},{writeCache:async(file,row)=>{writes++;await atomicJson(file,row);}});
+ assert.equal(writes,2);
+});
+test('coalesced cache durability failure stops REST and WS without losing failure',async()=>{
+ await assert.rejects(harness(async({socket})=>{socket.emit('open');socket.emit('message',Buffer.from(raw()));await new Promise(resolve=>setTimeout(resolve,250));},{writeCache:async()=>{throw Error('CACHE_DISK_FAILURE');}}),/CACHE_DISK_FAILURE/);
+});
