@@ -2126,13 +2126,15 @@ pub fn main()->Result<()>{
    if mode==Mode::Disabled{assert!(!root.0.join("ordinary-side-edge-refreshed.json").exists());}else{assert_eq!(load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap()["vetoedThisPass"],false);}
   }
  }
- #[test]fn refreshed_ws_only_book_without_original_request_clock_cannot_veto(){
+ #[test]fn refreshed_genuine_strong_no_ws_book_does_not_veto_account_packet(){
   use moloch_live_runtime::ordinary_side_edge::Mode;
   let(root,mut c,mut bank,log,mut source,_yes,book)=fixture_at(now()-15000);c.ordinary_side_edge=Mode::Enforce;let no=bank.engine().order_records().into_iter().find(|q|q["side"]=="NO"&&q["retired"]==false).unwrap();let mut reads=Reads::new(book);
   // The hook admits a genuine newer WS book; the returned REST book is an
-  // older source sequence. WS lacks requestStartedAt: no negative capability.
+  // older source sequence. RestSource::broadcast pins the normalized receive
+  // clock. Bid10/ask990 gives YES .400100 and NO .599900: this NO is strong,
+  // so an actual fresh source update must not suppress its independent packet.
   assert!(ordinary_preflight(&c,&mut bank,&log,&mut source,&no,&mut reads).unwrap().is_some());assert_eq!(reads.endpoints.len(),8);
-  let diagnostic=load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap();assert_eq!(diagnostic["class"],"unavailable");assert_eq!(diagnostic["vetoedThisPass"],false);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+  let diagnostic=load(&root.0.join("ordinary-side-edge-refreshed.json")).unwrap();assert_eq!(diagnostic["class"],"meets_minimum");assert_eq!(diagnostic["vetoedThisPass"],false);assert!(log.intents.is_empty()&&log.attempted.is_empty());
  }
  #[test]fn refreshed_negative_never_swallows_stream_or_durable_errors(){
   use moloch_live_runtime::ordinary_side_edge::Mode;
