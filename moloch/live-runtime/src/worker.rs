@@ -861,6 +861,17 @@ fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&Productio
  Ok(moloch_live_runtime::exit_refresh::Safety{never_attempted:log.never_attempted(qid),has_intent:log.intents.contains_key(&qid),unresolved_attempts:false,global_unknown,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity(ex,side),reserved_sell_quantity:reserved,same_exchange_pending_physical_order:physical,lifecycle_fingerprint:Sha256::digest(serde_json::to_vec(&lifecycle)?).into(),native_head_fingerprint:native_head(c)?})
 }
 fn refresh_deferred(c:&Control,stage:&str,error:&dyn std::fmt::Display)->Result<()>{atomic_json(&c.root.join("exit-refresh.json"),&json!({"at":iso(now()),"stage":stage,"code":error.to_string(),"expiryExtended":false,"writeAttempted":false}))}
+// A preparation hint only: final selection still binds the new quote to all
+// seven original receipts and reruns current lifecycle/coverage/profit checks.
+fn profit_successor_exists(bank:&Session,hint:&moloch_live_runtime::exit_refresh::ReadHint,cutoff:u64,at:u64)->Result<bool>{
+ for q in bank.engine().order_records(){
+  if q["id"].as_u64().is_some_and(|id|id>cutoff)&&q["marketId"]==hint.market()&&q["exchangeId"]==hint.exchange()&&q["side"]==hint.side()
+   &&q["retired"]==false&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)
+   &&q["expiresAt"].as_u64().is_some_and(|end|end>at.saturating_add(3000))
+   &&moloch_live_runtime::exit_refresh::ReadKind::from_quote(&q)==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit)
+   &&moloch_live_runtime::exit_refresh::current_profit_qualified(bank,&q)?{return Ok(true)}
+ }Ok(false)
+}
 fn exit_recovery_from(source:&RestSource,market:&str,prior_window:u64)->Option<u64>{source.recovery_start_ms(market).map(|from|from.min(prior_window))}
 fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,old:&Value,hint:&moloch_live_runtime::exit_refresh::ReadHint,flow_started:u64,maximum_qid_before:u64,unknown:bool,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  use moloch_live_runtime::exit_refresh::{RefreshFacts,BookAcceptance,RefreshPlan,RefreshStage};
@@ -877,6 +888,25 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   let scopes=source.scopes();let scope=scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?;
   if !scope["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{refresh_deferred(c,"coverage_ineligible",&"COMPLETE_TARGET_TAPE_REQUIRED")?;return Ok(())}
   refresh_controls(c,authority,stream)?;
+ }
+ if hint.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit{
+  if queue_has_unknown(t)?{return refresh_deferred(c,"preparation","GLOBAL_UNKNOWN_ACCEPTANCE")}
+  // Give the ordinary native planner the actual target book BEFORE consuming
+  // the timed seven-fact packet. Otherwise unrelated profitable drafts may use
+  // the real write gap and the target appears only after that packet is over.
+  // This extra read is not one of the final seven and grants no HTTP authority.
+  let initial=preflight_read(bank,source,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},None,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
+  let target=json!({"marketId":market,"exchangeId":hint.exchange()});accept_fresh_book(bank,c,&target,&initial,source)?;
+  if !profit_successor_exists(bank,hint,maximum_qid_before,now())?{
+   let gap=bank.engine().policy()["writeGapMs"].as_u64().ok_or("LIVE_PROFIT_REFRESH_WRITE_GAP")?;
+   if gap>3000{return refresh_deferred(c,"preparation","NATIVE_GAP_EXCEEDS_BOUNDED_PREPARATION")}
+   let ready=now().checked_add(gap).ok_or("LIVE_PROFIT_REFRESH_CLOCK_RANGE")?;
+   while now()<ready{refresh_controls(c,authority,stream)?;std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).clamp(1,100)));}
+   refresh_controls(c,authority,stream)?;
+   // A real current-time tick, not a rewritten book/source clock. Native
+   // budgets and ranking still determine whether ANY new quote is generated.
+   accept(bank,&json!({"type":"tick","receivedAt":iso(now())}))?;
+  }
  }
  let facts=snapshots(t,c,authority,bank,source,stream,breadth,universe,old)?;
  let bound=match RefreshFacts::new(&c.scope,hint,[facts.account.clone(),facts.positions.clone(),facts.open_orders.clone(),facts.cash_balance.clone(),facts.market.clone(),facts.contract.clone(),facts.book.clone()],now()){

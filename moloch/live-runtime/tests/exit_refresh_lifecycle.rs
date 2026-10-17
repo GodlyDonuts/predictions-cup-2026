@@ -127,3 +127,42 @@ fn profit_safety(bank:&Session,side:Side)->Safety{Safety{never_attempted:true,ha
  let facts=RefreshFacts::new(&scope(),&hint,raw.clone(),ms(27000)).unwrap();let events=moloch_replay::source::receipt_events(&wrapped(&raw[6])).unwrap();let events=commit(&mut bank,&events,27000);let safe=profit_safety(&bank,Side::No);let proof=BookAcceptance::from_events(&facts,&events,true,safe.native_head_fingerprint,ms(27000),ms(27100)).unwrap();
  assert!(RefreshPlan::select(&facts,&proof,&bank.engine().order_records(),cutoff,ms(20000),ms(27100),ms(27100),|_|safe).is_err());assert_eq!(bank.engine().wallet.quantity("2",Side::No),5);assert!(bank.engine().fills().is_empty());drop(bank);fs::remove_dir_all(root).unwrap();
 }
+
+#[test]fn early_target_book_and_real_gap_allow_a_native_profit_successor_before_the_final_packet(){
+ use moloch_live_runtime::exit_refresh::{ReadKind,current_profit_qualified};
+ fn book(ex:&str,market:&str,t:u64,sequence:u64)->Value{json!({"type":"book","receivedAt":at(t),"book":{"marketId":market,"exchangeId":ex,"tournamentId":TOURNAMENT,"sequence":sequence.to_string(),"sourceAt":at(t),"requestStartedAt":at(t),"receivedAt":at(t),"bids":[{"price":"0.400000","quantity":1000}],"asks":[{"price":"0.420000","quantity":1000}]}})}
+ for warm in [false,true]{
+  let root=std::env::temp_dir().join(format!("profit-seed-budget-{}-{}-{warm}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));
+  let policy=json!({"quantity":5,"maximumMarkets":4,"entriesEnabled":false,"maximumInventoryAgeMs":60000,"inventoryAgeClock":"execution","inventoryTakerAfterMs":0,"inventoryMinimumGain":"0.005000","inventoryExitMode":"fixedGain","inventoryExitDepthBps":5000,"writeGapMs":2500,"writesPerMinute":24});
+  let seed=json!({"runId":"profit-budget-refresh","tournamentId":TOURNAMENT,"availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":at(0)});
+  let mut bank=Session::open_live(&root,&policy,&seed).unwrap();
+  let positions:Vec<_>=[("1","3"),("2","1"),("3","4")].into_iter().enumerate().map(|(i,(ex,market))|json!({"marketId":market,"exchangeId":ex,"quantity":-5,"lotPrincipal":"2.500000","reportedCostBasis":"2.500000","reportedMinusLotPrincipal":"0.000000","basisClassification":"exact","lots":[{"lotId":(901+i).to_string(),"quantity":5,"side":"NO","entryPrice":"0.500000","openedAt":at(0)}]})).collect();
+  commit(&mut bank,&[json!({"type":"actual_position_adoption","source":"official_sig_api_v1","authority":"human_moloch_inherited_management_20261015","complete":true,"receiptHash":"d".repeat(64),"tournamentId":TOURNAMENT,"receivedAt":at(0),"requestStartedAt":at(0),"openingCost":"7.500000","effectiveMaximumMarkets":4,"positions":positions})],0);
+  commit(&mut bank,&[book("2","1",0,1)],0);
+  let old=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="2"&&q["action"]=="sell").unwrap();
+  commit(&mut bank,&[json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","receiptHash":"e".repeat(64),"orderId":old["id"],"confirmedNetworkAttempts":0,"deferPlanningForPackage":true,"receivedAt":at(20000)})],20000);
+  // A genuine other holding consumes the unchanged global write gap.
+  commit(&mut bank,&[book("1","3",25000,1)],25000);
+  let cutoff=bank.engine().order_records().iter().filter_map(|q|q["id"].as_u64()).max().unwrap();
+  let hint=ReadHint::from_expired_kind(&old,profit_safety(&bank,Side::No),ms(26000),ReadKind::Profit).unwrap();
+  if warm{
+   commit(&mut bank,&[book("2","1",27000,2)],27000);
+   assert!(!bank.engine().order_records().iter().any(|q|q["exchangeId"]=="2"&&q["id"].as_u64().unwrap()>cutoff),"real native gap still denies the early book");
+   commit(&mut bank,&[json!({"type":"tick","receivedAt":at(27499)})],27499);
+   assert!(!bank.engine().order_records().iter().any(|q|q["exchangeId"]=="2"&&q["id"].as_u64().unwrap()>cutoff),"one millisecond before the real gap is not permission");
+   commit(&mut bank,&[json!({"type":"tick","receivedAt":at(29500)})],29500);
+  }
+  // Another actual native write shortly before the final book prevents a late
+  // successor, reproducing the observed NO_FRESH_CANDIDATE path without seeding.
+  commit(&mut bank,&[book("3","4",35000,1)],35000);
+  let mut raw=receipts();for(i,r)in raw.iter_mut().enumerate(){r.request_started_at=at(30000+i as u64*1000);r.received_at=at(30100+i as u64*1000);}
+  raw[0].data["myBalance"]=json!(1000);raw[1].data=json!({"positions":[{"exchangeId":"2","marketId":"1","quantity":-5,"lots":[{"lotId":"902","side":"NO","quantity":5,"entryPrice":0.5,"openedAt":at(0)}]}]});raw[3].data=json!({"balance":1000,"availableAdvance":0,"buyingPower":1000});
+  raw[6].data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["at"]=json!(at(36000));raw[6].data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["sequence"]=json!(3);
+  let facts=RefreshFacts::new(&scope(),&hint,raw.clone(),ms(36200)).unwrap();let events=moloch_replay::source::receipt_events(&wrapped(&raw[6])).unwrap();let events=commit(&mut bank,&events,36100);
+  let safe=profit_safety(&bank,Side::No);let proof=BookAcceptance::from_events(&facts,&events,true,safe.native_head_fingerprint,ms(36000),ms(36200)).unwrap();let quotes=bank.engine().order_records();
+  let plan=RefreshPlan::select(&facts,&proof,&quotes,cutoff,ms(26000),ms(36200),ms(36200),|_|safe);
+  if warm{let plan=plan.unwrap();assert!(current_profit_qualified(&bank,plan.quote()).unwrap());assert_eq!(plan.quote()["createdAt"],ms(29500));assert_ne!(plan.quote()["id"],old["id"]);assert_eq!(plan.stage(plan.quote(),&facts,&scope(),safe,ms(36200)).unwrap(),RefreshStage::Ready);}
+  else{assert_eq!(plan.err().unwrap().to_string(),"EXIT_REFRESH_NO_FRESH_CANDIDATE");}
+  assert!(bank.engine().fills().is_empty());assert_eq!(bank.engine().wallet.quantity("2",Side::No),5);drop(bank);fs::remove_dir_all(root).unwrap();
+ }
+}
