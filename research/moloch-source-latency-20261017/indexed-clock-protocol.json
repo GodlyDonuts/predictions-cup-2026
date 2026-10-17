@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "declaredAtUtc": "2026-10-17T13:05:30Z",
+  "task": 167,
+  "oldProcess": "R26/651324",
+  "oldWindowStartUtc": "2026-10-17T13:06:00Z",
+  "oldWindowEndExclusiveUtc": "2026-10-17T13:11:00Z",
+  "newProcess": "R27 actual PID from independently checked rollout",
+  "newWindowStart": "First captured fresh trading/realtimeHealthy progress.at belonging to the actual R27 PID",
+  "windowMs": 300000,
+  "policyMaximumBookAgeMs": 10000,
+  "population": "All original admitted native books with processedAt in each fixed half-open window, including explicit invalid books",
+  "metrics": "Identical exact nanosecond metrics and raw member/seal verification from compare_book_clocks.py:measure; separate all/realtime/REST counts, median, nearest-rank p90, max, missing and stale flags",
+  "generationRequirement": "Original five-generation prefix and current eleven review economic terms preserved across both windows; no model activation or clock renewal",
+  "limitations": [
+    "Different live windows and startup versus continuing operation are observational, not randomized causal evidence.",
+    "Old fixed window is declared before completion; neither side is selected or retuned after its latency outcome.",
+    "Original native admission/seals do not independently authenticate all provider bodies or measure continuous market coverage.",
+    "Component benchmarks exclude complete worker operation; runtime clock results are separate.",
+    "No profitability or fill-frequency improvement follows from latency alone."
+  ],
+  "executionAuthority": false
+}
