@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-17T03:36:46.850499+00:00",
+  "archive": "/home/archon/apps/moloch/shared/account-queue-preserved-v1/superseded-before-244730-20261017T033244Z.tar.gz",
+  "archiveSha256": "0f330df67cc8f9df91137bf7ebce72b02d71fe6874ff5dc93ed1d955688636d1",
+  "archiveBytes": 2338006865,
+  "sourceDirectory": "/home/archon/apps/moloch/shared/live-production-v1/account-queue",
+  "selectedAnchorAtStart": 244730,
+  "selectedAnchorBeforeUnlink": 245105,
+  "originalBytes": 8548167607,
+  "fullDecompressionHashesVerified": true,
+  "originalsRehashedAfterArchive": true,
+  "currentGenerationAndSpecialProofFilesExcluded": true,
+  "noAccountRequestsOrRuntimeChanges": true,
+  "phase": "complete",
+  "preservedFileCount": 299,
+  "originalRawCopiesRemoved": true,
+  "freeMiB": 8826,
+  "manifestSha256": "e82d8e72322b440faaeb6a1a276eada8a5627c3dea00f310599e1834ad93ec62",
+  "historicalAuditRequiresExplicitExtraction": true
+}

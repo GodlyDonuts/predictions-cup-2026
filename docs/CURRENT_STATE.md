@@ -1,3 +1,18 @@
+# October17,03:40UTC — active strategy fixes checked and staged
+
+Candidatea557c779/binary7d44e839 passed836 checks and optimized ARM64 release;
+all262 source files match Git exactly or by CRLF normalization. Actual unchanged
+compiled checks are reused explicitly; retained failed fixture demonstrates the
+native write gap before corrected same-receipt reservation. The candidate fixes
+active final-ask quantity under-sizing, unconditional wait and unrelated expensive
+hint proofs. **Staged, not deployed**; sole601007 remains onf21c8b5f/b398c7e7.
+No native/SDK/source-clock/probability/risk/cadence changes. [Exact checked evidence](../research/moloch-throughput-capital-20261017/entry-strategy-proof/strategy-check-summary.json).
+
+Essential retention preserved299 superseded queue files byte-for-byte in a verified
+compressed archive, leaving8,826MiB at03:36; current generation/special proofs
+untouched. Ordinary spread entries remain active despite optional maker gateOFF;
+this is not empirical maker qualification. [Current handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md).
+
 # October17,03:22UTC — same-release recovery now verified trading
 
 Actual601007 progress at03:19:50UTC is trading/realtimeHealthy/noSTOP, with

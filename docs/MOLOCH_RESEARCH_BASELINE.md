@@ -1,6 +1,6 @@
 # Moloch research baseline
 
-Updated **2026-10-17 03:22 UTC**.
+Updated **2026-10-17 03:40 UTC**.
 
 Read [the current research handoff](MOLOCH_RESEARCH_HANDOFF_20261017.md) first. It separates deployed strategies, source-only components, missing economics, capital/fill evidence and next work. Older dated reports are history; previous baseline versions remain in Git.
 
@@ -13,10 +13,10 @@ Verified ledger:324 fill rows, cash19,449.715, owned75,993.970, combined realize
 |Fundamental/capital |Eleven policies; larger V2 budgets/top-ups implemented. Repeat purchases/capital deployment verified and same-release recovery now verified. |
 |Probabilities |Reviewed assumptions; no calibrated live correlated posterior. |
 |Mode choice |Join/improve/bounded and actual outcome collection exist; empirical optimizer missing. |
-|Market making |Economic qualification incomplete; gate OFF. |
+|Market making |Economic qualification incomplete; optional gate OFF. Ordinary spread/microprice-proxy entries remain active with60s age exits. |
 |Kalshi |Live reference feed,234 direct/3 analog mappings; qualified profitable lead-lag alpha unproved. |
 |Account/rank |Components/reviewed sleeve exist; calibrated whole-account/rank generation incomplete. |
-|Speed |Repeat buys verified; remaining plan expiries observed. Candidate453fead6 fixes active sizing/preparation; ARM64 build in progress/unactivated. Cadence work deferred. |
+|Speed |Repeat buys verified; remaining plan expiries observed. Candidatea557c779 fixes active sizing/preparation;836 checks/optimized release pass, staged/unactivated. Cadence work deferred. |
 
 No paper is declared fully implemented. Strategy/acquisition economics are the priority. Infrastructure stops unless essential; keep verified production trading and improve mode choice/allocation from observed outcomes/capital time.
 

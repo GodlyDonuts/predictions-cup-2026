@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-17T03:37:34.991012+00:00",
+  "operatorPath": "/tmp/moloch-throughput-capital-r19-owner-frozen-20261017.py",
+  "operatorSha256": "dcfa980b913bdbbc1647df992c165685c85fc77aa125af31bbec780cccf86081",
+  "draftSha256": "705fff9387e529e593863548addbce2f6cc0ef8cf012fb892a066452c87bdf9a",
+  "sourceCommit": "a557c7793077faae1b3a0703d9690998625f7644",
+  "binarySha256": "7d44e8392abc47d80151cc3215faf0e71ec9f12d0299a0d3a5a6c1dd20b35ee7",
+  "nativeEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "financialBridgeEntriesUnchanged": 14,
+  "originalGenerationCount": 4,
+  "managedReviewCount": 11,
+  "pins": {
+    "SOURCE": "a557c7793077faae1b3a0703d9690998625f7644",
+    "VALIDATION_SHA": "24af42f63eef29ad758e0bbdc4d7049f24567435e645313d547536d6acbba1e4",
+    "PRIOR_SHA": "0bae11141b559f4afe6e218ab893ffd112fccd144451f12df4d1796380558b74",
+    "PRIOR_STAGE_PATH": "/tmp/moloch-throughput-capital-r18-20261017-staging.json",
+    "PRIOR_STAGE_SHA": "7717200cf10263a1dac5be26abe0517a6da08ee5addcbc5a096fadc215355473",
+    "REVIEW_BUNDLE_SHA": "9ab20389cc2520e0faca577d01563e0193db9ffdf93a350ec6f81932bcf06dcc",
+    "EXPECTED_TEST_RESULTS": {
+      "sdk-library": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "native-library": [
+        [
+          "98",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "runtime-library": [
+        [
+          "237",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ],
+      "worker": [
+        [
+          "122",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_policy": [
+        [
+          "119",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_quantity": [
+        [
+          "2",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "fundamental_source_bounds": [
+        [
+          "7",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "alpha_proposal": [
+        [
+          "18",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "release": null,
+      "engine-probe-build": null,
+      "engine-probe-run": null
+    },
+    "GENERATION_SHA": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17",
+    "ACTIVE_OVERLAY_SHA": "5478dab3b905ad1ea75cff6fa1e9c4a59ab646bc9e85be5d4a5872f96499036a",
+    "ORIGINAL_REQUEST_SHA": "b27c469978fbe3149dcbaa74a42a1d8b79867fe57be40ca50413d572eae84e17"
+  },
+  "modesExecuted": false,
+  "independentSourceReview": "main_takeover found no concrete blocker; root frozen-source and exact artifact checks still required"
+}

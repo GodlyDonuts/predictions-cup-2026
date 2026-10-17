@@ -1,0 +1,90 @@
+{
+  "sourceCommit": "453fead62b3bb1c93b876ca655aff0a18e95f6ea",
+  "sourceManifestSha256": "7753faea1aa67dfc28a11f07c4fcbe9437e34ad5d91cde65ee5da782df3f192e",
+  "sourceFiles": 262,
+  "expectedEngineIdentity": "7a74f8c3a53119e158dae8338cd09d68140fc4299f09d4fb35ac060be5be7efa",
+  "productionChanged": false,
+  "startedAt": "2026-10-17T03:18:56.730939+00:00",
+  "checks": {
+    "sdk-library": {
+      "exitCode": 0,
+      "seconds": 25.253784310014453,
+      "logSha256": "1aa2d540ba66aefbe9aecd2bd1e04997d4c3417f867fb06ca21eaee472fcdf74",
+      "logBytes": 24978,
+      "testResults": [
+        [
+          "233",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "native-library": {
+      "exitCode": 0,
+      "seconds": 18.354853102006018,
+      "logSha256": "143fd5dcd257e4bfbdf4aa977aa505dc15a6d65b7b039612fafa1e97561ec167",
+      "logBytes": 13220,
+      "testResults": [
+        [
+          "98",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "runtime-library": {
+      "exitCode": 0,
+      "seconds": 123.4243604009971,
+      "logSha256": "6cb401044120a1129c62b47cf1739dcd1e04cf4fcf6bad4fafa5c0934cb7c363",
+      "logBytes": 38521,
+      "testResults": [
+        [
+          "237",
+          "0",
+          "1",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "worker": {
+      "exitCode": 0,
+      "seconds": 58.41197425898281,
+      "logSha256": "a5f061a7e61d0a60e09e19dcb6f1da9088f911feceb5acec4985762f3a958887",
+      "logBytes": 24820,
+      "testResults": [
+        [
+          "122",
+          "0",
+          "0",
+          "0",
+          "0"
+        ]
+      ]
+    },
+    "fundamental_policy": {
+      "exitCode": 101,
+      "seconds": 74.45108231497579,
+      "logSha256": "0fb77836bb13c7d30e41398736b5cabae0caaaf4ff09fd3a13b9874dc7221d02",
+      "logBytes": 24125,
+      "testResults": []
+    }
+  },
+  "parentValidationSha256": "9299869924baea31a9eb97bb71502df8f7a1829890796c4882e66778fb1d0898",
+  "reusedChecks": {
+    "sdk-library": {
+      "originalSourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+      "originalValidationSha256": "9299869924baea31a9eb97bb71502df8f7a1829890796c4882e66778fb1d0898",
+      "allSdkAndNativeSourceBytesExactUnchanged": true
+    },
+    "native-library": {
+      "originalSourceCommit": "f21c8b5f9ff4daeea18ffc6f67d0f46f1cb076bb",
+      "originalValidationSha256": "9299869924baea31a9eb97bb71502df8f7a1829890796c4882e66778fb1d0898",
+      "allSdkAndNativeSourceBytesExactUnchanged": true
+    }
+  }
+}
