@@ -1,0 +1,9 @@
+# Original fundamental closure-row cache
+
+Source-only performance change. Only parsed, hash-chain-verified original dispatch lifecycle rows are cached. Exact held-descriptor device/inode/bytes/sequence/head and wanted qids bind a cache entry. Every hit still calls full `FilePin.validate()` (original byte SHA, path identity and file metadata/version) and rechecks current log lifecycle membership. Normal append clears the old descriptor generation and reparses; replacement, truncation and prefix modification fail closed.
+
+Account receipts, books, authority, source clocks, native head, positions, FIFO, package/opposite protections and current entry hints are never cached or bypassed. Returned file pins hold a fresh cloned descriptor after full hit validation. Maximum 32 entries and 8 MiB serialized selected records plus qid storage; oversized results return through the unchanged full verifier without retention. Restart starts empty. No native/SDK/control changes.
+
+Checks: `cargo test --locked --offline --lib closed_rows_cache_tests`. Seven normal tests plus one ignored private-prefix benchmark; local Rust execution unavailable, root ARM64 validation pending.
+
+The optional benchmark requires an explicitly COPIED original log under a directory component named `offline-closure-cache`, `MOLOCH_CLOSED_CACHE_OFFLINE_LOG`, exact `MOLOCH_CLOSED_CACHE_EXPECTED_SHA256` and `MOLOCH_CLOSED_CACHE_EXPECTED_BYTES`. It uses the fixed original closed qids 10790/10795/10828, compares cold/warm exact rows and reports parse count/timing. Run `cargo test --locked --offline --lib offline_copied_original_dispatch_cold_warm_benchmark -- --ignored --nocapture`. It never opens a Session, bank, Transport or account endpoint. Original raw prefix stays private. Component timing is not full-cycle speed or profitability.
