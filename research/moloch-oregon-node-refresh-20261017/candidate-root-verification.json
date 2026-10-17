@@ -1,0 +1,23 @@
+{
+  "result": "PASS_CANDIDATE_ONLY",
+  "privateArchiveBytes": 913507,
+  "privateArchiveSha256": "5c4c6aa952ab6c7d10b2c78cddc5f1377485f051c577fb4a093ad5c3aab1db08",
+  "originalFilesVerified": 20,
+  "newReviewCanonicalSha256": "73147d66718c43d1747a0fc50b596cfffce5f8a5f08a57c531fdc7857c1732b7",
+  "newReviewRawSha256": "88d9911d0814e656046350c2add51793d3337bb079421f3a2e1fc0da60ab9035",
+  "nextControlSha256": "3cdb54e46fc95cb8af75339810f6aac1c847edb24f1b59a77b9942ea575c4f74",
+  "newNodeRawSha256": "e6d1b884d628881ffda0fdf86a8ac3ec3b8c974ec60ba5635c4641a7deff664f",
+  "oldNodePublishedClockRetained": true,
+  "originalForecastBallotBytesAndClocksUnchanged": true,
+  "probabilityMarginRiskCapsAndObjectiveUnchanged": true,
+  "unchangedOtherReviewReferences": 10,
+  "all26HistoricalTrustedHashesRetained": true,
+  "actualTypedReviewAndSettingsPassed": true,
+  "typedValidatorIsRetainedR22Artifact": true,
+  "fundamentalAndReloadSourcesUnchangedSinceR22": true,
+  "workerRebuildOrRestart": false,
+  "reviewUntilMs": 1792262095251,
+  "newForecastOrCalibration": false,
+  "runtimeActivated": false,
+  "profitabilityEstablished": false
+}

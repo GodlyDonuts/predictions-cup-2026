@@ -1,10 +1,22 @@
 # Retained Oregon node: offline provenance only
 
+**Root candidate status, October17 12:07 UTC:** a new immutable OR review and
+settings packet passes actual Rust review/settings validation and independent
+[20-file candidate verification](candidate-root-verification.json). It remains
+inactive. Only the genuine node reference and its actual observation change;
+the continuous reviewed ceiling remains .955150 (the venue execution path
+floors separately to .955), and probability, margin, caps, holding objective and
+original CTM/ballot clocks remain unchanged. All26 historical approval hashes
+and the other ten review references are retained. No worker rebuild or restart.
+Runtime installation still requires fresh same-worker account reconciliation
+and no pending/open Oregon order, after R26 fresh-operation verification.
+
 Task [168](https://github.com/GodlyDonuts/predictions-cup-2026/issues/168).
 The verifier ran successfully against the existing private originals. Its
 [aggregate result](node-provenance.json) contains no raw contract/creator body.
-No request, candidate review, authority/settings change, hotreload or activation
-was performed. This is not a new forecast, higher allocation or profit claim.
+The provenance verifier itself performs no request, candidate review,
+authority/settings change, hotreload or activation. The separately verified
+root candidate above is not a new forecast, higher allocation or profit claim.
 
 The existing sole worker really received the newer official market288 / contract289
 node at **October16 19:17:11.799 UTC**, after its request at19:17:11.545.

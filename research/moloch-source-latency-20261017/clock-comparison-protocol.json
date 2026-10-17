@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "frozenAtUtc": "2026-10-17T12:10:16Z",
+  "purpose": "Finite post-install availability diagnostic; no alpha or order authority",
+  "windowMs": 300000,
+  "start": "Actual progress.at in the first captured fresh-trading proof for each process",
+  "processes": ["R25/649399", "R26/651324"],
+  "sample": "All original native book events whose processedAt falls in [start,start+300000)",
+  "policyMaximumBookAgeMs": 10000,
+  "clockArithmetic": "Original nanosecond UTC parsing; retain request/source/receipt/processed fields and invalid gaps",
+  "metrics": [
+    "book counts by original normalized source",
+    "receipt-to-processing latency distribution",
+    "source-to-receipt latency distribution",
+    "stale at processing",
+    "stale despite source-fresh receipt",
+    "stale with receipt-to-processing over10000ms"
+  ],
+  "missingOrInvalid": "Count explicitly; never infer a fresh unchanged book or market silence",
+  "sourceAuthentication": "Authenticate original suffix/anchored heads and raw sealed rows before computation",
+  "limitations": [
+    "R25 outcomes were already inspected before this protocol; diagnostic comparison is not preregistered confirmatory evidence",
+    "Separate clock-time market windows and startup conditions may differ",
+    "A smaller processing delay does not establish more executable edge, fills or profit"
+  ],
+  "newGenerationsDuringNewWindow": "Keep original four generations until the comparison window closes; later node-only review is separate",
+  "runtimeChangesByMeasurement": false,
+  "accountRequestsByMeasurement": 0,
+  "executionAuthority": false
+}
