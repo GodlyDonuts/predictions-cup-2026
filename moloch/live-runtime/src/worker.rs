@@ -797,8 +797,8 @@ fn defer_account_preintent(c:&Control,bank:&Session,log:&DispatchLog,authority:&
  if !untouched{return Err("LIVE_ACCOUNT_DEFER_AFTER_ORIGINAL_OPERATION".into())}
  authority.clear_ready();atomic_json(&c.root.join("account-realtime-deferred.json"),&json!({"at":iso(now()),"qid":qid,"operation":if cancel{"cancel"}else{"order"},"reason":error.to_string(),"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity()?,"physicalAttempted":false,"requiresAuthoritativeRefresh":true}))?;Ok(true)
 }
-/// A freshness loss at physical capability minting can decline an untouched
-/// quote. This helper is never used after an original intent or attempt.
+/// A freshness loss during bind or physical capability minting can decline an
+/// untouched quote. This helper is never used after an original intent/attempt.
 fn fundamental_book_expiry_error(error:&dyn std::error::Error)->bool{
  matches!(error.to_string().as_str(),"FUNDAMENTAL_PHYSICAL_BOOK_STALE"|"FUNDAMENTAL_NOT_ELIGIBLE")
 }
@@ -813,6 +813,28 @@ fn fundamental_stale_preintent(bank:&Session,log:&DispatchLog,scope:&Scope,expec
  let age=bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?;
  let(books,_)=moloch_live_runtime::package_admission::native_books(bank,scope,at,age)?;
  if books.contains_key(ex){return Err("LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK".into())}Ok(true)
+}
+enum FundamentalPreintent{Ready(fundamental::PhysicalDecision),Deferred(String)}
+/// Keep BOTH original fallible preparation calls inside this pre-intent guard.
+/// bind_quantity assesses the current book before it can append a binding; its
+/// NOT_ELIGIBLE must receive the same positive proof as mint's BOOK_STALE.
+fn fundamental_preintent(f:&mut FundamentalRuntime,bank:&Session,log:&DispatchLog,scope:&Scope,q:&Value,n:u64,request:&RequestSpec,permit:&Permit,mut clock:impl FnMut()->u64,quiet_queue:impl FnOnce()->Result<()>)->Result<FundamentalPreintent>{
+ let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
+ let prepared=(||{
+  f.cohorts.bind_quantity(bank,log,scope,qid,n,request,f.authority.trusted(),clock())?;
+  f.cohorts.physical_decision(bank,log,scope,qid,request,permit,&f.authority,clock())
+ })();
+ match prepared{
+  Ok(decision)=>Ok(FundamentalPreintent::Ready(decision)),
+  Err(error)=>{
+   if fundamental_book_expiry_error(error.as_ref()){
+    // The original SDK snapshot must exclude unknown acceptance, active
+    // admission and manual review before any expected freshness defer.
+    quiet_queue()?;
+    if fundamental_stale_preintent(bank,log,scope,q,error.as_ref(),false,clock())?{return Ok(FundamentalPreintent::Deferred(error.to_string()))}
+   }Err(error)
+  }
+ }
 }
 fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  if !owner_capital_buys_allowed(c,bank,&q["action"])?{return Ok(())}
@@ -829,18 +851,10 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   if !f.eligible(bank,log,&c.scope,qid,now())?{authority.clear_ready();return Ok(())}
   let n=f.cohorts.planned_entry_quantity(bank,log,&c.scope,qid,f.authority.trusted(),now())?.unwrap_or(u64::from(order.quantity));
   order.quantity=u32::try_from(n)?;request_spec=spec(&order)?;p.maximum_quantity=order.quantity;p.maximum_cost=money(decimal_units(&order.price)?.checked_mul(i128::from(n)).ok_or("LIVE_COST_OVERFLOW")?);
-  f.cohorts.bind_quantity(bank,log,&c.scope,qid,n,&request_spec,f.authority.trusted(),now())?;
-  let decision=match f.cohorts.physical_decision(bank,log,&c.scope,qid,&request_spec,&p,&f.authority,now()){
-   Ok(decision)=>decision,
-   Err(error)=>{
-    if fundamental_book_expiry_error(error.as_ref()){
-     // The same positive quiet-queue proof used by stream recovery also
-     // excludes active admission/manual review, not only unknown accepts.
-     recovery_queue_clear(&t.admission_state()?)?;
-     if fundamental_stale_preintent(bank,log,&c.scope,q,error.as_ref(),false,now())?{
-      authority.clear_ready();atomic_json(&c.root.join("fundamental-preintent-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":error.to_string(),"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity()?,"physicalAttempted":false,"requiresAuthoritativeRefresh":true,"cohortBindingPreserved":true}))?;return Ok(())
-     }
-    }return Err(error)
+  let decision=match fundamental_preintent(f,bank,log,&c.scope,q,n,&request_spec,&p,now,||recovery_queue_clear(&t.admission_state()?))?{
+   FundamentalPreintent::Ready(decision)=>decision,
+   FundamentalPreintent::Deferred(reason)=>{
+    authority.clear_ready();atomic_json(&c.root.join("fundamental-preintent-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":reason,"nativeHead":bank.durable_head(),"dispatch":log.descriptor_identity()?,"physicalAttempted":false,"requiresAuthoritativeRefresh":true,"cohortBindingPreserved":true}))?;return Ok(())
    }
   };Some(Arc::new(decision))
  }else{None};
@@ -2417,8 +2431,8 @@ pub fn main()->Result<()>{
  #[test]fn fundamental_preintent_stale_defer_requires_real_freshness_loss_and_preserves_prefix(){
   let at=now()-1000;let(root,c,bank,log,_source,q,_book)=fixture_at(at);let stale:Box<dyn std::error::Error>="FUNDAMENTAL_PHYSICAL_BOOK_STALE".into();let head=bank.durable_head();let bytes=fs::read(root.0.join("dispatch.ndjson")).unwrap();let financial=bank.engine().report().unwrap();
   assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,stale.as_ref(),false,at+60000).unwrap());
-  // check_bound assesses current value before physical_decision's explicit
-  // book check, so real book expiry may surface as NOT_ELIGIBLE first.
+  // bind_quantity assesses before physical_decision. It can report this
+  // refusal before a binding exists; the production guard must cover both.
   let denied:Box<dyn std::error::Error>="FUNDAMENTAL_NOT_ELIGIBLE".into();
   assert!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at+60000).unwrap());
   assert_eq!(fundamental_stale_preintent(&bank,&log,&c.scope,&q,denied.as_ref(),false,at).unwrap_err().to_string(),"LIVE_FUNDAMENTAL_STALE_DEFER_CURRENT_BOOK");
