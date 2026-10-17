@@ -1012,6 +1012,7 @@ impl Cohorts{
     pub fn existing_exit_hint(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExitHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;
         let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some()||(c.entry.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange)))else{return Ok(None)};
+        if c.existing.is_none()&&c.pending_entry(log){return Ok(None)}
         if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(None)}
         let r=&self.policies[exchange];need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
         let reason=if liquidation_due(r,c,now){"reviewed_holding_deadline"}
