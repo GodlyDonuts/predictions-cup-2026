@@ -1,0 +1,109 @@
+{
+  "observedAt": "2026-10-17T00:24:39.551680+00:00",
+  "pid": 577770,
+  "sourceCommit": "b3a2bd86f9d02067b3bc2fe5c1c3a646a2d1b965",
+  "actualBinarySha256": "21d628ffd437d53b3628d8b1aee2d15df7943fb96c070c718fff52f66c184916",
+  "currentStop": false,
+  "baseControlSha256": "3317d016966cfd3455b2e541b75d20af12cf6922d5a4826113e5856dbb5795e0",
+  "effectiveGenerationSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+  "effectiveFundamentalExchanges": [
+    "1042",
+    "1068",
+    "966",
+    "977",
+    "1067",
+    "865",
+    "872",
+    "993",
+    "885"
+  ],
+  "progress": {
+    "actualFills": 241,
+    "actualOrders": 1377,
+    "at": "2026-10-17T00:24:31.500Z",
+    "completedReadScopes": 11,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 577770,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 32,
+    "terminalOrders": 1374
+  },
+  "newOfficialOrderAcknowledgments": [
+    {
+      "qid": 10717,
+      "exchangeId": "1005",
+      "marketId": "316",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 5855,
+      "limit": 0.95,
+      "officialAckReceivedAt": "2026-10-17T00:20:23.920Z",
+      "fundamental": false
+    },
+    {
+      "qid": 10718,
+      "exchangeId": "1005",
+      "marketId": "316",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 5855,
+      "limit": 0.045,
+      "officialAckReceivedAt": "2026-10-17T00:21:05.400Z",
+      "fundamental": false
+    },
+    {
+      "qid": 10728,
+      "exchangeId": "1010",
+      "marketId": "321",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 704,
+      "limit": 0.36,
+      "officialAckReceivedAt": "2026-10-17T00:22:25.602Z",
+      "fundamental": false
+    },
+    {
+      "qid": 10735,
+      "exchangeId": "1015",
+      "marketId": "326",
+      "side": "NO",
+      "action": "buy",
+      "quantity": 1348,
+      "limit": 0.08,
+      "officialAckReceivedAt": "2026-10-17T00:23:45.208Z",
+      "fundamental": false
+    },
+    {
+      "qid": 10736,
+      "exchangeId": "1015",
+      "marketId": "326",
+      "side": "YES",
+      "action": "buy",
+      "quantity": 1348,
+      "limit": 0.915,
+      "officialAckReceivedAt": "2026-10-17T00:24:31.133Z",
+      "fundamental": false
+    }
+  ],
+  "cumulativeNativeFills": 241,
+  "newFillCountSinceLaunch": 0,
+  "newFillCountIsNotAckCount": true,
+  "ledgerAtBankSequence": 360791,
+  "ledgerSummary": {
+    "cash": "70762.850000",
+    "reservedCash": "15442.965000",
+    "ownedCost": "24680.835000",
+    "realized": "-136.230000"
+  },
+  "ledgerReserveIncludesLocalDraftsNotJustVenueOrders": true,
+  "originalIncidentQid10701NativeRetired": true,
+  "originalIncidentQid10701Filled": 0,
+  "nativeFinancialEngine": "b5b28a476fc057de93f5784f7b3600116418aa7e775f25576cfd2906ecd77713",
+  "bridgeEntries": 13,
+  "bridgeSha256": "ab988f8d063b3b4a76167a193eb70576c5667ff28e3fe603865fa5229a5ce348",
+  "sourceFinancialHistoryReset": false,
+  "paper7Complete": false,
+  "profitabilityEstablished": false
+}

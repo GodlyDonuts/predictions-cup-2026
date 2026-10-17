@@ -1,0 +1,10 @@
+{
+  "requestPath": "/home/archon/apps/moloch/shared/fundamental-paper7-expanded-20261017/owner-request-001.json",
+  "requestSha256": "9b2c1dc671e0438dc5af8c217fa7e2a2a6c62bd57ccec0c65b2253292bee0a68",
+  "exitCode": 0,
+  "logSha256": "9eba29581cb179d77f60fd8c28ede957ab1bbf29e22cd051145a3fb67ccb8f70",
+  "logBytes": 412,
+  "sourceWorkerPid": 577770,
+  "baseControlUnchanged": true,
+  "notExchangeOrderRetry": true
+}

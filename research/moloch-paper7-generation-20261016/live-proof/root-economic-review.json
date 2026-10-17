@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-17T00:11:07.560587+00:00",
+  "executionOwner": "Rhaegal-Viserion-paper6-20261016",
+  "sourceCommitOfTypedValidator": "b3a2bd86f9d02067b3bc2fe5c1c3a646a2d1b965",
+  "newSelectedScopes": [
+    "872",
+    "885",
+    "993"
+  ],
+  "withheldScope": "1004",
+  "withheldReason": "Startup actual account receipt at23:53 shows1000 existing shares; new flat cohort cannot adopt them. No new origin/adoption fabricated.",
+  "maximumProspectiveAdditionalPrincipalIncludingNevada": "23000.000000",
+  "maximumQuantityPerNewCohort": 10000,
+  "maximumClosedAttributedPhysicalEntriesPerCohort": 2,
+  "nodeReferenceAgeHours": 72,
+  "sourceClocksUnchanged": true,
+  "conditionalModelAndExceptionMassUncalibrated": true,
+  "freshPhysicalExactRootAndAccountFactsRequired": true,
+  "runtimeActivated": false,
+  "baseSettingsRawSha256": "0ff59cdbadd59e78fb70b02ee10720ca95adae5072ebaeeba73d921f6213774e",
+  "settingsRawSha256": "b727a084310b02d0ffeec319fd2ab5dde2dfcf6ea88f0c69af6582a18ed09558",
+  "settingsCanonicalSha256": "e99404dfb72d98f95ca95233f76c7edc6bd15e67a3e9b72dedc3582c5f408d92",
+  "privatePacketSha256": "588667b73856c2c92f0fa46a173a6193572b820715932011dfff459dff759eb1"
+}

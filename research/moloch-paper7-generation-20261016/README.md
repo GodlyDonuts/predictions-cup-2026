@@ -1,3 +1,18 @@
+# October17,00:24UTC actual live update
+
+[Live proof](live-proof/live-verification.json) verifies sole577770 trading,
+healthy realtime, five new order acknowledgments and zero new fills at its
+observation. The original authenticated generation committed nine managed
+markets including NV872/KS993/TX885. WI1004 was withheld for existing holdings.
+[Reload CLI](live-proof/reload-001.log) and [observed exit](live-proof/reload-001-result.json)
+record the real commit. [Hashes](live-proof/SHA256SUMS.json) bind original bytes.
+
+The economic-review artifact was written before activation and accurately says
+runtimeActivated:false at that earlier point. The later CLI/live proof is the
+activation evidence. Native q10701 is genuinely retired, zero fill. Historical
+restoring statements below describe earlier observations and remain unchanged.
+No fill, realized-profit or Paper7 completion claim follows from these quotes.
+
 # Owner-authenticated generation and entry recovery release — October16
 
 The842 checked release b3a2bd86 was started as sole577770 at23:53UTC,

@@ -1,0 +1,30 @@
+{
+  "live-verification.json": {
+    "bytes": 3024,
+    "sha256": "4529c22cd5bf5f2ebb96367c64a10e77848d9c7fb86974d04632e798bfe8a7f9"
+  },
+  "reload-001.log": {
+    "bytes": 412,
+    "sha256": "9eba29581cb179d77f60fd8c28ede957ab1bbf29e22cd051145a3fb67ccb8f70"
+  },
+  "reload-001-result.json": {
+    "bytes": 415,
+    "sha256": "7b7e7527d843b19f6600af9f098da1901722343bd0bc9ae990dc59350410e757"
+  },
+  "typed-current-source-review.json": {
+    "bytes": 623,
+    "sha256": "28bc9cd9566375bc460888bcc3eb4f2ac1fbdf65ea27aba79d9f8bb7be9c5449"
+  },
+  "typed-settings.json": {
+    "bytes": 188,
+    "sha256": "15a8f81a213a8bd71bb292e06568fb503c6a5fc108a4828ec49e6c548e2b2aad"
+  },
+  "root-economic-review.json": {
+    "bytes": 1181,
+    "sha256": "a0dcd72d0f7a33c7beac0feac7c2ab2605a4adc07bd80f384791c4885fe0bcf7"
+  },
+  "decision-trace-latest.json": {
+    "bytes": 1523,
+    "sha256": "4ac4bf1582d812fd8c7bc415d80d72177ae7778fb6ae2bdb49e29fe9676a9acd"
+  }
+}

@@ -1,3 +1,35 @@
+# October17,00:30UTC: trading live; nine-market model installed
+
+Sole worker **577770/sourceb3a2bd86/binary21d628ffd437/nativeb5** completed its
+original ledger restoration and is trading with healthy realtime. The frozen
+00:24:39UTC proof records **five new official order acknowledgments and zero new
+fill rows**. Later progress at00:29:07 reports1381 cumulative acknowledgments,
+**nine above its1372 launch baseline**, with241 cumulative fills unchanged.
+Acknowledged quotes are not executed volume or profit.
+
+Root committed the original authenticated model generation without restarting:
+NV872, KS993 and TX885 join the existing six reviewed scopes, for nine total.
+The added scenarios allow up to23,000 prospective additional principal, subject
+to quantity, depth, original source expiry and fresh physical account/contract
+checks. Their conditional forecasts and exceptional-outcome allowances are
+uncalibrated operator assumptions. WI1004 was withheld because the actual
+startup account already held1000 shares; no new flat cohort adopted them.
+
+The original q10701 is genuinely native-retired with zero fill; its original SDK
+proof/history remain. Financial nativeb5/all13 bridges, original cash/loss/fill
+history and daily windows remain. Cash70,762.85 is the23:53:45 startup account
+observation, not fresh profit. Local reserved cash includes unsent drafts and
+must not be equated with venue commitments. [Frozen live proof](../research/moloch-paper7-generation-20261016/live-proof/live-verification.json)
+and [raw hashes](../research/moloch-paper7-generation-20261016/live-proof/SHA256SUMS.json).
+
+The next throughput release027abb60 passed872 checks, optimized ARM64 build and
+actual unchanged-native identity probe at00:29:42. It is **not deployed yet**.
+It adds one durable-head keyed historical-order snapshot, fair rotation of
+nonurgent SELL quotes, a negative-only screen after actual book refresh, and
+strict binary-only recovery of the original active model generation. Production
+continues during staging. Paper7 posterior/empirical maker qualification and
+whole-account/rank work remain incomplete; no new profitability is established.
+
 # Paper 7 execution components — checked source, not activated
 
 The integrated ARM64 candidate uses production source

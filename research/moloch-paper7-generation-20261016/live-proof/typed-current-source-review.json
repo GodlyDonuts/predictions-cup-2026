@@ -1,0 +1,21 @@
+{
+  "calibrationVerified": false,
+  "executionAuthority": false,
+  "reviews": [
+    {
+      "canonicalSha256": "7dc59cdf78fb9bace8419e53dedf9e07eafdb8429e56abc18ee772c65c5bba20",
+      "entryCeiling": "0.746000",
+      "key": "993",
+      "sourceHashesAndContractObjectiveVerified": true,
+      "supportsNewCohort": true
+    },
+    {
+      "canonicalSha256": "a836f6d8bc81b43559b6d058d7bcc1a904c587ee5c26a5365c0415879379b62d",
+      "entryCeiling": "0.767600",
+      "key": "885",
+      "sourceHashesAndContractObjectiveVerified": true,
+      "supportsNewCohort": true
+    }
+  ],
+  "typedCurrentReviewChecksPassed": true
+}
