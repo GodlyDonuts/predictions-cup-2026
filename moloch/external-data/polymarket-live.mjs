@@ -13,11 +13,12 @@ export async function run(options, dependencies={}) {
   let stream,server,timer,cacheTimer,flushInFlight,restStop,fatal,closing=false,selected=[],total=0;
   const now=dependencies.now??Date.now,latest=new Map();
   const pending=new Map(),identities=new Map(),cacheStats={updates:0,coalesced:0,writes:0};
+  let lastFrame=null,rawFrames=0,derivedEvents=0;
   const writeCache=dependencies.writeCache??atomicJson;
   const flushCache=()=>{if(flushInFlight)return flushInFlight;if(!pending.size)return Promise.resolve();const rows=[...pending.values()];pending.clear();flushInFlight=(async()=>{for(const row of rows){await writeCache(path.join(cache,'ws-latest',row.assetId+'.json'),{...row,identity:identities.get(row.assetId)});cacheStats.writes++;}})().finally(()=>{flushInFlight=null;});return flushInFlight;};
   const fail=e=>{fatal??=e;restStop?.();};
-  const status=()=>({source:'polymarket_public_live',at:new Date(now()).toISOString(),pricingAuthority:false,resolutionEquivalenceVerified:false,wsOutcomes:selected.length,restOutcomes:total,restOnlyOutcomes:total-selected.length,selection:'assetId_lexicographic_first_1024',cacheFlushMs:200,pendingCoalesced:pending.size,cacheFlushInFlight:!!flushInFlight,cacheUpdates:cacheStats.updates,cacheCoalesced:cacheStats.coalesced,cacheWrites:cacheStats.writes,stream:stream?.status()??null,failed:!!fatal});
-  const quote=id=>{const identity=selected.find(x=>x.assetId===id);if(!identity)return null;const event=latest.get(id);return {identity,streamEpoch:event?.streamEpoch??null,book:stream?.view(id,now())??{valid:false,pricingAuthority:false,sequenceContinuityVerified:false},trigger:event?{eventType:event.eventType,requestStartedAt:event.requestStartedAt??null,receivedAt:event.receivedAt,sourceTimestamp:event.sourceTimestamp??null,bodySha256:event.bodySha256,eventIndex:event.eventIndex??null}:null,pricingAuthority:false,resolutionEquivalenceVerified:false};};
+  const status=()=>({source:'polymarket_public_live',at:new Date(now()).toISOString(),pricingAuthority:false,resolutionEquivalenceVerified:false,wsOutcomes:selected.length,restOutcomes:total,restOnlyOutcomes:total-selected.length,selection:'assetId_lexicographic_first_1024',rawFrames,derivedEvents,cacheFlushMs:200,pendingCoalesced:pending.size,cacheFlushInFlight:!!flushInFlight,cacheUpdates:cacheStats.updates,cacheCoalesced:cacheStats.coalesced,cacheWrites:cacheStats.writes,stream:stream?.status()??null,failed:!!fatal});
+  const quote=id=>{const identity=selected.find(x=>x.assetId===id);if(!identity)return null;const event=latest.get(id);return {identity,streamEpoch:event?.streamEpoch??null,book:stream?.view(id,now())??{valid:false,pricingAuthority:false,sequenceContinuityVerified:false},trigger:event?{eventType:event.eventType,frameIndex:event.frameIndex??null,requestStartedAt:event.requestStartedAt??null,receivedAt:event.receivedAt,sourceTimestamp:event.sourceTimestamp??null,bodySha256:event.bodySha256,eventIndex:event.eventIndex??null}:null,pricingAuthority:false,resolutionEquivalenceVerified:false};};
   const publish=()=>atomicJson(path.join(cache,'ws-status.json'),status());
   const shutdown=async()=>{if(closing)return;closing=true;clearInterval(timer);clearInterval(cacheTimer);try{await stream?.stop();await flushCache();await flushCache();}catch(e){fatal??=e;}try{await publish();}catch(e){fatal??=e;}if(server){server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}};
   const {['ws-port']:ignored,...restOptions}=options;
@@ -35,8 +36,16 @@ export async function run(options, dependencies={}) {
         // No prior-process WS book can be promoted into this connection epoch.
         for(const identity of selected)await atomicJson(path.join(cache,'ws-latest',identity.assetId+'.json'),{source:'polymarket_clob_ws_public',identity,normalized:{valid:false},eventType:'process_start_invalidated',pricingAuthority:false});
         const onEvent=async event=>{try{
-          await ready.recordEvent(event);
-          if(event.assetId&&event.normalized){if(!identities.has(event.assetId))throw Error('POLY_LIVE_WS_SCOPE');latest.set(event.assetId,event);cacheStats.updates++;if(pending.has(event.assetId))cacheStats.coalesced++;pending.set(event.assetId,event);}
+          if(typeof event.bodyText==='string'){
+            if(!Number.isSafeInteger(event.frameIndex)||event.frameIndex<1||!Number.isSafeInteger(event.streamEpoch))throw Error('POLY_LIVE_FRAME_ID');
+            const prior=lastFrame,same=prior&&prior.epoch===event.streamEpoch&&prior.index===event.frameIndex;
+            if(same){if(prior.hash!==event.bodySha256||prior.receivedAt!==event.receivedAt)throw Error('POLY_LIVE_FRAME_CONFLICT');}
+            else {if(prior&&(event.streamEpoch<prior.epoch||(event.streamEpoch===prior.epoch&&event.frameIndex<=prior.index)))throw Error('POLY_LIVE_FRAME_ORDER');
+              const {normalized,assetId,conditionId,eventIndex,...wire}=event;
+              await ready.recordEvent({...wire,recordType:'wire_frame'});rawFrames++;lastFrame={epoch:event.streamEpoch,index:event.frameIndex,hash:event.bodySha256,receivedAt:event.receivedAt};}
+          }else await ready.recordEvent(event);
+          derivedEvents++;
+          if(event.assetId&&event.normalized){if(!identities.has(event.assetId))throw Error('POLY_LIVE_WS_SCOPE');const {bodyText,...derived}=event;latest.set(event.assetId,derived);cacheStats.updates++;if(pending.has(event.assetId))cacheStats.coalesced++;pending.set(event.assetId,derived);}
         }catch(e){fail(e);throw e;}};
         stream=(dependencies.startStream??startPolymarketMarketStream)({...dependencies.streamOptions,outcomes:selected,onEvent,onStatus:s=>{if(s.stopped&&s.lastReason==='SINK_ERROR')fail(Error('POLY_LIVE_WS_SINK'));}});
         cacheTimer=setInterval(()=>flushCache().catch(fail),200);cacheTimer.unref?.();

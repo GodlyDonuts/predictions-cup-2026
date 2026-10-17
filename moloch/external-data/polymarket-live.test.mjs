@@ -57,3 +57,13 @@ test('burst coalesces disk publications but journals every original mutation and
 test('coalesced cache durability failure stops REST and WS without losing failure',async()=>{
  await assert.rejects(harness(async({socket})=>{socket.emit('open');socket.emit('message',Buffer.from(raw()));await new Promise(resolve=>setTimeout(resolve,250));},{writeCache:async()=>{throw Error('CACHE_DISK_FAILURE');}}),/CACHE_DISK_FAILURE/);
 });
+test('one original array frame is journaled once, repeated actual frame remains distinct, derived files omit rawbody',async()=>{
+ const scope=[outcomes[0],{...outcomes[0],assetId:'2'}];
+ await harness(async({ready,socket,recorded,cache})=>{
+  socket.emit('open');const arrayBody=JSON.stringify([JSON.parse(raw()),{...JSON.parse(raw()),asset_id:'2'}]);socket.emit('message',Buffer.from(arrayBody));await turn();
+  assert.equal(recorded.length,1);assert.equal(recorded[0].recordType,'wire_frame');assert.equal(recorded[0].bodyText,arrayBody);assert.equal(recorded[0].frameIndex,1);assert.equal(ready.status().rawFrames,1);assert.equal(ready.status().derivedEvents,2);
+  socket.emit('message',Buffer.from(arrayBody));await turn();assert.equal(recorded.length,2);assert.equal(recorded[1].bodyText,arrayBody);assert.equal(recorded[1].frameIndex,2);assert.equal(recorded[1].bodySha256,recorded[0].bodySha256);assert.equal(ready.status().rawFrames,2);assert.equal(ready.status().derivedEvents,4);
+  await new Promise(resolve=>setTimeout(resolve,230));for(const id of ['1','2']){const row=JSON.parse(await fs.readFile(path.join(cache,'ws-latest',id+'.json')));assert.equal(row.bodyText,undefined);assert.equal(row.frameIndex,1);assert.equal(row.eventIndex,Number(id)-1);assert.equal(row.bodySha256,recorded[0].bodySha256);}
+  ready.stop();
+ },{scope});
+});
