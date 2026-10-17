@@ -1,0 +1,36 @@
+{
+  "result": "PASS",
+  "verifiedAt": "2026-10-17T21:28:35.895843+00:00",
+  "rustSourceCommit": "547556e137fa67c3bb84a236fada7ac690718f6d",
+  "sourceFilesVerifiedAgainstGit": 275,
+  "rawGitExact": 76,
+  "lineEndingEquivalent": 199,
+  "originalProofMembersVerified": 290,
+  "actualArm64RustTests": 9,
+  "originalRustExportFiles": 11,
+  "fiveExternalPinsVerified": true,
+  "rustProducerToPythonVerifierActualBytesPassed": true,
+  "draftClassificationAcceptedWithoutReleasingReservations": true,
+  "originalSourceClocksPreserved": true,
+  "nativeAdapterStatus": "unavailable",
+  "nativeAdapterUnavailableReasons": [
+    "SOURCE_OBSERVATION_PRECEDES_SNAPSHOT",
+    "SOURCE_VALIDITY_UNAVAILABLE",
+    "REGISTRY_UNAVAILABLE",
+    "LIABILITY_EVIDENCE_UNAVAILABLE"
+  ],
+  "fourCampaignArtifactRoundTripPassed": true,
+  "syntheticEvidenceOnly": true,
+  "financialEvidence": false,
+  "terminalDebtModelInvented": false,
+  "executionAuthority": false,
+  "productionChanged": false,
+  "profitabilityEstablished": false,
+  "privateProofBytes": 2839699,
+  "privateProofSha256": "632071f6a2a572b503ef08735315534671c3df54d1248f1673759e937f45ed81",
+  "pythonSources": {
+    "worker_packet.py": "b85dc4915974363d78417d446c4641f931b83d74fd39674e95228fec75a24269",
+    "native_snapshot.py": "6c519bd2353befdda4053547544b0d1dde79bedbb5ec101faa22931e7cb25e95",
+    "worker_campaign.py": "0694c35a30143a42d9b7ab425163969ca81af2610e0a404ea259217258041b95"
+  }
+}

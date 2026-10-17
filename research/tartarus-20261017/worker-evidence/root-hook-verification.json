@@ -1,0 +1,26 @@
+{
+  "result": "PASS",
+  "verifiedAt": "2026-10-17T21:43:28.966675+00:00",
+  "sourceCommit": "862da06c44cc649ad59ce43ba5e91f85aeb16e1f",
+  "actualArm64SerialWorkerTests": 172,
+  "optimizedReleasePassed": true,
+  "originalParallelResult": {
+    "passed": 171,
+    "failed": 1,
+    "retained": true,
+    "failedTest": "worker::passive_reserved_exit_tests::passive_reserved_same_qid_reads_seven_and_reuses_only_unchanged_predispatch_binding",
+    "unchangedFocusedTestPassed": true,
+    "causeIndependentlyProven": false
+  },
+  "sourceFilesVerifiedAgainstGit": 275,
+  "rawGitExact": 76,
+  "lineEndingEquivalent": 199,
+  "originalProofMembersVerified": 283,
+  "nativeSourceFilesByteIdenticalToInstalledR33": 69,
+  "binarySha256": "fb62f08cd86b379b09b553792330cb531f937bf3b678e021b9366ef0f3c56f80",
+  "privateProofBytes": 7488179,
+  "privateProofSha256": "cef823e1aa924b575ce30c36674805721a854e1e56e6f66058585dbb2accbb40",
+  "productionActivation": false,
+  "financialEvidencePacketCaptured": false,
+  "profitabilityEstablished": false
+}
