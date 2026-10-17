@@ -6,6 +6,8 @@ pub mod multi_leg;
 pub mod multi_leg_portfolio;
 pub mod multi_leg_first_call;
 pub mod cancel_not_sent;
+pub mod local_guard_no_http;
+pub use local_guard_no_http::{OrdinaryLocalGuardNoHttpProof,verify_legacy_ordinary_local_guard_no_http,verify_retained_ordinary_local_guard_no_http};
 
 use std::{collections::{BTreeMap,BTreeSet}, path::PathBuf, time::{Duration,SystemTime,UNIX_EPOCH}, io::Read};
 use chrono::{DateTime,Utc,SecondsFormat};
@@ -100,7 +102,7 @@ pub struct Receipt {pub endpoint:String,pub request_started_at:String,pub receiv
 #[serde(rename_all="camelCase")]
 pub struct AccountReconciliation {pub tournament:Receipt,pub positions:Receipt,pub orders:Receipt,pub exact_cash:String,pub started_at:String,pub completed_at:String,pub adopts_holdings:bool}
 struct LocalNotSentCapability {request:String,binding:admission::ImmutableBinding,minimum_clock:u64,sequence:u64,previous:String}
-pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool,last_basket_response:Option<multi_leg::ResponseEvidence>,local_not_sent:Option<LocalNotSentCapability>,first_call_active:Option<multi_leg_first_call::Ticket>,first_call_proof:Option<(multi_leg_first_call::Proof,u64,String)>,cancel_call:Option<cancel_not_sent::Call>,cancel_no_http:Option<cancel_not_sent::Pending>,cancel_epoch:std::cell::Cell<u64>}
+pub struct Transport {config:Config,credentials:Box<dyn CredentialProvider>,clock:Box<dyn Clock>,authority:Box<dyn Authority>,client:Client,base:String,queue:admission::AccountAdmission,request_sequence:u64,poisoned:bool,full_account_observation:bool,last_basket_response:Option<multi_leg::ResponseEvidence>,local_not_sent:Option<LocalNotSentCapability>,first_call_active:Option<multi_leg_first_call::Ticket>,first_call_proof:Option<(multi_leg_first_call::Proof,u64,String)>,cancel_call:Option<cancel_not_sent::Call>,cancel_no_http:Option<cancel_not_sent::Pending>,cancel_epoch:std::cell::Cell<u64>,ordinary_local_guard:Option<local_guard_no_http::Pending>}
 impl Transport {
  /// Observation never expands order placement or owned-order permissions.
  pub fn with_full_account_observation(mut self)->Self{self.local_not_sent=None;self.first_call_proof=None;self.cancel_no_http=None;self.full_account_observation=true;self}
@@ -113,9 +115,9 @@ impl Transport {
   let scope=&config.scope;need(scope.tournament_id.len()==36&&scope.tournament_id.bytes().all(|b|b.is_ascii_hexdigit()||b==b'-')&&!scope.tournament_slug.is_empty()&&scope.tournament_slug.bytes().all(|b|b.is_ascii_lowercase()||b.is_ascii_digit()||b==b'-')&&!scope.exchanges.is_empty()&&scope.exchanges.iter().all(|(e,m)|numeric(e)&&numeric(m)),"INVALID_SCOPE")?;
   let token=format!("{}-{}",std::process::id(),clock.now_ms());let queue=admission::AccountAdmission::open(&config.queue_dir,&config.account_scope,&token).map_err(|e|fail(&e))?;
   let client=Client::builder().no_proxy().redirect(Policy::none()).timeout(Duration::from_secs(20)).connect_timeout(Duration::from_secs(10)).build().map_err(|_|fail("HTTP_CLIENT_UNAVAILABLE"))?;
-  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None,local_not_sent:None,first_call_active:None,first_call_proof:None,cancel_call:None,cancel_no_http:None,cancel_epoch:std::cell::Cell::new(0)})
+  Ok(Self{config,credentials,clock,authority,client,base,queue,request_sequence:0,poisoned:false,full_account_observation:false,last_basket_response:None,local_not_sent:None,first_call_active:None,first_call_proof:None,cancel_call:None,cancel_no_http:None,cancel_epoch:std::cell::Cell::new(0),ordinary_local_guard:None})
  }
- fn command(&mut self,mut c:Value)->Result<Value>{self.local_not_sent=None;self.first_call_proof=None;self.cancel_no_http=None;if c["op"]=="admit"{if let Some(t)=self.first_call_active.as_mut(){t.disqualify();}}c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command_with_maintenance(c).map_err(|e|fail(&e))}
+ fn command(&mut self,mut c:Value)->Result<Value>{self.ordinary_local_guard=None;self.local_not_sent=None;self.first_call_proof=None;self.cancel_no_http=None;if c["op"]=="admit"{if let Some(t)=self.first_call_active.as_mut(){t.disqualify();}}c["scope"]=json!(self.config.account_scope);c["now"]=json!(self.clock.now_ms());self.queue.command_with_maintenance(c).map_err(|e|fail(&e))}
  fn guard(&self,spec:&RequestSpec,permit:Option<&Permit>,network:bool)->Result<()> {
   need(!self.poisoned&&self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;
   if spec.method!="GET"&&!(spec.method=="POST"&&spec.endpoint=="/realtime/token"&&spec.body.is_none()&&spec.body_json.is_none()){need(self.config.writes_enabled,"WRITES_DISABLED")?;let p=permit.ok_or_else(||fail("PERMIT_REQUIRED"))?;need(p.owner=="Codex"&&p.expires_at_ms>self.clock.now_ms()&&!p.run_id.is_empty()&&!p.intent_id.is_empty(),"PERMIT_EXPIRED_OR_INVALID")?;self.authority.authorize(&self.config.scope,spec,p,network,self.clock.now_ms())?;need(self.authority.can_read(&self.config.scope),"STOPPED_OR_OWNER_LOST")?;}
@@ -123,7 +125,7 @@ impl Transport {
  }
  fn wait(&mut self,until:u64,spec:&RequestSpec,p:Option<&Permit>)->Result<()> {while self.clock.now_ms()<until{self.guard(spec,p,false)?;let remaining=until-self.clock.now_ms();self.clock.sleep_ms(remaining.min(200))?;}self.guard(spec,p,false)}
  fn perform(&mut self,spec:RequestSpec,permit:Option<&Permit>,validator:impl Fn(&Self,&Value)->Result<()>)->Result<Receipt>{
-  self.local_not_sent=None;self.first_call_proof=None;self.cancel_no_http=None;let minimum_clock=self.clock.now_ms();
+  self.ordinary_local_guard=None;self.local_not_sent=None;self.first_call_proof=None;self.cancel_no_http=None;let minimum_clock=self.clock.now_ms();
   if let Err(e)=self.guard(&spec,permit,false){self.cancel_before_admit_failure(false);return Err(e)}self.request_sequence+=1;let request=format!("request-{}-{}",self.clock.now_ms(),self.request_sequence);let write=spec.method!="GET"&&spec.endpoint!="/realtime/token";
   let binding=if write{let p=permit.unwrap();let key=spec.body.as_ref().and_then(|b|b.get("idempotencyKey")).and_then(Value::as_str).map(str::to_string).unwrap_or_else(||format!("{}:{}:cancel",p.run_id,p.intent_id));Some(json!({"intent":format!("{}:{}",p.run_id,p.intent_id),"key":key,"payload_hash":digest(serde_json::to_string(&json!({"scope":self.config.scope,"spec":spec})).unwrap().as_bytes())}))}else{None};
   // The bounded summary is authoritative for GLOBAL uncertainty. An exact
@@ -146,6 +148,7 @@ impl Transport {
   if let Some(call)=self.cancel_call.as_mut(){call.phase=cancel_not_sent::Phase::NetworkAttempted;}
   self.command(json!({"op":"network","request":request,"write":write,"binding":binding,"authorized":write,"lease_valid":write,"permit_valid":write}))?;
   let started=self.clock.now_ms();let final_guard=self.guard(&spec,permit,true);
+  if write&&spec.method=="POST"&&spec.endpoint=="/orders"{if let Err(error)=&final_guard{return Err(self.complete_final_local_guard(&spec,permit.expect("write permit checked"),&request,minimum_clock,error.clone()));}}
   let mut observed_status=0u16;let mut observed_retry=String::new();
   let call=final_guard.and_then(|_|{
    let method=Method::from_bytes(spec.method.as_bytes()).map_err(|_|fail("HTTP_METHOD"))?;let mut builder=self.client.request(method,self.base.clone()+&spec.endpoint).header(AUTHORIZATION,header);
@@ -164,7 +167,23 @@ impl Transport {
   let retry_ms=completion.as_ref().ok().and_then(|v|v["next"].as_u64()).unwrap_or(0).saturating_sub(self.clock.now_ms());
   match validated{Ok((status,data))=>Ok(Receipt{endpoint:spec.endpoint,request_started_at:utc(started)?,received_at:utc(self.clock.now_ms())?,status,data}),Err(mut e)=>{if status!=0{e.status=Some(status)}e.may_have_executed|=write&&final_outcome=="unknown";e.order_id=returned_order_id;e.retry_after_ms=retry_ms;e.api_code=safe_api_code(&api_code);Err(e)}}
  }
- /// Finish a known pre-network failure durably. Failure to record completion
+  fn complete_final_local_guard(&mut self,spec:&RequestSpec,p:&Permit,request:&str,minimum_clock:u64,error:TransportError)->TransportError{
+   // The durable marker preceded this LOCAL callback, but HTTP send() did not.
+   // Persist that distinct fact before completing a known rejection. On any
+   // evidence failure keep actual unknown acceptance; never call it not_sent.
+   let pending=match local_guard_no_http::record_guard(&self.config,spec,p,request,minimum_clock,&error){Ok(v)=>v,Err(_)=>{
+    let _=self.command(json!({"op":"complete","request":request,"outcome":"unknown","status":0}));self.poisoned=true;let mut e=fail("LOCAL_GUARD_EVIDENCE_DURABILITY_UNCERTAIN");e.may_have_executed=true;return e
+   }};
+   if self.command(json!({"op":"complete","request":request,"outcome":"rejected","status":0})).is_err(){self.poisoned=true;let mut e=fail("COMPLETION_DURABILITY_UNCERTAIN");e.may_have_executed=true;return e}
+   self.ordinary_local_guard=Some(pending);error
+  }
+  /// Consumes only this controller's last final-guard certificate. It does not
+  /// reconcile, clear uncertainty, release the permanent key, or retry.
+  pub fn take_current_ordinary_local_guard_no_http_proof(&mut self,spec:&RequestSpec,p:&Permit,attempt_at:u64,error:&TransportError)->Result<OrdinaryLocalGuardNoHttpProof>{
+   let pending=self.ordinary_local_guard.take().ok_or_else(||fail("LOCAL_GUARD_CURRENT_CAPABILITY_REQUIRED"))?;
+   local_guard_no_http::current(&self.config,&self.queue,pending,spec,p,attempt_at,error)
+  }
+  /// Finish a known pre-network failure durably. Failure to record completion
  /// poisons this controller; the original error cannot hide queue uncertainty.
  fn complete_pre_network(&mut self,spec:&RequestSpec,request:&str,binding:Option<&Value>,minimum_clock:u64,error:TransportError)->TransportError{
   let completed=self.command(json!({"op":"complete","request":request,"outcome":"not_sent"}));
@@ -640,6 +659,7 @@ pub fn verify_retained_ordinary_pre_admission(config:&Config,spec:&RequestSpec,p
  Ok(OrdinaryPreAdmissionProof{evidence:expected})
 }
 #[cfg(test)]#[path="ordinary_pre_admission_tests.rs"]mod ordinary_pre_admission_tests;
+#[cfg(test)]#[path="local_guard_no_http_tests.rs"]mod local_guard_no_http_tests;
 #[cfg(test)]mod tests;
 #[cfg(test)]#[path="transport_not_sent_tests.rs"]mod transport_not_sent_tests;
 

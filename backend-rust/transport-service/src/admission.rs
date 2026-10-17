@@ -346,3 +346,77 @@ pub(crate) fn verify_unadmitted_snapshot_v1(scope:&str,binding:&ImmutableBinding
  Ok(json!({"sequence":sequence,"previous":previous,"lastClock":state.last_clock,"queueScope":scope,"globalUnknownCount":0,"active":null,"manualReview":false,"binding":binding}))
 }
 #[cfg(test)]#[path="admission_not_sent_tests.rs"]mod admission_not_sent_tests;
+
+// Distinct post-marker source witness. Never a not_sent/pre-admission proof.
+pub(crate) fn capture_local_guard_source(directory:&Path,scope:&str,binding:&ImmutableBinding,request:&str,attempt:u64,legacy:bool)->std::result::Result<FrozenUnadmittedSource,String>{capture_local_guard_source_mode(directory,scope,binding,request,attempt,legacy,None)}
+impl UnadmittedCaptureLease{
+ fn acquire_local_guard(directory:&Path,scope:&str)->std::result::Result<Self,String>{
+  let path=directory.join("offline-account-queue.lock");let identity=serde_json::to_vec(&json!({"scope":scope,"token":"sdk-ordinary-final-guard-exclusive-capture-v1","pid":std::process::id()})).map_err(|_|"LOCAL_GUARD_LEASE_JSON")?;
+  let mut o=OpenOptions::new();o.write(true).create_new(true);#[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;o.mode(0o600);}
+  let mut file=o.open(&path).map_err(|_|"LOCAL_GUARD_EXCLUSIVE_CAPTURE_REQUIRED")?;file.write_all(&identity).and_then(|_|file.sync_all()).map_err(|_|"LOCAL_GUARD_LEASE_DURABILITY")?;#[cfg(unix)]File::open(directory).and_then(|f|f.sync_all()).map_err(|_|"LOCAL_GUARD_LEASE_DURABILITY")?;Ok(Self{path,identity,_file:file})
+ }
+}
+impl AccountAdmission{
+ pub(crate) fn capture_current_local_guard_source(&self,binding:&ImmutableBinding,request:&str,attempt:u64)->std::result::Result<FrozenUnadmittedSource,String>{
+  let Backend::V1(s)=&self.store else{return Err("LOCAL_GUARD_V1_REQUIRED".into())};s.owned()?;
+  let out=capture_local_guard_source_mode(&self.directory,&self.scope,binding,request,attempt,false,Some(&s.identity))?;s.owned()?;
+  need(out.snapshot["verifiedHead"]["sequence"]==s.sequence&&out.snapshot["verifiedHead"]["previous"]==s.previous,"LOCAL_GUARD_HELD_HEAD_CHANGED")?;Ok(out)
+ }
+}
+pub(crate) fn verify_local_guard_snapshot_v1(scope:&str,binding:&ImmutableBinding,request:&str,attempt:u64,legacy:bool,snapshot:&Value)->std::result::Result<Value,String>{
+ valid_binding(binding)?;need(!scope.is_empty()&&!request.is_empty()&&attempt>0&&attempt<=MAX_TIME&&snapshot["schemaVersion"]==1,"LOCAL_GUARD_ARGUMENT")?;
+ let mut state=State::new(scope.into());let mut sequence=0;let mut previous=String::new();
+ if let Some(raw)=snapshot["manifest"].as_str(){let m:Manifest=serde_json::from_str(raw).map_err(|_|"LOCAL_GUARD_MANIFEST")?;
+  need(m.schema_version==1&&m.scope==scope&&local_name(&m.journal)&&local_name(&m.checkpoint)&&snapshot["journalName"]==m.journal&&snapshot["guard"]==scope,"LOCAL_GUARD_MANIFEST_SCOPE")?;
+  let raw=snapshot["checkpoint"].as_str().ok_or("LOCAL_GUARD_CHECKPOINT")?;need(raw.len()as u64<=MAX_CHECKPOINT_BYTES,"LOCAL_GUARD_CHECKPOINT_BOUND")?;
+  let cp:Checkpoint=serde_json::from_str(raw).map_err(|_|"LOCAL_GUARD_CHECKPOINT")?;need(cp.schema_version==1&&cp.state.schema_version==1&&cp.state.scope==scope&&cp.hash==m.checkpoint_hash&&cp.hash==checkpoint_hash(&cp.anchor,&cp.state),"LOCAL_GUARD_CHECKPOINT_HASH")?;
+  state=cp.state;sequence=cp.anchor.sequence;previous=cp.anchor.previous;
+ }else{need(snapshot["guard"].is_null()&&snapshot["checkpoint"].is_null()&&snapshot["journalName"]=="account-queue.jsonl","LOCAL_GUARD_LEGACY_SOURCE")?;}
+ let actual=Binding{intent:binding.intent.clone(),key:binding.key.clone(),payload_hash:binding.payload_hash.clone()};let raw=snapshot["journal"].as_str().ok_or("LOCAL_GUARD_JOURNAL")?;
+ need(raw.len()as u64<=MAX_ACTIVE_JOURNAL_BYTES&&raw.ends_with('\n'),"LOCAL_GUARD_JOURNAL_BOUND")?;
+ let mut admitted=None::<State>;let mut marked=None::<State>;let mut witness=None;let mut original_completion=None;
+ for line in raw.lines(){let row:Record=serde_json::from_str(line).map_err(|_|"LOCAL_GUARD_RECORD")?;
+  need(row.sequence==sequence+1&&row.previous==previous&&row.state.scope==scope&&row.state.schema_version==1&&row.state.last_clock>=state.last_clock&&row.hash==record_hash(row.sequence,&row.previous,&row.state),"LOCAL_GUARD_CHAIN")?;
+  if state.active.is_none()&&!state.intents.contains_key(&actual.intent)&&!state.keys.contains_key(&actual.key)&&state.unknown.is_empty()&&!state.manual_review{
+   let mut expected=state.clone();if expected.apply(&Command{op:"admit".into(),scope:scope.into(),now:row.state.last_clock,request:request.into(),write:true,binding:Some(actual.clone()),authorized:true,lease_valid:true,permit_valid:true,..Default::default()}).is_ok()&&expected==row.state&&row.state.active.as_ref().is_some_and(|a|a.request==request){admitted=Some(row.state.clone());}
+  }
+  if let Some(active)=&state.active{if admitted.as_ref()==Some(&state)&&active.request==request&&active.write&&active.binding.as_ref()==Some(&actual)&&!active.network_started{
+   let mut expected=state.clone();expected.apply(&Command{op:"network".into(),scope:scope.into(),now:row.state.last_clock,request:request.into(),write:true,binding:Some(actual.clone()),authorized:true,lease_valid:true,permit_valid:true,..Default::default()})?;
+   if expected==row.state{need(state.last_clock>=attempt&&state.unknown.is_empty()&&!state.manual_review,"LOCAL_GUARD_ORIGINAL_BOUNDARY")?;marked=Some(row.state.clone());}
+  }}
+  if let Some(before)=&marked{if state==*before{let mut expected=before.clone();expected.apply(&Command{op:"complete".into(),scope:scope.into(),now:row.state.last_clock,request:request.into(),outcome:if legacy{"unknown"}else{"rejected"}.into(),status:0,..Default::default()})?;
+   if expected==row.state{need(witness.is_none(),"LOCAL_GUARD_DUPLICATE_WITNESS")?;witness=Some(json!({"markedStateSha256":hash(before),"completionStateSha256":hash(&row.state),"completionNext":row.state.next,"completionSequence":row.sequence,"completionPrevious":row.hash}));original_completion=Some(row.state.last_clock);}
+  }}
+  if witness.is_some(){need(row.state.active.as_ref().is_none_or(|a|a.binding.as_ref()!=Some(&actual)),"LOCAL_GUARD_BINDING_REUSED")?;}
+  state=row.state;sequence=row.sequence;previous=row.hash;
+ }
+ need(witness.is_some()&&state.active.is_none()&&!state.manual_review&&state.intents.get(&actual.intent)==Some(&actual)&&state.keys.get(&actual.key)==Some(&actual)
+  &&state.unknown.iter().all(|(id,b)|legacy&&id==&actual.intent&&b==&actual),"LOCAL_GUARD_CURRENT_STATE")?;
+ Ok(json!({"sequence":sequence,"previous":previous,"lastClock":state.last_clock,"queueScope":scope,"binding":binding,"globalUnknownCount":state.unknown.len(),"completionAt":original_completion,"witness":witness}))
+}
+
+fn capture_local_guard_source_mode(directory:&Path,scope:&str,binding:&ImmutableBinding,request:&str,attempt:u64,legacy:bool,held:Option<&[u8]>)->std::result::Result<FrozenUnadmittedSource,String>{
+ let meta=fs::symlink_metadata(directory).map_err(|_|"UNADMITTED_DIRECTORY")?;need(meta.is_dir()&&!meta.file_type().is_symlink(),"UNADMITTED_DIRECTORY")?;
+ let lock_path=directory.join("offline-account-queue.lock");let owned=if held.is_none()&&!not_sent_exists(&lock_path)?{Some(UnadmittedCaptureLease::acquire_local_guard(directory,scope)?)}else{None};
+ let lease=NotSentPinnedFile::read(&lock_path,4096)?;let owner:Value=serde_json::from_slice(&lease.bytes).map_err(|_|"UNADMITTED_ORIGINAL_LEASE")?;
+ let pid=owner["pid"].as_u64().filter(|n|*n>0).ok_or("UNADMITTED_ORIGINAL_PID")?;need(owner["scope"]==scope&&owner["token"].as_str().is_some_and(|s|!s.is_empty()),"UNADMITTED_ORIGINAL_LEASE")?;
+ if let Some(identity)=held{need(lease.bytes==identity,"UNADMITTED_HELD_LEASE_CHANGED")?;}else if owned.is_none(){
+  #[cfg(target_os="linux")]need(Path::new("/proc/self/stat").exists()&&!Path::new("/proc").join(pid.to_string()).exists(),"UNADMITTED_ORIGINAL_OWNER_NOT_STOPPED")?;
+  #[cfg(not(target_os="linux"))]return Err("UNADMITTED_STOPPED_OWNER_PLATFORM_UNAVAILABLE".into());
+ }
+ let mut pins=vec![lease];let manifest_path=directory.join("account-queue-manifest.json");let guard_path=directory.join("account-queue-generation.guard");
+ let mut snapshot=json!({"schemaVersion":1,"manifest":null,"guard":null,"checkpoint":null,"journalName":"account-queue.jsonl","leaseKind":if held.is_some(){"heldOriginalSdkController"}else if owned.is_some(){"exclusiveSdkCapture"}else{"retainedStoppedOwner"},"originalLease":String::from_utf8(pins[0].bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?});
+ if not_sent_exists(&manifest_path)?{
+  let m=NotSentPinnedFile::read(&manifest_path,4096)?;let manifest:Manifest=serde_json::from_slice(&m.bytes).map_err(|_|"UNADMITTED_MANIFEST")?;
+  need(manifest.schema_version==1&&manifest.scope==scope&&local_name(&manifest.journal)&&local_name(&manifest.checkpoint),"UNADMITTED_V1_SCOPE")?;
+  let guard=NotSentPinnedFile::read(&guard_path,4096)?;let cp=NotSentPinnedFile::read(&directory.join(&manifest.checkpoint),MAX_CHECKPOINT_BYTES)?;
+  snapshot["manifest"]=json!(String::from_utf8(m.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);snapshot["guard"]=json!(String::from_utf8(guard.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);snapshot["checkpoint"]=json!(String::from_utf8(cp.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);snapshot["journalName"]=json!(manifest.journal);pins.extend([m,guard,cp]);
+ }else{need(!not_sent_exists(&guard_path)?,"UNADMITTED_MANIFEST_REQUIRED")?;}
+ let journal=NotSentPinnedFile::read(&directory.join(snapshot["journalName"].as_str().ok_or("UNADMITTED_JOURNAL")?),MAX_ACTIVE_JOURNAL_BYTES)?;
+ snapshot["journal"]=json!(String::from_utf8(journal.bytes.clone()).map_err(|_|"UNADMITTED_UTF8")?);pins.push(journal);
+ snapshot["verifiedHead"]=verify_local_guard_snapshot_v1(scope,binding,request,attempt,legacy,&snapshot)?;
+ for pin in &mut pins{pin.unchanged()?;}if snapshot["manifest"].is_null(){need(!not_sent_exists(&manifest_path)?&&!not_sent_exists(&guard_path)?,"UNADMITTED_GENERATION_CHANGED")?;}
+ let end=fs::symlink_metadata(directory).map_err(|_|"UNADMITTED_DIRECTORY_CHANGED")?;
+ #[cfg(unix)]{use std::os::unix::fs::MetadataExt;need(meta.dev()==end.dev()&&meta.ino()==end.ino(),"UNADMITTED_DIRECTORY_CHANGED")?;}
+ need(end.is_dir()&&!end.file_type().is_symlink(),"UNADMITTED_DIRECTORY_CHANGED")?;Ok(FrozenUnadmittedSource{snapshot,pins,_owned:owned})
+}
