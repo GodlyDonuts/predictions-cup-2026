@@ -1,10 +1,12 @@
-# October17,11:51:36 UTC - R26 installed; ledger restoring
+# October17,12:13:44 UTC - R26 verified trading
 
-**Sole worker651324/source6295e22c/binary97aeaf63/native5b61 is installed and restoring the original ledger. Fresh new-process trading is not yet verified.** Exact PID/executable/argv/service identity match. [Actual controlled installation and root verification](../research/moloch-source-latency-20261017/deployment/README.md).
+**Sole worker651324/source6295e22c/binary97aeaf63/native5b61 is verified trading with healthy realtime.** Actual process/executable/control/model channel match fresh12:13:33.595 progress. [Original new-process operation and root verification](../research/moloch-source-latency-20261017/live-proof/README.md). This supersedes the earlier restoration status.
 
-The corrected worker services original queued frames during routine book reads and defers only proved untouched quotes whose books expire before submission. All143 actual ARM64 worker checks, optimized release and263-source root verification pass. No freshness limit is relaxed. [Repair and original incident](../research/moloch-source-latency-20261017/README.md).
+The repair services queued original frames during routine book reads and narrowly defers proved untouched pre-intent book expiry, retaining the original10s freshness limit.143 actual ARM64 worker checks/optimized release/all263 sources verified. [Implementation and authenticated incident](../research/moloch-source-latency-20261017/README.md).
 
-The authenticated stopped481281 boundary preserves381 fill rows, cash3,611.985, owned cost91,853.520 and attributed realized-114.410. Original STOP is archived intact. Known1075NO SELL2/qid15156/order45189675 requires official startup reconciliation; no fill or replacement is assumed. The one queue, original models,15 financial bridge records and source/rate/risk/activation clocks remain unchanged. A finite file-only observer is running. No post-repair profit or latency benefit is established.
+Authenticated native481539 preserves all381 prior fill tokens and books one recovered known fill:1075NO SELL2/qid15156/order45189675, executed11:20:34.423 while old worker was stopped, reconciled12:12:25. This is not a new R26 execution. Ledger382fills/cash3,613.785/owned91,851.730/realized-114.400(new-184.970/inherited70.570). Actual new unused ordinary drafts release .995 localreservation; snapshot reservedCash0. These are not current executable marks or daily dashboardPnL.
+
+One worker/account queue, original15 bridge bytes/four generations/eleven reviews and source/model/rate/risk/activation clocks remain unchanged. The fixed five-minute clock comparison is pending. [Genuine retained-node OR review candidate](../research/moloch-oregon-node-refresh-20261017/README.md) passes typed checks/root verification but remains inactive; no restart or new forecast/cap change. No causal latency/profit improvement is established.
 
 ## Earlier R25 operation and reservation cleanup
 

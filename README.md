@@ -1,6 +1,6 @@
 # Moloch - official production bot
 
-**October17,11:51:36 UTC: repaired R26 is running as sole worker651324 and restoring its original ledger. Fresh new-process trading is not yet verified.** Source6295e22c/binary97aeaf63/native5b61 match the checked release. [Controlled installation](research/moloch-source-latency-20261017/deployment/README.md). The original book-expiry stop and known two-share SELL remain preserved for reconciliation. Models, financial history and source/rate/risk/activation clocks are unchanged.
+**October17,12:13:44 UTC: R26 is verified trading with healthy realtime as sole worker651324.** Source6295e22c/binary97aeaf63/native5b61 match the checked release. [Actual restored-operation proof](research/moloch-source-latency-20261017/live-proof/README.md). Original381 fill tokens,15 bridge records,four generations and eleven reviews are preserved. Ledger now382 fills/cash3,613.785/owned91,851.730/attributed realized-114.400. The extra row is the known sell executed11:20 while the old worker was stopped; it adds .010 inherited gain, not R26 strategy profit. Processing-delay measurement remains pending.
 
 ## Earlier R25 observation
 
