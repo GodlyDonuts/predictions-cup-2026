@@ -1,0 +1,251 @@
+{
+  "schemaVersion": 1,
+  "task": 167,
+  "analysisKind": "retained-evidence descriptive calibration and horizon audit; no new observations or refit",
+  "executionAuthority": false,
+  "calibratedLowerBoundEstablished": false,
+  "automaticTradeRecommendation": false,
+  "originalIncidentZipSha256": "8c09fd1aaa589dd0e4e55da09188b5b5aa7f19c9ea3378c779155da534dc02d3",
+  "originalFundamentalMember": {
+    "bytes": 434827,
+    "sha256": "2d914b70777f2774e31733480fcd76462fb1698c23d429f5f75140550dba030f"
+  },
+  "generation": {
+    "sha256": "64b373ce0b63e7e59a694da7175b49788b59320c68e7c12248c3fc38bffedbda",
+    "rowHash": "0eadebbf1cf7093a4645caec33b30daa4e5d8055924ced757afdc889d643d843",
+    "rowSequence": 68
+  },
+  "forecastFamilies": {
+    "www.callthemap.com": 11
+  },
+  "historicalAggregatePins": {
+    "research/atlas_model/validation-summary-20261016.json": {
+      "checkoutRawSha256": "477e978c4b9f9b3bee93879d3f3e3a3c78291947187d644acaea38bf60657085",
+      "gitLfSha256": "477e978c4b9f9b3bee93879d3f3e3a3c78291947187d644acaea38bf60657085"
+    },
+    "research/atlas_model/chronological-joint-20261017/report.json": {
+      "checkoutRawSha256": "a5c4292e6d25dcad1a8b6584e90660ad6d153b78d779edae5dd69157ddd58cd1",
+      "gitLfSha256": "cd74664940cc17913e2664705c76934b94660e7aadf9ddf78a3f51cdb70214fd"
+    },
+    "research/atlas_model/chronological-joint-20261017/owner-verification.json": {
+      "checkoutRawSha256": "f23bdeaad0c1edcabdf76f6fc5ec33b6e27ee3bc478b934be1397a74250d19cd",
+      "gitLfSha256": "c60b149523fdc48ec348bb73053b9ba42f85a4aa12a8d9fdd035c17d6cc98338"
+    },
+    "research/poll-calibration-v1/report-20261005-v1.json": {
+      "checkoutRawSha256": "c73c75d6062ef4ff318886181143802fc1c1dca248f012a2b888f834a517bf41",
+      "gitLfSha256": "85c7f916071c022a5bd49e23301c95eaaff8cd543f688acbf0f46dfca87e52f0"
+    }
+  },
+  "historical": {
+    "chronologicalAtlas": {
+      "bins": [
+        {
+          "lower": 0.0,
+          "mean": 0.04995394182317272,
+          "n": 118,
+          "observed": 0.0,
+          "upper": 0.2
+        },
+        {
+          "lower": 0.2,
+          "mean": 0.3068556678035254,
+          "n": 32,
+          "observed": 0.34375,
+          "upper": 0.4
+        },
+        {
+          "lower": 0.4,
+          "mean": 0.5008422158309748,
+          "n": 36,
+          "observed": 0.3888888888888889,
+          "upper": 0.6
+        },
+        {
+          "lower": 0.6,
+          "mean": 0.703327552369274,
+          "n": 41,
+          "observed": 0.6097560975609756,
+          "upper": 0.8
+        },
+        {
+          "lower": 0.8,
+          "mean": 0.9422190487112351,
+          "n": 130,
+          "observed": 0.9615384615384616,
+          "upper": 1.0
+        }
+      ],
+      "brier": 0.08727426594949282,
+      "correct": 308,
+      "cycles": 20,
+      "interval90Coverage": 0.9243697478991597,
+      "logLoss": 0.2771003042571197,
+      "marginRmse": 7.474526568568495,
+      "races": 357
+    },
+    "heldCycleAtlas": {
+      "bins": [
+        {
+          "lower": 0.0,
+          "mean": 0.04092990979689839,
+          "n": 158,
+          "observed": 0.02531645569620253,
+          "upper": 0.2
+        },
+        {
+          "lower": 0.2,
+          "mean": 0.3036831128327307,
+          "n": 39,
+          "observed": 0.38461538461538464,
+          "upper": 0.4
+        },
+        {
+          "lower": 0.4,
+          "mean": 0.4963410391666311,
+          "n": 39,
+          "observed": 0.5128205128205128,
+          "upper": 0.6
+        },
+        {
+          "lower": 0.6,
+          "mean": 0.7137333147328182,
+          "n": 37,
+          "observed": 0.7297297297297297,
+          "upper": 0.8
+        },
+        {
+          "lower": 0.8,
+          "mean": 0.9518958242559757,
+          "n": 143,
+          "observed": 0.965034965034965,
+          "upper": 1.0
+        }
+      ],
+      "brier": 0.08437987999986972,
+      "correct": 360,
+      "cycles": 23,
+      "interval90Coverage": 0.8774038461538461,
+      "logLoss": 0.26609311694383087,
+      "marginRmse": 7.6322710796318,
+      "races": 416
+    },
+    "stateCoverageInOriginal185SenateSelection": {
+      "MA": [
+        "2000:MA",
+        "2012:MA",
+        "2018:MA"
+      ],
+      "AK": [
+        "2008:AK",
+        "2014:AK"
+      ]
+    },
+    "limitations": [
+      "Atlas/poll-error diagnostics are not calibration of CTM point forecasts.",
+      "Original historical publisher release clocks and LV/RV labels unavailable; revised archives/eventual-candidate selection constrain as-of interpretation.",
+      "Races share election-cycle risks; bin counts are not independent effective sample sizes.",
+      "Neither exceptional contractual-state frequencies nor current executable deadline cash are calibrated."
+    ]
+  },
+  "reviews": {
+    "1068": {
+      "marketId": "379",
+      "contractId": "380",
+      "side": "YES",
+      "version": 1,
+      "ordinaryProbability": "0.990000",
+      "exceptionalProbabilityAllowance": "0.010000",
+      "minimumExceptionalPayout": "0.000000",
+      "holdUntilMs": 1792429200000,
+      "sources": [
+        {
+          "kind": "forecast",
+          "maximumAgeMs": 86400000,
+          "observedAtMs": 1792191083996,
+          "publishedAtMs": 1792191083996,
+          "sha256": "4f40a1f47a9aefbffc89a5f0651355a7fcb774a79277ed102c593ae5f22f845b",
+          "url": "https://www.callthemap.com/senate/massachusetts"
+        },
+        {
+          "kind": "official_ballot",
+          "maximumAgeMs": 86400000,
+          "observedAtMs": 1792196825225,
+          "publishedAtMs": 1792196825225,
+          "sha256": "6625e4d0c8559b843ef0ab71f680528fccaa3785fa9ba1356ca0c95835e809ad",
+          "url": "https://www.shrewsburyma.gov/DocumentCenter/View/21674/Specimen-Ballot-State-Election-November-3-2026"
+        },
+        {
+          "kind": "official_contract_node",
+          "maximumAgeMs": 259200000,
+          "observedAtMs": 1792131851981,
+          "publishedAtMs": 1792131851981,
+          "sha256": "90b45b8b974f03051f11e4c90337abc779a519fe816d6acc732c066c8ab66a4a",
+          "url": "https://sig.thesuper.market/api/v1/markets/379/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55"
+        }
+      ],
+      "originalStoredReviewSha256": "d4d74cacf8e72b90ea4243fbec38dc45c152368a01cb81a52f2132b43406fab6",
+      "modeledMixture": "0.980100",
+      "rootProvidedFrozenBid": "0.950",
+      "frozenBidFreshnessOrExecutionReverified": false,
+      "zeroFeeUndiscountedBreakEvenOrdinaryProbability": "0.9595959595959595959595959596",
+      "pointProbabilityDropToBidBreakEven": "0.0304040404040404040404040404",
+      "horizonFinding": "V1 operator deadline 2026-10-19T17:00:00Z precedes election/settlement; no retained model of executable deadline cash. Election mixture is not a conservative deadline liquidation floor."
+    },
+    "1067": {
+      "marketId": "378",
+      "contractId": "379",
+      "side": "YES",
+      "version": 2,
+      "ordinaryProbability": "0.507000",
+      "exceptionalProbabilityAllowance": "0.030000",
+      "minimumExceptionalPayout": "0.000000",
+      "holdUntilMs": 1793811600000,
+      "sources": [
+        {
+          "kind": "forecast",
+          "maximumAgeMs": 86400000,
+          "observedAtMs": 1792178407889,
+          "publishedAtMs": 1792173446000,
+          "sha256": "955c9d1d819ffc6e1194aa0027d378dfb5d6eeabd9dd04345433ffe0dcd7aaf8",
+          "url": "https://www.callthemap.com/senate/alaska"
+        },
+        {
+          "kind": "official_ballot",
+          "maximumAgeMs": 86400000,
+          "observedAtMs": 1792178515989,
+          "publishedAtMs": 0,
+          "sha256": "a5676ae3baa845a4cb618fe97fa7551d786103df0f7c5a02bc55898450dd26f2",
+          "url": "https://www.elections.alaska.gov/candidates/?election=26genr"
+        },
+        {
+          "kind": "official_contract_node",
+          "maximumAgeMs": 172800000,
+          "observedAtMs": 1792090976239,
+          "publishedAtMs": 1792090976239,
+          "sha256": "38ad364b1d91ae1825a38e3e8c135ba49d2a79554fd46210e835772ef40b19c0",
+          "url": "https://sig.thesuper.market/api/v1/markets/378/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55"
+        }
+      ],
+      "originalStoredReviewSha256": "8a334562126ea3e76478edae56c4f321b6d5697c6fa0342b733d8f0f028b1a92",
+      "modeledMixture": "0.491790",
+      "rootProvidedFrozenBid": "0.315",
+      "frozenBidFreshnessOrExecutionReverified": false,
+      "zeroFeeUndiscountedBreakEvenOrdinaryProbability": "0.3247422680412371134020618557",
+      "pointProbabilityDropToBidBreakEven": "0.1822577319587628865979381443",
+      "horizonFinding": "V2 terminalSettlement/holdForActualSettlement, scheduled2026-11-04T17:00:00Z; different objective from MA.",
+      "retainedDissent": {
+        "ordinaryProbabilities": [
+          "0.44",
+          "0.46"
+        ],
+        "sameThreePercentExceptionMixtures": [
+          "0.4268",
+          "0.4462"
+        ],
+        "source": "Original AK operator review assumptionLabel cites99chambers44%-46%; retained dissent, not independently re-fetched or calibrated.",
+        "bothAboveFrozenBid": true
+      }
+    }
+  },
+  "conclusion": "No justified blind haircut. MA needs explicit owner review of terminal versus Oct19 cash objective/capital opportunity cost; AK dissent does not alone justify .315 liquidation. FIFO profit is not proof of optimal liquidation."
+}
