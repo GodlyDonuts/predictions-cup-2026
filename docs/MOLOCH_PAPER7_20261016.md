@@ -1,3 +1,13 @@
+# October17,02:31UTC — replacement trading verified; capital benefit pending
+
+Sole595256/sourcef21c8b5f/binaryb398c7e7/native7a74f8c3 recovered the original
+ledger and all four unchanged model generations; currentb27c4699 has11 policies.
+Actual new-PID trading progress/channel, healthy realtime and no active STOP
+are verified. Ledger283fills/cash48,061.58/owned47,382.105/combinedrealized−136.23.
+No new fill or measured capital/latency benefit after this upgrade is claimed.
+Strategy/acquisition economics are the priority; infrastructure work is deferred
+unless essential. [Verified fresh trading](../research/moloch-throughput-capital-20261017/closure-cache-live-proof/live-verification.json).
+
 # October17,02:18UTC — cache fix deployed; original ledger recovering
 
 Sole worker **595256**, sourcef21c8b5f, binaryb398c7e7, has started the verified

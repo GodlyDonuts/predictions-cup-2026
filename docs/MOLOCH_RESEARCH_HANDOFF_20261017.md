@@ -1,10 +1,10 @@
 # Moloch: current research handoff
 
-**Observed 2026-10-17 02:25:28 UTC.** This is the current baseline. Older dated reports are history. No paper is declared fully implemented.
+**Observed 2026-10-17 02:31:09 UTC.** This is the current baseline. Older dated reports are history. No paper is declared fully implemented.
 
 ## Production and actual capital
 
-Sole installed VPS worker **595256**, source **f21c8b5f**, binary **b398c7e7**, native **7a74f8c3**, started02:16:57UTC. It is recovering the original ledger. **Resumed trading is not yet verified**; published trading progress still belongs to old592183. No active execution STOP exists.
+Sole installed VPS worker **595256**, source **f21c8b5f**, binary **b398c7e7**, native **7a74f8c3**, started02:16:57UTC. It has recovered the original ledger and **resumed trading is verified**, with healthy realtime and no active STOP. Actual new-PID progress/channel recover all four original generations and active eleven-policy generationb27c4699. [Fresh trading proof](../research/moloch-throughput-capital-20261017/closure-cache-live-proof/live-verification.json). No new fill after this cache upgrade is verified at this observation.
 
 The installed closure-row cache addresses repeated parsing during entry preparation; exact expiry diagnostics were added. All14 financial bridge bytes, four model-generation records, positions, losses, capital authorization, source clocks, deadlines and daily windows remain intact. No extra account client or pacing mode was activated.
 
@@ -25,7 +25,7 @@ Latest purchase: Alaska1067 YES10,000 for3,113.77 across18 official rows. Open a
 
 ## Actual entry strategy and allocation
 
-Last verified running generation **b27c4699** had eleven reviewed fundamental policies. Exact settings and all four original records are preserved for replacement recovery;595256 recovery is pending the observation above.
+Current recovered generation **b27c4699** has eleven reviewed fundamental policies. Exact settings and all four original records are recovered unchanged by595256. Further fill/capital improvement after the cache upgrade remains pending.
 
 - V1:1042 YES/max400 principal;1068 YES/max10,000. Original V1 history/deadlines remain distinct.
 - V2 terminal:966 YES,977 NO,1067 YES,865 YES,993 YES,885 YES,1051 NO and851 NO each max10,000 principal;872 YES max3,000.
@@ -65,7 +65,7 @@ Separate header-bound cadence sourceb2b3a8aa/3347be98 is **uncompiled, unactivat
 
 ## Next: strategy economics
 
-The human directs infrastructure work to stop unless essential. Finish verification of the already-installed release, then:
+The human directs infrastructure work to stop unless essential. Resumed trading of the installed release is verified; verify actual repeat acquisitions while prioritizing:
 
 1. Compare source-bound join/improve/bounded acquisition outcomes: actual quantity, zero/partial/full fills, timing, pending censoring and reserved/owned capital time. Anonymous prints do not prove hypothetical passive fills; unknown counterfactuals stay unknown.
 2. Fit/qualify acquisition probability and conditional value separately from terminal forecasts. Use executable marginal gain, capital time, failures and existing inventory to improve mode choice/allocation.
