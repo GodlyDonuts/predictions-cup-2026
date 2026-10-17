@@ -198,7 +198,7 @@ fn cache_snapshot_receipt(root:&Path,r:&Receipt,path:&Path){
  SNAPSHOT_RECEIPTS.with(|cache|{let mut cache=cache.borrow_mut();let c=cache.get_or_insert_with(||SnapshotReceiptCache{root:root.into(),rows:std::array::from_fn(|_|None)});if c.root!=root{*c=SnapshotReceiptCache{root:root.into(),rows:std::array::from_fn(|_|None)};}c.rows[slot]=Some(r.clone());});
 }
 #[derive(Deserialize)]#[serde(rename_all="camelCase",deny_unknown_fields)]
-struct SnapshotRequest{version:u32,id:String,expected_control_sha256:String,expected_generation_sha256:String,research_only:bool,execution_authority:bool}
+struct SnapshotRequest{version:u32,id:String,expected_control_sha256:String,expected_generation_sha256:String,research_only:bool,execution_authority:bool,#[serde(default)]acquisition_mode:Option<String>}
 #[derive(Default)]struct SnapshotRequestState{last_version:Option<Value>,last_request_sha256:Option<String>,seen:std::collections::BTreeSet<String>,attempts:usize}
 fn snapshot_atom(s:&str)->bool{!s.is_empty()&&s.len()<=64&&s.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_')}
 fn snapshot_hex(s:&str)->bool{s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))}
@@ -220,24 +220,83 @@ fn snapshot_request(root:&Path,state:&mut SnapshotRequestState)->Result<Option<(
  if fs::read_dir(&attempts)?.take(4).count()>=4{return Err("TARTARUS_TOTAL_REQUEST_LIMIT".into())}
  state.attempts+=1;let mut proof=serde_json::to_vec(&json!({"at":iso(now()),"requestSha256":sha,"researchOnly":true,"executionAuthority":false,"attemptedOnce":true}))?;proof.push(b'\n');snapshot_private_new(&marker,&proof)?;
  let request:SnapshotRequest=serde_json::from_slice(&raw)?;
- if request.version!=1||!snapshot_atom(&request.id)||!snapshot_hex(&request.expected_control_sha256)||!snapshot_hex(&request.expected_generation_sha256)||!request.research_only||request.execution_authority{return Err("TARTARUS_RESEARCH_REQUEST".into())}
+ if request.version!=1||!snapshot_atom(&request.id)||!snapshot_hex(&request.expected_control_sha256)||!snapshot_hex(&request.expected_generation_sha256)||!request.research_only||request.execution_authority||request.acquisition_mode.as_deref().is_some_and(|m|m!="original_account_four_v1"){return Err("TARTARUS_RESEARCH_REQUEST".into())}
+ if request.acquisition_mode.is_some(){let ids=root.join("tartarus-original-account-request-ids");private_dir(&ids)?;let id=ids.join(format!("{}.json",request.id));if id.exists(){return Ok(None)}snapshot_private_new(&id,&proof)?;}
  Ok(Some((sha,request)))
+}
+// No native admission or accounting is performed by these four logical reads.
+// The SDK still owns actual admission/pagination/backoff and in-flight timeout.
+fn snapshot_original_reads_with(mut guard:impl FnMut()->Result<()>,mut read:impl FnMut(Endpoint)->Result<Receipt>)->Result<[Receipt;4]>{
+ owner_capital_receipts_with(|endpoint|{guard()?;let receipt=read(endpoint)?;guard()?;Ok(receipt)})
+}
+fn snapshot_resolved_read_error(error:&api::TransportError,quiet:impl FnOnce()->Result<()>)->Result<bool>{
+ if !moloch_live_runtime::read_recovery::retryable_read(error){return Ok(false)}quiet()?;Ok(true)
+}
+fn snapshot_original_economics(bank:&Session,scope:&Scope,rows:&[Receipt;4],at:u64)->Result<()>{
+ let report=bank.engine().report()?;let native=chrono::DateTime::parse_from_rfc3339(report["at"].as_str().ok_or("TARTARUS_NATIVE_CLOCK")?)?;
+ let mut last=None;for r in rows{let start=chrono::DateTime::parse_from_rfc3339(&r.request_started_at)?;let end=chrono::DateTime::parse_from_rfc3339(&r.received_at)?;
+  if r.status!=200||start<native||start>end||last.is_some_and(|t|start<t)||end.timestamp_millis()<0||u64::try_from(end.timestamp_millis())?>at||at.checked_sub(u64::try_from(start.timestamp_millis())?).is_none_or(|age|age>20_000){return Err("TARTARUS_ORIGINAL_ACCOUNT_CLOCK".into())}last=Some(end);
+ }
+ let power=api::relationships::parse_buying_power(&rows[0].data,scope)?;
+ if power.gross_cash_units!=Some(moloch_live_runtime::authority::reconciled_expected_cash(bank)?){return Err("TARTARUS_ORIGINAL_CASH_MISMATCH".into())}
+ let collateral=api::relationships::parse_collateral(&rows[1].data,scope)?;
+ // This endpoint's documented response is one component census, not a cursor
+ // page. Never silently accept an additional, undocumented pagination envelope.
+ if rows[1].data.get("pagination").is_some()||rows[1].data.get("coverage").is_some_and(|v|v["complete"]!=true)||collateral.available_advance_units!=power.available_advance_units||collateral.components.iter().any(|v|rows[0].data["id"]!=v.profile_id){return Err("TARTARUS_COLLATERAL_COVERAGE_OR_PROFILE".into())}
+ let p=&rows[2].data;if p.get("pagination").is_some(){return Err("TARTARUS_POSITIONS_INCOMPLETE".into())}
+ let mut actual=std::collections::BTreeMap::new();for row in p["positions"].as_array().ok_or("TARTARUS_POSITIONS_REQUIRED")?{
+  let ex=row["exchangeId"].as_str().ok_or("TARTARUS_POSITION_SCOPE")?;let n=row["quantity"].as_i64().ok_or("TARTARUS_POSITION_QUANTITY")?;
+  if scope.exchanges.get(ex).is_none_or(|market|row["marketId"]!=*market)||actual.insert(ex.to_owned(),n as i128).is_some(){return Err("TARTARUS_POSITION_SCOPE".into())}
+ }
+ // Compare the complete official signed-quantity census to the existing typed
+ // Wallet projection; do not adopt, rebase or replace any native FIFO basis.
+ let held=bank.engine().wallet.positions();for ex in actual.keys().chain(held.as_object().ok_or("TARTARUS_NATIVE_POSITIONS")?.keys()){
+  let yes=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes);let no=bank.engine().wallet.quantity(ex,moloch_replay::Side::No);
+  if yes.min(no)!=0||actual.get(ex).copied().unwrap_or(0)!=yes as i128-no as i128{return Err("TARTARUS_WHOLE_POSITION_MISMATCH".into())}
+ }
+ let open=&rows[3].data;if open["coverage"]["complete"]!=true||open["pagination"]["hasMore"]!=false||open["pagination"].get("nextCursor")!=Some(&Value::Null)||!open["data"].as_array().is_some_and(Vec::is_empty){return Err("TARTARUS_OPEN_ORDER_EVIDENCE".into())}Ok(())
 }
 // Explicit end-of-cycle service only: no live physical permit or operation is
 // held. Errors are research diagnostics, never new trading/STOP authority.
 #[allow(clippy::too_many_arguments)]
-fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8],bank:&Session,t:&Transport,ordinary:&DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&ProductionAuthority,f:Option<&FundamentalRuntime>,state:&mut SnapshotRequestState){
+fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8],bank:&Session,t:&mut Transport,ordinary:&DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&ProductionAuthority,f:Option<&FundamentalRuntime>,stream:&Realtime,state:&mut SnapshotRequestState)->Result<()>{
+ let mut fatal=false;let mut logical_reads=0;
  let result=(||->Result<Option<Value>>{
   let Some((request_sha,request))=snapshot_request(&c.root,state)?else{return Ok(None)};
-  if !authority.can_read(&c.scope)||fs::read(control_path)?!=original_control||format!("{:x}",Sha256::digest(original_control))!=request.expected_control_sha256{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}
+  if format!("{:x}",Sha256::digest(original_control))!=request.expected_control_sha256{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}
+  fatal=request.acquisition_mode.is_some();
+  if !authority.can_read(&c.scope)||fs::read(control_path)?!=original_control{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}
   let generation=f.map(|f|f.cohorts.generation_sha()).unwrap_or(moloch_live_runtime::fundamental_reload::ZERO);
-  if generation!=request.expected_generation_sha256{return Err("TARTARUS_CURRENT_GENERATION_REQUIRED".into())}if let Some(f)=f{f.authority.validate()?;}
-  let rows=SNAPSHOT_RECEIPTS.with(|cache|cache.borrow().as_ref().filter(|v|v.root==c.root).map(|v|v.rows.clone())).ok_or("TARTARUS_ORIGINAL_RECEIPTS_UNAVAILABLE")?;
+  if generation!=request.expected_generation_sha256{fatal=false;return Err("TARTARUS_CURRENT_GENERATION_REQUIRED".into())}if let Some(f)=f{f.authority.validate()?;}fatal=false;
+  let acquired=if request.acquisition_mode.is_some(){
+   // No callback here can admit a Session event. The original private account
+   // signal continues to invalidate independently on the receiver thread.
+   let signal=stream.account_signal();if signal.is_none(){return Err("TARTARUS_ACCOUNT_SIGNAL_REQUIRED".into())}let generation_before=signal.as_ref().map(|s|s.generation());let head=bank.durable_head();let started=now();
+   ordinary.require_resolved_attempts()?;if ordinary.acknowledgments.keys().any(|qid|!ordinary.closed.contains(qid))||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return Err("TARTARUS_EXISTING_EXECUTION_UNAVAILABLE".into())}
+   let original_descriptors=(ordinary.descriptor_identity()?,packages.descriptor_identity()?,lease.descriptor_identity()?);
+   fatal=true;refresh_controls(c,authority,stream)?;let quiet=t.package_queue_quiet()?;fatal=false;
+   if quiet.state.next.max(quiet.state.cooldown)>started.saturating_add(2000){return Err("TARTARUS_ACCOUNT_ADMISSION_NOT_READY".into())}
+   let rows=snapshot_original_reads_with(||{if now().checked_sub(started).is_none_or(|age|age>20_000){return Err("TARTARUS_ACCOUNT_WINDOW_EXPIRED".into())}if signal.as_ref().map(|s|s.generation())!=generation_before{return Err("TARTARUS_ACCOUNT_GENERATION_CHANGED".into())}Ok(())},|endpoint|{
+    fatal=true;refresh_controls(c,authority,stream)?;if fs::read(control_path)?!=original_control{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}if let Some(f)=f{f.authority.validate()?;}
+    logical_reads+=1;let receipt=match t.request(endpoint){Ok(r)=>r,Err(error)=>{if snapshot_resolved_read_error(&error,||{t.package_queue_quiet()?;refresh_controls(c,authority,stream)})?{fatal=false;}return Err(error.into())}};record_receipt(&c.root,&receipt)?;refresh_controls(c,authority,stream)?;fatal=false;Ok(receipt)
+   })?;
+   let stamp=moloch_live_runtime::account_realtime::capture(&signal,&rows.iter().collect::<Vec<_>>())?;
+   if bank.durable_head()!=head||original_descriptors!=(ordinary.descriptor_identity()?,packages.descriptor_identity()?,lease.descriptor_identity()?){return Err("TARTARUS_NATIVE_BOUNDARY_CHANGED".into())}snapshot_original_economics(bank,&c.scope,&rows,now())?;
+   moloch_live_runtime::account_realtime::validate(&stamp,&stream.account_signal())?;
+   Some((rows,stamp))
+  }else{None};
+  let rows=if let Some((rows,_))=&acquired{[Some(rows[0].clone()),Some(rows[2].clone()),Some(rows[3].clone()),Some(rows[1].clone())]}else{SNAPSHOT_RECEIPTS.with(|cache|cache.borrow().as_ref().filter(|v|v.root==c.root).map(|v|v.rows.clone())).ok_or("TARTARUS_ORIGINAL_RECEIPTS_UNAVAILABLE")?};
   use moloch_live_runtime::{tartarus_snapshot as ts,collateral_feedback::{Boundary,RetainedReceipt,ReceiptStore}};
   let account=RetainedReceipt::open(&c.root,rows[0].as_ref().ok_or("TARTARUS_ACCOUNT_UNAVAILABLE")?,ReceiptStore::Ordinary)?;
   let positions=RetainedReceipt::open(&c.root,rows[1].as_ref().ok_or("TARTARUS_POSITIONS_UNAVAILABLE")?,ReceiptStore::Ordinary)?;
   let open=RetainedReceipt::open(&c.root,rows[2].as_ref().ok_or("TARTARUS_OPEN_ORDERS_UNAVAILABLE")?,ReceiptStore::Ordinary)?;
   let collateral=rows[3].as_ref().map(|r|RetainedReceipt::open(&c.root,r,ReceiptStore::Ordinary)).transpose()?;
+  if acquired.is_some(){
+   let seed=bank.live_account_seed().ok_or("TARTARUS_ORIGINAL_ACCOUNT_SEED")?;
+   let origin=RetainedReceipt::from_recorded_digest(&c.root,seed["accountSnapshotHash"].as_str().ok_or("TARTARUS_ORIGINAL_ACCOUNT_SEED")?,ReceiptStore::Ordinary)?;let original=origin.receipt();
+   if original.status!=200||original.endpoint!=account.receipt().endpoint||original.data["id"]!=account.receipt().data["id"]||!original.data["id"].as_str().is_some_and(api::relationships::uuid)||original.received_at!=seed["observedAt"].as_str().ok_or("TARTARUS_ORIGINAL_ACCOUNT_SEED")?{return Err("TARTARUS_ORIGINAL_PROFILE_CHANGED".into())}
+   if let Some(record)=bank.engine().owner_capital_allocation_record(){if record["bankScope"]["profileId"]!=account.receipt().data["id"]{return Err("TARTARUS_ORIGINAL_PROFILE_CHANGED".into())}}
+  }
   let mut sources=vec![ts::SourceFile{label:"control",root:control_path.parent().ok_or("TARTARUS_CONTROL_PATH")?,relative:Path::new(control_path.file_name().ok_or("TARTARUS_CONTROL_PATH")?),sha256:&request.expected_control_sha256},ts::SourceFile{label:"snapshot-request",root:&c.root,relative:Path::new("tartarus-snapshot-request.json"),sha256:&request_sha}];
   let mut generation_file=None;let mut generation_control=None;let mut generation_control_sha=None;
   if generation!=moloch_live_runtime::fundamental_reload::ZERO{
@@ -249,13 +308,16 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
   }
   if let Some(path)=&generation_file{sources.push(ts::SourceFile{label:"generation-request",root:path.parent().unwrap(),relative:Path::new(path.file_name().unwrap()),sha256:generation});}
   if let(Some(path),Some(sha))=(&generation_control,&generation_control_sha){sources.push(ts::SourceFile{label:"generation-control",root:path.parent().ok_or("TARTARUS_GENERATION_CONTROL")?,relative:Path::new(path.file_name().ok_or("TARTARUS_GENERATION_CONTROL")?),sha256:sha});}
+  if acquired.is_some(){fatal=true;t.package_queue_quiet()?;fatal=false;}
   let boundary=Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary,packages};
   let packet=ts::capture(bank,&boundary,ts::Receipts{account:&account,positions:&positions,open_orders:&open,collateral:collateral.as_ref()},ts::Pins{files:&sources,generation_sha256:generation},i64::try_from(now())?)?;
+  if let Some((_,stamp))=&acquired{fatal=true;refresh_controls(c,authority,stream)?;fatal=false;moloch_live_runtime::account_realtime::validate(stamp,&stream.account_signal())?;if fs::read(control_path)?!=original_control{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}if let Some(f)=f{f.authority.validate()?;}}
   let name=format!("{}-{}",request.id,&request_sha[..16]);let path=packet.write_new(bank,&boundary,&name)?;
+  if let Some((rows,stamp))=&acquired{fatal=true;refresh_controls(c,authority,stream)?;if let Some(f)=f{f.authority.validate()?;}fatal=false;moloch_live_runtime::account_realtime::validate(stamp,&stream.account_signal())?;snapshot_original_economics(bank,&c.scope,rows,now())?;}
   let metadata_raw=fs::read(path.join("metadata.json"))?;
   Ok(Some(json!({"at":iso(now()),"state":"captured_original_evidence","requestSha256":request_sha,"packetPath":path,"metadataSha256":format!("{:x}",Sha256::digest(&metadata_raw)),"expectedControlSha256":request.expected_control_sha256,"expectedGenerationSha256":generation,"sourceObservationMs":packet.metadata()["sourceObservationMs"],"originalReceipts":packet.metadata()["originalReceipts"],"economicFreshnessQualified":false,"researchOnly":true,"executionAuthority":false,"networkRequests":0})))
  })();
- match result{Ok(Some(value))=>{let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);},Ok(None)=>{},Err(error)=>{let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&json!({"at":iso(now()),"state":"unavailable","requestSha256":state.last_request_sha256,"reason":error.to_string(),"researchOnly":true,"executionAuthority":false,"networkRequests":0,"retryAutomatic":false}));}}
+ match result{Ok(Some(mut value))=>{if logical_reads>0{value["logicalAccountReads"]=json!(logical_reads);value.as_object_mut().unwrap().remove("networkRequests");value["acquisitionMode"]=json!("original_account_four_v1");value["terminalDebtModelAvailable"]=json!(false);}let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);},Ok(None)=>{},Err(error)=>{let mut value=json!({"at":iso(now()),"state":"unavailable","requestSha256":state.last_request_sha256,"reason":error.to_string(),"researchOnly":true,"executionAuthority":false,"networkRequests":0,"retryAutomatic":false});if logical_reads>0{value.as_object_mut().unwrap().remove("networkRequests");value["logicalAccountReads"]=json!(logical_reads);}let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);if fatal{return Err(error)}}}Ok(())
 }
 #[cfg(test)]mod tartarus_snapshot_worker_tests{
  use super::*;
@@ -271,6 +333,43 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
  #[test]fn oversized_or_public_request_is_diagnostic_once_without_source_read(){use std::os::unix::fs::PermissionsExt;let t=Temp::new();let p=t.0.join("tartarus-snapshot-request.json");snapshot_private_new(&p,&vec![b'x';4097]).unwrap();let mut state=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(state.last_request_sha256.is_none());fs::remove_file(&p).unwrap();put(&t.0,&request_value("private"));fs::set_permissions(&p,fs::Permissions::from_mode(0o644)).unwrap();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(!t.0.join("tartarus-snapshot-attempts").exists());}
  #[test]fn cache_keeps_exact_original_clocks_only_for_successful_matching_surfaces(){let t=Temp::new();private_dir(&t.0.join("receipts")).unwrap();SNAPSHOT_RECEIPTS.with(|v|*v.borrow_mut()=None);let r=Receipt{endpoint:"/account?tournamentId=fixture".into(),status:200,request_started_at:iso(1000),received_at:iso(1001),data:json!({"balance":42})};record_receipt(&t.0,&r).unwrap();let mut bad=r.clone();bad.status=503;bad.received_at=iso(2000);record_receipt(&t.0,&bad).unwrap();let mut other=r.clone();other.endpoint="/markets/1/orderbook".into();record_receipt(&t.0,&other).unwrap();SNAPSHOT_RECEIPTS.with(|cache|{let c=cache.borrow();let c=c.as_ref().unwrap();assert_eq!(serde_json::to_value(c.rows[0].as_ref().unwrap()).unwrap(),serde_json::to_value(&r).unwrap());assert!(c.rows[1..].iter().all(Option::is_none));});let bytes=fs::read(t.0.join("receipts").join(format!("{}.json",feedback::digest(&r).unwrap()))).unwrap();assert_eq!(serde_json::from_slice::<Value>(&bytes).unwrap(),serde_json::to_value(r).unwrap());}
  #[test]fn hash_named_generation_source_is_create_new_or_exact_not_overwritten(){let t=Temp::new();let p=t.0.join("original.json");snapshot_immutable_source(&p,b"original bytes").unwrap();snapshot_immutable_source(&p,b"original bytes").unwrap();assert!(snapshot_immutable_source(&p,b"different bytes").is_err());assert_eq!(fs::read(p).unwrap(),b"original bytes");}
+ #[test]fn original_account_mode_is_explicit_and_same_id_cannot_acquire_again(){
+  let old:SnapshotRequest=serde_json::from_value(request_value("legacy")).unwrap();assert!(old.acquisition_mode.is_none());
+  let t=Temp::new();let mut v=request_value("one-shot");v["acquisitionMode"]=json!("original_account_four_v1");put(&t.0,&v);assert!(snapshot_request(&t.0,&mut SnapshotRequestState::default()).unwrap().is_some());
+  fs::remove_file(t.0.join("tartarus-snapshot-request.json")).unwrap();v["expectedControlSha256"]=json!("b".repeat(64));put(&t.0,&v);assert!(snapshot_request(&t.0,&mut SnapshotRequestState::default()).unwrap().is_none());
+  let t=Temp::new();v["acquisitionMode"]=json!("borrow_and_allocate");put(&t.0,&v);assert!(snapshot_request(&t.0,&mut SnapshotRequestState::default()).is_err());
+ }
+ fn original_row(endpoint:Endpoint,n:u64)->Receipt{Receipt{endpoint:format!("fixture-{}",serde_json::to_string(&endpoint).unwrap()),status:200,request_started_at:iso(1000+n*100),received_at:iso(1050+n*100),data:Value::Null}}
+ #[test]fn original_acquisition_is_four_ordered_logical_reads_without_native_callbacks(){
+  let mut endpoints=vec![];let guards=std::cell::Cell::new(0);let rows=snapshot_original_reads_with(||{guards.set(guards.get()+1);Ok(())},|endpoint|{endpoints.push(serde_json::to_value(&endpoint)?);Ok(original_row(endpoint,endpoints.len()as u64))}).unwrap();
+  assert_eq!(endpoints,[Endpoint::Account,Endpoint::Collateral,Endpoint::Positions,Endpoint::Orders{status:"open".into()}].iter().map(|e|serde_json::to_value(e).unwrap()).collect::<Vec<_>>());assert_eq!(guards.get(),8);assert_eq!(rows[0].request_started_at,iso(1100));assert_eq!(rows[3].received_at,iso(1450));
+ }
+ #[test]fn account_invalidation_or_elapsed_window_stops_later_reads_without_retry(){for reason in ["TARTARUS_ACCOUNT_GENERATION_CHANGED","TARTARUS_ACCOUNT_WINDOW_EXPIRED"]{
+  let changed=std::cell::Cell::new(false);let mut reads=0;let error=snapshot_original_reads_with(||{if changed.get(){Err(reason.into())}else{Ok(())}},|endpoint|{reads+=1;changed.set(true);Ok(original_row(endpoint,0))}).err().expect("must refuse changed account/window");assert_eq!(error.to_string(),reason);assert_eq!(reads,1);
+ }}
+ #[test]fn actual_sdk_durability_and_unknown_errors_keep_original_type_and_stop_acquisition(){for code in ["COMPLETION_DURABILITY_UNCERTAIN","STOPPED_OR_OWNER_LOST","SCOPED_LEASE_LOST"]{
+  let mut reads=0;let error=snapshot_original_reads_with(||Ok(()),|_|{reads+=1;Err(Box::new(api::TransportError{code:code.into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None}))}).err().expect("must preserve SDK error");assert_eq!(error.downcast_ref::<api::TransportError>().unwrap().code,code);assert_eq!(reads,1);
+ }}
+ #[test]fn only_existing_read_recovery_class_with_positive_quiet_can_be_research_unavailable(){
+  let mut error=api::TransportError{code:"OFFICIAL_REQUEST_REJECTED".into(),status:Some(429),may_have_executed:false,retry_after_ms:3000,order_id:None,api_code:None};assert!(snapshot_resolved_read_error(&error,||Ok(())).unwrap());assert!(snapshot_resolved_read_error(&error,||Err("SDK_ACTIVE_OR_DURABLE_FAILURE".into())).is_err());
+  error.may_have_executed=true;assert!(!snapshot_resolved_read_error(&error,||panic!("must not inspect away uncertainty")).unwrap());error.may_have_executed=false;error.code="COMPLETION_DURABILITY_UNCERTAIN".into();assert!(!snapshot_resolved_read_error(&error,||panic!("durability is fatal")).unwrap());
+ }
+ fn economics_fixture()->(Temp,Session,Scope,[Receipt;4]){
+  let t=Temp::new();let scope=Scope{tournament_id:"11111111-1111-4111-8111-111111111111".into(),tournament_slug:"cup".into(),exchanges:[("101".into(),"201".into())].into()};
+  let mut bank=Session::open_live(&t.0.join("bank"),&json!({"quantity":5,"maximumMarkets":1,"entryStopAt":iso(100000)}),&json!({"runId":"original-account-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(0)})).unwrap();bank.accept("fixture-clock",1,&json!({"type":"tick","receivedAt":iso(500)})).unwrap();
+  let rows=std::array::from_fn(|i|Receipt{endpoint:[format!("/account?tournamentId={}",scope.tournament_id),format!("/portfolio/collateral?tournamentId={}",scope.tournament_id),"/tournaments/cup/portfolio/positions".into(),format!("/orders?status=open&limit=200&tournamentId={}",scope.tournament_id)][i].clone(),status:200,request_started_at:iso(1000+i as u64*100),received_at:iso(1050+i as u64*100),data:match i{0=>json!({"id":"22222222-2222-4222-8222-222222222222","balance":1000,"availableAdvance":0,"buyingPower":1000}),1=>json!({"availableAdvance":0,"data":[]}),2=>json!({"positions":[],"summary":{"totalMarketValue":0,"totalCostBasis":0,"totalUnrealizedPnl":0}}),_=>json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null}})}});(t,bank,scope,rows)
+ }
+ #[test]fn original_economics_checks_whole_account_without_events_or_cash_release(){let(_t,bank,scope,rows)=economics_fixture();let head=bank.durable_head();let report=bank.engine().report().unwrap();snapshot_original_economics(&bank,&scope,&rows,1400).unwrap();assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);}
+ #[test]fn complete_held_census_must_match_native_inventory_and_preserves_original_fifo(){
+  let(_t,mut bank,scope,mut rows)=economics_fixture();let original=Receipt{endpoint:rows[2].endpoint.clone(),status:200,request_started_at:iso(510),received_at:iso(550),data:json!({"positions":[{"exchangeId":"101","marketId":"201","quantity":2,"costBasis":0.8,"lots":[{"lotId":"1","quantity":2,"side":"YES","entryPrice":0.4,"openedAt":iso(510)}]}]})};
+  let event=moloch_live_runtime::inventory::adoption(&original,bank.engine(),&scope.tournament_id,&scope.tournament_slug,&scope.exchanges,&iso(600)).unwrap();bank.accept("fixture-adoption",1,&event).unwrap();rows[2].data=original.data;let fifo=bank.engine().wallet.positions();snapshot_original_economics(&bank,&scope,&rows,1400).unwrap();assert_eq!(bank.engine().wallet.positions(),fifo);
+  rows[2].data["positions"]=json!([]);assert!(snapshot_original_economics(&bank,&scope,&rows,1400).is_err());
+ }
+ #[test]fn nonzero_observed_collateral_is_retained_without_loan_or_accounting_event(){let(_t,bank,scope,mut rows)=economics_fixture();rows[1].data["data"]=json!([{"profileId":rows[0].data["id"],"tournamentId":scope.tournament_id,"componentId":"original-component","outstandingAdvance":5,"guaranteedPayoutFloor":null,"diagnostic":null,"coveredExchangeIds":[101],"relationshipIds":[]}]);let head=bank.durable_head();snapshot_original_economics(&bank,&scope,&rows,1400).unwrap();assert_eq!(api::relationships::parse_collateral(&rows[1].data,&scope).unwrap().outstanding_liability_units,5_000_000);assert_eq!(bank.durable_head(),head);}
+ #[test]fn stale_conflicting_cash_foreign_positions_and_incomplete_collateral_remain_unavailable(){for case in ["cash","held","foreign","duplicate","collateral_page","collateral_incomplete","orders","clock","stale"]{
+  let(_t,bank,scope,mut rows)=economics_fixture();match case{"cash"=>{rows[0].data["balance"]=json!(999);rows[0].data["buyingPower"]=json!(999)},"held"=>rows[2].data["positions"]=json!([{"exchangeId":"101","marketId":"201","quantity":1,"lots":[]}]),"foreign"=>rows[2].data["positions"]=json!([{"exchangeId":"999","marketId":"201","quantity":0,"lots":[]}]),"duplicate"=>rows[2].data["positions"]=json!([{"exchangeId":"101","marketId":"201","quantity":0},{"exchangeId":"101","marketId":"201","quantity":0}]),"collateral_page"=>rows[1].data["pagination"]=json!({"hasMore":false}),"collateral_incomplete"=>rows[1].data["coverage"]=json!({"complete":false}),"orders"=>rows[3].data["data"]=json!([{"id":1}]),"clock"=>rows[3].request_started_at=iso(0),_=>{}}
+  assert!(snapshot_original_economics(&bank,&scope,&rows,if case=="stale"{22000}else{1400}).is_err(),"{case}");
+ }}
 }
 fn validate_collateral_accounting(c:&Control)->Result<()>{
  // Ordinary passive partial/late fills require a separately verified native
@@ -2450,7 +2549,7 @@ pub fn main()->Result<()>{
    }
    cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
-   service_tartarus_snapshot(&c,&path,&original_control_bytes,&bank,&t,&log,&packages,lease.as_ref(),&authority,fundamental.as_ref(),&mut tartarus_snapshot_requests);
+   service_tartarus_snapshot(&c,&path,&original_control_bytes,&bank,&mut t,&log,&packages,lease.as_ref(),&authority,fundamental.as_ref(),stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut tartarus_snapshot_requests)?;
    // Ordinary trading precedes optional discovery. Empty certificate approval
    // must not freeze official relationship/collateral discovery until restart.
    // Four logical surfaces plus <=3 rotating graph roots share the actual
