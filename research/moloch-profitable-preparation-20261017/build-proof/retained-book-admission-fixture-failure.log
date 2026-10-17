@@ -1,0 +1,203 @@
+warning: unnecessary parentheses around function argument
+  --> /tmp/moloch-profit-preparation-r21-20261017/backend-rust/transport-service/src/multi_leg_portfolio.rs:84:63
+   |
+84 | ...&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIM...
+   |                           ^                                                                                ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+84 -   let last=prices::official_tick_units(&d["fillPrice"])?;need((if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000}),"PORTFOLIO_ACK_FILL_LIMIT")?;
+84 +   let last=prices::official_tick_units(&d["fillPrice"])?;need(if l.action==Action::Buy{0<=last&&last<=limit}else{limit<=last&&last<=1_000_000},"PORTFOLIO_ACK_FILL_LIMIT")?;
+   |
+
+warning: `baal-transport-service` (lib) generated 1 warning (run `cargo fix --lib -p baal-transport-service` to apply 1 suggestion)
+warning: unnecessary parentheses around `if` condition
+  --> /tmp/moloch-profit-preparation-r21-20261017/moloch/native/src/engine_collateral.rs:90:254
+   |
+90 | ...before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{1...
+   |                     ^                                                                                            ^
+   |
+   = note: `#[warn(unused_parens)]` (part of `#[warn(unused)]`) on by default
+help: remove these parentheses
+   |
+90 -   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if (e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint"){86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+90 +   need(before.cash==l.snapshot.cash&&before.debt==l.snapshot.debt&&before.power==l.snapshot.power&&before.components==l.snapshot.components&&before.start>=l.snapshot.start&&before.end>=l.snapshot.end&&before.end<=after.start&&after.end-before.start<=if e["type"]=="actual_collateral_ordinary_cash_sync"||e["type"]=="actual_collateral_checkpoint" {86_400_000}else{120_000},"COLLATERAL_WINDOW_OR_BEFORE")?;
+   |
+
+warning: use of deprecated method `std::sync::atomic::Atomic::<u64>::fetch_update`: renamed to `try_update` for consistency
+  --> /tmp/moloch-profit-preparation-r21-20261017/moloch/native/src/realtime.rs:98:25
+   |
+98 | ...   self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;O...
+   |                       ^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+help: replace the use of the deprecated method
+   |
+98 -         self.generation.fetch_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+98 +         self.generation.try_update(Ordering::SeqCst,Ordering::SeqCst,|n|n.checked_add(1)).map_err(|_|"STREAM_ACCOUNT_GENERATION")?;Ok(())
+   |
+
+warning: value assigned to `duplicate` is never read
+   --> /tmp/moloch-profit-preparation-r21-20261017/moloch/native/src/realtime.rs:124:97
+    |
+124 |         let mut scopes=std::collections::BTreeSet::new();let mut global=false;let mut duplicate=false;
+    |                                                                                                 ^^^^^ this value is reassigned later and never used
+...
+160 |             duplicate=self.standalone.contains(&digest);
+    |             ------------------------------------------- `duplicate` is overwritten here before the previous value is read
+    |
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+   --> /tmp/moloch-profit-preparation-r21-20261017/moloch/native/src/realtime.rs:417:9
+    |
+417 |         mut socket: WebSocket<MaybeTlsStream<TcpStream>>,
+    |         ----^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `accept` is never used
+   --> /tmp/moloch-profit-preparation-r21-20261017/moloch/native/src/realtime.rs:273:8
+    |
+253 | impl Protocol {
+    | ------------- method in this implementation
+...
+273 |     fn accept(&mut self, v: &Value) -> Result<Option<Incoming>> {self.accept_original(v,&v.to_string())}
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: associated function `start` is never used
+   --> /tmp/moloch-profit-preparation-r21-20261017/moloch/native/src/realtime.rs:416:8
+    |
+374 | impl Realtime {
+    | ------------- associated function in this implementation
+...
+416 |     fn start(
+    |        ^^^^^
+
+warning: `moloch-replay` (lib) generated 6 warnings (run `cargo fix --lib -p moloch-replay` to apply 3 suggestions)
+warning: unused import: `self`
+ --> src/package_worker.rs:5:77
+  |
+5 | use crate::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_admission::Admission,package_authori...
+  |                                                                             ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `UNIT`
+ --> src/package_portfolio.rs:6:75
+  |
+6 | use moloch_relationship_arbitrage::{Instrument,Side,Book,Level,depth_cost,UNIT};
+  |                                                                           ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `dispatch::DispatchLog`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/package_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},package_portfolio::Plan,package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ^^^^^^^^^^^^^^^^^^^^^            ^^^^                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `BindingLookup` and `Transport`
+ --> src/package_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                                                          ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/package_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: unused import: `UNIT`
+ --> src/package_allocation.rs:6:49
+  |
+6 | use moloch_relationship_arbitrage::{Limits,Side,UNIT};
+  |                                                 ^^^^
+
+warning: unused imports: `authority::ProductionAuthority`, `package_not_sent_evidence::VerifiedNotSent`, and `self`
+ --> src/probabilistic_portfolio_worker.rs:5:13
+  |
+5 | ...::{authority::ProductionAuthority,dispatch::DispatchLog,feedback::{self,Result},probabilistic_portfolio::{Plan,Reservation,Policy},package_authority::PackageSnapshotSet,package_dispatch::{DurableIntent,PackageDispatchLog},package_portfolio_feedback as events,package_not_sent_evidence::VerifiedNotSent};
+  |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                  ^^^^                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused imports: `Action`, `BindingLookup`, `Leg`, and `Transport`
+ --> src/probabilistic_portfolio_worker.rs:6:30
+  |
+6 | ...::{Transport,Scope,Permit,RequestSpec,Receipt,Endpoint,TransportError,multi_leg::{self,ResponseEvidence,RequestEvidence},multi_leg_portfolio::{self as signed,Basket,Outcome,Action,Leg},admission::{ImmutableBinding,BindingLookup}};
+  |       ^^^^^^^^^                                                                                                                                                                 ^^^^^^ ^^^                               ^^^^^^^^^^^^^
+
+warning: unused imports: `SystemTime` and `UNIX_EPOCH`
+  --> src/probabilistic_portfolio_worker.rs:11:32
+   |
+11 | use std::{fs,path::Path,time::{SystemTime,UNIX_EPOCH}};
+   |                                ^^^^^^^^^^ ^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> src/package_preflight.rs:24:90
+   |
+24 | pub fn collect<B:Backend,F:FnMut(&Receipt)->Result<()>>(b:&mut B,s:&Scope,basket:&Basket,mut after:F)->Result<PackageSnapshotSet>{
+   |                                                                                          ----^^^^^
+   |                                                                                          |
+   |                                                                                          help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `completed` is never read
+  --> src/execution_distribution.rs:51:77
+   |
+51 | #[derive(Clone)]struct Sample{key:Option<PoolKey>,market:String,attempt:u64,completed:u64,requested:u64,filled:u64,gain:Option<i128>...
+   |                        ------ field in this struct                          ^^^^^^^^^
+   |
+   = note: `Sample` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `moloch-live-runtime` (lib) generated 11 warnings (run `cargo fix --lib -p moloch-live-runtime` to apply 10 suggestions)
+warning: function `closed_legacy_ack` is never used
+  --> src/worker.rs:61:4
+   |
+61 | fn closed_legacy_ack(bank:&Session,log:&DispatchLog,qid:u64,event:&Value)->bool{
+   |    ^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `recovery_not_before` is never used
+    --> src/worker.rs:1783:4
+     |
+1783 | fn recovery_not_before(budget:&RecoveryBudget,at:u64,auth:u64)->Result<u64>{
+     |    ^^^^^^^^^^^^^^^^^^^
+
+warning: `moloch-live-runtime` (bin "moloch-live-runtime") generated 2 warnings
+   Compiling moloch-live-runtime v0.1.0 (/tmp/moloch-profit-preparation-r21-20261017/moloch/live-runtime)
+    Finished `test` profile [unoptimized] target(s) in 3.69s
+     Running tests/exit_refresh_lifecycle.rs (/tmp/moloch-paper7-generation-live-20261016/target/debug/deps/exit_refresh_lifecycle-c26bea99154ec189)
+
+running 9 tests
+test actual_later_source_gap_invalidates_previously_valid_committed_book ... ok
+test causal_repair_with_partial_pages_or_missing_boundary_cannot_reach_ready ... ok
+test certificate_does_not_promote_uncommitted_events_or_ambiguous_actual_valid_emissions ... ok
+test early_target_book_and_real_gap_allow_a_native_profit_successor_before_the_final_packet ... FAILED
+test complete_tape_then_real_invalid_valid_books_commit_and_certify_original_new_quote ... ok
+test genuine_deteriorated_book_cannot_turn_inherited_profit_hint_into_a_loss_exit ... ok
+test genuine_yes_and_no_inherited_profit_refresh_requires_new_native_quote_and_original_seven_facts ... ok
+test missing_or_unfinished_tape_keeps_real_book_invalid_and_denies_certificate ... ok
+test same_session_denial_then_exact_tape_repair_then_later_seven_facts_reaches_ready ... ok
+
+failures:
+
+---- early_target_book_and_real_gap_allow_a_native_profit_successor_before_the_final_packet stdout ----
+
+thread 'early_target_book_and_real_gap_allow_a_native_profit_successor_before_the_final_packet' (615864) panicked at tests/exit_refresh_lifecycle.rs:162:150:
+called `Result::unwrap()` on an `Err` value: "EXIT_REFRESH_BOOK_NOT_COMMITTED"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    early_target_book_and_real_gap_allow_a_native_profit_successor_before_the_final_packet
+
+test result: FAILED. 8 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.70s
+
+error: test failed, to rerun pass `--test exit_refresh_lifecycle`
