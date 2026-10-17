@@ -1,0 +1,19 @@
+{
+  "result": "PASS",
+  "archiveSha256": "f57dce3db2434782b56159c5bba193a9269b407c655c794ed5c337a917939a81",
+  "archiveBytes": 7323123,
+  "packetFilesVerified": 287,
+  "sourceCommit": "43b0341a15a3ef0d072c34724a3ef7a169d7594e",
+  "sourceFilesVerified": 263,
+  "exactFiles": 59,
+  "crlfOnlyFiles": 204,
+  "rustTomlLockFiles": 220,
+  "binarySha256": "d8e4672a8b5a90f406de830846a9388aaa3922a4a34cabfe3077165ef6cced72",
+  "nativeIdentity": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "checks": {
+    "worker": 134,
+    "lifecycle": 14,
+    "unchangedLibrary": 21
+  },
+  "operationallyRun": false
+}

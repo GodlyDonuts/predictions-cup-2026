@@ -1,0 +1,66 @@
+{
+  "startedAt": "2026-10-17T08:53:21.301177+00:00",
+  "checks": [
+    {
+      "label": "worker",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "test",
+        "--bin",
+        "moloch-live-runtime",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T08:53:21.351942+00:00",
+      "completedAt": "2026-10-17T08:56:28.369035+00:00",
+      "exitCode": 0
+    },
+    {
+      "label": "exit-refresh-lifecycle",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "test",
+        "--test",
+        "exit_refresh_lifecycle",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T08:56:28.369762+00:00",
+      "completedAt": "2026-10-17T09:02:30.938361+00:00",
+      "exitCode": 0
+    },
+    {
+      "label": "release",
+      "command": [
+        "nice",
+        "-n",
+        "19",
+        "cargo",
+        "build",
+        "--bin",
+        "moloch-live-runtime",
+        "--release",
+        "--offline",
+        "--locked"
+      ],
+      "startedAt": "2026-10-17T09:02:30.939047+00:00",
+      "completedAt": "2026-10-17T09:09:56.021155+00:00",
+      "exitCode": 0
+    }
+  ],
+  "sourceCommit": "43b0341a15a3ef0d072c34724a3ef7a169d7594e",
+  "productionChanged": false,
+  "library21InputUnchangedFromQualificationV2": true,
+  "priorFailedStageRetained": true,
+  "nativeIdentityFromExact16SourceInputs": "5b61d3cbb38eadf5170fafae5c91cb5b75858346b2771031084224bfa2c3d6d4",
+  "binarySha256": "d8e4672a8b5a90f406de830846a9388aaa3922a4a34cabfe3077165ef6cced72",
+  "completedAt": "2026-10-17T09:09:56.071317+00:00"
+}
