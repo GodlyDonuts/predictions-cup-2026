@@ -1,0 +1,31 @@
+{
+  "originalJournalSha256": "f32963477d94c202e603e7b157a877708ab626846869b4da941f57402c65860b",
+  "counts": {
+    "gaps": 1055,
+    "gapsWithoutReason": 1055,
+    "books": 13520,
+    "staleBooks": 6540,
+    "staleButSourceWithin10sAtReceipt": 6528,
+    "staleWithReceiptProcessingOver10s": 6333
+  },
+  "transportCounts": {
+    "REST_normalized": 275,
+    "official_sig_realtime": 13245
+  },
+  "receiptToProcessingMedianMs": 8872.0,
+  "sourceToReceiptMedianMs": 535.1139,
+  "gapReceiptBatchesOver200": [
+    {
+      "receivedAt": "2026-10-17T09:33:33.842Z",
+      "count": 237
+    },
+    {
+      "receivedAt": "2026-10-17T10:04:22.739Z",
+      "count": 237
+    }
+  ],
+  "currentProcessLatencyClaimed": false,
+  "marketSilenceInferred": false,
+  "causeLocalization": "Observed timestamps distinguish receipt-to-processing delay from source-to-receipt age, not queue vs normalization/financial-planning/HTTP-blocking CPU attribution.",
+  "executionAuthority": false
+}

@@ -1,5 +1,9 @@
 # Victory Directive: evidence and integration map
 
+Current October17,10:56:39UTC: [R25 is verified trading](../moloch-entry-capital-quarantine-20261017/live-proof/README.md) as sole649399/source8251b883/binary0bc69f07/native5b61. The paper's ordinary-entry quarantine is now implemented and actual unused-draft cleanup released3,611.850 of planning reservations. Reviewed entries and fully covered inventory reductions remain available. All381 original fills and cash3,611.985/owned91,853.520/realized-114.410 are preserved; zero post-upgrade fills at this proof. Original models and clocks remain. This is a production behavior change, not evidence of new alpha or profit.
+
+The [new fixed SIG-only screen](../moloch-sig-streaming-screen-20261017/README.md) is implemented and independently reproduced, but missing causal history/timely books leaves zero completed labels; no model was fitted. Other semantic, joint-posterior and tournament-utility qualification gaps remain. Older deployment/current-state paragraphs below retain their original observation dates and are superseded by this paragraph and the [research baseline](../../docs/MOLOCH_RESEARCH_BASELINE.md).
+
 Latest06:28UTC: [actual948 NO sale](../moloch-profitable-preparation-20261017/actual-profit-exit/README.md) realizes+17.815 on inherited recorded basis;355 fills/cash11,321.290/owned84,136.600. New-trading realized remains−184.970; no calibrated alpha/competitive-profit claim. R21 continues; R22 source/build is separate.
 
 
@@ -48,7 +52,7 @@ admission, order, fill/non-fill, exit/settlement and strategy attribution.
 
 | Paper recommendation | Existing implementation / actual evidence | Next acceptance criterion |
 | --- | --- | --- |
-| Quarantine unqualified ordinary entries | Ordinary spread lane remains active; optional empirical maker model is OFF. Actual ordinary cohorts are negative. | Measure current prospective entry-to-exit economics separately; reduce unqualified allocation through an explicit strategy change while retaining exits/reconciliation. This paper has not silently changed live allocation. |
+| Quarantine unqualified ordinary entries | R25 now rejects unqualified ordinary new exposure and actually retires proved-unused flat drafts. Empirical maker remains OFF; reviewed entries and covered inventory reductions remain. | Follow actual funded comparisons, fills and economic outcomes; a reservation release is not profit. Historical ordinary cohorts remain negative. |
 | Semantic compiler and refund states | [semantic_floor.rs](../../moloch/native/src/semantic_floor.rs), [semantic_states.rs](../../moloch/live-runtime/src/semantic_states.rs), [relationship analyzer](../../moloch/relationship-arbitrage/README.md) already implement distinct exhaustive and probabilistic state paths. No qualified profitable certificate. | Obtain original resolver, joint exception/refund and fee semantics; enumerate complete states, then evaluate full-depth quantities through existing AON authority. Publish zero/uncertified results too. |
 | Atomic package execution | Existing package settings, preflight, authority, dispatch and feedback modules. No trusted certificates/allocation reviews in installed control. | A specific certified or qualified probabilistic opportunity, fresh original facts and actual atomic result; independent ordinary fills are insufficient. |
 | External catch-up / SIG dislocation | [source_innovation.rs](../../moloch/live-runtime/src/source_innovation.rs) separates the models; prospective external-data observer/evaluator already exists. | Expand source-causal prospective coverage and fit on earlier events, evaluate later clusters, include abstentions/non-fills; qualify positive executable value before order authority. |
@@ -59,7 +63,7 @@ admission, order, fill/non-fill, exit/settlement and strategy attribution.
 | Choose SELL / opposite BUY / HOLD | Direct SELL and opposite-BUY netting are real existing operations; +31.445 netting versus -216.415 maximum-age SELL result is historical selection, not causal comparison. | Compare the same position/time with executable depth, origin-specific hold value, capital time and uncertainty. Existing terminal cohorts and inherited lots retain their distinct objectives. |
 | Collateral recycling | Defensive parser/accounting exists; installed collateral accounting OFF. | Use only original platform-recognized component capacity/liability after reconciliation. No imagined loan, independent floor or realized profit. |
 
-## Ordinary-entry policy review: source only
+## Earlier ordinary-entry policy review (superseded by R25 above)
 
 A bounded independent review of main4008470f found no existing control that implements the paper's strict quarantine while retaining reviewed entries and covered opposite-BUY reductions. ordinarySideEdge Enforce is a conditional microprice filter, not empirical qualification. The existing maker policy permits separately bounded unqualified exploration; fabricating a zero exploration budget or a reached-loss baseline would misrepresent its authority. Native entriesEnabled or entry-window shutdown also blocks reviewed entries, and the original bank policy must not be rewritten.
 
