@@ -1,0 +1,120 @@
+{
+  "schema": "tartarus_r49_conditional_reoptimization_stress_v1",
+  "at": "2026-10-18T19:11:57.712095+00:00",
+  "originalNumericIssuedAtMs": 1792348566528,
+  "numericRawSha256": "b7d0f093321e0750ead703d91a86662429749fd87ca17f2082a9137e366c34a8",
+  "heldExchanges": 25,
+  "fullWorlds": 380,
+  "models": 5,
+  "fields": 3,
+  "cases": [
+    {
+      "name": "one-cent-adverse",
+      "independentExactSequenceChecked": true,
+      "solverStatus": 0,
+      "legs": 19,
+      "meanChangesVsHold": {
+        "price_lower_common": "2375.641692",
+        "price_upper_common": "1989.835884",
+        "price_midpoint_independent": "2487.330665",
+        "historical_review_envelope_lower_common": "2285.583",
+        "historical_review_envelope_upper_common": "1990.288"
+      },
+      "minimumDeclaredMeanChangeVsHold": "1989.835884",
+      "nativeStates": 121,
+      "firstConditionalAction": {
+        "action": "SELL",
+        "ex": "1042",
+        "side": "YES",
+        "n": 430,
+        "price": 905000,
+        "basis": 395600000,
+        "previous": null,
+        "quantity": 430
+      },
+      "rawCandidateSha256": "18f0c10bcec935f72696fed9cd5418e139d845e548302c7b8a80cb929391929f",
+      "syntheticExecutionStress": {
+        "adversePriceTicksMicros": 10000,
+        "displayedDepthDivisor": 1,
+        "changesOriginalSourceBytes": false,
+        "actualCurrentLiquidityClaimed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "name": "half-displayed-depth",
+      "independentExactSequenceChecked": true,
+      "solverStatus": 0,
+      "legs": 31,
+      "meanChangesVsHold": {
+        "price_lower_common": "3486.470556",
+        "price_upper_common": "2955.149409",
+        "price_midpoint_independent": "3688.508689",
+        "historical_review_envelope_lower_common": "3309.688",
+        "historical_review_envelope_upper_common": "2955.241"
+      },
+      "minimumDeclaredMeanChangeVsHold": "2955.149409",
+      "nativeStates": 125,
+      "firstConditionalAction": {
+        "action": "SELL",
+        "ex": "1042",
+        "side": "YES",
+        "n": 430,
+        "price": 915000,
+        "basis": 395600000,
+        "previous": null,
+        "quantity": 430
+      },
+      "rawCandidateSha256": "fccdb8ce32a71d05aed26bb8b6043a92189290513c24cf12c165b6c71d8eb145",
+      "syntheticExecutionStress": {
+        "adversePriceTicksMicros": 0,
+        "displayedDepthDivisor": 2,
+        "changesOriginalSourceBytes": false,
+        "actualCurrentLiquidityClaimed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "name": "combined-adverse",
+      "independentExactSequenceChecked": true,
+      "solverStatus": 0,
+      "legs": 16,
+      "meanChangesVsHold": {
+        "price_lower_common": "1993.158275",
+        "price_upper_common": "1869.512045",
+        "price_midpoint_independent": "2084.440299",
+        "historical_review_envelope_lower_common": "1956.71",
+        "historical_review_envelope_upper_common": "1869.689"
+      },
+      "minimumDeclaredMeanChangeVsHold": "1869.512045",
+      "nativeStates": 117,
+      "firstConditionalAction": {
+        "action": "SELL",
+        "ex": "1042",
+        "side": "YES",
+        "n": 430,
+        "price": 905000,
+        "basis": 395600000,
+        "previous": null,
+        "quantity": 430
+      },
+      "rawCandidateSha256": "8b2df53e7ed8fdc0782dd0d4d47d44260cfa789e990b0611c1f00b080b9c2dd9",
+      "syntheticExecutionStress": {
+        "adversePriceTicksMicros": 10000,
+        "displayedDepthDivisor": 2,
+        "changesOriginalSourceBytes": false,
+        "actualCurrentLiquidityClaimed": false,
+        "executionAuthority": false
+      }
+    }
+  ],
+  "reoptimizedPortfolioPerCase": true,
+  "fixedOriginalPortfolioStressClaimed": false,
+  "originalBookClocksRenewed": false,
+  "syntheticPricesClippedToOpenUnitInterval": true,
+  "feeAssumption": "Original zero-fee policy retained; no new fee schedule asserted",
+  "calibratedProbabilitiesClaimed": false,
+  "actualCurrentOrFutureDepthCertified": false,
+  "actualTradesSubmitted": 0,
+  "executionAuthority": false
+}
