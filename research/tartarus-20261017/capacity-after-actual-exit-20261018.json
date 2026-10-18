@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "computedAt": "2026-10-18T06:05:55.472331+00:00",
+  "classification": "dated_original_journal_depth_census_and_exact_fractional_relaxation",
+  "journalPrefixBytes": 1897831408,
+  "journalPrefixSha256": "d9324235bebe33aac18fd9fbf6fd2ac5f6574598794ddd244a53588a1cbfdab4",
+  "financialSequence": 574171,
+  "reportAt": "2026-10-18T05:11:32.624Z",
+  "cash": "2042757/200",
+  "heldShares": 129477,
+  "bookCount": 203,
+  "nonInvalidatedBookCount": 15,
+  "allBooksFresh": false,
+  "completeCurrentUniverse": false,
+  "currentOfficialLiabilitiesKnown": false,
+  "newAccountRequests": 0,
+  "executionAuthority": false,
+  "calibratedProbabilityClaimed": false,
+  "assumptions": [
+    "Dated cached depth only; no current or future liquidity claim.",
+    "Optimistic all-held-and-new shares pay one even for incompatible outcomes.",
+    "Exact rational fractional quantities; integer-only trading can only reduce this bound.",
+    "Zero fees/debt and released reserves; ignored mandate, market, order, eligibility and timing constraints.",
+    "Rotation proceeds exist only inside conditional modeled sale fills, never actual acquisition cash.",
+    "Resource sharing/netting constraints relaxed; all book records and hypothetical funding may be mutually incompatible.",
+    "No repeated round trips, future replenishment, settlement advances or additional contributions included."
+  ],
+  "capacity": {
+    "buy_only": {
+      "looseTerminalWealthUpperFraction": "2152387/7",
+      "looseTerminalWealthUpperFloorMicros": 307483857142,
+      "fractionalNewShares": "1246048/7",
+      "fractionalSoldShares": "0"
+    },
+    "conditional_rotation": {
+      "looseTerminalWealthUpperFraction": "9652369/18",
+      "looseTerminalWealthUpperFloorMicros": 536242722222,
+      "fractionalNewShares": "7950631/18",
+      "fractionalSoldShares": "34936"
+    }
+  },
+  "interpretation": "Dated partial-depth relaxation, not a current/global capacity or attainable joint payout. Coverage decreased from37 to15 non-invalidated books; actual fills separately increased cash. Fresh full-universe coverage remains necessary.",
+  "independentReproduction": {
+    "sourceCommit": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+    "sourceSha256": "96e583f452b72929bbfd68f6128d38ab600479aae7eef1b03b9f83a2ce82ef79",
+    "buyDepthLevels": 1424,
+    "originalOwnedSaleDepthLevels": 10,
+    "bothExactFractionsReproduced": true,
+    "newAccountRequests": 0
+  }
+}

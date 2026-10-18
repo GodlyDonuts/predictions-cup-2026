@@ -1,0 +1,111 @@
+{
+  "qualification": {
+    "at": "2026-10-18T06:10:30.975300+00:00",
+    "checks": [
+      {
+        "check": "prior-worker-isolated",
+        "exitCode": 0
+      },
+      {
+        "check": "check",
+        "exitCode": 0
+      },
+      {
+        "check": "native",
+        "exitCode": 0
+      },
+      {
+        "check": "library",
+        "exitCode": 0
+      },
+      {
+        "check": "worker",
+        "exitCode": 0
+      },
+      {
+        "check": "integration",
+        "exitCode": 0
+      },
+      {
+        "check": "release",
+        "exitCode": 0
+      }
+    ],
+    "ordersSubmitted": 0,
+    "productionFilesChanged": false,
+    "moloch-live-runtimeSha256": "bbd4a497f473fbb52a92e9814fbf8b36dc3f1b9d3a7456e01b7de87c90a57cbc",
+    "moloch-reconcile-expired-exposureSha256": "7e4bb0642ef7926eeaa6a31770bb6a729f745469cafdbbe99b79ef57582b6591"
+  },
+  "sourceVerification": {
+    "sourceInputs": 233,
+    "allNormalizedInputsMatchLocalCandidate": true,
+    "newlinePolicy": "Normalize CRLF to LF for Git source comparison; retain and separately hash every actual compiled byte. Parent R41 source has CRLF; no compiler inputs rewritten. Native identity uses actual bytes.",
+    "physicalCrlfFiles": 174,
+    "expectedPinsSha256": "22f48a5ebc58f9e21ba260ac2d7c8cf0d2607a7411a2bb65f913464e7158103c",
+    "rawPinsSha256": "99f69891e24e3741f73073fe8920f5842bcdffb9347ebc6987f841b5d70816d8",
+    "mismatches": [],
+    "sourceCommitNotYetPublished": true,
+    "networkRequests": 0,
+    "bankMutations": 0
+  },
+  "publishedGitVerification": {
+    "sourceCommit": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+    "inputs": 233,
+    "allRawGitBlobsMatchExpectedNormalizedPins": true,
+    "expectedPinsSha256": "22f48a5ebc58f9e21ba260ac2d7c8cf0d2607a7411a2bb65f913464e7158103c",
+    "verificationMethod": "Root local git cat-file --batch over exact published commit; joined to independent remote raw/normalized source pins by expected manifest SHA256"
+  },
+  "upgradeHelper": {
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "expectedNativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "helperSha256": "2b7be292aab1704166ca84d2394a650eeea4cc60a0254807b1c02b200ba875ca",
+    "nativeLibrarySha256": "1b06a1a622d07be100ed123eb7544893d9ddb9c345fa6ec8f1132cc76c0a959e",
+    "sourceSha256": "2edb0164e010b9acc3954065d5d56f71b2bc54cb8093f4faecb348641a99df2a",
+    "networkRequests": 0,
+    "bankMutations": 0,
+    "serializer": "native Value Display, no cross-serde adapter"
+  },
+  "bridgeProposal": {
+    "observedAt": "2026-10-18T06:17:50.657724+00:00",
+    "proposalSha256": "f53eb69dd8bb8b0809484b49a5568915af3ce915ccc329b92afa0147d2a92307",
+    "newNativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "previousEntriesUnchanged": 18,
+    "totalEntries": 19,
+    "exactOriginalHeadReportAndNumberTokensPreserved": true,
+    "originalNativeSequence": 574171,
+    "originalNativeJournalBytes": 1897831408,
+    "outerRawTokenSealVerified": true,
+    "sourceCommit": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+    "bankFinancialOrSdkMutation": false,
+    "bridgeInstalled": false,
+    "networkRequests": 0
+  },
+  "bridgeInstalled": {
+    "installedAt": "2026-10-18T06:18:34.736328+00:00",
+    "originalNativeSequence": 574171,
+    "bridgeSha256": "f53eb69dd8bb8b0809484b49a5568915af3ce915ccc329b92afa0147d2a92307",
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "originalEntriesPreserved": 18,
+    "totalEntries": 19,
+    "sourceCommit": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+    "stopPreserved": true,
+    "sdkUncertaintyPreserved": true,
+    "financialEventsApplied": 0,
+    "officialRequests": 0
+  },
+  "recoveryObservation": {
+    "observedAt": "2026-10-18T06:19:14.749064+00:00",
+    "recoveryPid": 772276,
+    "recoveryStartTicks": "27396878",
+    "executableVerified": true,
+    "actualOwnerAndBankLeasePidMatch": true,
+    "serviceMainPid": 0,
+    "mode": "restoring_original_bank_for_expired_exposure_reconciliation",
+    "sourceCommit": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+    "nativeSequenceBeforeRecovery": 574171,
+    "stopPreserved": true,
+    "currentTradingVerified": false,
+    "sameIntentRetryAuthorized": false,
+    "profitabilityEstablished": false
+  }
+}
