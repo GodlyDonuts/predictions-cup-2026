@@ -12,6 +12,7 @@ from .population import (OPERATORS,OPERATOR_WEIGHTS,mutate,probe,distance,
                          change_hyperparameters,BehaviorArchive,founder_counts)
 from .run_experiment import sha,write_json,load_mechanics,rollout
 from .train_inner import PPOConfig,PPOTrainer,Trajectory,fingerprint
+from .execution_profiles import load_profiles
 
 
 def load_trainer(path,expected_sha,protocol_sha,device):
@@ -36,13 +37,16 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--dataset',type=Path,required=True);p.add_argument('--mechanics',type=Path,required=True)
     p.add_argument('--protocol',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--members',type=int,default=32);p.add_argument('--islands',type=int,default=4)
-    p.add_argument('--cycles',type=int,default=2);p.add_argument('--seed',type=int,default=7001);p.add_argument('--device',default='cuda');args=p.parse_args()
+    p.add_argument('--cycles',type=int,default=2);p.add_argument('--seed',type=int,default=7001);p.add_argument('--device',default='cuda')
+    p.add_argument('--execution-profiles',type=Path)
+    p.add_argument('--replacement-mode',choices=['independent','local','multiscale'],default='multiscale');args=p.parse_args()
     if args.output.exists()or args.members%args.islands or args.members//args.islands<4 or args.cycles<1:
         raise ValueError('FINITE_NEW_POPULATION_WITH_AT_LEAST_FOUR_PER_ISLAND_REQUIRED')
     args.output.mkdir(parents=True);(args.output/'checkpoints').mkdir();(args.output/'anchors').mkdir()
     torch.set_num_threads(4);rng=random.Random(args.seed);torch.manual_seed(args.seed)
     if args.device=='cuda':torch.cuda.reset_peak_memory_stats()
     begun=time.perf_counter();tape=Tape(args.dataset);mechanics=load_mechanics(args.mechanics)
+    profiles=load_profiles(args.execution_profiles,mechanics)
     base=json.loads(args.protocol.read_text())
     if tape.manifest_sha256!=base['initial_dataset_manifest_sha256']:raise ValueError('POPULATION_DATASET_PROTOCOL')
     minimum=max(tape.times[0],base['run_start_ms'])+base['recurrent_burnin_ms']
@@ -58,6 +62,12 @@ def main():
           'bankroll_curriculum_by_island_cycle':[25000,100000,400000,1000000,2000000],
           'recorded_depth_or_mechanics_scaled_with_bankroll':False,'search_bankroll_micros':base['initial_cash_micros'],
           'replacement_operator_probabilities':dict(zip(OPERATORS,OPERATOR_WEIGHTS)),
+          'replacement_mode':args.replacement_mode,
+          'execution_profiles_sha256':sha(args.execution_profiles)if args.execution_profiles else None,
+          'execution_profiles':json.loads(args.execution_profiles.read_text(encoding='utf-8'))if args.execution_profiles else None,
+          'execution_profile_names':[name for name,_ in profiles],
+          'training_execution_schedule':'cycle_index_mod_profile_count_common_to_all_islands',
+          'selection_criterion':'minimum_reference_return_across_all_fixed_profiles_and_calendars',
           'weak_fraction_per_island':.25,'protected_elites_per_island':2,'maximum_global_founder_share':.25,
           'reset_branch_grace_training_blocks':2,'migration_probability':.20,'source_sha256':source,
           'search_is_optimization_not_locked_evidence':True,'locked_test_used':False,'production_authority':False,
@@ -84,14 +94,16 @@ def main():
             else:trainer=PPOTrainer(RecurrentPolicy(CONTRACT_FEATURES,GLOBAL_FEATURES).to(args.device),PPOConfig(epochs=2),protocol_sha)
             cash=[25000,100000,400000,1000000,2000000][(m['island']+cycle)%5]*1000000
             tp={**train_protocol,'initial_cash_micros':cash}
-            t,fit=rollout(tape,mechanics,tp,trainer.model,train_starts[cycle][m['island']])
+            fit_profile,fit_mechanics=profiles[cycle%len(profiles)]
+            t,fit=rollout(tape,fit_mechanics,tp,trainer.model,train_starts[cycle][m['island']]);fit['execution_profile']=fit_profile
             updates=[]
             if fit['qualified_accounting'] and bool(t.learn.any()):updates=trainer.update(t)
             weights=fingerprint(trainer.model);evaluations=[]
-            for j,start in enumerate(search_starts):
-                torch.manual_seed(args.seed+900000+j)
-                et,e=rollout(tape,mechanics,search_protocol,trainer.model,start,split_role='search_development')
-                e['parameter_sha256']=weights;evaluations.append(e);del et
+            for profile_name,eval_mechanics in profiles:
+                for j,start in enumerate(search_starts):
+                    torch.manual_seed(args.seed+900000+j)
+                    et,e=rollout(tape,eval_mechanics,search_protocol,trainer.model,start,split_role='search_development')
+                    e.update(parameter_sha256=weights,execution_profile=profile_name);evaluations.append(e);del et
             if fingerprint(trainer.model)!=weights:raise ValueError('SEARCH_CHANGED_POLICY')
             checkpoint=args.output/'checkpoints'/f'c{cycle:03d}-s{slot:03d}-{m["id"]}.pt'
             checkpoint_sha=trainer.save(checkpoint,provenance(m))
@@ -112,12 +124,13 @@ def main():
             del trainer,t;gc.collect()
         write_json(args.output/f'archive-c{cycle:03d}.json',archive.json())
         if cycle+1==args.cycles:break
+        if args.replacement_mode=='independent':continue
         selection_pool=[dict(m)for m in members]
         for island in range(args.islands):
             local=sorted([m for m in selection_pool if m['island']==island],key=lambda m:m['score'],reverse=True)
             protected={m['id']for m in local[:2]};weak=[m for m in reversed(local)if m['id']not in protected and m['age']>=m['grace']][:max(1,width//4)]
             for old in weak:
-                operator=rng.choices(OPERATORS,weights=OPERATOR_WEIGHTS)[0]
+                operator='local'if args.replacement_mode=='local'else rng.choices(OPERATORS,weights=OPERATOR_WEIGHTS)[0]
                 migrating=rng.random()<.20
                 pool=sorted(selection_pool if migrating else local,key=lambda m:m['score'],reverse=True)[:max(2,args.members//4 if migrating else 2)]
                 counts=founder_counts(members)

@@ -95,8 +95,13 @@ class BehaviorArchive:
     def consider(self,identity,parameter_sha,episodes,descriptor,checkpoint):
         if len(episodes)<2 or any(e.get('split_role')!='search_development'for e in episodes):
             raise ValueError('ARCHIVE_REQUIRES_REPEATED_SEARCH_EVALUATION')
-        spans=sorted((e['start_ms'],e['terminal_ms'])for e in episodes)
-        if any(a[1]>b[0]for a,b in zip(spans,spans[1:])):raise ValueError('ARCHIVE_EVALUATION_BLOCKS_OVERLAP')
+        profiles={e.get('execution_profile','nominal')for e in episodes};calendars=[]
+        for profile in profiles:
+            spans=sorted((e['start_ms'],e['terminal_ms'])for e in episodes if e.get('execution_profile','nominal')==profile)
+            if len(spans)<2:raise ValueError('ARCHIVE_REQUIRES_REPEATED_CALENDARS_PER_PROFILE')
+            if any(a[1]>b[0]for a,b in zip(spans,spans[1:])):raise ValueError('ARCHIVE_EVALUATION_BLOCKS_OVERLAP')
+            calendars.append(spans)
+        if any(spans!=calendars[0]for spans in calendars):raise ValueError('ARCHIVE_PROFILE_CALENDARS_DIFFER')
         if any(e.get('parameter_sha256')!=parameter_sha for e in episodes):raise ValueError('ARCHIVE_POLICY_CHANGED_BETWEEN_EVALUATIONS')
         if any(not e['qualified_accounting'] or e['reference_return'] is None or e['reference_return']<0 or e.get('observable_market_frames',e.get('tradable_decision_frames',0))<=0 for e in episodes):
             return False

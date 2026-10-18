@@ -11,8 +11,9 @@ from .liquidity import Book
 from .reference_env import ReferenceEnv
 from .policy import FAMILIES, HEAD_SIZES
 
-CONTRACT_FEATURES = 20
-GLOBAL_FEATURES = 12
+CONTRACT_FEATURES = 24
+GLOBAL_FEATURES = 14
+FEATURE_SCHEMA = 'causal_capacity_24_14_v2'
 
 
 class Tape:
@@ -93,6 +94,7 @@ class Episode(ReferenceEnv):
         present = np.zeros(n,bool); present[0] = True
         masks = {'market':np.zeros(n,bool),'family':np.zeros((n,len(FAMILIES)),bool),
                  'side':np.ones((n,len(FAMILIES),2),bool),
+                'target_scale':np.ones((n,len(FAMILIES),2),np.float32),
                  **{k:np.ones((n,len(FAMILIES),2,HEAD_SIZES[k]),bool)for k in ['price','patience']}}
         masks['market'][0] = True; masks['family'][:,0] = True
         masks['side'][:,[1,2,4],:] = False
@@ -108,6 +110,8 @@ class Episode(ReferenceEnv):
             cost = account.market_cost.get(ex,0)
             buy_pending = account.pending_market_cost.get(ex,0)
             sell_pending = sum(v for (e,s),v in account.pending_sells.items()if e==ex)
+            pending_yes=account.pending_buys.get((ex,'YES'),0)-account.pending_sells.get((ex,'YES'),0)
+            pending_no=account.pending_buys.get((ex,'NO'),0)-account.pending_sells.get((ex,'NO'),0)
             features[i] = [bid/UNIT,ask/UNIT,(ask-bid)/UNIT,
                            (self.now-(b.source_at_ms if b.source_at_ms is not None else b.available_at_ms))/10000,
                            fraction(sum(price*qty for price,qty in b.bids)),fraction(sum(price*qty for price,qty in b.asks)),
@@ -115,7 +119,17 @@ class Episode(ReferenceEnv):
                            p.price_yes/UNIT if p else 0.,float(pv),(self.now-p.received_at_ms)/20000 if p else 0.,
                            fraction(account.quantities.get((ex,'YES'),0)*UNIT),fraction(account.quantities.get((ex,'NO'),0)*UNIT),
                            fraction(cost),fraction(buy_pending),fraction(sell_pending*UNIT),float(valid_book),0.,
-                           abs(k.price_yes-p.price_yes)/UNIT if kv and pv else 0.]
+                           abs(k.price_yes-p.price_yes)/UNIT if kv and pv else 0.,
+                           fraction(max(0,self.mechanics.limits.maximum_market_cost-cost-buy_pending)),
+                           fraction(self.mechanics.limits.maximum_order_quantity*UNIT),
+                           fraction(pending_yes*UNIT),fraction(pending_no*UNIT)]
+            for side_id,side in enumerate(['YES','NO']):
+                opposite='NO'if side=='YES'else'YES'
+                net=(account.quantities.get((ex,side),0)-account.quantities.get((ex,opposite),0)
+                     +account.pending_buys.get((ex,side),0)-account.pending_buys.get((ex,opposite),0)
+                     -account.pending_sells.get((ex,side),0)+account.pending_sells.get((ex,opposite),0))
+                mark=marks.get((ex,side),0)
+                masks['target_scale'][i,2,side_id]=min(1.,max(1e-9,net*mark/w))if w else 1.
             # The initial marked-capital experiment requires a current mark
             # for a newly acquired position. This is an observability mask,
             # not a signal or a synthetic zero-return valuation.
@@ -143,6 +157,9 @@ class Episode(ReferenceEnv):
                                  math.log(w/self.initial_wealth)if w else 0.,self.target_wealth/w if w else 0.,
                                  max(0,self.end-self.now)/(self.end-self.start),fraction(account.owned_cost),
                                  max(0,self.budget.next_at-self.now)/60000,float(busy),float(remaining_slots),float(w is not None)],np.float32)
+        global_state=np.concatenate([global_state,np.array([
+            fraction(max(0,self.mechanics.limits.maximum_committed-account.owned_cost-account.reserved_commitment)),
+            fraction(self.mechanics.limits.maximum_committed)],np.float32)])
         return {'contracts':features,'global_state':global_state,'present':present,'masks':masks,'wealth':w}
 
     def act(self, action):

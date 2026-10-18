@@ -78,6 +78,22 @@ class RecurrentActor(unittest.TestCase):
         self.assertEqual(out['family'].tolist(), [2, 2])
         self.assertEqual(out['side'].tolist(), [1, 1])
 
+    def test_sell_target_support_covers_owned_exposure_and_recomputes_density(self):
+        self.m['family'][:]=False;self.m['family'][:,:,2]=True
+        self.m['target_scale']=torch.ones(2,3,5,2);self.m['target_scale'][:,:,2,:]=.03
+        out=self.step();a=out['actions'];self.assertTrue(bool((a['target_fraction']<=.03).all()))
+        self.assertTrue(torch.allclose(out['logprob'],self.step(actions=a)['logprob'],atol=1e-6))
+
+    def test_capacity_feature_expansion_preserves_original_prefix_function(self):
+        from .feature_migration import expand_capacity_features
+        parent=RecurrentPolicy(20,12);child,metadata=expand_capacity_features(parent)
+        x=torch.randn(2,3,20);g=torch.randn(2,12);h=parent.initial_state(2)
+        out=parent.step(x,g,self.present,self.m,h,self.reset)
+        expanded=child.step(torch.cat([x,torch.randn(2,3,4)],-1),torch.cat([g,torch.randn(2,2)],-1),
+                            self.present,self.m,h,self.reset,actions=out['actions'])
+        self.assertTrue(torch.allclose(out['logprob'],expanded['logprob'],atol=2e-5))
+        self.assertTrue(metadata['requires_fresh_trajectories']);self.assertFalse(metadata['optimizer_transfer'])
+
     def test_all_false_mask_fails_instead_of_unmasking_impossible_trade(self):
         with self.assertRaisesRegex(ValueError, 'NO_FEASIBLE_ACTION'):
             masked_categorical(torch.zeros(2, 3), torch.zeros(2, 3, dtype=torch.bool))

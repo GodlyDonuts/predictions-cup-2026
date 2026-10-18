@@ -11,7 +11,7 @@ The human specification and proposed configuration are preserved byte-for-byte i
 - Fresh-policy fingerprint checks, whole-episode recurrent recomputation, elapsed-time PPO, separate monetary targets and immutable checkpoint bundles: [trainer](../../moloch/learning_v2/train_inner.py).
 - Full-observation causal source compilation, predecoding outside the inner loop, mechanics-only target actions and a finite GPU historical trainer: [compiler](../../moloch/learning_v2/compile_trace.py), [episodes](../../moloch/learning_v2/episodes.py), [runner](../../moloch/learning_v2/run_experiment.py).
 
-These components pass89 focused checks. Correct component behavior does not establish trading profitability.
+These components pass95 focused checks. Correct component behavior does not establish trading profitability.
 
 ## First actual historical PPO run
 
@@ -33,7 +33,7 @@ The inspected capture supplies **SIG and Kalshi; Polymarket is absent**. It is d
 
 A four-member/two-cycle [end-to-end trial](population-smoke-result.json) completed in163.3 seconds, including a fresh-trajectory child after checkpoint transfer. The local mutation measured categorical market/family KL0.001031 against its0.001 target. All original losses are retained; the economic archive admitted zero entries. This is scheduler evidence, not a profitable-policy result.
 
-The first full **32 logical learners / four islands / two cycles** experiment completed in1459.34 seconds, with one learner resident on the GPU at a time. Its second search block had no fresh SIG books, so the run is disqualified for finalist selection and admitted no archive entries. [Full retained results](population-32-v1-result.json) and [coverage diagnostic](v5-observation-coverage.json) preserve that failure. A revised32-member run is now running from fresh lineages under [a new split](development-evaluation-protocol-v2.json) and [explicit mechanics](development-mechanics-v2.json). It trains across fixed-depth bankroll stress points while evaluating every candidate on the same two search-development calendars. Physical limits are immutable inputs; mutation changes only learning parameters/weights. Parentage, protected elite checkpoints, optimizer resets, mutation diagnostics and failed evaluations are recorded. Revised results remain pending.
+The first full **32 logical learners / four islands / two cycles** experiment completed in1459.34 seconds, with one learner resident on the GPU at a time. Its second search block had no fresh SIG books, so the run is disqualified for finalist selection and admitted no archive entries. [Full retained results](population-32-v1-result.json) and [coverage diagnostic](v5-observation-coverage.json) preserve that failure. A revised32-member run completed from fresh lineages under [a new split](development-evaluation-protocol-v2.json) and [explicit mechanics](development-mechanics-v2.json). It trains across fixed-depth bankroll stress points while evaluating every candidate on the same two search-development calendars. Physical limits are immutable inputs; mutation changes only learning parameters/weights. Parentage, protected elite checkpoints, optimizer resets, mutation diagnostics and failed evaluations are recorded. It completed in1180.967 seconds with no empty search calendars. Three candidates were positive in both nominal blocks, but none passed all four nominal/adverse cases before the forward deadline. [Results and next experiment](population-32-v2-review.md).
 
 [The initial-run audit](initial-run-audit.md) records subsequent gap-depletion and recurrent burn-in corrections. [The independently compiled native-wallet differential](native-wallet-differential-result.json) matches ten exact accounting states. It is not full transport/simulator parity.
 
@@ -45,7 +45,7 @@ The first full **32 logical learners / four islands / two cycles** experiment co
 
 ## Remaining
 
-The complete experiment is unfinished: the full32-member run and useful reevaluated behavior archive, matched-compute ablations, locked finalists and forward results remain pending. Rust differential verification, Polymarket integration and execution calibration/stress evidence are also required. The learned checkpoint is not deployed. Next comes checkpoint-safe population transfer, behavior-controlled mutations, islands/archive and comparisons under measured equal budgets.
+The complete program remains unfinished. Two full32-member runs and a ten-state native-wallet differential are complete; they have not established profitable learned behavior. The revised run has seven provisional archive entries including cash-only zero-return behavior. No finalists qualified for the reserved forward window. A three-mode comparison now matches scheduled work across independent PPO, local replacement and multiscale replacement under fixed nominal/adverse scenarios. Full A0-A6 ablations, actual-shaped causal inventory, unified three-venue compilation, calibrated execution, locked/forward evaluation and the learned production adapter remain unfinished. No learned checkpoint is deployed.
 
 ## Reproduce
 

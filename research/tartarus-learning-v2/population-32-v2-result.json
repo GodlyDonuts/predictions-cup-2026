@@ -1,0 +1,1407 @@
+{
+  "classification": "completed_conditional_development_population_not_validated_strategy",
+  "logical_members": 32,
+  "islands": 4,
+  "cycles": 2,
+  "wall_seconds": 1180.9670513999881,
+  "report_sha256": "92804e234a32f260b11962224ef2c5ca05cbf1f6844afa95e78b0dd78e0e5d8f",
+  "protocol_sha256": "d357685008ada8674ea75ec8676c4523f4fea984d60f34e8d79c6a9ec6ad90ed",
+  "source_sha256": {
+    "__init__.py": "4fc8d351b2f0256f116dc44525a2eda7bcca90f6f17997182f3c47a4060943e4",
+    "account.py": "aee457326ebf8fd048f955167a3c03bc849298ea293058629edcb23c176591be",
+    "benchmark_sequence.py": "91c7d86320d7cd905a3399d2e3a09d3354a42ef0a467258af8e322908d772515",
+    "capture_receipt_stream.py": "8721eafff3e4e708a20d7ca0b0cff4d17f11a8e5c15672ca1faefd8df80c8400",
+    "clock.py": "e108cb165eba1ab779a2b5d6e316d8334841de4a04cc6bae2bdd7229d7fc47bd",
+    "compile_trace.py": "3bc432c9664aa6b11e21688d42a2828e69e6a6a4f59d77ba3a8a353681b98cd9",
+    "episodes.py": "0ccfea5e52c911ee42dd4d9b1c46c02374fbb2f38b65dc2ac7a806fa4412da90",
+    "liquidity.py": "e7bb776f446f8e30a53b31f27a4a24fcb6f7318ee2117471af830274322bfb3f",
+    "policy.py": "5a2800c4e76511dac03cbb3a0e8098fb060d5b516229b22c3c37663bc86f7226",
+    "population.py": "86f3ded1993242b4fe98702a6237246618f96cef6990bb01071eaa87f8625d00",
+    "reference_env.py": "82ad9f1e824358a206b2c2eb201c58345ceed6ca0058394f94d097cf288761d2",
+    "run_experiment.py": "9696069ab524d3a9397e2b398fed54d220217c03265f8672b02366a19d960800",
+    "run_population.py": "cceff64a6ae090d67c0f9ba3fca71018e541063344e586522ae2825f02029878",
+    "sig_capture_tail.py": "5217a6578cdcbbd5d23dc8f4e94269efb1e4e20134f52d79bae923112f339109",
+    "train_inner.py": "792fd3b46d3423e6638062b8d0f214ed8b574d88c5b705925b1a9b97ef42cda7",
+    "wallet_differential.py": "fe2e3f84e90e04dcbfb1e65aa79691692c0b499f2de30226c2e87c7289205790"
+  },
+  "peak_cuda_allocated_bytes": 619988992,
+  "founder_counts": {
+    "founder-8001": 1,
+    "founder-8003": 3,
+    "founder-8004": 1,
+    "founder-8005": 1,
+    "founder-8006": 2,
+    "founder-8008": 1,
+    "founder-8012": 2,
+    "founder-8010": 1,
+    "founder-8013": 2,
+    "founder-8014": 1,
+    "founder-8015": 1,
+    "founder-8016": 1,
+    "founder-8017": 2,
+    "founder-8020": 1,
+    "founder-8021": 1,
+    "founder-8022": 1,
+    "founder-8023": 1,
+    "founder-8024": 1,
+    "founder-8025": 1,
+    "founder-8029": 2,
+    "founder-8027": 2,
+    "founder-8030": 1,
+    "founder-8031": 1,
+    "founder-8032": 1
+  },
+  "archive_entries": 7,
+  "archive_includes_zero_return_baselines": true,
+  "observed_source_coverage_failures": 0,
+  "evaluations": [
+    {
+      "cycle": 0,
+      "slot": 0,
+      "id": "founder-8001",
+      "founder": "founder-8001",
+      "checkpoint_sha256": "af3a9fcfb11d3ead21159421fa838b40a69584e0531873c7fad66d4e36c6726c",
+      "parameter_sha256": "4d09fe67ac34d16ffc734f4ad95bb7abb41047c70204d85026fbc1c342efc109",
+      "returns": [
+        -0.00338355,
+        0.00490805
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 1,
+      "id": "founder-8002",
+      "founder": "founder-8002",
+      "checkpoint_sha256": "980e233319fdc259cac08b28945b6c0df48ad214c7a67e3b0b70b88774509a75",
+      "parameter_sha256": "69dd475c445858a3dcf98ff902c3f544c4fa5f7c595646f58f47f96f3e335f34",
+      "returns": [
+        -0.01025465,
+        -0.00424135
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 2,
+      "id": "founder-8003",
+      "founder": "founder-8003",
+      "checkpoint_sha256": "42409b757784b3f60f4cc0dff16fa92e39f9d2bba7d5bcf5e95eafaf56095a4e",
+      "parameter_sha256": "55bc38dca23680e669bc932124f787f7d920c931e54d8ae305d0d725ee54da00",
+      "returns": [
+        -0.00106545,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 3,
+      "id": "founder-8004",
+      "founder": "founder-8004",
+      "checkpoint_sha256": "3e772795dcbc849a2923b08a78e92cd871cca8e143270d643fe9bd742e55cec8",
+      "parameter_sha256": "d5f8b32a610df825303154902be5d01967a9acaad9a001660c0697025d07b127",
+      "returns": [
+        -0.0041098,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 4,
+      "id": "founder-8005",
+      "founder": "founder-8005",
+      "checkpoint_sha256": "3086e5d5ddd9ede5c639b25fa693a2f234c0e52a4af3ed33a22d0283217c4402",
+      "parameter_sha256": "99d76bb57344f833d200d65fbab5a485b794199cf4a94d5d4e367e319812f1a0",
+      "returns": [
+        -0.0013167,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 5,
+      "id": "founder-8006",
+      "founder": "founder-8006",
+      "checkpoint_sha256": "46f723c9b1731dfa95cba896ad55503aaef204b336dba84f21ba6b675fc18489",
+      "parameter_sha256": "c2692faa1145a8fbde43c69a81fcc1bb307e1a560b42ec261a5641efb76a5665",
+      "returns": [
+        0.0071,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 6,
+      "id": "founder-8007",
+      "founder": "founder-8007",
+      "checkpoint_sha256": "980755878d1c62c57508664d49b5523fe30f8181a5ee536b01394fd7999c2f04",
+      "parameter_sha256": "03832a2784b1f602a374c7c9eb25cef8df937440cf55e0589103a35a662becd2",
+      "returns": [
+        -0.00423197,
+        -0.000763535
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 7,
+      "id": "founder-8008",
+      "founder": "founder-8008",
+      "checkpoint_sha256": "819be539f029af7f9a65b890d9510c00903dbdf5308add85db4d7203a33a9c08",
+      "parameter_sha256": "f29cf317e90843c343881b32ad41be24c751323c2aa3a30531bf144da4df4e39",
+      "returns": [
+        -0.0019286,
+        -0.000763535
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 8,
+      "id": "founder-8009",
+      "founder": "founder-8009",
+      "checkpoint_sha256": "b88fda617a1ac0503e629cd73402762a0f7240a1d753efbe13a0b2e341d253dd",
+      "parameter_sha256": "f53278e922e35aa68bfd58ca3b93ce1d4fa400b3902d7f9b307f04b0d705e333",
+      "returns": [
+        -0.00164485,
+        -0.00366355
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 9,
+      "id": "founder-8010",
+      "founder": "founder-8010",
+      "checkpoint_sha256": "e1440922cd0899487585ad8ae4bba7ef1f8fcadc13a8502ec543fb8318266b33",
+      "parameter_sha256": "225d1557c01e8d65fc167be8cfea616ff76b90ead82238a05e65337733dcfeb2",
+      "returns": [
+        -0.00080255,
+        0.00271235
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 10,
+      "id": "founder-8011",
+      "founder": "founder-8011",
+      "checkpoint_sha256": "a7613a85f61cc4de2211469f7f56540ca85f2032ebde5f969a1aae47eb9d42b1",
+      "parameter_sha256": "e8ef0a360f91e0c6092058460a5c8b23155396449859d4751703d1c61fbdd4d7",
+      "returns": [
+        -0.01214485,
+        -0.01550225
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 11,
+      "id": "founder-8012",
+      "founder": "founder-8012",
+      "checkpoint_sha256": "b4ea1879b72948bed02afa1d222181554594c699e7e70a1d41e27289ae120ace",
+      "parameter_sha256": "b68cb5974b8c48e2a5c5031ce552c1582e0820622e329f3e0f0bb694257bf07f",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 12,
+      "id": "founder-8013",
+      "founder": "founder-8013",
+      "checkpoint_sha256": "8e8e060c3e9b0053e66f67995f227c5224b40bd5a928b1f20771be9f9e1e0a62",
+      "parameter_sha256": "4db77bcaf2298998949b4777ee819eb8fe4bc22e2cf3585f68435dc15f3285c9",
+      "returns": [
+        0.00632495,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 13,
+      "id": "founder-8014",
+      "founder": "founder-8014",
+      "checkpoint_sha256": "de704898fd605f203b8c82207d75ed4a4a38e8f211172ef1be6d233a335f85d1",
+      "parameter_sha256": "280ca4e08da997734f7c4c14a46ac7a191f7811ae8fdbaccf37f2dbbe54b94e8",
+      "returns": [
+        -0.00166435,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 14,
+      "id": "founder-8015",
+      "founder": "founder-8015",
+      "checkpoint_sha256": "17fd2e6d6ffb790e7e17776057b2135efbf0a27af0f37f7c75e412b0342241b7",
+      "parameter_sha256": "07b7ee9a37e47bb4dd298624dd72dce271a5ee293c9061833b360144ef620f14",
+      "returns": [
+        -0.00325535,
+        0.004565085
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 15,
+      "id": "founder-8016",
+      "founder": "founder-8016",
+      "checkpoint_sha256": "8cfc202c10278771ac9663f85fea255b9137493552a8dec4f23e661cf4677dfe",
+      "parameter_sha256": "47055c4ddcf796f5e2e0ceaa467fbe3084dc3f2f9a03ebeda4895982e258fd14",
+      "returns": [
+        -1.95e-05,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 16,
+      "id": "founder-8017",
+      "founder": "founder-8017",
+      "checkpoint_sha256": "3672e2a6cfe7c61b61fdf2f5725010483717b4a93934862830bc8cf90fef6b2d",
+      "parameter_sha256": "f1da0d158324ba5c7044acea476029fda0fda02a406ecbb6b00b8fb6e0702bc5",
+      "returns": [
+        0.0,
+        0.00189065
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 17,
+      "id": "founder-8018",
+      "founder": "founder-8018",
+      "checkpoint_sha256": "04f0a9488dbb333e7380619a592c67b233b91cdd26b4375d1f03712ee73c7a15",
+      "parameter_sha256": "4261f742a778bf36e4b01788f8579f67b20d0732391dd1dd8f4bdf62b501d052",
+      "returns": [
+        -0.00201405,
+        -0.01098285
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 18,
+      "id": "founder-8019",
+      "founder": "founder-8019",
+      "checkpoint_sha256": "178d94d3c6022e319701a3d1d22999c4cf1024b317943421e8bcd73f84f0edec",
+      "parameter_sha256": "395a548068c4dcb30a0e7185689ba115fcb2e629aa493afff9620a6c0211b748",
+      "returns": [
+        0.00101835,
+        -0.01348325
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 19,
+      "id": "founder-8020",
+      "founder": "founder-8020",
+      "checkpoint_sha256": "1f774ce2e93f51f1e0626fecbdaba9506892545895e545dd7c03e107293ecec2",
+      "parameter_sha256": "26a0d4f9a0858a7b574acf4adf90a76776d1a92a7859bd0c8bcbec0b2b10a511",
+      "returns": [
+        -0.0076195,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 20,
+      "id": "founder-8021",
+      "founder": "founder-8021",
+      "checkpoint_sha256": "dc418c47708bae023dec8d80e2ad997d2c57340334747ddffa6bd1bba61214de",
+      "parameter_sha256": "ee147a0d94be45302e7f92e7da60cf2bbe5bbbcbe47cff6c3234c85ddde8d930",
+      "returns": [
+        -0.00165805,
+        -0.00815
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 21,
+      "id": "founder-8022",
+      "founder": "founder-8022",
+      "checkpoint_sha256": "b638ba0491047d30ba3a8e37ba67eab08254332d56a6ec7e8a3ab887dd0299f0",
+      "parameter_sha256": "6b1b388458f03aba2fa89b62adf29389b42166c081d30c04106309a0bb9f54dc",
+      "returns": [
+        -0.0019481,
+        -0.00786951
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 22,
+      "id": "founder-8023",
+      "founder": "founder-8023",
+      "checkpoint_sha256": "04cdf1fa96b3f6919cd05f7f922a177d69b4e8e22d43f3587cb606055062c86c",
+      "parameter_sha256": "35e9069207d441609af92e3b0db5cea19740b21d6a0e51451cd3bfcc232b0e9a",
+      "returns": [
+        -0.00164485,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 23,
+      "id": "founder-8024",
+      "founder": "founder-8024",
+      "checkpoint_sha256": "dad0ac1aad8cb34abe92a283a3fa2cba2dfde361d52b36c56adc1e70c1d90f6b",
+      "parameter_sha256": "cf24cc916f204bcefd14fb960d8ac47ef3329d9b18e049cf68ff62562dcd6b61",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 24,
+      "id": "founder-8025",
+      "founder": "founder-8025",
+      "checkpoint_sha256": "4fcfa7bff1257ee366386912dfa673a008b3867bf4379694e3cec0a6b5caaead",
+      "parameter_sha256": "7ecf3c870f35c16ada6274c8c1836927f55cabbad158c4aeae934da12ade54eb",
+      "returns": [
+        -0.00164485,
+        -0.00590955
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 25,
+      "id": "founder-8026",
+      "founder": "founder-8026",
+      "checkpoint_sha256": "61d8020be8dec1d905058fee52fc21d685c445184472318675a68d20f412b04e",
+      "parameter_sha256": "3836d42ba5951fec87058948a5abbc37cdf084c64f641f077429da1e3ac2973b",
+      "returns": [
+        -0.00801515,
+        0.000623995
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 26,
+      "id": "founder-8027",
+      "founder": "founder-8027",
+      "checkpoint_sha256": "c8a26a95955b8d685fb33471b2a26f6fc78ed3b6074f9aee398c98ac3c2d4e15",
+      "parameter_sha256": "2ccc43f616306bf04eca909cb3efe1c47611746bc04b97cdb595caf9c10a44c1",
+      "returns": [
+        0.004392845,
+        0.00145615
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 27,
+      "id": "founder-8028",
+      "founder": "founder-8028",
+      "checkpoint_sha256": "ef84c0df75c3d843752e12b3ccd5ecba088dec1809f6d92068efc1e4817f5226",
+      "parameter_sha256": "12b88d68164eac839824480a2d8b72120e8c71f66a404b39b2aaaa43ee101c2b",
+      "returns": [
+        -0.0136384,
+        -0.00815
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 28,
+      "id": "founder-8029",
+      "founder": "founder-8029",
+      "checkpoint_sha256": "00c97d914b0b03a066be1b92ef39dd4b90f2d41b15d7a134b4e5277c8bdba29a",
+      "parameter_sha256": "a59495436767571a8e39aee8500038a9e05849f69a6c12af5d3458a56c3b3863",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 29,
+      "id": "founder-8030",
+      "founder": "founder-8030",
+      "checkpoint_sha256": "dd5323c490c0a47327b2e7be96613d4ced8ce577d8d62058c927f21417ecca29",
+      "parameter_sha256": "4d58d8113b6df70b76ccde4b30d4e580115ac4fcf941480a821b6d026ed02828",
+      "returns": [
+        -0.0058362,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 30,
+      "id": "founder-8031",
+      "founder": "founder-8031",
+      "checkpoint_sha256": "e3dcbf0f8832d1e4a5d035e2ab0625086068a6c3c5d22a931f84de758d2b8ac4",
+      "parameter_sha256": "0598c78d4e6ec72bf5a3d5deb241d573eac45387f1ebe84f9e31536f3ba09102",
+      "returns": [
+        -0.0041239,
+        0.0005778
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 0,
+      "slot": 31,
+      "id": "founder-8032",
+      "founder": "founder-8032",
+      "checkpoint_sha256": "3c7245e63fa6c7f646e5b5ed39b40b29c58594193230983bd644dc7c3b073b4f",
+      "parameter_sha256": "78a0402bc1955e9f2a8e10f88bdf0f53d40b6a0d0fa81c7516473a9d62267cc9",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 2
+    },
+    {
+      "cycle": 1,
+      "slot": 0,
+      "id": "founder-8001",
+      "founder": "founder-8001",
+      "checkpoint_sha256": "b1f18eaad6df5ab46fc1cad957bcde911beaecd5b2b7453d57782436cb01f443",
+      "parameter_sha256": "0720547ab56ca46b80d01aeee95360c23a87b2232fd30df14b8542ba91a97240",
+      "returns": [
+        -0.00151325,
+        0.00561765
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 1,
+      "id": "child-c1-433883244",
+      "founder": "founder-8003",
+      "checkpoint_sha256": "18e0d55f60ce9b8629f15182179d37598ce33e12b28d8e6f190673e91801bb5e",
+      "parameter_sha256": "d53a98cac1925786607d0dfd205c19ec7a80179a29dfd342712fc4cd46dac3fa",
+      "returns": [
+        -0.00792338,
+        -0.0005622
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 2,
+      "id": "founder-8003",
+      "founder": "founder-8003",
+      "checkpoint_sha256": "5fe80278ecb9eb95eeaece57aa0cb976f5d80b3e6f9394e64c986f3261dd947e",
+      "parameter_sha256": "6f778a7761be00a82a232db112a1a8286cd827e9de06743fe6f1df4f55fdb1b2",
+      "returns": [
+        -0.00106545,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 3,
+      "id": "founder-8004",
+      "founder": "founder-8004",
+      "checkpoint_sha256": "749260e08497e5fa2bcf4db26989958ff1fec1b6f26ba04ce57da0a5ef5c7d9e",
+      "parameter_sha256": "cd8405020d91bd3acb8d1f11519d714fe3ad0eb0d5e1b82bb29cdd439c64591a",
+      "returns": [
+        -0.0041098,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 4,
+      "id": "founder-8005",
+      "founder": "founder-8005",
+      "checkpoint_sha256": "f5ba32e6f57d61eaad4e47b7609f81afca31f50ae29408b1daef1300ac6c919a",
+      "parameter_sha256": "68d3d16e08c7dd8628069548af73e47d0d366b5a3a286ed5bf96c3ebc21d276a",
+      "returns": [
+        -0.00164485,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 5,
+      "id": "founder-8006",
+      "founder": "founder-8006",
+      "checkpoint_sha256": "b59ed6a5fb60d92574c64f2d6a91af3acde8000c6db97aeb29a6ad8233d869c4",
+      "parameter_sha256": "39819f0b5f85799f44adf002417fd77a87915327a879b6c02b3b865079fcaa15",
+      "returns": [
+        0.00616434,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 6,
+      "id": "child-c1-10600732",
+      "founder": "founder-8003",
+      "checkpoint_sha256": "5862f4e8048598372a5898bc75061ecc4ea0fa2abd84d3d764470ec1c686a8bd",
+      "parameter_sha256": "f7179d1b4e9a7ab7561110bddcbe521917a0a64d65c909f4429fefa324317034",
+      "returns": [
+        0.00015,
+        0.003866395
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 7,
+      "id": "founder-8008",
+      "founder": "founder-8008",
+      "checkpoint_sha256": "f520e0b2efcc2a1cc63b760d26a87f09b7d1e098ce7d87e0c3403c61230fdb37",
+      "parameter_sha256": "7fc16f60310c299d1276109f52dad495db85a2fc22ffeb46097dc5ebb441919c",
+      "returns": [
+        -0.005159125,
+        0.0012202
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 8,
+      "id": "child-c1-1711494751",
+      "founder": "founder-8012",
+      "checkpoint_sha256": "fa789a92f80cae0a8cd482dabae5620da72a6699a2df6a0b1a5e2efe00439bd1",
+      "parameter_sha256": "87027c4d81c5965aafb2d0e674a2b6b504d7cc358c951d3ce6370a67575fe99c",
+      "returns": [
+        -0.0076,
+        0.0005287
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 9,
+      "id": "founder-8010",
+      "founder": "founder-8010",
+      "checkpoint_sha256": "82fdaf4cb8aa484a6b55ee825b3df7583c156e4fcf52883bd7ca64d92a8920f8",
+      "parameter_sha256": "86ed88a661b96e6e04eaadd10dc7becf29e1ba88c9f9dfbb8c1b0cca06964aed",
+      "returns": [
+        -0.0014015,
+        0.00271235
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 10,
+      "id": "child-c1-934315366",
+      "founder": "founder-8006",
+      "checkpoint_sha256": "9553bf4b2cc4a43bfe315497d2b48c367581518ba1f192ec06ef8371ad19f790",
+      "parameter_sha256": "4ac13fbf33df60c7028163f7cead6b4e6031da55c2868c71541b68a3b5cdc51b",
+      "returns": [
+        0.0071,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 11,
+      "id": "founder-8012",
+      "founder": "founder-8012",
+      "checkpoint_sha256": "f5344aedc5dee6aefec006eb8b41e5219e43878ea14b831c363b98d033961f26",
+      "parameter_sha256": "795d00be3639bf1244cec366598602505d9877d1d3be23eac98bc9a4f6789b12",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 12,
+      "id": "founder-8013",
+      "founder": "founder-8013",
+      "checkpoint_sha256": "eebebb89033c1b4a3c1b7b88ba248ed3e2586c58e1c8dbd705999bcd013ee06e",
+      "parameter_sha256": "f00b954c7453f48c514b1ed02c70a6b459ba36eb143a69a3e7959e4a464612f9",
+      "returns": [
+        0.002,
+        0.0041528
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 13,
+      "id": "founder-8014",
+      "founder": "founder-8014",
+      "checkpoint_sha256": "0bfbf2bccddc45a321c3cf3bf58af21db6044f6fc2f948cc702a7653b9069ef4",
+      "parameter_sha256": "acfea040fbc9ca6d3287c8c13c15c381f59161e86bd83928758a066259c18d5b",
+      "returns": [
+        -0.00108495,
+        0.00032349
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 14,
+      "id": "founder-8015",
+      "founder": "founder-8015",
+      "checkpoint_sha256": "405bda32f421a3b734dba21aef1032ca8e0297d9ad422b30531f0f7f6d41e034",
+      "parameter_sha256": "2ea3f3e0e0467b6fe43a38b57a56632474b857b7a7e89711b2a075c614bb172a",
+      "returns": [
+        0.0,
+        0.0026
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 15,
+      "id": "founder-8016",
+      "founder": "founder-8016",
+      "checkpoint_sha256": "0e27acb648ef615d2a8ed68c6c74b481aab26c714a95caaf8d1fe2ca220102bb",
+      "parameter_sha256": "ccba89d1f28879735b3149c92d782c90618a24129bc324b605edc93ae761059d",
+      "returns": [
+        -0.00164485,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 16,
+      "id": "founder-8017",
+      "founder": "founder-8017",
+      "checkpoint_sha256": "816f4d1e03eaa3c5d0d46978823ce6dfe968f199406bfbb4b933858eb8f490a5",
+      "parameter_sha256": "6f28ac6a30c8d5db85aba9e31bb6bfc6ef35ecc629cc9266bc80b2be956baee9",
+      "returns": [
+        0.0,
+        -0.0047365
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 17,
+      "id": "child-c1-411665322",
+      "founder": "founder-8017",
+      "checkpoint_sha256": "fe7cbd071668d64473a97a998274613eaca6f8750ad996209f39c864955efe2d",
+      "parameter_sha256": "ea038e90155bd037d9e70bc42cdb5cc2a3b50a6edf75398777919336c5225393",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 18,
+      "id": "child-c1-841312851",
+      "founder": "founder-8013",
+      "checkpoint_sha256": "3287739367841b707f24d030ba3cba6e3715dd4a7059021b79be99f3ab851e26",
+      "parameter_sha256": "a41c3d3a18a3065aa419c7678844c09b4989b55e9b626712475cb54429d8e9ff",
+      "returns": [
+        -0.01129008,
+        -0.017591935
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 19,
+      "id": "founder-8020",
+      "founder": "founder-8020",
+      "checkpoint_sha256": "623221b92b5c14831d789b0c8929e8574151e569782fb6b3240c800e715122c1",
+      "parameter_sha256": "d072fb61de097dec036513bc2fc92214210f63e500c4563e9df1aedae783c477",
+      "returns": [
+        -0.0076195,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 20,
+      "id": "founder-8021",
+      "founder": "founder-8021",
+      "checkpoint_sha256": "ef77958c2f3bebbce0f5caec40814d478010b238e1042ce6bf9519d1fdf3e36c",
+      "parameter_sha256": "6bfc9e6d090ceff3ad49092b2c8e951406c796c243cba636ad1c7544e602fb27",
+      "returns": [
+        -0.00166435,
+        -0.0015768
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 21,
+      "id": "founder-8022",
+      "founder": "founder-8022",
+      "checkpoint_sha256": "a99db371effb1f1bd110978c3c2bee96a5654e1d9be4801c5f4cbc0e216acd6a",
+      "parameter_sha256": "a09815f7e1e0e3a0953acfc37c5359ba2a423b8ed03ab11b3ae94688a4c7cc7f",
+      "returns": [
+        -2.31e-05,
+        -0.0071268
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 22,
+      "id": "founder-8023",
+      "founder": "founder-8023",
+      "checkpoint_sha256": "a27567ce06c96faca558a276cbd9dd881e7a42a13527f579306827fe8116fb06",
+      "parameter_sha256": "fc8811393ebe3b0ff19c300ffcbf581834fd0d12ec76ff5729fad63810c7ecb1",
+      "returns": [
+        -0.00164485,
+        0.0037491
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 23,
+      "id": "founder-8024",
+      "founder": "founder-8024",
+      "checkpoint_sha256": "1bf0184f5fc3f0e61ce718e2f9605cfc189547800986df397899dbc9fa153328",
+      "parameter_sha256": "1e800a6f63e17b0424982a06e43a74d3414c8e382e2d2d206f31a4bb0f8d9363",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 24,
+      "id": "founder-8025",
+      "founder": "founder-8025",
+      "checkpoint_sha256": "cfb54211bb9ad5fe84408e45193b8e4cdf14f47be2673b14a4ade0d8078c736f",
+      "parameter_sha256": "1d0d4dcee022b9ca7365aaf81b97c82be706c3026907d0bd7358778ffdf8bcca",
+      "returns": [
+        0.0,
+        -0.00590955
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 25,
+      "id": "child-c1-72989115",
+      "founder": "founder-8029",
+      "checkpoint_sha256": "83b9c9ed3377118a4bf5a7acd5eb885a8c97af8118e4e4f3c54550cc1fa03456",
+      "parameter_sha256": "fde9eb2d8cbebcbe1e99c11588a4bc8f18286f7165ff37e34ebaee2d0321c01b",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 26,
+      "id": "founder-8027",
+      "founder": "founder-8027",
+      "checkpoint_sha256": "aa29482953647567d3b99221793d4317b520daa2d5065d41a969ff4556e84753",
+      "parameter_sha256": "134ffdb8a54d2e03a11d4c9481687ee75c134001e2613f492dbd28263c9b6112",
+      "returns": [
+        0.01005772,
+        0.01504954
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 27,
+      "id": "child-c1-890259375",
+      "founder": "founder-8027",
+      "checkpoint_sha256": "e7c60fd0123907f5b254c626d20300490b362349d08cb11db25d22d79e60fd83",
+      "parameter_sha256": "6056c649750162933997116fe66b70a1ff32860f9d943c4a70aab39e9d4db2f6",
+      "returns": [
+        -0.017968505,
+        -0.00577285
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 28,
+      "id": "founder-8029",
+      "founder": "founder-8029",
+      "checkpoint_sha256": "76de4072d4292b8afbc1150b3eb302861acb70be1a1161a9c6ec99f5b5b87da4",
+      "parameter_sha256": "227f1578636801774998fd810a53341107672f0fa605cf8de5149807fec55b5a",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 29,
+      "id": "founder-8030",
+      "founder": "founder-8030",
+      "checkpoint_sha256": "1c548a012e8463f0f5dea776ae1d47fc2515429202886d32a40602e6886f2589",
+      "parameter_sha256": "d5cbbd9017828acade8a454b7b248e77158c844fd0324ae77f1f136e235a2cf8",
+      "returns": [
+        0.00285,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 30,
+      "id": "founder-8031",
+      "founder": "founder-8031",
+      "checkpoint_sha256": "04e4c2fe3ab8ac46ca6f3cae4b825fd193a7665f5eef2ab0fb3b8537c87e43bc",
+      "parameter_sha256": "220a38dfdbff1cab9efe7ccce7ba2c20de93e374b4236ab431aba9eb73e277d3",
+      "returns": [
+        -0.0041098,
+        0.0005778
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    },
+    {
+      "cycle": 1,
+      "slot": 31,
+      "id": "founder-8032",
+      "founder": "founder-8032",
+      "checkpoint_sha256": "904fb39fbb5dd9ab6a385d73e5a4febaafd5dc247850f17789c597b92860abcf",
+      "parameter_sha256": "36615e0ba31f354e975d3fb45b9c782c06748bd2bdde46ac2dac28ae39142e82",
+      "returns": [
+        0.0,
+        0.0
+      ],
+      "qualified_accounting": [
+        true,
+        true
+      ],
+      "observable_market_frames": [
+        20966,
+        18821
+      ],
+      "accepted_optimizer_updates": 4
+    }
+  ],
+  "source_schema": "20_contract_12_global_features_no_new_scaled_sell_support",
+  "locked_test_used": false,
+  "competition_profitability_established": false,
+  "production_changed": false
+}

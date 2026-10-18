@@ -61,13 +61,16 @@ class SharedLiquidity:
         return self.book.source_at_ms is None or 0 <= now_ms - self.book.source_at_ms <= maximum_age_ms
 
     def cross(self, side: str, action: str, limit_price: int, quantity: int,
-              now_ms: int, maximum_age_ms: int) -> tuple[tuple[int, int], ...]:
+              now_ms: int, maximum_age_ms: int, *, depth_fraction_ppm=UNIT,
+              adverse_execution_micros=0) -> tuple[tuple[int, int], ...]:
         """Call at modeled arrival using the last causally available book.
 
         Returns (executed side price, quantity). No unseen depth, stale book,
         passive fill, or unlimited top-price quantity is substituted.
         """
         natural(quantity, 'QUANTITY')
+        natural(depth_fraction_ppm,'STRESS_DEPTH');natural(adverse_execution_micros,'STRESS_PRICE')
+        if depth_fraction_ppm>UNIT:raise ValueError('STRESS_CANNOT_INVENT_DEPTH')
         if side not in ['YES', 'NO'] or action not in ['BUY', 'SELL']:
             raise ValueError('ACTION_OR_SIDE')
         if type(limit_price) is not int or not 0 < limit_price < UNIT:
@@ -78,11 +81,12 @@ class SharedLiquidity:
         result = []
         left = quantity
         for yes_price, advertised in getattr(self.book, resource):
-            price = yes_price if side == 'YES' else UNIT - yes_price
+            price = (yes_price if side == 'YES' else UNIT - yes_price)+(adverse_execution_micros if action=='BUY'else-adverse_execution_micros)
+            if not 0<price<UNIT:continue
             if (action == 'BUY' and price > limit_price) or (action == 'SELL' and price < limit_price):
                 break
             key = (resource, yes_price)
-            take = min(left, max(0, advertised - self.depleted.get(key, 0)))
+            take = min(left, max(0, advertised*depth_fraction_ppm//UNIT - self.depleted.get(key, 0)))
             if take:
                 result.append((price, take))
                 self.depleted[key] = self.depleted.get(key, 0) + take

@@ -91,11 +91,17 @@ class RecurrentPolicy(nn.Module):
         parameters = torch.nn.functional.softplus(self.fractions(selected)) + 1
         for name, pair in [('target_fraction', (0, 1)), ('child_fraction', (2, 3))]:
             dist = Beta(parameters[:, pair[0]], parameters[:, pair[1]])
-            value = actions[name] if actions is not None else (dist.mean if deterministic else dist.sample())
+            scale=(masks['target_scale'][batch,market,out['family'],out['side']]
+                   if name=='target_fraction'and'target_scale'in masks else torch.ones_like(parameters[:,0]))
+            # SELL targets span the complete current reducible exposure rather
+            # than wasting almost every sample above the actual holding. This
+            # is action semantics, not an alpha/return filter. Keep the exact
+            # density Jacobian for the bounded absolute portfolio fraction.
+            value = actions[name] if actions is not None else (dist.mean if deterministic else dist.sample())*scale
             out[name] = value
             meaningful = ((out['family']==1)|(out['family']==2)) if name=='target_fraction' else ((out['family']==1)|(out['family']==2)|(out['family']==4))
-            logprob = logprob + torch.where(meaningful,dist.log_prob(value),0.)
-            entropy = entropy + torch.where(meaningful,dist.entropy(),0.)
+            logprob = logprob + torch.where(meaningful,dist.log_prob(value/scale)-scale.log(),0.)
+            entropy = entropy + torch.where(meaningful,dist.entropy()+scale.log(),0.)
         return {'actions': out, 'logprob': logprob, 'entropy': entropy,
                 'value': self.value(h).squeeze(-1), 'monetary_quantiles': self.monetary_quantiles(h),
                 'success_logit': self.target_success(h).squeeze(-1), 'hidden': h}

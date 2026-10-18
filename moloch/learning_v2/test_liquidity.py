@@ -45,6 +45,12 @@ class SharedDepthCounterfactual(unittest.TestCase):
     def test_partial_fill_not_full_top_price_assumption(self):
         self.assertEqual(self.cross(limit=450000), ((450000, 100),))
 
+    def test_adverse_price_stress_preserves_original_depth_and_obeys_limit(self):
+        self.assertEqual(self.q.cross('YES','BUY',450000,100,1000,3000,adverse_execution_micros=5000),())
+        self.assertEqual(self.q.cross('YES','BUY',460000,100,1000,3000,depth_fraction_ppm=500000,adverse_execution_micros=5000),((455000,50),))
+        self.assertEqual(self.b.asks[0],(450000,100))
+        self.assertEqual(self.q.cross('NO','SELL',540000,100,1000,3000,depth_fraction_ppm=500000,adverse_execution_micros=5000),())
+
     def test_advertised_increase_only_exposes_excess_above_prior_depletion(self):
         self.cross(n=100, limit=450000)
         self.q.update(replace(self.b, available_at_ms=1100, asks=((450000, 140),)))

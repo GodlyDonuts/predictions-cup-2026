@@ -56,5 +56,13 @@ class PopulationMechanics(unittest.TestCase):
         e=self.episodes();e[1]['start_ms']=100
         with self.assertRaisesRegex(ValueError,'OVERLAP'):BehaviorArchive().consider('x','b'*64,e,(0,),'x')
 
+    def test_same_calendars_in_distinct_execution_worlds_are_not_duplicate_evidence(self):
+        e=self.episodes();stress=[dict(row,execution_profile='adverse')for row in e]
+        self.assertTrue(BehaviorArchive().consider('x','b'*64,e+stress,(0,),'x'))
+        with self.assertRaisesRegex(ValueError,'REPEATED_CALENDARS'):
+            BehaviorArchive().consider('x','b'*64,[e[0],stress[0]],(0,),'x')
+        stress[0]['reference_return']=-.01
+        self.assertFalse(BehaviorArchive().consider('x','b'*64,e+stress,(0,),'x'))
+
 
 if __name__=='__main__':unittest.main()

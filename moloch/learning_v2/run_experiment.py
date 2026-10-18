@@ -55,8 +55,15 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;observable_market_frames=0;begun=time.perf_counter()
     for step,at in enumerate(range(start-protocol['recurrent_burnin_ms'],end,protocol['decision_interval_ms'])):
         env.advance(at); obs=env.observe()
-        tensors={k:torch.as_tensor(obs[k],device=device).unsqueeze(0) for k in ['contracts','global_state','present']}
+        if (model.contract_features,model.global_features)not in[(20,12),(CONTRACT_FEATURES,GLOBAL_FEATURES)]:
+            raise ValueError('UNKNOWN_FEATURE_SEMANTICS')
+        # The named legacy prefix keeps its original feature meanings. All
+        # source/adapter hashes remain in the new experiment provenance.
+        view={**obs,'contracts':obs['contracts'][:,:model.contract_features],
+              'global_state':obs['global_state'][:model.global_features]}
+        tensors={k:torch.as_tensor(view[k],device=device).unsqueeze(0) for k in ['contracts','global_state','present']}
         masks={k:torch.as_tensor(v,device=device).unsqueeze(0)for k,v in obs['masks'].items()}
+        if (model.contract_features,model.global_features)==(20,12):masks.pop('target_scale',None)
         reset=torch.tensor([step==0],device=device)
         with torch.no_grad():
             row=model.step(**tensors,masks=masks,hidden=hidden,reset=reset)
@@ -116,6 +123,8 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
            'missing_mark_observations':missing,'unresolved_orders':len(env.orders),
            'active_request_at_terminal':env.budget.active,'filled_shares':sum(e['quantity']for e in env.fill_events),
            'fill_receipts':len(env.fill_events),'realized_micros':env.realized,'fees_micros':env.fees,
+           'terminal_cash_micros':env.cash,'terminal_owned_cost_micros':env.account().owned_cost,
+           'terminal_owned_shares':sum(env.account().quantities.values()),
            'peak_cost_commitment_fraction':peak_committed,'gross_turnover_fraction':sum(e['quantity']*e['price']for e in env.fill_events)/initial,
            'families':dict(families),'never_sent_drafts_at_end':len(never_sent),
            'modeled_requests':len(env.budget.request_ids),'success_labels_available':False,

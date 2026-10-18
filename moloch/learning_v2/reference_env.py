@@ -23,6 +23,8 @@ class Mechanics:
     maximum_reference_age_ms: int
     preflight_reads: int
     valuation_source: str = 'independent_reference'
+    depth_fraction_ppm: int = UNIT
+    adverse_execution_micros: int = 0
 
     def __post_init__(self):
         for name in ['read_latency_ms', 'arrival_latency_ms', 'receipt_latency_ms',
@@ -30,6 +32,8 @@ class Mechanics:
             natural(getattr(self, name), name)
         if min(self.read_latency_ms, self.arrival_latency_ms, self.receipt_latency_ms) <= 0:
             raise ValueError('NONZERO_MODELED_LATENCY_REQUIRED')
+        natural(self.depth_fraction_ppm,'STRESS_DEPTH');natural(self.adverse_execution_micros,'STRESS_PRICE')
+        if self.depth_fraction_ppm>UNIT:raise ValueError('STRESS_CANNOT_INVENT_DEPTH')
 
 
 @dataclass
@@ -183,7 +187,9 @@ class ReferenceEnv:
         if q is None:
             return
         fills = q.cross(order.request.side, order.request.action, order.request.limit_price,
-                        order.remaining, self.now, self.mechanics.maximum_book_age_ms)
+                        order.remaining, self.now, self.mechanics.maximum_book_age_ms,
+                        depth_fraction_ppm=self.mechanics.depth_fraction_ppm,
+                        adverse_execution_micros=self.mechanics.adverse_execution_micros)
         n = sum(n for _, n in fills)
         if not n:
             return

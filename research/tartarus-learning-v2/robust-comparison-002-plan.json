@@ -1,0 +1,42 @@
+{
+  "classification": "scheduled_work_matched_development_comparison_not_locked_evidence",
+  "modes": [
+    "independent",
+    "local",
+    "multiscale"
+  ],
+  "members": 4,
+  "islands": 1,
+  "cycles": 2,
+  "seed": 10001,
+  "dataset_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+  "mechanics_sha256": "22b3b302bcdd03162495aaaa3709e9075f6ec63ae181a98c9332f8f84f1e2637",
+  "protocol_sha256": "1550e5db4bb64c17d828c53c55faf4e46e7dea703c140a6c551b59266f733af4",
+  "execution_profiles_sha256": "5feeff555d24b10eb66f927e562315a0647ee041c449b62c14d5d257714c8b38",
+  "source_sha256": {
+    "__init__.py": "4fc8d351b2f0256f116dc44525a2eda7bcca90f6f17997182f3c47a4060943e4",
+    "account.py": "aee457326ebf8fd048f955167a3c03bc849298ea293058629edcb23c176591be",
+    "benchmark_sequence.py": "91c7d86320d7cd905a3399d2e3a09d3354a42ef0a467258af8e322908d772515",
+    "capture_receipt_stream.py": "8721eafff3e4e708a20d7ca0b0cff4d17f11a8e5c15672ca1faefd8df80c8400",
+    "clock.py": "e108cb165eba1ab779a2b5d6e316d8334841de4a04cc6bae2bdd7229d7fc47bd",
+    "compile_trace.py": "3bc432c9664aa6b11e21688d42a2828e69e6a6a4f59d77ba3a8a353681b98cd9",
+    "episodes.py": "238778bcfb0bd9c5630f6b3127c747ca43199a78957f35d1755a35edac98793d",
+    "execution_profiles.py": "3a8ec0d37c408fa8b67b0da747a30f92c0ab7cf994f910a2bb3383d3ae174e84",
+    "feature_migration.py": "1d5010cafe216536bf3bbaeb6d84b0f0186d97b63ce04eef8b7f3062bb3a4cc2",
+    "freeze_finalists.py": "57bc4c594848f8939df9be47cbb40aac3effad3192533bb46ad72f396a8a7709",
+    "liquidity.py": "c765ae793296640e00b6f100f83117926e3f489eb4e3b224791e0880773c100f",
+    "policy.py": "694c150b320eea2dabd88aa06407423c5ab5f5bf6ac4a044d0a14e92ac7c06f4",
+    "population.py": "6d98f395cb47059939e84108f39845dc31df10ebcbfeecc9878b93f28e5b0c13",
+    "reference_env.py": "04618f07eb2401d34e712b9a0ef91d2de4fc51e6cfb23d11e1cf7fc0218d86f9",
+    "run_comparison.py": "f90d77c920b79e73cb4ad45694eefd51b6e3e58b58eccfd0dbb921c2dfe0b81d",
+    "run_experiment.py": "9c20385ffee47c365457ee06611ff2a41293d36db0948770e4eb8ce7da3fbf62",
+    "run_population.py": "ec55713f7828f9872bbfd97daf00a6df843b66a224b9e0f506a1bc7ac84dae6c",
+    "sig_capture_tail.py": "5217a6578cdcbbd5d23dc8f4e94269efb1e4e20134f52d79bae923112f339109",
+    "train_inner.py": "792fd3b46d3423e6638062b8d0f214ed8b574d88c5b705925b1a9b97ef42cda7",
+    "wallet_differential.py": "fe2e3f84e90e04dcbfb1e65aa79691692c0b499f2de30226c2e87c7289205790"
+  },
+  "matching": "same founders, calendars, scheduled training decisions, bankrolls, evaluation profiles and seeds",
+  "unmatched": "replacement/mutation/probe overhead and rejected optimizer steps; measure actual work and wall time",
+  "archive": "same observational archive in all modes; archive reintroduction is not implemented",
+  "production_authority": false
+}

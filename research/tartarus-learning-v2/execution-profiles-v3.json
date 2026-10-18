@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "classification": "fixed_development_execution_scenarios",
+  "production_authority": false,
+  "calibrated": false,
+  "purpose": "Common development selection and alternating training scenarios; immutable across compared modes. These are explicit robustness hypotheses, not empirical execution calibration.",
+  "profiles": [
+    {"name": "nominal", "overrides": {}},
+    {"name": "joint_adverse", "overrides": {"read_latency_ms": 900, "arrival_latency_ms": 1200, "receipt_latency_ms": 600, "depth_fraction_ppm": 500000, "adverse_execution_micros": 5000}}
+  ]
+}
