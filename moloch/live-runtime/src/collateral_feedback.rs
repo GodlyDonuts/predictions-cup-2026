@@ -67,14 +67,26 @@ pub enum Operation<'a>{
 /// JSON. These must borrow its ORIGINAL held objects; opening a copy is not a
 /// new source of execution authority. Transport rechecks its actual authority.
 pub struct Boundary<'a>{pub root:&'a Path,pub owner_lock_path:&'a Path,pub owner_lease:&'a ExclusiveLock,pub transport:&'a Transport,pub ordinary:&'a DispatchLog,pub packages:&'a PackageDispatchLog}
+#[derive(Clone)]
 struct Journal {sha256:String,acks:BTreeSet<String>,attempted:BTreeSet<u64>,closed:BTreeSet<u64>,acknowledged:BTreeSet<u64>,aborted:BTreeMap<u64,Value>,local_final_guard:BTreeMap<u64,Value>,expired_exposure:BTreeMap<u64,Value>}
+// Only parsing is reused. Every invocation independently SHA-verifies every
+// original byte, so same-size edits and restored timestamps cannot hit cache.
+struct VerifiedJournal{path:PathBuf,held:Value,package:bool,journal:Journal}
+thread_local!{static VERIFIED_JOURNALS:std::cell::RefCell<Vec<VerifiedJournal>>=const{std::cell::RefCell::new(Vec::new())};}
+#[cfg(test)]thread_local!{static JOURNAL_PARSE_COUNT:std::cell::Cell<usize>=const{std::cell::Cell::new(0)};}
 fn exact_expired_resolution(log:&DispatchLog,rows:&BTreeMap<u64,Value>,qid:u64)->bool{log.exposure_resolved(qid)&&rows.contains_key(&qid)&&rows.get(&qid)==log.exposure_records().get(&qid)}
 #[cfg(test)]pub(crate) fn test_exact_expired_resolution(log:&DispatchLog,rows:&BTreeMap<u64,Value>,qid:u64)->bool{exact_expired_resolution(log,rows,qid)}
 /// Stream the original retained chain with bounded rows; compare its actual
 /// head to the held object before and after scanning. Never repairs a tail.
 fn journal(path:&Path,held:&Value,package:bool)->Result<Journal>{
  pin(path,held)?;need(held["bytes"].as_u64().is_some_and(|n|n<=MAX_JOURNAL),"COLLATERAL_JOURNAL_SIZE")?;
- let f=File::open(path)?;let opened=metadata(&f.metadata()?)?;for k in ["schemaVersion","device","inode","bytes"]{need(opened[k]==held[k],"COLLATERAL_DESCRIPTOR_CHANGED")?;}pin(path,&opened)?;let mut r=BufReader::new(f);let(mut seq,mut previous)=(0u64,"0".repeat(64));let mut digest=Sha256::new();let mut size=0u64;
+ let mut f=File::open(path)?;let opened=metadata(&f.metadata()?)?;for k in ["schemaVersion","device","inode","bytes"]{need(opened[k]==held[k],"COLLATERAL_DESCRIPTOR_CHANGED")?;}pin(path,&opened)?;
+ let mut raw_digest=Sha256::new();let mut raw_size=0u64;let mut chunk=[0u8;65536];loop{let n=f.read(&mut chunk)?;if n==0{break}raw_size=raw_size.checked_add(n as u64).ok_or("COLLATERAL_RANGE")?;need(raw_size<=MAX_JOURNAL,"COLLATERAL_JOURNAL_SIZE")?;raw_digest.update(&chunk[..n]);}
+ need(held["bytes"]==raw_size,"COLLATERAL_JOURNAL_HEAD")?;pin(path,held)?;let raw_sha=format!("{:x}",raw_digest.finalize());
+ if let Some(checked)=VERIFIED_JOURNALS.with(|c|c.borrow().iter().find(|c|c.path==path&&c.held==*held&&c.package==package&&c.journal.sha256==raw_sha).map(|c|c.journal.clone())){return Ok(checked)}
+ f.seek(SeekFrom::Start(0))?;
+ #[cfg(test)]JOURNAL_PARSE_COUNT.with(|c|c.set(c.get()+1));
+ let mut r=BufReader::new(f);let(mut seq,mut previous)=(0u64,"0".repeat(64));let mut digest=Sha256::new();let mut size=0u64;
  let mut out=Journal{sha256:String::new(),acks:BTreeSet::new(),attempted:BTreeSet::new(),closed:BTreeSet::new(),acknowledged:BTreeSet::new(),aborted:BTreeMap::new(),local_final_guard:BTreeMap::new(),expired_exposure:BTreeMap::new()};
  loop{let mut row=Vec::new();let n=Read::take(&mut r,MAX_RECEIPT+1).read_until(b'\n',&mut row)?;if n==0{break}need(n as u64<=MAX_RECEIPT&&row.last()==Some(&b'\n'),"COLLATERAL_JOURNAL_TAIL_OR_ROW")?;size=size.checked_add(n as u64).ok_or("COLLATERAL_RANGE")?;need(size<=MAX_JOURNAL,"COLLATERAL_JOURNAL_SIZE")?;digest.update(&row);
   let mut v:Value=serde_json::from_slice(&row)?;let claimed=v.as_object_mut().ok_or("COLLATERAL_JOURNAL_ROW")?.remove("hash").ok_or("COLLATERAL_JOURNAL_HASH")?;
@@ -83,7 +95,8 @@ fn journal(path:&Path,held:&Value,package:bool)->Result<Journal>{
   if !package{let q=e["qid"].as_u64().ok_or("COLLATERAL_JOURNAL_QID")?;match e["kind"].as_str(){Some("attempt")=>{out.attempted.insert(q);},Some("ack"|"recovered_ack")=>{out.acknowledged.insert(q);},Some("closed")=>{out.closed.insert(q);},Some("aborted_before_admission")=>{out.aborted.insert(q,e.clone());},Some("local_final_guard_no_http")=>{out.local_final_guard.insert(q,e.clone());},Some("expired_exposure_reconciled")=>{out.expired_exposure.insert(q,e.clone());},_=>{}}}
  }
  need(seq==held["sequence"].as_u64().ok_or("COLLATERAL_JOURNAL_HEAD")?&&held["previous"]==previous&&held["bytes"]==size,"COLLATERAL_JOURNAL_HEAD")?;
- pin(path,held)?;out.sha256=format!("{:x}",digest.finalize());Ok(out)
+ pin(path,held)?;out.sha256=format!("{:x}",digest.finalize());need(out.sha256==raw_sha,"COLLATERAL_JOURNAL_CHANGED_DURING_READ")?;
+ VERIFIED_JOURNALS.with(|c|{let mut c=c.borrow_mut();if c.len()==4{c.remove(0);}c.push(VerifiedJournal{path:path.into(),held:held.clone(),package,journal:out.clone()});});Ok(out)
 }
 fn capture(bank:&Session,b:&Boundary<'_>,at:i64)->Result<Value>{capture_checked(bank,b,at,false)}
 /// Allocation only: original positively verified no-network terminal audit may
@@ -112,6 +125,23 @@ fn capture_checked(bank:&Session,b:&Boundary<'_>,at:i64,allow_proved:bool)->Resu
  if allow_proved{let mut c=captured;c["provedNoNetworkOrderIds"]=json!(allocation_aborted);if !allocation_expired.is_empty(){c["expiredExposureOrderIds"]=json!(allocation_expired);}Ok(c)}else{Ok(captured)}
 }
 fn receipt_clocks(r:&Receipt,at:i64)->Result<()> {let start=clock(&r.request_started_at)?;let end=clock(&r.received_at)?;need(r.status==200&&start>=0&&start<=end&&end<=at,"COLLATERAL_RECEIPT_CLOCK_OR_STATUS")}
+#[cfg(all(test,unix))]mod verified_journal_tests{
+ use super::*;use std::io::Write;
+ struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ fn fixture()->(Temp,PathBuf,DispatchLog){
+  let p=std::env::temp_dir().join(format!("verified-dispatch-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));fs::create_dir(&p).unwrap();let path=p.join("dispatch.ndjson");let log=DispatchLog::open(&path).unwrap();VERIFIED_JOURNALS.with(|c|c.borrow_mut().clear());JOURNAL_PARSE_COUNT.with(|c|c.set(0));(Temp(p),path,log)
+ }
+ fn append(log:&mut DispatchLog,qid:u64){let proof=log.proof(qid);log.append(json!({"kind":"not_sent","qid":qid,"proof":proof})).unwrap();}
+ #[test]fn unchanged_bytes_reuse_parsing_but_new_original_head_is_fully_validated(){
+  let(_t,path,mut log)=fixture();append(&mut log,1);let first=log.descriptor_identity().unwrap();let a=journal(&path,&first,false).unwrap();let b=journal(&path,&first,false).unwrap();assert_eq!(a.sha256,b.sha256);assert_eq!(JOURNAL_PARSE_COUNT.with(|c|c.get()),1);
+  append(&mut log,2);assert!(journal(&path,&first,false).is_err());let next=log.descriptor_identity().unwrap();let changed=journal(&path,&next,false).unwrap();assert_ne!(changed.sha256,a.sha256);assert_eq!(JOURNAL_PARSE_COUNT.with(|c|c.get()),2);assert_eq!(changed.attempted,log.attempted);assert_eq!(changed.closed,log.closed);
+ }
+ #[test]fn same_size_corruption_with_restored_mtime_never_reuses_validated_history(){
+  let(_t,path,mut log)=fixture();append(&mut log,1);let held=log.descriptor_identity().unwrap();let original=fs::read(&path).unwrap();let modified=fs::metadata(&path).unwrap().modified().unwrap();journal(&path,&held,false).unwrap();let mut changed=original.clone();let marker=b"\"qid\":1";let at=changed.windows(marker.len()).position(|s|s==marker).unwrap()+marker.len()-1;changed[at]=b'9';
+  let mut f=fs::OpenOptions::new().write(true).open(&path).unwrap();f.write_all(&changed).unwrap();f.sync_all().unwrap();f.set_times(fs::FileTimes::new().set_modified(modified)).unwrap();assert_eq!(fs::metadata(&path).unwrap().len(),original.len()as u64);assert_eq!(fs::metadata(&path).unwrap().modified().unwrap(),modified);
+  assert!(journal(&path,&held,false).err().expect("changed original chain must fail").to_string().contains("COLLATERAL_JOURNAL_CHAIN"));assert_eq!(JOURNAL_PARSE_COUNT.with(|c|c.get()),2);
+ }
+}
 fn sources<'a>(op:&Operation<'a>)->Vec<&'a RetainedReceipt>{let mut v=Vec::new();match op{Operation::Baseline{after}=>v.extend([after.account,after.collateral]),Operation::Checkpoint{before,after}=>v.extend([before.account,before.collateral,after.account,after.collateral]),Operation::Execution{before,after,acknowledgments,fill_tapes}|Operation::OrdinaryCashSync{before,after,acknowledgments,fill_tapes}=>{v.extend([before.account,before.collateral,after.account,after.collateral]);v.extend_from_slice(acknowledgments);v.extend_from_slice(fill_tapes);},Operation::Settlement{before,after,settlements,..}=>v.extend([before.account,before.collateral,after.account,after.collateral,*settlements])}v}
 fn same_fill(native:&Value,event:&Value)->Result<bool>{
  for(n,e)in [("orderId","orderId"),("actualOrderId","actualOrderId"),("sourceId","fillId"),("exchangeId","exchangeId"),("marketId","marketId"),("side","side"),("action","action"),("quantity","quantity"),("price","price"),("fee","fee")]{if native[n]!=event[e]{return Ok(false)}}

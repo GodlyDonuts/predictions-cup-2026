@@ -116,8 +116,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  if managed.contains(&ex){rank_yield_managed_drafts(bank,log,&ex)?;}
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_ALREADY_HAS_PHYSICAL_LIABILITY")}
  retire_existing_drafts(bank,log,&ex)?;
- let collateral=request(t,&c.root,Endpoint::Collateral)?;
- let facts=preflight_snapshots(c,bank,source,&market,None,&mut LivePreflightReads{frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
+ let(facts,collateral)=rank_snapshots(c,bank,source,&market,None,&mut LivePreflightReads{frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
  accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if managed.contains(&ex){rank_yield_managed_drafts(bank,log,&ex)?;}
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_CHANGED_DURING_READS")}
@@ -126,15 +125,22 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  let plan={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
   match moloch_live_runtime::rank_campaign::prepare(bank,&b,&review,&facts,&retained,now()){Ok(p)=>{if !rank_commit_ready(p.valid_until_ms(),now,|at|p.validate_current(bank,&b,at))?{return rank_deferred(c,"reservation_age","ORIGINAL_FACT_WINDOW_EXPIRED_BEFORE_NATIVE_COMMIT")}p},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"evaluation",&e.to_string()),Err(e)=>return Err(e)}
  };
- let qid=plan.expected_qid();accept(bank,plan.event())?;let original=quote(bank,qid)?;(qid,original)};
+ let before=bank.durable_head();let journal=c.root.join(&c.bank_name).join("events.jsonl");let original_bytes=fs::metadata(&journal)?.len();
+ if let Err(error)=accept(bank,plan.event()){
+  // Kernel refusals precede the Session append. Never turn a changed durable
+  // prefix, I/O/poison error or unknown acceptance into an ordinary deferral.
+  if error.to_string().starts_with("RANK_")&&bank.durable_head()==before&&fs::metadata(&journal)?.len()==original_bytes{return rank_deferred(c,"native_admission",&error.to_string())}
+  return Err(error)
+ }
+ let records=moloch_live_runtime::order_snapshot::snapshot(bank);let mut matches=records.records().iter().filter(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256());let original=matches.next().ok_or("RANK_COMMITTED_QUOTE_MISSING")?.clone();
+ if matches.next().is_some(){return Err("RANK_COMMITTED_QUOTE_NOT_UNIQUE".into())}let qid=original["id"].as_u64().ok_or("RANK_COMMITTED_QUOTE_ID")?;(qid,original)};
  if !rank_quote(&original)||original["reviewedRankCampaign"]["campaignSha256"]!=review.campaign_sha256(){return Err("RANK_REAL_RESERVATION_MISMATCH".into())}
  atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"state":"native_reserved_not_submitted","qid":qid,"campaignSha256":review.campaign_sha256(),"physicalAttempted":false,"profitabilityEstablished":false}))?;
  loop{refresh_controls(c,authority,stream)?;pins.validate()?;let q=quote(bank,qid)?;match rank_activation(&q,&original,now()){
   Ok(None)=>break,Ok(Some(at))=>std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100))),
   Err(e)=>{if log.never_attempted(qid)&&q["retired"]==false{retire_never_sent(bank,log,&q)?;}return rank_deferred(c,"activation",&e.to_string())}
  }}
- let collateral=request(t,&c.root,Endpoint::Collateral)?;
- let facts=match preflight_snapshots(c,bank,source,&market,Some(&original),&mut LivePreflightReads{frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe}){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
+ let(facts,collateral)=match rank_snapshots(c,bank,source,&market,Some(&original),&mut LivePreflightReads{frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe}){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
  accept_fresh_book(bank,c,&target,&facts.book,source)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;let current=quote(bank,qid)?;
  if current!=original||!log.never_attempted(qid){return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_CHANGED")}
  pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
@@ -147,7 +153,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  };
  let evaluation=decision.evaluation().clone();let rank=RankDispatch{order,spec,permit,decision:Arc::new(decision),owner:pins,raw_sha:review.raw_sha256().into(),campaign_sha:review.campaign_sha256().into()};
  submit_order_with_rank(t,c,bank,log,authority,&current,facts,None,if managed.contains(&ex){fundamental.as_deref_mut()}else{None},Some(rank))?;
- atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid),"evaluation":evaluation,"profitabilityEstablished":false}))?;Ok(())
+ atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid)&&!log.proved_no_network(qid),"evaluation":evaluation,"profitabilityEstablished":false}))?;Ok(())
 }
 fn rank_waits_for_known_orders(log:&DispatchLog)->Result<bool>{
  log.require_resolved_attempts()?;Ok(log.acknowledgments.keys().any(|qid|!log.closed.contains(qid)))
@@ -1439,7 +1445,12 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{let end=now();let _=trace.record(Stage::TransportCall,transport_start,end);if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"transport_error","diagnosticOnly":true}));}log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
   if let Ok((spec,permit,at,error))=log.local_final_guard_originals(qid){
-   if let Ok(proof)=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error){log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return if expected_ordinary_final_guard(&error.code){Ok(())}else{Err(error.code.into())}}
+   if let Ok(proof)=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error){
+    // A proved no-HTTP rank clock expiry retires this exact key. Request or
+    // owner changes and every unproved/unknown outcome remain fatal.
+    let rank_expired=if let Some(r)=&rank{at>=r.decision.expires_at_ms()&&matches!(error.code.as_str(),"RANK_PHYSICAL_REQUEST_CHANGED_OR_EXPIRED"|"RANK_PHYSICAL_FROZEN_CHANGED_OR_EXPIRED")&&serde_json::to_value(&r.spec)?==serde_json::to_value(&spec)?&&serde_json::to_value(&r.permit)?==serde_json::to_value(&permit)?&&r.owner.validate().is_ok()}else{false};
+    log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return if expected_ordinary_final_guard(&error.code)||rank_expired{Ok(())}else{Err(error.code.into())}
+   }
   }
   if let Ok((spec,permit,at,error))=log.pre_admission_originals(qid){
    if let Ok(proof)=t.verify_current_ordinary_pre_admission(&spec,&permit,at,&error){log.append_aborted_before_admission(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
@@ -2006,6 +2017,17 @@ fn preflight_read(bank:&mut Session,source:&mut RestSource,reads:&mut impl Ordin
 }
 fn preflight_snapshots(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut impl OrdinaryPreflightReads)->Result<SnapshotSet>{
  snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep))
+}
+// Collateral has the account's20s clock. Obtain it after the four account
+// facts, before the three10s market facts, so it cannot expire first merely
+// because it preceded the whole packet. Preserve every original SDK receipt.
+fn rank_snapshots(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut impl OrdinaryPreflightReads)->Result<(SnapshotSet,Receipt)>{
+ let mut collateral=None;
+ let facts=snapshots_for_market(c,market,|ep|{
+  if matches!(&ep,Endpoint::Market{..}){collateral=Some(reads.read(Endpoint::Collateral)?);}
+  preflight_read(bank,source,reads,expected,ep)
+ })?;
+ Ok((facts,collateral.ok_or("RANK_COLLATERAL_READ_MISSING")?))
 }
 fn bulk_ordinary_quote(q:&Value,managed:&std::collections::BTreeSet<String>)->bool{
  q["exchangeId"].as_str().is_some_and(|ex|!managed.contains(ex))
@@ -3059,6 +3081,33 @@ pub fn main()->Result<()>{
 }
 #[cfg(test)]mod cooperative_preflight_tests{
  use super::*;
+ struct RankPacketReads{at:u64,fail_collateral:bool,returned:Vec<Receipt>}
+ impl OrdinaryPreflightReads for RankPacketReads{
+  fn now_ms(&self)->u64{self.at}
+  fn guarded(&mut self)->Result<bool>{Ok(true)}
+  fn read(&mut self,ep:Endpoint)->Result<Receipt>{
+   let(name,data)=match ep{
+    Endpoint::Tournament=>("tournament",json!({"status":"active"})),Endpoint::Positions=>("positions",json!({})),
+    Endpoint::Orders{..}=>("orders",json!({"coverage":{"complete":true},"pagination":{"hasMore":false}})),Endpoint::Account=>("cash",json!({})),
+    Endpoint::Collateral=>{if self.fail_collateral{return Err(std::io::Error::other("fixture collateral read failed").into())}("collateral",json!({}))},
+    Endpoint::Market{..}=>("market",json!({})),Endpoint::Nodes{..}=>("nodes",json!({})),Endpoint::OrderBook{..}=>("book",json!({})),_=>return Err("UNEXPECTED_RANK_PACKET_READ".into())};
+   // Synthetic two-second logical GETs. No production receipt is rewritten.
+   let r=Receipt{endpoint:name.into(),request_started_at:iso(self.at),received_at:iso(self.at+1),status:200,data};self.at+=2000;self.returned.push(r.clone());Ok(r)
+  }
+ }
+ #[test]fn rank_packet_keeps_collateral_fresh_without_aging_the_three_market_facts(){
+  let at=now();let(_root,c,mut bank,log,mut source,_,_)=fixture();let head=bank.durable_head();let mut reads=RankPacketReads{at,fail_collateral:false,returned:vec![]};
+  let(f,collateral)=rank_snapshots(&c,&mut bank,&mut source,"201",None,&mut reads).unwrap();
+  assert_eq!(reads.returned.iter().map(|r|r.endpoint.as_str()).collect::<Vec<_>>(),vec!["tournament","positions","orders","cash","collateral","market","nodes","book"]);
+  let original=[&f.account,&f.positions,&f.open_orders,&f.cash_balance,&collateral,&f.market,&f.contract,&f.book];for(a,b)in original.iter().zip(&reads.returned){assert_eq!(serde_json::to_vec(a).unwrap(),serde_json::to_vec(b).unwrap());}
+  let decision_at=reads.at+2000;assert!(existing_facts_until(&f,decision_at).unwrap().unwrap()>decision_at);assert!(moloch_live_runtime::daily_windows::clock(&collateral.request_started_at).unwrap()+20000>decision_at);
+  assert_eq!(head,bank.durable_head());assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn rank_packet_collateral_failure_never_continues_into_market_reads_or_intents(){
+  let(_root,c,mut bank,log,mut source,_,_)=fixture();let head=bank.durable_head();let mut reads=RankPacketReads{at:now(),fail_collateral:true,returned:vec![]};
+  assert!(rank_snapshots(&c,&mut bank,&mut source,"201",None,&mut reads).err().expect("collateral must fail").to_string().contains("fixture collateral read failed"));
+  assert_eq!(reads.returned.len(),4);assert!(reads.returned.iter().all(|r|!["market","nodes","book"].contains(&r.endpoint.as_str())));assert_eq!(head,bank.durable_head());assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
  // Real Session-generated quotes and original typed receipt fixtures; no
  // network, extra client or fabricated native qid.
  struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}

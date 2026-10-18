@@ -1,0 +1,149 @@
+{
+  "qualifiedAt": "2026-10-18T17:00:24.061692+00:00",
+  "steps": [
+    {
+      "step": "debug-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:41:48.497826+00:00",
+      "finishedAt": "2026-10-18T16:42:19.028272+00:00"
+    },
+    {
+      "step": "worker-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:42:19.029084+00:00",
+      "finishedAt": "2026-10-18T16:42:43.274370+00:00"
+    },
+    {
+      "step": "cooperative-preflight-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:42:43.275092+00:00",
+      "finishedAt": "2026-10-18T16:43:31.104948+00:00"
+    },
+    {
+      "step": "rank-worker-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:43:31.105640+00:00",
+      "finishedAt": "2026-10-18T16:43:33.890726+00:00"
+    },
+    {
+      "step": "rank-library-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:43:33.891485+00:00",
+      "finishedAt": "2026-10-18T16:44:08.251327+00:00"
+    },
+    {
+      "step": "rank-library-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:44:08.257044+00:00",
+      "finishedAt": "2026-10-18T16:44:08.274216+00:00"
+    },
+    {
+      "step": "collateral-library-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:44:08.274787+00:00",
+      "finishedAt": "2026-10-18T16:44:08.662898+00:00"
+    },
+    {
+      "step": "rank-ownership-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:44:08.663815+00:00",
+      "finishedAt": "2026-10-18T16:44:15.663664+00:00"
+    },
+    {
+      "step": "rank-ownership-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:44:15.664265+00:00",
+      "finishedAt": "2026-10-18T16:44:30.084660+00:00"
+    },
+    {
+      "step": "release-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:44:30.085692+00:00",
+      "finishedAt": "2026-10-18T16:47:35.118958+00:00"
+    },
+    {
+      "step": "release-worker",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T16:47:35.120021+00:00",
+      "finishedAt": "2026-10-18T16:50:24.975565+00:00"
+    },
+    {
+      "step": "final-worker-test-build",
+      "exitCode": 0
+    },
+    {
+      "step": "final-cooperative-tests",
+      "exitCode": 0
+    },
+    {
+      "step": "final-rank-worker-tests",
+      "exitCode": 0
+    },
+    {
+      "step": "final-release-worker",
+      "exitCode": 0
+    }
+  ],
+  "binarySha256": "b76997845f99e0adb7ba427b93a2f993b8003b8666d26107340d49ab5ddae8c3",
+  "sourceSha256": {
+    "worker.rs": "eadd01e8cb011948c19241bf4cd09eeb8e1002aa9f207d7ae8c4d4563e660e4b",
+    "rank_campaign.rs": "1a36e864917c754b859c67efe1c260bde21f3cf34a2fd7eb66b98193bf7c6f07",
+    "collateral_feedback.rs": "52a62ecd95e7c80cb29af7463029f3e019bd1c17eee8307269fcd99a339cbc49"
+  },
+  "unchangedNativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "nativeOrSdkCodeChanged": false,
+  "deployed": false,
+  "sourceTtlOrRiskOrLimiterChanged": false,
+  "actualLatencyOrProfitImprovementClaimed": false,
+  "testResults": {
+    "cooperative-preflight-tests": [
+      "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 189 filtered out; finished in 47.82s"
+    ],
+    "rank-worker-tests": [
+      "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 199 filtered out; finished in 2.78s"
+    ],
+    "rank-library-tests": [
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 265 filtered out; finished in 0.01s"
+    ],
+    "collateral-library-tests": [
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 266 filtered out; finished in 0.38s"
+    ],
+    "rank-ownership-tests": [
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.41s"
+    ],
+    "final-cooperative-tests": [
+      "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 189 filtered out; finished in 66.33s"
+    ],
+    "final-rank-worker-tests": [
+      "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 199 filtered out; finished in 2.71s"
+    ]
+  },
+  "collateralIntegrationResults": {
+    "at": "2026-10-18T16:47:41.558666+00:00",
+    "results": [
+      {
+        "name": "collateral_feedback",
+        "exitCode": 0,
+        "summary": [
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.26s"
+        ]
+      },
+      {
+        "name": "collateral_reconciliation",
+        "exitCode": 0,
+        "summary": [
+          "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s"
+        ]
+      },
+      {
+        "name": "capital_allocation",
+        "exitCode": 0,
+        "summary": [
+          "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 47.92s"
+        ]
+      }
+    ]
+  },
+  "sdkProvedNoHttpRankExpiryRetiresWithoutStopping": true,
+  "unknownOrChangedRequestsStillFailClosed": true
+}

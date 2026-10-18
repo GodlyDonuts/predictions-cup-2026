@@ -95,24 +95,22 @@ fn facts(bank:&Session,b:&Boundary<'_>,r:&Reviewed,f:&SnapshotSet,collateral:&Re
  let age=bank.engine().policy()["bookAgeMs"].as_u64().ok_or("RANK_BOOK_POLICY")?;let mut target_scope=scope.clone();target_scope.exchanges.retain(|key,_|key==ex);let(books,_)=crate::package_admission::native_books(bank,&target_scope,at,age)?;let book=books.get(ex).ok_or("RANK_BOOK_NOT_FRESH")?;until=until.min(book.observed_ms.checked_add(age).ok_or("RANK_CLOCK")?).min(book.source.received_ms.checked_add(age).ok_or("RANK_CLOCK")?);
  need(at<until,"RANK_FACTS_EXPIRED")?;Ok((retained,until))
 }
-pub struct Reservation{event:Value,boundary:Value,review:Reviewed,until:u64,qid:u64,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt}
+pub struct Reservation{event:Value,boundary:Value,review:Reviewed,until:u64,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt}
 impl Reservation{
- pub fn expected_qid(&self)->u64{self.qid}
  pub fn event(&self)->&Value{&self.event}
  pub fn valid_until_ms(&self)->u64{self.until}
  pub fn validate_current(&self,bank:&Session,b:&Boundary<'_>,at:u64)->Result<()>{self.review.current(at)?;need(at<self.until&&collateral_feedback::allocation_boundary(bank,b,i64::try_from(at)?)?==self.boundary,"RANK_RESERVATION_BOUNDARY_CHANGED")?;for r in &self.receipts{r.verify()?;}self.collateral.verify()?;Ok(())}
 }
 /// No writes. The root worker may accept event() ONLY after validate_current,
-/// then normal activation/final seven ORIGINAL facts. Never accept a failed
-/// preview, change its price/size, or treat this as an SDK capability.
+/// then native admission and activation/final seven ORIGINAL facts. Native
+/// admission recomputes the evaluation; this plan is not an SDK capability.
 pub fn prepare(bank:&Session,b:&Boundary<'_>,review:&Reviewed,f:&SnapshotSet,collateral:&RetainedReceipt,at:u64)->Result<Reservation>{
  let before=collateral_feedback::allocation_boundary(bank,b,i64::try_from(at)?)?;let(receipts,until)=facts(bank,b,review,f,collateral,at)?;
  let evaluation=bank.engine().evaluate_rank_campaign(&review.campaign,i64::try_from(at)?)?;
  let policy=bank.engine().policy();let expires=at.checked_add(policy["lifetimeMs"].as_u64().ok_or("RANK_POLICY")?).ok_or("RANK_CLOCK")?.min(review.until).min(clock(policy["entryStopAt"].as_str().ok_or("RANK_ENTRY_DEADLINE")?)?);
  let event=json!({"type":"reviewed_rank_campaign_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(at)?,"processedAt":daily_windows::iso(at)?,"bankScope":{"runId":bank.live_account_seed().ok_or("RANK_LIVE_BANK")?["runId"],"bankManifestHash":bank.manifest_hash(),"tournamentId":b.transport.scope().tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?)?,"campaignSha256":review.canonical_sha,"campaign":review.campaign,"currentBookSha256":evaluation["currentBookSha256"],"originSha256":hash(&json!({"reviewRawSha256":review.raw_sha,"boundary":before,"originalFacts":receipts.iter().map(|r|r.evidence()).collect::<Result<Vec<_>>>()?,"collateral":collateral.evidence()?}))?,"evaluation":evaluation,"expiresAt":daily_windows::iso(expires)?});
- let mut preview=bank.engine().clone();preview.advance(&event).map_err(|e|->Box<dyn std::error::Error>{e.into()})?;
- let qid=preview.order_records().iter().find(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.canonical_sha).and_then(|q|q["id"].as_u64()).ok_or("RANK_PREVIEW_QID")?;let cr=RetainedReceipt::open(b.root,collateral.receipt(),ReceiptStore::Ordinary)?;
- let result=Reservation{event,boundary:before,review:review.clone(),until,qid,receipts,collateral:cr};result.validate_current(bank,b,at)?;Ok(result)
+ let cr=RetainedReceipt::open(b.root,collateral.receipt(),ReceiptStore::Ordinary)?;
+ let result=Reservation{event,boundary:before,review:review.clone(),until,receipts,collateral:cr};result.validate_current(bank,b,at)?;Ok(result)
 }
 /// Opaque process-local physical proof. JSON research records cannot construct it.
 pub struct PhysicalDecision{head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>}

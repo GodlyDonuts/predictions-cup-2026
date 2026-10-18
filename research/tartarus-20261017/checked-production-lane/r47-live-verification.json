@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-18T15:54:58.065979+00:00",
+  "pid": 805897,
+  "phase": "trading",
+  "currentTradingVerified": true,
+  "originalFillCount": 393,
+  "progress": {
+    "actualFills": 393,
+    "actualOrders": 1640,
+    "at": "2026-10-18T15:54:45.270Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 805897,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 39,
+    "terminalOrders": 1640
+  },
+  "binarySha256": "308179edf4c6bd60362957b9e3b8bab0bfb3f880126d76922146ecd3626c6122",
+  "controlSha256": "02b3891a47e7487150a963d250d34c05cffe3e9ba3f24c1d2293c0ef0edf13d2",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "modelGeneration": "2f6dedcda8278345f55a821cc5690c96c753c5005f427f11765288e9979800fa",
+  "engineUpgradeCount": 20,
+  "nativeBridgeBytesUnchanged": true,
+  "originalFinancialPrefixPreserved": true,
+  "originalFillRecordsPreserved": true,
+  "actualFills": 393,
+  "attributedRealized": "156.795000",
+  "cash": "157.305000",
+  "ownedCost": "95579.405000",
+  "actualRankFillsOrProfitsClaimed": false
+}
