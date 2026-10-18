@@ -1,3 +1,5 @@
+**October18,20:54 UTC: production is STOPPED after storage exhaustion; recovery is underway.** MainPID0 and the storage STOP are verified. The original SDK journal is archived; only a1258-byte incomplete, proved unstarted READ admission was removed, preserving every complete checkpoint/chain record and all2423 keys/bindings. Native committed head639591 matches the intact tail; derived report639579 lags12 verified book-only updates. Original393fills/cash157.305/FIFO95579.405 remain unchanged. Existing replay must rebuild that report before fresh production evidence. R50 qualification is running; it is NOT deployed. No new Tartarus POST/fill or positive ROI. [Exact repair evidence](checked-production-lane/r50-storage-repair.json).
+
 R49 installed18:52 UTC as sole worker813301/startTicks31917443; actual executable/arguments verified. Original-bank recovery is running, not yet fresh trading. [Installation evidence](checked-production-lane/r49-installed-restoring.json).
 
 # R49 execution and economics — October 18
@@ -36,6 +38,8 @@ Next measurable milestones are fresh R49 recovery, a newly reconciled executable
 The18:36 numerical source was independently projected with all25 holdings into136 lossless native states/32 contracts. Its129-leg tournament option preserves the refreshed prior winning worlds and model means; the covered1068YES7061@0.95 sale remains first. All other128 actions are conditional. Original numeric source clocks remain fixed, two original reviews remain expired historical stress, and there is no owner approval or order submission. A finite file-only driver stages it only after current-PID live recovery and a fresh matched native report/view. [Prepared-only evidence](checked-production-lane/r49-fresh-prepared-only.json).
 
 A separate search directly maximizing the independent midpoint model against the1.1m planning target completed with solver status0 and zero target mass. Its82-leg incumbent independently passes the exact sequence audit. This is a limitation of the supplied finite380-world matrix and conditional liquidity/risk limits, not proof that a real-world win is impossible. The common-swing catch-up score must not be presented as calibrated confidence. [Independent-target result](r49-independent-target-comparison.json).
+
+R49 verified LIVE19:30:30 as sole813301 with healthy realtime; all393 original fills/FIFO and20bridgebytes preserved. First-only review published19:31:35, but q19188 retired never-sent after genuine fact expiry. No new Tartarus POST/fill or ROI. [Live evidence](checked-production-lane/r49-live-verification.json) / [fresh first-only approval](checked-production-lane/r49-first-only-owner-approval.json) / [original packet timing and retirement](checked-production-lane/r49-first-rank-reservation-retired.json).
 
 ## Conditional execution-stress comparisons
 

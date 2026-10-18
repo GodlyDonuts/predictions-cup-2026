@@ -1,0 +1,102 @@
+{
+  "at": "2026-10-18T19:43:31.118690+00:00",
+  "qid": 19188,
+  "campaignSha256": "5e396df6efd42b47dbcbd552043453132c8500b02c1b768b4d42acd425c8375c",
+  "retired": true,
+  "filled": 0,
+  "originalCreatedAtMs": 1792351932869,
+  "originalDispatchRows": [
+    {
+      "event": {
+        "kind": "not_sent",
+        "proof": {
+          "chain": "740cf78a78be810dace7f420223e50687e9f213b9d4b664f6eba6676fa781e25",
+          "networkAttempts": 0,
+          "qid": 19188,
+          "sequence": 25694
+        },
+        "qid": 19188
+      },
+      "hash": "fd7b842bee8b78a31897a934c69002d1d211a6df6a5977f21177c841d2e861af",
+      "previous": "740cf78a78be810dace7f420223e50687e9f213b9d4b664f6eba6676fa781e25",
+      "sequence": 25695
+    }
+  ],
+  "finalPacketReceipts": [
+    {
+      "file": "753ffe3d382b1a5c8df793da08b56ddc9ea1af5b757ce2e37ca63f1eed800eeb.json",
+      "endpoint": "/tournaments/midterm-elections",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:17.441Z",
+      "receivedAt": "2026-10-18T19:32:18.000Z"
+    },
+    {
+      "file": "d217c665837df160d9baa1be337e5a46ea1bb505ada47ecfd33c8f4ccc5acbf1.json",
+      "endpoint": "/tournaments/midterm-elections/portfolio/positions",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:18.727Z",
+      "receivedAt": "2026-10-18T19:32:19.337Z"
+    },
+    {
+      "file": "2e6eeb0442365751a5c202cf447e202e0c2eb3fb282528a03ea4106561932052.json",
+      "endpoint": "/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:22.799Z",
+      "receivedAt": "2026-10-18T19:32:23.134Z"
+    },
+    {
+      "file": "1ada99ec73bc454b4570fcffef4c94338fa742666460522ad31562f6fce71025.json",
+      "endpoint": "/account?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:26.503Z",
+      "receivedAt": "2026-10-18T19:32:26.914Z"
+    },
+    {
+      "file": "022f7fe13543461398d28d39586bb30716d675a4db493b743e707c4b3357d00a.json",
+      "endpoint": "/portfolio/collateral?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:27.598Z",
+      "receivedAt": "2026-10-18T19:32:27.875Z"
+    },
+    {
+      "file": "8473bc1135206997894d4eae86c140c732baf65fae0c7f68157ed50897aab8fd.json",
+      "endpoint": "/markets/379?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:30.856Z",
+      "receivedAt": "2026-10-18T19:32:31.193Z"
+    },
+    {
+      "file": "23ba058113922c747b715479c06449f829339b7c7bd6b333991a11f4e0b0bac1.json",
+      "endpoint": "/markets/379/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:31.871Z",
+      "receivedAt": "2026-10-18T19:32:33.603Z"
+    },
+    {
+      "file": "5653df32e05afa8639ccf0214380a4130e3fa332103bc1a73534c6ba72dd5468.json",
+      "endpoint": "/markets/379/orderbook?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T19:32:34.467Z",
+      "receivedAt": "2026-10-18T19:32:35.015Z"
+    }
+  ],
+  "finalPacketStartToLastReceiptMs": 17574,
+  "sumRequestToReceiptMs": 4809,
+  "minimumSevenReadPacingGapsMs": 4200,
+  "lastReceiptToDeferredStatusIncludingRetirementMs": 9836,
+  "postReceiptTimeIsNotClaimedPureValidation": true,
+  "originalDeferredStatus": {
+    "at": "2026-10-18T19:32:44.851Z",
+    "physicalAttempted": false,
+    "profitabilityEstablished": false,
+    "reason": "RANK_ORIGINAL_FACT_CLOCK_OR_SCOPE",
+    "stage": "physical_review",
+    "state": "deferred"
+  },
+  "actualFillCount": 393,
+  "cash": "157.305000",
+  "ownedCost": "95579.405000",
+  "unknownOrActualNetworkAttemptClaimed": false,
+  "sourceClocksExtended": false,
+  "r49StillRunning": true
+}
