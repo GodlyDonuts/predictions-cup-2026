@@ -1,0 +1,22 @@
+{
+  "observedAt": "2026-10-18T00:50:09.312511+00:00",
+  "phase": "actual-new-worker-restoring-fresh-trading-not-yet-verified",
+  "pid": 735621,
+  "startTicks": 25379977,
+  "binarySha256": "b9b35ea001480200e5df8ca8341162309ed522d3c94528f9c7d66c7615bf4da8",
+  "controlSha256": "ffa8592d80149bfa9d8045f3f762edb8a456c5c28cc857877247dc7d929d3fb9",
+  "nativeIdentity": "4d6a93b83043420d7253a0911f1df72fe67421fb96fcb83bd9faecdedee465c8",
+  "bridgeSha256": "112f9719a32ef7ac4a36e716079ca58bcb9530b8874bd73e9c6772424f6dd1d4",
+  "nativeUpgradeEntries": 17,
+  "originalFinancialPrefixParity": true,
+  "originalFillsPreserved": 382,
+  "exactLegacyIncidentRecoveredWithoutHTTP": true,
+  "failedIntentRetried": false,
+  "memoryMaxBytes": 2147483648,
+  "holdsActualOwnerDescriptor": true,
+  "freshAccountPacketQueued": true,
+  "approvedLiveTartarusCampaign": false,
+  "profitabilityEstablished": false,
+  "observationArchiveSha256": "0454f2907bd19fed2082746ded0cd2a972a8f664101073ba600818939977bc73",
+  "offlineReplayElapsedMs": 1748895
+}

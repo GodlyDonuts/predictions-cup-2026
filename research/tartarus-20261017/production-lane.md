@@ -1,11 +1,10 @@
 # Tartarus production integration: candidate source, not deployed proof
 
-As of October 18, 00:11 UTC, production remains stopped at the original
-`LIVE_WRITE_NOT_CONFIRMED_NO_RETRY` incident. No profitable Tartarus execution
-has been established. R39 has completed ARM64 qualification and independent artifact verification;
+At October 18, 00:50 UTC, migrated worker735621 is running and restoring.
+Its actual executable/control and held owner descriptor were verified. Fresh
+trading and profitable Tartarus execution have not been established. R39 has completed ARM64 qualification and independent artifact verification;
 it is not evidence that the service has migrated or that a campaign can win.
-The original incident was recovered without HTTP at 00:30:45 UTC. The STOP
-remains pending controlled deployment. See [build evidence](checked-production-lane/build-verification.json).
+The original incident was recovered without HTTP at 00:30:45 UTC. Its STOP was archived during the controlled00:42:25 restart. See [build evidence](checked-production-lane/build-verification.json).
 
 ## Physical execution path
 
@@ -47,13 +46,15 @@ Eligible ordinary BUY drafts that were never submitted can yield their modeled
 cash reservations to this lane. Attempted or acknowledged orders, physical
 holdings and managed cohorts cannot be released by that mechanism.
 
-## What still needs evidence
+## Migration evidence and remaining work
 
-- Complete ARM64 runtime qualification and real-journal financial parity.
-- Resolve the exact retained incident with the source-bound no-HTTP proof;
-  preserve the failed intent and original error, and never retry that intent.
-- Install and observe the sole migrated worker, then reconcile current account
-  facts through it. Dated portfolio exports cannot substitute for this step.
+- R39 ARM64 qualification and real-journal financial parity are complete; the
+  acquisition-continuation follow-up remains in qualification.
+- The exact retained incident is resolved with the source-bound no-HTTP proof.
+  The failed intent, original error and permanent key remain; no retry occurred.
+- The sole migrated worker is installed and observed restoring. Fresh account
+  reconciliation and the queued packet remain pending; dated exports cannot
+  substitute for this step.
 - Supply current economically reviewed whole-account scenarios, probability
   assumptions, incomplete-field stresses, debt assumptions and executable
   actions. The retained 23-contract registry leaves missing models explicit.
@@ -63,3 +64,27 @@ holdings and managed cohorts cannot be released by that mechanism.
 
 Current integration work and checked evidence are tracked in issue #173;
 the original execution incident and source-bound proof are tracked in #174.
+
+## Acquisition continuation follow-up
+
+R39 can review a funding sale but requires direct BUYs to improve immediate
+threshold hits. With a10,000-share physical cap and a distant tournament target,
+early acquisition tranches cannot satisfy that condition. The follow-up adds an
+explicit `acquisition_prerequisite`, preserving zero immediate gain plus strictly
+positive declared conditional target improvement. Current BUY funding, the first
+BUY in cumulative committed/market/count limits, partial loss, unavailable future
+liquidity and fresh reapproval remain binding. This follow-up is not deployed.
+Existing fundamental cohort targets remain excluded from the rank lane; ownership
+of those cohorts must be reconciled before any broader rotation handoff.
+
+## External reference continuity
+
+The Windows Kalshi collector and supervisor were positively absent after their
+last23:30UTC receipt. The existing frozen release was restored at00:59UTC; no
+credential was transferred. The same20-read/second limiter and private VPS
+loopback route are working. [Observed restoration](checked-production-lane/kalshi-restoration.json)
+records actual throughput, original response preservation and the stopped-data
+gap. A23-contract reference packet preserves source bytes and receipt times;
+all23 REST records lack venue publication timestamps. Settlement equivalence
+and pricing authority remain unverified. The Polymarket public collector remains
+separate reference data. Neither feed throughput nor a quote is profit evidence.
