@@ -1,0 +1,27 @@
+{
+  "publishedAt": "2026-10-18T14:27:10.514833+00:00",
+  "currentWorkerPid": 800853,
+  "nominationRawSha256": "82994ac01c13a4d954a874f90975b42754cb74250ea9dee7061eb1b7f57c4046",
+  "approvalRawSha256": "e4c9f702b4bb79fe7622bad0954ac9e83c325cf11bbd5f5e8042132cbd64e457",
+  "campaignDirectory": "/home/archon/apps/moloch/shared/live-production-v1/rank-campaign-owner/campaigns/current-r46-1792333387882",
+  "firstAction": {
+    "contractId": "380",
+    "exchangeId": "1068",
+    "marketId": "379",
+    "side": "YES",
+    "action": "SELL",
+    "quantity": 7061,
+    "limitPrice": "0.950000",
+    "nominationBookSha256": "a870cf5cdd761e866bcc8d41d813364dfadea5f2661ca19131b2c0e2087021bf"
+  },
+  "firstOnlyApproval": true,
+  "futureTradeAuthority": false,
+  "validUntilMs": 1792343239231,
+  "minimumCompletionMs": 5400000,
+  "sourceCount": 44,
+  "allOriginalSourceBytesVerified": true,
+  "nativeAndSdkPhysicalGuardsRemainRequired": true,
+  "actualOrderSubmittedByPublisher": false,
+  "rankFillOrProfitClaimed": false,
+  "bankOrSdkHistoryChangedByPublisher": false
+}
