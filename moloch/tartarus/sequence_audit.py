@@ -50,6 +50,13 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
              and sum(w) == UNIT, "MODEL_MASS")
     positions = deepcopy(financial["positions"])
     need(set(positions) <= set(byex), "UNMODELED_HOLDING")
+    retained_markets = financial.get("retainedMarketExchanges", [])
+    need(type(retained_markets) is list and all(type(ex) is str and ex in byex for ex in retained_markets)
+         and len(set(retained_markets)) == len(retained_markets), "RETAINED_MARKET_SCOPE")
+    retained_markets = set(retained_markets)
+    excluded_buys = financial.get("excludedBuyExchanges", [])
+    need(type(excluded_buys) is list and all(type(ex) is str and ex in byex for ex in excluded_buys)
+         and len(set(excluded_buys)) == len(excluded_buys), "EXCLUDED_BUY_SCOPE")
     for sides in positions.values():
         need(set(sides) <= {"YES", "NO"}, "HOLDING_SIDE")
         for lots in sides.values():
@@ -112,6 +119,7 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
                 break
         need(remaining == 0, "SHARED_DEPTH_EXHAUSTED")
         if action == "BUY":
+            need(ex not in excluded_buys, "BUY_EXCLUDED_BY_ORIGINAL_OWNERSHIP_SCOPE")
             need(not any(l["quantity"] for l in positions.get(ex, {}).get(
                 "NO" if side == "YES" else "YES", [])), "OPPOSITE_INVENTORY")
             cash -= n * price
@@ -140,6 +148,7 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
              and market[ex] <= amount(financial["maximumMarketCost"]), "PREFIX_FUNDING_OR_BANK_LIMIT")
         active = {ex for ex, sides in positions.items()
                   if any(l["quantity"] for lots in sides.values() for l in lots)}
+        active |= retained_markets
         need(len(active - inherited) <= fresh_limit
              and len(active) <= financial["maximumMarkets"], "MARKET_COUNT")
         for values in states:

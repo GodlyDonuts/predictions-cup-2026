@@ -1,8 +1,25 @@
 # Direct joint-target SELL/BUY frontier — October 18
 
-The starting financial snapshot is native574173 with23 original held sides.
-Production subsequently added1044YES at10:14UTC, so a new live nomination must
-rebuild the full account with that additional holding and its original basis.
+The published comparison below starts at native574173 with23 original held
+sides. Production subsequently bought1044YES and1043NO, so the current private
+candidate was rebuilt with all25 held sides,393 actual fills,157.305 cash and
+95579.405 remaining original FIFO principal. The historical table is not a
+current-price or current-holdings projection.
+
+The October18 update preserves slots occupied by original managed drafts even
+following a hypothetical full inventory sale, excludes purchases lacking actual
+cohort ownership evidence, and uses exact integer wealth lattices so numerical
+solver tolerance cannot count a tie as a first-place result. The independent
+FIFO auditor enforces the same reservation and ownership restrictions. All18
+focused sequential/audit/projection checks pass. These are execution-feasibility
+corrections, not new evidence of forecast calibration or earned ROI.
+
+At11:06:51UTC production stopped before accepting its first native rank
+reservation. The preceding original-fact packet consumed its short freshness
+window during plan preparation; the boundary validator combines expiry and
+allocation mismatch under one error. A worker repair is being qualified to
+defer expected expiry while retaining fatal genuine allocation changes. No
+Tartarus order or rank-campaign fill has been established.
 
 This search directly maximizes declared strict first-place mass across the
 whole account. The earlier write-aware prototype first forced wealth into one

@@ -56,6 +56,7 @@ class SequentialFrontier(unittest.TestCase):
         f[0]["maximumCommitted"] = "1.200000"
         f[0]["maximumMarketCost"] = "1.200000"
         f[2]["safe"]["bids"] = [{"price": "0.600000", "quantity": 4}]
+        f[2]["safe"]["asks"] = [{"price": "0.650000", "quantity": 10}]
         f[4][0]["thresholds"] = ["10.000000"] * 3
         out = self.run_search(f, objective="rank")
         self.assertEqual(out["legs"][0]["action"], "SELL")
@@ -86,6 +87,24 @@ class SequentialFrontier(unittest.TestCase):
         self.assertFalse(out["targetObjectiveImproved"])
         self.assertEqual(out["researchDisposition"], "retain_no_action_for_this_target_objective")
         self.assertEqual(out["baseline"]["trades"], 0)
+
+    def test_original_managed_draft_keeps_slot_after_hypothetical_full_sale(self):
+        f = fixture(); f[0].update(cash="0.000000", ownedCost="0.400000",
+            positions={"safe": {"YES": [{"quantity": 4, "price": "0.100000"}]}},
+            freshMarketLimit=1, retainedMarketExchanges=["safe"])
+        f[2]["safe"]["bids"] = [{"price": "0.600000", "quantity": 4}]
+        f[2]["safe"]["asks"] = [{"price": "0.650000", "quantity": 10}]
+        retained = self.run_search(f, objective="rank")
+        self.assertEqual(retained["selectedAverageStrictMassPpm"], 0)
+        del f[0]["retainedMarketExchanges"]
+        released = self.run_search(f, objective="rank")
+        self.assertEqual(released["selectedAverageStrictMassPpm"], 10000)
+
+    def test_missing_original_empty_cohort_ownership_excludes_purchase(self):
+        f = fixture(); f[0]["excludedBuyExchanges"] = ["rare"]
+        out = self.run_search(f, objective="rank")
+        self.assertEqual(out["selectedAverageStrictMassPpm"], 0)
+        self.assertTrue(all(v["ex"] != "rare" or v["action"] != "BUY" for v in out["legs"]))
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ module cannot retire reservations, approve a campaign or place an order. Every
 incumbent is independently checked against original FIFO and shared book depth.
 """
 from copy import deepcopy
+from math import gcd
+from functools import reduce
 from time import monotonic
 
 from .sequence_audit import UNIT, amount, audit, need
@@ -78,6 +80,8 @@ def _columns(fin, registry, books):
     for ex in byex:
         if ex not in books:
             continue
+        if ex in fin.get("excludedBuyExchanges", []):
+            continue
         for side in ("YES", "NO"):
             opposite = "NO" if side == "YES" else "YES"
             opposite_quantity = sum(l["quantity"] for l in fin["positions"].get(ex, {}).get(opposite, []))
@@ -135,7 +139,8 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
         return j
 
     z = {j: variable() for j, v in enumerate(cols) if v["action"] == "BUY"}
-    active = {ex: variable() for ex in sorted(set(financial["positions"]) | {v["ex"] for v in cols})}
+    active = {ex: variable() for ex in sorted(set(financial["positions"]) | {v["ex"] for v in cols}
+                                            | set(financial.get("retainedMarketExchanges", [])))}
     choices = {ex: variable() for ex in sorted({ex for ex, side in buys})}
     hits = {(f, i): variable() for f in sorted({f for _, f in target_pairs}) for i in range(len(worlds))}
     tcol = variable(-1e9 if objective == "mean" else 0,
@@ -147,6 +152,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
 
     cash, owned, writes, market = {}, {}, {}, {}
     deltas = np.zeros((len(worlds), N))
+    exact_deltas = [[0] * N for _ in worlds]
     for j, v in enumerate(cols):
         ex, p, n = v["ex"], v["price"], v["n"]
         market.setdefault(ex, {})
@@ -170,10 +176,17 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
         cid = byex[ex]["contractId"]
         for i, world in enumerate(worlds):
             outcome = world["payouts"][cid]
-            payout = (v["basis"] / n if v["action"] == "SELL" else p) if outcome == "refund_principal" else UNIT if outcome == ("resolved_yes" if v["side"] == "YES" else "resolved_no") else 0
-            deltas[i, j] = n * (p - payout) / UNIT if v["action"] == "SELL" else (payout - p) / UNIT
+            payout = UNIT if outcome == ("resolved_yes" if v["side"] == "YES" else "resolved_no") else 0
+            if v["action"] == "SELL":
+                delta = n * p - (v["basis"] if outcome == "refund_principal" else n * payout)
+            else:
+                delta = 0 if outcome == "refund_principal" else payout - p
+            exact_deltas[i][j] = delta
+            deltas[i, j] = delta / UNIT
 
     for ex, a in active.items():
+        if ex in financial.get("retainedMarketExchanges", []):
+            row({a: 1}, lo=1)
         original = sum(l["quantity"] for lots in financial["positions"].get(ex, {}).values() for l in lots)
         indices = [j for (sx, side), js in sales.items() if sx == ex for j in js]
         if original:
@@ -206,7 +219,16 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     # claims. Only a hit=>strict-wealth implication is required for maximization.
     least = baseline + np.minimum(deltas, 0) @ np.asarray(upper[:N])
     for (fid, i), h in hits.items():
-        target = amount(fmap[fid]["thresholds"][i]) / UNIT + 1 / UNIT
+        # Every decision quantity is integral. The first strictly winning
+        # reachable lattice value is exact; avoid a one-micro floating row
+        # tolerance accidentally crediting an exact tie as a first-place hit.
+        step = reduce(gcd, (abs(v) for v in exact_deltas[i]), 0)
+        initial = baseline_audit["terminalWealthMicros"][i]
+        threshold = amount(fmap[fid]["thresholds"][i])
+        if not step:
+            lower[h] = upper[h] = int(initial > threshold)
+            continue
+        target = (initial + ((threshold + 1 - initial + step - 1) // step) * step) / UNIT
         big_m = max(0.0, target - least[i])
         row({**dict(enumerate(deltas[i])), h: -big_m}, lo=target - baseline[i] - big_m)
 
