@@ -1,0 +1,50 @@
+{
+  "qualifiedAt": "2026-10-18T13:38:39.135353+00:00",
+  "steps": [
+    {
+      "step": "rank-native-tests",
+      "exitCode": 0
+    },
+    {
+      "step": "native-tests",
+      "exitCode": 0
+    },
+    {
+      "step": "unchanged-worker-206-plus-isolated-failed-case",
+      "exitCode": 0
+    },
+    {
+      "step": "release",
+      "exitCode": 0
+    },
+    {
+      "step": "upgrade-helper-matched-features",
+      "exitCode": 0
+    },
+    {
+      "step": "identity",
+      "exitCode": 0
+    }
+  ],
+  "binarySha256": "029a5192d2b4fc87c01eb49830cbfc6ee627cbff1ebee1f1623793aa7470133b",
+  "upgradeHelperSha256": "b7be533d9429d9ece0bcd1bdb7ab300510d2a8e7274871439a83736fc2120e82",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "deployed": false,
+  "ordersSubmitted": 0,
+  "nativeChecks": 123,
+  "nativeIgnored": 1,
+  "focusedRankChecks": 18,
+  "workerSuccessfulCasesAcrossInvocations": 207,
+  "fullWorkerRun": {
+    "passed": 206,
+    "failed": 1,
+    "failure": "original_dispatch_proved_retirement_does_not_recreate_component_quotes_and_replays",
+    "isolatedSameSourceSameBinaryRerun": "passed1,206filtered",
+    "claimAll207PassedTogether": false
+  },
+  "compiledLibraryPins": {
+    "moloch_replay": "85a8b88c7ed62c72a3a1920b18322a930fdd3cf5e45298d05ba184d718425cf8",
+    "serde_json": "292723681d9d2add7a3e7e8edb2bfe5cd40d07938a4cab5aaa8f10bf62c0cc2a"
+  },
+  "onlyNativeSourceChanged": "reviewed_rank_campaign.rs"
+}

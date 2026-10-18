@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-18T13:46:46.214003+00:00",
+  "action": "archive_exact_dead_worker_sdk_application_lock",
+  "deadPid": 790101,
+  "failedReplacementPid": 800280,
+  "originalLockRawSha256": "84edd620f00063b4d9b3e1927a0bf0fc515249d7f05815242aa3c9f181c59bef",
+  "originalLockBytes": 82,
+  "originalLockInode": 12441643,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "manualReview": false,
+  "originalFinancialAndDispatchPrefixesUnchanged": true,
+  "sourceManifestOrCheckpointOrJournalEdited": false,
+  "requestKeysOrIntentsEdited": false,
+  "httpRequests": 0,
+  "tradingResumed": false
+}

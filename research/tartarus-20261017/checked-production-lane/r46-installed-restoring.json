@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-18T13:46:46.337685+00:00",
+  "incident": "/home/archon/apps/moloch/shared/incidents/rank-capacity-rollout-20261018T134024Z",
+  "sourceCommit": "d4d22cc9",
+  "binarySha256": "029a5192d2b4fc87c01eb49830cbfc6ee627cbff1ebee1f1623793aa7470133b",
+  "controlSha256": "654589d37701b144a32dfe85ba77ac8542a3e557afdc32df1a42aef9d68bc2ba",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "engineUpgradeCount": 20,
+  "prefixes": {
+    "financial": {
+      "bytes": 1997981464,
+      "sha256": "9a07e69228930d6fe08887069a61a49586a84fca0a927e6ae2da8d92aa35bf0b"
+    },
+    "dispatch": {
+      "bytes": 12171120,
+      "sha256": "e9343f4d451968b7ed26394611d01055c209024f78479a6f2ac7c17b16ddd0b5"
+    }
+  },
+  "originalFillCount": 393,
+  "originalFillsAndFifoPreserved": true,
+  "all14G12ReviewsPreserved": true,
+  "riskAndDailyWindowsChanged": false,
+  "sdkUnknown": 0,
+  "noRankApprovalPublished": true,
+  "ordersSubmittedByDeployment": 0,
+  "currentTradingVerified": false,
+  "pid": 800853,
+  "startTicks": "30086034",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true,
+  "firstStartFailedBeforeReplay": "EXCLUSIVE_QUEUE_LOCK_REQUIRED",
+  "exactDeadWorkerLockArchived": true
+}
