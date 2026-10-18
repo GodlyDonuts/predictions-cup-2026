@@ -109,7 +109,8 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
           objective="rank", seconds=20, minimum_expected_change=None,
           minimum_terminal_wealth=None, forbidden_new_market_sets=(),
           required_covered_sale_exchanges=(), maximum_native_scenarios=None,
-          required_target_hits=(), minimum_model_expected_changes=None):
+          required_target_hits=(), minimum_model_expected_changes=None,
+          ordinary_probability_inputs=None, minimum_interval_expected_change=None):
     """Search both BUY sides and FIFO SELL prefixes; report actual model scores.
 
     target_pairs is an explicit nonempty list of (modelId, fieldId). ``rank``
@@ -120,12 +121,21 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     A time-limited incumbent is never a claim of global portfolio optimality.
     Optional model-specific money floors name every supplied model, allowing
     a winning-state-preserving comparison without sacrificing another mean.
+    ``interval_mean`` additionally maximizes the exact ordinary worst-case
+    expectation over explicitly supplied categorical marginal intervals. It
+    does not calibrate those intervals or replace the exceptional-world audit.
     """
     import numpy as np
     from scipy.optimize import Bounds, LinearConstraint, milp
     from scipy.sparse import coo_matrix
 
-    need(objective in {"rank", "robust_rank", "mean"}, "OBJECTIVE")
+    need(objective in {"rank", "robust_rank", "mean", "interval_mean"}, "OBJECTIVE")
+    interval_requested = ordinary_probability_inputs is not None
+    need(not (objective == "interval_mean" or minimum_interval_expected_change is not None)
+         or interval_requested, "ORDINARY_INTERVAL_INPUTS_REQUIRED")
+    if interval_requested:
+        need(type(ordinary_probability_inputs) is dict
+             and set(ordinary_probability_inputs) == {"marginals", "profiles", "diagnostics"}, "ORDINARY_INTERVAL_INPUTS")
     need(type(seconds) in (int, float) and 0 < seconds <= 300, "TIME_BOUND")
     baseline_audit = audit(financial, registry, books, model, fields, [], assumptions=ASSUMPTIONS)
     worlds = model["scenarios"]
@@ -160,8 +170,9 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     inherited_survives = {ex: variable() for ex in inherited_quantities} if inherited_quantities is not None else {}
     inherited_fresh = {ex: variable() for ex in inherited_survives}
     hits = {(f, i): variable() for f in sorted({f for _, f in target_pairs}) for i in range(len(worlds))}
-    tcol = variable(-1e9 if objective == "mean" else 0,
-                    1e9 if objective == "mean" else UNIT, 0)
+    monetary_objective = objective in {"mean", "interval_mean"}
+    tcol = variable(-1e9 if monetary_objective else 0,
+                    1e9 if monetary_objective else UNIT, 0)
     rows, low, high = [], [], []
 
     def row(values, lo=-np.inf, hi=np.inf):
@@ -316,6 +327,26 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
             row(dict(enumerate(delta)), lo=model_floors[mid] / UNIT)
         if objective == "mean":
             row({**{j: -v for j, v in enumerate(delta)}, tcol: 1}, hi=0)
+    if interval_requested:
+        from .categorical_money_bound import ordinary_probability_vertices
+        event_floors = []
+        for vertices in ordinary_probability_vertices(registry, **ordinary_probability_inputs).values():
+            indices = [j for j, col in enumerate(cols) if col['ex'] in vertices[0]]
+            if not indices: continue
+            bound = variable(-1e9, 1e9, 0); event_floors.append(bound)
+            for vertex in vertices:
+                values = {bound: 1}
+                for j in indices:
+                    col = cols[j]; payout = vertex[col['ex']]
+                    if col['side'] == 'NO': payout = UNIT - payout
+                    gain = ((payout - col['price']) if col['action'] == 'BUY'
+                            else col['n'] * (col['price'] - payout)) / UNIT
+                    values[j] = -gain
+                row(values, hi=0)
+        if objective == 'interval_mean':
+            row({tcol: 1, **{v: -1 for v in event_floors}}, hi=0)
+        if minimum_interval_expected_change is not None:
+            row({v: 1 for v in event_floors}, lo=amount(minimum_interval_expected_change) / UNIT)
     if minimum_terminal_wealth is not None:
         floor = amount(minimum_terminal_wealth) / UNIT
         for i, delta in enumerate(deltas):
@@ -339,7 +370,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
         row({**dict(enumerate(deltas[i])), h: -big_m}, lo=target - baseline[i] - big_m)
 
     costs = np.zeros(len(upper))
-    if objective == "mean":
+    if monetary_objective:
         costs[tcol] = -1
     else:
         for mid, fid in target_pairs:
@@ -367,6 +398,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
                calibratedProbabilities=False, executionAuthority=False,
                minimumExpectedChange=minimum_expected_change,
                minimumModelExpectedChanges=minimum_model_expected_changes,
+               minimumIntervalExpectedChange=minimum_interval_expected_change,
                requiredTargetHits=list(required_target_hits),
                minimumTerminalWealth=minimum_terminal_wealth, baseline=baseline_audit)
     if result.x is None:
@@ -375,6 +407,13 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
         legs = [dict(v, quantity=v["n"] if v["action"] == "SELL" else int(round(result.x[j])))
                 for j, v in enumerate(cols) if int(round(result.x[j]))]
         checked = audit(financial, registry, books, model, fields, legs, assumptions=ASSUMPTIONS)
+        if interval_requested:
+            from .categorical_money_bound import ordinary_money_bounds
+            interval_bound = ordinary_money_bounds(registry, **ordinary_probability_inputs, legs=legs)
+            if minimum_interval_expected_change is not None:
+                need(interval_bound['ordinaryMinimumExpectedChangeMicros'] >= amount(minimum_interval_expected_change),
+                     'EXACT_ORDINARY_INTERVAL_FLOOR')
+            out['ordinaryIntervalSensitivity'] = interval_bound
         if minimum_expected_change is not None:
             need(all(m["expectedChangeMicrosNumerator"] >= amount(minimum_expected_change) * UNIT for m in checked["models"]), "EXACT_MEAN_FLOOR")
         if model_floors:
@@ -393,7 +432,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
                    selectedAverageStrictMassPpm=sum(selected) / len(selected),
                    selectedMinimumStrictMassPpm=min(selected),
                    targetObjectiveImproved=improved,
-                   researchDisposition="monetary_comparison_only" if objective == "mean"
+                   researchDisposition="monetary_comparison_only" if monetary_objective
                        else "target_alternative_requires_economic_and_physical_review" if improved
                        else "retain_no_action_for_this_target_objective")
         retained = sorted({byex[ex]["contractId"] for ex in financial["positions"]} | {byex[v["ex"]]["contractId"] for v in legs})

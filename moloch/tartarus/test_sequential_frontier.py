@@ -32,6 +32,29 @@ def fixture():
 
 
 class SequentialFrontier(unittest.TestCase):
+    def test_interval_objective_uses_heterogeneous_adverse_bounds_and_keeps_original_models(self):
+        f = fixture(); diagnostics, marginals = [], []
+        for i, r in enumerate(f[1]):
+            event = dict(raceId=i, electionDate='2026-11-03', raceName=str(i),
+                         stageId=1, officeLevel='Federal', usState='AK')
+            r.update(event, winnerName='Republican Party')
+            diagnostics.append(dict(eventIdentity=event))
+            marginals.append(dict(exchangeId=r['exchangeId'], lowerPpm=100000, upperPpm=900000))
+        f[3]['probabilityModels'][0]['weightsPpm'] = [495000, 495000, 10000]
+        original = copy.deepcopy(f)
+        out = self.run_search(f, objective='interval_mean', minimum_expected_change='0',
+            minimum_interval_expected_change='0',
+            ordinary_probability_inputs=dict(marginals=marginals, profiles=[], diagnostics=diagnostics))
+        self.assertGreaterEqual(out['ordinaryIntervalSensitivity']['ordinaryMinimumExpectedChangeMicros'], 1200000)
+        self.assertFalse(out['ordinaryIntervalSensitivity']['exceptionalOutcomesCovered'])
+        self.assertEqual(out['researchDisposition'], 'monetary_comparison_only')
+        self.assertEqual(f, original)
+
+    def test_interval_objective_or_floor_requires_explicit_inputs(self):
+        for kw in [dict(objective='interval_mean'), dict(minimum_interval_expected_change='0')]:
+            with self.assertRaisesRegex(ValueError, 'ORDINARY_INTERVAL_INPUTS_REQUIRED'):
+                self.run_search(fixture(), **kw)
+
     def test_fresh_sale_precedes_retained_inherited_sale_to_preserve_slot_limit(self):
         f = fixture()
         f[0].update(cash="0.000000", ownedCost="1.000000",
