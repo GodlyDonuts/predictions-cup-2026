@@ -1,5 +1,11 @@
 # Florida Senate production review — October 18
 
+**Actual new fill:** R44 bought10,0001044YES at0.835 at10:14:14.656UTC,
+across four original official fill IDs.8,350 gross cost/zero fee reconciles cash
+1,863.785 and owned FIFO93,872.925, with prior387fill rows retained (now391).
+Attributed realized156.795 is unchanged: this is an entry, not earned profit.
+[Independent source/accounting verification](../tartarus-20261017/checked-production-lane/r44-first-florida-fill-verification.json).
+
 [Actual model activation and later runtime stop](activation-and-stop.json).
 
 The existing R43 worker committed G11 generation `a28b77a2` without a restart,

@@ -1,5 +1,9 @@
 # Direct joint-target SELL/BUY frontier — October 18
 
+The starting financial snapshot is native574173 with23 original held sides.
+Production subsequently added1044YES at10:14UTC, so a new live nomination must
+rebuild the full account with that additional holding and its original basis.
+
 This search directly maximizes declared strict first-place mass across the
 whole account. The earlier write-aware prototype first forced wealth into one
 selected world and then maximized monetary gain. Both are conditional research;
