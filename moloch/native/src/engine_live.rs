@@ -64,6 +64,17 @@ impl Engine {
   if e["type"].as_str().is_some_and(|s|s.starts_with("actual_collateral_")){return self.apply_collateral(e,_at)}
   if e["type"]=="live_entry_window" {return self.apply_entry_window(e,_at)}
   if e["type"]=="actual_position_adoption" {return self.adopt_positions(e,_at)}
+  if e["type"]=="expired_attempt_exposure_reconciled_v1" {
+   // Account-level recovery is distinct from an ACK, terminal venue order, or
+   // proof of zero network attempts. The sole dispatcher verifies complete
+   // post-expiry history AND unchanged full-account cash/positions first.
+   if e["source"]!="moloch_live_dispatcher"||e["networkAttemptRetained"]!=true||e["sameIntentRetryAuthorized"]!=false||e["venueOrderIdentityKnown"]!=false||e["accountEffectsReconciled"]!=true{return Err("EXPIRED_EXPOSURE_PROOF")}
+   for key in ["receiptHash","originalIntentSha256","originalAttemptSha256","originalErrorSha256"]{if e[key].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_hexdigit())){return Err("EXPIRED_EXPOSURE_PROOF")}}
+   let qid=e["orderId"].as_u64().ok_or("ACTUAL_INTENT_ID")?;
+   let index=self.orders.iter().position(|q|q.id==qid).ok_or("ACTUAL_UNOWNED_ORDER")?;let q=&self.orders[index];
+   if self.is_package_order(qid)||self.live_orders.contains_key(&qid)||q.filled!=0||q.retired||q.end()>=_at||e["expiresAt"].as_i64()!=Some(q.expires)||e["exchangeId"]!=q.exchange||e["marketId"]!=q.market{return Err("EXPIRED_EXPOSURE_INTENT")}
+   if q.buy{self.wallet.release(&qid.to_string())?}self.orders[index].retired=true;self.count("expiredAttemptExposuresReconciled");return Ok(())
+  }
   if e["type"]=="unsubmitted_intent_retired" {
    if e.get("deferPlanningForPackage").is_some_and(|v|!v.is_boolean()){return Err("UNSUBMITTED_INTENT_PLANNING_FLAG")}
    if e["source"]!="moloch_live_dispatcher"||e["confirmedNetworkAttempts"].as_u64()!=Some(0)||e["receiptHash"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_hexdigit())){return Err("UNSUBMITTED_INTENT_PROOF")}
@@ -198,4 +209,18 @@ impl Engine {
   self.wallet.audit()?;self.count("actualPositionAdoptions");Ok(())
  }
 
+}
+
+#[cfg(test)]mod expired_exposure_tests{
+ use super::*;
+ #[test]fn expired_uncertain_attempt_retires_only_after_bound_proof_without_ack_or_fill(){
+  let mut engine=Engine::new_live(&json!({"quantity":1,"minimumSpreadTicks":1,"requireCurrentFlow":false})).unwrap();
+  engine.advance(&json!({"type":"book","receivedAt":"2026-10-18T00:00:00Z","book":{"marketId":"201","exchangeId":"101","tournamentId":"cup","sequence":"1","sourceAt":"2026-10-18T00:00:00Z","requestStartedAt":"2026-10-18T00:00:00Z","receivedAt":"2026-10-18T00:00:00Z","bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.420000","quantity":100}]}})).unwrap();
+  let q=engine.order_records().into_iter().find(|q|q["action"]=="buy").expect("native quote");let end=q["expiresAt"].as_i64().unwrap();let at=chrono::DateTime::from_timestamp_millis(end+60001).unwrap().to_rfc3339();
+  let e=json!({"type":"expired_attempt_exposure_reconciled_v1","source":"moloch_live_dispatcher","orderId":q["id"],"marketId":q["marketId"],"exchangeId":q["exchangeId"],"expiresAt":end,"receiptHash":"a".repeat(64),"originalIntentSha256":"b".repeat(64),"originalAttemptSha256":"c".repeat(64),"originalErrorSha256":"d".repeat(64),"networkAttemptRetained":true,"sameIntentRetryAuthorized":false,"venueOrderIdentityKnown":false,"accountEffectsReconciled":true,"receivedAt":at,"processedAt":at});
+  let cash=engine.wallet.cash;let before=engine.wallet.reserved().unwrap();let positions=engine.wallet.positions();
+  for key in ["networkAttemptRetained","sameIntentRetryAuthorized","venueOrderIdentityKnown","accountEffectsReconciled"]{let mut bad=e.clone();bad[key]=json!(!bad[key].as_bool().unwrap());assert!(engine.clone().advance(&bad).is_err());}
+  let mut early=e.clone();early["receivedAt"]=json!(chrono::DateTime::from_timestamp_millis(end).unwrap().to_rfc3339());early["processedAt"]=early["receivedAt"].clone();assert!(engine.clone().advance(&early).is_err());
+  engine.advance(&e).unwrap();assert_eq!(engine.wallet.cash,cash);assert_eq!(engine.wallet.positions(),positions);assert!(engine.fills().is_empty()&&engine.live_order_bindings().is_empty());assert!(engine.wallet.reserved().unwrap()<before);assert_eq!(engine.order_records().into_iter().find(|r|r["id"]==q["id"]).unwrap()["retired"],true);assert!(engine.advance(&e).is_err());
+ }
 }

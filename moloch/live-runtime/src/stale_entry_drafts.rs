@@ -46,10 +46,10 @@ fn select_for(bank:&Session,log:&DispatchLog,scope:&Scope,managed:&BTreeSet<Stri
  let mut busy=BTreeSet::new();
  // An unsent mate can be intended cover for a physical order that may fill
  // later. Closed original ownership, never an open-list omission, is required.
- for id in log.attempted.iter().filter(|id|!log.closed.contains(id)&&!log.proved_no_network(**id)).chain(log.acknowledgments.keys().filter(|id|!log.closed.contains(id))).chain(bank.engine().live_order_bindings().keys().filter(|id|!log.closed.contains(id))){
+ for id in log.attempted.iter().filter(|id|!log.closed.contains(id)&&!log.proved_no_network(**id)&&!log.exposure_resolved(**id)).chain(log.acknowledgments.keys().filter(|id|!log.closed.contains(id))).chain(bank.engine().live_order_bindings().keys().filter(|id|!log.closed.contains(id))){
   let q=byid.get(id).ok_or("STALE_DRAFT_ORIGINAL_ORDER_MISSING")?;busy.insert(q["exchangeId"].as_str().ok_or("STALE_DRAFT_SCOPE")?.to_owned());
  }
- if kind==SelectionKind::UnqualifiedFlat{for id in log.intents.keys().filter(|id|!log.closed.contains(id)&&!log.proved_no_network(**id)){
+ if kind==SelectionKind::UnqualifiedFlat{for id in log.intents.keys().filter(|id|!log.closed.contains(id)&&!log.proved_no_network(**id)&&!log.exposure_resolved(**id)){
   let q=byid.get(id).ok_or("STALE_DRAFT_ORIGINAL_ORDER_MISSING")?;busy.insert(q["exchangeId"].as_str().ok_or("STALE_DRAFT_SCOPE")?.to_owned());
  }}
  let actual_fills:BTreeSet<_>=bank.engine().fills().iter().map(|f|f["orderId"].as_u64().ok_or("STALE_DRAFT_ACTUAL_FILL_ID")).collect::<std::result::Result<_,_>>()?;

@@ -12,6 +12,20 @@ pub mod package_settings;
 pub mod package_preflight;
 pub mod package_dispatch;
 pub mod dispatch;
+pub mod expired_exposure;
+
+#[cfg(test)]mod expired_allocation_boundary_test{
+ #[test]fn restored_expired_exposure_is_not_a_network_abort_or_serialized_permission(){
+  let(root,log)=crate::expired_exposure::tests::resolved_fixture();
+  let rows=log.exposure_records().clone();assert!(log.exposure_resolved(1));assert!(!log.proved_no_network(1)&&!log.never_attempted(1));
+  // Exact retained journal membership and process-local proof hydration are
+  // separately required by the allocation boundary.
+  assert!(crate::collateral_feedback::test_exact_expired_resolution(&log,&rows,1));
+  assert!(!crate::collateral_feedback::test_exact_expired_resolution(&log,&Default::default(),1));
+  let mut changed=rows.clone();changed.get_mut(&1).unwrap()["proofSha256"]=serde_json::json!("0".repeat(64));assert!(!crate::collateral_feedback::test_exact_expired_resolution(&log,&changed,1));
+  drop(log);let replay=crate::dispatch::DispatchLog::open(&root.join("dispatch.ndjson")).unwrap();assert!(!crate::collateral_feedback::test_exact_expired_resolution(&replay,&rows,1));drop(replay);std::fs::remove_dir_all(root).unwrap();
+ }
+}
 pub mod breadth;
 pub mod read_recovery;
 pub mod universe;

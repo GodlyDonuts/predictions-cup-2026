@@ -6,11 +6,15 @@ The checked finite discovery helper uses the stopped writer's global owner lease
 
 ## Candidate recovery, not yet applied
 
+The same dated05:31 account observations show10,213.785 cash plus84,434.11 published position market value: indicative marked equity94,647.895, about5.35% below100,000 initial points. These observations are nearby rather than atomic, and marks are not whole-position executable liquidation values. Positive realized FIFO exits do not establish positive whole-account ROI.
+
 The candidate introduces a separately named `expired_attempt_exposure_reconciled_v1` native event. It retires an expired, unbound reservation after economic reconciliation. It creates no venue ID, acknowledgment, fill, proceeds, cost-basis change or claim of zero network attempts. The original logical intent can never be retried.
 
 The recovery factory is limited to reviewed inventory sales. It requires the restored original bank, sole unresolved original attempt, no pending acknowledged orders, exact SDK payload/key binding, unchanged full-account signed positions and cash, matching durable owner profile, no collateral ledger or obligations, and complete order history with no open or potentially matching order. Every physical observation must start at least60 seconds after the original expiry and be no more than60 seconds old at qualification. Known acknowledged orders are reconciled by their real IDs and complete fill tapes first.
 
 Receipts and original intent/attempt/error hashes remain in a private immutable bundle. The native event commits before the separate dispatch resolution and SDK reconciliation. Startup restores trust only by rechecking the exact retained bundle and its original committed native source event. A serialized resolution flag cannot release an uncertain attempt. Crashes or incomplete evidence retain the stop; recovery never removes it automatically.
+
+Known-order reconciliation retains its exact order/fill receipts in an incident-private bundle. Before restarting, the execution owner must also preserve those same hash-verified receipts in the worker's standard receipt archive so later cohort lifecycle readers can find their original sources. This archive step creates no order, fill or accounting event.
 
 This changes native semantics and therefore requires the existing explicit engine-upgrade chain and a checked successor binary. It is being qualified in an isolated copy; no recovery, bridge installation, restart or profitability is established by this document. Following recovery, the sole worker still must perform its normal current-account preflight. Existing risk limits and daily windows remain unchanged.
 

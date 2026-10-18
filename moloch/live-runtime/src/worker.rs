@@ -239,7 +239,7 @@ fn advance_owner_capital(t:&mut Transport,c:&Control,control_path:&Path,bank:&mu
  let control_sha=current_control()?;
  if !settings.contributed(bank)?{
   ordinary.require_resolved_attempts()?;
-  let open=ordinary.attempted.iter().any(|q|!ordinary.closed.contains(q)&&!ordinary.proved_no_network(*q))||ordinary.acknowledgments.keys().any(|q|!ordinary.closed.contains(q))||packages.unresolved()||bank.engine().package_blocks_new_submissions();
+  let open=ordinary.attempted.iter().any(|q|!ordinary.closed.contains(q)&&!ordinary.proved_no_network(*q)&&!ordinary.exposure_resolved(*q))||ordinary.acknowledgments.keys().any(|q|!ordinary.closed.contains(q))||packages.unresolved()||bank.engine().package_blocks_new_submissions();
   if open{let _=atomic_json(&c.root.join("owner-capital-allocation.json"),&json!({"at":iso(now()),"state":"waiting_for_original_physical_terminal","buyEntriesPaused":true,"coveredSellsAndReconciliationEnabled":true}));return Ok(true)}
   match t.package_queue_quiet(){Ok(_)=>{},Err(e)if e.code=="PACKAGE_QUEUE_NOT_QUIET"=>return Ok(true),Err(e)=>return Err(e.into())}
   let at=now();if *last_check!=0&&at.saturating_sub(*last_check)<30_000{return Ok(true)}*last_check=at;
@@ -1417,8 +1417,8 @@ fn refresh_controls(c:&Control,authority:&ProductionAuthority,stream:&Realtime)-
 /// Contradictory actual execution is integrity failure, even for a retired qid.
 fn refresh_physical_pending(log:&DispatchLog,qid:u64,native_binding:bool,actual_fill:bool)->Result<bool>{
  let actual=log.acknowledgments.contains_key(&qid)||native_binding||actual_fill;
- if log.proved_no_network(qid)&&actual{return Err("LIVE_ABORT_PROOF_CONTRADICTS_ACTUAL_EXECUTION".into())}
- Ok(!log.closed.contains(&qid)&&(actual||(log.attempted.contains(&qid)&&!log.proved_no_network(qid))))
+ if (log.proved_no_network(qid)||log.exposure_resolved(qid))&&actual{return Err("LIVE_ABORT_PROOF_CONTRADICTS_ACTUAL_EXECUTION".into())}
+ Ok(!log.closed.contains(&qid)&&(actual||(log.attempted.contains(&qid)&&!log.proved_no_network(qid)&&!log.exposure_resolved(qid))))
 }
 fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&ProductionAuthority,stream:&Realtime,q:&Value,global_unknown:bool)->Result<moloch_live_runtime::exit_refresh::Safety>{
  refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;
@@ -2049,7 +2049,7 @@ fn covered_opposite_buy(bank:&Session,log:&DispatchLog,q:&Value)->bool{
    let unclosed=log.attempted.difference(&log.closed).filter(|id|{
     // Only the SDK-hydrated capability can clear this encumbrance. A raw
     // replayed abort is untrusted, and any actual execution evidence wins.
-    !log.proved_no_network(**id)||log.acknowledgments.contains_key(*id)||bank.engine().live_order_bindings().contains_key(*id)||!records.iter().any(|o|o["id"]==**id&&o["retired"]==true&&o["filled"]==0)
+    (!log.proved_no_network(**id)&&!log.exposure_resolved(**id))||log.acknowledgments.contains_key(*id)||bank.engine().live_order_bindings().contains_key(*id)||!records.iter().any(|o|o["id"]==**id&&o["retired"]==true&&o["filled"]==0)
    }).copied().collect();
    if moloch_live_runtime::ordinary_side_edge::fully_covered_opposite_buy(q,held,&records,&unclosed){return true}
   }
@@ -2706,7 +2706,7 @@ pub fn main()->Result<()>{
   if fs::read(&path)?!=original_control_bytes{return Err("LIVE_CONTROL_CHANGED_DURING_STARTUP".into())}
   let maker_review=c.maker_policy.as_ref().map(|settings|moloch_live_runtime::maker_policy::Reviewed::load(settings.clone(),&bank)).transpose()?;
   if let Some(review)=&maker_review{review.validate_model(c.execution_model.as_ref().ok_or("LIVE_MAKER_MODEL_REQUIRED")?)?;authority.require_maker_review(review.sha256())?;}
-  let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(&c,&mut log)?;log.require_resolved_attempts()?;
+  let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(&c,&mut log)?;moloch_live_runtime::expired_exposure::restore(&c.root,&bank,&mut log)?;log.require_resolved_attempts()?;
   for qid in log.aborted_records().keys().chain(log.local_final_guard_records().keys()).copied().collect::<Vec<_>>(){retire_proved_unadmitted(&mut bank,&log,qid)?;}
   // End the startup reader before constructing the ONE continuing worker. The
   // existing-origin baseline borrows this same transport's real quiet queue;

@@ -356,7 +356,7 @@ fn no_existing_liability(bank:&Session,log:&DispatchLog,ex:&str)->Result<()>{
 // over any contradictory local proof. Cohort lifecycle remains separately held.
 fn physical_pending(bank:&Session,log:&DispatchLog,id:u64)->bool{
     !log.closed.contains(&id)&&(bank.engine().live_order_bindings().contains_key(&id)||log.acknowledgments.contains_key(&id)
-        ||(log.attempted.contains(&id)&&!log.proved_no_network(id)))
+        ||(log.attempted.contains(&id)&&!log.proved_no_network(id)&&!log.exposure_resolved(id)))
 }
 // The active value-exit floor is structure + margin: structure already removed
 // that margin. Do not add it twice or substitute the inherited FIFO cost floor.
@@ -410,7 +410,7 @@ fn fifo_basis(r:&ReviewInput,head:&Value,position:&Value,book:&Value,n:u64,cost:
 }
 fn passive_exit_clear(bank:&Session,log:&DispatchLog,ex:&str,current:Option<u64>,allow_drafts:bool)->Result<bool>{
     if !bank.engine().managed_inventory_planning_excludes(ex)
-        ||log.attempted.iter().any(|id|Some(*id)!=current&&!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id))
+        ||log.attempted.iter().any(|id|Some(*id)!=current&&!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id)&&!log.exposure_resolved(*id))
         ||bank.engine().package_blocks_submissions()
         ||bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|generation_package_protects(p,ex)){return Ok(false)}
     let snapshot=crate::order_snapshot::snapshot(bank);
@@ -1216,7 +1216,7 @@ impl Cohorts{
         let r=&self.policies[ex];let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_EXIT_FIFO_CHANGED")?;
         let snapshot=crate::order_snapshot::snapshot(bank);let records=snapshot.records();let mut bindings=Vec::new();
         for b in c.entries().chain(c.exits.values()).chain(c.rank_trades.values()){
-            if !bank.engine().live_order_bindings().contains_key(&b.qid){need(log.never_attempted(b.qid)||log.proved_no_network(b.qid),"FUNDAMENTAL_EXIT_UNKNOWN_BINDING")?;need(!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid),"FUNDAMENTAL_EXIT_UNBOUND_FILL")?;continue}
+            if !bank.engine().live_order_bindings().contains_key(&b.qid){need(log.never_attempted(b.qid)||log.proved_no_network(b.qid)||log.exposure_resolved(b.qid),"FUNDAMENTAL_EXIT_UNKNOWN_BINDING")?;need(!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid),"FUNDAMENTAL_EXIT_UNBOUND_FILL")?;continue}
             if !log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid){return Ok(None)}bindings.push(b);
         }
         let wanted=bindings.iter().map(|b|b.qid).collect();let closed=self.original_closed_records(log,&wanted)?.0;let mut entries=Vec::new();let mut exits=Vec::new();
@@ -1759,7 +1759,7 @@ impl Cohorts{
         if top_up.is_none()&&(bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0){return Ok(hold("existing_inventory_cannot_be_adopted"))}
         if let Some(proof)=&top_up{let held=proof["heldQuantity"].as_u64().ok_or("FUNDAMENTAL_TOP_UP_QUANTITY")?;let cost=amount(proof["heldCost"].as_str().ok_or("FUNDAMENTAL_TOP_UP_COST")?)?;
             need(held.checked_add(n).is_some_and(|n|n<=r.maximum_quantity)&&add(cost,mul(price,n as i128)?)?<=amount(&r.maximum_principal)?,"FUNDAMENTAL_TOP_UP_TOTAL_CAP")?;}
-        if log.attempted.iter().any(|id|!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id)){return Ok(hold("unknown_physical_acceptance"))}
+        if log.attempted.iter().any(|id|!log.acknowledgments.contains_key(id)&&!log.proved_no_network(*id)&&!log.exposure_resolved(*id)){return Ok(hold("unknown_physical_acceptance"))}
         if crate::order_snapshot::snapshot(bank).records().iter().any(|other|other["exchangeId"]==ex
             &&other["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){return Ok(hold("same_exchange_physical_order_open"))}
         if bank.engine().package_blocks_submissions(){return Ok(hold("unresolved_package"))}
@@ -1859,7 +1859,7 @@ impl Cohorts{
     /// The SDK/original dispatch retain unknown-acceptance and rate controls.
     pub fn check_bound(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<()>{
         self.check(bank,log)?;
-        need(!log.proved_no_network(qid)&&!self.cohorts.values().any(|c|c.retired_top_ups.contains_key(&qid)),"FUNDAMENTAL_ABORTED_INTENT_CANNOT_RETRY")?;
+        need(!log.proved_no_network(qid)&&!log.exposure_resolved(qid)&&!self.cohorts.values().any(|c|c.retired_top_ups.contains_key(&qid)),"FUNDAMENTAL_ABORTED_INTENT_CANNOT_RETRY")?;
         let(ex,c)=self.cohorts.iter().find(|(_,c)|c.binding(qid).is_some()).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
         let b=c.binding(qid).unwrap();need(digest(spec)?==b.spec_sha256,"FUNDAMENTAL_PHYSICAL_REQUEST_CHANGED")?;
         if c.is_entry(qid){
@@ -1870,7 +1870,7 @@ impl Cohorts{
                 let cost=amount(proof["heldCost"].as_str().ok_or("FUNDAMENTAL_TOP_UP_COST")?)?;
                 need(held.checked_add(n).is_some_and(|n|n<=r.maximum_quantity)&&add(cost,mul(amount(b.quote["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?,n as i128)?)?<=amount(&r.maximum_principal)?,"FUNDAMENTAL_TOP_UP_TOTAL_CAP")?;
             }else{need(self.owned(bank,ex,c)?==0,"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;}
-            need(log.attempted.iter().all(|id|*id==qid||log.acknowledgments.contains_key(id)||log.proved_no_network(*id)),"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;
+            need(log.attempted.iter().all(|id|*id==qid||log.acknowledgments.contains_key(id)||log.proved_no_network(*id)||log.exposure_resolved(*id)),"FUNDAMENTAL_PHYSICAL_ENTRY_OWNERSHIP")?;
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id)
                 &&now<daily_windows::clock(bank.engine().policy()["entryStopAt"].as_str().ok_or("FUNDAMENTAL_ENTRY_DEADLINE")?)?,"FUNDAMENTAL_PHYSICAL_SCOPE_OR_DEADLINE")?;
             let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;

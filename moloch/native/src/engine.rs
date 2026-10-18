@@ -1533,7 +1533,7 @@ impl Engine {
             "live_market_capacity_v1" => self.apply_live_market_capacity(e,at)?,
             "live_capital_allocation_v1" => self.apply_owner_capital(e,at)?,
             "live_owner_mandate_revision_v1" => self.apply_owner_mandate_revision(e,at)?,
-            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" | "actual_collateral_baseline" | "actual_collateral_execution" | "actual_collateral_settlement" | "actual_collateral_checkpoint" | "actual_collateral_ordinary_cash_sync" => self.apply_live(e,at)?,
+            "actual_order_ack" | "actual_fill" | "actual_order_terminal" | "expired_attempt_exposure_reconciled_v1" | "unsubmitted_intent_retired" | "actual_position_adoption" | "live_entry_window" | "actual_collateral_baseline" | "actual_collateral_execution" | "actual_collateral_settlement" | "actual_collateral_checkpoint" | "actual_collateral_ordinary_cash_sync" => self.apply_live(e,at)?,
             "live_package_reserve" | "live_package_attempt" | "live_package_no_execution" | "live_package_ack" | "live_package_unknown" | "live_package_complete" => self.apply_package(e,at)?,
             "probabilistic_portfolio_reserve_v1" | "probabilistic_portfolio_attempt_v1" | "probabilistic_portfolio_no_execution_v1" | "probabilistic_portfolio_ack_v1" | "probabilistic_portfolio_unknown_v1" | "probabilistic_portfolio_complete_v1" => self.apply_probabilistic_package(e,at)?,
             "book" => {
