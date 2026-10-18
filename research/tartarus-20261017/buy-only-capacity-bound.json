@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "classification": "optimistic_static_buy_only_capacity_bound_not_a_campaign",
+  "computed_at_utc": "2026-10-17T22:20:07.966714+00:00",
+  "original_private_packet_sha256": "0eb0c041cc8aa8da8f5bc2a78339fc63d5beeeaab2d633c4817417a78f76705e",
+  "original_report_raw_sha256": "ee0ea5059aa495fe4ca3a9da18dc3572ed9df364cdea5a3951366f77a014f63e",
+  "financial_sequence": 547539,
+  "report_at_utc": "2026-10-17T22:05:14.467Z",
+  "gross_cash": "3613.785000",
+  "original_held_shares": 149477,
+  "current_native_admissible_min_buy_price": "0.005",
+  "minimum_price_source": "moloch/native/src/lib.rs::TICK=5000/SCALE=1000000; price requires 0<v<SCALE and v%TICK==0",
+  "maximum_new_shares_if_full_cash_spent_at_floor": 722757,
+  "unspent_cash": "0.000000",
+  "all_holdings_plus_new_units_payout_upper": "872234.000000",
+  "assumptions": [
+    "All native held lots pay one per share, including mutually incompatible outcomes; this is deliberately a loose upper envelope.",
+    "Every new share costs the current runtime minimum .005 and pays one; unlimited simultaneous liquidity, zero nonnegative fees and unlimited market/order caps are optimistic relaxations.",
+    "All gross cash can fund purchases; current reservations and current executable depth are ignored in the optimistic direction.",
+    "No existing holding is sold, no intermediate trade profit or other cash credit, and no collateral/leverage/cross-venue execution.",
+    "Refund upper envelope uses the retained native remaining-principal convention; admin exceptions and unrelated external payoffs are not a universal theorem."
+  ],
+  "declared_target_results": [
+    {
+      "target": "925300",
+      "attainable_under_even_this_relaxation": false,
+      "gap_to_upper": "53066.000000",
+      "optimistic_additional_gross_proceeds_lower_bound_ignoring_sold_asset_loss": "265.330000"
+    },
+    {
+      "target": "1000000",
+      "attainable_under_even_this_relaxation": false,
+      "gap_to_upper": "127766.000000",
+      "optimistic_additional_gross_proceeds_lower_bound_ignoring_sold_asset_loss": "638.830000"
+    },
+    {
+      "target": "1086100",
+      "attainable_under_even_this_relaxation": false,
+      "gap_to_upper": "213866.000000",
+      "optimistic_additional_gross_proceeds_lower_bound_ignoring_sold_asset_loss": "1069.330000"
+    },
+    {
+      "target": "1500000",
+      "attainable_under_even_this_relaxation": false,
+      "gap_to_upper": "627766.000000",
+      "optimistic_additional_gross_proceeds_lower_bound_ignoring_sold_asset_loss": "3138.830000"
+    },
+    {
+      "target": "2000000",
+      "attainable_under_even_this_relaxation": false,
+      "gap_to_upper": "1127766.000000",
+      "optimistic_additional_gross_proceeds_lower_bound_ignoring_sold_asset_loss": "5638.830000"
+    }
+  ],
+  "current_rival_terminal_threshold_observed": false,
+  "proves_zero_probability_of_first_place": false,
+  "calibrated_probability_claimed": false,
+  "rotation_execution_or_sale_proceeds_assumed": false,
+  "execution_authority": false,
+  "new_account_reads": 0
+}

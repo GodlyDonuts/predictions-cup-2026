@@ -1,0 +1,1167 @@
+{
+  "schema_version": 1,
+  "kind": "g9_source_continuity_candidate_not_approval",
+  "source_baseline_commit": "d86cef2f",
+  "prepared_at_utc": "2026-10-17T21:59:36.268186+00:00",
+  "review_count": 11,
+  "fresh_official_ballot_responses": 11,
+  "fresh_resolver_responses": 1,
+  "current_forecast_witnesses_reused": 10,
+  "fresh_forecast_responses": 1,
+  "new_original_retained_node_receipts": 10,
+  "old_node_source_retained_for": [
+    "1042"
+  ],
+  "no_new_sig_http_calls": true,
+  "private_packet": {
+    "directory_basename": "moloch-g9-source-candidate-20261017-r1",
+    "zip_name": "g9-source-candidates-final.zip",
+    "bytes": 21577572,
+    "sha256": "43371f4e8881947e5a084a9f541809646abae5e136f043a5e8e080bd465ddf71",
+    "manifest_sha256": "0446d849e507a07284de34b84c27b773bfb681856d9619111ff6da82fa781551",
+    "member_pin_count": 103
+  },
+  "source_policy": {
+    "all_existing_ttls_preserved": true,
+    "published_at_ms_zero_when_first_publication_unknown": true,
+    "observed_times_are_actual_retained_response_times_not_invocation_time": true,
+    "same_byte_refetch_does_not_establish_new_edition": true,
+    "all_10_new_node_semantic_roots_equal_existing_reviews": true,
+    "full_ca_pdf_preserved": true,
+    "maximum_review_source_bytes": 15014986,
+    "aggregate_bound_bytes": 16777216
+  },
+  "rows": [
+    {
+      "exchange_id": "1042",
+      "market_id": "353",
+      "contract_id": "354",
+      "side": "YES",
+      "review_version_unchanged": 1,
+      "installed_probability_assumption": "0.950000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Chris Coons * incumbent (D)",
+        "operator": "=",
+        "probability_display": "0.995"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Chris Coons * incumbent (D)",
+          "operator": "=",
+          "probability_display": "0.995"
+        },
+        {
+          "candidate_display": "Michael Katz (R)",
+          "operator": "=",
+          "probability_display": "0.005"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Chris Coons * incumbent (D)",
+        "operator": "=",
+        "probability_display": "0.995"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.995",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.940500000000",
+      "alternative_conditional_payout_if_uncensored": "0.985050000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": true,
+      "semantic_notes": "Coons D victory is an ordinary subset of Democratic YES. Installed .950 is a retained owner assumption, not today’s .995 display. Same original official ballot bytes; full resolver/party-affiliation exceptions remain unverified.",
+      "proposed_source_bound_utc": "2026-10-18T21:00:42.718+00:00",
+      "source_bytes_total": 297184,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/d3391d49e400573d7877773c687d7aeb07ca4fa1831a09c957dbc470b9c9ff42.html",
+          "bytes": 156712,
+          "sha256": "d3391d49e400573d7877773c687d7aeb07ca4fa1831a09c957dbc470b9c9ff42",
+          "old_sha256": "3583f14a0e669eb46cfd4c7eb02f32e40e114708d9f40220fe891a512498fc89",
+          "old_observed_at_ms": 1792191080939,
+          "new_observed_at_ms": 1792270842718,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:00:42.718+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:00:42.718+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/senate/delaware",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/6ec9aca6fd001590b504cfa5e7946a7882032d0d25161d18417b36265faf820c.html",
+          "bytes": 139561,
+          "sha256": "6ec9aca6fd001590b504cfa5e7946a7882032d0d25161d18417b36265faf820c",
+          "old_sha256": "a14593f6776e6cd4843d2d7ead82f0beea6c14e7c323b456969db15eff9aa0f2",
+          "old_observed_at_ms": 1792196665428,
+          "new_observed_at_ms": 1792273931521,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:52:11.521+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:52:11.521+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://elections.delaware.gov/candidates/candidatelist/genl_fcddt_2026.html",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": true
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/a0847c32dc1a21529bd4bdb00495ceb1a4c0c723d80d90d9f0b6420a5ff5331c.json",
+          "bytes": 911,
+          "sha256": "a0847c32dc1a21529bd4bdb00495ceb1a4c0c723d80d90d9f0b6420a5ff5331c",
+          "old_sha256": "a0847c32dc1a21529bd4bdb00495ceb1a4c0c723d80d90d9f0b6420a5ff5331c",
+          "old_observed_at_ms": 1792123334317,
+          "new_observed_at_ms": 1792123334317,
+          "maximum_age_ms_unchanged": 259200000,
+          "proposed_bound_utc": "2026-10-19T04:02:14.317+00:00",
+          "fresh_response_or_retained_worker_receipt": false,
+          "observed_at_utc": "2026-10-16T04:02:14.317+00:00",
+          "published_at_ms_candidate": 1792123334317,
+          "url": "https://sig.thesuper.market/api/v1/markets/353/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "b4d6f5b6df47f22d271d880f6385c6434cb9990222e6b67811ca8a20c374d472",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original G8 source retained with original clock"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "1068",
+      "market_id": "379",
+      "contract_id": "380",
+      "side": "YES",
+      "review_version_unchanged": 1,
+      "installed_probability_assumption": "0.990000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Ed Markey * incumbent (D)",
+        "operator": ">",
+        "probability_display": "0.999"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Ed Markey * incumbent (D)",
+          "operator": ">",
+          "probability_display": "0.999"
+        },
+        {
+          "candidate_display": "John Deaton (R)",
+          "operator": "<",
+          "probability_display": "0.001"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Ed Markey * incumbent (D)",
+        "operator": ">",
+        "probability_display": "0.999"
+      },
+      "proposed_uncensored_point_if_owner_chooses": null,
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.980100000000",
+      "alternative_conditional_payout_if_uncensored": null,
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": true,
+      "semantic_notes": "Markey D victory is an ordinary subset of Democratic YES. Publisher >.999 remains censored; installed .990 is an owner assumption, not an extracted .999 point. Same official specimen ballot bytes; write-in and resolver exceptions remain.",
+      "proposed_source_bound_utc": "2026-10-18T21:15:59.119+00:00",
+      "source_bytes_total": 3235528,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/bf0a462232bcfb9456d0c8e4f3215811a2337c1182a9349c72f2d2fed51a9492.html",
+          "bytes": 204163,
+          "sha256": "bf0a462232bcfb9456d0c8e4f3215811a2337c1182a9349c72f2d2fed51a9492",
+          "old_sha256": "4f40a1f47a9aefbffc89a5f0651355a7fcb774a79277ed102c593ae5f22f845b",
+          "old_observed_at_ms": 1792191083996,
+          "new_observed_at_ms": 1792271759119,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:59.119+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:59.119+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/senate/massachusetts",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/6625e4d0c8559b843ef0ab71f680528fccaa3785fa9ba1356ca0c95835e809ad.html",
+          "bytes": 3030444,
+          "sha256": "6625e4d0c8559b843ef0ab71f680528fccaa3785fa9ba1356ca0c95835e809ad",
+          "old_sha256": "6625e4d0c8559b843ef0ab71f680528fccaa3785fa9ba1356ca0c95835e809ad",
+          "old_observed_at_ms": 1792196825225,
+          "new_observed_at_ms": 1792273849369,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:49.369+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:49.369+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.shrewsburyma.gov/DocumentCenter/View/21674/Specimen-Ballot-State-Election-November-3-2026",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": null
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/529265679e7215242ddeb1af5677b9b89621817c1bf45c6694805614163725ab.json",
+          "bytes": 921,
+          "sha256": "529265679e7215242ddeb1af5677b9b89621817c1bf45c6694805614163725ab",
+          "old_sha256": "90b45b8b974f03051f11e4c90337abc779a519fe816d6acc732c066c8ab66a4a",
+          "old_observed_at_ms": 1792131851981,
+          "new_observed_at_ms": 1792273340640,
+          "maximum_age_ms_unchanged": 259200000,
+          "proposed_bound_utc": "2026-10-20T21:42:20.640+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:42:20.640+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/379/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "8981f973d98643bcdd91df6b4d7290bfed120be764e34c26d913856aedb39a6c",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "966",
+      "market_id": "277",
+      "contract_id": "278",
+      "side": "YES",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.919000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Roy Cooper (D)",
+        "operator": "=",
+        "probability_display": "0.919"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Roy Cooper (D)",
+          "operator": "=",
+          "probability_display": "0.92"
+        },
+        {
+          "candidate_display": "Michael Whatley (R)",
+          "operator": "=",
+          "probability_display": "0.08"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Roy Cooper (D)",
+        "operator": "=",
+        "probability_display": "0.92"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.92",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.891430000000",
+      "alternative_conditional_payout_if_uncensored": "0.892400000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": true,
+      "semantic_notes": "Cooper D victory is an ordinary subset of Democratic YES. Official general list, not a primary field, retained byte-identically. Other/independent/write-in probabilities and resolver exceptions remain unestimated.",
+      "proposed_source_bound_utc": "2026-10-18T21:50:58.930+00:00",
+      "source_bytes_total": 431227,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/7d3db54e1fd08fe2fd5de1d54b3ec946baac7cfb2b234f6e4b7b6a0696dbc02b.html",
+          "bytes": 259861,
+          "sha256": "7d3db54e1fd08fe2fd5de1d54b3ec946baac7cfb2b234f6e4b7b6a0696dbc02b",
+          "old_sha256": "7d363c14643375a1770f7a46b6805b30cb86c308e574c086052c4aa528448419",
+          "old_observed_at_ms": 1792191086285,
+          "new_observed_at_ms": 1792273929577,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:52:09.577+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:52:09.577+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/senate/north-carolina",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d.pdf",
+          "bytes": 170443,
+          "sha256": "378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d",
+          "old_sha256": "378ca3dde9e97f65a921c922171aa34942bcc68582ef46e713b371e0b6caf11d",
+          "old_observed_at_ms": 1792196612285,
+          "new_observed_at_ms": 1792273858930,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:58.930+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:58.930+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://s3.amazonaws.com/dl.ncsbe.gov/Elections/2026/Candidate%20Filing/2026_general_candidate_list_by_contest_federal_and_state.pdf",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": null
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/47ddf71b8bf31e355d788906c966e6db64f9e4c40777118c9d3aa5adfc104236.json",
+          "bytes": 923,
+          "sha256": "47ddf71b8bf31e355d788906c966e6db64f9e4c40777118c9d3aa5adfc104236",
+          "old_sha256": "1d91331b147ffb78e759f7555ebf971f71077caf866558ca7e4d11ae8228012f",
+          "old_observed_at_ms": 1792132087690,
+          "new_observed_at_ms": 1792235188460,
+          "maximum_age_ms_unchanged": 259200000,
+          "proposed_bound_utc": "2026-10-20T11:06:28.460+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T11:06:28.460+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/277/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "56670f0ec4ec7e9837de07ca07cc7573996a89e94d578f9db675252613936da1",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "977",
+      "market_id": "288",
+      "contract_id": "289",
+      "side": "NO",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.995000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Jeff Merkley * incumbent (D)",
+        "operator": "=",
+        "probability_display": "0.995"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Jeff Merkley * incumbent (D)",
+          "operator": "=",
+          "probability_display": "0.995"
+        },
+        {
+          "candidate_display": "David Brock Smith (R)",
+          "operator": "=",
+          "probability_display": "0.005"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Jeff Merkley * incumbent (D)",
+        "operator": "=",
+        "probability_display": "0.995"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.995",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.965150000000",
+      "alternative_conditional_payout_if_uncensored": "0.965150000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": false,
+      "semantic_notes": "Merkley Democratic/Working Families fusion affiliation is the preserved assumption supporting Republican NO, not an exact candidate/party equivalence. Other party/independent/refund/replacement outcomes remain separate.",
+      "proposed_source_bound_utc": "2026-10-18T21:15:58.801+00:00",
+      "source_bytes_total": 219831,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/52266739c9201b2a46ed2dd47a90553e8c3a6aa645ee8c8237ab8cb651295874.html",
+          "bytes": 157424,
+          "sha256": "52266739c9201b2a46ed2dd47a90553e8c3a6aa645ee8c8237ab8cb651295874",
+          "old_sha256": "562b801140e413432b3fd9f8eb2c50e93adcd734d1c4bef001263f53a9d13f09",
+          "old_observed_at_ms": 1792257990747,
+          "new_observed_at_ms": 1792271758801,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:58.801+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:58.801+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/senate/oregon",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/0af9a265cde636cf5ee3ad1c6d9797ea9912820401cf4c1d5e665fc67e7ff55c.html",
+          "bytes": 61500,
+          "sha256": "0af9a265cde636cf5ee3ad1c6d9797ea9912820401cf4c1d5e665fc67e7ff55c",
+          "old_sha256": "0af9a265cde636cf5ee3ad1c6d9797ea9912820401cf4c1d5e665fc67e7ff55c",
+          "old_observed_at_ms": 1792258146416,
+          "new_observed_at_ms": 1792273857705,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:57.705+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:57.705+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.co.umatilla.or.us/departments/elections/general-election/contest-and-candidate-listing-for-the-november-3-2026-general-election",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": true
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/e83b4c4bf5ff649a3cdb0ad92397bc3ba5df1fb00795376afce7d76f96b36516.json",
+          "bytes": 907,
+          "sha256": "e83b4c4bf5ff649a3cdb0ad92397bc3ba5df1fb00795376afce7d76f96b36516",
+          "old_sha256": "e6d1b884d628881ffda0fdf86a8ac3ec3b8c974ec60ba5635c4641a7deff664f",
+          "old_observed_at_ms": 1792178231799,
+          "new_observed_at_ms": 1792273677056,
+          "maximum_age_ms_unchanged": 172800000,
+          "proposed_bound_utc": "2026-10-19T21:47:57.056+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:47:57.056+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/288/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "ebe719c4fc2796abfc66e2669db45e84abf9c1c7310e00dc298f05f5c2c60d15",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "1067",
+      "market_id": "378",
+      "contract_id": "379",
+      "side": "YES",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.503000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Dan S. Sullivan * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.503"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Mary Peltola (D)",
+          "operator": "=",
+          "probability_display": "0.497"
+        },
+        {
+          "candidate_display": "Dan S. Sullivan * incumbent (R)",
+          "operator": "=",
+          "probability_display": "0.503"
+        },
+        {
+          "candidate_display": "Daniel J. Sullivan Jr. (O)",
+          "operator": "<",
+          "probability_display": "0.001"
+        },
+        {
+          "candidate_display": "Gerald L. Heikes (R)",
+          "operator": "<",
+          "probability_display": "0.001"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Dan S. Sullivan * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.503"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.503",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.487910000000",
+      "alternative_conditional_payout_if_uncensored": "0.487910000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": false,
+      "semantic_notes": "Incumbent Dan S. Sullivan Republican victory is only a subset of Republican YES. Heikes is another Republican; Daniel J. Sullivan Jr. is distinct. Preserve final ranked-choice winner event and name/affiliation assumptions, never sum censored values into a certified point.",
+      "proposed_source_bound_utc": "2026-10-18T21:15:58.965+00:00",
+      "source_bytes_total": 502543,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/b73fa227765511ed7c6a2b3da2d360142491bdc434fa6eb7094cd1bf6af26c7c.html",
+          "bytes": 257857,
+          "sha256": "b73fa227765511ed7c6a2b3da2d360142491bdc434fa6eb7094cd1bf6af26c7c",
+          "old_sha256": "bdc0d358395dbefc868eda0e0b00cd0dec3ceb90765c1bea835c3e67c493d78a",
+          "old_observed_at_ms": 1792257991292,
+          "new_observed_at_ms": 1792271758965,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:58.965+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:58.965+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/senate/alaska",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/f23c992d7219c783df4644ac1405a18c3e39f60f5d9ec4e35dadba341091e49d.html",
+          "bytes": 243779,
+          "sha256": "f23c992d7219c783df4644ac1405a18c3e39f60f5d9ec4e35dadba341091e49d",
+          "old_sha256": "45eeed66311fd8a5fb142d52793f536cd9f6854c287b61b9ba99c061bde496dd",
+          "old_observed_at_ms": 1792258113158,
+          "new_observed_at_ms": 1792273848108,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:48.108+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:48.108+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.elections.alaska.gov/candidates/?election=26genr",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": true
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/fa2216dd7f8345ae611ee5024d35ab0053d3673b10cfa6d266d1efb484dff467.json",
+          "bytes": 907,
+          "sha256": "fa2216dd7f8345ae611ee5024d35ab0053d3673b10cfa6d266d1efb484dff467",
+          "old_sha256": "7d53c449bc2805391ff8a49789459c9211bd442687bcc75d428754b2e12636a9",
+          "old_observed_at_ms": 1792189834489,
+          "new_observed_at_ms": 1792273255456,
+          "maximum_age_ms_unchanged": 172800000,
+          "proposed_bound_utc": "2026-10-19T21:40:55.456+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:40:55.456+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/378/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "8fe67c16b16544d7f71c3c955e40adaaa0baaa6b19e7ac29d6aafe931ae84c8a",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "865",
+      "market_id": "176",
+      "contract_id": "177",
+      "side": "YES",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.954000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Hannah Pingree (D)",
+        "operator": "=",
+        "probability_display": "0.954"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Hannah Pingree (D)",
+          "operator": "=",
+          "probability_display": "0.954"
+        },
+        {
+          "candidate_display": "Bobby Charles (R)",
+          "operator": "=",
+          "probability_display": "0.046"
+        },
+        {
+          "candidate_display": "Rick Bennett (I)",
+          "operator": "<",
+          "probability_display": "0.001"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Hannah Pingree (D)",
+        "operator": "=",
+        "probability_display": "0.954"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.954",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.925380000000",
+      "alternative_conditional_payout_if_uncensored": "0.925380000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": false,
+      "semantic_notes": "Official GOV rows: Hannah M. Pingree D, Robert B. Charles R, Rick Bennett Independent. Bobby=Robert name inference remains explicit. Bennett <.001 stays censored; party and exceptional/refund resolution remain conditional.",
+      "proposed_source_bound_utc": "2026-10-18T21:15:58.303+00:00",
+      "source_bytes_total": 255089,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/65b3105afb95ce1d8f45747226dd5eae34a650feaad0fe37d5cf0dbe7386e8eb.html",
+          "bytes": 205846,
+          "sha256": "65b3105afb95ce1d8f45747226dd5eae34a650feaad0fe37d5cf0dbe7386e8eb",
+          "old_sha256": "65b3105afb95ce1d8f45747226dd5eae34a650feaad0fe37d5cf0dbe7386e8eb",
+          "old_observed_at_ms": 1792257991021,
+          "new_observed_at_ms": 1792271758303,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:58.303+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:58.303+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/governors/maine",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/c628e48fa6298b6862e709166adf3145f7bc4a3f60929c3e6ef5a3ea324e03ea.xlsx",
+          "bytes": 48337,
+          "sha256": "c628e48fa6298b6862e709166adf3145f7bc4a3f60929c3e6ef5a3ea324e03ea",
+          "old_sha256": "c628e48fa6298b6862e709166adf3145f7bc4a3f60929c3e6ef5a3ea324e03ea",
+          "old_observed_at_ms": 1792258110789,
+          "new_observed_at_ms": 1792273850574,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:50.574+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:50.574+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www1.maine.gov/sos/sites/maine.gov.sos/files/inline-files/2026%20General%20Candidate%20List%20-%20FINAL.xlsx",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": null
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/6e033a3ac785320c5b48e726f0dce6d2c310c9a7e7a004617c208f4f595e0eb5.json",
+          "bytes": 906,
+          "sha256": "6e033a3ac785320c5b48e726f0dce6d2c310c9a7e7a004617c208f4f595e0eb5",
+          "old_sha256": "edacd07108be8ec5f30a8bf7b9c6ca4b1796e72985616e7f249ea8a5b683cf80",
+          "old_observed_at_ms": 1792188617648,
+          "new_observed_at_ms": 1792273613127,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:46:53.127+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:46:53.127+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/176/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "5e768c0f5224b76620be03b0d08a9eb433c300d329491b1cd058ea47b42801e5",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "872",
+      "market_id": "183",
+      "contract_id": "184",
+      "side": "YES",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.783000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Joe Lombardo * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.783"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Aaron Ford (D)",
+          "operator": "=",
+          "probability_display": "0.218"
+        },
+        {
+          "candidate_display": "Joe Lombardo * incumbent (R)",
+          "operator": "=",
+          "probability_display": "0.782"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Joe Lombardo * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.782"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.782",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.548100000000",
+      "alternative_conditional_payout_if_uncensored": "0.547400000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": true,
+      "semantic_notes": "Joe=Joseph Lombardo inference, unmodeled Danielle, full-field/None-of-these-candidates and resolver assumptions remain. A newer genuine node receipt repairs only prospective source currency; it does not resolve ambiguity or approve the .30 allowance.",
+      "proposed_source_bound_utc": "2026-10-18T17:57:50.626+00:00",
+      "source_bytes_total": 1388048,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/7416a0f2ebbd9af62b5182cf9ef1ecf8c8f8868fe7b7185c5aa7399c7576e74c.html",
+          "bytes": 191570,
+          "sha256": "7416a0f2ebbd9af62b5182cf9ef1ecf8c8f8868fe7b7185c5aa7399c7576e74c",
+          "old_sha256": "a32349a41a5e3db86bb8c4fc7c8e04fb8aa99b9d1264f835429ffb1f938a5980",
+          "old_observed_at_ms": 1792191075121,
+          "new_observed_at_ms": 1792271758345,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:58.345+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:58.345+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/governors/nevada",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/0a06448b99848377017ac9ca37fb9da6fdf3899310cccaaff9092153e8a29886.html",
+          "bytes": 164026,
+          "sha256": "0a06448b99848377017ac9ca37fb9da6fdf3899310cccaaff9092153e8a29886",
+          "old_sha256": "b431f8dfcbbb5cfaab259b2021890da6a6e8668f8018574cbefcc118db5146b2",
+          "old_observed_at_ms": 1792192001941,
+          "new_observed_at_ms": 1792273850222,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:50.222+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:50.222+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://cltr.douglasnv.us/elections/2026-election-information/2026_general_election/who-is-on-my-ballot",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": true
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/14b67100b4cacb3356d81a51d95d89df34f056f48c6dea155181a8ee25474bd7.json",
+          "bytes": 908,
+          "sha256": "14b67100b4cacb3356d81a51d95d89df34f056f48c6dea155181a8ee25474bd7",
+          "old_sha256": "13b18d2b206b4deed547ef4694dd5d261594c0de21889f0f9189d2cc565366eb",
+          "old_observed_at_ms": 1792175017746,
+          "new_observed_at_ms": 1792259870626,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T17:57:50.626+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T17:57:50.626+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/183/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "2f719ff73551d460ebac7077d3a59f11fa0f102bb17a06ef777b364b680a0541",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        },
+        {
+          "kind": "resolver",
+          "source_member": "candidate-sources/4ce9599105f7005e65fec7d73faddc76d11bb692fda4ceedfd11db5cfea977af.html",
+          "bytes": 1031544,
+          "sha256": "4ce9599105f7005e65fec7d73faddc76d11bb692fda4ceedfd11db5cfea977af",
+          "old_sha256": "4ce9599105f7005e65fec7d73faddc76d11bb692fda4ceedfd11db5cfea977af",
+          "old_observed_at_ms": 1792192185983,
+          "new_observed_at_ms": 1792273849947,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:49.947+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:49.947+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.leg.state.nv.us/nrs/NRS-293.html",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "993",
+      "market_id": "304",
+      "contract_id": "305",
+      "side": "YES",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.840000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Ty Masterson (R)",
+        "operator": "=",
+        "probability_display": "0.84"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Cindy Holscher (D)",
+          "operator": "=",
+          "probability_display": "0.16"
+        },
+        {
+          "candidate_display": "Ty Masterson (R)",
+          "operator": "=",
+          "probability_display": "0.84"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Ty Masterson (R)",
+        "operator": "=",
+        "probability_display": "0.84"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.84",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.756000000000",
+      "alternative_conditional_payout_if_uncensored": "0.756000000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": false,
+      "semantic_notes": "Masterson/Klemp Republican ticket versus Holscher/Ohaebosim Democratic, 2026 General county listing. It is not an exhaustive statewide write-in roster or a venue party-resolver guarantee.",
+      "proposed_source_bound_utc": "2026-10-18T21:15:58.833+00:00",
+      "source_bytes_total": 250858,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/524680e216647d68c068627c7853b4226cd8f19925be9c3f6be38dc6a41eaf77.html",
+          "bytes": 179242,
+          "sha256": "524680e216647d68c068627c7853b4226cd8f19925be9c3f6be38dc6a41eaf77",
+          "old_sha256": "c3dce92c2aadb4657f3d6a7934cda2c59076f3b558d844ff75d5d86ff80f2f86",
+          "old_observed_at_ms": 1792191073090,
+          "new_observed_at_ms": 1792271758833,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:58.833+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:58.833+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/governors/kansas",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/207a97e4d915b505be3e8cce46bdcf7c38866977b8b5a7a5a96c86c5013e01e2.html",
+          "bytes": 70708,
+          "sha256": "207a97e4d915b505be3e8cce46bdcf7c38866977b8b5a7a5a96c86c5013e01e2",
+          "old_sha256": "207a97e4d915b505be3e8cce46bdcf7c38866977b8b5a7a5a96c86c5013e01e2",
+          "old_observed_at_ms": 1792194362993,
+          "new_observed_at_ms": 1792274230270,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:57:10.270+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:57:10.270+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.sedgwickcounty.org/elections/current-candidates/?page=1",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": true
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/ca33d8b4f434b953df1ffc35519f9b9de676e1508c41cea4e817c5cf3845b62b.json",
+          "bytes": 908,
+          "sha256": "ca33d8b4f434b953df1ffc35519f9b9de676e1508c41cea4e817c5cf3845b62b",
+          "old_sha256": "feb9412053603d24db5e8004a926f991a33512b910d9e33b57b9a628c58a368d",
+          "old_observed_at_ms": 1792167797885,
+          "new_observed_at_ms": 1792273776761,
+          "maximum_age_ms_unchanged": 259200000,
+          "proposed_bound_utc": "2026-10-20T21:49:36.761+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:49:36.761+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/304/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "d452289674a0cf21a59329f2ec80bf3285b556d712bb7b0ab9fd9a99d40b800d",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "885",
+      "market_id": "196",
+      "contract_id": "197",
+      "side": "YES",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.864000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Greg Abbott * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.864"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Gina Hinojosa (D)",
+          "operator": "=",
+          "probability_display": "0.138"
+        },
+        {
+          "candidate_display": "Greg Abbott * incumbent (R)",
+          "operator": "=",
+          "probability_display": "0.862"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Greg Abbott * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.862"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.862",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.777600000000",
+      "alternative_conditional_payout_if_uncensored": "0.775800000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": true,
+      "semantic_notes": "Abbott REP versus Hinojosa DEM; Pat Dixon LIB is printed in the retained full official certification but has no displayed CTM win probability. Do not set omitted/write-in probability to zero.",
+      "proposed_source_bound_utc": "2026-10-18T21:15:58.447+00:00",
+      "source_bytes_total": 6157787,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/fe1a8fffa6d6e08d27a3b7c9055f58eba38e09f14cebcb5df0ae3f3bf2221b86.html",
+          "bytes": 237250,
+          "sha256": "fe1a8fffa6d6e08d27a3b7c9055f58eba38e09f14cebcb5df0ae3f3bf2221b86",
+          "old_sha256": "3d40246e1a227206c6d690e9626ea0009449ef1417aeccac64878f70fd32388f",
+          "old_observed_at_ms": 1792191078506,
+          "new_observed_at_ms": 1792271758447,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:58.447+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:58.447+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/governors/texas",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/c13ffb4ebeee389fa9818d47b31f77b4e260ea6e6f5389cb7bf0f36d9b44d87c.pdf",
+          "bytes": 5919631,
+          "sha256": "c13ffb4ebeee389fa9818d47b31f77b4e260ea6e6f5389cb7bf0f36d9b44d87c",
+          "old_sha256": "c13ffb4ebeee389fa9818d47b31f77b4e260ea6e6f5389cb7bf0f36d9b44d87c",
+          "old_observed_at_ms": 1792194359910,
+          "new_observed_at_ms": 1792273850688,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:50.688+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:50.688+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.sos.state.tx.us/elections/forms/2026-ballot-cert.pdf",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": null
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/cc8d7f49955ad178714a59b23ee3b97616905ca84675dfe73ff5ae2ccc8042f0.json",
+          "bytes": 906,
+          "sha256": "cc8d7f49955ad178714a59b23ee3b97616905ca84675dfe73ff5ae2ccc8042f0",
+          "old_sha256": "b62aa0be1caf88b6fc49fad807ef60462fb6c8e5e26ce21d9e0547cb596209d2",
+          "old_observed_at_ms": 1792075527480,
+          "new_observed_at_ms": 1792273141115,
+          "maximum_age_ms_unchanged": 259200000,
+          "proposed_bound_utc": "2026-10-20T21:39:01.115+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:39:01.115+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/196/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "f9eb65ec8e8a98ae7927432c8334e0cf61ce2d68eb6c4868d23e6dacde3082f1",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "1051",
+      "market_id": "362",
+      "contract_id": "363",
+      "side": "NO",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.996000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Bill Hagerty * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.996"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Marquita Bradshaw (D)",
+          "operator": "=",
+          "probability_display": "0.004"
+        },
+        {
+          "candidate_display": "Bill Hagerty * incumbent (R)",
+          "operator": "=",
+          "probability_display": "0.996"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Bill Hagerty * incumbent (R)",
+        "operator": "=",
+        "probability_display": "0.996"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.996",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.896400000000",
+      "alternative_conditional_payout_if_uncensored": "0.896400000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": false,
+      "semantic_notes": "Hagerty R win is a subset supporting Democratic NO, not 1 minus Bradshaw. Retain all ten printed Senate candidates plus write-ins as original unresolved full-field context, not a two-candidate partition.",
+      "proposed_source_bound_utc": "2026-10-18T21:00:42.974+00:00",
+      "source_bytes_total": 864654,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/38c3dc2d48faa8e373fbf324e74734cc60e4f6e5a295d312c45f4ad78bf8ec87.html",
+          "bytes": 169194,
+          "sha256": "38c3dc2d48faa8e373fbf324e74734cc60e4f6e5a295d312c45f4ad78bf8ec87",
+          "old_sha256": "2c2b9cc99ea4ecb1751e49d47f95a6523739f6a9ab702c9a1723c1df3d613c0c",
+          "old_observed_at_ms": 1792191088460,
+          "new_observed_at_ms": 1792270842974,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:00:42.974+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:00:42.974+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/senate/tennessee",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/75a97b128701bf32f3846db713ed5b583ade45654da3c4c65acf2ebf8ed331cb.pdf",
+          "bytes": 694547,
+          "sha256": "75a97b128701bf32f3846db713ed5b583ade45654da3c4c65acf2ebf8ed331cb",
+          "old_sha256": "75a97b128701bf32f3846db713ed5b583ade45654da3c4c65acf2ebf8ed331cb",
+          "old_observed_at_ms": 1792195105904,
+          "new_observed_at_ms": 1792273843573,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:43.573+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:43.573+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.electionsshelbytn.gov/wp-content/uploads/2026/09/Nov-3-2026-Official-Sample-2026-State-and-Federal-General-Election-and-Municipal-Elections-Paper-Ver-2.pdf",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": null
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/cad2667eec24e8df7fdf45a8506ed06930c74ba93d5aac4e747dc7fa5e2f160b.json",
+          "bytes": 913,
+          "sha256": "cad2667eec24e8df7fdf45a8506ed06930c74ba93d5aac4e747dc7fa5e2f160b",
+          "old_sha256": "98ef4baf78679e3d711f54c8dae8e86c16760c5d76f6b415728b8880ea53557b",
+          "old_observed_at_ms": 1792184811888,
+          "new_observed_at_ms": 1792272416344,
+          "maximum_age_ms_unchanged": 259200000,
+          "proposed_bound_utc": "2026-10-20T21:26:56.344+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:26:56.344+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/362/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "40d8eb10e71ab0829b11fb16fdc87142a274c99aec89a30dbae612e077f9830f",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    },
+    {
+      "exchange_id": "851",
+      "market_id": "162",
+      "contract_id": "163",
+      "side": "NO",
+      "review_version_unchanged": 2,
+      "installed_probability_assumption": "0.988000",
+      "previous_publisher_target_display": {
+        "candidate_display": "Xavier Becerra (D)",
+        "operator": "=",
+        "probability_display": "0.988"
+      },
+      "current_publisher_candidate_displays": [
+        {
+          "candidate_display": "Xavier Becerra (D)",
+          "operator": "=",
+          "probability_display": "0.989"
+        },
+        {
+          "candidate_display": "Steve Hilton (R)",
+          "operator": "=",
+          "probability_display": "0.011"
+        }
+      ],
+      "current_named_subset_alternative": {
+        "candidate_display": "Xavier Becerra (D)",
+        "operator": "=",
+        "probability_display": "0.989"
+      },
+      "proposed_uncensored_point_if_owner_chooses": "0.989",
+      "probability_changed_in_draft": false,
+      "installed_conditional_payout_assumption": "0.889200000000",
+      "alternative_conditional_payout_if_uncensored": "0.890100000000",
+      "alternative_is_calibrated": false,
+      "owner_probability_decision_required": true,
+      "semantic_notes": "Becerra D win is an ordinary subset supporting Republican NO. The full 14,833,345-byte general certification is retained, not split or relabeled; affiliation is not proof of the SIG resolver’s exceptional treatment.",
+      "proposed_source_bound_utc": "2026-10-18T21:15:58.301+00:00",
+      "source_bytes_total": 15014986,
+      "sources": [
+        {
+          "kind": "forecast",
+          "source_member": "candidate-sources/440aea7cf1dc355649e0ae3934d2680bb4d569b15e79cb18c66deca1065cdcdf.html",
+          "bytes": 180725,
+          "sha256": "440aea7cf1dc355649e0ae3934d2680bb4d569b15e79cb18c66deca1065cdcdf",
+          "old_sha256": "36bc477a217953bc5686edd0e1445c6f6a3cd6184e3a12a569a5e20fddd7ac26",
+          "old_observed_at_ms": 1792191070747,
+          "new_observed_at_ms": 1792271758301,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:15:58.301+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:15:58.301+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://www.callthemap.com/governors/california",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false
+        },
+        {
+          "kind": "official_ballot",
+          "source_member": "candidate-sources/0e514ae7b14378b1837bcea99c07e6a05ce35baa9db4c3d3a2297704dc7e6017.pdf",
+          "bytes": 14833345,
+          "sha256": "0e514ae7b14378b1837bcea99c07e6a05ce35baa9db4c3d3a2297704dc7e6017",
+          "old_sha256": "0e514ae7b14378b1837bcea99c07e6a05ce35baa9db4c3d3a2297704dc7e6017",
+          "old_observed_at_ms": 1792195103215,
+          "new_observed_at_ms": 1792273849149,
+          "maximum_age_ms_unchanged": 86400000,
+          "proposed_bound_utc": "2026-10-18T21:50:49.149+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:50:49.149+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://elections.cdn.sos.ca.gov/statewide-elections/2026-general/cert-list-candidates.pdf",
+          "body_changed": false,
+          "new_publisher_edition_claimed": false,
+          "visible_text_unchanged_if_html": null
+        },
+        {
+          "kind": "official_contract_node",
+          "source_member": "candidate-sources/9476ae9331e2bb4db5d8378b9f8e9576243648fbb29367cd800516b7dcf00745.json",
+          "bytes": 916,
+          "sha256": "9476ae9331e2bb4db5d8378b9f8e9576243648fbb29367cd800516b7dcf00745",
+          "old_sha256": "aeb09a9fe3ae3cb469759fd70af8bdbfb5a5ea77d444793c4f27177c1446d9c6",
+          "old_observed_at_ms": 1792144449154,
+          "new_observed_at_ms": 1792272899824,
+          "maximum_age_ms_unchanged": 259200000,
+          "proposed_bound_utc": "2026-10-20T21:34:59.824+00:00",
+          "fresh_response_or_retained_worker_receipt": true,
+          "observed_at_utc": "2026-10-17T21:34:59.824+00:00",
+          "published_at_ms_candidate": 0,
+          "url": "https://sig.thesuper.market/api/v1/markets/162/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+          "body_changed": true,
+          "new_publisher_edition_claimed": false,
+          "semantic_root_sha256": "c6ca35eb6ce94b2a8c687a7a588478a3da6cbc7b319cc8f3de5925c0096d60ef",
+          "semantic_root_unchanged": true,
+          "evidence_type": "original retained SDK Receipt bytes, not raw HTTP"
+        }
+      ],
+      "caps_hold_objective_execution_and_passive_pricing_preserved": true,
+      "source_ttls_preserved": true,
+      "root_review_required": true
+    }
+  ],
+  "global_limits": [
+    "No current book, holdings, cash, executable price or liability observation performed by this child.",
+    "All candidate probabilities remain uncalibrated ordinary-regime owner assumptions; exception weights are unestimated stress choices.",
+    "New source clocks do not resolve NV name/full-field/None, AK ranked-choice/subset, OR fusion, omitted candidates, party/resolver/refund or delayed-settlement assumptions.",
+    "Null reviewer/time intentionally make drafts non-activatable; root must make actual economic choices and perform genuine typed validation and owner-controlled generation commit.",
+    "No authority, Settings, allowlist, control, bank/native event, funding or production change was made."
+  ],
+  "execution_authority": false,
+  "calibrated_probability_claimed": false,
+  "operator_approval_claimed": false
+}

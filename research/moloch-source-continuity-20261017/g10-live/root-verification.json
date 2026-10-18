@@ -1,0 +1,97 @@
+{
+  "result": "PASS",
+  "verifiedAt": "2026-10-17T22:38:52.978721+00:00",
+  "capturedAt": "2026-10-17T22:34:50.564440+00:00",
+  "actualPid": 699384,
+  "startTicks": 23910394,
+  "sourceCommit": "022435b64328185b1b8959eca75458fa6dd776b6",
+  "binarySha256": "5ce153648fe20b6749af71ba4d6a3c88a6ed2b6b92ddc343ec488c0c2042b497",
+  "generationSha256": "bafa3a32f585bcab682145c649eca69e39702531005274867e01cf4a2cb5435a",
+  "generationCount": 10,
+  "committedAt": "2026-10-17T22:32:10.268409+00:00",
+  "commitNativeSequence": 552977,
+  "financialSequence": 553757,
+  "reportAt": "2026-10-17T22:34:43.277Z",
+  "cash": "3613.785000",
+  "reservedCash": "297.505000",
+  "ownedCost": "91851.730000",
+  "realized": "-114.400000",
+  "officialFillRows": 382,
+  "additionalFillRows": 0,
+  "allPrior382OriginalFillTokensPreserved": true,
+  "all16BridgeBytesUnchanged": true,
+  "nativeSuffixRowsVerified": 20754,
+  "originalJournalRowsVerified": {
+    "dispatch.original.ndjson": 24001,
+    "fundamental.original.jsonl": 102
+  },
+  "reviewChanges": [
+    {
+      "exchangeId": "851",
+      "ordinaryProbabilityBefore": "0.988000",
+      "ordinaryProbabilityAfter": "0.989000",
+      "sourceExpiryMs": 1792358158301
+    },
+    {
+      "exchangeId": "872",
+      "ordinaryProbabilityBefore": "0.783000",
+      "ordinaryProbabilityAfter": "0.782000",
+      "sourceExpiryMs": 1792346270626
+    },
+    {
+      "exchangeId": "885",
+      "ordinaryProbabilityBefore": "0.864000",
+      "ordinaryProbabilityAfter": "0.862000",
+      "sourceExpiryMs": 1792358158447
+    },
+    {
+      "exchangeId": "966",
+      "ordinaryProbabilityBefore": "0.919000",
+      "ordinaryProbabilityAfter": "0.920000",
+      "sourceExpiryMs": 1792360258930
+    },
+    {
+      "exchangeId": "993",
+      "ordinaryProbabilityBefore": "0.840000",
+      "ordinaryProbabilityAfter": "0.840000",
+      "sourceExpiryMs": 1792358158833
+    },
+    {
+      "exchangeId": "1042",
+      "ordinaryProbabilityBefore": "0.950000",
+      "ordinaryProbabilityAfter": "0.950000",
+      "sourceExpiryMs": 1792357242718
+    },
+    {
+      "exchangeId": "1051",
+      "ordinaryProbabilityBefore": "0.996000",
+      "ordinaryProbabilityAfter": "0.996000",
+      "sourceExpiryMs": 1792357242974
+    },
+    {
+      "exchangeId": "1067",
+      "ordinaryProbabilityBefore": "0.503000",
+      "ordinaryProbabilityAfter": "0.503000",
+      "sourceExpiryMs": 1792358158965
+    },
+    {
+      "exchangeId": "1068",
+      "ordinaryProbabilityBefore": "0.990000",
+      "ordinaryProbabilityAfter": "0.990000",
+      "sourceExpiryMs": 1792358159119
+    }
+  ],
+  "MaineG9AndOregonSettingsPreserved": true,
+  "otherEconomicCapsObjectivesHoldTtlsUnchanged": true,
+  "originalSourceClocksPreserved": true,
+  "pointProbabilitiesUncalibratedOwnerAssumptions": true,
+  "typedCurrentReviewAndSettingsChecksPassed": true,
+  "newNativeCodeDeployed": false,
+  "restart": false,
+  "newAccountClient": false,
+  "newActivationOrRiskRenewal": false,
+  "privateProofBytes": 57555373,
+  "privateProofSha256": "58c40a1ffc2ef636d6baf8e8389887259d5d581187eba5af0061dc5158f487e6",
+  "originalMembersVerified": 118,
+  "newProfitEstablished": false
+}
