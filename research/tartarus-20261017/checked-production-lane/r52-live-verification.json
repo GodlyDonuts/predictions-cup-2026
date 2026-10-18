@@ -40,5 +40,17 @@
     "realtimeHealthy": true,
     "pid": 859146,
     "observerAccountApiCalls": 0
+  },
+  "latestFileOnlyObservation": {
+    "observedAt": "2026-10-18T23:38Z",
+    "progressAt": "2026-10-18T23:37:54.805Z",
+    "pidPresent": true,
+    "phase": "trading",
+    "realtimeHealthy": true,
+    "actualFills": 395,
+    "actualOrders": 1645,
+    "terminalOrders": 1645,
+    "breadthLatestFileAgeSeconds": 4,
+    "observerAccountApiCalls": 0
   }
 }

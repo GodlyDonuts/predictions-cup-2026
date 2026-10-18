@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "classification": "conditional_development_population_not_live_qualification",
+  "base_protocol": {
+    "schema_version": 1,
+    "classification": "development_protocol_not_production_authority",
+    "mission": "win_the_competition",
+    "initial_task": "capital_building_control_baseline_then_explicit_tournament_scenario_training",
+    "initial_dataset_manifest_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+    "history_previously_inspected": true,
+    "history_roles": [
+      "fit_training",
+      "search_development"
+    ],
+    "locked_test_source": null,
+    "locked_test_not_claimed": true,
+    "forward_cohort_source": null,
+    "split_axis": "agent_information_availability",
+    "run_start_ms": 1792172290442,
+    "run_duration_ms": 3600000,
+    "fit_end_ms": 1792174090442,
+    "search_start_ms": 1792174090442,
+    "episode_length_ms": 300000,
+    "recurrent_burnin_ms": 60000,
+    "maximum_receipt_drain_ms": 120000,
+    "episode_and_burnin_must_stay_inside_role": true,
+    "old_strategy_trigger_selection": false,
+    "source_mapping_equivalence_verified": false,
+    "missing_polymarket_observations_are_not_synthesized": true,
+    "actor_uses_economic_actions_not_old_proposals": true,
+    "locked_finalists_count": 2,
+    "simulator_configuration_mutable_by_policy": false,
+    "success_on_easy_target_is_not_competition_win": true,
+    "production_changed": false,
+    "actual_returns_established": false,
+    "decision_interval_ms": 1000,
+    "initial_cash_micros": 95000000000,
+    "planning_target_wealth_micros": 1100000000000,
+    "planning_target_is_observed_competition_threshold": false,
+    "initial_inventory": "target_nearly_funded_causal_synthetic_start_achieved_allocation_is_measured_not_assumed",
+    "reference_reward": "Kalshi_marked_wealth_change_missing_measurements_masked_unavailable_final_accounting_fails",
+    "success_labels": "unavailable_no_tournament_outcomes_in_this_capture",
+    "protocol_version": 4,
+    "search_evaluation_starts_ms": [
+      1792174270442,
+      1792174870442
+    ],
+    "evaluation_revision_reason": "Causal depth-capacity selection of initial positions; same fit/search roles. The original shuffled trial achieved only29-30k cost before using twelve slots. No future prices or labels select inventory.",
+    "reinitialize_all_learners_for_new_role_manifest": true,
+    "import_old_population_checkpoints": false,
+    "search_blocks_are_development_optimization": true,
+    "initial_inventory_allocation_ppm": 998000,
+    "initial_inventory_seed": 11001,
+    "initial_mark_difference_is_profit": false,
+    "initial_inventory_selection": "current_depth_capacity"
+  },
+  "base_protocol_sha256": "8477d944ad2945eb20c4be7ad0a18c8bd2f40726f0f92920621172dd86675fb5",
+  "mechanics_manifest_sha256": "22b3b302bcdd03162495aaaa3709e9075f6ec63ae181a98c9332f8f84f1e2637",
+  "dataset_manifest_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+  "members": 8,
+  "islands": 2,
+  "cycles": 4,
+  "resident_gpu_learners": 1,
+  "seed": 12001,
+  "training_starts_by_cycle_island": [
+    [
+      1792172644860,
+      1792172982616
+    ],
+    [
+      1792172564082,
+      1792172526805
+    ],
+    [
+      1792172508878,
+      1792173432254
+    ],
+    [
+      1792172614774,
+      1792172763966
+    ]
+  ],
+  "search_starts_ms": [
+    1792174270442,
+    1792174870442
+  ],
+  "search_episode_length_ms": 150000,
+  "fixed_terminal_drain_ms": 120000,
+  "bankroll_curriculum_by_island_cycle": [
+    25000,
+    100000,
+    400000,
+    1000000,
+    2000000
+  ],
+  "recorded_depth_or_mechanics_scaled_with_bankroll": false,
+  "search_bankroll_micros": 95000000000,
+  "replacement_operator_probabilities": {
+    "local": 0.5,
+    "medium": 0.25,
+    "large": 0.15,
+    "head_reset": 0.05,
+    "fresh": 0.05
+  },
+  "replacement_mode": "multiscale",
+  "execution_profiles_sha256": "5feeff555d24b10eb66f927e562315a0647ee041c449b62c14d5d257714c8b38",
+  "execution_profiles": {
+    "schema_version": 1,
+    "classification": "fixed_development_execution_scenarios",
+    "production_authority": false,
+    "calibrated": false,
+    "purpose": "Common development selection and alternating training scenarios; immutable across compared modes. These are explicit robustness hypotheses, not empirical execution calibration.",
+    "profiles": [
+      {
+        "name": "nominal",
+        "overrides": {}
+      },
+      {
+        "name": "joint_adverse",
+        "overrides": {
+          "read_latency_ms": 900,
+          "arrival_latency_ms": 1200,
+          "receipt_latency_ms": 600,
+          "depth_fraction_ppm": 500000,
+          "adverse_execution_micros": 5000
+        }
+      }
+    ]
+  },
+  "execution_profile_names": [
+    "nominal",
+    "joint_adverse"
+  ],
+  "training_execution_schedule": "cycle_index_mod_profile_count_common_to_all_islands",
+  "selection_criterion": "minimum_reference_return_across_all_fixed_profiles_and_calendars",
+  "weak_fraction_per_island": 0.25,
+  "protected_elites_per_island": 2,
+  "maximum_global_founder_share": 0.25,
+  "initial_founder_grace_training_blocks": 2,
+  "reset_branch_grace_training_blocks": 2,
+  "migration_probability": 0.2,
+  "source_sha256": {
+    "__init__.py": "4fc8d351b2f0256f116dc44525a2eda7bcca90f6f17997182f3c47a4060943e4",
+    "account.py": "aee457326ebf8fd048f955167a3c03bc849298ea293058629edcb23c176591be",
+    "benchmark_sequence.py": "91c7d86320d7cd905a3399d2e3a09d3354a42ef0a467258af8e322908d772515",
+    "capture_receipt_stream.py": "8721eafff3e4e708a20d7ca0b0cff4d17f11a8e5c15672ca1faefd8df80c8400",
+    "clock.py": "e108cb165eba1ab779a2b5d6e316d8334841de4a04cc6bae2bdd7229d7fc47bd",
+    "compile_trace.py": "3bc432c9664aa6b11e21688d42a2828e69e6a6a4f59d77ba3a8a353681b98cd9",
+    "episodes.py": "238778bcfb0bd9c5630f6b3127c747ca43199a78957f35d1755a35edac98793d",
+    "execution_profiles.py": "3a8ec0d37c408fa8b67b0da747a30f92c0ab7cf994f910a2bb3383d3ae174e84",
+    "feature_migration.py": "1d5010cafe216536bf3bbaeb6d84b0f0186d97b63ce04eef8b7f3062bb3a4cc2",
+    "freeze_finalists.py": "57bc4c594848f8939df9be47cbb40aac3effad3192533bb46ad72f396a8a7709",
+    "inventory_curriculum.py": "873cc78ca548269b636e7b827d7d69304f862a9655f399475263cca1ea53000b",
+    "liquidity.py": "c765ae793296640e00b6f100f83117926e3f489eb4e3b224791e0880773c100f",
+    "policy.py": "694c150b320eea2dabd88aa06407423c5ab5f5bf6ac4a044d0a14e92ac7c06f4",
+    "population.py": "6d98f395cb47059939e84108f39845dc31df10ebcbfeecc9878b93f28e5b0c13",
+    "reference_env.py": "04618f07eb2401d34e712b9a0ef91d2de4fc51e6cfb23d11e1cf7fc0218d86f9",
+    "run_comparison.py": "e0c4185e59a024334bc4db428df7b820e1d3435eeed77efce9cb4e4535fdddf9",
+    "run_experiment.py": "169afb0e423e700272cebeda89b952f62d695899d9284fa840590151b48c2e58",
+    "run_population.py": "3f9c42d4afdf419f390fd6341ad9e481ea0c8386d420e59c28014e7b47473aab",
+    "sig_capture_tail.py": "5217a6578cdcbbd5d23dc8f4e94269efb1e4e20134f52d79bae923112f339109",
+    "train_inner.py": "792fd3b46d3423e6638062b8d0f214ed8b574d88c5b705925b1a9b97ef42cda7",
+    "wallet_differential.py": "fe2e3f84e90e04dcbfb1e65aa79691692c0b499f2de30226c2e87c7289205790"
+  },
+  "search_is_optimization_not_locked_evidence": true,
+  "locked_test_used": false,
+  "production_authority": false,
+  "matched_compute_ablation_complete": false,
+  "projected_mutation_distance_available": false
+}
