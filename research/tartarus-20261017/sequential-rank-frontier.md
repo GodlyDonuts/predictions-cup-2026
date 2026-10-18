@@ -1,5 +1,38 @@
 # Direct joint-target SELL/BUY frontier — October 18
 
+The file-only [current-account adapter](../../moloch/tartarus/current_portfolio.py)
+now feeds confirmed native state into the existing sequential search. It requires
+separately supplied original report/view byte pins, the sealed report and exact
+matching native head, current policy hash, all held contract mappings, original
+FIFO cost and actual-fill digest. It reconstructs remaining inherited lots after
+both actual sells and opposite-side buys, preserving unknown basis labels.
+All active native quote slots remain counted; missing original managed ownership
+excludes purchases. Pending physical orders or unresolved acceptance return an
+explicit unavailable result, with no assumed cancellation or proceeds.
+
+Existing managed holdings also retain their actual handoff state. An unpaused
+managed position requires a prior covered sale in the conditional sequence before
+a rank top-up; both the MILP and independent exact auditor enforce it. A simulated
+sale is still not a live ownership transfer or actual cash. Original book flags
+and receipt clocks survive without becoming fresh API authority.
+
+The old retained393-fill report/view pair has different heads582928/583051,
+although financial fields match; it is not advertised as a matched snapshot.
+The finite [R45 capture](capture-r45-current.py) waits for the exact current worker
+handle and fresh trading progress, then copies a matching immutable pair through
+local files only. It submits no account read, nomination, approval or order.
+The new adapter and integration cases bring focused checks to26. Actual current
+snapshot/search qualification remains pending production restoration.
+
+```powershell
+python -m moloch.tartarus.current_portfolio --report REPORT_ORIGINAL_JSON --view VIEW_ORIGINAL_JSON --report-sha256 ORIGINAL_REPORT_SHA256 --view-sha256 ORIGINAL_VIEW_SHA256 --registry ORIGINAL_REGISTRY_JSON --conditional-future-legs 128 --output PRIVATE_CURRENT_INPUT_JSON
+```
+
+The output is an input/provenance artifact for the existing solver. It does not
+approve the future128 legs, assume terminal debt is known, refresh an expired
+review, or publish files to the execution owner directory.
+
+
 The published comparison below starts at native574173 with23 original held
 sides. Production subsequently bought1044YES and1043NO, so the current private
 candidate was rebuilt with all25 held sides,393 actual fills,157.305 cash and

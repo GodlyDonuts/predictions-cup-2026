@@ -165,6 +165,9 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
             cash[j] = p / UNIT; owned[j] = p / UNIT; market[ex][j] = p / UNIT
             writes[z[j]] = 1
             row({j: 1, z[j]: -n}, hi=0); row({j: 1, z[j]: -1}, lo=0)
+            if ex in financial.get("buyRequiresPriorCoveredSellExchanges", []):
+                first_sales = [js[0] for (sx, _), js in sales.items() if sx == ex and js]
+                row({z[j]: 1, **{s: -1 for s in first_sales}}, hi=0)
             if v["previous"] is not None:
                 row({v["previous"]: 1, z[j]: -cols[v["previous"]]["n"]}, lo=0)
             if v["opposite_sale"] is not None:

@@ -57,6 +57,10 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
     excluded_buys = financial.get("excludedBuyExchanges", [])
     need(type(excluded_buys) is list and all(type(ex) is str and ex in byex for ex in excluded_buys)
          and len(set(excluded_buys)) == len(excluded_buys), "EXCLUDED_BUY_SCOPE")
+    handoff_required = financial.get("buyRequiresPriorCoveredSellExchanges", [])
+    need(type(handoff_required) is list and all(type(ex) is str and ex in byex for ex in handoff_required)
+         and len(set(handoff_required)) == len(handoff_required), "COVERED_SELL_HANDOFF_SCOPE")
+    covered_sales = set()
     for sides in positions.values():
         need(set(sides) <= {"YES", "NO"}, "HOLDING_SIDE")
         for lots in sides.values():
@@ -120,6 +124,8 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
         need(remaining == 0, "SHARED_DEPTH_EXHAUSTED")
         if action == "BUY":
             need(ex not in excluded_buys, "BUY_EXCLUDED_BY_ORIGINAL_OWNERSHIP_SCOPE")
+            need(ex not in handoff_required or ex in covered_sales,
+                 "BUY_REQUIRES_PRIOR_COVERED_SELL_HANDOFF")
             need(not any(l["quantity"] for l in positions.get(ex, {}).get(
                 "NO" if side == "YES" else "YES", [])), "OPPOSITE_INVENTORY")
             cash -= n * price
@@ -144,6 +150,7 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
                 if not left:
                     break
             need(not left, "SELL_EXCEEDS_ORIGINAL_FIFO")
+            covered_sales.add(ex)
         need(cash >= 0 and owned <= amount(financial["maximumCommitted"])
              and market[ex] <= amount(financial["maximumMarketCost"]), "PREFIX_FUNDING_OR_BANK_LIMIT")
         active = {ex for ex, sides in positions.items()

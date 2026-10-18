@@ -115,6 +115,22 @@ class SequentialFrontier(unittest.TestCase):
         self.assertEqual(out["selectedAverageStrictMassPpm"], 0)
         self.assertTrue(all(v["ex"] != "rare" or v["action"] != "BUY" for v in out["legs"]))
 
+    def test_managed_held_topup_requires_first_covered_sale_handoff(self):
+        from .sequence_audit import audit
+        from .sequential_frontier import ASSUMPTIONS
+        f = fixture(); f[0].update(ownedCost="0.400000", maximumCommitted="2.000000",
+            maximumMarketCost="2.000000", positions={"safe": {"YES": [
+                {"quantity": 4, "price": "0.100000"}]}})
+        unrestricted = self.run_search(f, objective="mean")
+        self.assertEqual(unrestricted["legs"][0]["action"], "BUY")
+        f[0]["buyRequiresPriorCoveredSellExchanges"] = ["safe"]
+        with self.assertRaisesRegex(ValueError, "BUY_REQUIRES_PRIOR_COVERED_SELL_HANDOFF"):
+            audit(*f, unrestricted["legs"], assumptions=ASSUMPTIONS)
+        routed = self.run_search(f, objective="mean")
+        self.assertEqual(routed["legs"][0]["action"], "SELL")
+        self.assertEqual(routed["legs"][0]["ex"], "safe")
+        self.assertTrue(any(v["action"] == "BUY" and v["ex"] == "safe" for v in routed["legs"]))
+
 
 if __name__ == "__main__":
     unittest.main()
