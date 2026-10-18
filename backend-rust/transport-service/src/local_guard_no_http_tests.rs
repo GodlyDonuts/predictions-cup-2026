@@ -10,6 +10,19 @@ fn permit()->Permit{Permit{run_id:"guard-run".into(),intent_id:"17".into(),owner
 fn order()->Order{Order{idempotency_key:"guard-run:17".into(),exchange_id:"101".into(),side:"yes".into(),action:"sell".into(),quantity:1,price:"0.120000".into(),expiration_date:"2030-01-01T00:00:00Z".into(),tournament_id:config(std::path::Path::new("/")).scope.tournament_id}}
 fn spec()->RequestSpec{let o=order();let body=json!({"idempotencyKey":o.idempotency_key,"exchangeId":o.exchange_id,"side":o.side,"action":o.action,"quantity":o.quantity,"price":serde_json::Number::from_string_unchecked(o.price),"expirationDate":o.expiration_date,"tournamentId":o.tournament_id});RequestSpec{method:"POST".into(),endpoint:"/orders".into(),body_json:Some(body.to_string()),body:Some(body)}}
 fn transport(p:&std::path::Path,deny_final:bool,base:String)->Transport{Transport::new_for_mock(config(p),Box::new(Credentials),Box::new(ClockFixture(Arc::new(AtomicU64::new(1000)))),Box::new(Guard{calls:AtomicU64::new(0),deny_final}),base).unwrap()}
+struct AccountFinalGuard(AtomicU64);
+impl Authority for AccountFinalGuard{
+ fn can_read(&self,_:&Scope)->bool{true}
+ fn owns_order(&self,_:&str)->bool{false}
+ fn authorize(&self,_:&Scope,_:&RequestSpec,_:&Permit,network:bool,_:u64)->Result<()>{if network&&self.0.fetch_add(1,Ordering::SeqCst)>0{Err(fail("LIVE_ACCOUNT_STALE"))}else{Ok(())}}
+}
+#[test]fn expired_account_at_final_guard_uses_actual_durable_certificate_without_socket_send(){
+ let p=temp();let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();listener.set_nonblocking(true).unwrap();
+ let mut t=Transport::new_for_mock(config(&p),Box::new(Credentials),Box::new(ClockFixture(Arc::new(AtomicU64::new(1000)))),Box::new(AccountFinalGuard(AtomicU64::new(0))),format!("http://{}/api/v1",listener.local_addr().unwrap())).unwrap();
+ let error=t.place(order(),permit()).err().unwrap();assert_eq!(error.code,"LIVE_ACCOUNT_STALE");assert!(!error.may_have_executed);assert_eq!(listener.accept().unwrap_err().kind(),std::io::ErrorKind::WouldBlock);
+ let proof=t.take_current_ordinary_local_guard_no_http_proof(&spec(),&permit(),999,&error).unwrap();proof.validate_binding(&spec(),&permit(),999,&error).unwrap();let evidence=proof.evidence().unwrap();assert_eq!(t.admission_summary().unwrap().global_unknown_count,0);drop(t);
+ assert_eq!(verify_retained_ordinary_local_guard_no_http(&config(&p),&spec(),&permit(),999,&error,&evidence).unwrap().evidence().unwrap(),evidence);fs::remove_dir_all(p).unwrap();
+}
 #[test]fn genuine_final_guard_after_marker_has_no_socket_send_and_replays_distinct_proof(){
  let p=temp();let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();listener.set_nonblocking(true).unwrap();let base=format!("http://{}/api/v1",listener.local_addr().unwrap());let mut t=transport(&p,true,base);
  let error=t.place(order(),permit()).err().unwrap();assert_eq!(error.code,"LIVE_CONTRACT_OR_BOOK_STALE");assert!(!error.may_have_executed);assert_eq!(listener.accept().unwrap_err().kind(),std::io::ErrorKind::WouldBlock);

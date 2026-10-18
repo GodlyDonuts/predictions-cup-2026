@@ -706,7 +706,7 @@ fn recover_unadmitted(c:&Control)->Result<()>{
 /// account nor send an order. The proof factory verifies the original SDK and
 /// dispatch chains and the externally pinned approval before this is created.
 struct LocalGuardRecoveryAuthority{scope:Value,binding:Value}
-fn expected_ordinary_final_guard(code:&str)->bool{matches!(code,"LIVE_CONTRACT_OR_BOOK_STALE"|"PERMIT_EXPIRED_OR_INVALID")}
+fn expected_ordinary_final_guard(code:&str)->bool{matches!(code,"LIVE_CONTRACT_OR_BOOK_STALE"|"LIVE_ACCOUNT_STALE"|"PERMIT_EXPIRED_OR_INVALID")}
 impl Authority for LocalGuardRecoveryAuthority{
  fn can_read(&self,_:&Scope)->bool{false}
  fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,network:bool,at:u64)->api::Result<()>{ReadOnlyAuthority.authorize(scope,spec,permit,network,at)}
@@ -1014,6 +1014,34 @@ fn passive_reserved_exit(bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&s
   let other=snapshot.quote(*id).ok_or("LIVE_ACK_QUOTE_MISSING")?;if other["exchangeId"]==exchange{return Ok(None)}
  }
  Ok(Some(q.clone()))
+}
+// Owned passive retries share the cursor with reviewed acquisitions. Actual
+// deadline/revocation liquidations retain priority; selection grants no permit.
+fn mixed_reviewed_preflight(exits:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],cursor:Option<&str>)->Option<(bool,usize,String)>{
+ let urgent=exits.iter().any(|h|matches!(h.reason.as_str(),"reviewed_holding_deadline"|"reviewed_source_revocation"));
+ let mut jobs:Vec<_>=exits.iter().enumerate().map(|(i,h)|(true,i,format!("{}:{}:sell",h.exchange_id,h.side))).collect();
+ if !urgent{jobs.extend(entries.iter().enumerate().map(|(i,h)|(false,i,format!("{}:{}:buy",h.exchange_id,h.side))));}
+ let keys:Vec<_>=jobs.iter().map(|j|j.2.clone()).collect();let index=*moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first()?;Some(jobs.swap_remove(index))
+}
+#[cfg(test)]mod mixed_reviewed_preflight_tests{
+ use super::*;
+ fn exit(reason:&str)->fundamental::ExistingExitHint{fundamental::ExistingExitHint{exchange_id:"865".into(),market_id:"1".into(),contract_id:"2".into(),side:"YES".into(),reason:reason.into()}}
+ fn entry(ex:&str)->fundamental::EntryHint{fundamental::EntryHint{exchange_id:ex.into(),market_id:"3".into(),contract_id:"4".into(),side:"NO".into(),review_sha256:"a".repeat(64)}}
+ #[test]fn repeated_passive_retry_cannot_starve_both_new_reviewed_markets(){
+  let exits=[exit("reviewed_passive_reservation_retry")];let entries=[entry("1043"),entry("1044")];let mut cursor=Some("865:YES:sell".to_owned());let mut selected=std::collections::BTreeSet::new();
+  for _ in 0..3{let(e,i,key)=mixed_reviewed_preflight(&exits,&entries,cursor.as_deref()).unwrap();selected.insert((e,i));cursor=Some(key);}
+  assert_eq!(selected,std::collections::BTreeSet::from([(true,0),(false,0),(false,1)]));
+ }
+ #[test]fn genuine_deadline_or_source_revocation_retains_exit_priority(){
+  for reason in ["reviewed_holding_deadline","reviewed_source_revocation"]{let choice=mixed_reviewed_preflight(&[exit(reason)],&[entry("1043")],Some("865:YES:sell")).unwrap();assert!(choice.0);}
+ }
+ #[test]fn empty_or_exit_only_candidates_keep_original_behavior(){
+  assert!(mixed_reviewed_preflight(&[],&[],None).is_none());assert_eq!(mixed_reviewed_preflight(&[exit("refreshed_value_exit")],&[],None).unwrap(),(true,0,"865:YES:sell".into()));
+ }
+ #[test]fn only_exact_expected_local_expiry_codes_continue_after_opaque_sdk_proof(){
+  for code in ["LIVE_ACCOUNT_STALE","LIVE_CONTRACT_OR_BOOK_STALE","PERMIT_EXPIRED_OR_INVALID"]{assert!(expected_ordinary_final_guard(code));}
+  for code in ["OFFICIAL_REQUEST_REJECTED","BODY_UNCONFIRMED","CONNECTION_UNCONFIRMED","LIVE_CASH_MISMATCH"]{assert!(!expected_ordinary_final_guard(code));}
+ }
 }
 fn existing_exit_read_hint(bank:&Session,log:&DispatchLog,scope:&Scope,f:&FundamentalRuntime,exchange:&str,at:u64)->Result<Option<fundamental::ExistingExitHint>>{
  let untouched_passive=if existing_target_busy(bank,log,exchange)?{if passive_reserved_exit(bank,log,scope,exchange,at)?.is_none(){return Ok(None)}true}else{false};
@@ -2387,13 +2415,15 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  if !allow_new_submissions||bank.engine().package_blocks_submissions(){return Ok(())}
  if let Some(f)=fundamental.as_deref_mut(){if refresh_fundamental_cohort(t,c,bank,log,authority,stream,f)?{return Ok(())}}
  let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
+ let entry_hints=if !owner_capital_ready(c,bank)?{Vec::new()}else if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
  let mut stale_existing_hints=Vec::new();
  if let Some(f)=fundamental.as_deref_mut(){
   f.authority.validate()?;let mut existing_hints=Vec::new();
   for ex in f.cohorts.managed_exchanges(){if let Some(hint)=existing_exit_read_hint(bank,log,&c.scope,f,&ex,now())?{if hint.reason=="reviewed_inventory_book_refresh"{stale_existing_hints.push(hint)}else{existing_hints.push(hint);}}}
-  if !existing_hints.is_empty(){let keys:Vec<_>=existing_hints.iter().map(|h|format!("{}:{}:sell",h.exchange_id,h.side)).collect();let index=moloch_live_runtime::scheduling::preflight_rotation(&keys,preflight_cursor.as_deref())[0];
-   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());let hint=&existing_hints[index];
-   reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;return Ok(())
+  if !existing_hints.is_empty(){let(existing,index,key)=mixed_reviewed_preflight(&existing_hints,&entry_hints,preflight_cursor.as_deref()).ok_or("LIVE_REVIEWED_PREFLIGHT_CHOICE")?;
+   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
+   if existing{let hint=&existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}
+   else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}return Ok(())
   }
  }
  let profit_keys:Vec<_>=hints.iter().filter(|(_,(_,h))|h.kind()==moloch_live_runtime::exit_refresh::ReadKind::Profit).map(|(key,_)|key.clone()).collect();
@@ -2405,7 +2435,6 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   refresh_exit(t,c,bank,log,authority,source,stream,old,hint,flow_started,maximum_qid_before,refresh_unknown,*windows.get(hint.exchange()).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe,fundamental.as_deref_mut().filter(|f|f.cohorts.manages(hint.exchange())))?;
   return Ok(()) // Ineligible refresh still consumes this pass; never another packet.
  }
- let entry_hints=if !owner_capital_ready(c,bank)?{Vec::new()}else if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
  // At most one new physical order per pass; subsequent fills change funding.
  // Retired history and already-physical orders have separate reconciliation
  // paths above; they cannot become a new submission or consume its ranking.
