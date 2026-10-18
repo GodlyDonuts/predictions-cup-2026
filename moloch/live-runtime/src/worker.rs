@@ -393,7 +393,7 @@ fn snapshot_write_observation(c:&Control,original_control:&[u8],bank:&Session,or
   let name=format!("{label}.json");snapshot_private_new(&path.join(&name),&raw)?;files.insert(name,json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"requestStartedAt":r.request_started_at,"receivedAt":r.received_at}));
  }
  if let Some(f)=fundamental{
-  let mut records=Vec::new();for ex in f.cohorts.managed_exchanges(){if bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)+bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)>0{records.push(f.cohorts.rank_inventory_state(bank,ordinary,&ex)?);}}
+  let mut records=Vec::new();for ex in f.cohorts.managed_exchanges(){if bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)+bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)>0||f.cohorts.rank_paused(&ex){records.push(f.cohorts.rank_inventory_state(bank,ordinary,&ex)?);}}
   let raw=serde_json::to_vec(&json!({"schemaVersion":1,"generationSha256":f.cohorts.generation_sha(),"holdings":records,"executionAuthority":false}))?;
   snapshot_private_new(&path.join("fundamental-ownership.json"),&raw)?;files.insert("fundamental-ownership.json".into(),json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"ownershipProjectionNotTradingAuthority":true}));
  }
@@ -403,6 +403,22 @@ fn snapshot_write_observation(c:&Control,original_control:&[u8],bank:&Session,or
  let metadata=json!({"schema":"tartarus_readonly_account_observation_v1","at":iso(now()),"requestSha256":request_sha,"expectedControlSha256":request.expected_control_sha256,"expectedGenerationSha256":request.expected_generation_sha256,"files":files,"restingOrdersPreserved":true,"openOrderOwnershipReconciled":false,"pendingProceedsCredited":false,"allocationBoundaryQualified":false,"economicFreshnessQualified":false,"researchOnly":true,"executionAuthority":false});
  snapshot_private_new(&path.join("metadata.json"),&serde_json::to_vec(&metadata)?)?;
  Ok(json!({"at":iso(now()),"state":"captured_readonly_account_observation","packetPath":path,"requestSha256":request_sha,"metadataSha256":format!("{:x}",Sha256::digest(serde_json::to_vec(&metadata)?)),"allocationBoundaryQualified":false,"researchOnly":true,"executionAuthority":false}))
+}
+// Sole-worker derived research view. No Transport, mutable Session or trading
+// capability is passed in. Original receipt/book clocks remain unmodified.
+fn write_tartarus_native_view(c:&Control,bank:&Session,ordinary:&DispatchLog,f:Option<&FundamentalRuntime>)->Result<()>{
+ let mut ownership=Vec::new();if let Some(f)=f{for ex in f.cohorts.managed_exchanges(){if bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)+bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)>0||f.cohorts.rank_paused(&ex){ownership.push(f.cohorts.rank_inventory_state(bank,ordinary,&ex)?);}}}
+ let receipts=SNAPSHOT_RECEIPTS.with(|cache|cache.borrow().as_ref().filter(|v|v.root==c.root).map(|v|v.rows.iter().flatten().map(|r|json!({"receiptSha256":feedback::digest(r).ok(),"endpoint":r.endpoint,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at})).collect::<Vec<_>>()).unwrap_or_default());
+ let orders:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).collect();
+ let view=json!({"schema":"tartarus_native_research_view_v1","writtenAt":iso(now()),"nativeHead":bank.durable_head(),"manifestHash":bank.manifest_hash(),
+  "account":{"positions":bank.engine().wallet.positions(),"positionsSha256":hash(&bank.engine().wallet.positions()),"cash":money(bank.engine().wallet.cash),"reservedCash":money(bank.engine().wallet.reserved()?),"actualFillsSha256":hash(&json!(bank.engine().fills())),"fillCount":bank.engine().fills().len()},
+  "policy":bank.engine().policy(),"generationSha256":f.map(|f|f.cohorts.generation_sha()),"managedOwnership":ownership,"activeNativeOrders":orders,"knownUnclosedAcknowledgments":ordinary.acknowledgments.keys().filter(|q|!ordinary.closed.contains(q)).copied().collect::<Vec<_>>(),
+  "unresolvedOrdinaryAttempt":ordinary.require_resolved_attempts().is_err(),"originalObservationReceiptClocks":receipts,"books":bank.engine().live_package_books(),
+  "booksCompleteUniverse":false,"allBooksCurrent":false,"officialAtomicAccountSnapshot":false,"sdkQueueBoundaryChecked":false,"economicFreshnessQualified":false,"physicalPreflightRequired":true,"networkRequests":0,"researchOnly":true,"executionAuthority":false});
+ // A research export IO failure does not acquire STOP or execution authority.
+ // A retained older file stays visibly older; financial ownership errors above
+ // still propagate through the existing fail-closed worker.
+ if let Err(e)=atomic_json(&c.root.join("tartarus-current-native-state.json"),&view){let _=atomic_json(&c.root.join("tartarus-native-view-status.json"),&json!({"at":iso(now()),"state":"unavailable","reason":e.to_string(),"executionAuthority":false}));}Ok(())
 }
 // Explicit service after completed scope/cycle: no live physical permit or operation is
 // held. Errors are research diagnostics, never new trading/STOP authority.
@@ -524,6 +540,11 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
   let(_t,bank,scope,mut rows)=economics_fixture();let head=bank.durable_head();let report=bank.engine().report().unwrap();rows[3].data["data"]=json!([{"orderId":"918","exchangeId":"101","quantity":10,"side":"yes","action":"sell","limitPrice":"0.9"}]);let original=rows[3].clone();
   assert!(snapshot_original_economics(&bank,&scope,&rows,1400).is_err());snapshot_original_economics_observed(&bank,&scope,&rows,1400,true).unwrap();assert_eq!(serde_json::to_value(&rows[3]).unwrap(),serde_json::to_value(original).unwrap());assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);
   rows[3].data["coverage"]["complete"]=json!(false);assert!(snapshot_original_economics_observed(&bank,&scope,&rows,1400,true).is_err());rows[3].data["coverage"]["complete"]=json!(true);rows[0].data["balance"]=json!(999);assert!(snapshot_original_economics_observed(&bank,&scope,&rows,1400,true).is_err());
+ }
+ #[test]fn continuous_native_view_preserves_funds_history_and_original_book_clocks(){
+  let(t,bank,scope,_)=economics_fixture();let c:Control=serde_json::from_value(json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":scope,"policy":{},"root":t.0,"credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap();
+  let log=DispatchLog::open(&t.0.join("view-dispatch.ndjson")).unwrap();let head=bank.durable_head();let report=bank.engine().report().unwrap();let books=bank.engine().live_package_books();write_tartarus_native_view(&c,&bank,&log,None).unwrap();let v:Value=serde_json::from_slice(&fs::read(t.0.join("tartarus-current-native-state.json")).unwrap()).unwrap();
+  assert_eq!(v["schema"],"tartarus_native_research_view_v1");assert_eq!(v["nativeHead"],head);assert_eq!(v["books"],json!(books));assert_eq!(v["account"]["positions"],bank.engine().wallet.positions());assert_eq!(v["account"]["cash"],money(bank.engine().wallet.cash));for k in ["executionAuthority","economicFreshnessQualified","officialAtomicAccountSnapshot","sdkQueueBoundaryChecked","booksCompleteUniverse"]{assert_eq!(v[k],false);}assert_eq!(v["networkRequests"],0);assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);
  }
  #[test]fn observation_packet_retains_original_bytes_and_has_no_allocation_authority(){
   let(t,bank,scope,mut rows)=economics_fixture();rows[3].data["data"]=json!([{"orderId":"918","quantity":10,"action":"sell"}]);
@@ -2801,6 +2822,7 @@ pub fn main()->Result<()>{
     // no live permit held. Existing original receipts supply all observations.
     if let Some(runtime)=paper5_runtime.as_ref(){let at=now();if at.saturating_sub(paper5_last_evaluation)>=60_000{paper5_last_evaluation=at;let diagnostic=runtime.evaluate(&bank,&c.scope,&log,&paper5_nodes(&c.scope),&Default::default(),&Default::default(),at);if let Ok(value)=serde_json::to_value(diagnostic){let _=atomic_json(&c.root.join("paper5-proposals.json"),&value);}}}
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
+    if c.rank_campaign.is_some(){write_tartarus_native_view(&c,&bank,&log,fundamental.as_ref())?;}
     service_tartarus_snapshot(&c,&path,&original_control_bytes,&bank,&mut t,&log,&packages,lease.as_ref(),&authority,fundamental.as_ref(),stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut tartarus_snapshot_requests)?;
    }
    cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
