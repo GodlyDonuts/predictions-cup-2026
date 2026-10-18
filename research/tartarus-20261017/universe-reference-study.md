@@ -12,6 +12,8 @@ The earlier dated model used an ignorance interval for Kansas governor993 becaus
 
 ## Campaign connection
 
+The [shared-universe projection study](global-scenario-projection.md) now builds a separately declared139-contract/198-state research model and evaluates four subsets without regenerating the held-account baseline. All23 held identities survive in every subset; all original joint payout/field distributions match. Raw price probabilities fail coherence, and the separately disclosed widened-interval sensitivity remains uncalibrated.
+
 The wider registry can supply candidate contracts alongside every existing holding. Native reviewed campaigns still accept at most64 contracts and64 original sources; individual contract roots consume source slots too. A search must account for the remaining probability, field and ownership sources when forming bounded candidate subsets. A universe census does not justify silently truncating held positions, averaging disagreeing publishers, or submitting a139-contract matrix.
 
 The next economic step is to evaluate additional source-qualified contracts against actual SIG depth and complete current account liabilities from the existing worker after recovery. Kalshi depth is external information and cannot fund SIG orders. Current production remains stopped while the qualified R42 helper restores the original ledger and reconciles uncertain sale18533. No campaign activation, new fill or Tartarus ROI is claimed.

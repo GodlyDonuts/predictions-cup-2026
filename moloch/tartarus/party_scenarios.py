@@ -31,8 +31,8 @@ def integer(value, lo, hi, reason):
     return value
 
 
-def _marginal_records(records, originals, decision_ms):
-    need(type(records) is list and len(records) <= 64, "MARGINAL_BOUND")
+def _marginal_records(records, originals, decision_ms, maximum_records=64):
+    need(type(records) is list and len(records) <= maximum_records, "MARGINAL_BOUND")
     result = {}
     for m in records:
         need(type(m) is dict, "MARGINAL_SHAPE")
@@ -51,7 +51,8 @@ def _marginal_records(records, originals, decision_ms):
 
 
 def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
-                      draws_per_profile=16, seed=17023, research_scenario_limit=128):
+                      draws_per_profile=16, seed=17023, research_scenario_limit=128,
+                      research_contract_limit=64):
     """Return native scenarios/probabilityModels, never a nomination/approval.
 
     Each marginal names exchangeId, lowerPpm, upperPpm, sourceSha256,
@@ -68,15 +69,19 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
     The default retains the native128-row bound. An explicitly larger research
     limit retains every row/model and grants no live authority; a complete
     field-aware reduction must satisfy native dimensions before nomination.
+    An explicit research_contract_limit up to512 can build a shared wider
+    universe. It requires holding-preserving subset projection before native
+    use; the ordinary64-contract default and live bounds remain unchanged.
     """
     integer(decision_ms, 0, 2**63-1, "DECISION_CLOCK")
     integer(seed, 0, 2**63-1, "SEED")
     integer(draws_per_profile, 2, 64, "DRAW_BOUND")
     integer(research_scenario_limit, 128, 4096, "RESEARCH_SCENARIO_LIMIT")
-    need(type(registry) is list and 1 <= len(registry) <= 64, "REGISTRY_BOUND")
+    integer(research_contract_limit, 64, 512, "RESEARCH_CONTRACT_LIMIT")
+    need(type(registry) is list and 1 <= len(registry) <= research_contract_limit, "REGISTRY_BOUND")
     need(type(profiles) is list and 1 <= len(profiles) <= 8, "NATIVE_MODEL_BOUND")
     need(type(originals) is dict and type(marginals) is list, "INPUT_SHAPE")
-    by_exchange = _marginal_records(marginals, originals, decision_ms)
+    by_exchange = _marginal_records(marginals, originals, decision_ms, research_contract_limit)
     groups, contracts, exchanges = {}, set(), set()
     for c in registry:
         cid, ex = c.get("contractId"), c.get("exchangeId")
@@ -111,7 +116,7 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
              and dependence in ("independent", "common_party_swing"), "PROFILE_ASSUMPTION")
         refund = integer(profile.get("hypotheticalRefundWeightPpm"), 0, PPM, "REFUND_ASSUMPTION_REQUIRED")
         need(type(profile.get("assumptionLabel")) is str and profile["assumptionLabel"].strip(), "ASSUMPTION_REQUIRED")
-        overrides = _marginal_records(profile.get("marginalOverrides", []), originals, decision_ms)
+        overrides = _marginal_records(profile.get("marginalOverrides", []), originals, decision_ms, research_contract_limit)
         need(set(overrides) <= exchanges, "PROFILE_OVERRIDE_SCOPE")
         selected_marginals = dict(by_exchange)
         selected_marginals.update(overrides)
@@ -192,4 +197,7 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
     if research_scenario_limit != 128:
         result["researchScenarioLimit"] = research_scenario_limit
         result["requiresFieldAwareNativeReduction"] = len(scenarios) > 128
+    if research_contract_limit != 64:
+        result["researchContractLimit"] = research_contract_limit
+        result["requiresCompleteHoldingPreservingProjection"] = len(contracts) > 64
     return result

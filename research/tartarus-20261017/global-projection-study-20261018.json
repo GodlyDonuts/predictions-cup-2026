@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "originalDecisionMs": 1792307289853,
+  "originalCensusSha256": "aaddb4d9aa3e4d721ae1b180b1d944e1a5ce59fcee483a3b19715c0f6fcec5b5",
+  "sourceContracts": 139,
+  "assumptions": {
+    "refundStressPpm": 1000,
+    "independentDraws": 16,
+    "seed": 17023,
+    "marginalPricesAreCalibrated": false,
+    "bandVariantsPpm": [
+      0,
+      1000
+    ],
+    "nativeSourceSlotsReservedForAuxiliaryEvidence": 5,
+    "fieldThresholdsAreCurrentObservations": false
+  },
+  "variants": [
+    {
+      "bandPpm": 0,
+      "status": "unavailable",
+      "reason": "INCOHERENT_PARTY_MARGINALS"
+    },
+    {
+      "bandPpm": 1000,
+      "status": "research_only",
+      "originalScenarios": 198,
+      "sourceModels": 3,
+      "fieldModels": 3,
+      "subsets": [
+        {
+          "start": 0,
+          "status": "research_only",
+          "heldContractsRetained": 23,
+          "candidateContracts": 36,
+          "contractCount": 59,
+          "coalescedScenarios": 83,
+          "allModelJointPayoutFieldDistributionsIndependentlyMatched": true,
+          "artifactSha256": "2bf80582ed4bcf2a2e87cb2aca211a55b78bf2e7c194d5c804aaed51685495d0"
+        },
+        {
+          "start": 36,
+          "status": "research_only",
+          "heldContractsRetained": 23,
+          "candidateContracts": 36,
+          "contractCount": 59,
+          "coalescedScenarios": 85,
+          "allModelJointPayoutFieldDistributionsIndependentlyMatched": true,
+          "artifactSha256": "a50103551e7bac3931918378fe87e0b8175431fd2dbe5835f056b2f58ab6e6cf"
+        },
+        {
+          "start": 72,
+          "status": "research_only",
+          "heldContractsRetained": 23,
+          "candidateContracts": 36,
+          "contractCount": 59,
+          "coalescedScenarios": 82,
+          "allModelJointPayoutFieldDistributionsIndependentlyMatched": true,
+          "artifactSha256": "4609cc3ce6773b2428022191dffbbb62f068dfc74f069b568a23db9291065f01"
+        },
+        {
+          "start": 108,
+          "status": "research_only",
+          "heldContractsRetained": 23,
+          "candidateContracts": 8,
+          "contractCount": 31,
+          "coalescedScenarios": 52,
+          "allModelJointPayoutFieldDistributionsIndependentlyMatched": true,
+          "artifactSha256": "7c84d2165a34cf750bf71b9370527fd77c3ded3f2b1562c731d4ae8fc06747b7"
+        }
+      ]
+    }
+  ],
+  "executionAuthority": false,
+  "networkRequests": 0,
+  "newProfitClaimed": false,
+  "testsPassed": 19
+}
