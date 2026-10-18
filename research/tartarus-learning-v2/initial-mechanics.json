@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "classification": "conditional_development_mechanics",
+  "production_authority": false,
+  "budget": {
+    "reads_per_minute": 100,
+    "read_completion_gap_ms": 600,
+    "writes_per_minute": 24,
+    "write_completion_gap_ms": 2500,
+    "source_sha256": "b58b68e775577a20c22feb1d2121c24d63cccb0411292ddd78cfd9ab1107dd3a"
+  },
+  "limits": {
+    "maximum_order_quantity": 10000,
+    "maximum_committed": 95579915000,
+    "maximum_market_cost": 10000000000,
+    "maximum_position_quantity": null,
+    "fee_per_share": 0,
+    "maximum_fresh_markets": 12,
+    "inherited_exchanges": []
+  },
+  "hypotheses": {
+    "read_latency_ms": 600,
+    "arrival_latency_ms": 600,
+    "receipt_latency_ms": 300,
+    "maximum_book_age_ms": 10000,
+    "maximum_reference_age_ms": 20000,
+    "preflight_reads": 16,
+    "valuation_source": "Kalshi"
+  },
+  "evidence": {
+    "read_profile": {
+      "file": "research/tartarus-20261017/checked-production-lane/r50-storage-repair.json",
+      "sha256": "b866906ad06ded88c87eeae6ad36e455617568e83483b16dcf931cdb0486c5ae"
+    },
+    "control_sha256": "eeed6244f8bb5eb8e7e56dbf48311690671ddca048c2d43dabec952cd7969fe8",
+    "control_observed_at": "2026-10-18T22:08Z",
+    "constraints_are_research_copy_not_authority": true
+  },
+  "assumptions": [
+    "Read/arrival/receipt latencies and sixteen preflight reads are conservative modeling hypotheses, not fitted execution calibration.",
+    "Direct-party Kalshi marks have unverified settlement equivalence.",
+    "Counterfactual crossing liquidity is depleted persistently; passive queue probability and market response are not calibrated.",
+    "Ten-second book and twenty-second reference freshness are explicit experiment assumptions.",
+    "Source gaps and rotation barriers preserve unknown continuity; this is development research only."
+  ],
+  "mutation_may_change_mechanics": false
+}

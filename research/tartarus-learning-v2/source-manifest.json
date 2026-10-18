@@ -1,0 +1,17 @@
+{
+  "classification": "human_supplied_research_proposal_not_execution_authority",
+  "sources": [
+    {
+      "file": "TARTARUS_POPULATION_LEARNING_V2.md",
+      "bytes": 41212,
+      "sha256": "7ed11d2dc9532159e03c8a8c54f1fea540603319c46d42d266582e607dc94f85"
+    },
+    {
+      "file": "EXPERIMENT_CONFIGURATION.json",
+      "bytes": 6037,
+      "sha256": "d852f9067cef1650f609724b0cd455ece1d09adb3d1fbc8283bd224ecd7f5fc7"
+    }
+  ],
+  "productionChangedByImport": false,
+  "trainedModelProvided": false
+}

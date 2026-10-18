@@ -1,0 +1,343 @@
+{
+  "seed": 1701,
+  "starts_ms": [
+    1792174414454,
+    1792173930019,
+    1792174303528,
+    1792174351055
+  ],
+  "split_manifest_sha256": "ee407d8abe0021f4a1fd7659553f80bb4a06361a7a2b0ef9248d61d097000335",
+  "dataset_manifest_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+  "mechanics_manifest_sha256": "078710966511121aa26d1f4176efc1f5542f519be1c60bf60f526ca0e9bf5627",
+  "source_sha256": {
+    "__init__.py": "4fc8d351b2f0256f116dc44525a2eda7bcca90f6f17997182f3c47a4060943e4",
+    "account.py": "aee457326ebf8fd048f955167a3c03bc849298ea293058629edcb23c176591be",
+    "clock.py": "e108cb165eba1ab779a2b5d6e316d8334841de4a04cc6bae2bdd7229d7fc47bd",
+    "compile_trace.py": "3bc432c9664aa6b11e21688d42a2828e69e6a6a4f59d77ba3a8a353681b98cd9",
+    "episodes.py": "f2de31c59068e279b9587398a76323ebec35e2362013d48aad7b0ffd10d99681",
+    "liquidity.py": "3e47caa1096bd8db6dc7d3bc7680b9c32f360682ef99342f0db432f41aebdef5",
+    "policy.py": "40f180bd4c4ede16133ef4dba62426a54f3c7678a04e09af2ffd8738ee9bb559",
+    "reference_env.py": "0c619bd3d72aa4af1b50619e81ab18d6aecdb47d204fb1f2a3b9b0adbfbfd042",
+    "run_experiment.py": "92513ea1b411691bf2940c180c74bf0c0fc249d182f50a1fa4cbad91fd697926",
+    "train_inner.py": "3caf714a313e36a1dab573cb9830e0f222ec569789fa4423c1afed85470df1ea"
+  },
+  "device": "cuda:0",
+  "initial_parameter_sha256": "4a5a4c9e44471d39567420fa1383401770d28c6b9de78ccc79e7f818b7e3cf9b",
+  "parameters": 1579806,
+  "load_seconds": 9.130399200017564,
+  "production_authority": false,
+  "locked_test_used": false,
+  "episodes": [
+    {
+      "start_ms": 1792174414454,
+      "decision_end_ms": 1792174714454,
+      "terminal_ms": 1792174834454,
+      "decisions": 300,
+      "rollout_wall_seconds": 4.468505700002424,
+      "baseline": false,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 100038845500,
+      "reference_return": 0.000388455,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 893,
+      "fill_receipts": 2,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "WAIT": 288,
+        "BUY": 12
+      },
+      "never_sent_drafts_at_end": 0,
+      "modeled_requests": 206,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI",
+      "episode": 0,
+      "ppo": [
+        {
+          "epoch": 0,
+          "loss": -0.07323885709047318,
+          "policyLoss": -3.1789144649962964e-09,
+          "valueLoss": 0.0009003774612210691,
+          "quantileLoss": 0.062040697783231735,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 3.7412168979644775,
+          "sampledApproximateKl": 0.0
+        },
+        {
+          "epoch": 1,
+          "loss": 0.057350292801856995,
+          "policyLoss": 0.08583014458417892,
+          "valueLoss": 0.08274000883102417,
+          "quantileLoss": 0.029286092147231102,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 6.0885186195373535,
+          "sampledApproximateKl": 0.5960487723350525
+        }
+      ],
+      "update_wall_seconds": 7.07097270002123
+    },
+    {
+      "start_ms": 1792173930019,
+      "decision_end_ms": 1792174230019,
+      "terminal_ms": 1792174350019,
+      "decisions": 300,
+      "rollout_wall_seconds": 4.1972156999399886,
+      "baseline": false,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 100012694000,
+      "reference_return": 0.00012694,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 2206,
+      "fill_receipts": 2,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "WAIT": 288,
+        "BUY": 12
+      },
+      "never_sent_drafts_at_end": 0,
+      "modeled_requests": 204,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI",
+      "episode": 1,
+      "ppo": [
+        {
+          "epoch": 0,
+          "loss": -0.06158788502216339,
+          "policyLoss": 6.357828929992593e-09,
+          "valueLoss": 0.01723060943186283,
+          "quantileLoss": 0.028442461043596268,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 4.073851108551025,
+          "sampledApproximateKl": 0.0
+        },
+        {
+          "epoch": 1,
+          "loss": 0.00010644644498825073,
+          "policyLoss": -0.020225318148732185,
+          "valueLoss": 0.18083906173706055,
+          "quantileLoss": 0.032122690230607986,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 8.16927433013916,
+          "sampledApproximateKl": 0.02564886026084423
+        }
+      ],
+      "update_wall_seconds": 6.3687460999935865
+    },
+    {
+      "start_ms": 1792174303528,
+      "decision_end_ms": 1792174603528,
+      "terminal_ms": 1792174723528,
+      "decisions": 300,
+      "rollout_wall_seconds": 4.148667300003581,
+      "baseline": false,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 98627711000,
+      "reference_return": -0.01372289,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 41800,
+      "fill_receipts": 11,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "WAIT": 289,
+        "BUY": 11
+      },
+      "never_sent_drafts_at_end": 0,
+      "modeled_requests": 191,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI",
+      "episode": 2,
+      "ppo": [
+        {
+          "epoch": 0,
+          "loss": -0.05958853289484978,
+          "policyLoss": 7.152557657263969e-09,
+          "valueLoss": 0.019946176558732986,
+          "quantileLoss": 0.03664637729525566,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 4.054269313812256,
+          "sampledApproximateKl": 0.0
+        },
+        {
+          "epoch": 1,
+          "loss": -0.03404584899544716,
+          "policyLoss": -0.007134014740586281,
+          "valueLoss": 0.0815032348036766,
+          "quantileLoss": 0.034886039793491364,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 6.0014214515686035,
+          "sampledApproximateKl": 0.02663300186395645
+        }
+      ],
+      "update_wall_seconds": 6.325381199945696
+    },
+    {
+      "start_ms": 1792174351055,
+      "decision_end_ms": 1792174651055,
+      "terminal_ms": 1792174771055,
+      "decisions": 300,
+      "rollout_wall_seconds": 4.263001200044528,
+      "baseline": false,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 99271425000,
+      "reference_return": -0.00728575,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 11920,
+      "fill_receipts": 4,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "BUY": 11,
+        "WAIT": 288,
+        "SELL": 1
+      },
+      "never_sent_drafts_at_end": 1,
+      "modeled_requests": 183,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI",
+      "episode": 3,
+      "ppo": [
+        {
+          "epoch": 0,
+          "loss": -0.06482528895139694,
+          "policyLoss": 7.947286384535346e-09,
+          "valueLoss": 0.008589738048613071,
+          "quantileLoss": 0.018318017944693565,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 3.8637032508850098,
+          "sampledApproximateKl": 0.0
+        },
+        {
+          "epoch": 1,
+          "loss": -0.06939565390348434,
+          "policyLoss": -0.006887943018227816,
+          "valueLoss": 0.007132814731448889,
+          "quantileLoss": 0.014363160356879234,
+          "successLabels": 0,
+          "gradientNormBeforeClip": 2.993891716003418,
+          "sampledApproximateKl": 0.05372476205229759
+        }
+      ],
+      "update_wall_seconds": 6.369489099946804
+    }
+  ],
+  "hold_baselines": [
+    {
+      "start_ms": 1792174414454,
+      "decision_end_ms": 1792174714454,
+      "terminal_ms": 1792174834454,
+      "decisions": 300,
+      "rollout_wall_seconds": 5.355702999979258,
+      "baseline": true,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 100000000000,
+      "reference_return": 0.0,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 0,
+      "fill_receipts": 0,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "WAIT": 300
+      },
+      "never_sent_drafts_at_end": 0,
+      "modeled_requests": 0,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI"
+    },
+    {
+      "start_ms": 1792173930019,
+      "decision_end_ms": 1792174230019,
+      "terminal_ms": 1792174350019,
+      "decisions": 300,
+      "rollout_wall_seconds": 4.901013299939223,
+      "baseline": true,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 100000000000,
+      "reference_return": 0.0,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 0,
+      "fill_receipts": 0,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "WAIT": 300
+      },
+      "never_sent_drafts_at_end": 0,
+      "modeled_requests": 0,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI"
+    },
+    {
+      "start_ms": 1792174303528,
+      "decision_end_ms": 1792174603528,
+      "terminal_ms": 1792174723528,
+      "decisions": 300,
+      "rollout_wall_seconds": 4.786334800068289,
+      "baseline": true,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 100000000000,
+      "reference_return": 0.0,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 0,
+      "fill_receipts": 0,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "WAIT": 300
+      },
+      "never_sent_drafts_at_end": 0,
+      "modeled_requests": 0,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI"
+    },
+    {
+      "start_ms": 1792174351055,
+      "decision_end_ms": 1792174651055,
+      "terminal_ms": 1792174771055,
+      "decisions": 300,
+      "rollout_wall_seconds": 4.6997733999742195,
+      "baseline": true,
+      "qualified_accounting": true,
+      "final_reference_wealth_micros": 100000000000,
+      "reference_return": 0.0,
+      "missing_mark_observations": 0,
+      "unresolved_orders": 0,
+      "active_request_at_terminal": null,
+      "filled_shares": 0,
+      "fill_receipts": 0,
+      "realized_micros": 0,
+      "fees_micros": 0,
+      "families": {
+        "WAIT": 300
+      },
+      "never_sent_drafts_at_end": 0,
+      "modeled_requests": 0,
+      "success_labels_available": false,
+      "interpretation": "conditional_marked_capital_development_not_execution_calibration_or_competition_ROI"
+    }
+  ],
+  "policy_epochs": 4,
+  "training_decisions": 1200,
+  "checkpoint_sha256": "b5175012364e62f3ab4386e38174ba4120b67759d67059c0d08b4258c3b99e80",
+  "final_parameter_sha256": "2a79ee638995b48cd7c6ca1239a8caea88dab8f19c907148e4718d4f4c018360",
+  "total_wall_seconds": 74.36500039999373,
+  "production_changed": false,
+  "competition_profitability_established": false,
+  "matched_compute_ablation_complete": false
+}

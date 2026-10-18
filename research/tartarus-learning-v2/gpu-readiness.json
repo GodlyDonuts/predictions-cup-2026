@@ -1,0 +1,16 @@
+{
+  "torch": "2.11.0+cu128",
+  "cudaRuntime": "12.8",
+  "gpu": "NVIDIA GeForce RTX 5070 Ti Laptop GPU",
+  "gpuCapability": [
+    12,
+    0
+  ],
+  "gpuMemoryBytes": 12820480000,
+  "python": "3.12.14",
+  "policyParameters16Features": 1579294,
+  "gpuMatrixKernelVerified": true,
+  "trainedPolicy": false,
+  "endToEndTrainingBenchmarkAvailable": false,
+  "runtimeSource": "https://pytorch.org/get-started/locally/"
+}

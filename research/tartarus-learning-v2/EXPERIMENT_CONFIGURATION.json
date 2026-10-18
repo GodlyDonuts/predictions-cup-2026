@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "classification": "proposed_experiment_configuration_not_runtime_authority",
+  "repository_reference": "9bcb9873a7ea5b7e423f4e23d37ee2a564a8cced",
+  "model_trained": false,
+  "production_changes": false,
+  "performance_claims": null,
+  "source_manifests": {
+    "data": null,
+    "split": null,
+    "mechanics": null,
+    "execution_calibration": null,
+    "evaluation_protocol": null
+  },
+  "data": {
+    "venues": [
+      "SIG",
+      "Kalshi",
+      "Polymarket"
+    ],
+    "execution_venue": "SIG",
+    "causal_axis": "agent_information_availability",
+    "unknown_publisher_times": "retain_missing",
+    "preserve_cross_market_calendar": true,
+    "replay_rows_are_independent_events": false,
+    "predecode_once": true
+  },
+  "account": {
+    "ledger_representation": "existing_integer_millionths",
+    "observation_wealth": "cash_plus_external_reference_position_value_minus_liabilities",
+    "reserved_cash_subtracted_from_wealth": false,
+    "spendable_cash": "actual_cash_minus_actual_reservations_and_other_verified_encumbrances",
+    "pending_sale_proceeds_spendable": false,
+    "wealth_denominator_invalid": "explicit_unavailable_state",
+    "action_representation": "target_exposure_plus_child_order_fraction",
+    "recorded_depth_scales_with_bankroll": false
+  },
+  "bankroll_curriculum": {
+    "classification": "proposed_training_stress_points",
+    "sampling": "log_uniform",
+    "minimum": 25000,
+    "maximum": 2000000,
+    "evaluation_anchors": [
+      25000,
+      100000,
+      400000,
+      1000000,
+      2000000
+    ],
+    "initial_portfolios": [
+      "cash_only",
+      "causal_actual_shaped_inventory"
+    ],
+    "target_ratios": [
+      1.1,
+      1.5,
+      2,
+      5,
+      10,
+      15,
+      25
+    ],
+    "actual_final_target_required": true
+  },
+  "environment": {
+    "clock": "discrete_event",
+    "wall_clock_sleep": false,
+    "rate_budget_clock": "virtual_exchange_time",
+    "rate_budget_values": "required_from_source_manifest",
+    "match_at": "modeled_order_arrival",
+    "shared_yes_no_liquidity": true,
+    "unchanged_snapshot_replenishes_consumed_depth": false,
+    "counterfactual_reactivity": "uncertain_separate_stress_models",
+    "trainer_may_change_simulator_assumptions": false,
+    "cancel_fill_races": true,
+    "evaluation_simulator_independent_of_policy_selection": true
+  },
+  "policy": {
+    "baseline": "compact_recurrent_ppo",
+    "encoder": "shared_contract_encoder_set_portfolio_aggregation_recurrence",
+    "candidate_parameter_range": [
+      500000,
+      3000000
+    ],
+    "action_heads": [
+      "contract_or_verified_basket",
+      "side",
+      "supported_action_family",
+      "target_exposure_fraction",
+      "child_order_fraction",
+      "price_offset",
+      "patience_or_cancel",
+      "wait"
+    ],
+    "mask": "physical_and_authorized_feasibility_not_old_alpha_filter",
+    "monetary_distribution_critic": true,
+    "target_conditioned_success_head": true,
+    "opposing_terminal_wealth": "declared_joint_models_until_observed",
+    "from_scratch_representation_branch": true
+  },
+  "population": {
+    "logical_members": 32,
+    "islands": 4,
+    "members_per_island": 8,
+    "concurrently_resident_members": null,
+    "residency_selected_by_benchmark": true,
+    "selection_unit": "matured_training_block_not_single_episode",
+    "elites_outside_offspring_pool": true,
+    "replacement_mix": {
+      "local": 0.5,
+      "medium": 0.25,
+      "large": 0.15,
+      "partial_reset": 0.05,
+      "fresh_lineage": 0.05
+    },
+    "mix_is_initial_hypothesis": true,
+    "operator_adaptation": "later_ablation_with_nonzero_exploration_floor",
+    "rescore_elites": true,
+    "reset_grace_budget": "predeclared_in_experiment_registry"
+  },
+  "mutations": {
+    "categorical_behavior_kl_targets": {
+      "local": 0.001,
+      "medium": 0.01,
+      "large": 0.1
+    },
+    "targets_are_not_financial_risk_limits": true,
+    "reference_sequences": "training_only_pinned_histories",
+    "continuous_distance": "normalized_executed_and_raw_action_distance",
+    "perturbation": "output_controlled_head_module_or_sensitivity_scaled",
+    "recompute_child_recurrent_burnin": true,
+    "discard_parent_onpolicy_trajectories": true,
+    "optimizer_transfer": "compatible_parameters_only_else_reset",
+    "weight_crossover_default": false,
+    "mirrored_es_branch": "optional_later_ablation"
+  },
+  "archive": {
+    "kind": "bounded_quality_diversity",
+    "descriptors": [
+      "holding_time",
+      "concentration",
+      "maker_taker_fraction",
+      "turnover_capital_time",
+      "external_source_sensitivity"
+    ],
+    "descriptors_prescribe_strategies": false,
+    "separate_research_and_deployment_archives": true,
+    "novelty_alone_allows_deployment": false,
+    "repeated_evaluation_required": true,
+    "average_opposing_policies_at_deployment": false
+  },
+  "evaluation": {
+    "roles": [
+      "fit_training",
+      "search_development",
+      "locked_chronological_test",
+      "new_forward_cohort"
+    ],
+    "pbt_may_access_locked_test": false,
+    "scalers_and_simulators_fit_on_training_only": true,
+    "purge_holding_label_burnin_overlap": true,
+    "common_exogenous_episode_batches": true,
+    "event_keyed_randomness": true,
+    "independent_seed_checks": true,
+    "uncertainty_unit": "event_time_block_and_independent_search_seed",
+    "fixed_external_mission_score": true,
+    "equal_compute_and_walltime_ablations": true,
+    "finalists_count_predeclared": true
+  },
+  "ablation_order": [
+    "current_and_hold",
+    "independent_rl",
+    "single_scale_pbt",
+    "multiscale_pbt",
+    "behavior_archive_and_islands",
+    "behavior_controlled_mutations",
+    "bankroll_capacity_conditioning"
+  ],
+  "required_first_artifacts": [
+    "dataset_manifest",
+    "split_manifest",
+    "simulator_tests",
+    "execution_calibration_or_limits",
+    "measured_training_benchmark",
+    "trained_checkpoint",
+    "genealogy",
+    "archive_reevaluations",
+    "matched_compute_comparison",
+    "locked_finalist_report"
+  ]
+}

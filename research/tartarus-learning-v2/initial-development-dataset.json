@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "originalManifestSha256": "1db5b9472ac54a041f75120659084f8e23bc070ee24d979bcffc09d7130399cc",
+  "verifierLfSha256": "3b7895720a06ee52104c9a23cbaf06fd0987e90405fac71673afaa0bdd602bc1",
+  "compilerSha256": "3bc432c9664aa6b11e21688d42a2828e69e6a6a4f59d77ba3a8a353681b98cd9",
+  "sourceVerification": {
+    "version": 1,
+    "samplerInputReplayVerified": true,
+    "originalSigMembershipVerified": true,
+    "firstConsumedBookReplayVerified": true,
+    "firstConsumedBookProof": "verified",
+    "horizonLabels": 15,
+    "originalCacheBodyMembershipVerified": true,
+    "wholeWitnessVerified": false,
+    "eligibleForModelValidation": false,
+    "executionAuthority": false,
+    "historyPrefixVerified": false,
+    "providerTradeTapeComplete": false,
+    "collectorProcessingEpochProof": "unavailable",
+    "tournamentTopicBindingProof": "unavailable",
+    "resolutionEquivalenceVerified": false,
+    "crossSegmentContinuityVerified": false,
+    "unconsumedSourceObservations": [],
+    "traceRecords": 25160,
+    "outputRows": 23,
+    "samplingMode": "trade",
+    "counts": {
+      "polls": 4000,
+      "failedPolls": 0,
+      "cacheApplies": 4000,
+      "sigApplies": 2578,
+      "rotations": 3
+    },
+    "manifestSha256": "753d254bd4d93c744bcf6420286b9386fc33ca13b4a29fc60ced1d17acb2c884",
+    "producerSha256": "2fa9b142b672f4a9076e185ac91be0b288945b0e1bba6afb0797594ed6678529"
+  },
+  "observationCounts": {
+    "reference": 115441,
+    "book": 107817,
+    "reference_gap": 24093,
+    "gap": 980
+  },
+  "observationsSha256": "cc469c8310e5d4861758ed29ce7d8306877c67181f6330de0f312ff00616fb87",
+  "venuesPresent": [
+    "SIG",
+    "Kalshi"
+  ],
+  "polymarketPresent": false,
+  "classification": "inspected_history_development_only",
+  "lockedTestEligible": false,
+  "executionCalibrationAvailable": false,
+  "sourcePublisherTimesInferred": false,
+  "strategyTriggersUsedAsObservations": false,
+  "productionChanged": false,
+  "executionAuthority": false,
+  "trainedCheckpoint": null
+}
