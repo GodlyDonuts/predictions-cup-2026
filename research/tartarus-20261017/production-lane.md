@@ -1,11 +1,10 @@
 # Tartarus production integration: candidate source, not deployed proof
 
-As of October 18, 00:11 UTC, production remains stopped at the original
-`LIVE_WRITE_NOT_CONFIRMED_NO_RETRY` incident. No profitable Tartarus execution
-has been established. R39 has completed ARM64 qualification and independent artifact verification;
+At October 18, 00:50 UTC, migrated worker735621 is running and restoring.
+Its actual executable/control and held owner descriptor were verified. Fresh
+trading and profitable Tartarus execution have not been established. R39 has completed ARM64 qualification and independent artifact verification;
 it is not evidence that the service has migrated or that a campaign can win.
-The original incident was recovered without HTTP at 00:30:45 UTC. The STOP
-remains pending controlled deployment. See [build evidence](checked-production-lane/build-verification.json).
+The original incident was recovered without HTTP at 00:30:45 UTC. Its STOP was archived during the controlled00:42:25 restart. See [build evidence](checked-production-lane/build-verification.json).
 
 ## Physical execution path
 
@@ -63,3 +62,15 @@ holdings and managed cohorts cannot be released by that mechanism.
 
 Current integration work and checked evidence are tracked in issue #173;
 the original execution incident and source-bound proof are tracked in #174.
+
+## Acquisition continuation follow-up
+
+R39 can review a funding sale but requires direct BUYs to improve immediate
+threshold hits. With a10,000-share physical cap and a distant tournament target,
+early acquisition tranches cannot satisfy that condition. The follow-up adds an
+explicit `acquisition_prerequisite`, preserving zero immediate gain plus strictly
+positive declared conditional target improvement. Current BUY funding, the first
+BUY in cumulative committed/market/count limits, partial loss, unavailable future
+liquidity and fresh reapproval remain binding. This follow-up is not deployed.
+Existing fundamental cohort targets remain excluded from the rank lane; ownership
+of those cohorts must be reconciled before any broader rotation handoff.
