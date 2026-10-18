@@ -30,7 +30,8 @@ and all market limits. The no-fill account is retained. Earlier candidates were 
 | Maximise weakest declared money, within this candidate family | 25 | 29 contracts / 70 states | +3,759.060483 |
 | Require 250,000 wealth in the selected world | 49 | 33 contracts / 76 states | +233.372490 |
 | Require 500,000 wealth in that world | 79 | 33 contracts / 75 states | −9,491.112453 |
-| Retained candidate reaching the dated first-place anchor | 129 | Independently scored in full matrix | −55,260.387545 |
+| Require 925,300 wealth in that world | 125 | 34 contracts / 82 states | -38,121.932000 |
+| Candidate reaching the dated first-place anchor | 129 | 35 contracts / 102 states | -55,831.206017 |
 
 The positive declared-mean candidates have **zero** first-place mass against the
 dated 1,081,241.68 flat anchor in every sampled view. The final rank-risk candidate
