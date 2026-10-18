@@ -85,6 +85,13 @@ fn rank_activation(q:&Value,original:&Value,at:u64)->Result<Option<u64>>{
 fn rank_commit_ready(until:u64,mut clock:impl FnMut()->u64,validate:impl FnOnce(u64)->Result<()>)->Result<bool>{
  let at=clock();if at>=until{return Ok(false)}validate(at)?;Ok(clock()<until)
 }
+// A new target is blocked until its real trade coverage AND book recover.
+// Reuse ordinary source admission before obtaining expiring physical facts.
+fn rank_recover_target_source(c:&Control,bank:&mut Session,rest:&mut RestSource,ex:&str,market:&str,reads:&mut impl OrdinaryPreflightReads)->Result<bool>{
+ if c.scope.exchanges.get(ex).map(String::as_str)!=Some(market){return Err("RANK_SOURCE_SCOPE".into())}
+ let Some(from)=rest.recovery_start_ms(market)else{return Ok(false)};
+ self::source(c,bank,rest,ex,market,from,reads)?;Ok(true)
+}
 fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&Arc<ProductionAuthority>,stream:&Realtime,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  let Some(settings)=&c.rank_campaign else{return Ok(())};
  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
@@ -102,6 +109,8 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  // A known resting order is a temporary allocation conflict, not a fatal
  // collateral error. Unknown acceptance still propagates before deferral.
  if rank_waits_for_known_orders(log)?||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return rank_deferred(c,"liability","EXISTING_PHYSICAL_ORDERS_REQUIRE_RECONCILIATION")}
+ rank_recover_target_source(c,bank,source,&ex,&market,&mut LivePreflightReads{frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
+ if source.recovery_start_ms(&market).is_some(){return rank_deferred(c,"source_recovery","ORIGINAL_TARGET_TAPE_AND_BOOK_STILL_BLOCKED")}
  rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;
  let(qid,original)=if let Some(q)=existing.into_iter().next(){(q["id"].as_u64().ok_or("RANK_QUOTE_ID")?,q)}else{
  if managed.contains(&ex){rank_yield_managed_drafts(bank,log,&ex)?;}
@@ -162,6 +171,15 @@ fn validate_maker_configuration(c:&Control)->Result<()>{
 fn expected_maker_expiry(error:&dyn std::error::Error)->bool{matches!(error.to_string().as_str(),"MAKER_DECISION_EXPIRED"|"MAKER_QUOTE_EXPIRED")}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
 const RANK_REALTIME_FRAMES_PER_SERVICE:usize=1;
+// Rank reads already admit a stream frame before every GET. Avoid starting
+// another durable stream commit on every 25ms SDK wait notification: that
+// commit can outlive the GET and age the entire seven-receipt packet.
+// Controls/stream health are still checked on EVERY notification; slow GETs
+// additionally admit a frame each second. Other read paths are unchanged.
+const RANK_READ_STREAM_SERVICE_INTERVAL:Duration=Duration::from_millis(1000);
+fn preflight_stream_service_due(frames:usize,elapsed:Duration)->bool{
+ frames!=RANK_REALTIME_FRAMES_PER_SERVICE||elapsed>=RANK_READ_STREAM_SERVICE_INTERVAL
+}
 const RELATIONSHIP_CENSUS_REFRESH_MS:u64=300_000;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
 fn iso(t:u64)->String{chrono::DateTime::from_timestamp_millis(t as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
@@ -2041,7 +2059,14 @@ impl OrdinaryPreflightReads for LivePreflightReads<'_>{
  fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
  fn read_serviced(&mut self,bank:&mut Session,source:&mut RestSource,ep:Endpoint)->Result<Receipt>{
   let Self{t,c,authority,stream,breadth,universe,frames_per_service}=self;
-  let mut service=||{refresh_controls(c,authority,stream)?;drain_stream_limited(stream,bank,source,breadth,universe,*frames_per_service)?;refresh_controls(c,authority,stream)};
+  let mut last_stream_service=std::time::Instant::now();
+  let mut service=||{refresh_controls(c,authority,stream)?;
+   if preflight_stream_service_due(*frames_per_service,last_stream_service.elapsed()){
+    drain_stream_limited(stream,bank,source,breadth,universe,*frames_per_service)?;
+    last_stream_service=std::time::Instant::now();
+   }
+   refresh_controls(c,authority,stream)
+  };
   for attempt in 0..3u64{
    // One exclusive SDK GET; source admission stays on this Session thread.
    // Outer service errors are fatal and never enter SDK retry classification.
@@ -3166,6 +3191,17 @@ pub fn main()->Result<()>{
   let stamp=iso(at);book.request_started_at=stamp.clone();book.received_at=stamp.clone();book.data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]=json!({"sequence":2,"at":stamp});
   let tape=Receipt{endpoint:format!("/exchanges/101/trades?tournamentId={T}&from={}&to={stamp}",iso(at-4002)),request_started_at:stamp.clone(),received_at:stamp.clone(),status:200,data:json!({"marketId":"201","exchangeId":"101","from":iso(at-4002),"to":stamp,"data":[],"pagination":{"hasMore":false,"nextCursor":null},"coverage":{"complete":true,"projectedThroughSequence":2}})};
   PeriodicReads{at,tape,book,journal:c.root.join("bank/events.jsonl"),initial_sequence:bank.last_source_sequence("moloch-live"),services:0,fail_service:None,book_failure:false,queued_gap:false,trace:vec![]}
+ }
+ #[test]fn rank_target_cold_source_needs_original_tape_and_warm_target_does_not_read_again(){
+  let at=now()-1000;let(_root,c,mut bank,log,_state,_,book)=fixture_at(at);let mut state=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"}]),T,&iso(at-4001)).unwrap();let mut reads=periodic_reads(at,book,&bank,&c);let cash=bank.engine().wallet.cash;let fills=bank.engine().fills().to_vec();
+  let r=&reads.book;let wrap=json!({"source":"official_sig_api_v1","kind":"book","tournamentId":T,"marketId":"201","exchangeId":"101","endpoint":r.endpoint,"status":r.status,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at,"data":r.data});accept_source_events(&mut bank,&state.accept(&wrap).unwrap()).unwrap();
+  assert!(state.recovery_start_ms("201").is_some());assert!(!bank.engine().live_package_books().iter().any(|b|b["exchangeId"]=="101"));
+  assert!(rank_recover_target_source(&c,&mut bank,&mut state,"101","201",&mut reads).unwrap());assert!(state.recovery_start_ms("201").is_none());assert!(bank.engine().live_package_books().iter().any(|b|b["exchangeId"]=="101"));assert_eq!(reads.trace,vec!["service","tape_return","service","book_wait","service","book_return"]);
+  let head=bank.durable_head();let trace=reads.trace.clone();assert!(!rank_recover_target_source(&c,&mut bank,&mut state,"101","201",&mut reads).unwrap());assert_eq!(head,bank.durable_head());assert_eq!(trace,reads.trace);assert_eq!(bank.engine().wallet.cash,cash);assert_eq!(bank.engine().fills(),fills.as_slice());assert!(log.attempted.is_empty());
+ }
+ #[test]fn rank_target_recovery_preserves_new_stream_gap_and_rejects_foreign_scope(){
+  let at=now()-1000;let(_root,c,mut bank,log,_state,_,book)=fixture_at(at);let mut state=RestSource::new(&json!([{"marketId":"201","exchangeId":"101"}]),T,&iso(at-4001)).unwrap();let mut reads=periodic_reads(at,book,&bank,&c);let head=bank.durable_head();assert_eq!(rank_recover_target_source(&c,&mut bank,&mut state,"101","999",&mut reads).unwrap_err().to_string(),"RANK_SOURCE_SCOPE");assert_eq!(bank.durable_head(),head);assert!(reads.trace.is_empty());
+  reads.queued_gap=true;assert!(rank_recover_target_source(&c,&mut bank,&mut state,"101","201",&mut reads).unwrap());assert!(state.recovery_start_ms("201").is_some());assert!(!bank.engine().live_package_books().iter().any(|b|b["exchangeId"]=="101"));assert!(log.attempted.is_empty());assert!(bank.engine().fills().is_empty());
  }
  #[test]fn periodic_source_services_book_wait_only_after_original_tape_is_committed(){
   let at=now()-1000;let(_root,c,mut bank,log,mut state,_,book)=fixture_at(at);let mut reads=periodic_reads(at,book,&bank,&c);let cash=bank.engine().wallet.cash;let fills=bank.engine().fills().to_vec();

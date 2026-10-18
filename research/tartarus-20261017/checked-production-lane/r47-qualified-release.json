@@ -1,0 +1,28 @@
+{
+  "qualifiedAt": "2026-10-18T15:08:00.937954+00:00",
+  "workerSha256": "892529f567f2d23782eff0468ab79974660de6c0812e91cc2005272a3ae8bfec",
+  "binarySha256": "308179edf4c6bd60362957b9e3b8bab0bfb3f880126d76922146ecd3626c6122",
+  "unchangedNativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "changedFiles": [
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "deployed": false,
+  "accountClientsCreated": 0,
+  "sourceTtlChanged": false,
+  "riskChanged": false,
+  "actualLatencyImprovementEstablished": false,
+  "checks": {
+    "cooperativePreflight": {
+      "passed": 20,
+      "failed": 0
+    },
+    "rankWorker": {
+      "passed": 10,
+      "failed": 0
+    },
+    "overlap": 2,
+    "distinctFocused": 28,
+    "releaseBuild": "passed"
+  },
+  "qualificationLimitation": "Existing native and SDK libraries are the exact qualified R46 release dependencies; no complete worker or native rerun is claimed."
+}
