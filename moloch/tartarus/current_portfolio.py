@@ -71,8 +71,8 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
     """Compile a matched sealed report/view; never infer a physical permission.
 
     All active native quotes retain their market slots. Their local retirement
-    needs a separate actual worker action. Pending real acknowledgments and
-    unresolved attempts make this research planning input unavailable.
+    needs a separate actual worker action. Known orders permit only a declared
+    no-additional-fill research branch; uncertain acceptance remains unavailable.
     """
     need(sha256(report_bytes).hexdigest() == expected_report_sha256, "CURRENT_REPORT_PIN")
     need(sha256(view_bytes).hexdigest() == expected_view_sha256, "CURRENT_VIEW_PIN")
@@ -152,11 +152,13 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
     reasons = []
     if view["unresolvedOrdinaryAttempt"]:
         reasons.append("ORIGINAL_UNRESOLVED_ATTEMPT")
-    if view["knownUnclosedAcknowledgments"]:
-        reasons.append("ORIGINAL_PHYSICAL_ORDERS_REQUIRE_RECONCILIATION")
+    pending = bool(view["knownUnclosedAcknowledgments"])
     return {"schema": "tartarus_current_portfolio_research_v1",
-        "status": "unavailable" if reasons else "available_research_input",
+        "status": "unavailable" if reasons else "conditional_research_input_known_orders"
+                  if pending else "available_research_input",
         "unavailableReasons": reasons, "financial": None if reasons else financial,
+        "physicalDeferrals": ["ORIGINAL_PHYSICAL_ORDERS_REQUIRE_RECONCILIATION"] if pending else [],
+        "knownOrderResearchAssumption": "No additional fills of retained known orders; every actual fill requires a new account input and review.",
         "nativeSequence": sealed["sequence"], "reportSha256": expected_report_sha256,
         "viewSha256": expected_view_sha256, "originalReportAt": report["at"],
         "originalViewWrittenAt": view["writtenAt"], "managedOwnership": ownership,
@@ -168,6 +170,7 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
                                      for row in inherited["sourcePositions"]}},
         "knownUnclosedAcknowledgments": deepcopy(view["knownUnclosedAcknowledgments"]),
         "actualAccountCashCredited": "0.000000", "retirementPerformed": False,
+        "allocationBoundaryQualified": False,
         "terminalDebtEstablished": False,
         "freshAccountOrBookAuthority": False, "executionAuthority": False}
 

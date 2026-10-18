@@ -93,15 +93,20 @@ class CurrentPortfolioTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CURRENT_FINANCIAL_BINDING"):
             compile_fixture(report, view, registry)
 
-    def test_pending_ack_or_unknown_acceptance_cannot_fund_research_rotation(self):
-        for change, reason in [({"knownUnclosedAcknowledgments": [9]}, "ORIGINAL_PHYSICAL_ORDERS_REQUIRE_RECONCILIATION"),
-                               ({"unresolvedOrdinaryAttempt": True}, "ORIGINAL_UNRESOLVED_ATTEMPT")]:
-            report, view, registry = fixture()
-            view.update(change)
-            out = compile_fixture(report, view, registry)
-            self.assertEqual(out["status"], "unavailable")
-            self.assertIsNone(out["financial"])
-            self.assertIn(reason, out["unavailableReasons"])
+    def test_known_orders_preserve_no_fill_branch_but_unknown_acceptance_is_unavailable(self):
+        report, view, registry = fixture()
+        view["knownUnclosedAcknowledgments"] = [9]
+        out = compile_fixture(report, view, registry)
+        self.assertEqual(out["status"], "conditional_research_input_known_orders")
+        self.assertEqual(out["financial"]["cash"], "7.000000")
+        self.assertEqual(out["financial"]["reservedCash"], "1.000000")
+        self.assertIn("ORIGINAL_PHYSICAL_ORDERS_REQUIRE_RECONCILIATION", out["physicalDeferrals"])
+        self.assertFalse(out["allocationBoundaryQualified"])
+        view["unresolvedOrdinaryAttempt"] = True
+        out = compile_fixture(report, view, registry)
+        self.assertEqual(out["status"], "unavailable")
+        self.assertIsNone(out["financial"])
+        self.assertIn("ORIGINAL_UNRESOLVED_ATTEMPT", out["unavailableReasons"])
 
     def test_missing_holding_and_mutated_original_ownership_reject(self):
         report, view, registry = fixture()

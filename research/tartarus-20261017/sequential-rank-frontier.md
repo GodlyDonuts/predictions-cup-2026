@@ -9,8 +9,10 @@ both actual sells and opposite-side buys, preserving unknown basis labels.
 All active native quote slots remain counted; missing original managed ownership
 excludes purchases. Original reserved cash remains account wealth but is excluded
 from both available purchase cash and uncommitted principal; the solver and exact
-auditor never assume it was released. Pending physical orders or unresolved acceptance return an
-explicit unavailable result, with no assumed cancellation or proceeds.
+auditor never assume it was released. Known physical orders retain an explicitly conditional no-additional-fill
+research branch and a mandatory physical reconciliation deferral. They are not
+assumed canceled, and their unexecuted proceeds are never credited. Unknown
+acceptance returns an unavailable financial result until actual reconciliation.
 
 Existing managed holdings also retain their actual handoff state. An unpaused
 managed position requires a prior covered sale in the conditional sequence before
