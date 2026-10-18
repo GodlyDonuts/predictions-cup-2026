@@ -1,0 +1,96 @@
+{
+  "verifiedAt": "2026-10-18T01:58:37.919168+00:00",
+  "classification": "actual_existing_fundamental_fifo_exit_not_tartarus_rank_execution",
+  "workerPid": 735621,
+  "financialSequence": 566118,
+  "reportAt": "2026-10-18T01:58:34.326Z",
+  "reportRawSha256": "2a8c6bed3cbe47552774f6bcbbc7def7a4611c547c46fd3d9a8bcdc04acfdffe",
+  "reportSealVerified": true,
+  "all382PriorFillsUnchanged": true,
+  "originalReceiptRawSha256": "de78e1186424a196b3092db7af163712f578f64fd836bd9f2ce452317d0148d8",
+  "originalReceiptDigest": "0cb4e87f75bcaf177e3f114c1b9f125face1a0f609fc317c047e1fc30ff8045f",
+  "originalReceiptReceivedAt": "2026-10-18T01:53:31.493Z",
+  "actualOrderId": "46602282",
+  "exchangeId": "1067",
+  "side": "YES",
+  "action": "SELL",
+  "quantity": 10000,
+  "price": "0.330000",
+  "actualFillCount": 3,
+  "grossProceeds": "3300.000000",
+  "fees": "0.000000",
+  "originalFifoPrincipalRemoved": "3113.770000",
+  "incrementalRealizedGain": "186.230000",
+  "cash": "6913.785000",
+  "ownedCost": "88737.960000",
+  "totalNativeRealized": "71.830000",
+  "newTradingRealized": "1.260000",
+  "inheritedRealizedGross": "70.570000",
+  "currentWholeAccountROIEstablished": false,
+  "tartarusRankCampaignProfitEstablished": false,
+  "fills": [
+    {
+      "action": "sell",
+      "actualOrderId": "46602282",
+      "at": "2026-10-18T01:53:31.508Z",
+      "counterfactual": false,
+      "exchangeId": "1067",
+      "executedAt": "2026-10-18T01:52:54.790Z",
+      "fee": "0.000000",
+      "marketId": "378",
+      "orderId": 18095,
+      "price": "0.330000",
+      "quantity": 761,
+      "receiptHash": "0cb4e87f75bcaf177e3f114c1b9f125face1a0f609fc317c047e1fc30ff8045f",
+      "side": "YES",
+      "sourceId": "194055362"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "46602282",
+      "at": "2026-10-18T01:53:32.068Z",
+      "counterfactual": false,
+      "exchangeId": "1067",
+      "executedAt": "2026-10-18T01:52:54.790Z",
+      "fee": "0.000000",
+      "marketId": "378",
+      "orderId": 18095,
+      "price": "0.330000",
+      "quantity": 600,
+      "receiptHash": "0cb4e87f75bcaf177e3f114c1b9f125face1a0f609fc317c047e1fc30ff8045f",
+      "side": "YES",
+      "sourceId": "194055356"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "46602282",
+      "at": "2026-10-18T01:53:32.624Z",
+      "counterfactual": false,
+      "exchangeId": "1067",
+      "executedAt": "2026-10-18T01:52:54.790Z",
+      "fee": "0.000000",
+      "marketId": "378",
+      "orderId": 18095,
+      "price": "0.330000",
+      "quantity": 8639,
+      "receiptHash": "0cb4e87f75bcaf177e3f114c1b9f125face1a0f609fc317c047e1fc30ff8045f",
+      "side": "YES",
+      "sourceId": "194055350"
+    }
+  ],
+  "retainedOriginals": {
+    "report.original.json": {
+      "bytes": 6034435,
+      "sha256": "2a8c6bed3cbe47552774f6bcbbc7def7a4611c547c46fd3d9a8bcdc04acfdffe"
+    },
+    "engine-upgrade.original.json": {
+      "bytes": 33703585,
+      "sha256": "112f9719a32ef7ac4a36e716079ca58bcb9530b8874bd73e9c6772424f6dd1d4"
+    },
+    "receipt.original.json": {
+      "bytes": 722,
+      "sha256": "de78e1186424a196b3092db7af163712f578f64fd836bd9f2ce452317d0148d8"
+    }
+  },
+  "originalsDirectory": "/tmp/moloch-tartarus-live-fifo-fill-20261018"
+}
