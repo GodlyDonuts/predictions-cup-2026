@@ -393,7 +393,7 @@ fn snapshot_write_observation(c:&Control,original_control:&[u8],bank:&Session,or
   let name=format!("{label}.json");snapshot_private_new(&path.join(&name),&raw)?;files.insert(name,json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"requestStartedAt":r.request_started_at,"receivedAt":r.received_at}));
  }
  if let Some(f)=fundamental{
-  let mut records=Vec::new();for ex in f.cohorts.managed_exchanges(){if bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)+bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)>0||f.cohorts.rank_paused(&ex){records.push(f.cohorts.rank_inventory_state(bank,ordinary,&ex)?);}}
+  let records=f.cohorts.rank_inventory_states(bank,ordinary)?;
   let raw=serde_json::to_vec(&json!({"schemaVersion":1,"generationSha256":f.cohorts.generation_sha(),"holdings":records,"executionAuthority":false}))?;
   snapshot_private_new(&path.join("fundamental-ownership.json"),&raw)?;files.insert("fundamental-ownership.json".into(),json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"ownershipProjectionNotTradingAuthority":true}));
  }
@@ -407,7 +407,7 @@ fn snapshot_write_observation(c:&Control,original_control:&[u8],bank:&Session,or
 // Sole-worker derived research view. No Transport, mutable Session or trading
 // capability is passed in. Original receipt/book clocks remain unmodified.
 fn write_tartarus_native_view(c:&Control,bank:&Session,ordinary:&DispatchLog,f:Option<&FundamentalRuntime>)->Result<()>{
- let mut ownership=Vec::new();if let Some(f)=f{for ex in f.cohorts.managed_exchanges(){if bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)+bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)>0||f.cohorts.rank_paused(&ex){ownership.push(f.cohorts.rank_inventory_state(bank,ordinary,&ex)?);}}}
+ let ownership=f.map(|f|f.cohorts.rank_inventory_states(bank,ordinary)).transpose()?.unwrap_or_default();
  let receipts=SNAPSHOT_RECEIPTS.with(|cache|cache.borrow().as_ref().filter(|v|v.root==c.root).map(|v|v.rows.iter().flatten().map(|r|json!({"receiptSha256":feedback::digest(r).ok(),"endpoint":r.endpoint,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at})).collect::<Vec<_>>()).unwrap_or_default());
  let orders:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).collect();
  let view=json!({"schema":"tartarus_native_research_view_v1","writtenAt":iso(now()),"nativeHead":bank.durable_head(),"manifestHash":bank.manifest_hash(),

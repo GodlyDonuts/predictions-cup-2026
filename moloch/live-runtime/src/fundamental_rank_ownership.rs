@@ -57,7 +57,13 @@ impl Cohorts{
  /// Compact ownership source; original bindings remain in the immutable held
  /// sidecar. No model probability, cash credit or physical permission is added.
  pub fn rank_inventory_state(&self,bank:&Session,log:&DispatchLog,ex:&str)->Result<Value>{
-  self.check(bank,log)?;let statement=self.ownership_statement(bank,ex)?;let body=serde_json::to_vec(&statement)?;
+  self.check(bank,log)?;self.rank_inventory_state_inner(bank,ex)
+ }
+ pub fn rank_inventory_states(&self,bank:&Session,log:&DispatchLog)->Result<Vec<Value>>{
+  self.check(bank,log)?;let mut states=Vec::new();for ex in self.policies.keys(){if bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)>0||self.rank_paused(ex){states.push(self.rank_inventory_state_inner(bank,ex)?);}}Ok(states)
+ }
+ fn rank_inventory_state_inner(&self,bank:&Session,ex:&str)->Result<Value>{
+  let statement=self.ownership_statement(bank,ex)?;let body=serde_json::to_vec(&statement)?;
   let yes=bank.engine().wallet.quantity(ex,Side::Yes);let no=bank.engine().wallet.quantity(ex,Side::No);let mut out=statement;
   out["sourceSha256"]=json!(bytes_sha(&body));out["sourceBodyText"]=json!(String::from_utf8(body)?);
   out["heldQuantity"]=json!(yes+no);out["positions"]=bank.engine().wallet.positions()[ex].clone();
