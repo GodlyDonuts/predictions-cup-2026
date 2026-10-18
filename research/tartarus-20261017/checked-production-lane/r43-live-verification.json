@@ -1,0 +1,25 @@
+{
+  "phase": "new_pid_fresh_trading_progress_observed",
+  "observedAt": "2026-10-18T09:06:46.596643+00:00",
+  "expectedPid": 778730,
+  "ordersSubmittedByObserver": 0,
+  "currentTradingVerified": true,
+  "actualExecutableArgumentsAndControlVerified": true,
+  "startTicks": "28213733",
+  "binarySha256": "fcb092dc35f6aee1f7473f851e43e48d62f433915bc8528ee80f3bcfeef8a35e",
+  "controlSha256": "205a48b0367a13b069fb1b6af273ca112f461c749f4f4653c80af64570ba75af",
+  "progress": {
+    "actualFills": 387,
+    "actualOrders": 1614,
+    "at": "2026-10-18T09:06:42.754Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 778730,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 39,
+    "terminalOrders": 1614
+  },
+  "newFillOrProfitVerified": false
+}
