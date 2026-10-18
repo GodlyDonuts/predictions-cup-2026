@@ -136,6 +136,7 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
     need(digest(policy) == report["policyHash"], "CURRENT_POLICY_BINDING")
     financial = {"nativeSequence": sealed["sequence"],
         "nativeReportRawSha256": expected_report_sha256, "cash": report["cash"],
+        "reservedCash": report["reservedCash"],
         "ownedCost": report["ownedCost"], "positions": positions,
         "maximumCommitted": policy["maximumCommitted"],
         "maximumMarketCost": policy["maximumMarketCost"],

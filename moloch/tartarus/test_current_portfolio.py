@@ -71,6 +71,7 @@ class CurrentPortfolioTests(unittest.TestCase):
         self.assertEqual(out["status"], "available_research_input")
         self.assertEqual(out["financial"]["inheritedExchanges"], ["x"])
         self.assertEqual(out["financial"]["ownedCost"], "0.400000")
+        self.assertEqual(out["financial"]["reservedCash"], "1.000000")
         self.assertEqual(out["financial"]["retainedMarketExchanges"], ["y"])
         self.assertEqual(out["financial"]["excludedBuyExchanges"], ["z"])
         self.assertEqual(out["financial"]["buyRequiresPriorCoveredSellExchanges"], ["x"])

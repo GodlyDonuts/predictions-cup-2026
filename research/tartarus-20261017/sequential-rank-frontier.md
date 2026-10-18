@@ -7,7 +7,9 @@ matching native head, current policy hash, all held contract mappings, original
 FIFO cost and actual-fill digest. It reconstructs remaining inherited lots after
 both actual sells and opposite-side buys, preserving unknown basis labels.
 All active native quote slots remain counted; missing original managed ownership
-excludes purchases. Pending physical orders or unresolved acceptance return an
+excludes purchases. Original reserved cash remains account wealth but is excluded
+from both available purchase cash and uncommitted principal; the solver and exact
+auditor never assume it was released. Pending physical orders or unresolved acceptance return an
 explicit unavailable result, with no assumed cancellation or proceeds.
 
 Existing managed holdings also retain their actual handoff state. An unpaused
@@ -38,7 +40,7 @@ although financial fields match; it is not advertised as a matched snapshot.
 The finite [R45 capture](capture-r45-current.py) waits for the exact current worker
 handle and fresh trading progress, then copies a matching immutable pair through
 local files only. It submits no account read, nomination, approval or order.
-The new adapter and integration cases bring focused checks to26. Actual current
+The new adapter and integration cases bring focused checks to27. Actual current
 snapshot/search qualification remains pending production restoration.
 
 ```powershell

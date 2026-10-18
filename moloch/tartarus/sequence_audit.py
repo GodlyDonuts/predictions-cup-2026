@@ -71,11 +71,14 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
     fresh_limit = financial["freshMarketLimit"]
     need(type(fresh_limit) is int and fresh_limit > 0, "FRESH_MARKET_LIMIT")
     cash = amount(financial["cash"])
+    reserved = amount(financial.get("reservedCash", "0.000000"))
     owned = amount(financial["ownedCost"])
     market = {ex: sum(l["quantity"] * amount(l["price"])
                      for lots in sides.values() for l in lots)
               for ex, sides in positions.items()}
     need(cash >= 0 and owned == sum(market.values()), "ORIGINAL_FINANCIALS")
+    need(0 <= reserved <= cash and owned + reserved <= amount(financial["maximumCommitted"]),
+         "ORIGINAL_RESERVED_FUNDING")
     available = {}
     for ex, entry in books.items():
         if ex not in byex:
@@ -151,7 +154,7 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
                     break
             need(not left, "SELL_EXCEEDS_ORIGINAL_FIFO")
             covered_sales.add(ex)
-        need(cash >= 0 and owned <= amount(financial["maximumCommitted"])
+        need(cash >= reserved and owned + reserved <= amount(financial["maximumCommitted"])
              and market[ex] <= amount(financial["maximumMarketCost"]), "PREFIX_FUNDING_OR_BANK_LIMIT")
         active = {ex for ex, sides in positions.items()
                   if any(l["quantity"] for lots in sides.values() for l in lots)}

@@ -197,8 +197,9 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
                 row({a: 1, indices[-1]: 1}, lo=1)
             else:
                 row({a: 1}, lo=1)
-    row(cash, hi=amount(financial["cash"]) / UNIT)
-    row(owned, hi=(amount(financial["maximumCommitted"]) - amount(financial["ownedCost"])) / UNIT)
+    reserved = amount(financial.get("reservedCash", "0.000000"))
+    row(cash, hi=(amount(financial["cash"]) - reserved) / UNIT)
+    row(owned, hi=(amount(financial["maximumCommitted"]) - amount(financial["ownedCost"]) - reserved) / UNIT)
     row(writes, hi=financial["conditionalFutureLegs"] + 1)
     row({a: 1 for a in active.values()}, hi=financial["maximumMarkets"])
     inherited = set(financial["inheritedExchanges"])

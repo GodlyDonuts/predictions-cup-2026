@@ -131,6 +131,13 @@ class SequentialFrontier(unittest.TestCase):
         self.assertEqual(routed["legs"][0]["ex"], "safe")
         self.assertTrue(any(v["action"] == "BUY" and v["ex"] == "safe" for v in routed["legs"]))
 
+    def test_original_cash_reservation_is_wealth_but_cannot_fund_new_buys(self):
+        f = fixture(); f[0]["reservedCash"] = "1.000000"
+        result = self.run_search(f, objective="mean")
+        self.assertEqual(result["legs"], [])
+        self.assertEqual(result["baseline"]["terminalWealthMicros"], [U, U, U])
+        self.assertEqual(result["independentExactAudit"]["cashMicros"], U)
+
 
 if __name__ == "__main__":
     unittest.main()
