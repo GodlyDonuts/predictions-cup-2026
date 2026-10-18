@@ -1,8 +1,9 @@
 # Whole-account sequential frontier — October 18
 
-Production R43 started at 08:34:43 UTC and is restoring its original financial
-history. This research changes no production review, activation or order.
-[Deployment evidence](checked-production-lane/r43-token-recovery-and-worker-start.json).
+Production R44 restarted at09:42UTC after an exact unadmitted-account-expiry
+recovery and is restoring its original financial history. This research changes
+no production review, activation or order.
+[Deployment evidence](checked-production-lane/r44-account-expiry-and-entry-fairness.json).
 
 The new research search includes integer BUY quantities, whole FIFO SELL
 tranches, at most 129 writes, 10,000 shares per write, the actual funded bank,

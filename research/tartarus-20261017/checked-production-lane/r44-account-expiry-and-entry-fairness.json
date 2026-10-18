@@ -1,0 +1,112 @@
+{
+  "qualification": {
+    "qualifiedAt": "2026-10-18T09:35:57.395274+00:00",
+    "steps": [
+      {
+        "step": "worker-expiry-isolated",
+        "exitCode": 0
+      },
+      {
+        "step": "worker-tests-serial",
+        "exitCode": 0
+      },
+      {
+        "step": "release-library",
+        "exitCode": 0
+      },
+      {
+        "step": "token-test-build",
+        "exitCode": 0
+      },
+      {
+        "step": "token-tests",
+        "exitCode": 0
+      },
+      {
+        "step": "release-worker",
+        "exitCode": 0
+      },
+      {
+        "step": "identity-build",
+        "exitCode": 0
+      }
+    ],
+    "libraryChecks": 264,
+    "ignoredLibraryChecks": 2,
+    "tokenChecks": 8,
+    "newWorkerChecks": 4,
+    "newSdkChecks": 2,
+    "binarySha256": "99a1f8f5de7ddce592fa77485db9c6018509bb2162d93ea0574f72045886d702",
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "nativeSourceChanged": false,
+    "engineBridgeRequired": false,
+    "workerChange": "SDK-proved stale-account no-HTTP recovery and fair reviewed entry scheduling",
+    "earlierQualificationObservations": "SDK245/library264 passed; parallel worker202pass/1 clock-dependent failure; isolated and serial worker rechecks required",
+    "libraryPins": {
+      "moloch_live_runtime": "9d4351e5bdd129d2cefe702b201956533099beb83e40153c5d81de68a3e1cfee",
+      "moloch_replay": "99a8476c5a7638afe1cf52545c6690d174f6c36f98d7390a7af41b031e810dfb",
+      "baal_transport_service": "8e569ec77526c7fe8c8e86fb1de312906165edf8d32231e768633f72d0a4daa9"
+    },
+    "ordersSubmitted": 0
+  },
+  "deployment": {
+    "observedAt": "2026-10-18T09:41:59.598915+00:00",
+    "sourceCommit": "9bcb9873",
+    "binarySha256": "99a1f8f5de7ddce592fa77485db9c6018509bb2162d93ea0574f72045886d702",
+    "controlSha256": "e0bb89a3dcea5e11d171b17bdf573ce8bd27772166f18d3ec6dcb2b1b1b49afd",
+    "unitSha256": "9153abdc240bb5458d4bb67a90cad00edaeaf204dac69c476a6401f1dd23add3",
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "nativeEngineBridgeChanged": false,
+    "modelGeneration": "a28b77a2638e0c83cf4d8657e195f1b0cbce09013fd22ffba2b576e4d0f123fa",
+    "all13ModelReviewsPreserved": true,
+    "onlyActiveOverlayBinaryBindingAndUnitPathsChanged": true,
+    "originalNativeReportHeadAndFinancialsUnchanged": true,
+    "originalFillTokensPreserved": 387,
+    "originalDispatchPrefixPreserved": true,
+    "originalAttemptAndErrorRetained": true,
+    "typedSdkProvedBeforeAdmissionQid": 18577,
+    "sdkKeyOrIntentForOriginalQidCreated": false,
+    "unknownCount": 0,
+    "ordersSubmittedByRecovery": 0,
+    "originalStopArchivedOnlyAfterProof": true,
+    "riskAndDailyWindowsChanged": false,
+    "currentTradingVerified": false,
+    "pid": 786288,
+    "startTicks": "28617359",
+    "actualExecutableAndArgumentsVerified": true,
+    "phase": "restoring_original_financial_ledger"
+  },
+  "recovery": {
+    "at": "2026-10-18T09:41:42.660Z",
+    "financialStateChanged": false,
+    "historicalExpiredExposureLeftForOriginalNativeRestore": true,
+    "networkRequests": 0,
+    "recoveredOriginalQids": [
+      18577
+    ],
+    "sameIntentRetryAuthorized": false,
+    "sdkArchiveReverified": true,
+    "stopPreserved": true
+  },
+  "originalError": {
+    "code": "LIVE_ACCOUNT_STALE",
+    "mayHaveExecuted": false
+  },
+  "frozenSdkClock": 1792314844324,
+  "originalAttemptAtMs": 1792314845927,
+  "financialHistoryBytes": 1900062276,
+  "financialHistorySha256": "65660aae22e10e71db809f1ecac31bcfbf6e9951d228f5a3a1699566f811d88ba",
+  "actualFinancialReport": {
+    "nativeSequence": 575011,
+    "fills": 387,
+    "cash": "10213.785000",
+    "ownedFifoCost": "85522.925000",
+    "realized": "156.795000"
+  },
+  "notes": [
+    "Original unknown attempt18533 remains bound and restored by the original native-backed expiry reconciliation.",
+    "No historical retry, invented acknowledgment or fill.",
+    "Parallel worker fixture failed on time-sensitive refresh/deferred state; unchanged isolated and complete serial worker suite passed.",
+    "No fresh trading, Tartarus campaign or new profit established at startup."
+  ]
+}

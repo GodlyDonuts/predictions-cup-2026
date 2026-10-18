@@ -37,11 +37,12 @@ R43 accepted native sells18549 (78NO1002 at0.285) and18562 (10,000YES1067 at0.33
 then stopped09:14:08 on18577's local account-freshness rejection. No additional
 fill or gain has been established. SDK history shows no18577 binding/admission,
 no unknown acceptance, and a watermark earlier than its original attempt.
-Its original STOP and immutable error remain while a typed no-HTTP recovery is
-qualified. The fix preserves20-second account checks and10-second book checks;
+The original immutable error and archived STOP remain. A typed SDK no-HTTP
+proof retired only the exact unadmitted intent; corrected R44 restarted09:42UTC
+and is restoring the original financial history. The fix preserves20-second account checks and10-second book checks;
 it does not turn uncertain writes into retries or erase old intents.
 
-Prospective code also shares the existing selection cursor between passive
+The installed R44 code also shares the existing selection cursor between passive
 reserved-exit retries and new reviewed entries. Actual holding deadlines and
 source revocations retain exit priority. No financial engine, fee, bank,
 position basis or API-rate setting changes are involved.
