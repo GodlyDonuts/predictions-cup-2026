@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "classification": "dated_public_marked_field_observation_not_terminal_wealth",
+  "sourceUrl": "https://sig.thesuper.market/leaderboards",
+  "rawSourceKind": "anonymous_official_public_HTML_no_internal_API",
+  "requestStartedAt": "2026-10-18T03:47:06.345877+00:00",
+  "receivedAt": "2026-10-18T03:47:06.962671+00:00",
+  "originalHtmlBytes": 216170,
+  "originalHtmlSha256": "e7f2bce089394f2458b41b2190bf121fd1b7a411a17090d674d412d7d60b5a70",
+  "sourcePublisherTimestamp": null,
+  "sourceFieldName": "pnl",
+  "period": "all",
+  "sort": "pnl",
+  "participantCount": 1685,
+  "visibleRows": 100,
+  "completeField": false,
+  "top": [
+    {
+      "rank": 1,
+      "username": "kind-brook-6861",
+      "publishedPnl": "981241.68",
+      "tradesCount": 4376,
+      "inferredMarkedWealthIfInitial100000PlusPnl": "1081241.68"
+    },
+    {
+      "rank": 2,
+      "username": "bright-finch-0400",
+      "publishedPnl": "902719.47",
+      "tradesCount": 16670,
+      "inferredMarkedWealthIfInitial100000PlusPnl": "1002719.47"
+    },
+    {
+      "rank": 3,
+      "username": "steady-finch-4087",
+      "publishedPnl": "827944.55",
+      "tradesCount": 18080,
+      "inferredMarkedWealthIfInitial100000PlusPnl": "927944.55"
+    }
+  ],
+  "initialAllotmentForInferenceOnly": "100000",
+  "initialAllotmentIndependentVerificationByThisCapture": false,
+  "inferredMarkedWealthIsAssumption": true,
+  "currentOpposingTerminalWealth": null,
+  "privatePositionsObserved": false,
+  "calibratedWinningProbabilityClaimed": false,
+  "authenticatedAccountRequests": 0,
+  "executionAuthority": false,
+  "uncertainties": [
+    "The HTML contains public PnL, not competing cash, cost basis, debt or terminal wealth.",
+    "Adding100000 is an explicit benchmark inference from the paper, not a private account reconstruction.",
+    "Only100of1685public rows are retained in the original page; no complete-field assertion.",
+    "The earlier web-text rendering showed different rounded values and1683participants; it is a separate observation, not merged with this raw snapshot.",
+    "Final field growth, correlated exposure and ties require separate declared sensitivity models."
+  ]
+}
