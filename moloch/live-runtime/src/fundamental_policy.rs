@@ -1398,8 +1398,8 @@ impl Cohorts{
         need(!self.poisoned&&at>=self.clock,"FUNDAMENTAL_POISONED_OR_CLOCK")?;
         path_pin(&self.path,&identity(&self.file)?)?;
         // Apply to small metadata maps before writing; no financial state copy.
-        let policies=self.policies.clone();let cohorts=self.cohorts.clone();let abandoned=self.abandoned.clone();let generation=self.generation.clone();
-        let result=self.apply(&event);self.policies=policies;self.cohorts=cohorts;self.abandoned=abandoned;self.generation=generation;result?;
+        let policies=self.policies.clone();let cohorts=self.cohorts.clone();let abandoned=self.abandoned.clone();let generation=self.generation.clone();let rank_exits=self.rank_exits.clone();
+        let result=self.apply(&event);self.policies=policies;self.cohorts=cohorts;self.abandoned=abandoned;self.generation=generation;self.rank_exits=rank_exits;result?;
         let mut row=json!({"sequence":self.sequence+1,"previous":self.previous,"manifestHash":self.manifest,"runId":self.run,"atMs":at,"event":event});
         let sha=digest(&row)?;row["hash"]=json!(sha);let mut bytes=serde_json::to_vec(&row)?;bytes.push(b'\n');
         need(bytes.len()<=MAX_ROW&&self.file.metadata()?.len().checked_add(bytes.len() as u64).is_some_and(|n|n<=MAX_LOG),"FUNDAMENTAL_LOG_BOUND")?;

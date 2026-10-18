@@ -10,7 +10,7 @@ fn setup()->(F,rank_campaign::Reviewed,Value){
  let mut f=F::new(None,"0.900000",0,"0.000000",true);
  f.event(json!({"type":"ordinary_entry_exclusions_v1","source":"moloch_live_dispatcher","receivedAt":iso(NOW+7100),
   "bankScope":{"runId":f.seed["runId"],"bankManifestHash":f.bank.manifest_hash(),"tournamentId":T},
-  "managedExchangeIds":["101"],"approvedReviewSetSha256":"b".repeat(64),"controlSha256":"c".repeat(64),"expectedPreviousExclusionSha256":null}));
+  "bankHead":f.bank.durable_head(),"expectedReportSha256":digest(&f.bank.engine().report().unwrap()),"managedExchangeIds":["101"],"approvedReviewSetSha256":"b".repeat(64),"controlSha256":"c".repeat(64),"expectedPreviousExclusionSha256":null}));
  let state=f.store.as_ref().unwrap().rank_exit_state(&f.bank,&f.log,"101").unwrap();
  let body=state["cohortBodyText"].as_str().unwrap().as_bytes().to_vec();assert_eq!(sha(&body),state["cohortSha256"]);
  let proof:Value=["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256"].into_iter().map(|k|(k.to_owned(),state[k].clone())).collect::<serde_json::Map<String,Value>>().into();
@@ -21,7 +21,7 @@ fn setup()->(F,rank_campaign::Reviewed,Value){
   "contracts":[{"contractId":"301","exchangeId":"101","marketId":"201","semanticSourceSha256":node_sha,"officialContractRootSha256":f.review.official_contract_root_sha256}],
   "scenarios":[{"id":"no","kind":"ordinary","assumptionLabel":"Synthetic NO","payouts":{"301":"resolved_no"}},{"id":"yes","kind":"ordinary","assumptionLabel":"Synthetic YES","payouts":{"301":"resolved_yes"}}],
   "probabilityModels":[{"id":"declared","weightsPpm":[800000,200000],"assumptionLabel":"Synthetic uncalibrated weights"}],
-  "fieldModels":[{"id":"unknown","thresholds":["2000.000000","1000.500000"],"completeField":false,"assumptionLabel":"Synthetic incomplete field"}],
+  "fieldModels":[{"id":"unknown","thresholds":["2000.000000",moloch_replay::money(engine.wallet.cash+500000)],"completeField":false,"assumptionLabel":"Synthetic incomplete field"}],
   "modelPairs":[{"probabilityId":"declared","fieldId":"unknown"}],
   "action":{"contractId":"301","exchangeId":"101","marketId":"201","side":"NO","action":"SELL","quantity":1,"limitPrice":"0.680000","nominationBookSha256":digest(&engine.live_package_books()[0])},
   "managedExit":proof,"risk":{"maximumGrossCost":"1.000000","maximumQuantity":1,"maximumModeledLoss":"10.000000","minimumTerminalWealth":"0.000000","minimumTargetGainPpm":1},"unmodeledStateStatement":"Synthetic states are not exhaustive or calibrated"});
