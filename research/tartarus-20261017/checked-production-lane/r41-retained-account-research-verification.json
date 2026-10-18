@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-18T05:17:23.311786+00:00",
+  "classification": "retained_same_worker_original_account_receipts_for_dated_research",
+  "originalReceiptHashesVerified": true,
+  "sources": {
+    "account": {
+      "receiptDigest": "517e9fdba147ea0ce6ff7973d8f97f832bb3724adc14d6d0d2cfbc167870beb5",
+      "rawSha256": "186f61d539889ed7c76a16f194b515da43ec5010350cfb125c27d70b2b744e0e",
+      "endpoint": "/account?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T05:02:46.069Z",
+      "receivedAt": "2026-10-18T05:02:46.467Z"
+    },
+    "collateral": {
+      "receiptDigest": "687e6496b1a0d2fd35bf87f5d471589eded9b1fbf5647f6e9cf7458bdf369e06",
+      "rawSha256": "7034cc9a0a2a510aaccb289d1ff69f98be0867c221775bebf25163c8eff029c4",
+      "endpoint": "/portfolio/collateral?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T05:02:47.188Z",
+      "receivedAt": "2026-10-18T05:02:47.565Z"
+    },
+    "positions": {
+      "receiptDigest": "e97253c7c8d758199866bc77ffeb69eb0f62b9e058ec44e4e09f1be336df0e8f",
+      "rawSha256": "1d8c3c9dd7a21486158c1b36fd5fb0fb55fb63882db0c69ac4ffdec4ddc44095",
+      "endpoint": "/tournaments/midterm-elections/portfolio/positions",
+      "requestStartedAt": "2026-10-18T05:02:48.213Z",
+      "receivedAt": "2026-10-18T05:02:48.600Z"
+    },
+    "open-orders": {
+      "receiptDigest": "92e31cc889db53b5dca8da8e7ff3e84710df5ab104d399a463b8469977a77506",
+      "rawSha256": "4ad573e231a426b175d3b0070fcd0112083f107326c427d47cba698a3a40ac2b",
+      "endpoint": "/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T05:02:49.308Z",
+      "receivedAt": "2026-10-18T05:02:49.798Z"
+    }
+  },
+  "profileMatchesDurableOwnerCapitalRecord": true,
+  "cashMatchesPreservedNativeFinancialSnapshot": true,
+  "cash": "6913.785000",
+  "allSignedPositionsMatchPreservedNativeSnapshot": true,
+  "physicalOpenOrdersAtSource": 0,
+  "collateralComponentsAtSource": 0,
+  "outstandingAdvanceAtSource": "0.000000",
+  "availableAdvanceAtSource": "0.000000",
+  "financialSnapshotSequence": 573400,
+  "financialSnapshotAt": "2026-10-18T05:02:54.838Z",
+  "financialSnapshotReportSha256": "ab495c4afc3766814c5b7a18da3a03e8fb06e8661750f42db45e88dd08853d7a",
+  "snapshotRequestFailurePreserved": "TARTARUS_ORIGINAL_PROFILE_CHANGED",
+  "diagnosis": "Immutable legacy bank seed binds original tournament/myBalance receipt; research export incorrectly assumes seed receipt is account/profile. Original seed unchanged; account profile separately matches original durable owner capital record.",
+  "nativeAllocationBoundaryQualified": false,
+  "officialAtomicSnapshotClaimed": false,
+  "sdkCapabilityMinted": false,
+  "newHttpRequests": 0,
+  "bankOrIntentEdited": false,
+  "executionAuthority": false,
+  "laterTradingChangesThisDatedCashAndPositions": true
+}

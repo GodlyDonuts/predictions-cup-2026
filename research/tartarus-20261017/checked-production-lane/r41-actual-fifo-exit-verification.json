@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-18T05:14:32.469819+00:00",
+  "workerPid": 759034,
+  "workerPidIsFinancialAttributionNotCurrentLiveness": true,
+  "laterOperationalObservation": {
+    "observedAt": "2026-10-18T05:19:44Z",
+    "serviceMainPid": 0,
+    "workerStoppedAt": "2026-10-18T05:11:45.853Z",
+    "reason": "LIVE_WRITE_NOT_CONFIRMED_NO_RETRY",
+    "uncertainQid": 18533,
+    "financialVerificationDoesNotEstablishLivenessAtVerificationTime": true
+  },
+  "sourcePrefixReplayedByNewProcess": true,
+  "all385OriginalFillTokensPreserved": true,
+  "capturedFinancialSequence": 574171,
+  "capturedFinancialAt": "2026-10-18T05:11:32.624Z",
+  "capturedReportSha256": "35672c0c1b99689300ee232f7fb186f36ec10b44232427327205bd7fbfbde668",
+  "capturedHeadSha256": "6bd77b5fa32a58a94bf8dba5a07eaca842f5b179da7adb34bb74e69955e8ca31",
+  "sourceFinancialSequence": 573129,
+  "sourceReportSha256": "a0cab1520b1de10ce968ad6bce228fa11acae6d1dd8e2b8136dfb06929191adb",
+  "actualFillsAtSnapshot": 387,
+  "verifiedTrade": {
+    "exchangeId": "1067",
+    "side": "YES",
+    "action": "SELL",
+    "quantity": 10000,
+    "price": "0.330000",
+    "actualFillParts": [
+      355,
+      9645
+    ],
+    "actualExecutedAt": "2026-10-18T05:06:37.842Z",
+    "grossProceeds": "3300.000000",
+    "originalFifoPrincipalRemoved": "3215.035000",
+    "nativeExecutionFees": "0.000000",
+    "incrementalRealizedFifoProfit": "84.965000",
+    "originalCompleteFillTapeDigest": "0786689b151bc658edb02eb8a750c5308caee7d44d29ca6f555e43bd79a02b39",
+    "originalCompleteFillTapeRawSha256": "db390de5be94c1a8867be786aaac048501d9c5a20432ea9469bd4abaf9938203",
+    "nativeMatchesOriginalCompleteFillTape": true,
+    "classification": "existing_fundamental_fifo_exit_not_rank_campaign"
+  },
+  "cashAtSnapshot": "10213.785000",
+  "ownedFifoAtSnapshot": "85522.925000",
+  "nativeRealizedAtSnapshot": "156.795000",
+  "progress": {
+    "actualFills": 387,
+    "actualOrders": 1614,
+    "at": "2026-10-18T05:10:44.515Z",
+    "completedReadScopes": 12,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 759034,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 36,
+    "terminalOrders": 1613
+  },
+  "profitableTartarusRankCampaignEstablished": false
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "completedAt": "2026-10-18T05:10:42.136150+00:00",
+  "originalFilesScanned": 73851,
+  "matchedOriginalNodeReceipts": 4061,
+  "coveredMarkets": 143,
+  "officialScopeMarkets": 237,
+  "allMarketCoverage": false,
+  "currentSemanticsClaimed": false,
+  "executionAuthority": false,
+  "networkRequests": 0,
+  "originalPrivateIndexSha256": "976499abc4922bfb97c3fb229809b9e23d0bda6fa59157af315c6ca262ce3f4f",
+  "indexScriptSha256": "b00f4b6bfb7ba6b11d679e64b166556806e85a6206b96d7054834c3152eed964"
+}
