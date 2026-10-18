@@ -80,6 +80,11 @@ fn rank_activation(q:&Value,original:&Value,at:u64)->Result<Option<u64>>{
  if q!=original||!rank_quote(q)||q["retired"]!=false||q["filled"]!=0||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|at>=t){return Err("RANK_RESERVATION_EXPIRED_OR_CHANGED".into())}
  let active=q["activationAt"].as_u64().ok_or("RANK_ACTIVATION")?;Ok((at<active).then_some(active))
 }
+// Expiring source facts before native admission are an ordinary deferral.
+// Validate at one captured clock so genuine boundary changes remain fatal.
+fn rank_commit_ready(until:u64,mut clock:impl FnMut()->u64,validate:impl FnOnce(u64)->Result<()>)->Result<bool>{
+ let at=clock();if at>=until{return Ok(false)}validate(at)?;Ok(clock()<until)
+}
 fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&Arc<ProductionAuthority>,stream:&Realtime,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  let Some(settings)=&c.rank_campaign else{return Ok(())};
  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
@@ -103,14 +108,14 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_ALREADY_HAS_PHYSICAL_LIABILITY")}
  retire_existing_drafts(bank,log,&ex)?;
  let collateral=request(t,&c.root,Endpoint::Collateral)?;
- let facts=preflight_snapshots(c,bank,source,&market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
+ let facts=preflight_snapshots(c,bank,source,&market,None,&mut LivePreflightReads{frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
  accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if managed.contains(&ex){rank_yield_managed_drafts(bank,log,&ex)?;}
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_CHANGED_DURING_READS")}
  retire_existing_drafts(bank,log,&ex)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;pins.validate()?;
  let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
  let plan={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
-  match moloch_live_runtime::rank_campaign::prepare(bank,&b,&review,&facts,&retained,now()){Ok(p)=>{p.validate_current(bank,&b,now())?;p},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"evaluation",&e.to_string()),Err(e)=>return Err(e)}
+  match moloch_live_runtime::rank_campaign::prepare(bank,&b,&review,&facts,&retained,now()){Ok(p)=>{if !rank_commit_ready(p.valid_until_ms(),now,|at|p.validate_current(bank,&b,at))?{return rank_deferred(c,"reservation_age","ORIGINAL_FACT_WINDOW_EXPIRED_BEFORE_NATIVE_COMMIT")}p},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"evaluation",&e.to_string()),Err(e)=>return Err(e)}
  };
  let qid=plan.expected_qid();accept(bank,plan.event())?;let original=quote(bank,qid)?;(qid,original)};
  if !rank_quote(&original)||original["reviewedRankCampaign"]["campaignSha256"]!=review.campaign_sha256(){return Err("RANK_REAL_RESERVATION_MISMATCH".into())}
@@ -120,7 +125,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
   Err(e)=>{if log.never_attempted(qid)&&q["retired"]==false{retire_never_sent(bank,log,&q)?;}return rank_deferred(c,"activation",&e.to_string())}
  }}
  let collateral=request(t,&c.root,Endpoint::Collateral)?;
- let facts=match preflight_snapshots(c,bank,source,&market,Some(&original),&mut LivePreflightReads{t,c,authority,stream,breadth,universe}){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
+ let facts=match preflight_snapshots(c,bank,source,&market,Some(&original),&mut LivePreflightReads{frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe}){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
  accept_fresh_book(bank,c,&target,&facts.book,source)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;let current=quote(bank,qid)?;
  if current!=original||!log.never_attempted(qid){return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_CHANGED")}
  pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
@@ -156,6 +161,7 @@ fn validate_maker_configuration(c:&Control)->Result<()>{
 }
 fn expected_maker_expiry(error:&dyn std::error::Error)->bool{matches!(error.to_string().as_str(),"MAKER_DECISION_EXPIRED"|"MAKER_QUOTE_EXPIRED")}
 const MAX_REALTIME_FRAMES_PER_DRAIN:usize=64;
+const RANK_REALTIME_FRAMES_PER_SERVICE:usize=1;
 const RELATIONSHIP_CENSUS_REFRESH_MS:u64=300_000;
 fn now()->u64{SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() as u64}
 fn iso(t:u64)->String{chrono::DateTime::from_timestamp_millis(t as i64).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Millis,true)}
@@ -791,7 +797,7 @@ fn source(c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,fro
  accept_source_events(bank,&s.accept(&wrap(&book,"book"))?)?;Ok(to.saturating_sub(2000))
 }
 fn snapshots(t:&mut Transport,c:&Control,authority:&ProductionAuthority,bank:&mut Session,source:&mut RestSource,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,q:&Value)->Result<SnapshotSet>{
- preflight_snapshots(c,bank,source,q["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})
+ preflight_snapshots(c,bank,source,q["marketId"].as_str().ok_or("LIVE_MARKET_ID")?,None,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})
 }
 /// A read-only target is not a native quote. In particular, inherited value
 /// exits obtain all seven original facts BEFORE creating a genuine SELL qid.
@@ -1259,7 +1265,7 @@ fn paper5_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:&mu
  if exchanges.iter().any(|ex|managed.contains(ex))||paper5_component_drafts(bank,ordinary,&exchanges)?.is_none(){paper5_status(c,runtime,"ownership","MANAGED_OR_PHYSICAL_COMPONENT_BUSY");return Ok(())}
  for(ex,market)in &targets{
   request(t,&c.root,Endpoint::Nodes{market_id:market.clone()})?;if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;
-  let from=*windows.get(ex).ok_or("LIVE_PACKAGE_SOURCE_WINDOW")?;let next=source(c,bank,source_state,ex,market,from,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;windows.insert(ex.clone(),next);
+  let from=*windows.get(ex).ok_or("LIVE_PACKAGE_SOURCE_WINDOW")?;let next=source(c,bank,source_state,ex,market,from,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?;windows.insert(ex.clone(),next);
   if !authority.can_read(&c.scope){return Err("LIVE_PACKAGE_OWNER_LOST".into())}require_stream(stream)?;drain_stream(stream,bank,source_state,breadth,universe)?;
  }
  let nodes=paper5_nodes(&c.scope);
@@ -1566,7 +1572,7 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
   // the timed seven-fact packet. Otherwise unrelated profitable drafts may use
   // the real write gap and the target appears only after that packet is over.
   // This extra read is not one of the final seven and grants no HTTP authority.
-  let initial=preflight_read(bank,source,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},None,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
+  let initial=preflight_read(bank,source,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe},None,Endpoint::OrderBook{market_id:market.into(),depth:20})?;
   let target=json!({"marketId":market,"exchangeId":hint.exchange()});let admitted=accept_fresh_book(bank,c,&target,&initial,source)?;
   let admitted_head=bank.durable_head();
   let target_managed=fundamental.as_ref().is_some_and(|f|f.cohorts.manages(hint.exchange()));
@@ -1829,17 +1835,17 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  }
  refresh_controls(c,authority,stream)?;
  if let Some(original)=retry{
-  let Some((facts,until))=passive_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_PASSIVE_RESERVATION_OR_PACKET_INELIGIBLE")};
+  let Some((facts,until))=passive_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_PASSIVE_RESERVATION_OR_PACKET_INELIGIBLE")};
   return submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,facts,until)
  }
  if hint.reason=="reviewed_inventory_book_refresh"{
   let target=json!({"marketId":market,"exchangeId":ex});
-  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},|bank,at|{
+  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe},|bank,at|{
    Ok(f.cohorts.existing_exit_hint(bank,log,&c.scope,ex,f.authority.trusted(),at)?.is_some())
   })?;
   if !eligible{return existing_exit_deferred(c,ex,"book_prefilter","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")}
  }
- let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
+ let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?;
  let Some(facts_until)=existing_facts_until(&facts,now())?else{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if existing_target_busy(bank,log,ex)?{return existing_exit_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
@@ -2028,14 +2034,14 @@ fn apply_bulk_vetoes(scope:&Scope,quotes:&[Value],physical:&mut Vec<(String,usiz
   if vetoed{chosen_deferred|=item.1==chosen;}else{kept.push(item.clone());}
  }*physical=kept;Ok(chosen_deferred)
 }
-struct LivePreflightReads<'a>{t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime,breadth:&'a mut Option<Recorder>,universe:&'a mut Option<Universe>}
+struct LivePreflightReads<'a>{frames_per_service:usize,t:&'a mut Transport,c:&'a Control,authority:&'a ProductionAuthority,stream:&'a Realtime,breadth:&'a mut Option<Recorder>,universe:&'a mut Option<Universe>}
 impl OrdinaryPreflightReads for LivePreflightReads<'_>{
  fn now_ms(&self)->u64{now()}
  fn guarded(&mut self)->Result<bool>{refresh_controls(self.c,self.authority,self.stream)?;Ok(!queue_has_unknown(self.t)?)}
  fn read(&mut self,ep:Endpoint)->Result<Receipt>{request(self.t,&self.c.root,ep)}
  fn read_serviced(&mut self,bank:&mut Session,source:&mut RestSource,ep:Endpoint)->Result<Receipt>{
-  let Self{t,c,authority,stream,breadth,universe}=self;
-  let mut service=||{refresh_controls(c,authority,stream)?;drain_stream(stream,bank,source,breadth,universe)?;refresh_controls(c,authority,stream)};
+  let Self{t,c,authority,stream,breadth,universe,frames_per_service}=self;
+  let mut service=||{refresh_controls(c,authority,stream)?;drain_stream_limited(stream,bank,source,breadth,universe,*frames_per_service)?;refresh_controls(c,authority,stream)};
   for attempt in 0..3u64{
    // One exclusive SDK GET; source admission stays on this Session thread.
    // Outer service errors are fatal and never enter SDK retry classification.
@@ -2052,7 +2058,7 @@ impl OrdinaryPreflightReads for LivePreflightReads<'_>{
  }
   fn service_before_read(&mut self,bank:&mut Session,source:&mut RestSource)->Result<()>{
    refresh_controls(self.c,self.authority,self.stream)?;
-   drain_stream(self.stream,bank,source,self.breadth,self.universe)?;
+   drain_stream_limited(self.stream,bank,source,self.breadth,self.universe,self.frames_per_service)?;
    refresh_controls(self.c,self.authority,self.stream)
   }
 }
@@ -2175,14 +2181,14 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  }
  let target=json!({"marketId":market,"exchangeId":ex});
  let quarantine=c.maker_policy.is_none()&&!queue_has_unknown(t)?;let managed=f.cohorts.managed_exchanges();
- let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{t,c,authority,stream,breadth,universe},|bank,at|{
+ let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe},|bank,at|{
   let at=if quarantine{retire_unqualified_entry_drafts(c,bank,log,&managed)?;now()}else{at};
   let(books,_)=moloch_live_runtime::package_admission::native_books(bank,&c.scope,at,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("LIVE_BOOK_POLICY")?)?;
   if !books.contains_key(ex){return Ok(true)} // Unavailable/legacy comparison is not price evidence.
   Ok(f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,at)?.is_none_or(|comparison|!comparison.candidates.is_empty()))
  })?;
  if !eligible{return fundamental_entry_deferred(c,ex,"book_prefilter","NO_CURRENT_REVIEWED_VALUE_OR_DEPTH")}
- let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
+ let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;if existing_target_busy(bank,log,ex)?{return fundamental_entry_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
  retire_existing_drafts(bank,log,ex)?;
  // Serviced reads can regenerate ordinary drafts. Release their ACTUAL local
@@ -2236,7 +2242,7 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // Activation and native write pacing intentionally consume time. Obtain a
  // FINAL genuine seven-receipt packet after that wait instead of dispatching
  // against the earlier planning packet. Keep the exact funded qid and price.
- let final_facts=match preflight_snapshots(c,bank,source,market,Some(q),&mut LivePreflightReads{t,c,authority,stream,breadth,universe}){
+ let final_facts=match preflight_snapshots(c,bank,source,market,Some(q),&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe}){
   Ok(facts)=>facts,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED"),Err(e)=>return Err(e)
  };
  accept_fresh_book(bank,c,&target,&final_facts.book,source)?;
@@ -2487,7 +2493,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   if let Some((key,decision))=defensive_cancel_candidate(c,bank,log,&managed,preflight_cursor.as_deref(),now())?{
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
    let qid=decision.qid();let _=decision;
-   if let Some((current,facts))=defensive_cancel_preflight(c,bank,log,source,&managed,qid,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?{
+   if let Some((current,facts))=defensive_cancel_preflight(c,bank,log,source,&managed,qid,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?{
     refresh_controls(c,authority,stream)?;
     match t.package_queue_quiet(){Ok(_)=>{},Err(e)if e.code=="PACKAGE_QUEUE_NOT_QUIET"=>return Ok(()),Err(e)=>return Err(e.into())}
     if !defensive_cancel_current(&current,bank,&c.scope,log,&managed,now())?{return Ok(())}
@@ -2501,7 +2507,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let mut chosen=shared_preflight_with_profit(&stale_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
  if let Some((SharedPreflight::Physical(index),key))=&chosen{
   let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
-  let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?;
+  let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?;
   if !vetoes.is_empty(){
    if apply_bulk_vetoes(&c.scope,&quotes,&mut physical,&vetoes,*index,now())?{*preflight_cursor=Some(key.clone());}
    chosen=shared_preflight_with_profit(&stale_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
@@ -2546,7 +2552,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   // same read-only facts. No intent/attempt or HTTP write exists at this stage.
   if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(keys[index].clone());
   if early_exit_prefetch{let _=atomic_json(&c.root.join("exit-prefetch.json"),&json!({"at":iso(prefetch_started),"qid":qid,"stage":"started","createdAtMs":q["createdAt"],"activationAtMs":q["activationAt"],"expiresAtMs":q["expiresAt"],"prefetchStartedAtMs":prefetch_started,"expiryExtended":false}));}
-  let Some((current,facts))=ordinary_preflight(c,bank,log,source,&q,&mut LivePreflightReads{t,c,authority,stream,breadth,universe})?else{
+  let Some((current,facts))=ordinary_preflight(c,bank,log,source,&q,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?else{
    authority.clear_ready();let assessment=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&[quote(bank,qid)?],now(),None)?;
    let _=atomic_json(&c.root.join("quote-book-prefilter.json"),&json!({"at":iso(now()),"qid":qid,"assessment":assessment,"stage":"deferred_before_account_packet","physicalAttempted":false,"priceChanged":false,"expiryExtended":false}));return Ok(())
   };let final_at=now();
@@ -2590,12 +2596,17 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
 }
 fn account_reconciliation_due(stream:&Realtime)->bool{stream.account_signal().is_some_and(|s|s.requires_reconciliation())}
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
+ drain_stream_limited(stream,bank,source,breadth,universe,MAX_REALTIME_FRAMES_PER_DRAIN)
+}
+// Private account invalidation is independent of this public-frame budget.
+// Unconsumed frames remain queued for the next normal drain.
+fn drain_stream_limited(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,maximum:usize)->Result<()>{
  require_stream(stream)?;
  let mut pending=QueuedSourceBatch::default();
  let account=stream.account_signal();let generation=||account.as_ref().map(|s|s.generation());
  let mut catchup=realtime_book_catchup::Drain::new(generation());
  let emit=|pending:&mut QueuedSourceBatch,bank:&mut Session,rows:Vec<realtime_book_catchup::Stamped>|->Result<()>{for(event,_normalized_at)in rows{pending.push_at(bank,std::slice::from_ref(&event),now())?;}Ok(())};
- for _ in 0..MAX_REALTIME_FRAMES_PER_DRAIN{
+ for _ in 0..maximum{
   catchup.observe_generation(generation());
   if let Err(error)=require_stream(stream){emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}let Ok(input)=stream.incoming.try_recv()else{break};match input{
   Incoming::Broadcast{event,payload,received_at}=>{
@@ -2830,7 +2841,7 @@ pub fn main()->Result<()>{
     let _=atomic_json(&c.root.join("discovery-schedule.json"),&json!({"at":iso(now()),"pid":std::process::id(),"nativeHead":bank.durable_head(),"maximumDiscoveryReads":read_budget.maximum_discovery_reads(),"maximumManagedMarkets":read_budget.maximum_managed_markets(),"requiredScopeCount":required.len(),"urgentOwned":urgent,"selectedScopes":order.scopes,"diagnostic":order.diagnostic,"readSchedulingOnly":true,"monetaryCapsChanged":false}));
     order.scopes
    }else{selected};
-   for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let source_started=now();let next=source(&c,&mut bank,&mut source_state,ex,market,from,&mut LivePreflightReads{t:&mut t,c:&c,authority:&authority,stream:stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,breadth:&mut breadth,universe:&mut universe})?;owned_age_reads.record_source_read(ex,source_started,now())?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
+   for (selected_index,ex) in selected.iter().enumerate(){require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;let market=&c.scope.exchanges[ex];let from=windows[ex];let source_started=now();let next=source(&c,&mut bank,&mut source_state,ex,market,from,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t:&mut t,c:&c,authority:&authority,stream:stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,breadth:&mut breadth,universe:&mut universe})?;owned_age_reads.record_source_read(ex,source_started,now())?;windows.insert(ex.clone(),next);drain_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut bank,&mut source_state,&mut breadth,&mut universe)?;
     if account_reconciliation_due(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)||reconciliation_schedule.due(now(),pending_version(&log))?.is_some(){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
@@ -2852,7 +2863,7 @@ pub fn main()->Result<()>{
      require_stream(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
      let target=hint.exchange_id().to_owned();let market=hint.market_id().to_owned();
      let started=now();let from=*windows.get(&target).ok_or("LIVE_OWNED_REFRESH_WINDOW")?;
-     let next=source(&c,&mut bank,&mut source_state,&target,&market,from,&mut LivePreflightReads{t:&mut t,c:&c,authority:&authority,stream:stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,breadth:&mut breadth,universe:&mut universe})?;
+     let next=source(&c,&mut bank,&mut source_state,&target,&market,from,&mut LivePreflightReads{frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t:&mut t,c:&c,authority:&authority,stream:stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,breadth:&mut breadth,universe:&mut universe})?;
      owned_age_reads.complete_read(&hint,started,now())?;windows.insert(target.clone(),next);
      let execution_clock=if hint.reason()=="new_lot_maximum_age"{Some(hint.oldest_execution_ms())}else{None};
      let _=atomic_json(&c.root.join("owned-age-refresh.json"),&json!({"at":iso(now()),"pid":std::process::id(),"exchangeId":target,"marketId":market,"reason":hint.reason(),"nativeQid":hint.native_qid(),"oldestExecutionMs":execution_clock,"dueAtMs":hint.due_at_ms(),"sourceStartedAt":iso(started),"nativeHead":bank.durable_head(),"readOnlyNomination":true,"financialPolicyChanged":false}));
@@ -4179,6 +4190,11 @@ mod local_final_guard_recovery_tests{
 }
 #[cfg(test)]mod rank_worker_tests{
  use super::*;
+ #[test]fn rank_expired_before_validation_defers_without_validating(){assert!(!rank_commit_ready(10,||10,|_|panic!("expired plan must not validate")).unwrap());}
+ #[test]fn rank_expired_during_validation_defers_without_committing(){let mut ticks=[9,10].into_iter();assert!(!rank_commit_ready(10,||ticks.next().unwrap(),|at|{assert_eq!(at,9);Ok(())}).unwrap());}
+ #[test]fn rank_fresh_commit_validates_once_at_original_clock(){let mut ticks=[8,9].into_iter();let mut calls=0;assert!(rank_commit_ready(10,||ticks.next().unwrap(),|at|{calls+=1;assert_eq!(at,8);Ok(())}).unwrap());assert_eq!(calls,1);}
+ #[test]fn rank_genuine_boundary_change_remains_fatal(){assert_eq!(rank_commit_ready(10,||9,|_|Err("RANK_RESERVATION_BOUNDARY_CHANGED".into())).unwrap_err().to_string(),"RANK_RESERVATION_BOUNDARY_CHANGED");}
+
  #[test]fn known_open_order_defers_rank_but_unknown_acceptance_remains_fatal(){
   let p=std::env::temp_dir().join(format!("rank-dispatch-{}-{}.ndjson",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));let mut log=DispatchLog::open(&p).unwrap();assert!(!rank_waits_for_known_orders(&log).unwrap());
   log.append(json!({"kind":"intent","qid":1})).unwrap();log.append(json!({"kind":"attempt","qid":1})).unwrap();assert_eq!(rank_waits_for_known_orders(&log).unwrap_err().to_string(),"DISPATCH_UNKNOWN_ACCEPTANCE_MANUAL_RECONCILIATION");
