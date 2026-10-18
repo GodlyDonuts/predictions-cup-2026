@@ -1,0 +1,171 @@
+{
+  "observedResearchAt": "2026-10-18T21:03:00Z",
+  "numericIssuedAtMs": 1792357026392,
+  "inputCutoffMs": 1792357025105,
+  "numericalModelRawSha256": "96e044b7922edd63fbb8f568ea471fa6e237a21d0043d12c67bd7282841f2f09",
+  "fullWorlds": 385,
+  "models": 5,
+  "fields": 3,
+  "retainedOriginalReviews": 14,
+  "expiredOriginalReviews": 2,
+  "historicalEnvelopesOnly": true,
+  "originalReviewClocksRenewed": false,
+  "currentPriceInputsAtIssue": true,
+  "financialSource": "Original retained13:37 no-further-fill branch; fresh matched account reconciliation required after replay",
+  "futureBooksAreConditionalHypotheses": true,
+  "rankComparison": {
+    "status": "exact_sequence_checked",
+    "solverStatus": 0,
+    "legs": 129,
+    "models": [
+      {
+        "id": "price_lower_common",
+        "declaredExpectedChange": "-66575.137482"
+      },
+      {
+        "id": "price_upper_common",
+        "declaredExpectedChange": "-55135.508562"
+      },
+      {
+        "id": "price_midpoint_independent",
+        "declaredExpectedChange": "-62121.368139"
+      },
+      {
+        "id": "historical_review_envelope_lower_common",
+        "declaredExpectedChange": "-68023.035"
+      },
+      {
+        "id": "historical_review_envelope_upper_common",
+        "declaredExpectedChange": "-52127.517"
+      }
+    ],
+    "fieldPairs": [
+      {
+        "modelId": "price_lower_common",
+        "fieldId": "public_anchor_plus_buffer_20261018T182426",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 3996
+      },
+      {
+        "modelId": "price_upper_common",
+        "fieldId": "public_anchor_plus_buffer_20261018T182426",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 18981
+      },
+      {
+        "modelId": "price_midpoint_independent",
+        "fieldId": "public_anchor_plus_buffer_20261018T182426",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "historical_review_envelope_lower_common",
+        "fieldId": "public_anchor_plus_buffer_20261018T182426",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 4000
+      },
+      {
+        "modelId": "historical_review_envelope_upper_common",
+        "fieldId": "public_anchor_plus_buffer_20261018T182426",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 19000
+      },
+      {
+        "modelId": "price_lower_common",
+        "fieldId": "adverse_growing_field",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "price_upper_common",
+        "fieldId": "adverse_growing_field",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "price_midpoint_independent",
+        "fieldId": "adverse_growing_field",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "historical_review_envelope_lower_common",
+        "fieldId": "adverse_growing_field",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "historical_review_envelope_upper_common",
+        "fieldId": "adverse_growing_field",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "price_lower_common",
+        "fieldId": "held_alaska_correlated_adverse",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "price_upper_common",
+        "fieldId": "held_alaska_correlated_adverse",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "price_midpoint_independent",
+        "fieldId": "held_alaska_correlated_adverse",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "historical_review_envelope_lower_common",
+        "fieldId": "held_alaska_correlated_adverse",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      },
+      {
+        "modelId": "historical_review_envelope_upper_common",
+        "fieldId": "held_alaska_correlated_adverse",
+        "beforeStrictMassPpm": 0,
+        "afterStrictMassPpm": 0
+      }
+    ]
+  },
+  "intervalMoneyComparisons": [
+    {
+      "case": "original",
+      "legs": 26,
+      "solverStatus": 0,
+      "status": "exact_sequence_checked",
+      "ordinaryMinimumExpectedChange": "1798.558000",
+      "syntheticExecutionStress": {
+        "adversePriceTicksMicros": 0,
+        "displayedDepthDivisor": 1,
+        "changesOriginalSourceBytes": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "case": "combined-adverse",
+      "legs": 12,
+      "solverStatus": 0,
+      "status": "exact_sequence_checked",
+      "ordinaryMinimumExpectedChange": "1090.604000",
+      "syntheticExecutionStress": {
+        "adversePriceTicksMicros": 10000,
+        "displayedDepthDivisor": 2,
+        "changesOriginalSourceBytes": false,
+        "executionAuthority": false
+      }
+    }
+  ],
+  "executionAuthority": false,
+  "ordersSubmitted": false,
+  "actualRoiImprovementEstablished": false,
+  "limitations": [
+    "Uncalibrated probability/field hypotheses; target scores are not win probabilities.",
+    "Conditional future liquidity and exact-prefix audits do not establish current executable depth.",
+    "The monetary variants have zero first-place target score; rank variant retains strongly negative declared monetary expectation."
+  ]
+}
