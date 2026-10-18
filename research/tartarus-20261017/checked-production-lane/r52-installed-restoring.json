@@ -1,0 +1,121 @@
+{
+  "at": "2026-10-18T22:31:33.092864+00:00",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r52-dispatch-row-20261018T222241Z",
+  "sourceCommit": "163e0a3faf3de3f1ed32b42da9e3a6283c50153d",
+  "sourceSha256": {
+    "backend-rust/transport-service/src/lib.rs": "7e00772eeee7cba6a6345f3d2a20735bcdeb4816bafc5952f939972f6561a0c2",
+    "backend-rust/transport-service/src/ordinary_pre_admission_tests.rs": "3377f0d45b7e3d51dde494b5f647739af5e69614d999b96ebb9c22e28e16bfe0",
+    "moloch/live-runtime/src/fundamental_policy.rs": "c3114ad1091d7756c48907761bb5aaa85fc648b0f81b32f9db1927ae0ec4c173",
+    "moloch/live-runtime/src/worker.rs": "bf038e41fa5aee00bc201b794e0803c5a7b02f9075e148fa1f2fd8f26fec338d",
+    "research/moloch-fundamental-closure-cache-20261017/tests.rs": "e084355e421a78ed446c8c7309416c2a80a1c6af53a28cd16c3aab294ddda978",
+    "research/moloch-fundamental-not-sent-cache-20261017/tests.rs": "b515ece57005744eed134c90d3f4a60e43b2f534304db1ef0e190a702e3f0246"
+  },
+  "binarySha256": "eb1bf251794a12ece641a6757703f92db2018c241cdfa3cfe31a1203b0743afe",
+  "controlSha256": "f8b27448b0cadecdf500fe0ca2c26e20282c6d7d60961b62ac11fc2eeb6f079e",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "prefixes": {
+    "financial": {
+      "bytes": 2161852833,
+      "sha256": "fa2488344e2f89770efeadf547952d2588b19c1e1bccfd152ef50684e6615d37"
+    },
+    "dispatch": {
+      "bytes": 15910235,
+      "sha256": "cb00e96bad3eda141d615b5f10bb4973d1515dfcebe54e298d386e825aebfd59"
+    }
+  },
+  "originals": {
+    "head": "ead9c18c938296132435b29a227dcaae1726dc19c3805def95392f3a6326c825",
+    "report": "bce56edeeb04c91ca8477b751612b764680a8aec741099a9d16e7a5c870ae6e5",
+    "manifest": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "bridge": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c",
+    "unit": "759a1fd0872c52df3a8691cefe591b48d7c41fa1509040f5849395ae3208fdb8",
+    "control": "eeed6244f8bb5eb8e7e56dbf48311690671ddca048c2d43dabec952cd7969fe8",
+    "fundamental": "ebba4591d840bc957185808ad73b15081b45fc1e92a76fea63f7fe2762deade0",
+    "STOP": "1751310c5711bd10086954a0182b07d28e016e2357da20f6c43b7eaf5f7b9881"
+  },
+  "originalFillCount": 395,
+  "allOriginalFifoAndFillRowsPreserved": true,
+  "bridgeCount": 20,
+  "bridgeBytesUnchanged": true,
+  "all14G12ReviewsPreserved": true,
+  "sdkOriginalCommittedWatermarkBeforeAttempt": true,
+  "sdkStateOrKeysChanged": false,
+  "sdkPermanentBindings": 2426,
+  "originalQid19504NotRetryable": true,
+  "retrospectiveExceptionIsNotHistoricalSdkErrorReceipt": true,
+  "recovery": {
+    "allDispatchAttemptsResolvedClaimed": false,
+    "allOtherOriginalProofsMustBeReverifiedByNormalStartup": true,
+    "at": "2026-10-18T22:30:35.371Z",
+    "dispatchHead": {
+      "bytes": 15913034,
+      "device": 66305,
+      "inode": 12353650,
+      "previous": "598e6ba339e40651aa71f64ae5b8ee1e7e2c94cf33aac8532178a2bf1a0a00e7",
+      "schemaVersion": 1,
+      "sequence": 26024
+    },
+    "financialStateChanged": false,
+    "historical18533NativeRestorationStillRequired": true,
+    "networkRequests": 0,
+    "proof": {
+      "attemptAtMs": 1792360800665,
+      "binding": {
+        "intent": "moloch-live-20261015-v1:19504",
+        "key": "moloch-live-20261015-v1:19504",
+        "payload_hash": "6266bb16b8376b85abfd655d99bfdb70ed2740c73aeba8c58b5948527921d79b"
+      },
+      "kind": "sdk_stopped_v1_before_admit_no_http",
+      "originalError": {
+        "apiCode": null,
+        "code": "FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND",
+        "mayHaveExecuted": false,
+        "orderId": null,
+        "retryAfterMs": 0,
+        "status": null
+      },
+      "originalHead": {
+        "active": null,
+        "binding": {
+          "intent": "moloch-live-20261015-v1:19504",
+          "key": "moloch-live-20261015-v1:19504",
+          "payload_hash": "6266bb16b8376b85abfd655d99bfdb70ed2740c73aeba8c58b5948527921d79b"
+        },
+        "globalUnknownCount": 0,
+        "lastClock": 1792360796313,
+        "manualReview": false,
+        "previous": "86aefbb653ed984f959c94f4dc6ee724ec29d5b8a789cb14dc64a061e6ab9c6e",
+        "queueScope": "sig-midterm-shared-account",
+        "sequence": 306125
+      },
+      "originalRequestSha256": "5382ac9b7203ecfe0fbf462c98f99b0ab9000bc289092ecf6f8aea52937b74ab",
+      "permitSha256": "16a710c2a46c305a13667f53e63950bb00f6d7b395eeeea231bbb224dfb27665",
+      "queueDirectory": "/home/archon/apps/moloch/shared/live-production-v1/account-queue",
+      "queueDirectoryIdentity": {
+        "device": 66305,
+        "inode": 12355018
+      },
+      "queueScope": "sig-midterm-shared-account",
+      "schemaVersion": 1,
+      "scopeSha256": "eb720801f2031dbcf232b2af58d331d8b6399c1a2d095d7962111263822e328b",
+      "sdkRequestSha256": "5382ac9b7203ecfe0fbf462c98f99b0ab9000bc289092ecf6f8aea52937b74ab",
+      "sourceArchive": "ordinary-unadmitted-b7c2a6e6e5854c635920fb67b69c67aa1e518f4613c0fcbb4ab0be0df6f5a34b.json",
+      "sourceArchiveSha256": "604fae63b5880e95ac9a8f3cd7036d4998045ec50c31f1804080dec0162a9866"
+    },
+    "recoveredOriginalQids": [
+      19504
+    ],
+    "sameIntentRetryAuthorized": false,
+    "sdkArchiveReverified": true,
+    "stopPreserved": true
+  },
+  "ordersSubmittedByDeployment": 0,
+  "activationOrDailyWindowRenewed": false,
+  "riskCapsOrLimiterOrSourceTtlsChanged": false,
+  "financialLedgerEditedOrReset": false,
+  "currentTradingVerified": false,
+  "pid": 859146,
+  "startTicks": "33234710",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}
