@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "classification": "dated_optimistic_buy_only_capacity_bound_not_a_campaign",
+  "computedAt": "2026-10-18T03:27:24.277080+00:00",
+  "sourceReportAt": "2026-10-18T02:08:56.781Z",
+  "sourceFinancialSequence": 568204,
+  "sourceReportRawSha256": "c1bd3e82b5d63d3f7dade52c3629db3985b242185b9a6efbc7d88aa3cbbcf5bd",
+  "reportSealVerified": true,
+  "fillCount": 385,
+  "heldAbsoluteShares": 139477,
+  "cash": "6913.785000",
+  "ownedFifoPrincipal": "88737.960000",
+  "effectiveMaximumCommitted": "95579.915000",
+  "actualReservationsAtSource": "4579.985000",
+  "assumptions": [
+    "All held shares and all newly purchased shares pay one; mutually incompatible outcomes are optimistically allowed.",
+    "All untouched reservations could be retired and no actual pending cash liability consumes that funding. This is a relaxation, not current available cash.",
+    "Unlimited executable depth at the assumed minimum price; zero fees; per-market caps, physical quantity caps and actual latency are relaxed.",
+    "No further sales, collateral, payouts, interim trading gains or new contributions.",
+    "Leaderboard targets are old indicative marked values, not current opposing terminal wealth.",
+    "The .005 row follows native minimum admissible price; .01/.02 are sensitivity assumptions, not observed offers."
+  ],
+  "bounds": [
+    {
+      "minimumPurchasePriceAssumed": "0.005",
+      "grossFundingCeiling": "6841.955000",
+      "maximumNewShares": 1368391,
+      "unspentCash": "71.830000",
+      "looseTerminalPayoutUpper": "1507939.830000",
+      "indicativeThresholds": [
+        {
+          "target": "925300",
+          "notRuledOutByThisUpper": true,
+          "gapToUpper": "582639.830000"
+        },
+        {
+          "target": "1000000",
+          "notRuledOutByThisUpper": true,
+          "gapToUpper": "507939.830000"
+        },
+        {
+          "target": "1086100",
+          "notRuledOutByThisUpper": true,
+          "gapToUpper": "421839.830000"
+        },
+        {
+          "target": "1500000",
+          "notRuledOutByThisUpper": true,
+          "gapToUpper": "7939.830000"
+        },
+        {
+          "target": "2000000",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-492060.170000"
+        }
+      ]
+    },
+    {
+      "minimumPurchasePriceAssumed": "0.01",
+      "grossFundingCeiling": "6841.955000",
+      "maximumNewShares": 684195,
+      "unspentCash": "71.835000",
+      "looseTerminalPayoutUpper": "823743.835000",
+      "indicativeThresholds": [
+        {
+          "target": "925300",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-101556.165000"
+        },
+        {
+          "target": "1000000",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-176256.165000"
+        },
+        {
+          "target": "1086100",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-262356.165000"
+        },
+        {
+          "target": "1500000",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-676256.165000"
+        },
+        {
+          "target": "2000000",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-1176256.165000"
+        }
+      ]
+    },
+    {
+      "minimumPurchasePriceAssumed": "0.02",
+      "grossFundingCeiling": "6841.955000",
+      "maximumNewShares": 342097,
+      "unspentCash": "71.845000",
+      "looseTerminalPayoutUpper": "481645.845000",
+      "indicativeThresholds": [
+        {
+          "target": "925300",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-443654.155000"
+        },
+        {
+          "target": "1000000",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-518354.155000"
+        },
+        {
+          "target": "1086100",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-604454.155000"
+        },
+        {
+          "target": "1500000",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-1018354.155000"
+        },
+        {
+          "target": "2000000",
+          "notRuledOutByThisUpper": false,
+          "gapToUpper": "-1518354.155000"
+        }
+      ]
+    }
+  ],
+  "currentAccountObservation": false,
+  "executableDepthVerified": false,
+  "jointAttainabilityVerified": false,
+  "calibratedProbabilityClaimed": false,
+  "executionAuthority": false,
+  "newAccountReads": 0
+}
