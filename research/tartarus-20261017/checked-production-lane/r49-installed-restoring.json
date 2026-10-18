@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-18T18:52:00.418634+00:00",
+  "incident": "/home/archon/apps/moloch/shared/incidents/rank-slot-and-token-recovery-20261018T185150Z",
+  "sourceCommit": "e9a036714ea81e01e1502ac453cc3b7a20989a46",
+  "binarySha256": "5efdf0c1f13e05569265c989315c52c06e746363450a6002c51f0168b0b08202",
+  "controlSha256": "42b7c5fe94afd5605cbd628e57653aa272cf2a9640a167b6fcbec5220a51c5ca",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "engineUpgradeCount": 20,
+  "nativeBridgeBytesUnchanged": true,
+  "originalFillCount": 393,
+  "originalFinancialAndFifoPreserved": true,
+  "prefixes": {
+    "financial": {
+      "bytes": 2124741173,
+      "sha256": "60adfe126c1a96729d65f89e9eb1fe614fd74701f56f9f07cf76251efe6f4ef0"
+    },
+    "dispatch": {
+      "bytes": 12249440,
+      "sha256": "e1655d406766b0f7854207700c305429e12cfd964253b3b0eaf9724ab65359ae"
+    }
+  },
+  "originals": {
+    "head.original.json": "27768926df9f1acaa1c9e19275ed4e63d29f01b678bff912f0ca34c9658ba47c",
+    "report.original.json": "e93ef724c6015b5f70ac18658fefd2aea76344be06f9db17bc96d30780dce63e",
+    "manifest.original.json": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "upgrade.original.json": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c",
+    "unit.original.service": "8309dcf5c6af0025e3d69d6b0db45decc6012f12ac453af7f1df644204ede93b",
+    "control.original.json": "0ec955e2a2ea2600c864d5cb3c29cc3f97258c81fa28d9505b7176ab0dbb3d1a",
+    "fundamental.original.ndjson": "17258914d7d16f2762f68ab93b78487a302ee4ba42fca2a944631643a96dea14"
+  },
+  "all14G12ReviewsPreserved": true,
+  "riskAndDailyWindowsChanged": false,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "exactDeadWorkerApplicationLockArchived": false,
+  "sdkApplicationLockAlreadyAbsentAfterWorkerExit": true,
+  "sourceManifestCheckpointJournalOrKeysEdited": false,
+  "exactToken503StopArchivedAfterSdkReconciliation": true,
+  "activationRenewedByDeployment": false,
+  "ordersSubmittedByDeployment": 0,
+  "currentTradingVerified": false,
+  "pid": 813301,
+  "startTicks": "31917443",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}

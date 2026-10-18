@@ -1,3 +1,5 @@
+R49 installed18:52 UTC as sole worker813301/startTicks31917443; actual executable/arguments verified. Original-bank recovery is running, not yet fresh trading. [Installation evidence](checked-production-lane/r49-installed-restoring.json).
+
 # R49 execution and economics — October 18
 
 ## Actual result
