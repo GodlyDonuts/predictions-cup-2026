@@ -630,12 +630,22 @@ fn collateral_accounting(t:&mut Transport,c:&Control,bank:&mut Session,ordinary:
  // A failed durable commit is fatal, never downgraded to postponement.
  let committed=tx.commit(bank,&b)?;atomic_json(&c.root.join("collateral-accounting-status.json"),&json!({"at":stamp,"state":"committed","sourceSequence":committed.source_sequence,"eventSha256":committed.event_sha256,"nativeHead":committed.durable_head,"snapshotIsolation":"not_documented","futureAdvanceFundsSizing":false}))?;Ok(false)
 }
+// Only these typed Endpoint GET callers can mint an exhausted-observation
+// error. A write rejection, unknown acceptance or local durability failure
+// never enters this recovery lane merely because its text/status matches.
+struct ExhaustedObservation{endpoint:Endpoint,error:api::TransportError}
+impl std::fmt::Debug for ExhaustedObservation{fn fmt(&self,f:&mut std::fmt::Formatter<'_>)->std::fmt::Result{write!(f,"ExhaustedObservation({})",self.error.code)}}
+impl std::fmt::Display for ExhaustedObservation{fn fmt(&self,f:&mut std::fmt::Formatter<'_>)->std::fmt::Result{write!(f,"{}",self.error)}}
+impl std::error::Error for ExhaustedObservation{}
+fn exhausted_observation(ep:Endpoint,error:api::TransportError)->Box<dyn std::error::Error>{
+ if moloch_live_runtime::read_recovery::retryable_read(&error){Box::new(ExhaustedObservation{endpoint:ep,error})}else{Box::new(error)}
+}
 fn request(t:&mut Transport,root:&Path,ep:Endpoint)->Result<Receipt>{
  for attempt in 0..3u64{
   match t.request(ep.clone()){
    Ok(r)=>{record_receipt(root,&r)?;return Ok(r)},
    Err(error)=>{
-    if attempt==2||!moloch_live_runtime::read_recovery::retryable_read(&error){return Err(error.into())}
+    if attempt==2{return Err(exhausted_observation(ep.clone(),error))}if !moloch_live_runtime::read_recovery::retryable_read(&error){return Err(error.into())}
     atomic_json(&root.join("read-recovery.json"),&json!({"at":iso(now()),"endpoint":ep,"attempt":attempt+1,"code":error.code,"status":error.status,"retryAfterMs":error.retry_after_ms,"ordersRetried":false}))?;
     std::thread::sleep(Duration::from_millis(2000*(attempt+1)));
    }
@@ -2004,7 +2014,7 @@ impl OrdinaryPreflightReads for LivePreflightReads<'_>{
    match moloch_live_runtime::serviced_read::request(t,ep.clone(),&mut service)?{
     Ok(receipt)=>{record_receipt(&c.root,&receipt)?;return Ok(receipt)},
     Err(error)=>{
-     if attempt==2||!moloch_live_runtime::read_recovery::retryable_read(&error){return Err(error.into())}
+     if attempt==2{return Err(exhausted_observation(ep.clone(),error))}if !moloch_live_runtime::read_recovery::retryable_read(&error){return Err(error.into())}
      atomic_json(&c.root.join("read-recovery.json"),&json!({"at":iso(now()),"endpoint":ep,"attempt":attempt+1,"code":error.code,"status":error.status,"retryAfterMs":error.retry_after_ms,"ordersRetried":false}))?;
      let until=now().checked_add(2000*(attempt+1)).ok_or("LIVE_SERVICED_READ_CLOCK")?;
      while now()<until{service()?;std::thread::sleep(Duration::from_millis(until.saturating_sub(now()).clamp(1,25)));}
@@ -2869,6 +2879,15 @@ pub fn main()->Result<()>{
    Ok(())})();
    if let Err(error)=cycle_result{if let Some(failure)=error.downcast_ref::<StreamFailure>(){
     recover_stream(&mut t,&c,&mut bank,&log,&authority,&mut source_state,&mut stream,&mut recovery_budget,*failure,&mut breadth,&mut universe,&mut windows)?;
+   }else if let Some(read)=error.downcast_ref::<ExhaustedObservation>(){
+    // The failed observation grants no order permission or synthetic data.
+    // Preserve every intent and queue row. The next full cycle reconciles
+    // actual open orders/fills before any new physical decision.
+    log.require_resolved_attempts()?;recovery_queue_clear(&t.admission_state()?)?;authority.clear_ready();
+    let until=now().checked_add(read.error.retry_after_ms.max(30_000)).ok_or("LIVE_READ_RECOVERY_CLOCK")?;
+    atomic_json(&c.root.join("read-recovery.json"),&json!({"at":iso(now()),"pid":std::process::id(),"state":"degraded_retry_next_reconciled_cycle","endpoint":read.endpoint,"code":read.error.code,"status":read.error.status,"retryAfterMs":read.error.retry_after_ms,"notBefore":iso(until),"ordersRetried":false,"nextCycleRequiresReconciliation":true}))?;
+    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"degraded-read-backoff","reason":read.error.code,"status":read.error.status,"notBefore":iso(until),"profitabilityEstablished":false}))?;
+    while now()<until{if !authority.can_read(&c.scope){return Err("LIVE_READ_RECOVERY_CONTROL_OR_STOP".into())}std::thread::sleep(Duration::from_millis(until.saturating_sub(now()).clamp(1,100)));}
    }else{return Err(error)}}
   }
  })();
@@ -4135,4 +4154,17 @@ mod local_final_guard_recovery_tests{
  }
  #[test]fn rank_activation_preserves_exact_quote_and_handles_both_actions(){for action in ["buy","sell"]{let q=json!({"id":10,"action":action,"reviewedRankCampaign":{"campaignSha256":"a".repeat(64)},"retired":false,"filled":0,"activationAt":3000,"expiresAt":10000});assert_eq!(rank_activation(&q,&q,2000).unwrap(),Some(3000));assert_eq!(rank_activation(&q,&q,3000).unwrap(),None);assert!(rank_activation(&q,&q,10000).is_err());let mut changed=q.clone();changed["filled"]=json!(1);assert!(rank_activation(&changed,&q,3000).is_err());let mut ordinary=q.clone();ordinary.as_object_mut().unwrap().remove("reviewedRankCampaign");assert!(!rank_quote(&ordinary));assert!(rank_activation(&ordinary,&ordinary,3000).is_err());}}
  #[test]fn historical_control_omits_optional_tartarus_owner_paths(){let raw=json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"});let c:Control=serde_json::from_value(raw).unwrap();assert!(c.rank_campaign.is_none());assert!(serde_json::to_value(c).unwrap().get("rankCampaign").is_none());}
+}
+
+#[cfg(test)]mod exhausted_observation_tests{
+ use super::*;
+ fn error(status:u16,unknown:bool)->api::TransportError{api::TransportError{code:"OFFICIAL_REQUEST_REJECTED".into(),status:Some(status),may_have_executed:unknown,retry_after_ms:43210,order_id:None,api_code:None}}
+ #[test]fn only_exhausted_typed_get_promotes_retryable_original_error(){
+  for status in [429,500,503]{let boxed=exhausted_observation(Endpoint::Market{market_id:"379".into()},error(status,false));let e=boxed.downcast_ref::<ExhaustedObservation>().unwrap();assert_eq!(e.error.status,Some(status));assert_eq!(e.error.retry_after_ms,43210);assert_eq!(serde_json::to_value(&e.endpoint).unwrap(),json!({"kind":"market","market_id":"379"}));}
+  for(status,unknown)in[(400,false),(401,false),(403,false),(404,false),(503,true)]{let boxed=exhausted_observation(Endpoint::Positions,error(status,unknown));assert!(boxed.downcast_ref::<ExhaustedObservation>().is_none());assert_eq!(boxed.downcast_ref::<api::TransportError>().unwrap().status,Some(status));}
+ }
+ #[test]fn write_errors_and_durability_failures_never_match_read_recovery_lane(){
+  let raw:Box<dyn std::error::Error>=Box::new(error(503,false));assert!(raw.downcast_ref::<ExhaustedObservation>().is_none());
+  for code in["DURABILITY_FAILURE","COMPLETION_DURABILITY_UNCERTAIN","STOPPED_OR_OWNER_LOST"]{let mut e=error(503,false);e.code=code.into();let boxed=exhausted_observation(Endpoint::Account,e);assert!(boxed.downcast_ref::<ExhaustedObservation>().is_none());assert_eq!(boxed.to_string(),code);}
+ }
 }
