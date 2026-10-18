@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-18T18:49:10.490439+00:00",
+  "originalStop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-18T18:42:47.887Z",
+    "reason": "OFFICIAL_REQUEST_REJECTED"
+  },
+  "originalTokenFailure": {
+    "apiCode": "SERVICE_UNAVAILABLE",
+    "at": "2026-10-18T18:42:46.672Z",
+    "code": "OFFICIAL_REQUEST_REJECTED",
+    "contestOrderRetried": false,
+    "endpoint": "/realtime/token",
+    "mayHaveExecuted": false,
+    "orderIdPresent": false,
+    "retryAfterMs": 9976,
+    "status": 503
+  },
+  "sdkActive": null,
+  "sdkUnknownCount": 0,
+  "sdkManualReview": false,
+  "sdkOriginalClock": 1792348966648,
+  "sdkOriginalCooldown": 1792348976648,
+  "sdkReadProfile": {
+    "cap": 100,
+    "gap_ms": 600
+  },
+  "accountOrdersRetried": false,
+  "productionRecoveryVerified": false
+}

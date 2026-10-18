@@ -32,6 +32,22 @@ def fixture():
 
 
 class SequentialFrontier(unittest.TestCase):
+    def test_fresh_sale_precedes_retained_inherited_sale_to_preserve_slot_limit(self):
+        f = fixture()
+        f[0].update(cash="0.000000", ownedCost="1.000000",
+            positions={"safe": {"YES": [{"quantity": 1, "price": "0.500000"}]},
+                       "rare": {"YES": [{"quantity": 1, "price": "0.500000"}]}},
+            inheritedExchanges=["safe"], inheritedRemainingQuantities={"safe": 1},
+            retainedMarketExchanges=["safe"], freshMarketLimit=1,
+            excludedBuyExchanges=["safe", "rare"])
+        for ex in ("safe", "rare"):
+            f[2][ex]["bids"] = [{"price": "0.900000", "quantity": 1}]
+        for world in f[3]["scenarios"][:2]:
+            world["payouts"] = {"safe": "resolved_no", "rare": "resolved_no"}
+        out = self.run_search(f, objective="mean")
+        self.assertEqual([(v["ex"], v["action"]) for v in out["legs"]],
+                         [("rare", "SELL"), ("safe", "SELL")])
+
     def run_search(self, f, **kw):
         out = solve(*f, target_pairs=[("view", "flat")], seconds=3, **kw)
         self.assertEqual(out["status"], "exact_sequence_checked", out)

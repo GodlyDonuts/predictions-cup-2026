@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-18T18:24:56.725120+00:00",
+  "qid": 19128,
+  "campaignSha256": "f3d52e30e0c86b6b1e6c11d29f698b666df6fdd79913ebfa85f012917a8147ac",
+  "originalCreatedAtMs": 1792346064343,
+  "originalActivationAtMs": 1792346067343,
+  "originalExpiresAtMs": 1792346659550,
+  "action": {
+    "exchangeId": "1068",
+    "marketId": "379",
+    "side": "YES",
+    "action": "sell",
+    "quantity": 7061,
+    "price": "0.950000"
+  },
+  "retired": true,
+  "filled": 0,
+  "originalDispatchEvents": [
+    {
+      "event": {
+        "kind": "not_sent",
+        "proof": {
+          "chain": "497ec86d8c6b9399a8dff945f27c4582835e66dd58c090a1c3bc7e0eb6a30900",
+          "networkAttempts": 0,
+          "qid": 19128,
+          "sequence": 25630
+        },
+        "qid": 19128
+      },
+      "hash": "1489055642dbe61b16b707af322a1b6ec99acafda6c519c8f1e4c6d354ee2599",
+      "previous": "497ec86d8c6b9399a8dff945f27c4582835e66dd58c090a1c3bc7e0eb6a30900",
+      "sequence": 25631
+    }
+  ],
+  "originalSourceBytesOrFinancialHistoryEdited": false,
+  "actualFillCount": 393,
+  "cash": "157.305000",
+  "ownedCost": "95579.405000",
+  "attributedRealized": "156.795000",
+  "officialPostOrFill": false,
+  "currentNominationConsumedAndNotRetryable": true,
+  "newReviewAndFreshPhysicalFactsRequired": true,
+  "lastPhysicalReviewFailure": {
+    "at": "2026-10-18T17:55:49.995Z",
+    "stage": "physical_review",
+    "reason": "RANK_ORIGINAL_FACT_CLOCK_OR_SCOPE",
+    "physicalAttempted": false
+  }
+}

@@ -19,6 +19,7 @@ impl TokenFailure {
   let token_api_code=match error.api_code.as_deref(){
    None=>true,
    Some("INTERNAL_ERROR")=>matches!(error.status,Some(500|502|503|504)),
+   Some("SERVICE_UNAVAILABLE")=>error.status==Some(503),
    Some("RATE_LIMITED"|"RATE_LIMIT_EXCEEDED"|"TOO_MANY_REQUESTS")=>error.status==Some(429),
    _=>false,
   };

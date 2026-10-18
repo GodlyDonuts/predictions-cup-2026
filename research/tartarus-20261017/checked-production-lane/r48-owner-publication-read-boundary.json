@@ -1,0 +1,18 @@
+{
+  "atStoppedMs": 1792345917540,
+  "pid": 811119,
+  "startTicks": "31256489",
+  "phase": "completed_non_target_tape_before_mandatory_book",
+  "sourceReceiptRawSha256": "8ed880d90c35f4f6637c2fac38133d2bdcfc9c39d3cd8eae256e4b6c587b8ec9",
+  "sourceEndpoint": "/exchanges/1011/trades?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&from=2026-10-18T17%3A41%3A31.165Z&to=2026-10-18T17%3A51%3A57.058Z&limit=200",
+  "sourceReceivedAt": "2026-10-18T17:51:57.517Z",
+  "actualNextAdmissionMs": 1792345918065,
+  "completionReadGapMs": 600,
+  "sdkActive": null,
+  "sdkUnknown": 0,
+  "workerSameProcessAndNoRestart": true,
+  "stagerExitStatusNotFabricated": true,
+  "publisherExitCode": 0,
+  "atResumingMs": 1792345918288,
+  "pauseMs": 748
+}

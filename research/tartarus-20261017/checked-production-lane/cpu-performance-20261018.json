@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-18T18:02:45.430236+00:00",
+  "policies": [
+    {
+      "path": "/sys/devices/system/cpu/cpufreq/policy0",
+      "before": {
+        "scaling_governor": "schedutil",
+        "scaling_min_freq": "729600",
+        "scaling_max_freq": "1344000",
+        "cpuinfo_max_freq": "1728000"
+      },
+      "after": {
+        "scaling_governor": "performance",
+        "scaling_cur_freq": "1728000",
+        "scaling_max_freq": "1728000",
+        "cpuinfo_max_freq": "1728000"
+      }
+    },
+    {
+      "path": "/sys/devices/system/cpu/cpufreq/policy4",
+      "before": {
+        "scaling_governor": "schedutil",
+        "scaling_min_freq": "729600",
+        "scaling_max_freq": "1344000",
+        "cpuinfo_max_freq": "1728000"
+      },
+      "after": {
+        "scaling_governor": "performance",
+        "scaling_cur_freq": "1728000",
+        "scaling_max_freq": "1728000",
+        "cpuinfo_max_freq": "1728000"
+      }
+    }
+  ],
+  "targetIsReportedCpuHardwareMaximum": true,
+  "gpuClocksOrPowerGatingTouched": false,
+  "kernelThermalControlsChanged": false,
+  "workerRestarted": false,
+  "bankSdkControlsOrSourceClocksChanged": false
+}

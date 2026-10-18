@@ -17,7 +17,31 @@ from moloch.tartarus.party_scenarios import compile_scenarios, canonical, PPM
 from moloch.tartarus.native_snapshot import _ns
 
 
-def build(inputs, original_directory, field_observation, *, allow_dated=False, directional=False):
+def historical_envelope(selected, members, points, cutoff, cache_sha):
+    """A new stress assumption containing current quotes AND dated opinions.
+
+    This does not renew an original review, narrow quote ignorance, or supply
+    positive-alpha authority. Both original review clocks remain in the source.
+    """
+    opinions = [(int(Decimal(r["ordinaryProbability"]) * PPM)
+                 if r["side"] == "YES" else PPM - int(Decimal(r["ordinaryProbability"]) * PPM))
+                for r, _ in selected]
+    lo = min(opinions + [points[ex]["lowerPpm"] for ex in members])
+    hi = max(opinions + [points[ex]["upperPpm"] for ex in members])
+    doc = dict(schema="current_price_historical_review_envelope_v1", derivedAtMs=cutoff,
+        currentQuoteCacheSha256=cache_sha, exchangeIds=sorted(members), lowerPpm=lo, upperPpm=hi,
+        originalReviews=[dict(sha256=h, reviewedAtMs=r["reviewedAtMs"], expiresAtMs=r["expiresAtMs"],
+                              side=r["side"], ordinaryProbability=r["ordinaryProbability"])
+                         for r, h in selected],
+        currentPriceBands={ex: points[ex] for ex in sorted(members)},
+        originalReviewRenewed=False, originalTradingAuthority=False, executionAuthority=False,
+        assumptionLabel="Current receipt-price range widened to contain historical owner opinions; expired opinions are stress inputs, not active forecasts or new permissions.")
+    raw = canonical(doc)
+    return lo, hi, sha256(raw).hexdigest(), raw
+
+
+def build(inputs, original_directory, field_observation, *, allow_dated=False, directional=False,
+          historical_review_envelopes=False):
     raw = (inputs / "kalshi-cache-quotes.original.json").read_bytes()
     cache = json.loads(raw)
     pins = json.loads((inputs / "external-input-capture.json").read_text(encoding="utf-8"))
@@ -77,11 +101,13 @@ def build(inputs, original_directory, field_observation, *, allow_dated=False, d
         body = item["bodyText"].encode()
         assert sha256(body).hexdigest() == item["sha256"]
         review = json.loads(body)
-        assert review["reviewedAtMs"] <= cutoff < review["expiresAtMs"], "ORIGINAL_REVIEW_EXPIRED"
+        assert review["reviewedAtMs"] <= cutoff, "ORIGINAL_REVIEW_NOT_YET_AVAILABLE"
+        assert historical_review_envelopes or cutoff < review["expiresAtMs"], "ORIGINAL_REVIEW_EXPIRED"
         if review["exchangeId"] in byex:
             reviews.append((review, item["sha256"]))
             originals[item["sha256"]] = body
     overrides = {}
+    envelope_sources = []
     for event, parties in groups.items():
         claimed = {}
         for party, members in parties.items():
@@ -89,14 +115,23 @@ def build(inputs, original_directory, field_observation, *, allow_dated=False, d
             if selected:
                 values = [int(Decimal(r["ordinaryProbability"]) * PPM) if r["side"] == "YES"
                           else PPM - int(Decimal(r["ordinaryProbability"]) * PPM) for r, h in selected]
-                claimed[party] = (min(values), max(values), selected[0])
+                if historical_review_envelopes:
+                    lo, hi, source, raw = historical_envelope(selected, members, points, cutoff, pins["quoteSha256"])
+                    originals[source] = raw
+                    envelope_sources.append(dict(sha256=source, bodyText=raw.decode()))
+                    origin = dict(reviewedAtMs=cutoff, expiresAtMs=cutoff + 10800000)
+                    claimed[party] = (lo, hi, (origin, source))
+                else:
+                    claimed[party] = (min(values), max(values), selected[0])
         if not claimed:
             continue
         assert sum(c[0] for c in claimed.values()) <= PPM, "ACTIVE_REVIEW_CATEGORICAL_CONFLICT"
         for party, members in parties.items():
             if party in claimed:
                 lo, hi, (origin, source) = claimed[party]
-                label = "Original active owner conditional ordinary numerical input; same-party predicates share a declared point/envelope, not calibrated probability. Original exceptional mixture is not reconstructed."
+                label = ("New current-price envelope widened by dated owner opinions; original review clocks/expiry are preserved in the derived source and no expired forecast or trading permission is renewed."
+                         if historical_review_envelopes else
+                         "Original active owner conditional ordinary numerical input; same-party predicates share a declared point/envelope, not calibrated probability. Original exceptional mixture is not reconstructed.")
             else:
                 lo, hi = 0, PPM - sum(c[0] for c in claimed.values())
                 origin, source = next(iter(claimed.values()))[2]
@@ -136,10 +171,14 @@ def build(inputs, original_directory, field_observation, *, allow_dated=False, d
                         rec.update(lowerPpm=masses[party], upperPpm=masses[party])
                         rec["assumptionLabel"] += " Explicit coherent directional party-envelope sensitivity within original declared intervals; neither a fitted probability nor a silent quote normalization."
                         selected_overrides.append(rec)
+        if active and historical_review_envelopes:
+            name = name.replace("active_review_", "historical_review_envelope_")
         profiles.append(dict(id=name, marginalPoint=point, dependence=dependence,
             hypotheticalRefundWeightPpm=0 if active else 1000,
             marginalOverrides=selected_overrides,
-            assumptionLabel="Uncalibrated terminal sensitivity from original receipt-timed price proxies and declared dependence; active-review ordinary points omit their full exceptional mixture."))
+            assumptionLabel=("Uncalibrated current-price/historical-opinion envelope; expired original opinions remain dated stress, renew no permission and do not reconstruct the original exceptional mixture."
+                             if active and historical_review_envelopes else
+                             "Uncalibrated terminal sensitivity from original receipt-timed price proxies and declared dependence; active-review ordinary points omit their full exceptional mixture.")))
     model = compile_scenarios(registry, originals, list(points.values()), profiles, cutoff,
         draws_per_profile=64, seed=17023, research_scenario_limit=4096, research_contract_limit=512)
     pub = json.loads(field_observation.read_text(encoding="utf-8"))
@@ -159,14 +198,19 @@ def build(inputs, original_directory, field_observation, *, allow_dated=False, d
     issued = int(time.time() * 1000)
     current = issued - cutoff <= 30000 and all(
         0 <= issued - m["observedAtMs"] <= m["maximumAgeMs"] for m in points.values())
-    current = current and all(issued < r["expiresAtMs"] for r, _ in reviews)
+    current_prices = current
+    current = current_prices and all(issued < r["expiresAtMs"] for r, _ in reviews)
     if not allow_dated:
-        assert current, "CACHE_EXPIRED_DURING_ISSUE"
+        assert current_prices if historical_review_envelopes else current, "CACHE_EXPIRED_DURING_ISSUE"
     return dict(model=model, fields=fields, profiles=profiles, marginals=list(points.values()),
         publicBenchmarkObservation=pub, inputCutoffMs=cutoff, issuedAtMs=issued,
         currentInputsAtIssue=current, datedResearchOverride=allow_dated,
+        currentPriceInputsAtIssue=current_prices, historicalReviewEnvelopes=historical_review_envelopes,
+        historicalReviewEnvelopeSources=envelope_sources,
+        expiredOriginalReviewCount=sum(issued >= r["expiresAtMs"] for r, _ in reviews),
         directionalPartyEnvelopeVariant=directional,
-        activeReviewCount=len(reviews), cacheMarketCount=len(cache["markets"]),
+        activeReviewCount=sum(issued < r["expiresAtMs"] for r, _ in reviews),
+        retainedOriginalReviewCount=len(reviews), cacheMarketCount=len(cache["markets"]),
         quoteIgnoranceExchanges=ignorance, categoricalPriceConflicts=conflicts,
         quoteCacheRawSha256=pins["quoteSha256"], originalControlSha256=json.loads(review_raw)["controlSha256"],
         sourceCodeSha256=sha256(Path(__file__).read_bytes()).hexdigest(),
@@ -182,9 +226,11 @@ if __name__ == "__main__":
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--allow-dated-research", action="store_true")
     p.add_argument("--directional-party-envelope", action="store_true")
+    p.add_argument("--historical-review-envelopes", action="store_true")
     a = p.parse_args()
     out = build(a.input_directory, a.original_directory, a.field_observation,
-                allow_dated=a.allow_dated_research, directional=a.directional_party_envelope)
+                allow_dated=a.allow_dated_research, directional=a.directional_party_envelope,
+                historical_review_envelopes=a.historical_review_envelopes)
     a.output.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({k: out[k] for k in ("inputCutoffMs", "issuedAtMs", "currentInputsAtIssue", "activeReviewCount", "cacheMarketCount")}))
     print(json.dumps({"scenarios": len(out["model"]["scenarios"]), "ignorance": len(out["quoteIgnoranceExchanges"]), "categoricalConflicts": len(out["categoricalPriceConflicts"]), "executionAuthority": False}))

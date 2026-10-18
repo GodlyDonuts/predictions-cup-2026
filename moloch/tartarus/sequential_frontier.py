@@ -58,7 +58,12 @@ def _columns(fin, registry, books):
     byex = {r["exchangeId"]: r for r in registry}
     cap = fin["physicalOrderQuantity"]
     cols, sales, buys = [], {}, {}
-    for ex, sides in fin["positions"].items():
+    # A retained inherited market becomes fresh once its original lot is sold.
+    # Free existing fresh slots first so a feasible final portfolio does not
+    # fail its intermediate market-count limit solely through iteration order.
+    inherited = set(fin["inheritedExchanges"])
+    for ex in sorted(fin["positions"], key=lambda ex: ex in inherited):
+        sides = fin["positions"][ex]
         for side, lots in sides.items():
             quantity = sum(l["quantity"] for l in lots)
             if not quantity or ex not in books:

@@ -1,0 +1,76 @@
+{
+  "qualifiedAt": "2026-10-18T18:50:46.879581+00:00",
+  "steps": [
+    {
+      "step": "token-debug-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:44:35.826112+00:00",
+      "finishedAt": "2026-10-18T18:44:59.173901+00:00"
+    },
+    {
+      "step": "token-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:44:59.174524+00:00",
+      "finishedAt": "2026-10-18T18:45:08.704176+00:00"
+    },
+    {
+      "step": "token-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:45:08.704727+00:00",
+      "finishedAt": "2026-10-18T18:45:08.709541+00:00"
+    },
+    {
+      "step": "worker-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:45:08.710001+00:00",
+      "finishedAt": "2026-10-18T18:45:23.592494+00:00"
+    },
+    {
+      "step": "rank-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:45:23.593065+00:00",
+      "finishedAt": "2026-10-18T18:45:42.252973+00:00"
+    },
+    {
+      "step": "cooperative-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:45:42.253511+00:00",
+      "finishedAt": "2026-10-18T18:46:11.556521+00:00"
+    },
+    {
+      "step": "token-release-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:46:11.560137+00:00",
+      "finishedAt": "2026-10-18T18:48:35.891356+00:00"
+    },
+    {
+      "step": "release-worker",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T18:48:35.895607+00:00",
+      "finishedAt": "2026-10-18T18:50:46.817215+00:00"
+    }
+  ],
+  "binarySha256": "5efdf0c1f13e05569265c989315c52c06e746363450a6002c51f0168b0b08202",
+  "workerSha256": "afd197cf5d097ef92f7417ce22d598661e18345e5ed314f78669ce4463fdebdc",
+  "sourceSha256": {
+    "moloch/live-runtime/src/stream_token_retry.rs": "417c4e43b920dac64ec751691c9071a503ce0af0b2b8a8de02501bbf16691a36",
+    "moloch/live-runtime/src/worker.rs": "afd197cf5d097ef92f7417ce22d598661e18345e5ed314f78669ce4463fdebdc",
+    "moloch/live-runtime/tests/stream_token_retry.rs": "05e6f3239f0c0efac16af45300fb0973c3215a0f21a6ca6c5fb7f9a09fd703b8"
+  },
+  "unchangedNativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "nativeOrSdkCodeChanged": false,
+  "tokenClassificationLibraryChanged": true,
+  "readFrameBudgetOrTtlsRiskLimiterChanged": false,
+  "deployed": false,
+  "testResults": {
+    "rank-tests": [
+      "test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 199 filtered out; finished in 18.65s"
+    ],
+    "cooperative-tests": [
+      "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 193 filtered out; finished in 29.30s"
+    ],
+    "token-tests": [
+      "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+    ]
+  }
+}
