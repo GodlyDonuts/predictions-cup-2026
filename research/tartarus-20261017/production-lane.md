@@ -1,3 +1,5 @@
+**October18,04:01UTC: the combined managed-continuation release is checked, not deployed.** Source d37fde43, ARM64 binary6b072cef/native eb384dc2 passes native121/library261/ownership5/original fundamental132/worker199 and release. All295 archive members/281 source inputs/274 unchanged parent pins and ELF/native identity are independently verified. [Original verification](checked-production-lane/managed-continuation-build-verification.json); [behavior and remaining work](managed-continuation.md). Current R39 worker742716 remains verified live after its GET503 recovery, with385original fills/FIFO preserved. New-rank financial-prefix replay/upgrade, current official liabilities/depth and a feasible reviewed campaign remain outstanding; no Tartarus profit is established.
+
 # Tartarus production integration: candidate source, not deployed proof
 
 At October 18, 01:44 UTC, migrated worker735621 is verified trading and realtime healthy.

@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "sourceCommit": "d37fde4307f6f21b7c9aab4ad19c8f6d68cb4340",
+  "sourceFiles": 281,
+  "unchangedParentInputs": 274,
+  "archiveMembers": 295,
+  "archiveSha256": "55ee292a23c6812e2ab08e90d89c169109d0a652229a262256b3d5efd6931d79",
+  "binarySha256": "6b072cef634f9444c54eb5e0496332aa8582a93cfa1cd496eea70a1a958f319d",
+  "nativeIdentity": "eb384dc28a924024147eb5a7f21c5e08107b62dbd85917b409bc3b13927e3668",
+  "checks": {
+    "check": [],
+    "native-focused": [
+      17
+    ],
+    "native": [
+      121
+    ],
+    "library": [
+      261
+    ],
+    "cohort-focused": [
+      5
+    ],
+    "fundamental": [
+      132
+    ],
+    "worker": [
+      199
+    ],
+    "release": []
+  },
+  "independentSourceAndArtifactVerification": true,
+  "financialPrefixReplayByThisCandidate": false,
+  "deployed": false,
+  "profitableTartarusTradeEstablished": false
+}
