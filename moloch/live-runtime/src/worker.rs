@@ -76,8 +76,8 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  let(review,pins)=match load_rank_campaign(c,settings){Ok(v)=>v,Err(e)=>return rank_deferred(c,"owner_review",&e.to_string())};let ex=review.exchange_id().to_owned();
  if managed.contains(&ex){
   let f=fundamental.as_ref().ok_or("RANK_COHORT_RUNTIME_REQUIRED")?;
-  match f.cohorts.check_rank_exit_review(bank,log,&review){Ok(())=>{},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"ownership",&e.to_string()),Err(e)=>return Err(e)}
- }else if review.managed_exit().is_some(){return rank_deferred(c,"ownership","RANK_UNMANAGED_EXIT_PROOF")}
+  match f.cohorts.check_rank_review(bank,log,&review){Ok(())=>{},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"ownership",&e.to_string()),Err(e)=>return Err(e)}
+ }else if review.managed_inventory().is_some(){return rank_deferred(c,"ownership","RANK_UNMANAGED_EXIT_PROOF")}
 
  let existing:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).collect();
  if existing.len()>1{return Err("RANK_CAMPAIGN_RESERVATION_NOT_UNIQUE".into())}
@@ -116,7 +116,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
  let(order,spec,permit)=physical_order(c,&current)?;
  let ownership=if managed.contains(&ex){let f=fundamental.as_deref_mut().ok_or("RANK_COHORT_RUNTIME_REQUIRED")?;
-  Some(f.cohorts.bind_rank_exit(bank,log,&c.scope,&review,qid,&spec,&permit,now(),review.valid_until_ms().min(permit.expires_at_ms))?)
+  Some(f.cohorts.bind_rank_trade(bank,log,&c.scope,&review,qid,&spec,&permit,now(),review.valid_until_ms().min(permit.expires_at_ms))?)
  }else{None};
  let decision={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
   match if let Some(o)=ownership{moloch_live_runtime::rank_campaign::mint_managed(bank,&b,&review,qid,&facts,&retained,&spec,&permit,now(),o)}else{moloch_live_runtime::rank_campaign::mint(bank,&b,&review,qid,&facts,&retained,&spec,&permit,now())}{Ok(d)=>d,Err(e)if e.to_string().starts_with("RANK_")=>{retire_never_sent(bank,log,&current)?;return rank_deferred(c,"physical_review",&e.to_string())},Err(e)=>return Err(e)}
@@ -393,7 +393,7 @@ fn snapshot_write_observation(c:&Control,original_control:&[u8],bank:&Session,or
   let name=format!("{label}.json");snapshot_private_new(&path.join(&name),&raw)?;files.insert(name,json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"requestStartedAt":r.request_started_at,"receivedAt":r.received_at}));
  }
  if let Some(f)=fundamental{
-  let mut records=Vec::new();for ex in f.cohorts.managed_exchanges(){if bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)+bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)>0{records.push(f.cohorts.rank_exit_state(bank,ordinary,&ex)?);}}
+  let mut records=Vec::new();for ex in f.cohorts.managed_exchanges(){if bank.engine().wallet.quantity(&ex,moloch_replay::Side::Yes)+bank.engine().wallet.quantity(&ex,moloch_replay::Side::No)>0{records.push(f.cohorts.rank_inventory_state(bank,ordinary,&ex)?);}}
   let raw=serde_json::to_vec(&json!({"schemaVersion":1,"generationSha256":f.cohorts.generation_sha(),"holdings":records,"executionAuthority":false}))?;
   snapshot_private_new(&path.join("fundamental-ownership.json"),&raw)?;files.insert("fundamental-ownership.json".into(),json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"ownershipProjectionNotTradingAuthority":true}));
  }
@@ -1300,7 +1300,7 @@ fn submit_order(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  submit_order_with_rank(t,c,bank,log,authority,q,facts,maker,fundamental,None)
 }
 fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,q:&Value,facts:SnapshotSet,maker:Option<(Arc<moloch_live_runtime::maker_policy::Decision>,&moloch_live_runtime::maker_policy::Reviewed)>,mut fundamental:Option<&mut FundamentalRuntime>,rank:Option<RankDispatch>)->Result<()>{
- if rank.is_some()&&(maker.is_some()||fundamental.is_some()&&!rank.as_ref().is_some_and(|r|r.decision.allows_managed_exit())){return Err("LIVE_EXCLUSIVE_ORDER_OBJECTIVE".into())}
+ if rank.is_some()&&(maker.is_some()||fundamental.is_some()&&!rank.as_ref().is_some_and(|r|r.decision.allows_managed_inventory())){return Err("LIVE_EXCLUSIVE_ORDER_OBJECTIVE".into())}
  if !owner_capital_buys_allowed(c,bank,&q["action"])?{return Ok(())}
  use moloch_live_runtime::decision_trace::{Trace,Stage};
  // Only bounded in-memory timestamps precede the physical call. Diagnostic IO
@@ -1335,7 +1335,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
- log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"fundamentalOwnershipOnly":rank.as_ref().is_some_and(|r|r.decision.allows_managed_exit()),"rankCampaign":rank.as_ref().map(|r|json!({"objective":"declared_first_place_rank_risk","rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluation":r.decision.evaluation()}))}))?;
+ log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"fundamentalOwnershipOnly":rank.as_ref().is_some_and(|r|r.decision.allows_managed_inventory()),"rankCampaign":rank.as_ref().map(|r|json!({"objective":"declared_first_place_rank_risk","rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluation":r.decision.evaluation()}))}))?;
  record_original_attempt(bank,log,qid,if fundamental.is_some()||rank.is_some(){None}else{c.execution_model.as_ref()},now())?;
  if let Some(f)=fundamental.as_ref(){f.authority.validate()?;if rank.is_some(){f.cohorts.check_rank_bound(bank,log,&c.scope,qid,&request_spec)?;}else{f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}}
  let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);

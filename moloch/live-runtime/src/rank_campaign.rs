@@ -61,7 +61,7 @@ impl Reviewed{
  pub fn exchange_id(&self)->&str{self.campaign["action"]["exchangeId"].as_str().unwrap_or("")}
  pub fn action(&self)->&Value{&self.campaign["action"]}
  pub fn valid_until_ms(&self)->u64{self.until}
- pub fn managed_exit(&self)->Option<&Value>{self.campaign.get("managedExit").filter(|v|!v.is_null())}
+ pub fn managed_inventory(&self)->Option<&Value>{self.campaign.get("managedInventory").filter(|v|!v.is_null())}
  fn current(&self,at:u64)->Result<()>{need(at>=self.campaign["reviewedAtMs"].as_u64().ok_or("RANK_CLOCK")?&&at<self.until,"RANK_REVIEW_EXPIRED")}
 }
 struct DispatchPin{file:File,path:PathBuf,descriptor:Value,sha:String}
@@ -115,10 +115,10 @@ pub fn prepare(bank:&Session,b:&Boundary<'_>,review:&Reviewed,f:&SnapshotSet,col
  let result=Reservation{event,boundary:before,review:review.clone(),until,qid,receipts,collateral:cr};result.validate_current(bank,b,at)?;Ok(result)
 }
 /// Opaque process-local physical proof. JSON research records cannot construct it.
-pub struct PhysicalDecision{head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankExitOwnership>>}
+pub struct PhysicalDecision{head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>}
 impl PhysicalDecision{
  pub fn native_head(&self)->&Value{&self.head}
- pub fn allows_managed_exit(&self)->bool{self.ownership.is_some()&&self.review.managed_exit().is_some()&&self.review.action()["action"]=="SELL"}
+ pub fn allows_managed_inventory(&self)->bool{self.ownership.is_some()&&self.review.managed_inventory().is_some()}
  pub fn cohort_ownership_tag(&self)->Option<&Value>{self.ownership.as_ref().map(|o|o.durable_tag())}
  pub fn expires_at_ms(&self)->u64{self.until}
  pub fn evaluation(&self)->&Value{&self.evaluation}
@@ -133,11 +133,11 @@ pub fn mint(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&SnapshotSe
  mint_inner(bank,b,review,qid,f,collateral,spec,permit,at,None)
 }
 /// Ownership is supplemental attribution, not a positive-alpha decision.
-pub fn mint_managed(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&SnapshotSet,collateral:&RetainedReceipt,spec:&RequestSpec,permit:&Permit,at:u64,ownership:crate::fundamental_policy::RankExitOwnership)->Result<PhysicalDecision>{
+pub fn mint_managed(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&SnapshotSet,collateral:&RetainedReceipt,spec:&RequestSpec,permit:&Permit,at:u64,ownership:crate::fundamental_policy::RankInventoryOwnership)->Result<PhysicalDecision>{
  mint_inner(bank,b,review,qid,f,collateral,spec,permit,at,Some(std::sync::Arc::new(ownership)))
 }
-fn mint_inner(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&SnapshotSet,collateral:&RetainedReceipt,spec:&RequestSpec,permit:&Permit,at:u64,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankExitOwnership>>)->Result<PhysicalDecision>{
- need(review.managed_exit().is_some()==ownership.is_some(),"RANK_COHORT_OPAQUE_OWNERSHIP_REQUIRED")?;
+fn mint_inner(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&SnapshotSet,collateral:&RetainedReceipt,spec:&RequestSpec,permit:&Permit,at:u64,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>)->Result<PhysicalDecision>{
+ need(review.managed_inventory().is_some()==ownership.is_some(),"RANK_COHORT_OPAQUE_OWNERSHIP_REQUIRED")?;
 
  let before=collateral_feedback::allocation_boundary(bank,b,i64::try_from(at)?)?;need(b.ordinary.never_attempted(qid)&&!b.ordinary.intents.contains_key(&qid),"RANK_ORIGINAL_INTENT_EXISTS")?;
  let(receipts,mut until)=facts(bank,b,review,f,collateral,at)?;let q=crate::order_snapshot::snapshot(bank).records().iter().find(|q|q["id"]==qid).cloned().ok_or("RANK_NATIVE_QUOTE")?;let a=review.action();let scope=b.transport.scope();

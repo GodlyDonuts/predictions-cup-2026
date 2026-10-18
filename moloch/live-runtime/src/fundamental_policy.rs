@@ -309,7 +309,7 @@ impl Reviewed{
 struct Binding{qid:u64,spec:RequestSpec,spec_sha256:String,quote:Value,review_sha256:String,bound_at_ms:u64}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Cohort{#[serde(default,skip_serializing_if="Option::is_none")]entry:Option<Binding>,#[serde(default,skip_serializing_if="BTreeMap::is_empty")]top_ups:BTreeMap<u64,Binding>,#[serde(default,skip_serializing_if="BTreeMap::is_empty")]retired_top_ups:BTreeMap<u64,RetiredTopUp>,#[serde(default,skip_serializing_if="Option::is_none")]existing:Option<ExistingOrigin>,first_fill_index:usize,prior_fills_sha256:String,bank_head_at_entry:Value,hold_until_ms:u64,exits:BTreeMap<u64,Binding>}
+struct Cohort{#[serde(default,skip_serializing_if="Option::is_none")]entry:Option<Binding>,#[serde(default,skip_serializing_if="BTreeMap::is_empty")]top_ups:BTreeMap<u64,Binding>,#[serde(default,skip_serializing_if="BTreeMap::is_empty")]retired_top_ups:BTreeMap<u64,RetiredTopUp>,#[serde(default,skip_serializing_if="Option::is_none")]existing:Option<ExistingOrigin>,first_fill_index:usize,prior_fills_sha256:String,bank_head_at_entry:Value,hold_until_ms:u64,exits:BTreeMap<u64,Binding>,#[serde(default,skip_serializing_if="BTreeMap::is_empty")]rank_trades:BTreeMap<u64,Binding>}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 struct ExistingOrigin{approval:ExistingApproval,adoption_ref:Value,adopted_position:Value,lots:Value,quantity:u64,principal:String,review_sha256:String}
@@ -325,7 +325,7 @@ impl Cohort{
     fn entries(&self)->impl Iterator<Item=&Binding>{self.entry.iter().chain(self.top_ups.values())}
     fn entry_binding(&self,qid:u64)->Option<&Binding>{self.entries().find(|b|b.qid==qid)}
     fn is_entry(&self,qid:u64)->bool{self.entry_binding(qid).is_some()}
-    fn binding(&self,qid:u64)->Option<&Binding>{self.entry_binding(qid).or_else(||self.exits.get(&qid))}
+    fn binding(&self,qid:u64)->Option<&Binding>{self.entry_binding(qid).or_else(||self.exits.get(&qid)).or_else(||self.rank_trades.get(&qid))}
     fn pending_entry(&self,log:&DispatchLog)->bool{self.entries().any(|b|!self.retired_top_ups.contains_key(&b.qid)&&!log.closed.contains(&b.qid))}
     fn origin_sha(&self)->Result<String>{digest(&json!({"existing":self.existing,"firstFillIndex":self.first_fill_index,"fillPrefixSha256":self.prior_fills_sha256,"nativeHead":self.bank_head_at_entry}))}
 }
@@ -696,13 +696,13 @@ pub struct Cohorts{
     _owner:Arc<ExclusiveLock>,manifest:String,run:String,
     sequence:u64,previous:String,clock:u64,poisoned:bool,generation:Option<Value>,
     policies:BTreeMap<String,ReviewInput>,cohorts:BTreeMap<String,Cohort>,abandoned:BTreeMap<u64,AbandonedCohort>,
-    rank_exits:BTreeMap<u64,Value>,
+    rank_bindings:BTreeMap<u64,Value>,
     aborted_archives:std::sync::Mutex<BTreeMap<u64,FilePin>>,
     closed_rows_cache:std::sync::Mutex<ClosedRowsCache>,
     not_sent_rows_cache:std::sync::Mutex<NotSentRowsCache>,
 }
 #[path="fundamental_rank_ownership.rs"]mod rank_ownership;
-pub use rank_ownership::RankExitOwnership;
+pub use rank_ownership::RankInventoryOwnership;
 #[cfg(unix)]fn identity(file:&File)->Result<Value>{use std::os::unix::fs::MetadataExt;let m=file.metadata()?;Ok(json!({"device":m.dev(),"inode":m.ino()}))}
 #[cfg(not(unix))]fn identity(_file:&File)->Result<Value>{Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
 fn path_pin(path:&Path,want:&Value)->Result<()>{
@@ -1169,7 +1169,7 @@ impl Cohorts{
             &&snapshot.origin.adopted_position["exchangeId"]==*ex&&snapshot.origin.adopted_position["marketId"]==r.input.market_id&&transport.scope().tournament_id==r.input.tournament_id
             &&snapshot.origin.adopted_position["quantity"].as_i64().is_some_and(|n|if n<0{r.input.side=="NO"}else{r.input.side=="YES"})
             &&snapshot.origin.quantity<=r.input.maximum_quantity&&amount(&snapshot.origin.principal)?<=amount(&r.input.maximum_principal)?,"FUNDAMENTAL_EXISTING_SNAPSHOT_OR_REVIEW_CHANGED")?;
-        snapshot.origin.review_sha256=r.sha.clone();let c=Cohort{entry:None,top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:Some(snapshot.origin),first_fill_index:snapshot.fill_count,prior_fills_sha256:snapshot.fill_sha,bank_head_at_entry:snapshot.head,hold_until_ms:r.input.hold_until_ms,exits:BTreeMap::new()};
+        snapshot.origin.review_sha256=r.sha.clone();let c=Cohort{entry:None,top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:Some(snapshot.origin),first_fill_index:snapshot.fill_count,prior_fills_sha256:snapshot.fill_sha,bank_head_at_entry:snapshot.head,hold_until_ms:r.input.hold_until_ms,exits:BTreeMap::new(),rank_trades:BTreeMap::new()};
         self.append(json!({"kind":"existing_origin","review":r.input,"sha256":r.sha,"cohort":c}),now)
     }
     /// Proposes a genuine covered native SELL; this is not an API request or an
@@ -1215,7 +1215,7 @@ impl Cohorts{
         if c.pending_entry(log){return Ok(None)}
         let r=&self.policies[ex];let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_EXIT_FIFO_CHANGED")?;
         let snapshot=crate::order_snapshot::snapshot(bank);let records=snapshot.records();let mut bindings=Vec::new();
-        for b in c.entries().chain(c.exits.values()){
+        for b in c.entries().chain(c.exits.values()).chain(c.rank_trades.values()){
             if !bank.engine().live_order_bindings().contains_key(&b.qid){need(log.never_attempted(b.qid)||log.proved_no_network(b.qid),"FUNDAMENTAL_EXIT_UNKNOWN_BINDING")?;need(!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid),"FUNDAMENTAL_EXIT_UNBOUND_FILL")?;continue}
             if !log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid){return Ok(None)}bindings.push(b);
         }
@@ -1299,7 +1299,7 @@ impl Cohorts{
             marker,
             manifest:bank.manifest_hash().as_str().ok_or("FUNDAMENTAL_MANIFEST")?.into(),
             run:bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"].as_str().ok_or("FUNDAMENTAL_RUN")?.into(),
-            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new(),rank_exits:BTreeMap::new(),aborted_archives:Default::default(),closed_rows_cache:Default::default(),not_sent_rows_cache:Default::default()};
+            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new(),rank_bindings:BTreeMap::new(),aborted_archives:Default::default(),closed_rows_cache:Default::default(),not_sent_rows_cache:Default::default()};
         let mut reader=BufReader::new(out.file.try_clone()?);let mut line=Vec::new();
         loop{line.clear();let n=reader.by_ref().take((MAX_ROW+1) as u64).read_until(b'\n',&mut line)?;if n==0{break}
             need(line.len()<=MAX_ROW&&line.last()==Some(&b'\n'),"FUNDAMENTAL_TORN_OR_OVERSIZED_ROW")?;
@@ -1387,7 +1387,7 @@ impl Cohorts{
                     &&event["closedZeroEvidence"].is_object()&&event["committedTerminal"].is_object()&&hex(event["factsSha256"].as_str().ok_or("FUNDAMENTAL_REARM_FACTS")?),"FUNDAMENTAL_REARM_EVENT")?;
                 let c=self.cohorts.remove(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;self.abandoned.insert(id,AbandonedCohort{exchange:ex.into(),cohort:c,not_sent:Value::Null,retirement:event["committedTerminal"].clone(),closed_zero:Some(event["closedZeroEvidence"].clone())});
             },
-            Some("rank_exit")=>self.apply_rank_exit(event)?,
+            Some("rank_trade")=>self.apply_rank_trade(event)?,
             Some("exit")=>{let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let b:Binding=serde_json::from_value(event["binding"].clone())?;let c=self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
                 need(c.exits.len()<128&&!c.exits.contains_key(&b.qid),"FUNDAMENTAL_EXIT_BINDING_LIMIT_OR_DUPLICATE")?;c.exits.insert(b.qid,b);},
             _=>return Err("FUNDAMENTAL_EVENT".into()),
@@ -1398,8 +1398,8 @@ impl Cohorts{
         need(!self.poisoned&&at>=self.clock,"FUNDAMENTAL_POISONED_OR_CLOCK")?;
         path_pin(&self.path,&identity(&self.file)?)?;
         // Apply to small metadata maps before writing; no financial state copy.
-        let policies=self.policies.clone();let cohorts=self.cohorts.clone();let abandoned=self.abandoned.clone();let generation=self.generation.clone();let rank_exits=self.rank_exits.clone();
-        let result=self.apply(&event);self.policies=policies;self.cohorts=cohorts;self.abandoned=abandoned;self.generation=generation;self.rank_exits=rank_exits;result?;
+        let policies=self.policies.clone();let cohorts=self.cohorts.clone();let abandoned=self.abandoned.clone();let generation=self.generation.clone();let rank_bindings=self.rank_bindings.clone();
+        let result=self.apply(&event);self.policies=policies;self.cohorts=cohorts;self.abandoned=abandoned;self.generation=generation;self.rank_bindings=rank_bindings;result?;
         let mut row=json!({"sequence":self.sequence+1,"previous":self.previous,"manifestHash":self.manifest,"runId":self.run,"atMs":at,"event":event});
         let sha=digest(&row)?;row["hash"]=json!(sha);let mut bytes=serde_json::to_vec(&row)?;bytes.push(b'\n');
         need(bytes.len()<=MAX_ROW&&self.file.metadata()?.len().checked_add(bytes.len() as u64).is_some_and(|n|n<=MAX_LOG),"FUNDAMENTAL_LOG_BOUND")?;
@@ -1463,7 +1463,7 @@ impl Cohorts{
                     &&e["orderId"]==*id&&e["confirmedNetworkAttempts"]==0&&e["receiptHash"]==digest(&p.not_sent["event"]["proof"])?
                     &&crate::order_snapshot::snapshot(bank).records().iter().any(|q|q["id"]==*id&&q["retired"]==true&&q["filled"]==0),"FUNDAMENTAL_TOP_UP_ABANDON_SOURCE_CHANGED")?;
             }
-            for b in c.entries().chain(c.exits.values()){
+            for b in c.entries().chain(c.exits.values()).chain(c.rank_trades.values()){
                 need(digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_BINDING_HASH")?;
                 let n=request_quantity(&b.spec)?;request_matches(&b.spec,&b.quote,&self.run,&self.policies[ex].tournament_id,n)?;
                 if let Some(original)=log.intents.get(&b.qid){let s:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&s)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(b.qid).as_ref(),"FUNDAMENTAL_DISPATCH_REQUEST_OR_TAG_CHANGED")?;}
@@ -1476,6 +1476,7 @@ impl Cohorts{
         }Ok(())
     }
     fn owned(&self,bank:&Session,ex:&str,c:&Cohort)->Result<u64>{
+        if self.rank_paused(ex){return self.rank_owned(bank,ex,c)}
         let r=self.policies.get(ex).ok_or("FUNDAMENTAL_REVIEW_MISSING")?;let mut held=c.existing.as_ref().map_or(0,|o|o.quantity);
         need(c.first_fill_index<=bank.engine().fills().len(),"FUNDAMENTAL_BANK_PREFIX_MISSING")?;
         need(digest(&bank.engine().fills()[..c.first_fill_index])?==c.prior_fills_sha256
@@ -1591,7 +1592,7 @@ impl Cohorts{
                 &&snapshot.origin.adopted_position["marketId"]==r.input.market_id&&snapshot.origin.adopted_position["quantity"].as_i64().is_some_and(|n|if n<0{r.input.side=="NO"}else{r.input.side=="YES"})
                 &&snapshot.origin.quantity<=r.input.maximum_quantity&&amount(&snapshot.origin.principal)?<=amount(&r.input.maximum_principal)?,"FUNDAMENTAL_EXISTING_SNAPSHOT_OR_REVIEW_CHANGED")?;
             let mut origin=snapshot.origin;origin.review_sha256=r.sha.clone();
-            let cohort=Cohort{entry:None,top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:Some(origin),first_fill_index:snapshot.fill_count,prior_fills_sha256:snapshot.fill_sha,bank_head_at_entry:snapshot.head,hold_until_ms:r.input.hold_until_ms,exits:BTreeMap::new()};
+            let cohort=Cohort{entry:None,top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:Some(origin),first_fill_index:snapshot.fill_count,prior_fills_sha256:snapshot.fill_sha,bank_head_at_entry:snapshot.head,hold_until_ms:r.input.hold_until_ms,exits:BTreeMap::new(),rank_trades:BTreeMap::new()};
             need(origins.insert(ex,cohort).is_none(),"FUNDAMENTAL_GENERATION_EXISTING_DUPLICATE")?;
         }}
         self.check(bank,log)?;approved.validate(bank,log,&self._owner,base,self.generation_sha(),now)?;approved.validate_loaded(loaded,base)?;
@@ -1810,7 +1811,7 @@ impl Cohorts{
     /// SELLs through the original cancel path; never invent unknown actual IDs.
     pub fn existing_exit_cancellations(&self,bank:&Session,log:&DispatchLog,trusted:&BTreeSet<String>,now:u64)->Result<Vec<u64>>{
         self.check(bank,log)?;let mut out=Vec::new();for(ex,c)in &self.cohorts{let r=&self.policies[ex];
-            for b in c.exits.values(){if self.rank_exits.contains_key(&b.qid){continue}
+            for b in c.exits.values(){if self.rank_bindings.contains_key(&b.qid){continue}
                 let cohort_exit=c.existing.is_none()&&c.entry.is_some()&&b.quote["reviewedInventoryExit"]["originKind"]=="original_entry_cohort";
                 if c.existing.is_none()&&!cohort_exit{continue}
                 if !log.acknowledgments.contains_key(&b.qid)||log.closed.contains(&b.qid){continue}
@@ -1850,7 +1851,7 @@ impl Cohorts{
         if matches!(decision,Decision::Entry{..}){if let Some(c)=self.cohorts.get(ex){
             need(q["reviewedFundamentalEntry"]["sameSideTopUp"]["cohortSha256"]==digest(c)?,"FUNDAMENTAL_TOP_UP_COHORT_CHANGED")?;
             self.append(json!({"kind":"top_up","exchangeId":ex,"cohortSha256":digest(c)?,"binding":b,"proof":q["reviewedFundamentalEntry"]["sameSideTopUp"]}),now)?;
-        }else{let c=Cohort{entry:Some(b),top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:None,first_fill_index:bank.engine().fills().len(),prior_fills_sha256:digest(&bank.engine().fills())?,bank_head_at_entry:bank.durable_head(),hold_until_ms:r.hold_until_ms,exits:BTreeMap::new()};self.append(json!({"kind":"entry","exchangeId":ex,"cohort":c}),now)?;}}
+        }else{let c=Cohort{entry:Some(b),top_ups:BTreeMap::new(),retired_top_ups:BTreeMap::new(),existing:None,first_fill_index:bank.engine().fills().len(),prior_fills_sha256:digest(&bank.engine().fills())?,bank_head_at_entry:bank.durable_head(),hold_until_ms:r.hold_until_ms,exits:BTreeMap::new(),rank_trades:BTreeMap::new()};self.append(json!({"kind":"entry","exchangeId":ex,"cohort":c}),now)?;}}
         else{self.append(json!({"kind":"exit","exchangeId":ex,"binding":b}),now)?;}
         Ok(decision)
     }

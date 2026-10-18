@@ -25,12 +25,12 @@ fn projected_take(lots:&mut BTreeMap<(String,Side),VecDeque<Lot>>,ex:&str,side:S
 }
 fn projected_quantity(lots:&BTreeMap<(String,Side),VecDeque<Lot>>,ex:&str,side:Side)->u64{lots.get(&(ex.to_owned(),side)).map_or(0,|xs|xs.iter().map(|x|x.quantity).sum())}
 impl Engine {
- fn rank_declared_managed_exit(&self,ex:&str,buy:bool,proof:&Value,sources:&BTreeSet<String>)->Result<bool>{
+ fn rank_declared_managed_inventory(&self,ex:&str,buy:bool,proof:&Value,sources:&BTreeSet<String>,conditional_handoff:bool)->Result<bool>{
   if !self.ordinary_entry_excluded(ex){need(proof.is_null(),"RANK_UNMANAGED_EXIT_PROOF")?;return Ok(false)}
-  need(!buy&&proof["schemaVersion"]==1&&proof["exchangeId"]==ex
-   &&["cohortSha256","originSha256","generationSha256","reviewSha256","exclusionSha256"].iter().all(|k|hex(&proof[*k]))
-   &&sources.contains(proof["cohortSha256"].as_str().ok_or("RANK_MANAGED_EXIT_PROOF")?)
-   &&proof["exclusionSha256"]==self.ordinary_entry_exclusion_record().ok_or("RANK_MANAGED_EXIT_PROOF")?["sha256"],"RANK_MANAGED_EXIT_PROOF")?;Ok(true)
+  need((!buy||proof["handoffEstablished"]==true||conditional_handoff)&&proof["handoffEstablished"].as_bool().is_some()&&proof["schemaVersion"]==1&&proof["exchangeId"]==ex
+   &&["cohortSha256","originSha256","generationSha256","reviewSha256","exclusionSha256","positionsSha256","sourceSha256"].iter().all(|k|hex(&proof[*k]))
+   &&sources.contains(proof["sourceSha256"].as_str().ok_or("RANK_MANAGED_EXIT_PROOF")?)
+   &&proof["positionsSha256"]==hash(&self.wallet.positions()[ex])&&proof["exclusionSha256"]==self.ordinary_entry_exclusion_record().ok_or("RANK_MANAGED_EXIT_PROOF")?["sha256"],"RANK_MANAGED_EXIT_PROOF")?;Ok(true)
  }
  /// Independent bounded exact recomputation. A successful evaluation is NOT
  /// owner approval and creates no reservation/physical permission.
@@ -52,10 +52,10 @@ impl Engine {
   // The inherited-inventory flag only disables the ordinary planner. A rank
   // review may manage that holding. The separate fundamental-cohort exclusion
   // remains binding until its execution owner explicitly hands the scope over.
-  let managed_exit=self.rank_declared_managed_exit(&ex,buy,&c["managedExit"],&source_hashes)?;
+  let managed_inventory=self.rank_declared_managed_inventory(&ex,buy,&c["managedInventory"],&source_hashes,false)?;
   // The native preview only checks the pinned ownership declaration. Dispatch
   // additionally requires an opaque original-cohort registration capability.
-  need((!self.ordinary_entry_excluded(&ex)||managed_exit)&&!self.package_protects_exchange(&ex)&&!self.package_blocks_submissions()&&self.wallet.quantity(&ex,side.other())==0&&self.orders.iter().all(|q|q.exchange!=ex||q.retired),"RANK_TARGET_LIABILITY_OR_MANAGED")?;
+  need((!self.ordinary_entry_excluded(&ex)||managed_inventory)&&!self.package_protects_exchange(&ex)&&!self.package_blocks_submissions()&&self.wallet.quantity(&ex,side.other())==0&&self.orders.iter().all(|q|q.exchange!=ex||q.retired),"RANK_TARGET_LIABILITY_OR_MANAGED")?;
   need(self.policy.entry(&ex,at),"RANK_ENTRY_DISABLED")?;
   let quantity=a["quantity"].as_u64().filter(|q|*q>0&&*q<=10000&&*q<=self.policy.quantity).ok_or("RANK_QUANTITY")?;let limit=price(dec(&a["limitPrice"])?)?;
   let b=self.books.get(&ex).ok_or("RANK_BOOK")?;need(b.market==market&&b.fresh(&self.policy,at)&&b.source<=at&&b.request<=at&&at-(if b.raw["transport"]=="official_sig_realtime"{b.source}else{b.source.min(b.request)})<=self.policy.book_age&&at-b.received<=self.policy.book_age,"RANK_BOOK_CHANGED_OR_STALE")?;
@@ -84,6 +84,7 @@ impl Engine {
   if buy{contingent_markets.insert(ex.clone());contingent_costs.insert(ex.clone(),cost);contingent_lots.entry((ex.clone(),side)).or_default().push_back(Lot{quantity,price:limit,executed_at:None});}
   else{projected_take(&mut contingent_lots,&ex,side,quantity)?;contingent_costs.insert(ex.clone(),-sold_basis);if quantity==self.wallet.quantity(&ex,side){contingent_markets.remove(&ex);}}
 
+  let mut contingent_handoffs=BTreeSet::new();if managed_inventory{contingent_handoffs.insert(ex.clone());}
   if prerequisite{let plan=&c["contingentPlan"];text(&plan["assumptionLabel"])?;need(plan["executionAuthority"]==false&&plan["actualFillAndFreshReapprovalRequired"]==true,"RANK_CONTINGENT_CLASSIFICATION")?;
    let mixed=plan.get("tradeLegs").is_some_and(|v|!v.is_null());need(!mixed||plan.get("buyLegs").is_none_or(Value::is_null),"RANK_CONTINGENT_AMBIGUOUS_LEGS")?;let legs=rows(if mixed{&plan["tradeLegs"]}else{&plan["buyLegs"]},128)?;let timing=&plan["executionAssumption"];let theoretical=completion_lower_bound(legs.len(),self.policy.writes,self.policy.write_gap)?;let declared=timing["minimumCompletionMs"].as_i64().filter(|n|*n>=theoretical).ok_or("RANK_CONTINGENT_COMPLETION_TOO_FAST")?;let available=timing["availableAtMs"].as_i64().ok_or("RANK_CONTINGENT_CLOCK")?;let deadline=timing["validUntilMs"].as_i64().ok_or("RANK_CONTINGENT_CLOCK")?;let finish=at.checked_add(declared).ok_or("RANK_RANGE")?;
    text(&timing["conditionalFutureLiquidityAssumption"])?;need(available>=0&&available<=at&&finish<deadline&&deadline<=until,"RANK_CONTINGENT_COMPLETION_WINDOW")?;
@@ -105,7 +106,7 @@ impl Engine {
      let proceeds=mul(p-lf,n as i128)?;contingent_cash=add(contingent_cash,proceeds)?;contingent_remaining=add(contingent_remaining,released)?;contingent_costs.insert(exchange.clone(),add(previous,-released)?);
      if projected_quantity(&contingent_lots,&exchange,ls)==0&&self.orders.iter().all(|q|q.exchange!=exchange||q.retired){contingent_markets.remove(&exchange);}pieces
     };
-    self.rank_declared_managed_exit(&exchange,leg_buy,&leg["managedExit"],&source_hashes)?;
+    if self.rank_declared_managed_inventory(&exchange,leg_buy,&leg["managedInventory"],&source_hashes,contingent_handoffs.contains(&exchange))?{contingent_handoffs.insert(exchange.clone());}
     need(self.policy.entry(&exchange,finish)&&!self.package_protects_exchange(&exchange),"RANK_CONTINGENT_ENTRY_POLICY")?;
     need(contingent_markets.len()<=self.policy.markets,"RANK_CONTINGENT_MARKET_CAP")?;
     if let Some(i)=&self.inherited{need(contingent_markets.iter().filter(|x|!i.remaining.iter().any(|((y,_),lots)|y==*x&&!lots.is_empty())).count()<=i.fresh_market_limit,"RANK_CONTINGENT_FRESH_MARKET_CAP")?;}

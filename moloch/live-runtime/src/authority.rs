@@ -137,8 +137,8 @@ impl ProductionAuthority {
   if usize::from(maker.is_some())+usize::from(fundamental.is_some())+usize::from(rank.is_some())>1{return Err("LIVE_EXCLUSIVE_ORDER_OBJECTIVE".into())}
   if rank.is_some()!=rank_owner.is_some(){return Err("LIVE_RANK_OWNER_APPROVAL_REQUIRED".into())}if let Some(pins)=&rank_owner{pins.validate()?;}
   if quote.get("reviewedRankCampaign").is_some_and(|v|!v.is_null())!=rank.is_some(){return Err("LIVE_RANK_DECISION_REQUIRED".into())}
-  if rank.as_ref().is_some_and(|proof|(self.fundamental_required(exchange)&&!proof.allows_managed_exit())||proof.native_head()!=&bank.durable_head()){return Err("LIVE_RANK_SCOPE_OR_NATIVE_HEAD".into())}
-  if self.fundamental_required(exchange)&&fundamental.is_none()&&!rank.as_ref().is_some_and(|r|r.allows_managed_exit()){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
+  if rank.as_ref().is_some_and(|proof|(self.fundamental_required(exchange)&&!proof.allows_managed_inventory())||proof.native_head()!=&bank.durable_head()){return Err("LIVE_RANK_SCOPE_OR_NATIVE_HEAD".into())}
+  if self.fundamental_required(exchange)&&fundamental.is_none()&&!rank.as_ref().is_some_and(|r|r.allows_managed_inventory()){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
   if fundamental.as_ref().is_some_and(|proof|proof.native_head()!=&bank.durable_head()){return Err("LIVE_FUNDAMENTAL_NATIVE_HEAD_CHANGED".into())}
   if quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if rank.is_none()&&fundamental.is_none()&&maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   let owned=bank.engine().wallet.quantity(quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?,if quote["side"]=="YES"{moloch_replay::Side::Yes}else{moloch_replay::Side::No});
@@ -219,10 +219,10 @@ impl ProductionAuthority {
    if spec.method!="DELETE"||!self.owns_order(id){return Err("LIVE_CANCEL_UNOWNED".into())}self.validate_account_stamp(&f.account_stamp)?;return Ok(())
   }};
   if serde_json::to_value(spec)?!=serde_json::to_value(&f.spec)?||serde_json::to_value(p)?!=serde_json::to_value(&f.permit)?{return Err("LIVE_REQUEST_CHANGED".into())}
-  if self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&f.fundamental.is_none()&&!f.rank.as_ref().is_some_and(|r|r.allows_managed_exit()){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
+  if self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&f.fundamental.is_none()&&!f.rank.as_ref().is_some_and(|r|r.allows_managed_inventory()){return Err("LIVE_FUNDAMENTAL_DECISION_REQUIRED".into())}
   if f.quote.get("reviewedRankCampaign").is_some_and(|v|!v.is_null())!=f.rank.is_some(){return Err("LIVE_RANK_DECISION_REQUIRED".into())}
   if f.rank.is_some()!=f.rank_owner.is_some(){return Err("LIVE_RANK_OWNER_APPROVAL_REQUIRED".into())}if let Some(pins)=&f.rank_owner{pins.validate()?;}
-  if f.rank.is_some()&&(f.maker.is_some()||f.fundamental.is_some()||(self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&!f.rank.as_ref().is_some_and(|r|r.allows_managed_exit()))){return Err("LIVE_RANK_SCOPE_OR_OBJECTIVE".into())}
+  if f.rank.is_some()&&(f.maker.is_some()||f.fundamental.is_some()||(self.fundamental_required(f.quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?)&&!f.rank.as_ref().is_some_and(|r|r.allows_managed_inventory()))){return Err("LIVE_RANK_SCOPE_OR_OBJECTIVE".into())}
   if f.quote["action"]=="buy"{if let Some(required)=self.maker_review.lock().unwrap().as_ref(){if f.rank.is_none()&&f.fundamental.is_none()&&f.maker.as_ref().is_none_or(|m|m.review_sha256()!=required){return Err("LIVE_MAKER_DECISION_REQUIRED".into())}}}
   if let Some(maker)=&f.maker{maker.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;maker.authorize(scope,spec,p,now)?;}
   if let Some(fundamental)=&f.fundamental{fundamental.validate_contract(&f.snapshots.contract)?;fundamental.validate_frozen(&f.quote,&f.ledger,f.quote["id"].as_u64().ok_or("LIVE_QUOTE_ID")?,now)?;fundamental.authorize(scope,spec,p,now)?;}
