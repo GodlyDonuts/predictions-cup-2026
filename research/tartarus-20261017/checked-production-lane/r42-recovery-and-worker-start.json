@@ -1,0 +1,65 @@
+{
+  "observedAt": "2026-10-18T07:34:35.419412+00:00",
+  "recoverySource": "27531c746709b912083ecc01e50100411c6fc369",
+  "workerSource": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+  "ownerFinancialVerification": {
+    "verifiedAt": "2026-10-18T07:31:49.835050+00:00",
+    "actualServiceMainPid": 0,
+    "originalNativePrefixBytes": 1897831408,
+    "originalNativePrefixSha256": "d9324235bebe33aac18fd9fbf6fd2ac5f6574598794ddd244a53588a1cbfdab4",
+    "exactOriginalFillTokensPreserved": 387,
+    "sameOriginalFinancialFields": true,
+    "sameOriginalPositionsAndFifo": true,
+    "newNativeSequence": 574173,
+    "newNativeSuffixEvents": 2,
+    "knownOrder18473ExpiredZeroFill": true,
+    "uncertain18533ExposureReconciledWithoutVenueId": true,
+    "originalKeyAndBindingRetained": true,
+    "sdkUnknownCount": 0,
+    "sdkActive": false,
+    "sdkManualReview": false,
+    "stopPreserved": true,
+    "knownOriginalReceiptsRetained": [
+      {
+        "kind": "order",
+        "receiptSha256": "5feae33e9c5635750f2f7502a94c060313d651ccf6d7cc97de1d1dc410f16c60",
+        "fileRawSha256": "75b47f3ab5c6959fe0f2c0284d26fd5c5735d392a95aa87ed0ff2cbba2977fa5"
+      },
+      {
+        "kind": "fills",
+        "receiptSha256": "68170467dc2a8c513070555ab524e62c8de1ab64fb06709dd0e7e5362db49dde",
+        "fileRawSha256": "b6e1ac92649f1c97c008ebd56343be3ac102e49f6929a5da05c92aee19f6b35b"
+      }
+    ],
+    "cash": "10213.785000",
+    "ownedFifo": "85522.925000",
+    "nativeRealized": "156.795000",
+    "ordersSubmittedByRecovery": 0,
+    "currentTradingVerified": false,
+    "headRawSha256": "312f9199a56355674bb793f3ddf17b3d64adaaa5e64799b335c22089e2cc945a",
+    "reportRawSha256": "59982e5a59a301845aaee5babf51cef0bec8c52ca1c586ae5559fc0d69a5c967"
+  },
+  "actualRuntimeStart": {
+    "at": "2026-10-18T07:31:50.795477+00:00",
+    "sourceCommit": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+    "binarySha256": "bbd4a497f473fbb52a92e9814fbf8b36dc3f1b9d3a7456e01b7de87c90a57cbc",
+    "controlSha256": "034d50e9ec098bcd0c348cfffcd2e7a175e889ad086cc61934934f07310f9850",
+    "unitSha256": "eb9557f6b191e428dbb386151b5b685aa6543649327dc697fac9ddad32152f2e",
+    "onlyBinaryBindingAndExecPathsChanged": true,
+    "previousProcessStopped": true,
+    "originalUnknownReconciled": true,
+    "originalStopArchived": true,
+    "newEntryOrRiskActivation": false,
+    "currentTradingVerified": false,
+    "observedAt": "2026-10-18T07:31:50.900637+00:00",
+    "pid": 773025,
+    "startTicks": "27836490",
+    "actualExecutableAndArgumentsVerified": true,
+    "phase": "started_requires_original_financial_replay_and_fresh_trading_verification"
+  },
+  "actualProcessStillPresentAndExecutableVerified": true,
+  "originalStopArchivedAfterVerifiedRecovery": true,
+  "currentTradingVerified": false,
+  "newProfitClaimed": false,
+  "phase": "sole R42 worker restoring original financial history; fresh account and new-PID progress verification pending"
+}

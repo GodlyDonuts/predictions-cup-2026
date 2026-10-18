@@ -1,5 +1,7 @@
 # Static captured-depth rotation capacity
 
+The [later coverage sensitivity](dated-depth-coverage-sensitivity-20261018.json) uses unchanged cash/129477 held shares at574172 and the actual574171 retained books. Its15 non-invalidated books reproduce536242.722222 modeled rotation capacity. If all203 dated books, including188 subsequently invalidated books, are hypothetically available together, the same deliberately relaxed calculation gives1414786.625. This is **not an executable or current capacity bound**: the books were not contemporaneous, mutually exclusive payouts are relaxed, and those invalidations remain authoritative. It identifies the value of obtaining fresh broader held-sale and acquisition depth through the sole worker; it does not authorize using old prices. Cash-only ceilings remain307483.857142 and327037.909090 respectively, so sale-funded rotation is material even in this optimistic diagnostic.
+
 The full retained journal scan at04:42UTC changes the portfolio search. Its573129 original rows contain203 last-seen exchange books, but166 were subsequently invalidated by a native gap event. The remaining37 are dated observations, not a fresh or complete339-market opportunity set. Original prefix length is1,894,800,574bytes; [source pins and exact results](full-book-capacity-20261018.json) retain its SHA256 and source financial time04:16:44.848UTC. No account request was made.
 
 | Captured static opportunity set | Optimistic terminal wealth ceiling |

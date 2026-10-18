@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "classification": "noncontemporaneous retained-depth coverage sensitivity, not executable liquidity or a current/global bound",
+  "financialSequence": 574172,
+  "sourceDepthFinancialSequence": 574171,
+  "sameOriginalCashAndHeldQuantity": true,
+  "bookVariants": [
+    {
+      "includesSubsequentlyInvalidatedBooks": false,
+      "bookCount": 15,
+      "buyLevels": 1424,
+      "ownedSaleLevels": 10,
+      "capacity": {
+        "buy_only": {
+          "relaxedWealthFraction": "2152387/7",
+          "relaxedWealthDecimal": "307483.8571428571428571428571"
+        },
+        "conditional_rotation": {
+          "relaxedWealthFraction": "9652369/18",
+          "relaxedWealthDecimal": "536242.7222222222222222222222"
+        }
+      }
+    },
+    {
+      "includesSubsequentlyInvalidatedBooks": true,
+      "bookCount": 203,
+      "buyLevels": 18089,
+      "ownedSaleLevels": 37,
+      "capacity": {
+        "buy_only": {
+          "relaxedWealthFraction": "3597417/11",
+          "relaxedWealthDecimal": "327037.9090909090909090909091"
+        },
+        "conditional_rotation": {
+          "relaxedWealthFraction": "11318293/8",
+          "relaxedWealthDecimal": "1414786.625"
+        }
+      }
+    }
+  ],
+  "allHeldAndNewSharesPayOne": true,
+  "feesDebtRiskTimingResourceLimitsRelaxed": true,
+  "currentSIGLiquidityClaimed": false,
+  "networkRequests": 0,
+  "executionAuthority": false,
+  "newProfitClaimed": false
+}
