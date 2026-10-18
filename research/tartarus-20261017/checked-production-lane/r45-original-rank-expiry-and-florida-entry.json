@@ -1,0 +1,115 @@
+{
+  "verifiedAt": "2026-10-18T11:23:49.785701+00:00",
+  "sourceCommit": "886081f0",
+  "nativeSequence": 586205,
+  "nativeFillCount": 393,
+  "newRealizedProfit": "0.000000",
+  "cash": "157.305000",
+  "ownedCost": "95579.405000",
+  "attributedRealized": "156.795000",
+  "newEntry": {
+    "nativeOrderId": 18805,
+    "officialOrderId": "47313798",
+    "exchangeId": "1043",
+    "side": "NO",
+    "quantity": 2056,
+    "price": "0.830000",
+    "cost": "1706.480000",
+    "originalFillIds": [
+      "196987171",
+      "196987176"
+    ],
+    "originalReceiptRawSha256": "0e03314993e2cbac23e407aa21bd0fdb868783facf1b1593ca4f8ae84e7b4fce",
+    "typedFeedbackSha256": "8854dadb55f47688ad29fedd50c43e64f0c7de803e17437e11ba07ca55e73068",
+    "completeOriginalCensusVerified": true,
+    "prior391FillTokensPreserved": true,
+    "originalCashCostAndRealizedReconciled": true
+  },
+  "rankStop": {
+    "observedAt": "2026-10-18T11:20:11.298443+00:00",
+    "nativeSequence": 586205,
+    "fills": 393,
+    "rankReservations": 0,
+    "rankDispatchEvents": 0,
+    "ackCount": 1624,
+    "terminalAckCount": 1624,
+    "sdkSequence": 291869,
+    "sdkUnknown": 0,
+    "sdkActive": null,
+    "manualReview": false,
+    "prefixes": {
+      "financial": {
+        "bytes": 1941795417,
+        "sha256": "f1e0437ae2af7b98d911534c31aa9985ae53c5966ee7c0b6bf839954d595ce10"
+      },
+      "dispatch": {
+        "bytes": 12046980,
+        "sha256": "642fd6f67cf13343aedf00030a831ef81a231a44c8ff9db12e7d8f31cee24139"
+      }
+    },
+    "noNetworkRequestsByAudit": true,
+    "originalStopPreserved": true
+  },
+  "originalLastRankPacket": [
+    {
+      "file": "adc9d8e1aeac094cea5ec9ba25c6535943b871726075e76c4f37dc2ca5744861.json",
+      "sha256": "842583ebf6eddce0beb80ab30a05c67684639a59aff9a6c8f20766f24dfc9b42",
+      "endpoint": "/portfolio/collateral?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T11:06:28.121Z",
+      "receivedAt": "2026-10-18T11:06:28.546Z"
+    },
+    {
+      "file": "a03264b122559ae118837f001090afd4d2d1f53e6735b3841f5edee49e153674.json",
+      "sha256": "f0be0d15ea3577e3aac198bc78410a63e1f493b784bd5320a76dcdd1319bc953",
+      "endpoint": "/tournaments/midterm-elections",
+      "requestStartedAt": "2026-10-18T11:06:35.509Z",
+      "receivedAt": "2026-10-18T11:06:35.999Z"
+    },
+    {
+      "file": "4db4f681a6084f1ef67961820d24597b4c559d423fed27dbd98a26e9987c53a0.json",
+      "sha256": "aa52b985d672f1112c2e2b3de6588a07e2867adb7f4dd4b9a1c4854e27ed00f6",
+      "endpoint": "/tournaments/midterm-elections/portfolio/positions",
+      "requestStartedAt": "2026-10-18T11:06:38.510Z",
+      "receivedAt": "2026-10-18T11:06:38.876Z"
+    },
+    {
+      "file": "0329552d755d784625e014635d9cc78f56a5c115a70472647ceb76f9c7298b5e.json",
+      "sha256": "a2009e7893e251f85fe857de94f8a0269d6659068e7f376e055cd7555aa69f3c",
+      "endpoint": "/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T11:06:39.908Z",
+      "receivedAt": "2026-10-18T11:06:40.123Z"
+    },
+    {
+      "file": "72d86ca21ff4f691ab5244a59b16702ed2793ae6a5c5931936d499d5d5e53d6b.json",
+      "sha256": "d44fda1765a612bc69a351021bbc374f1e8cb8e28bfa119572b179d5d5340257",
+      "endpoint": "/account?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T11:06:40.760Z",
+      "receivedAt": "2026-10-18T11:06:41.086Z"
+    },
+    {
+      "file": "afb4616d2e3268a7169fca533c74144c6a6a7a1cb901cd62892977732140b575.json",
+      "sha256": "dcfdfd7e808738a1eb0d188749217a1cf4ba1b35bd3fe6e4027c34d96dc558ad",
+      "endpoint": "/markets/353?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T11:06:41.750Z",
+      "receivedAt": "2026-10-18T11:06:41.966Z"
+    },
+    {
+      "file": "b48221ebc53d13857bea2e277b68e6ac889f17dc7fb8efba595264d167397f2f.json",
+      "sha256": "8d52a8f9187498aea30daeaa7ad78bd45af4964b3326af025d5601b65df74314",
+      "endpoint": "/markets/353/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "requestStartedAt": "2026-10-18T11:06:42.569Z",
+      "receivedAt": "2026-10-18T11:06:42.844Z"
+    },
+    {
+      "file": "93849b5e4de8b5beee071ea81b8ae3ff6e83d377618aa101589f767c200d6385.json",
+      "sha256": "875d6028aecc99f659aaaaa343648638895cc109957a85d0bc7006e1e612b17e",
+      "endpoint": "/markets/353/orderbook?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55&depth=20",
+      "requestStartedAt": "2026-10-18T11:06:43.963Z",
+      "receivedAt": "2026-10-18T11:06:44.312Z"
+    }
+  ],
+  "collateralExpiresAt": "2026-10-18T11:06:48.121Z",
+  "stopAt": "2026-10-18T11:06:51.110Z",
+  "rankOrderSubmitted": false,
+  "positiveWholeAccountRoiEstablished": false
+}
