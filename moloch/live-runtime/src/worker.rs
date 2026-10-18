@@ -340,10 +340,13 @@ fn snapshot_original_economics(bank:&Session,scope:&Scope,rows:&[Receipt;4],at:u
  }
  let open=&rows[3].data;if open["coverage"]["complete"]!=true||open["pagination"]["hasMore"]!=false||open["pagination"].get("nextCursor")!=Some(&Value::Null)||!open["data"].as_array().is_some_and(Vec::is_empty){return Err("TARTARUS_OPEN_ORDER_EVIDENCE".into())}Ok(())
 }
-// Explicit end-of-cycle service only: no live physical permit or operation is
+// Explicit service after completed scope/cycle: no live physical permit or operation is
 // held. Errors are research diagnostics, never new trading/STOP authority.
 #[allow(clippy::too_many_arguments)]
 fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8],bank:&Session,t:&mut Transport,ordinary:&DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&ProductionAuthority,f:Option<&FundamentalRuntime>,stream:&Realtime,state:&mut SnapshotRequestState)->Result<()>{
+ // Keep the explicit one-shot request queued until a genuine quiet boundary.
+ // Calling between scopes must not consume it during an acknowledged order.
+ if ordinary.require_resolved_attempts().is_err()||ordinary.acknowledgments.keys().any(|qid|!ordinary.closed.contains(qid))||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return Ok(())}
  let mut fatal=false;let mut logical_reads=0;
  let result=(||->Result<Option<Value>>{
   let Some((request_sha,request))=snapshot_request(&c.root,state)?else{return Ok(None)};
@@ -2695,6 +2698,12 @@ pub fn main()->Result<()>{
     }
     // Package preflight consumes real account time; never reuse an expired
     // ordinary reconciliation permission after those paced reads.
+    // Serve an approved rank campaign between completed source scopes rather
+    // than waiting for the complete universe sweep. No physical permit survives
+    // the call; recompute ordinary permission afterward because reads take time.
+    if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
+     rank_opportunity(&mut t,&c,&mut bank,&mut log,&packages,lease.as_ref(),&authority,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
+    }
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&windows,maker_review.as_ref(),fundamental.as_mut())?;
     if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
@@ -2704,6 +2713,7 @@ pub fn main()->Result<()>{
     // no live permit held. Existing original receipts supply all observations.
     if let Some(runtime)=paper5_runtime.as_ref(){let at=now();if at.saturating_sub(paper5_last_evaluation)>=60_000{paper5_last_evaluation=at;let diagnostic=runtime.evaluate(&bank,&c.scope,&log,&paper5_nodes(&c.scope),&Default::default(),&Default::default(),at);if let Ok(value)=serde_json::to_value(diagnostic){let _=atomic_json(&c.root.join("paper5-proposals.json"),&value);}}}
     let _=atomic_json(&c.root.join("progress.json"),&json!({"at":iso(now()),"pid":std::process::id(),"phase":"trading","completedReadScopes":selected_index+1,"selectedReadScopes":selected.len(),"maximumRealtimeFramesPerDrain":MAX_REALTIME_FRAMES_PER_DRAIN,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"actualFills":bank.engine().fills().len(),"profitabilityEstablished":false}));
+    service_tartarus_snapshot(&c,&path,&original_control_bytes,&bank,&mut t,&log,&packages,lease.as_ref(),&authority,fundamental.as_ref(),stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut tartarus_snapshot_requests)?;
    }
    cycles+=1; if let Some(model)=moloch_live_runtime::execution_edge::observer_diagnostic(){let _=atomic_json(&c.root.join("execution-model.json"),&json!({"at":iso(now()),"model":model,"executionAuthority":false}));}
    atomic_json(&c.root.join("status.json"),&json!({"at":iso(now()),"pid":std::process::id(),"mode":"actual-contest-trading","runId":c.activation.run_id,"bank":c.bank_name,"cycles":cycles,"realtimeHealthy":stream.as_ref().is_some_and(|s|s.healthy()),"universe":universe.as_ref().map(Universe::status),"selectedReadScopes":selected,"ownedReconciliation":reconciled,"sourceScopes":source_state.scopes(),"breadthCapture":{"path":breadth_path,"state":breadth.as_ref().map(Recorder::status)},"report":bank.engine().report()?,"queue":t.admission_state()?,"actualOrders":log.acknowledgments.len(),"terminalOrders":log.closed.len(),"entryAnchor":iso(c.activation.entry_until_ms),"entryUntil":iso(authority.entry_until_ms()),"profitabilityEstablished":false}))?;
