@@ -144,11 +144,13 @@ def build(inputs, original_directory, field_observation, *, allow_dated=False, d
         draws_per_profile=64, seed=17023, research_scenario_limit=4096, research_contract_limit=512)
     pub = json.loads(field_observation.read_text(encoding="utf-8"))
     anchor = pub["derivedFlatMarkedWealthAnchor"]
+    benchmark_at = _ns(pub["receivedAt"]) // 1_000_000
+    assert benchmark_at <= cutoff, "PUBLIC_BENCHMARK_NOT_YET_AVAILABLE"
     n = len(model["scenarios"])
     alaska = [r for r in registry if r["raceName"] == "U.S. Senate Alaska" and r["winnerName"] == "Republican Party"]
     assert len(alaska) == 1
     cid = alaska[0]["contractId"]
-    fields = [dict(id="public_flat_anchor_20261018T115653", thresholds=[anchor] * n,
+    fields = [dict(id=f"public_flat_anchor_{benchmark_at}", thresholds=[anchor] * n,
         completeField=False, assumptionLabel="Incomplete flat terminal-threshold hypothesis from initial100000 plus dated official public marked PnL; not rival cash or terminal wealth."),
         dict(id="adverse_growing_field", thresholds=["1500000.000000"] * n,
             completeField=False, assumptionLabel="Hypothetical constant1.5m adverse field; not an observation."),

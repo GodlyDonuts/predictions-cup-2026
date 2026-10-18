@@ -1,0 +1,38 @@
+{
+  "schema": "moloch_dated_marked_equity_v1",
+  "source": "original_official_sdk_startup_receipts",
+  "preflightAt": "2026-10-18T15:15:18.320Z",
+  "preflightRawSha256": "3b7827b1a9c072332d881aaadc508b4449c2482dc97158f495769b1f41dab6c7",
+  "cashReceipt": {
+    "requestStartedAt": "2026-10-18T15:15:09.472Z",
+    "receivedAt": "2026-10-18T15:15:09.809Z",
+    "status": 200
+  },
+  "positionsReceipt": {
+    "requestStartedAt": "2026-10-18T15:15:07.588Z",
+    "receivedAt": "2026-10-18T15:15:07.965Z",
+    "status": 200
+  },
+  "cash": "157.305",
+  "apiPositionMarketValue": "94312.79",
+  "nearbyMarkedEquity": "94470.095",
+  "initialAllotmentAssumption": "100000",
+  "markedChangeVersusAssumedInitial": "-5529.905",
+  "markedReturnPercentVersusAssumedInitial": "-5.52990500",
+  "apiPositionCostBasis": "95257.15",
+  "apiReportedUnrealized": "-944.34",
+  "nativeOriginalFifoCost": "95579.405000",
+  "apiMinusNativeCostDifference": "-322.255000",
+  "nativeAttributedRealized": "156.795000",
+  "originalFillCountAtHandoff": 393,
+  "observationsAtomic": false,
+  "executableLiquidationValueEstablished": false,
+  "costBasisDiscrepancyResolved": false,
+  "newProfitClaimed": false,
+  "limitations": [
+    "Nearby original receipts are not simultaneous or realtime.",
+    "API marks are not whole-position executable bids.",
+    "Native original FIFO is preserved despite the API cost-basis discrepancy.",
+    "No source timestamps or bank lots were rewritten."
+  ]
+}

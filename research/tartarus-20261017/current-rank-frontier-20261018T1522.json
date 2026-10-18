@@ -1,0 +1,146 @@
+{
+  "schema": "tartarus_current_rank_frontier_v1",
+  "preparedAt": "2026-10-18T15:36:12.255383+00:00",
+  "numericIssuedAtMs": 1792336921032,
+  "numericInputCutoffMs": 1792336919631,
+  "currentInputsAtIssue": true,
+  "numericSourceClocksRenewed": false,
+  "numericModelRawSha256": "535ab8d2cfe870f62e790621b410f465cf58c1a558a5be5e9dbc67e0a327653a",
+  "builderSourceSha256": "888bf3f2c554dc00d010f8193fd430f48254389a2a6c84d8e967849a62e918ec",
+  "publicObservationAt": "2026-10-18T15:19:55.085680+00:00",
+  "publicOriginalRawSha256": "c5c320e5b22d4b9a4214a018af87d2695f921743f478d63168966fac4d4c69c0",
+  "publicMarkedAnchor": "1080098.030000",
+  "planningTarget": "1100000.000000",
+  "targetIsObservedRivalTerminalWealth": false,
+  "financialOriginalReportAt": "2026-10-18T13:37:31.983Z",
+  "noAdditionalFillBranch": true,
+  "freshPhysicalAndOwnerReviewRequired": true,
+  "fullScenarios": 400,
+  "models": 5,
+  "fields": 3,
+  "allAdverseFieldsRetained": true,
+  "anchoredRank": {
+    "solverStatus": 1,
+    "solverMessage": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+    "exactOptimalityClaimed": false,
+    "legs": 129,
+    "nativeScenarios": 149,
+    "contracts": 32,
+    "allHeldSidesRetained": 25,
+    "averageTargetMassPpm": 7795.2,
+    "targetModelScores": [
+      {
+        "model": "price_lower_common",
+        "strictMassPpm": 4995
+      },
+      {
+        "model": "price_upper_common",
+        "strictMassPpm": 18981
+      },
+      {
+        "model": "price_midpoint_independent",
+        "strictMassPpm": 0
+      },
+      {
+        "model": "active_review_lower_common",
+        "strictMassPpm": 5000
+      },
+      {
+        "model": "active_review_upper_common",
+        "strictMassPpm": 10000
+      }
+    ],
+    "declaredExpectedMoneyChanges": {
+      "price_lower_common": "-69354.453524",
+      "price_upper_common": "-56588.498258",
+      "price_midpoint_independent": "-62632.513582",
+      "active_review_lower_common": "-76162.479000",
+      "active_review_upper_common": "-57774.506000"
+    },
+    "minimumPrefixWealth": "2171.750000",
+    "maximumPrefixLossVersusHold": "115120.555000",
+    "calibratedProbabilities": false,
+    "executionAuthority": false
+  },
+  "winPreservingMonetaryComparison": {
+    "solverStatus": 0,
+    "solverMessage": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+    "exactOptimalityClaimed": false,
+    "legs": 129,
+    "nativeScenarios": 148,
+    "contracts": 32,
+    "allHeldSidesRetained": 25,
+    "averageTargetMassPpm": 7795.2,
+    "targetModelScores": [
+      {
+        "model": "price_lower_common",
+        "strictMassPpm": 4995
+      },
+      {
+        "model": "price_upper_common",
+        "strictMassPpm": 18981
+      },
+      {
+        "model": "price_midpoint_independent",
+        "strictMassPpm": 0
+      },
+      {
+        "model": "active_review_lower_common",
+        "strictMassPpm": 5000
+      },
+      {
+        "model": "active_review_upper_common",
+        "strictMassPpm": 10000
+      }
+    ],
+    "declaredExpectedMoneyChanges": {
+      "price_lower_common": "-66578.585611",
+      "price_upper_common": "-54670.078039",
+      "price_midpoint_independent": "-59871.548153",
+      "active_review_lower_common": "-68657.509000",
+      "active_review_upper_common": "-46989.426000"
+    },
+    "minimumPrefixWealth": "53.010000",
+    "maximumPrefixLossVersusHold": "109161.295000",
+    "calibratedProbabilities": false,
+    "executionAuthority": false,
+    "preservedPositiveWeightWinningStates": 12,
+    "lowerPrefixFloorThanAnchoredCase": true,
+    "dominatesAllRiskMetrics": false,
+    "worstDeclaredMeanImprovementVersusPriorFreshRescore": "5477.213000",
+    "minimumIndividualModelImprovementVersusPriorFreshRescore": "2272.716977"
+  },
+  "preparedFirstOnlyPackage": {
+    "rawSha256": "4722c3715e7b821e9aba87973b32ff865597d8c6005f2f6ef455fe1dd89b0078",
+    "candidate": "anchoredRank",
+    "futureTradeAuthority": false,
+    "ownerApprovalPublished": false,
+    "firstAction": {
+      "contractId": "380",
+      "exchangeId": "1068",
+      "marketId": "379",
+      "side": "YES",
+      "action": "SELL",
+      "quantity": 7061,
+      "limitPrice": "0.950000",
+      "nominationBookSha256": "a870cf5cdd761e866bcc8d41d813364dfadea5f2661ca19131b2c0e2087021bf"
+    }
+  },
+  "actualRankOrders": 0,
+  "actualRankFills": 0,
+  "calibratedProbabilityClaimed": false,
+  "actualRoiImprovementClaimed": false,
+  "priorFreshSequenceRescore": {
+    "rawSha256": "7e91c5aaa2cafb08e68a69ee9d2a7e5dc1eaababb988b8fa86b26cbda419fa43",
+    "declaredExpectedMoneyChanges": {
+      "price_lower_common": "-69621.793326",
+      "price_upper_common": "-56942.795016",
+      "price_midpoint_independent": "-62437.745162",
+      "active_review_lower_common": "-74134.722000",
+      "active_review_upper_common": "-55937.489000"
+    },
+    "minimumPrefixWealth": "187.005000",
+    "maximumPrefixLossVersusHold": "107105.300000",
+    "allModelsAndFieldsRetained": true
+  }
+}

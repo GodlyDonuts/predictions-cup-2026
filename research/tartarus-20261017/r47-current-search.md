@@ -1,0 +1,23 @@
+# Current Tartarus search and execution — October18,15:36UTC
+
+R47 worker805897 and finite file observer805907 are confirmed live, replaying the original ledger; the preparation-only driver806166 is also confirmed alive. At15:33 the worker had read1,460,379,648 of the2,045,362,999 original journal bytes. No fresh trading or performance improvement is verified. No additional native upgrade, financial reset, risk/limiter/source-TTL change or second official account client was introduced.
+
+## Actual return evidence
+
+[Original official startup receipts](dated-marked-equity-20261018T1515.json), received15:15:07–09UTC, contain157.305 cash and94312.79 API position marks, giving94470.095 nearby marked equity. Against an explicitly assumed100000 initial allotment that is **minus5.529905%**. These receipts are asynchronous, dated and not executable liquidation prices. The API reports95257.15 cost while native original FIFO remains95579.405; the322.255 difference is unresolved, with neither ledger rewritten. Native attributed realized156.795 is not whole-account ROI.
+
+## New information and retained alternatives
+
+The [anonymous public page](public-leader-20261018T151955.json) received15:19:55 reports leaderPnL980098.03 and4385trades. Assumed initial100000 plus that dated mark gives1080098.03; opposing cash, private positions and terminal wealth remain unknown. The separate1.1m planning buffer remains an assumption.
+
+Strict current-input issuance15:22:01 retains all14 original owner reviews and the existing237-market quote cache,139contracts and400joint worlds. Underlying publication/receipt clocks were not renewed. The numerical sensitivity is uncalibrated; price proxies are not fitted terminal forecasts. The builder now gives each flat field its original public observation clock rather than an obsolete hardcoded11:56identifier. Original-source reconstruction and rejection of a synthetic unavailable future benchmark pass, without network.
+
+The [new frontier](current-rank-frontier-20261018T1522.json) retains the current129-leg anchored candidate:32contracts,149lossless native states,all25held sides,five models and all three fields. Its7795.2ppm average target score is uncalibrated and all five monetary means remain negative. Original and adverse alternatives are retained rather than overwritten. A first-only research package4722c371 is prepared for the same covered7061-share Massachusetts Democratic Senate1068YES sale@.95; it is not approved or published. The finite driver may create a fresh staged record only after actual new-PID trading and matched original account/cohort evidence. It cannot send or approve an order. The oldq19042 never-sent record and consumed nomination remain intact.
+
+A second search fixes all12 positive-weight winning states of the retained alternatives and optimizes the weakest declared monetary mean. Independent exact audit preserves those hits and all held positions/models/fields, fitting148native states. Worst declared mean improves from minus74134.722 on the prior fresh rescore to minus68657.509. All five individual model means improve by at least2272.716977. This is still negative expected money, not realized profit or calibrated alpha. Minimum prefix wealth falls from2171.75 in the newly anchored alternative to53.01, and maximum loss versus holding rises to109161.295; therefore it does **not** dominate all risk metrics. Both alternatives remain visible. The solver reports optimality for its bounded mean problem, not global tournament optimality.
+
+## Why continuation matters
+
+[An optimistic quantity bound](single-campaign-capacity-bound.json) starts from141533 held shares and157.305 cash. Even generously counting every one of129orders as a10000-share BUY and ignoring all purchase costs, funding, depth, fees, market-count limits and correlated losses gives at most1431690.305 terminal SUSQies. With a first covered SELL and128later BUYs the bound is1421690.305. Therefore a single current plan cannot reach the retained1.5m or2m adverse thresholds under those assumptions. At least136BUYorders are needed even for the loose1.5m bound; actual required orders/capital may be higher.
+
+This is not proof that the competition is unwinnable. It identifies the need for subsequent stages, each after actual fills, new account/source evidence and reapproval. No future orders or larger limits are authorized by a capacity calculation. The immediate priority remains verified first execution and its measured result, followed by rolling whole-account reevaluation.

@@ -1,0 +1,54 @@
+{
+  "schema": "tartarus_single_campaign_optimistic_quantity_bound_v1",
+  "financialOriginalReportAt": "2026-10-18T13:37:31.983Z",
+  "originalFinancialRawSha256": "047a249d1405b996c40159a98be57c9368ed53a31372035071caf3cd18250502",
+  "cash": "157.305000",
+  "heldAbsoluteShares": 141533,
+  "staticAllSharesPayOneBound": "141690.305000",
+  "physicalOrderQuantityCap": 10000,
+  "maximumFutureTranches": 128,
+  "all129OrdersGenerouslyTreatedAsBuys": true,
+  "generic129BuyUpperBound": "1431690.305000",
+  "coveredFirstSaleThen128BuyUpperBound": "1421690.305000",
+  "thresholds": [
+    {
+      "strictTarget": "925300",
+      "optimisticMinimumBuyOrders": 79,
+      "aboveGeneric129BuyBound": false
+    },
+    {
+      "strictTarget": "1000000",
+      "optimisticMinimumBuyOrders": 86,
+      "aboveGeneric129BuyBound": false
+    },
+    {
+      "strictTarget": "1086100",
+      "optimisticMinimumBuyOrders": 95,
+      "aboveGeneric129BuyBound": false
+    },
+    {
+      "strictTarget": "1100000",
+      "optimisticMinimumBuyOrders": 96,
+      "aboveGeneric129BuyBound": false
+    },
+    {
+      "strictTarget": "1500000",
+      "optimisticMinimumBuyOrders": 136,
+      "aboveGeneric129BuyBound": true
+    },
+    {
+      "strictTarget": "2000000",
+      "optimisticMinimumBuyOrders": 186,
+      "aboveGeneric129BuyBound": true
+    }
+  ],
+  "derivation": "Let U=cash+remaining shares, each paying at most1. A SELL at price<=1 cannot increase U; a BUY of q at nonnegative cost increases U by at most q. Therefore U_final<=U_initial+10000*number_of_BUY_orders. This deliberately ignores funding/depth/fees/market caps/correlation, giving a generous upper bound.",
+  "assumptions": [
+    "No new credit, deposits or nontrading awards.",
+    "Each share pays at most1 including principal refund; buy/sell prices stay between0and1.",
+    "Original bank cash/FIFO/physical order cap are preserved."
+  ],
+  "doesNotProveEntireCompetitionUnwinnable": true,
+  "rollingContinuationNeedsActualFillsAndFreshReapproval": true,
+  "executionAuthority": false
+}
