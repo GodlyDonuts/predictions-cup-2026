@@ -1,0 +1,35 @@
+{
+  "observedAt": "2026-10-18T01:46:45.101424+00:00",
+  "serviceMainPid": 735621,
+  "kernelStartTicks": 25379977,
+  "executable": "/home/archon/apps/moloch/releases/tartarus-b9b35ea00148/moloch-live-runtime",
+  "binarySha256": "b9b35ea001480200e5df8ca8341162309ed522d3c94528f9c7d66c7615bf4da8",
+  "controlSha256": "ffa8592d80149bfa9d8045f3f762edb8a456c5c28cc857877247dc7d929d3fb9",
+  "progress": {
+    "actualFills": 382,
+    "actualOrders": 1602,
+    "at": "2026-10-18T01:46:35.454Z",
+    "completedReadScopes": 7,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 735621,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 39,
+    "terminalOrders": 1599
+  },
+  "rootStopPresent": false,
+  "globalStopPresent": false,
+  "snapshotStatus": {
+    "at": "2026-10-18T01:37:00.335Z",
+    "executionAuthority": false,
+    "networkRequests": 0,
+    "reason": "TARTARUS_EXISTING_EXECUTION_UNAVAILABLE",
+    "requestSha256": "cb2cfa4856c35614d987be23811cee204330d7836d05416fedd16acb14f5f260",
+    "researchOnly": true,
+    "retryAutomatic": false,
+    "state": "unavailable"
+  },
+  "newTartarusFillEstablished": false,
+  "profitabilityEstablished": false
+}

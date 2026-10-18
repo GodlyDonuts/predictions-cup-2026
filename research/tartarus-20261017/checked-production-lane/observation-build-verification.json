@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "sourceCommit": "826ff09c3befeadf72c3f737a3ef05bdb46f5344",
+  "sourceFiles": 279,
+  "archiveMembers": 292,
+  "archiveSha256": "2a66529a3af6fc6e8874d77b43d1abe36a9e038a7f3490cd52a6bae8b2a316a4",
+  "binarySha256": "cc2d1cb210094ede3f56e618d10e458b8b92ea2f464ee243dda239aa363d4619",
+  "nativeIdentity": "4fc90d44c7632749387e50adebdb189bf278783ebeda99975a44bec1e0845ea2",
+  "actualChecks": {
+    "check": [],
+    "snapshot-worker-focused": [
+      19
+    ],
+    "rank-worker-focused": [
+      3
+    ],
+    "worker": [
+      195
+    ],
+    "release": []
+  },
+  "parentQualificationRawSha256": "7d8a91abe7baf325fc53900f1fb8be1e393acbc4cf767c8c5624be01114fdae1",
+  "allUnchangedInputPinsMatchCheckedR40": true,
+  "sourceEquality": "Git LF normalization only; compiled raw inputs individually pinned",
+  "productionActivation": false,
+  "r40HistoricalFinancialReplayClaimed": false,
+  "profitabilityEstablished": false
+}

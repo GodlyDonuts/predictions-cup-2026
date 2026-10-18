@@ -1,9 +1,8 @@
 # Tartarus production integration: candidate source, not deployed proof
 
-At October 18, 00:50 UTC, migrated worker735621 is running and restoring.
-Its actual executable/control and held owner descriptor were verified. Fresh
-trading and profitable Tartarus execution have not been established. R39 has completed ARM64 qualification and independent artifact verification;
-it is not evidence that the service has migrated or that a campaign can win.
+At October 18, 01:44 UTC, migrated worker735621 is verified trading and realtime healthy.
+Its actual executable/control and held owner descriptor were verified. R39 progress reports1601 acknowledgments,1598 terminal orders and382 fills. No new fill or profitable Tartarus execution is established. R39 has completed ARM64 qualification and independent artifact verification;
+The running release is not evidence that a campaign can win.
 The original incident was recovered without HTTP at 00:30:45 UTC. Its STOP was archived during the controlled00:42:25 restart. See [build evidence](checked-production-lane/build-verification.json).
 
 ## Physical execution path
@@ -91,3 +90,31 @@ gap. A23-contract reference packet preserves source bytes and receipt times;
 all23 REST records lack venue publication timestamps. Settlement equivalence
 and pricing authority remain unverified. The Polymarket public collector remains
 separate reference data. Neither feed throughput nor a quote is profit evidence.
+
+
+## Read-only account observation while offers remain open
+
+The actual01:37 request failed before any account read because the allocation packet requires all physical orders to be terminal. Maintaining live offers can therefore starve research. Candidate 826ff09c adds `acquisitionMode: original_account_observation_four_v1` to the same private one-shot request mechanism. It passes195 worker checks and the ARM64 release build; production R39 does not support it yet.
+
+This mode uses the same worker/SDK/shared limiter for Account, Collateral, complete Positions and complete Open Orders. It retains original receipt bytes and timestamps, original request/control bytes, a separately labeled native projection, and known unclosed acknowledgments/intents. Cash and signed quantities must match the original native account, and source clocks, private account generation, control, owner descriptors and unknown-acceptance checks remain binding. No native event is admitted by the capture.
+
+Output uses the distinct schema `tartarus_readonly_account_observation_v1` and directory `tartarus-account-observations`. It declares allocation qualification, open-order ownership reconciliation and execution authority false. Unfilled proceeds are never credited. The strict allocation packet and downstream campaign validators are unchanged; observation data must not be passed off as an admitted financial boundary. Research must model remaining orders/liabilities and reconcile again before any physical action.
+
+Known resting orders now defer a rank allocation before costly preflight reads. An unresolved submission still raises its original fatal error. A cancellation acknowledgment is not terminal evidence. The request budget remains four durable attempts; old markers and the failed original request remain intact. Strict allocation requests wait for quiet without consuming an attempt.
+
+The fundamental controller still owns ten held scopes containing roughly79,421.95 of the dated91,851.73 FIFO principal. This is accounting cost, not current liquidation value. Rank cannot silently take those scopes. Whole-account rotation and any controller transition require original basis/holdings preservation and reconciled outstanding offers; these economic/controller steps remain incomplete.
+
+
+The controller issue is reproducible in current source: `Cohorts::cohort_lots` rejects any post-origin fill not registered as its own entry or exit (`FUNDAMENTAL_FOREIGN_FILL`); generation reload rejects removal of existing scopes; and production authority pins the required fundamental exchange set. Simply bypassing the rank target exclusion would risk a later accounting stop and competing reacquisition. A proper continuation must register the rank sale against original cohort FIFO and suspend conflicting acquisitions under an explicit owner-approved transition. No such transition has been installed.
+
+
+## Dated execution diagnosis — October18 approximately01:50UTC
+
+A read-only tail sample of the actual native journal contained46 exchange books, with very different observation ages; it is not a simultaneous all-market snapshot. The corresponding original bytes were retained privately at `/tmp/moloch-tartarus-depth-sample-20261018/books.original.ndjson`. No additional SIG request was made.
+
+Recent original ACKs were SELL977 NO10000@0.95, SELL993 YES10000@0.72 and SELL872 YES6521@0.465, each showing `quantityTraded:0` in that original ACK. Later sample books showed977 NO bid0.92 (derived from YES ask0.08,454 shares),993 YES bid0.715 (4039 shares) and872 YES bid0.45 (936 shares). These are nearby observations, not synchronized order-status/fill evidence; top-level depth does not cover the entire offers. Some other sampled books were over20minutes old and cannot support a current trade.
+
+The samples distinguish pending accounting-profit offers from executable rotation proceeds. They explain why additional ACKs alone need not free capital. Existing positions must be valued against surrendering their future payout and the feasible use of confirmed proceeds. Faster submission does not itself improve that decision. No modeled proceeds, anonymous liquidity or sampled quote is counted as an actual fill or ROI.
+
+
+The observation/between-scope follow-up is independently verified at source826ff09c. [Build proof](checked-production-lane/observation-build-verification.json) checks all292 archive members and279 source pins, exact unchanged checked R40 inputs outside `worker.rs`,19 focused observation checks,3 rank-worker checks,195 total worker checks, release compilation and actual ARM64 ELF cc2d1cb2/native4fc90d44. The new capture and known-order handling are worker-only; no additional native behavior changed beyond the already checked acquisition prerequisite. These are source/build results, not deployment or a new financial-prefix replay. Production remains on R39. [Live process evidence](checked-production-lane/live-trading-observation.json) independently binds the actual process, executable/control hashes and fresh progress at01:46:45UTC.
