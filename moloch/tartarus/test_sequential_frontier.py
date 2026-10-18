@@ -162,6 +162,24 @@ class SequentialFrontier(unittest.TestCase):
         self.assertEqual(admitted["selectedAverageStrictMassPpm"], 10000)
         self.assertEqual(f, original)
 
+    def test_model_floors_prevent_sacrificing_an_unoptimized_probability_view(self):
+        f = fixture(); f[0]["freshMarketLimit"] = 1
+        f[3]["probabilityModels"].append(dict(id="other", weightsPpm=[10000, 989000, 1000],
+                                             assumptionLabel="Synthetic opposing view"))
+        unrestricted = self.run_search(f, objective="rank")
+        self.assertEqual(unrestricted["selectedAverageStrictMassPpm"], 10000)
+        bounded = self.run_search(f, objective="rank",
+                                 minimum_model_expected_changes={"view": "0.000000", "other": "0.000000"})
+        self.assertEqual(bounded["selectedAverageStrictMassPpm"], 0)
+        self.assertEqual(len(bounded["independentExactAudit"]["models"]), 2)
+        self.assertTrue(all(m["expectedChangeMicrosNumerator"] >= 0
+                            for m in bounded["independentExactAudit"]["models"]))
+
+    def test_model_floors_cannot_omit_or_substitute_a_supplied_probability_model(self):
+        for floors in ({}, {"different": "0.000000"}, {"view": "0.000000", "extra": "0.000000"}):
+            with self.assertRaisesRegex(ValueError, "COMPLETE_MODEL_MEAN_FLOORS"):
+                self.run_search(fixture(), minimum_model_expected_changes=floors)
+
     def test_target_conditioned_feasibility_preserves_worlds_and_models(self):
         f = fixture(); original = copy.deepcopy(f)
         found = self.run_search(f, required_target_hits=[("flat", "rare")],

@@ -104,7 +104,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
           objective="rank", seconds=20, minimum_expected_change=None,
           minimum_terminal_wealth=None, forbidden_new_market_sets=(),
           required_covered_sale_exchanges=(), maximum_native_scenarios=None,
-          required_target_hits=()):
+          required_target_hits=(), minimum_model_expected_changes=None):
     """Search both BUY sides and FIFO SELL prefixes; report actual model scores.
 
     target_pairs is an explicit nonempty list of (modelId, fieldId). ``rank``
@@ -113,6 +113,8 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     declared monetary change. Negative-mean alternatives remain identifiable.
     All supplied fields survive scoring, including unoptimized adverse fields.
     A time-limited incumbent is never a claim of global portfolio optimality.
+    Optional model-specific money floors name every supplied model, allowing
+    a winning-state-preserving comparison without sacrificing another mean.
     """
     import numpy as np
     from scipy.optimize import Bounds, LinearConstraint, milp
@@ -126,6 +128,11 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     pmap = {m["id"]: m for m in model["probabilityModels"]}
     fmap = {f["id"]: f for f in fields}
     need(len(pmap) == len(model["probabilityModels"]) and len(fmap) == len(fields), "DUPLICATE_MODEL")
+    model_floors = {}
+    if minimum_model_expected_changes is not None:
+        need(isinstance(minimum_model_expected_changes, dict)
+             and set(minimum_model_expected_changes) == set(pmap), "COMPLETE_MODEL_MEAN_FLOORS")
+        model_floors = {mid: amount(value) for mid, value in minimum_model_expected_changes.items()}
     need(1 <= len(target_pairs) <= 16 and len(set(target_pairs)) == len(target_pairs)
          and all(p in pmap and f in fmap for p, f in target_pairs), "TARGET_PAIRS")
     cols, sales, buys = _columns(financial, registry, books)
@@ -300,6 +307,8 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     for mid, delta in means.items():
         if minimum_expected_change is not None:
             row(dict(enumerate(delta)), lo=amount(minimum_expected_change) / UNIT)
+        if mid in model_floors:
+            row(dict(enumerate(delta)), lo=model_floors[mid] / UNIT)
         if objective == "mean":
             row({**{j: -v for j, v in enumerate(delta)}, tcol: 1}, hi=0)
     if minimum_terminal_wealth is not None:
@@ -352,6 +361,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
                solverMessage=str(result.message), exactOptimalityClaimed=False,
                calibratedProbabilities=False, executionAuthority=False,
                minimumExpectedChange=minimum_expected_change,
+               minimumModelExpectedChanges=minimum_model_expected_changes,
                requiredTargetHits=list(required_target_hits),
                minimumTerminalWealth=minimum_terminal_wealth, baseline=baseline_audit)
     if result.x is None:
@@ -362,6 +372,9 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
         checked = audit(financial, registry, books, model, fields, legs, assumptions=ASSUMPTIONS)
         if minimum_expected_change is not None:
             need(all(m["expectedChangeMicrosNumerator"] >= amount(minimum_expected_change) * UNIT for m in checked["models"]), "EXACT_MEAN_FLOOR")
+        if model_floors:
+            need(all(m["expectedChangeMicrosNumerator"] >= model_floors[m["id"]] * UNIT
+                     for m in checked["models"]), "EXACT_MODEL_MEAN_FLOOR")
         if minimum_terminal_wealth is not None:
             need(min(checked["terminalWealthMicros"]) >= amount(minimum_terminal_wealth), "EXACT_WEALTH_FLOOR")
         for (fid, i), h in hits.items():

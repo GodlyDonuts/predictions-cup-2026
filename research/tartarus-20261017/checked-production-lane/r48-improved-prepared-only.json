@@ -1,0 +1,52 @@
+{
+  "preparedAtMs": 1792344042777,
+  "packageRawSha256": "854aff18e5de731c5a68cb4ee31ba85e38408433e5ef50233433b5fa2fdbe0a2",
+  "originalFullWorlds": 387,
+  "nativeLosslessStates": 162,
+  "models": 5,
+  "fields": 3,
+  "allHeldSidesRetained": 25,
+  "candidateLegs": 129,
+  "firstActionUnchanged": true,
+  "everyPriorModelMoneyMeanPreservedOrImproved": true,
+  "priorWinningOutcomesPreserved": true,
+  "minimumPrefixWealthMicros": 2172375000,
+  "priorMinimumPrefixWealthMicros": 2171750000,
+  "maximumPrefixLossVersusHoldMicros": 106984930000,
+  "moneyMeans": [
+    {
+      "id": "price_lower_common",
+      "expectedChangeMicrosNumerator": -56867162175000000,
+      "denominator": 1000000
+    },
+    {
+      "id": "price_upper_common",
+      "expectedChangeMicrosNumerator": -57391573239000000,
+      "denominator": 1000000
+    },
+    {
+      "id": "price_midpoint_independent",
+      "expectedChangeMicrosNumerator": -56433954280000000,
+      "denominator": 1000000
+    },
+    {
+      "id": "active_review_lower_common",
+      "expectedChangeMicrosNumerator": -70928704000000000,
+      "denominator": 1000000
+    },
+    {
+      "id": "active_review_upper_common",
+      "expectedChangeMicrosNumerator": -52895036000000000,
+      "denominator": 1000000
+    }
+  ],
+  "currentPhysicalAccountReconciliationRequired": true,
+  "ownerApprovalPublished": false,
+  "physicalAuthority": false,
+  "original387WorldsIndependentlyReaudited": true,
+  "every11OriginalPositiveWeightWinningWorldIndividuallyVerified": true,
+  "originalForecastValidityNotExtended": true,
+  "numericalModelIssuedAtMs": 1792342805960,
+  "minimumContingentCompletionMs": 5400000,
+  "verifiedAt": "2026-10-18T17:22:58.949300+00:00"
+}

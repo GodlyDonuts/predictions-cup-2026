@@ -1,0 +1,1216 @@
+{
+  "schema": "tartarus_r48_current_comparison_v1",
+  "createdAt": "2026-10-18T17:22:08.837790+00:00",
+  "actualTartarusFills": 0,
+  "profitabilityEstablished": false,
+  "inputPins": {
+    "numericalModelSha256": "11f57bea5723832742836a86921661e3b577371d40727d8e3d2a71564021dd64",
+    "originalFinancialBranchSha256": "047a249d1405b996c40159a98be57c9368ed53a31372035071caf3cd18250502",
+    "originalBookHypothesesSha256": "80eaba350a499d54510f4d57fe058aaf78578f29f015698fe5a682a7dc2cc39a",
+    "optimizerSourceSha256": "08f26ef8e061456eda82d2ae1877e0e87261ca5d509a537a09c81db40cc06b00",
+    "independentAuditSourceSha256": "1ec569d348e320c9ed368d1751be5f34a706b60c1c18036df19df13d5597c3d2"
+  },
+  "numericalIssuedAtMs": 1792342805960,
+  "fullWorlds": 387,
+  "models": 5,
+  "fields": 3,
+  "completeHeldExchanges": 25,
+  "universeContracts": 139,
+  "financialBranchOriginallyAt": "2026-10-18T13:37:31.983Z",
+  "financialCashFifoPositionsAndFillsVerifiedUnchangedAt": "2026-10-18T17:01:50.891675+00:00",
+  "frozenReportRawSha256": "13f8462bd078704fc7495ed4877bab37d6aa979569ac34b49aa25c4fc5784eb7",
+  "conditionalManagedSlotsStillRequireCurrentReconciliation": true,
+  "datedBookHypothesesNotCurrentLiquidity": true,
+  "allModelProbabilitiesUncalibrated": true,
+  "fieldFirstFlatThreshold": "1100000.000000",
+  "fieldThresholdIsForecast": false,
+  "physicalMaximumQuantityUnchanged": 10000,
+  "sourceClocksRenewed": false,
+  "cases": [
+    {
+      "id": "retained_incumbent",
+      "privateArtifactSha256": "f3035dd2fe3aefb12eb55e5a1b9db734a1e9419b948efd5f47cef9fbbeec60c2",
+      "solverStatus": null,
+      "legCount": 129,
+      "nativeStateCount": null,
+      "averageFlatTargetMassPpm": 7795.2,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -59724991625000000,
+          "declaredExpectedMoney": "-59724.991625",
+          "declaredExpectedTerminalWealth": "29318.935857",
+          "expectedWealthChangeVsAssumed100kInitial": "-70681.064143",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -59349758234000000,
+          "declaredExpectedMoney": "-59349.758234",
+          "declaredExpectedTerminalWealth": "43794.546756",
+          "expectedWealthChangeVsAssumed100kInitial": "-56205.453244",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": -59262725005000000,
+          "declaredExpectedMoney": "-59262.725005",
+          "declaredExpectedTerminalWealth": "36482.415848",
+          "expectedWealthChangeVsAssumed100kInitial": "-63517.584152",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -76290604000000000,
+          "declaredExpectedMoney": "-76290.604",
+          "declaredExpectedTerminalWealth": "32575.351",
+          "expectedWealthChangeVsAssumed100kInitial": "-67424.649",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -57238256000000000,
+          "declaredExpectedMoney": "-57238.256",
+          "declaredExpectedTerminalWealth": "45426.51",
+          "expectedWealthChangeVsAssumed100kInitial": "-54573.49",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "2171.75",
+      "maximumPrefixLossVersusHold": "115120.555",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 4995
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 18981
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 5000
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 10000
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false,
+      "optimizerSourceSha256": "08f26ef8e061456eda82d2ae1877e0e87261ca5d509a537a09c81db40cc06b00"
+    },
+    {
+      "id": "fresh_rank_incumbent",
+      "privateArtifactSha256": "5c834e06fb607e7c1fd0420be61a8bef44fe4b76f7404cece5b71fc309db8b97",
+      "solverStatus": 1,
+      "legCount": 101,
+      "nativeStateCount": 162,
+      "averageFlatTargetMassPpm": 0.0,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -31623892343000000,
+          "declaredExpectedMoney": "-31623.892343",
+          "declaredExpectedTerminalWealth": "57420.035139",
+          "expectedWealthChangeVsAssumed100kInitial": "-42579.964861",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -40695271883000000,
+          "declaredExpectedMoney": "-40695.271883",
+          "declaredExpectedTerminalWealth": "62449.033107",
+          "expectedWealthChangeVsAssumed100kInitial": "-37550.966893",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": -35416203054000000,
+          "declaredExpectedMoney": "-35416.203054",
+          "declaredExpectedTerminalWealth": "60328.937799",
+          "expectedWealthChangeVsAssumed100kInitial": "-39671.062201",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -54643043000000000,
+          "declaredExpectedMoney": "-54643.043",
+          "declaredExpectedTerminalWealth": "54222.912",
+          "expectedWealthChangeVsAssumed100kInitial": "-45777.088",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 197560151000000000,
+          "declaredExpectedMoney": "197560.151",
+          "declaredExpectedTerminalWealth": "300224.917",
+          "expectedWealthChangeVsAssumed100kInitial": "200224.917",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "10586.635",
+      "maximumPrefixLossVersusHold": "113340.67",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false,
+      "optimizerSourceSha256": "08f26ef8e061456eda82d2ae1877e0e87261ca5d509a537a09c81db40cc06b00"
+    },
+    {
+      "id": "nonnegative_mean_target",
+      "privateArtifactSha256": "8528e4ffd4e77060baed593da1701835f2458d40d251436246969614e3d10660",
+      "solverStatus": 1,
+      "legCount": 43,
+      "nativeStateCount": 158,
+      "averageFlatTargetMassPpm": 0.0,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 63600346000000,
+          "declaredExpectedMoney": "63.600346",
+          "declaredExpectedTerminalWealth": "89107.527828",
+          "expectedWealthChangeVsAssumed100kInitial": "-10892.472172",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 8002000000,
+          "declaredExpectedMoney": "0.008002",
+          "declaredExpectedTerminalWealth": "103144.312992",
+          "expectedWealthChangeVsAssumed100kInitial": "3144.312992",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": 698500431000000,
+          "declaredExpectedMoney": "698.500431",
+          "declaredExpectedTerminalWealth": "96443.641284",
+          "expectedWealthChangeVsAssumed100kInitial": "-3556.358716",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 24184000000000,
+          "declaredExpectedMoney": "24.184",
+          "declaredExpectedTerminalWealth": "108890.139",
+          "expectedWealthChangeVsAssumed100kInitial": "8890.139",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 7000000000,
+          "declaredExpectedMoney": "0.007",
+          "declaredExpectedTerminalWealth": "102664.773",
+          "expectedWealthChangeVsAssumed100kInitial": "2664.773",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "45614.6",
+      "maximumPrefixLossVersusHold": "56076.435",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false,
+      "optimizerSourceSha256": "08f26ef8e061456eda82d2ae1877e0e87261ca5d509a537a09c81db40cc06b00"
+    },
+    {
+      "id": "maximum_weakest_money",
+      "privateArtifactSha256": "eaa5ece9219a5cb3f24b6c4ad8e224858856459e1115372e376a8447473db070",
+      "solverStatus": 0,
+      "legCount": 28,
+      "nativeStateCount": 148,
+      "averageFlatTargetMassPpm": 0.0,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 2930680436000000,
+          "declaredExpectedMoney": "2930.680436",
+          "declaredExpectedTerminalWealth": "91974.607918",
+          "expectedWealthChangeVsAssumed100kInitial": "-8025.392082",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 2930681435000000,
+          "declaredExpectedMoney": "2930.681435",
+          "declaredExpectedTerminalWealth": "106074.986425",
+          "expectedWealthChangeVsAssumed100kInitial": "6074.986425",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": 3398495674000000,
+          "declaredExpectedMoney": "3398.495674",
+          "declaredExpectedTerminalWealth": "99143.636527",
+          "expectedWealthChangeVsAssumed100kInitial": "-856.363473",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 2930782000000000,
+          "declaredExpectedMoney": "2930.782",
+          "declaredExpectedTerminalWealth": "111796.737",
+          "expectedWealthChangeVsAssumed100kInitial": "11796.737",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": 2931594000000000,
+          "declaredExpectedMoney": "2931.594",
+          "declaredExpectedTerminalWealth": "105596.36",
+          "expectedWealthChangeVsAssumed100kInitial": "5596.36",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "26351.54",
+      "maximumPrefixLossVersusHold": "51174.405",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false,
+      "optimizerSourceSha256": "08f26ef8e061456eda82d2ae1877e0e87261ca5d509a537a09c81db40cc06b00"
+    },
+    {
+      "id": "preserve_all_prior_positive_weight_wins",
+      "privateArtifactSha256": "9bcc7538c3e44b13aaf666eb01c123c7e0e4340e712b84d7a6c5ac549363c29d",
+      "solverStatus": 0,
+      "legCount": 129,
+      "nativeStateCount": 162,
+      "averageFlatTargetMassPpm": 7795.2,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -56869209706000000,
+          "declaredExpectedMoney": "-56869.209706",
+          "declaredExpectedTerminalWealth": "32174.717776",
+          "expectedWealthChangeVsAssumed100kInitial": "-67825.282224",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -57431338015000000,
+          "declaredExpectedMoney": "-57431.338015",
+          "declaredExpectedTerminalWealth": "45712.966975",
+          "expectedWealthChangeVsAssumed100kInitial": "-54287.033025",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": -56501759576000000,
+          "declaredExpectedMoney": "-56501.759576",
+          "declaredExpectedTerminalWealth": "39243.381277",
+          "expectedWealthChangeVsAssumed100kInitial": "-60756.618723",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -68705640000000000,
+          "declaredExpectedMoney": "-68705.64",
+          "declaredExpectedTerminalWealth": "40160.315",
+          "expectedWealthChangeVsAssumed100kInitial": "-59839.685",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -46453176000000000,
+          "declaredExpectedMoney": "-46453.176",
+          "declaredExpectedTerminalWealth": "56211.59",
+          "expectedWealthChangeVsAssumed100kInitial": "-43788.41",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "94.01",
+      "maximumPrefixLossVersusHold": "109161.295",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 4995
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 18981
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 5000
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 10000
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false,
+      "optimizerSourceSha256": "08f26ef8e061456eda82d2ae1877e0e87261ca5d509a537a09c81db40cc06b00"
+    },
+    {
+      "id": "preserve_wins_and_terminal_floor",
+      "privateArtifactSha256": "652f626a27ef46299b980a15f31464c9eb7d09e96616e7c51d1e35165626946c",
+      "solverStatus": 1,
+      "legCount": 129,
+      "nativeStateCount": 160,
+      "averageFlatTargetMassPpm": 7795.2,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -60160286304000000,
+          "declaredExpectedMoney": "-60160.286304",
+          "declaredExpectedTerminalWealth": "28883.641178",
+          "expectedWealthChangeVsAssumed100kInitial": "-71116.358822",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -59938136676000000,
+          "declaredExpectedMoney": "-59938.136676",
+          "declaredExpectedTerminalWealth": "43206.168314",
+          "expectedWealthChangeVsAssumed100kInitial": "-56793.831686",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": -59663143377000000,
+          "declaredExpectedMoney": "-59663.143377",
+          "declaredExpectedTerminalWealth": "36081.997476",
+          "expectedWealthChangeVsAssumed100kInitial": "-63918.002524",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -74065236000000000,
+          "declaredExpectedMoney": "-74065.236",
+          "declaredExpectedTerminalWealth": "34800.719",
+          "expectedWealthChangeVsAssumed100kInitial": "-65199.281",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -54988170000000000,
+          "declaredExpectedMoney": "-54988.17",
+          "declaredExpectedTerminalWealth": "47676.596",
+          "expectedWealthChangeVsAssumed100kInitial": "-52323.404",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "2171.895",
+      "maximumPrefixLossVersusHold": "106740.41",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 4995
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 18981
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 5000
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 10000
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false,
+      "optimizerSourceSha256": "08f26ef8e061456eda82d2ae1877e0e87261ca5d509a537a09c81db40cc06b00"
+    },
+    {
+      "id": "preserve_wins_all_means_and_floor",
+      "privateArtifactSha256": "aee2322c0a85358b56da58917b71b11905463fec260b39ee2df7413ccf2b14ad",
+      "solverStatus": 0,
+      "legCount": 129,
+      "nativeStateCount": 162,
+      "averageFlatTargetMassPpm": 7795.2,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -56867162175000000,
+          "declaredExpectedMoney": "-56867.162175",
+          "declaredExpectedTerminalWealth": "32176.765307",
+          "expectedWealthChangeVsAssumed100kInitial": "-67823.234693",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -57391573239000000,
+          "declaredExpectedMoney": "-57391.573239",
+          "declaredExpectedTerminalWealth": "45752.731751",
+          "expectedWealthChangeVsAssumed100kInitial": "-54247.268249",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": -56433954280000000,
+          "declaredExpectedMoney": "-56433.95428",
+          "declaredExpectedTerminalWealth": "39311.186573",
+          "expectedWealthChangeVsAssumed100kInitial": "-60688.813427",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -70928704000000000,
+          "declaredExpectedMoney": "-70928.704",
+          "declaredExpectedTerminalWealth": "37937.251",
+          "expectedWealthChangeVsAssumed100kInitial": "-62062.749",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -52895036000000000,
+          "declaredExpectedMoney": "-52895.036",
+          "declaredExpectedTerminalWealth": "49769.73",
+          "expectedWealthChangeVsAssumed100kInitial": "-50230.27",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "2172.375",
+      "maximumPrefixLossVersusHold": "106984.93",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 4995
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 18981
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 5000
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 10000
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false,
+      "optimizerSourceSha256": "3cb13463f704e4281867df9f6a08a9f9871ffd903074c7faff4f264beb041836"
+    },
+    {
+      "id": "rank_search_with_winning_state_and_model_floors",
+      "privateArtifactSha256": "5465df33b844a61f4e76aa679a2b9b51dadcd5e9365466b486430527067764ab",
+      "optimizerSourceSha256": "3cb13463f704e4281867df9f6a08a9f9871ffd903074c7faff4f264beb041836",
+      "solverStatus": 1,
+      "legCount": 129,
+      "nativeStateCount": 162,
+      "averageFlatTargetMassPpm": 7795.2,
+      "minimumFlatTargetMassPpm": 0,
+      "moneyModels": [
+        {
+          "modelId": "price_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -59559824957000000,
+          "declaredExpectedMoney": "-59559.824957",
+          "declaredExpectedTerminalWealth": "29484.102525",
+          "expectedWealthChangeVsAssumed100kInitial": "-70515.897475",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -59348807186000000,
+          "declaredExpectedMoney": "-59348.807186",
+          "declaredExpectedTerminalWealth": "43795.497804",
+          "expectedWealthChangeVsAssumed100kInitial": "-56204.502196",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "expectedChangeNumeratorMicrosTimesPpm": -59210101301000000,
+          "declaredExpectedMoney": "-59210.101301",
+          "declaredExpectedTerminalWealth": "36535.039552",
+          "expectedWealthChangeVsAssumed100kInitial": "-63464.960448",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -76125272000000000,
+          "declaredExpectedMoney": "-76125.272",
+          "declaredExpectedTerminalWealth": "32740.683",
+          "expectedWealthChangeVsAssumed100kInitial": "-67259.317",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "expectedChangeNumeratorMicrosTimesPpm": -57237304000000000,
+          "declaredExpectedMoney": "-57237.304",
+          "declaredExpectedTerminalWealth": "45427.462",
+          "expectedWealthChangeVsAssumed100kInitial": "-54572.538",
+          "expectedMoneyDefinition": "Increment versus holding the existing portfolio, not profit versus original deposit."
+        }
+      ],
+      "minimumPrefixWealth": "2351.47",
+      "maximumPrefixLossVersusHold": "114940.835",
+      "allFieldPairResults": [
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 4995
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 18981
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 5000
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "public_anchor_plus_buffer_20261018T165606",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 10000
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "adverse_growing_field",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "price_midpoint_independent",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_lower_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        },
+        {
+          "modelId": "active_review_upper_common",
+          "fieldId": "held_alaska_correlated_adverse",
+          "beforeStrictMassPpm": 0,
+          "afterStrictMassPpm": 0
+        }
+      ],
+      "physicalAuthority": false
+    }
+  ],
+  "selection": "Prepare the129-leg all-mean/floor comparison for fresh first-leg account review: it preserves all11 prior positive-weight winning worlds/all15field-pair scores, improves every5modelmean, raises prefixfloor2171.75to2172.375 and lowers maxloss-versus-hold115120.555to106984.93. These are limited modeled-metric improvements, not worldwise dominance or profits. The first7061MA1068YESsale@.95 is unchanged. All8alternatives retained; no owner approval or future order authority.",
+  "executionAuthority": false,
+  "optimizerExtension": {
+    "sourceSha256": "3cb13463f704e4281867df9f6a08a9f9871ffd903074c7faff4f264beb041836",
+    "minimumModelExpectedChangesNamesEveryModel": true,
+    "exactIntegerAuditRequired": true,
+    "focusedTests": 15,
+    "runtimeNativeSdkOrProductionControlChanged": false
+  }
+}
