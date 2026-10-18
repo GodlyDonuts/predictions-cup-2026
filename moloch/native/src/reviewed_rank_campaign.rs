@@ -2,6 +2,8 @@
 //! assumptions, never calibrated probabilities, resolver certificates or alpha.
 //! See runtime rank_campaign for owner/source/official-account physical binding.
 use super::*;
+use crate::Lot;
+use std::collections::VecDeque;
 fn need(ok:bool,e:&'static str)->Result<()>{if ok{Ok(())}else{Err(e)}}
 fn hex(v:&Value)->bool{v.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)))}
 fn rows<'a>(v:&'a Value,max:usize)->Result<&'a Vec<Value>>{v.as_array().filter(|a|!a.is_empty()&&a.len()<=max).ok_or("RANK_DIMENSION")}
