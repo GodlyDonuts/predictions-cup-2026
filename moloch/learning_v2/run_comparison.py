@@ -18,14 +18,16 @@ def main():
         p.add_argument('--'+flag, type=Path, required=True)
     p.add_argument('--members', type=int, default=4)
     p.add_argument('--islands', type=int, default=1)
-    p.add_argument('--cycles', type=int, default=2)
+    p.add_argument('--cycles', type=int, default=3)
+    p.add_argument('--founder-grace-blocks', type=int, default=2)
     p.add_argument('--seed', type=int, default=10001)
     args = p.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     modes = ['independent', 'local', 'multiscale']
     plan = {'classification':'scheduled_work_matched_development_comparison_not_locked_evidence',
             'modes':modes, 'members':args.members, 'islands':args.islands, 'cycles':args.cycles,
-            'seed':args.seed, 'dataset_sha256':sha(args.dataset/'dataset-manifest.json'),
+            'seed':args.seed, 'initial_founder_grace_training_blocks':args.founder_grace_blocks,
+            'dataset_sha256':sha(args.dataset/'dataset-manifest.json'),
             'mechanics_sha256':sha(args.mechanics), 'protocol_sha256':sha(args.protocol),
             'execution_profiles_sha256':sha(args.execution_profiles),
             'source_sha256':{x.name:sha(x) for x in sorted(Path(__file__).parent.glob('*.py')) if not x.name.startswith('test_')},
@@ -41,7 +43,7 @@ def main():
         if any(sha(Path(__file__).parent/name)!=digest for name,digest in plan['source_sha256'].items()):
             raise ValueError('COMPARISON_SOURCE_CHANGED')
         command = [sys.executable, '-u', '-m', 'moloch.learning_v2.run_population']
-        for key in ['dataset','mechanics','protocol','execution_profiles','members','islands','cycles','seed']:
+        for key in ['dataset','mechanics','protocol','execution_profiles','members','islands','cycles','seed','founder_grace_blocks']:
             command += ['--'+key.replace('_','-'), str(getattr(args,key))]
         command += ['--output', str(args.output/mode), '--replacement-mode', mode]
         start = time.perf_counter()

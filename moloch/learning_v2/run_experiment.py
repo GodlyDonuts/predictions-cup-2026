@@ -57,7 +57,8 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     for step,at in enumerate(range(start-protocol['recurrent_burnin_ms'],end,protocol['decision_interval_ms'])):
         env.advance(at)
         if at==start and protocol.get('initial_inventory_allocation_ppm',0):
-            initial_portfolio=seed_inventory(env,protocol['initial_inventory_allocation_ppm'],protocol['initial_inventory_seed'])
+            initial_portfolio=seed_inventory(env,protocol['initial_inventory_allocation_ppm'],protocol['initial_inventory_seed'],
+                                            selection=protocol.get('initial_inventory_selection','shuffle'))
             initial=initial_portfolio['initial_marked_wealth_micros'];previous=initial;env.initial_wealth=initial
         obs=env.observe()
         if (model.contract_features,model.global_features)not in[(20,12),(CONTRACT_FEATURES,GLOBAL_FEATURES)]:

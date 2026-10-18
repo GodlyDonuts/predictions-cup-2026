@@ -39,8 +39,9 @@ def main():
     p.add_argument('--members',type=int,default=32);p.add_argument('--islands',type=int,default=4)
     p.add_argument('--cycles',type=int,default=2);p.add_argument('--seed',type=int,default=7001);p.add_argument('--device',default='cuda')
     p.add_argument('--execution-profiles',type=Path)
+    p.add_argument('--founder-grace-blocks',type=int,default=2)
     p.add_argument('--replacement-mode',choices=['independent','local','multiscale'],default='multiscale');args=p.parse_args()
-    if args.output.exists()or args.members%args.islands or args.members//args.islands<4 or args.cycles<1:
+    if args.output.exists()or args.members%args.islands or args.members//args.islands<4 or args.cycles<1 or args.founder_grace_blocks<1:
         raise ValueError('FINITE_NEW_POPULATION_WITH_AT_LEAST_FOUR_PER_ISLAND_REQUIRED')
     args.output.mkdir(parents=True);(args.output/'checkpoints').mkdir();(args.output/'anchors').mkdir()
     torch.set_num_threads(4);rng=random.Random(args.seed);torch.manual_seed(args.seed)
@@ -68,7 +69,8 @@ def main():
           'execution_profile_names':[name for name,_ in profiles],
           'training_execution_schedule':'cycle_index_mod_profile_count_common_to_all_islands',
           'selection_criterion':'minimum_reference_return_across_all_fixed_profiles_and_calendars',
-          'weak_fraction_per_island':.25,'protected_elites_per_island':2,'maximum_global_founder_share':.25,
+          'weak_fraction_per_island':.25,'protected_elites_per_island':2,'maximum_global_founder_share':max(2,args.members//4)/args.members,
+          'initial_founder_grace_training_blocks':args.founder_grace_blocks,
           'reset_branch_grace_training_blocks':2,'migration_probability':.20,'source_sha256':source,
           'search_is_optimization_not_locked_evidence':True,'locked_test_used':False,'production_authority':False,
           'matched_compute_ablation_complete':False,'projected_mutation_distance_available':False}
@@ -79,7 +81,7 @@ def main():
     for i in range(args.members):
         identity=f'founder-{args.seed+i}'
         members.append({'id':identity,'founder':identity,'island':i//width,'seed':args.seed+i,'parent':None,
-                        'checkpoint':None,'age':0,'grace':1,'operator':'fresh','lineage':[]})
+                        'checkpoint':None,'age':0,'grace':args.founder_grace_blocks,'operator':'fresh','lineage':[]})
     def provenance(member):
         return {'dataset_manifest_sha256':tape.manifest_sha256,'mechanics_manifest_sha256':sha(args.mechanics),
                 'evaluation_protocol_sha256':protocol_sha,'action_adapter_sha256':source['episodes.py'],

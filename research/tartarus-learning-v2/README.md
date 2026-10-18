@@ -11,7 +11,7 @@ The human specification and proposed configuration are preserved byte-for-byte i
 - Fresh-policy fingerprint checks, whole-episode recurrent recomputation, elapsed-time PPO, separate monetary targets and immutable checkpoint bundles: [trainer](../../moloch/learning_v2/train_inner.py).
 - Full-observation causal source compilation, predecoding outside the inner loop, mechanics-only target actions and a finite GPU historical trainer: [compiler](../../moloch/learning_v2/compile_trace.py), [episodes](../../moloch/learning_v2/episodes.py), [runner](../../moloch/learning_v2/run_experiment.py).
 
-These components pass95 focused checks. Correct component behavior does not establish trading profitability.
+These components pass98 focused checks, plus a separate source-transport hash regression. Correct component behavior does not establish trading profitability.
 
 ## First actual historical PPO run
 
@@ -45,7 +45,7 @@ The first full **32 logical learners / four islands / two cycles** experiment co
 
 ## Remaining
 
-The complete program remains unfinished. Two full32-member runs and a ten-state native-wallet differential are complete; they have not established profitable learned behavior. The revised run has seven provisional archive entries including cash-only zero-return behavior. No finalists qualified for the reserved forward window. A three-mode comparison now matches scheduled work across independent PPO, local replacement and multiscale replacement under fixed nominal/adverse scenarios. Full A0-A6 ablations, actual-shaped causal inventory, unified three-venue compilation, calibrated execution, locked/forward evaluation and the learned production adapter remain unfinished. No learned checkpoint is deployed.
+The complete program remains unfinished. Two full32-member runs and a ten-state native-wallet differential are complete; they have not established profitable learned behavior. The revised run has seven provisional archive entries including cash-only zero-return behavior. No finalists qualified for the reserved forward window. A three-mode comparison completed with equal scheduled decisions: independent PPO retained one positive-across-four-cases candidate, while local and multiscale replacement retained none. The multiscale draw was local, so this does not establish the value of the mixture. [Full comparison and inventory curriculum](robust-comparison-002-review.md). Full A0-A6 ablations, actual-shaped causal inventory, unified three-venue compilation, calibrated execution, locked/forward evaluation and the learned production adapter remain unfinished. No learned checkpoint is deployed.
 
 ## Reproduce
 
@@ -60,3 +60,5 @@ python -m moloch.learning_v2.run_experiment --dataset COMPILED_CAPTURE --mechani
 Original captures and model weights remain outside Git. Hash-matched COMPLETE manifests, not partial files, establish completed runs.
 
 The [pre-forward SIG prefix proof](sig-prefix-pre-forward-verification.json) verifies587 original producer rows and the receiver chain across94,554,077 original transport bytes through23:19:59.999UTC. Exact pre-hash bytes are reconstructed without Python float reserialization. This closes byte/hash integrity for that prefix; it does not verify native frame semantics, cross-segment continuity, complete capture or executable fills. The reserved future window is not used to select a model.
+
+The [completed comparison](robust-comparison-002-review.md) retains unfavorable and null results. Two real inventory-bearing CUDA training episodes now exercise SELL and EXIT, but the initial shuffled portfolio reached only29-30k cost and was not nearly fully deployed. The current-depth-capacity initializer achieved94.81k cost and190 cash, but its first two training episodes lost0.748% and0.152%; both losses are retained. A finite eight-policy/two-island/four-cycle run continues this development condition under both fixed execution profiles. Initial marked-value differences are excluded from scored returns; synthetic starts do not rewrite any actual account basis.
