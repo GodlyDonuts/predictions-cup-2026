@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-18T05:31:32.957541+00:00",
+  "checks": [
+    {
+      "check": "test",
+      "exitCode": 0
+    },
+    {
+      "check": "release",
+      "exitCode": 0
+    }
+  ],
+  "networkRequests": 0,
+  "productionFilesChanged": false,
+  "binarySha256": "0307f0d742e107c5baa9a81b5d13d0a33eae9ed4b8329d433a9a37004568983f",
+  "sourceSha256": "c9064e6c0a9120377c5736529e5ea9f54a36458d089e771c933de58bf39d7d21",
+  "classification": "finite_read_only_discovery_helper_not_production_worker"
+}
