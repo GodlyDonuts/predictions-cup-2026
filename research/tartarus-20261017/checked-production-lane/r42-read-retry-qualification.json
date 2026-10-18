@@ -1,0 +1,50 @@
+{
+  "qualifiedAt": "2026-10-18T07:00:21.471381+00:00",
+  "sourceSha256": "96cd5fdbae108aea4279859bb0c7760c6601030940a22de98348b2f5ae2f2fe2",
+  "binarySha256": "37211f539494c2963b7e9a20e554b06a25ea02f5d7036d2027d07be03af810b4",
+  "qualifiedLibrarySource": "4b1602abcca0d2b8011dcb1f30ace1b1efbff0e3",
+  "libraries": {
+    "serde_json": {
+      "path": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libserde_json-0cc4c80014a529ad.rlib",
+      "sha256": "292723681d9d2add7a3e7e8edb2bfe5cd40d07938a4cab5aaa8f10bf62c0cc2a"
+    },
+    "chrono": {
+      "path": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libchrono-bf1a817e7d77e245.rlib",
+      "sha256": "0608061b0c6a621efa95e6906b16f3e85c0e2e42d61d01a9b9b1bda20b7da9f2"
+    },
+    "moloch_replay": {
+      "path": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libmoloch_replay-544ec57d349d6477.rlib",
+      "sha256": "1b06a1a622d07be100ed123eb7544893d9ddb9c345fa6ec8f1132cc76c0a959e"
+    },
+    "baal_transport_service": {
+      "path": "/tmp/moloch-paper7-generation-live-20261016/target/release/deps/libbaal_transport_service-fb3c15e7827c6878.rlib",
+      "sha256": "dd2bbe22c3a66a2453b186422c10866088ede99d1a496e42c7ab74c3fdd6ab0b"
+    },
+    "moloch_live_runtime": {
+      "path": "/tmp/moloch-paper7-generation-live-20261016/target/release/libmoloch_live_runtime.rlib",
+      "sha256": "659a01f0e864c2d93e5c35a03f32a6e3b410568c30a29230512dff0b78739feb"
+    }
+  },
+  "tests": 5,
+  "nativeSourceChanged": false,
+  "workerBinaryChanged": false,
+  "ordersSubmitted": 0,
+  "previousRecovery": {
+    "pid": 772276,
+    "restoredAt": "2026-10-18T06:48:12.810Z",
+    "exit": "typed GET HTTP500 INTERNAL_ERROR",
+    "nativeSequenceAfterKnownTerminal": 574172,
+    "unknownOriginalIntentRetained": true,
+    "stopPreserved": true
+  },
+  "readOnlyKnownOrderProbe": {
+    "orderId": "46876251",
+    "receivedAt": "2026-10-18T06:55:21.715Z",
+    "terminalReason": "Expired",
+    "completeFills": true,
+    "quantityFilled": 0,
+    "openOrders": 0,
+    "originalUnknownRetained": true
+  },
+  "helperOnlyFix": true
+}

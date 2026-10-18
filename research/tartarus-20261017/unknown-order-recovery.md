@@ -4,7 +4,13 @@ Production R41 stopped at 05:11:45 UTC after original SELL intent q18533 receive
 
 The checked finite discovery helper uses the stopped writer's global owner lease, original SDK queue, persistent backoff and 100-read/minute limiter. Its optimized ARM64 build and focused matcher test pass. It submitted zero orders. The complete history read beginning 05:31:40 returned 1,888 rows with no matching original request and no open orders. [The aggregate comparison](checked-production-lane/unknown18533-discovery-observation.json) verifies unchanged balance10,213.785 and all23 nonzero signed positions against native snapshot574171, including7,061 affected YES shares. These are dated observations; absence alone does not prove the original HTTP request never executed.
 
-## Candidate recovery, not yet applied
+## Recovery status — October18,07:00 UTC
+
+The qualified R42 helper restored the original bank at06:48:12 and authentically closed known order46876251 with its exact order receipt and complete zero-fill tape. Native574171→574172 preserves all387 fills, cash and inventory. A later typed GET failed with HTTP500 INTERNAL_ERROR; the helper exited while keeping the original q18533 uncertainty and STOP. An independent read-only exact-order probe succeeds at06:55. This is partial recovery, not resumed production.
+
+The [helper-only retry qualification](checked-production-lane/r42-read-retry-qualification.json) passes five focused ARM64 tests and an optimized build against the already qualified, pinned R42 libraries. Bounded typed observation retries retain the same restored Session, original SDK, persistent backoff and unknown binding. Each request must leave no active request or manual-review flag and preserve the exact original unknown map. Authorization errors, possible write execution, durable failures and changed uncertainty fail immediately. No native source, engine bridge, production worker binary, risk limit or activation deadline changes. Another original-bank replay remains necessary because the earlier helper exited.
+
+## Economic exposure reconciliation
 
 The same dated05:31 account observations show10,213.785 cash plus84,434.11 published position market value: indicative marked equity94,647.895, about5.35% below100,000 initial points. These observations are nearby rather than atomic, and marks are not whole-position executable liquidation values. Positive realized FIFO exits do not establish positive whole-account ROI.
 
@@ -16,6 +22,6 @@ Receipts and original intent/attempt/error hashes remain in a private immutable 
 
 Known-order reconciliation retains its exact order/fill receipts in an incident-private bundle. Before restarting, the execution owner must also preserve those same hash-verified receipts in the worker's standard receipt archive so later cohort lifecycle readers can find their original sources. This archive step creates no order, fill or accounting event.
 
-This changes native semantics and therefore requires the existing explicit engine-upgrade chain and a checked successor binary. It is being qualified in an isolated copy; no recovery, bridge installation, restart or profitability is established by this document. Following recovery, the sole worker still must perform its normal current-account preflight. Existing risk limits and daily windows remain unchanged.
+The native change is qualified in source4b1602ab and its nineteenth explicit upgrade is installed with all18 earlier entries preserved. The prepared worker is not yet started. Following completed recovery and independent financial parity verification, the sole worker still must perform its normal current-account preflight. Existing risk limits and daily windows remain unchanged.
 
 Official source: [SIG API v1 documentation](https://sig.thesuper.market/api/v1/docs), captured anonymously on October18. GET `/orders` supports complete paginated history and expiry information but documents no read-by-idempotency-key endpoint. POST documents same-key replay, but this recovery submits no POST and does not bypass the SDK's uncertainty barrier.
