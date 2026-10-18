@@ -1,0 +1,85 @@
+{
+  "workerLiveVerification": {
+    "observedAt": "2026-10-18T10:13:26.292469+00:00",
+    "pid": 786288,
+    "startTicks": "28617359",
+    "sourceCommit": "9bcb9873",
+    "binarySha256": "99a1f8f5de7ddce592fa77485db9c6018509bb2162d93ea0574f72045886d702",
+    "baseControlSha256": "e0bb89a3dcea5e11d171b17bdf573ce8bd27772166f18d3ec6dcb2b1b1b49afd",
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "actualExecutableAndStartTicksVerified": true,
+    "soleServiceMainPidVerified": true,
+    "executionStopAbsent": true,
+    "progress": {
+      "actualFills": 387,
+      "actualOrders": 1616,
+      "at": "2026-10-18T10:13:05.118Z",
+      "completedReadScopes": 2,
+      "maximumRealtimeFramesPerDrain": 64,
+      "phase": "trading",
+      "pid": 786288,
+      "profitabilityEstablished": false,
+      "realtimeHealthy": true,
+      "selectedReadScopes": 40,
+      "terminalOrders": 1616
+    },
+    "originalFillPrefixPreserved": 387,
+    "newFillRows": 0,
+    "sealedCurrentReportVerified": true,
+    "reportRawSha256": "ff097afba84ce30939ff1259ef69a0eff1650865099aff7fd626826fa28141d5",
+    "nativeEngineBridgeUnchanged": true,
+    "currentReportSequence": 575324,
+    "reportAt": "2026-10-18T10:13:23.794Z",
+    "accounting": {
+      "cash": "10213.785000",
+      "ownedCost": "85522.925000",
+      "reservedCash": "3345.190000",
+      "realized": "156.795000"
+    },
+    "newProfitEstablished": false,
+    "tartarusCampaignInstalled": false
+  },
+  "modelActivationVerification": {
+    "observedAt": "2026-10-18T10:14:24.257458+00:00",
+    "workerPid": 786288,
+    "workerStartTicks": 28617359,
+    "generationSha256": "2f6dedcda8278345f55a821cc5690c96c753c5005f427f11765288e9979800fa",
+    "reply": {
+      "baseFinancialControlUnchanged": true,
+      "generationSha256": "2f6dedcda8278345f55a821cc5690c96c753c5005f427f11765288e9979800fa",
+      "nativeHead": {
+        "hash": "5969ce7d304e2c98fbba8f84e80e7f7bb0c7882c9980c3588d0919c5cfefa2b3",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "ba8cd706c3ffa3554e7dc0abdcd0884d62c134b318d6aad5fc141cd406b3ac63",
+        "sequence": 575324
+      },
+      "state": "committed"
+    },
+    "onlyModelPolicyChanged": true,
+    "all13PriorReviewSpecificationsAndSourceFilesPreserved": true,
+    "activeReviews": 14,
+    "newExchangeId": "1077",
+    "newSide": "NO",
+    "baseControlSha256": "e0bb89a3dcea5e11d171b17bdf573ce8bd27772166f18d3ec6dcb2b1b1b49afd",
+    "activeOverlaySha256": "43cb161ff99630972b00ac4df1c85dbd62781a52f2a256869ea20d6eb9488602",
+    "workerRestarted": false,
+    "activationRenewed": false,
+    "all387OriginalFillRowsPreserved": true,
+    "additionalFillRows": 0,
+    "cashOwnedCostAndRealizedUnchanged": true,
+    "currentReportSequence": 575390,
+    "reportAt": "2026-10-18T10:14:22.890Z",
+    "newProfitEstablished": false,
+    "directHttp403NotClaimedSuccessfulHtml": true,
+    "officialBallotEvidence": "exact_primary_official_page_web_tool_text_extraction"
+  },
+  "snapshotStatusSummary": {
+    "at": "2026-10-18T10:12:33.244Z",
+    "economicFreshnessQualified": false,
+    "metadataSha256": "8349fe6336c6919a63dd4c28088b8a7e349603a08225a0141371ce1bf4115430",
+    "networkRequests": 0,
+    "requestSha256": "790a59b667ac001f9785a5eecf3debbcb109f8b2b066574d6a0ee394817daf71",
+    "sourceObservationMs": 1792318317087,
+    "state": "captured_original_evidence"
+  }
+}

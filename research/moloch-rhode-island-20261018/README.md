@@ -1,7 +1,10 @@
-# Rhode Island Senate prospective G12 review
+# Rhode Island Senate active G12 review
 
-Prepared October18,10:02:53UTC. This is not a committed generation, order or
-profit. [Preparation/source evidence](preparation.json).
+**G12 genuinely committed on the same R44 worker**, native575324 at10:13:23UTC,
+generation2f6dedcd. All13 prior reviews and387 original fills/FIFO/financials are
+preserved. No new fill/profit is established.
+[Actual activation verification](../tartarus-20261017/checked-production-lane/r44-live-g12-verification.json).
+[Original preparation/source evidence](preparation.json).
 
 The direct whole-account search identified Republican-NO1077 as a monetary
 candidate absent from the current13 reviews. Its dated .865 acquisition is a
@@ -29,15 +32,16 @@ guarantee or a certified confidence interval. Third-party, write-in, replacement
 resolver, refund and finality uncertainty remain. This exposure is correlated
 with inherited Democratic-YES1076.
 
-The prospective review preserves all13 existing reviews. Its maximum10000
+The activated review preserves all13 existing reviews. Its maximum10000
 principal shares the same unchanged funded bank; no extra cash is added.
 Existing nine non-inherited markets plus two prospective Florida scopes and
 this scope fit the12 total market limit only while actual holdings permit it.
 Physical limits remain authoritative. Terminal settlement, at most16 same-side
 entries and FIFO profit-taking minimum.005/share follow the existing policy.
 
-Typed review/source/settings checks pass. A finite helper waits for the exact
-R44 process/executable/control, original G11 generation and fresh trading before
-one owner-socket submission. It performs no worker restart, mandate renewal,
-automatic retry or direct account request. Actual commitment and fills require
-separate verification.
+Typed review/source/settings checks pass. The finite helper verified the exact
+R44 process/executable/control, G11 predecessor and fresh trading, then made one
+owner-socket submission. Exit0/statecommitted and the actual new generation
+status were independently checked against the retained original request. No
+worker restart, mandate renewal, automatic retry or direct account request was
+performed. Actual future orders/fills remain separate from this model activation.
