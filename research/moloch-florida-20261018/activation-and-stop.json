@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "generationSha256": "a28b77a2638e0c83cf4d8657e195f1b0cbce09013fd22ffba2b576e4d0f123fa",
+  "state": "committed",
+  "nativeCommitSequence": 574752,
+  "workerPid": 778730,
+  "workerRestartedForModelChange": false,
+  "baseFinancialControlUnchanged": true,
+  "originalReviewsPreserved": 11,
+  "newReviews": [
+    {
+      "exchangeId": "1043",
+      "canonicalSha256": "37b1078a9b370570446c06dd2af1888439d6f0b23b2af552b9782fb3f8e9d06d",
+      "fileSha256": "6dfc8d645f61a207667e35b80a9748e3e01a9731d44ac67b9cfc315b3d51c43b",
+      "ordinaryProbability": "0.933000",
+      "maximumPrincipal": "10000.000000",
+      "expiresAtMs": 1792400754307
+    },
+    {
+      "exchangeId": "1044",
+      "canonicalSha256": "a5e08637feda2dced9d10dbb045f134e5d772d635a39f0116cb1d9af2d539e0a",
+      "fileSha256": "59f732334a8724233b1c57f9f5f866798d38859b3eff9f531d7a6b00acede899",
+      "ordinaryProbability": "0.933000",
+      "maximumPrincipal": "10000.000000",
+      "expiresAtMs": 1792400754307
+    }
+  ],
+  "totalReviews": 13,
+  "ordinaryCandidatePoint": "0.933000",
+  "exceptionalProbabilityAllowance": "0.010000",
+  "minimumExceptionalPayout": "0.000000",
+  "marginPerShare": "0.010000",
+  "fifoMinimumNetGainPerShare": "0.005000",
+  "valuation": "terminalSettlement, holdForActualSettlement after original 2026-11-04T17:00:00Z schedule",
+  "sameSideTopUpsMaximumEntries": 16,
+  "physicalMaximumQuantityUnchanged": 10000,
+  "mappingAndProbabilitiesAreOperatorAssumptions": true,
+  "sourceCaptures": [
+    {
+      "kind": "forecast",
+      "url": "https://www.callthemap.com/senate/florida",
+      "requestStartedAt": "2026-10-18T09:05:54.828294+00:00",
+      "receivedAt": "2026-10-18T09:05:55.307961+00:00",
+      "status": 200,
+      "sha256": "80575428313b164b64c86fd917147e319ebe5dd89b00f050d889717435b0ddde",
+      "bytes": 206249,
+      "candidateStringsPresent": {
+        "Moody": true,
+        "Nixon": true,
+        "Gillespie": false
+      }
+    },
+    {
+      "kind": "official_ballot",
+      "url": "https://dos.elections.myflorida.com/candidates/CanList.asp?CountyCode=ALL&OfficeGroup=ALL&Party=ALL&StatusCode=QUA&cantype=FED&elecID=20261103-GEN&sortby=OFF",
+      "requestStartedAt": "2026-10-18T09:05:54.829920+00:00",
+      "receivedAt": "2026-10-18T09:05:55.428097+00:00",
+      "status": 200,
+      "sha256": "cd0ed930737615374c79d4bbcb9ce3c0eb26cf7d5ca79b2cca78b8e7c76caf54",
+      "bytes": 268837,
+      "candidateStringsPresent": {
+        "Moody": true,
+        "Nixon": true,
+        "Gillespie": true
+      }
+    }
+  ],
+  "productionStop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-18T09:14:08.017Z",
+    "reason": "LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"
+  },
+  "lastVerifiedProgress": {
+    "actualFills": 387,
+    "actualOrders": 1616,
+    "at": "2026-10-18T09:13:13.425Z",
+    "completedReadScopes": 10,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 778730,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 39,
+    "terminalOrders": 1614
+  },
+  "stoppedNativeSequence": 575011,
+  "stoppedAccounting": {
+    "cash": "10213.785000",
+    "ownedCost": "85522.925000",
+    "realized": "156.795000"
+  },
+  "newFillsOrProfitEstablished": false,
+  "unadmittedIntent": 18577,
+  "originalError": "LIVE_ACCOUNT_STALE",
+  "sdkObservation": {
+    "lastClock": 1792314844324,
+    "attemptAt": 1792314845927,
+    "keyOrIntentPresent": false,
+    "unknownCount": 0,
+    "typedProofPending": true
+  },
+  "ordersRetried": 0
+}
