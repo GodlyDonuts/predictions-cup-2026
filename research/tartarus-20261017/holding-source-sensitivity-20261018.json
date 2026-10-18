@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "computedAt": "2026-10-18T04:50:29.891282+00:00",
+  "classification": "asynchronous_dated_hold_vs_sale_declared_model_sensitivity",
+  "originalReportAt": "2026-10-18T04:16:44.848Z",
+  "originalReportSha256": "a0cab1520b1de10ce968ad6bce228fa11acae6d1dd8e2b8136dfb06929191adb",
+  "externalReferenceCapturedAt": "2026-10-18T04:49:26.764462+00:00",
+  "externalPacketSha256": "d8e43e51fb46a2eb3f7b79fe502a2d13d782b7f87e1e3700037b516028af3daa",
+  "modelPacketSha256": "bd39a331759433aa703e4deacd34c2deeff31c4f3eeca18f7c4b115395c22e79",
+  "modeledHeldSidesWithNonInvalidatedDepth": 21,
+  "positiveAcrossDeclaredProfiles": 5,
+  "feesAssumed": "0",
+  "terminalDebtNeededForDelta": false,
+  "wholeAccountRankChangeComputed": false,
+  "calibratedProbabilitiesClaimed": false,
+  "actualExpectedReturnClaimed": false,
+  "executionAuthority": false,
+  "missing": [
+    "fresh SIG current book/account/open-order and source clocks",
+    "current holdings and unpledged sell quantities after restoration",
+    "verified external resolution equivalence and empirical calibration",
+    "whole-account rival-field advantage and funded replacement",
+    "owner-reviewed nomination/current physical preflight"
+  ],
+  "interpretation": "Prioritize fresh observations of robust declared sale sensitivities; positive model delta is not calibrated alpha or physical authority. Original financial basis is unchanged; terminal debt cancels only in the per-leg hold/sale difference.",
+  "privateFullOutputSha256": "0e94ce92bf5c2e159f2d977afebecda9387dce62be68c2596808822eb04a2755",
+  "selectedDeclaredSensitivities": [
+    {
+      "exchangeId": "1067",
+      "side": "YES",
+      "modeledSellQuantity": 10000,
+      "conservativeLimitGrossFraction": "3300",
+      "limitAccountingGainFraction": "16993/200",
+      "minimumDeclaredValueGainFraction": "700",
+      "declaredLimitSaleValueGainByProfile": {
+        "common_lower": "800",
+        "common_upper": "700",
+        "independent_refund_stress": "15856993/20000"
+      },
+      "bookSourceAt": "2026-10-18T04:16:13.764884100Z",
+      "bookReceivedAt": "2026-10-18T04:16:14.845Z",
+      "originalBookRowSha256": "78cc28ca24c9bcaa8217af43f45224511a95218dca766cef2eb27dd73d54f3eb",
+      "currentExecutionEligible": false
+    },
+    {
+      "exchangeId": "1058",
+      "side": "YES",
+      "modeledSellQuantity": 3455,
+      "conservativeLimitGrossFraction": "35241/40",
+      "limitAccountingGainFraction": "-691/5",
+      "minimumDeclaredValueGainFraction": "6219/40",
+      "declaredLimitSaleValueGainByProfile": {
+        "common_lower": "7601/40",
+        "common_upper": "6219/40",
+        "independent_refund_stress": "1835987/8000"
+      },
+      "bookSourceAt": "2026-10-18T04:16:13.764884100Z",
+      "bookReceivedAt": "2026-10-18T04:16:14.845Z",
+      "originalBookRowSha256": "5a8de0580a726cf5ef564afb9e861151a38d8d8ed432928b69fb713680c26afd",
+      "currentExecutionEligible": false
+    },
+    {
+      "exchangeId": "1004",
+      "side": "YES",
+      "modeledSellQuantity": 1000,
+      "conservativeLimitGrossFraction": "210",
+      "limitAccountingGainFraction": "-30",
+      "minimumDeclaredValueGainFraction": "10",
+      "declaredLimitSaleValueGainByProfile": {
+        "common_lower": "20",
+        "common_upper": "10",
+        "independent_refund_stress": "879/40"
+      },
+      "bookSourceAt": "2026-10-18T04:15:53.675622200Z",
+      "bookReceivedAt": "2026-10-18T04:15:54.428Z",
+      "originalBookRowSha256": "f2b60d021f397bddbccccaceb44e2526d9717f7d434e87fe68380ce5c007edcc",
+      "currentExecutionEligible": false
+    },
+    {
+      "exchangeId": "1066",
+      "side": "NO",
+      "modeledSellQuantity": 100,
+      "conservativeLimitGrossFraction": "59/2",
+      "limitAccountingGainFraction": "-7/5",
+      "minimumDeclaredValueGainFraction": "7/2",
+      "declaredLimitSaleValueGainByProfile": {
+        "common_lower": "7/2",
+        "common_upper": "7/2",
+        "independent_refund_stress": "4441/1000"
+      },
+      "bookSourceAt": "2026-10-18T04:16:13.764884100Z",
+      "bookReceivedAt": "2026-10-18T04:16:14.845Z",
+      "originalBookRowSha256": "17f905b051ff73cff087982b81a427751be29f240d1f58f27a8b7e98b77e7bf7",
+      "currentExecutionEligible": false
+    },
+    {
+      "exchangeId": "1002",
+      "side": "NO",
+      "modeledSellQuantity": 78,
+      "conservativeLimitGrossFraction": "1989/100",
+      "limitAccountingGainFraction": "-39/20",
+      "minimumDeclaredValueGainFraction": "1833/5000",
+      "declaredLimitSaleValueGainByProfile": {
+        "common_lower": "117/100",
+        "common_upper": "39/20",
+        "independent_refund_stress": "1833/5000"
+      },
+      "bookSourceAt": "2026-10-18T04:15:51.688387700Z",
+      "bookReceivedAt": "2026-10-18T04:15:52.569Z",
+      "originalBookRowSha256": "0e5c28c3a0ab2ebc92a4fba0a3ba082446786669cca75297cef7c292e7018652",
+      "currentExecutionEligible": false
+    }
+  ],
+  "singleSourceFamilyInterpretationInsufficient": true,
+  "alaskaAdditionalRetainedCtmOrdinaryPoint": "0.503000",
+  "alaskaAdditionalRetainedCtmSaleDelta": "-1730.000000",
+  "alaskaSourceDisagreementReversesSalePreference": true
+}

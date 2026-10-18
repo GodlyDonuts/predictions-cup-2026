@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "externalReferenceCapturedAt": "2026-10-18T04:57:33.094470+00:00",
+  "externalPacketSha256": "5cb0cadc5a067d7d395e9d3c2c28359eb6a72f614c41bc3f460b56a9a3e3bbf9",
+  "modelSha256": "63f1d6ed684794752a81ad5b48f02ac96b3581b9a01e8376eaf09ee970145985",
+  "contracts": 23,
+  "scenarios": 105,
+  "profiles": 5,
+  "retainedCtmNumericalOverrides": 10,
+  "explicitTwoPartyCompletionExchanges": [
+    "1066"
+  ],
+  "excludedExpiredReviews": [],
+  "originalMarginalAndSourceClocksPreserved": true,
+  "alaskaConditionalYesMassPpmByProfile": {
+    "common_lower": 250000,
+    "common_upper": 260000,
+    "independent_refund_stress": 247500,
+    "retained_ctm_lower": 503000,
+    "retained_ctm_upper": 503000
+  },
+  "sourceDisagreementAffectsSaleDecision": true,
+  "priorReviewExceptionalMixtureReconstructed": false,
+  "resolutionEquivalenceVerified": false,
+  "calibratedProbabilitiesClaimed": false,
+  "executionAuthority": false
+}

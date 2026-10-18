@@ -2,6 +2,18 @@
 
 The [offline compiler](../../moloch/tartarus/party_scenarios.py) supplies the native rank campaign's `scenarios` and `probabilityModels` fragments. It uses exact original official contract roots and explicitly supplied marginal intervals. It creates no account client, order, owner approval or financial event.
 
+## Retaining conflicting sources — October18
+
+Profiles now accept optional `marginalOverrides` records with the same required source bytes, original observation clock, maximum age, interval and assumption label as the baseline marginals. They apply only to their named profile; the original models remain separate. Foreign exchanges, duplicates, forged source bytes, stale/future clocks and incoherent same-race mass are rejected. No source averaging or implicit party complement is introduced.
+
+An actual [23-contract,105-state,5-profile run](source-disagreement-model-20261018.json) retains10 prior CTM/operator numerical points alongside the three Kalshi-based dependence/endpoint profiles. Its Kalshi packet was captured04:57:33UTC; the CTM observations retain their older source/review deadlines. All5 profiles and their distinct assumptions survive in the output. This is source sensitivity, not empirical calibration or a production change.
+
+Alaska illustrates why this matters. The retained Kalshi Republican quote interval gives.25–.26 conditional YES mass; the retained operator point based on [Call the Map's candidate forecast](https://www.callthemap.com/senate/alaska) is.503. At the dated.33 sale price,10,000 YES units have a +700 to+800 modeled hold-versus-sale delta under the direct quote endpoints, but a−1,730 delta under the retained.503 ordinary point. These are conditional model calculations, not expected realized returns. The original scenario set also retains its separately labeled refund stress.
+
+The first mixed-source run correctly rejected Republican.503 combined with the other held Alaska Democratic contract's roughly.74 Kalshi point. The new CTM profiles therefore include an **explicit ordinary two-party completion** for that Democratic contract, with distinct assumption bytes and original review clocks. It excludes other winners only within this hypothetical ordinary model. It does not establish resolver equivalence, reproduce the prior review's exceptional mixture, or prove third-party/refund states impossible. The original other-winner/refund sensitivity models remain separate. No actual sale, rank advantage, approval or profitable Tartarus execution follows from this artifact.
+
+The [dated holding sensitivity](holding-source-sensitivity-20261018.json) separately retains the earlier04:49 external packet and04:16 original financial/book clocks. Among21 held sides with non-invalidated archived depth, five sale alternatives had positive deltas across its three **Kalshi-family** profiles. This does not establish positivity across sources: Alaska's additional retained CTM point changes that preference. Quantities are modeled, not currently unpledged; fees are explicitly assumed zero, terminal debt cancels only in the per-leg value difference, and no whole-account rank improvement or current execution eligibility is claimed. The105-state run uses a later04:57 external observation; these captures are not merged into a fictitious simultaneous account packet.
+
 ## Actual dated input run
 
 The existing Kalshi collector was independently observed alive as Windows PID9956. A local-cache-only capture at **2026-10-18T03:35:54UTC** retained23 original responses for the23-contract SIG registry. The oldest receipt was11.984seconds old; all23 lacked publisher timestamps. Receipt freshness does not establish publication time, forecast quality or settlement equivalence.

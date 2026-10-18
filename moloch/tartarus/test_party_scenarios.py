@@ -32,6 +32,55 @@ def fixture(count=3):
 
 
 class PartyScenarioTests(unittest.TestCase):
+    def test_conflicting_source_is_retained_only_in_its_own_profile(self):
+        a = list(fixture(1))
+        raw = canonical({"different_declared_publisher": "conditional point .8"})
+        a[1][sha(raw)] = raw
+        override = dict(a[2][0], lowerPpm=800000, upperPpm=800000,
+                        sourceSha256=sha(raw), observedAtMs=120,
+                        assumptionLabel="Separate synthetic publisher assumption")
+        profile = dict(a[3][0], id="conflicting", marginalOverrides=[override])
+        a[3] = [a[3][0], profile]
+        original = copy.deepcopy(a)
+        result = compile_scenarios(*a, 150)
+        probabilities = {}
+        for model in result["probabilityModels"]:
+            probabilities[model["id"]] = sum(w for s, w in zip(result["scenarios"], model["weightsPpm"])
+                                             if s["payouts"]["100"] == "resolved_yes")
+        self.assertEqual(probabilities, {"shared": 400000, "conflicting": 800000})
+        self.assertEqual(a, original)
+        # At a .6 sale price, the two retained models disagree about selling.
+        self.assertGreater(600000-probabilities["shared"], 0)
+        self.assertLess(600000-probabilities["conflicting"], 0)
+
+    def test_overrides_require_current_original_bytes_and_existing_scope(self):
+        for case in ("stale", "future", "forged", "foreign", "duplicate"):
+            a = list(fixture(1))
+            override = dict(a[2][0])
+            if case == "stale": override["observedAtMs"] = 0
+            if case == "future": override["observedAtMs"] = 151
+            if case == "forged": override["sourceSha256"] = "f"*64
+            if case == "foreign": override["exchangeId"] = "unmodeled"
+            overrides = [override, override] if case == "duplicate" else [override]
+            a[3] = [dict(a[3][0], marginalOverrides=overrides)]
+            with self.subTest(case=case), self.assertRaises(ValueError):
+                compile_scenarios(*a, 150)
+
+    def test_conflicting_same_race_sources_need_explicit_coherent_completion(self):
+        a = list(fixture(2))
+        republican = dict(a[2][0], lowerPpm=800000, upperPpm=800000)
+        # Existing Democratic .3 and alternative Republican .8 cannot coexist.
+        a[3] = [dict(a[3][0], marginalOverrides=[republican])]
+        with self.assertRaisesRegex(ValueError, "INCOHERENT_PARTY_MARGINALS"):
+            compile_scenarios(*a, 150)
+        democratic = dict(a[2][1], lowerPpm=200000, upperPpm=200000,
+                          assumptionLabel="Explicit synthetic two-party completion")
+        a[3][0]["marginalOverrides"].append(democratic)
+        result = compile_scenarios(*a, 150)
+        for state in result["scenarios"]:
+            if state["kind"] == "ordinary":
+                self.assertNotEqual(state["payouts"]["100"], state["payouts"]["101"])
+
     def test_same_race_parties_never_both_win_and_other_winner_is_retained(self):
         r = compile_scenarios(*fixture(), 150)
         rows = [s for s in r["scenarios"] if s["kind"] == "ordinary"]

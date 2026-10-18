@@ -31,6 +31,25 @@ def integer(value, lo, hi, reason):
     return value
 
 
+def _marginal_records(records, originals, decision_ms):
+    need(type(records) is list and len(records) <= 64, "MARGINAL_BOUND")
+    result = {}
+    for m in records:
+        need(type(m) is dict, "MARGINAL_SHAPE")
+        ex = m.get("exchangeId")
+        need(type(ex) is str and ex and ex not in result, "MARGINAL_DUPLICATE")
+        lo = integer(m.get("lowerPpm"), 0, PPM, "MARGINAL_INTERVAL")
+        hi = integer(m.get("upperPpm"), lo, PPM, "MARGINAL_INTERVAL")
+        observed = integer(m.get("observedAtMs"), 0, decision_ms, "MARGINAL_FUTURE")
+        age = integer(m.get("maximumAgeMs"), 1, 2**63-1, "MARGINAL_AGE")
+        need(decision_ms-observed <= age, "MARGINAL_STALE")
+        need(type(m.get("assumptionLabel")) is str and m["assumptionLabel"].strip(), "ASSUMPTION_REQUIRED")
+        raw = originals.get(m.get("sourceSha256"))
+        need(type(raw) is bytes and sha(raw) == m["sourceSha256"], "MARGINAL_ORIGINAL_REQUIRED")
+        result[ex] = (lo, hi, m)
+    return result
+
+
 def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
                       draws_per_profile=16, seed=17023):
     """Return native scenarios/probabilityModels, never a nomination/approval.
@@ -38,6 +57,9 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
     Each marginal names exchangeId, lowerPpm, upperPpm, sourceSha256,
     observedAtMs, maximumAgeMs and assumptionLabel. [0,1000000] is allowed
     only as an explicitly supplied ignorance interval, never an inferred zero.
+    A profile may supply marginalOverrides using the same complete source/clock
+    records for a subset of existing exchanges. Overrides affect that profile
+    only: conflicting publishers remain separate models, never an average.
     Profiles explicitly select lower|midpoint|upper, independent|common_party_swing,
     and a hypothetical all-refund stress weight. Same-race intervals must admit
     a coherent categorical distribution. Inconsistent quotes do not get silently
@@ -49,19 +71,7 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
     need(type(registry) is list and 1 <= len(registry) <= 64, "REGISTRY_BOUND")
     need(type(profiles) is list and 1 <= len(profiles) <= 8, "NATIVE_MODEL_BOUND")
     need(type(originals) is dict and type(marginals) is list, "INPUT_SHAPE")
-    by_exchange = {}
-    for m in marginals:
-        ex = m.get("exchangeId")
-        need(type(ex) is str and ex and ex not in by_exchange, "MARGINAL_DUPLICATE")
-        lo = integer(m.get("lowerPpm"), 0, PPM, "MARGINAL_INTERVAL")
-        hi = integer(m.get("upperPpm"), lo, PPM, "MARGINAL_INTERVAL")
-        observed = integer(m.get("observedAtMs"), 0, decision_ms, "MARGINAL_FUTURE")
-        age = integer(m.get("maximumAgeMs"), 1, 2**63-1, "MARGINAL_AGE")
-        need(decision_ms-observed <= age, "MARGINAL_STALE")
-        need(type(m.get("assumptionLabel")) is str and m["assumptionLabel"].strip(), "ASSUMPTION_REQUIRED")
-        raw = originals.get(m.get("sourceSha256"))
-        need(type(raw) is bytes and sha(raw) == m["sourceSha256"], "MARGINAL_ORIGINAL_REQUIRED")
-        by_exchange[ex] = (lo, hi, m)
+    by_exchange = _marginal_records(marginals, originals, decision_ms)
     groups, contracts, exchanges = {}, set(), set()
     for c in registry:
         cid, ex = c.get("contractId"), c.get("exchangeId")
@@ -96,12 +106,16 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
              and dependence in ("independent", "common_party_swing"), "PROFILE_ASSUMPTION")
         refund = integer(profile.get("hypotheticalRefundWeightPpm"), 0, PPM, "REFUND_ASSUMPTION_REQUIRED")
         need(type(profile.get("assumptionLabel")) is str and profile["assumptionLabel"].strip(), "ASSUMPTION_REQUIRED")
+        overrides = _marginal_records(profile.get("marginalOverrides", []), originals, decision_ms)
+        need(set(overrides) <= exchanges, "PROFILE_OVERRIDE_SCOPE")
+        selected_marginals = dict(by_exchange)
+        selected_marginals.update(overrides)
         event_specs, cuts = [], {0, PPM}
         for event, parties in sorted(groups.items()):
             intervals, mass = {}, {}
             for party, members in parties.items():
-                lo = max(by_exchange[ex][0] for _, ex in members)
-                hi = min(by_exchange[ex][1] for _, ex in members)
+                lo = max(selected_marginals[ex][0] for _, ex in members)
+                hi = min(selected_marginals[ex][1] for _, ex in members)
                 need(lo <= hi, "SAME_PARTY_INTERVAL_CONFLICT")
                 intervals[party] = (lo, hi)
                 mass[party] = lo if point == "lower" else hi if point == "upper" else (lo+hi)//2
