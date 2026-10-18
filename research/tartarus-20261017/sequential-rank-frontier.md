@@ -10,7 +10,7 @@ The October18 update preserves slots occupied by original managed drafts even
 following a hypothetical full inventory sale, excludes purchases lacking actual
 cohort ownership evidence, and uses exact integer wealth lattices so numerical
 solver tolerance cannot count a tie as a first-place result. The independent
-FIFO auditor enforces the same reservation and ownership restrictions. All18
+FIFO auditor enforces the same reservation and ownership restrictions. All19
 focused sequential/audit/projection checks pass. These are execution-feasibility
 corrections, not new evidence of forecast calibration or earned ROI.
 

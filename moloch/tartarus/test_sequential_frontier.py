@@ -88,6 +88,15 @@ class SequentialFrontier(unittest.TestCase):
         self.assertEqual(out["researchDisposition"], "retain_no_action_for_this_target_objective")
         self.assertEqual(out["baseline"]["trades"], 0)
 
+    def test_strict_winner_threshold_rejects_exact_tie_but_accepts_one_micro_above(self):
+        f = fixture(); f[0]["freshMarketLimit"] = 1
+        f[4][0]["thresholds"] = ["20.200000"] * 3
+        tied = self.run_search(f, objective="rank")
+        self.assertEqual(tied["selectedAverageStrictMassPpm"], 0)
+        f[4][0]["thresholds"] = ["20.199999"] * 3
+        winning = self.run_search(f, objective="rank")
+        self.assertEqual(winning["selectedAverageStrictMassPpm"], 10000)
+
     def test_original_managed_draft_keeps_slot_after_hypothetical_full_sale(self):
         f = fixture(); f[0].update(cash="0.000000", ownedCost="0.400000",
             positions={"safe": {"YES": [{"quantity": 4, "price": "0.100000"}]}},
