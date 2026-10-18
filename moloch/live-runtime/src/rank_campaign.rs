@@ -1,7 +1,7 @@
 //! Tartarus v1: one owner-reviewed physical BUY or SELL, not positive alpha.
 //!
 //! Frozen campaign JSON schema: schemaVersion=1, objective=
-//! declared_first_place_rank_risk; campaignStage=direct|rotation_prerequisite;
+//! declared_first_place_rank_risk; campaignStage=direct|rotation_prerequisite|acquisition_prerequisite;
 //! reviewedAtMs/validUntilMs; sources[{sha256,observedAtMs,maximumAgeMs,
 //! assumptionLabel}]; account{positionsSha256,cash,reservedCash,
 //! actualFillsSha256,modeledTerminalDebt,liabilityAssumption}; complete
@@ -19,9 +19,10 @@
 //! conditionalFutureLiquidityAssumption},
 //! buyLegs:[{contractId,exchangeId,marketId,side,quantity,limitPrice,
 //! sourceSha256,availableAtMs,validUntilMs}]} is conditional research ONLY.
-//! At most 128 staged BUY tranches, each bounded by the physical order cap;
+//! Acquisition prerequisites fund the current BUY from actual cash; later BUYs
+//! remain conditional. At most 128 future BUY tranches, each bounded by the physical order cap;
 //! repeated same-side tranches share cumulative market/funding limits. Native
-//! evaluation includes the minimum post-SELL pacing/rolling-rate horizon,
+//! evaluation includes the minimum post-leg pacing/rolling-rate horizon,
 //! incomplete-prefix and partial-fill outcomes. Future liquidity/completion are
 //! explicitly uncertified; every next tranche needs actual fills and reapproval.
 //! Direct gain must be positive; a prerequisite may declare exactly zero
