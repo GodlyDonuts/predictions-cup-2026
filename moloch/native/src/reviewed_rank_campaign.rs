@@ -29,7 +29,7 @@ fn projected_quantity(lots:&BTreeMap<(String,Side),VecDeque<Lot>>,ex:&str,side:S
 impl Engine {
  fn rank_declared_managed_inventory(&self,ex:&str,buy:bool,proof:&Value,sources:&BTreeSet<String>,conditional_handoff:bool)->Result<bool>{
   if !self.ordinary_entry_excluded(ex){need(proof.is_null(),"RANK_UNMANAGED_EXIT_PROOF")?;return Ok(false)}
-  need((!buy||proof["handoffEstablished"]==true||conditional_handoff)&&proof["handoffEstablished"].as_bool().is_some()&&proof["schemaVersion"]==1&&proof["exchangeId"]==ex
+  need((!buy||proof["handoffEstablished"]==true||conditional_handoff||proof["emptyOriginalInventory"]==true&&self.wallet.quantity(ex,Side::Yes)+self.wallet.quantity(ex,Side::No)==0)&&proof["handoffEstablished"].as_bool().is_some()&&proof["emptyOriginalInventory"].as_bool().is_some()&&proof["schemaVersion"]==1&&proof["exchangeId"]==ex
    &&["cohortSha256","originSha256","generationSha256","reviewSha256","exclusionSha256","positionsSha256","sourceSha256"].iter().all(|k|hex(&proof[*k]))
    &&sources.contains(proof["sourceSha256"].as_str().ok_or("RANK_MANAGED_EXIT_PROOF")?)
    &&proof["positionsSha256"]==hash(&self.wallet.positions()[ex])&&proof["exclusionSha256"]==self.ordinary_entry_exclusion_record().ok_or("RANK_MANAGED_EXIT_PROOF")?["sha256"],"RANK_MANAGED_EXIT_PROOF")?;Ok(true)

@@ -868,13 +868,13 @@ impl Cohorts{
     /// No eligibility is reset until both positive original witnesses verify.
     pub fn abandonment_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,_now:u64)->Result<Vec<AbandonHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
-        for(ex,c)in &self.cohorts{let Some(b)=&c.entry else{continue};
+        for(ex,c)in &self.cohorts{if self.rank_paused(ex){continue}let Some(b)=&c.entry else{continue};
             need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_ABANDON_SCOPE")?;
             if c.existing.is_some()||!c.top_ups.is_empty()||!c.exits.is_empty()||!(log.never_attempted(b.qid)||log.proved_no_network(b.qid))||bank.engine().live_order_bindings().contains_key(&b.qid)
                 ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
             out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});
         }
-        for(ex,c)in &self.cohorts{if c.existing.is_none()&&!c.exits.is_empty(){continue}for b in c.top_ups.values(){
+        for(ex,c)in &self.cohorts{if self.rank_paused(ex){continue}if c.existing.is_none()&&!c.exits.is_empty(){continue}for b in c.top_ups.values(){
             if !c.retired_top_ups.contains_key(&b.qid)&&log.never_attempted(b.qid)&&!bank.engine().live_order_bindings().contains_key(&b.qid)
                 &&!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid){out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});}
         }}Ok(out)
@@ -934,7 +934,7 @@ impl Cohorts{
     /// not enough. Complete original receipt proof is checked by prepare_rearm.
     pub fn rearm_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,_now:u64)->Result<Vec<RearmHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
-        for(ex,c)in &self.cohorts{let Some(b)=&c.entry else{continue};need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_REARM_SCOPE")?;
+        for(ex,c)in &self.cohorts{if self.rank_paused(ex){continue}let Some(b)=&c.entry else{continue};need(scope.tournament_id==self.policies[ex].tournament_id&&scope.exchanges.get(ex)==Some(&self.policies[ex].market_id),"FUNDAMENTAL_REARM_SCOPE")?;
             if c.existing.is_some()||!c.top_ups.is_empty()||!c.exits.is_empty()||!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)
                 ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
             let Some(actual)=bank.engine().live_order_bindings().get(&b.qid)else{continue};let Some(q)=crate::order_snapshot::quote(bank,b.qid)else{return Err("FUNDAMENTAL_REARM_NATIVE_QUOTE".into())};

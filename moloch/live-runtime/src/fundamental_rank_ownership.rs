@@ -51,7 +51,7 @@ impl Cohorts{
   let c=self.cohorts.get(ex).ok_or("RANK_COHORT_MISSING")?;let r=self.policies.get(ex).ok_or("RANK_COHORT_REVIEW_MISSING")?;
   Ok(json!({"schemaVersion":1,"producer":"moloch_original_cohort_owner","runId":self.run,"bankManifestHash":self.manifest,
    "exchangeId":ex,"generationSha256":self.generation_sha(),"reviewSha256":digest(r)?,"cohortSha256":digest(c)?,"originSha256":c.origin_sha()?,
-   "positionsSha256":digest(&bank.engine().wallet.positions()[ex])?,"handoffEstablished":self.rank_paused(ex),
+   "positionsSha256":digest(&bank.engine().wallet.positions()[ex])?,"handoffEstablished":self.rank_paused(ex),"emptyOriginalInventory":bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)==0,
    "exclusionSha256":bank.engine().ordinary_entry_exclusion_record().ok_or("RANK_COHORT_EXCLUSION_MISSING")?["sha256"],"ownershipOnly":true,"executionAuthority":false}))
  }
  /// Compact ownership source; original bindings remain in the immutable held
@@ -60,7 +60,7 @@ impl Cohorts{
   self.check(bank,log)?;self.rank_inventory_state_inner(bank,ex)
  }
  pub fn rank_inventory_states(&self,bank:&Session,log:&DispatchLog)->Result<Vec<Value>>{
-  self.check(bank,log)?;let mut states=Vec::new();for ex in self.policies.keys(){if bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)>0||self.rank_paused(ex){states.push(self.rank_inventory_state_inner(bank,ex)?);}}Ok(states)
+  self.check(bank,log)?;let mut states=Vec::new();for ex in self.policies.keys(){if bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)>0||self.cohorts.contains_key(ex){states.push(self.rank_inventory_state_inner(bank,ex)?);}}Ok(states)
  }
  fn rank_inventory_state_inner(&self,bank:&Session,ex:&str)->Result<Value>{
   let statement=self.ownership_statement(bank,ex)?;let body=serde_json::to_vec(&statement)?;
@@ -76,12 +76,12 @@ impl Cohorts{
   let n=a["quantity"].as_u64().filter(|n|*n>0).ok_or("RANK_COHORT_QUANTITY")?;
   let buy=a["action"]=="BUY";need(buy||a["action"]=="SELL","RANK_COHORT_ACTION")?;
   need(a["marketId"]==r.market_id&&bank.engine().wallet.quantity(ex,if side==Side::Yes{Side::No}else{Side::Yes})==0
-   &&if buy{self.rank_paused(ex)}else{n<=bank.engine().wallet.quantity(ex,side)},"RANK_COHORT_FUNDED_ACTION_REQUIRED")?;
-  if !self.rank_paused(ex){need(!buy&&a["side"]==r.side,"RANK_COHORT_FIRST_HANDOFF_REQUIRES_ORIGINAL_SELL")?;}
+   &&if buy{self.rank_paused(ex)||bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)==0}else{n<=bank.engine().wallet.quantity(ex,side)},"RANK_COHORT_FUNDED_ACTION_REQUIRED")?;
+  if !self.rank_paused(ex){need(if buy{bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)==0}else{a["side"]==r.side},"RANK_COHORT_FIRST_HANDOFF_REQUIRES_COVERED_OR_FLAT_ORIGIN")?;}
   let registered=bank.engine().order_records().iter().find(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).and_then(|q|q["id"].as_u64()).and_then(|id|self.rank_bindings.get(&id));
   if let Some(old)=registered{need(old["managedInventory"]==*proof,"RANK_COHORT_ORIGINAL_HANDOFF_CHANGED")?;}else{
    let current=self.rank_inventory_state(bank,log,ex)?;
-   for k in ["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256","positionsSha256","handoffEstablished","sourceSha256"]{need(proof[k]==current[k],"RANK_COHORT_HANDOFF_CHANGED")?;}
+   for k in ["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256","positionsSha256","handoffEstablished","emptyOriginalInventory","sourceSha256"]{need(proof[k]==current[k],"RANK_COHORT_HANDOFF_CHANGED")?;}
   }
   need(proof["generationSha256"]==self.generation_sha()&&proof["reviewSha256"]==digest(r)?,"RANK_COHORT_GENERATION_CHANGED")?;Ok(())
  }
@@ -94,7 +94,7 @@ impl Cohorts{
    &&b.quote["exchangeId"]==ex&&b.quote["reviewedRankCampaign"]["campaignSha256"]==event["campaignSha256"]
    &&c.rank_trades.len()<4096&&!c.rank_trades.contains_key(&b.qid)&&!self.rank_bindings.contains_key(&b.qid),"RANK_COHORT_REGISTRATION_CHANGED")?;
   if first{
-   need(b.quote["action"]=="sell"&&b.quote["side"]==self.policies[ex].side,"RANK_COHORT_FIRST_HANDOFF_REQUIRES_ORIGINAL_SELL")?;
+   need(if b.quote["action"]=="buy"{proof["emptyOriginalInventory"]==true}else{b.quote["action"]=="sell"&&b.quote["side"]==self.policies[ex].side},"RANK_COHORT_FIRST_HANDOFF_REQUIRES_COVERED_OR_FLAT_ORIGIN")?;
    let h=&event["handoff"];let raw=h["originalCohortBodyText"].as_str().ok_or("RANK_COHORT_ORIGINAL_BODY")?;
    need(bytes_sha(raw.as_bytes())==proof["cohortSha256"]&&serde_json::from_str::<Cohort>(raw).is_ok()
     &&digest(&h["positions"])?==proof["positionsSha256"]&&h["firstFillIndex"].is_u64()&&h["priorFillsSha256"].as_str().is_some(),"RANK_COHORT_ORIGINAL_BOUNDARY")?;
