@@ -68,6 +68,9 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  if existing.first().is_some_and(|q|!rank_can_resume(bank,log,q)){return Ok(())}
  let market=c.scope.exchanges.get(&ex).ok_or("RANK_TARGET_OUTSIDE_CONTROL")?.clone();let target=json!({"exchangeId":ex,"marketId":market});
  refresh_controls(c,authority,stream)?;t.package_queue_quiet()?;
+ // A known resting order is a temporary allocation conflict, not a fatal
+ // collateral error. Unknown acceptance still propagates before deferral.
+ if rank_waits_for_known_orders(log)?||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return rank_deferred(c,"liability","EXISTING_PHYSICAL_ORDERS_REQUIRE_RECONCILIATION")}
  rank_yield_unsubmitted_drafts(c,bank,log,managed)?;
  let(qid,original)=if let Some(q)=existing.into_iter().next(){(q["id"].as_u64().ok_or("RANK_QUOTE_ID")?,q)}else{
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_ALREADY_HAS_PHYSICAL_LIABILITY")}
@@ -100,6 +103,9 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  let evaluation=decision.evaluation().clone();let rank=RankDispatch{order,spec,permit,decision:Arc::new(decision),owner:pins,raw_sha:review.raw_sha256().into(),campaign_sha:review.campaign_sha256().into()};
  submit_order_with_rank(t,c,bank,log,authority,&current,facts,None,None,Some(rank))?;
  atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid),"evaluation":evaluation,"profitabilityEstablished":false}))?;Ok(())
+}
+fn rank_waits_for_known_orders(log:&DispatchLog)->Result<bool>{
+ log.require_resolved_attempts()?;Ok(log.acknowledgments.keys().any(|qid|!log.closed.contains(qid)))
 }
 struct FundamentalRuntime{cohorts:Cohorts,authority:ReviewAuthority}
 impl FundamentalRuntime{
@@ -291,20 +297,26 @@ fn snapshot_private_new(path:&Path,bytes:&[u8])->Result<()>{use std::{io::Write,
 fn snapshot_immutable_source(path:&Path,bytes:&[u8])->Result<()>{
  if path.exists(){let m=fs::symlink_metadata(path)?;if !m.is_file()||m.file_type().is_symlink()||m.len()!=bytes.len()as u64||fs::read(path)?!=bytes{return Err("TARTARUS_GENERATION_SOURCE_CHANGED".into())}Ok(())}else{snapshot_private_new(path,bytes)}
 }
-fn snapshot_request(root:&Path,state:&mut SnapshotRequestState)->Result<Option<(String,SnapshotRequest)>>{
+#[cfg(test)]fn snapshot_request(root:&Path,state:&mut SnapshotRequestState)->Result<Option<(String,SnapshotRequest)>>{
+ snapshot_request_ready(root,state,false)
+}
+fn snapshot_request_ready(root:&Path,state:&mut SnapshotRequestState,physical_busy:bool)->Result<Option<(String,SnapshotRequest)>>{
  use std::{io::Read,os::unix::fs::MetadataExt};
  if state.attempts>=4{return Ok(None)}let path=root.join("tartarus-snapshot-request.json");let m=match fs::symlink_metadata(&path){Ok(m)=>m,Err(e)if e.kind()==std::io::ErrorKind::NotFound=>return Ok(None),Err(e)=>return Err(e.into())};
  let version=snapshot_file_version(&m);if state.last_version.as_ref()==Some(&version){return Ok(None)}state.last_version=Some(version.clone());
  if !m.is_file()||m.file_type().is_symlink()||m.nlink()!=1||m.uid()!=fs::metadata(root)?.uid()||m.mode()&0o077!=0||m.len()>4096{state.attempts+=1;return Err("TARTARUS_PRIVATE_REQUEST_BOUND".into())}
  let mut raw=Vec::new();fs::File::open(&path)?.take(4097).read_to_end(&mut raw)?;
  if raw.len()>4096||snapshot_file_version(&fs::symlink_metadata(&path)?)!=version{return Err("TARTARUS_REQUEST_CHANGED".into())}
+ let request:SnapshotRequest=serde_json::from_slice(&raw)?;
+ if request.version!=1||!snapshot_atom(&request.id)||!snapshot_hex(&request.expected_control_sha256)||!snapshot_hex(&request.expected_generation_sha256)||!request.research_only||request.execution_authority||request.acquisition_mode.as_deref().is_some_and(|m|m!="original_account_four_v1"&&m!="original_account_observation_four_v1"){return Err("TARTARUS_RESEARCH_REQUEST".into())}
+ // Observation preserves resting liabilities. The allocation packet continues
+ // to require a quiet boundary; waiting must not spend its durable attempt.
+ if physical_busy&&request.acquisition_mode.as_deref()!=Some("original_account_observation_four_v1"){state.last_version=None;return Ok(None)}
  let sha=format!("{:x}",Sha256::digest(&raw));state.last_request_sha256=Some(sha.clone());if !state.seen.insert(sha.clone()){return Ok(None)}
  let attempts=root.join("tartarus-snapshot-attempts");private_dir(&attempts)?;
  let marker=attempts.join(format!("{sha}.json"));if marker.exists(){return Ok(None)}
  if fs::read_dir(&attempts)?.take(4).count()>=4{return Err("TARTARUS_TOTAL_REQUEST_LIMIT".into())}
  state.attempts+=1;let mut proof=serde_json::to_vec(&json!({"at":iso(now()),"requestSha256":sha,"researchOnly":true,"executionAuthority":false,"attemptedOnce":true}))?;proof.push(b'\n');snapshot_private_new(&marker,&proof)?;
- let request:SnapshotRequest=serde_json::from_slice(&raw)?;
- if request.version!=1||!snapshot_atom(&request.id)||!snapshot_hex(&request.expected_control_sha256)||!snapshot_hex(&request.expected_generation_sha256)||!request.research_only||request.execution_authority||request.acquisition_mode.as_deref().is_some_and(|m|m!="original_account_four_v1"){return Err("TARTARUS_RESEARCH_REQUEST".into())}
  if request.acquisition_mode.is_some(){let ids=root.join("tartarus-original-account-request-ids");private_dir(&ids)?;let id=ids.join(format!("{}.json",request.id));if id.exists(){return Ok(None)}snapshot_private_new(&id,&proof)?;}
  Ok(Some((sha,request)))
 }
@@ -317,6 +329,9 @@ fn snapshot_resolved_read_error(error:&api::TransportError,quiet:impl FnOnce()->
  if !moloch_live_runtime::read_recovery::retryable_read(error){return Ok(false)}quiet()?;Ok(true)
 }
 fn snapshot_original_economics(bank:&Session,scope:&Scope,rows:&[Receipt;4],at:u64)->Result<()>{
+ snapshot_original_economics_observed(bank,scope,rows,at,false)
+}
+fn snapshot_original_economics_observed(bank:&Session,scope:&Scope,rows:&[Receipt;4],at:u64,allow_resting:bool)->Result<()>{
  let report=bank.engine().report()?;let native=chrono::DateTime::parse_from_rfc3339(report["at"].as_str().ok_or("TARTARUS_NATIVE_CLOCK")?)?;
  let mut last=None;for r in rows{let start=chrono::DateTime::parse_from_rfc3339(&r.request_started_at)?;let end=chrono::DateTime::parse_from_rfc3339(&r.received_at)?;
   if r.status!=200||start<native||start>end||last.is_some_and(|t|start<t)||end.timestamp_millis()<0||u64::try_from(end.timestamp_millis())?>at||at.checked_sub(u64::try_from(start.timestamp_millis())?).is_none_or(|age|age>20_000){return Err("TARTARUS_ORIGINAL_ACCOUNT_CLOCK".into())}last=Some(end);
@@ -338,7 +353,30 @@ fn snapshot_original_economics(bank:&Session,scope:&Scope,rows:&[Receipt;4],at:u
   let yes=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes);let no=bank.engine().wallet.quantity(ex,moloch_replay::Side::No);
   if yes.min(no)!=0||actual.get(ex).copied().unwrap_or(0)!=yes as i128-no as i128{return Err("TARTARUS_WHOLE_POSITION_MISMATCH".into())}
  }
- let open=&rows[3].data;if open["coverage"]["complete"]!=true||open["pagination"]["hasMore"]!=false||open["pagination"].get("nextCursor")!=Some(&Value::Null)||!open["data"].as_array().is_some_and(Vec::is_empty){return Err("TARTARUS_OPEN_ORDER_EVIDENCE".into())}Ok(())
+ let open=&rows[3].data;if open["coverage"]["complete"]!=true||open["pagination"]["hasMore"]!=false||open["pagination"].get("nextCursor")!=Some(&Value::Null)||!open["data"].as_array().is_some_and(|v|allow_resting||v.is_empty()){return Err("TARTARUS_OPEN_ORDER_EVIDENCE".into())}Ok(())
+}
+// Deliberately a different schema/directory from allocation-qualified packets.
+// Raw orders and original liabilities remain visible. No admission, retirement,
+// cash credit, Session event or financial-boundary permission is created.
+fn snapshot_write_observation(c:&Control,original_control:&[u8],bank:&Session,ordinary:&DispatchLog,request:&SnapshotRequest,request_sha:&str,rows:&[Receipt;4])->Result<Value>{
+ let parent=c.root.join("tartarus-account-observations");private_dir(&parent)?;
+ let path=parent.join(format!("{}-{}",request.id,&request_sha[..16]));fs::create_dir(&path)?;private_dir(&path)?;
+ let mut files=serde_json::Map::new();
+ for(label,raw,expected)in [("request-source.json",fs::read(c.root.join("tartarus-snapshot-request.json"))?,request_sha),("control-source.json",original_control.to_vec(),request.expected_control_sha256.as_str())]{
+  if format!("{:x}",Sha256::digest(&raw))!=expected{return Err("TARTARUS_OBSERVATION_SOURCE_CHANGED".into())}snapshot_private_new(&path.join(label),&raw)?;files.insert(label.into(),json!({"sha256":expected,"bytes":raw.len()}));
+ }
+ for (label,r) in ["account","collateral","positions","open-orders"].iter().zip(rows){
+  let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,r,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
+  let raw=fs::read(c.root.join("receipts").join(format!("{}.json",feedback::digest(retained.receipt())?)))?;
+  if serde_json::from_slice::<Value>(&raw)?!=serde_json::to_value(r)?{return Err("TARTARUS_OBSERVATION_ORIGINAL_CHANGED".into())}
+  let name=format!("{label}.json");snapshot_private_new(&path.join(&name),&raw)?;files.insert(name,json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"requestStartedAt":r.request_started_at,"receivedAt":r.received_at}));
+ }
+ let pending:Vec<_>=ordinary.acknowledgments.iter().filter(|(q,_)|!ordinary.closed.contains(q)).map(|(q,ack)|json!({"qid":q,"intent":ordinary.intents.get(q),"acknowledgment":ack})).collect();
+ let native=json!({"nativeHead":bank.durable_head(),"reportProjection":bank.engine().report()?,"knownUnclosedAcknowledgments":pending,"ordinaryDispatch":ordinary.descriptor_identity()?});
+ let raw=serde_json::to_vec(&native)?;snapshot_private_new(&path.join("native-projection.json"),&raw)?;files.insert("native-projection.json".into(),json!({"sha256":format!("{:x}",Sha256::digest(&raw)),"bytes":raw.len(),"derivedProjection":true}));
+ let metadata=json!({"schema":"tartarus_readonly_account_observation_v1","at":iso(now()),"requestSha256":request_sha,"expectedControlSha256":request.expected_control_sha256,"expectedGenerationSha256":request.expected_generation_sha256,"files":files,"restingOrdersPreserved":true,"openOrderOwnershipReconciled":false,"pendingProceedsCredited":false,"allocationBoundaryQualified":false,"economicFreshnessQualified":false,"researchOnly":true,"executionAuthority":false});
+ snapshot_private_new(&path.join("metadata.json"),&serde_json::to_vec(&metadata)?)?;
+ Ok(json!({"at":iso(now()),"state":"captured_readonly_account_observation","packetPath":path,"requestSha256":request_sha,"metadataSha256":format!("{:x}",Sha256::digest(serde_json::to_vec(&metadata)?)),"allocationBoundaryQualified":false,"researchOnly":true,"executionAuthority":false}))
 }
 // Explicit service after completed scope/cycle: no live physical permit or operation is
 // held. Errors are research diagnostics, never new trading/STOP authority.
@@ -346,10 +384,12 @@ fn snapshot_original_economics(bank:&Session,scope:&Scope,rows:&[Receipt;4],at:u
 fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8],bank:&Session,t:&mut Transport,ordinary:&DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&ProductionAuthority,f:Option<&FundamentalRuntime>,stream:&Realtime,state:&mut SnapshotRequestState)->Result<()>{
  // Keep the explicit one-shot request queued until a genuine quiet boundary.
  // Calling between scopes must not consume it during an acknowledged order.
- if ordinary.require_resolved_attempts().is_err()||ordinary.acknowledgments.keys().any(|qid|!ordinary.closed.contains(qid))||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return Ok(())}
+ if ordinary.require_resolved_attempts().is_err()||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return Ok(())}
  let mut fatal=false;let mut logical_reads=0;
  let result=(||->Result<Option<Value>>{
-  let Some((request_sha,request))=snapshot_request(&c.root,state)?else{return Ok(None)};
+  let busy=ordinary.acknowledgments.keys().any(|qid|!ordinary.closed.contains(qid));
+  let Some((request_sha,request))=snapshot_request_ready(&c.root,state,busy)?else{return Ok(None)};
+  let observation=request.acquisition_mode.as_deref()==Some("original_account_observation_four_v1");
   if format!("{:x}",Sha256::digest(original_control))!=request.expected_control_sha256{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}
   fatal=request.acquisition_mode.is_some();
   if !authority.can_read(&c.scope)||fs::read(control_path)?!=original_control{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}
@@ -359,7 +399,7 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
    // No callback here can admit a Session event. The original private account
    // signal continues to invalidate independently on the receiver thread.
    let signal=stream.account_signal();if signal.is_none(){return Err("TARTARUS_ACCOUNT_SIGNAL_REQUIRED".into())}let generation_before=signal.as_ref().map(|s|s.generation());let head=bank.durable_head();let started=now();
-   ordinary.require_resolved_attempts()?;if ordinary.acknowledgments.keys().any(|qid|!ordinary.closed.contains(qid))||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return Err("TARTARUS_EXISTING_EXECUTION_UNAVAILABLE".into())}
+   ordinary.require_resolved_attempts()?;if (!observation&&ordinary.acknowledgments.keys().any(|qid|!ordinary.closed.contains(qid)))||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return Err("TARTARUS_EXISTING_EXECUTION_UNAVAILABLE".into())}
    let original_descriptors=(ordinary.descriptor_identity()?,packages.descriptor_identity()?,lease.descriptor_identity()?);
    fatal=true;refresh_controls(c,authority,stream)?;let quiet=t.package_queue_quiet()?;fatal=false;
    if quiet.state.next.max(quiet.state.cooldown)>started.saturating_add(2000){return Err("TARTARUS_ACCOUNT_ADMISSION_NOT_READY".into())}
@@ -368,7 +408,7 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
     logical_reads+=1;let receipt=match t.request(endpoint){Ok(r)=>r,Err(error)=>{if snapshot_resolved_read_error(&error,||{t.package_queue_quiet()?;refresh_controls(c,authority,stream)})?{fatal=false;}return Err(error.into())}};record_receipt(&c.root,&receipt)?;refresh_controls(c,authority,stream)?;fatal=false;Ok(receipt)
    })?;
    let stamp=moloch_live_runtime::account_realtime::capture(&signal,&rows.iter().collect::<Vec<_>>())?;
-   if bank.durable_head()!=head||original_descriptors!=(ordinary.descriptor_identity()?,packages.descriptor_identity()?,lease.descriptor_identity()?){return Err("TARTARUS_NATIVE_BOUNDARY_CHANGED".into())}snapshot_original_economics(bank,&c.scope,&rows,now())?;
+   if bank.durable_head()!=head||original_descriptors!=(ordinary.descriptor_identity()?,packages.descriptor_identity()?,lease.descriptor_identity()?){return Err("TARTARUS_NATIVE_BOUNDARY_CHANGED".into())}snapshot_original_economics_observed(bank,&c.scope,&rows,now(),observation)?;
    moloch_live_runtime::account_realtime::validate(&stamp,&stream.account_signal())?;
    Some((rows,stamp))
   }else{None};
@@ -384,6 +424,7 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
    if original.status!=200||original.endpoint!=account.receipt().endpoint||original.data["id"]!=account.receipt().data["id"]||!original.data["id"].as_str().is_some_and(api::relationships::uuid)||original.received_at!=seed["observedAt"].as_str().ok_or("TARTARUS_ORIGINAL_ACCOUNT_SEED")?{return Err("TARTARUS_ORIGINAL_PROFILE_CHANGED".into())}
    if let Some(record)=bank.engine().owner_capital_allocation_record(){if record["bankScope"]["profileId"]!=account.receipt().data["id"]{return Err("TARTARUS_ORIGINAL_PROFILE_CHANGED".into())}}
   }
+  if observation{let(rows,stamp)=acquired.as_ref().ok_or("TARTARUS_OBSERVATION_ORIGINALS_REQUIRED")?;fatal=true;refresh_controls(c,authority,stream)?;fatal=false;if fs::read(control_path)?!=original_control{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}if let Some(f)=f{f.authority.validate()?;}let mut value=snapshot_write_observation(c,original_control,bank,ordinary,&request,&request_sha,rows)?;moloch_live_runtime::account_realtime::validate(stamp,&stream.account_signal())?;snapshot_original_economics_observed(bank,&c.scope,rows,now(),true)?;value["acquisitionMode"]=json!("original_account_observation_four_v1");return Ok(Some(value))}
   let mut sources=vec![ts::SourceFile{label:"control",root:control_path.parent().ok_or("TARTARUS_CONTROL_PATH")?,relative:Path::new(control_path.file_name().ok_or("TARTARUS_CONTROL_PATH")?),sha256:&request.expected_control_sha256},ts::SourceFile{label:"snapshot-request",root:&c.root,relative:Path::new("tartarus-snapshot-request.json"),sha256:&request_sha}];
   let mut generation_file=None;let mut generation_control=None;let mut generation_control_sha=None;
   if generation!=moloch_live_runtime::fundamental_reload::ZERO{
@@ -404,13 +445,19 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
   let metadata_raw=fs::read(path.join("metadata.json"))?;
   Ok(Some(json!({"at":iso(now()),"state":"captured_original_evidence","requestSha256":request_sha,"packetPath":path,"metadataSha256":format!("{:x}",Sha256::digest(&metadata_raw)),"expectedControlSha256":request.expected_control_sha256,"expectedGenerationSha256":generation,"sourceObservationMs":packet.metadata()["sourceObservationMs"],"originalReceipts":packet.metadata()["originalReceipts"],"economicFreshnessQualified":false,"researchOnly":true,"executionAuthority":false,"networkRequests":0})))
  })();
- match result{Ok(Some(mut value))=>{if logical_reads>0{value["logicalAccountReads"]=json!(logical_reads);value.as_object_mut().unwrap().remove("networkRequests");value["acquisitionMode"]=json!("original_account_four_v1");value["terminalDebtModelAvailable"]=json!(false);}let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);},Ok(None)=>{},Err(error)=>{let mut value=json!({"at":iso(now()),"state":"unavailable","requestSha256":state.last_request_sha256,"reason":error.to_string(),"researchOnly":true,"executionAuthority":false,"networkRequests":0,"retryAutomatic":false});if logical_reads>0{value.as_object_mut().unwrap().remove("networkRequests");value["logicalAccountReads"]=json!(logical_reads);}let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);if fatal{return Err(error)}}}Ok(())
+ match result{Ok(Some(mut value))=>{if logical_reads>0{value["logicalAccountReads"]=json!(logical_reads);value.as_object_mut().unwrap().remove("networkRequests");if value.get("acquisitionMode").is_none(){value["acquisitionMode"]=json!("original_account_four_v1");}value["terminalDebtModelAvailable"]=json!(false);}let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);},Ok(None)=>{},Err(error)=>{let mut value=json!({"at":iso(now()),"state":"unavailable","requestSha256":state.last_request_sha256,"reason":error.to_string(),"researchOnly":true,"executionAuthority":false,"networkRequests":0,"retryAutomatic":false});if logical_reads>0{value.as_object_mut().unwrap().remove("networkRequests");value["logicalAccountReads"]=json!(logical_reads);}let _=atomic_json(&c.root.join("tartarus-snapshot-status.json"),&value);if fatal{return Err(error)}}}Ok(())
 }
 #[cfg(test)]mod tartarus_snapshot_worker_tests{
  use super::*;
  struct Temp(PathBuf);impl Temp{fn new()->Self{let p=std::env::temp_dir().join(format!("tartarus-worker-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));private_dir(&p).unwrap();Self(p)}}impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  fn request_value(id:&str)->Value{json!({"version":1,"id":id,"expectedControlSha256":"a".repeat(64),"expectedGenerationSha256":moloch_live_runtime::fundamental_reload::ZERO,"researchOnly":true,"executionAuthority":false})}
  fn put(root:&Path,v:&Value){snapshot_private_new(&root.join("tartarus-snapshot-request.json"),&serde_json::to_vec(v).unwrap()).unwrap();}
+ #[test]fn resting_orders_preserve_allocation_request_until_quiet_but_allow_explicit_observation(){
+  let t=Temp::new();let mut v=request_value("waiting");v["acquisitionMode"]=json!("original_account_four_v1");put(&t.0,&v);let mut state=SnapshotRequestState::default();
+  for _ in 0..2{assert!(snapshot_request_ready(&t.0,&mut state,true).unwrap().is_none());assert_eq!(state.attempts,0);assert!(!t.0.join("tartarus-snapshot-attempts").exists());}
+  assert!(snapshot_request_ready(&t.0,&mut state,false).unwrap().is_some());assert_eq!(state.attempts,1);
+  let t=Temp::new();v["acquisitionMode"]=json!("original_account_observation_four_v1");put(&t.0,&v);let mut state=SnapshotRequestState::default();assert!(snapshot_request_ready(&t.0,&mut state,true).unwrap().is_some());assert!(snapshot_request_ready(&t.0,&mut state,true).unwrap().is_none());assert_eq!(state.attempts,1);
+ }
  #[test]fn absent_request_has_no_output_or_attempt_work(){let t=Temp::new();let mut state=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert_eq!(state.attempts,0);assert_eq!(fs::read_dir(&t.0).unwrap().count(),0);}
  #[test]fn exact_request_is_once_only_including_restart_and_original_raw_sha(){
   let t=Temp::new();let v=request_value("audit-one");put(&t.0,&v);let raw=fs::read(t.0.join("tartarus-snapshot-request.json")).unwrap();let mut state=SnapshotRequestState::default();let(sha,r)=snapshot_request(&t.0,&mut state).unwrap().unwrap();assert_eq!(sha,format!("{:x}",Sha256::digest(&raw)));assert_eq!(r.id,"audit-one");assert_eq!(state.attempts,1);assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(snapshot_request(&t.0,&mut SnapshotRequestState::default()).unwrap().is_none());assert_eq!(fs::read(t.0.join("tartarus-snapshot-request.json")).unwrap(),raw);assert_eq!(fs::read_dir(t.0.join("tartarus-snapshot-attempts")).unwrap().count(),1);
@@ -447,6 +494,21 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
   let rows=std::array::from_fn(|i|Receipt{endpoint:[format!("/account?tournamentId={}",scope.tournament_id),format!("/portfolio/collateral?tournamentId={}",scope.tournament_id),"/tournaments/cup/portfolio/positions".into(),format!("/orders?status=open&limit=200&tournamentId={}",scope.tournament_id)][i].clone(),status:200,request_started_at:iso(1000+i as u64*100),received_at:iso(1050+i as u64*100),data:match i{0=>json!({"id":"22222222-2222-4222-8222-222222222222","balance":1000,"availableAdvance":0,"buyingPower":1000}),1=>json!({"availableAdvance":0,"data":[]}),2=>json!({"positions":[],"summary":{"totalMarketValue":0,"totalCostBasis":0,"totalUnrealizedPnl":0}}),_=>json!({"data":[],"coverage":{"complete":true},"pagination":{"hasMore":false,"nextCursor":null}})}});(t,bank,scope,rows)
  }
  #[test]fn original_economics_checks_whole_account_without_events_or_cash_release(){let(_t,bank,scope,rows)=economics_fixture();let head=bank.durable_head();let report=bank.engine().report().unwrap();snapshot_original_economics(&bank,&scope,&rows,1400).unwrap();assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);}
+ #[test]fn observation_retains_resting_orders_without_weakening_allocation_or_account_checks(){
+  let(_t,bank,scope,mut rows)=economics_fixture();let head=bank.durable_head();let report=bank.engine().report().unwrap();rows[3].data["data"]=json!([{"orderId":"918","exchangeId":"101","quantity":10,"side":"yes","action":"sell","limitPrice":"0.9"}]);let original=rows[3].clone();
+  assert!(snapshot_original_economics(&bank,&scope,&rows,1400).is_err());snapshot_original_economics_observed(&bank,&scope,&rows,1400,true).unwrap();assert_eq!(serde_json::to_value(&rows[3]).unwrap(),serde_json::to_value(original).unwrap());assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);
+  rows[3].data["coverage"]["complete"]=json!(false);assert!(snapshot_original_economics_observed(&bank,&scope,&rows,1400,true).is_err());rows[3].data["coverage"]["complete"]=json!(true);rows[0].data["balance"]=json!(999);assert!(snapshot_original_economics_observed(&bank,&scope,&rows,1400,true).is_err());
+ }
+ #[test]fn observation_packet_retains_original_bytes_and_has_no_allocation_authority(){
+  let(t,bank,scope,mut rows)=economics_fixture();rows[3].data["data"]=json!([{"orderId":"918","quantity":10,"action":"sell"}]);
+  let c:Control=serde_json::from_value(json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":scope,"policy":{},"root":t.0,"credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"})).unwrap();
+  let control=serde_json::to_vec(&c).unwrap();let mut v=request_value("observed");v["expectedControlSha256"]=json!(format!("{:x}",Sha256::digest(&control)));v["acquisitionMode"]=json!("original_account_observation_four_v1");put(&t.0,&v);let mut state=SnapshotRequestState::default();let(sha,request)=snapshot_request_ready(&t.0,&mut state,true).unwrap().unwrap();
+  for r in &rows{record_receipt(&t.0,r).unwrap();}let log=DispatchLog::open(&t.0.join("observation-dispatch.ndjson")).unwrap();let head=bank.durable_head();let report=bank.engine().report().unwrap();
+  let result=snapshot_write_observation(&c,&control,&bank,&log,&request,&sha,&rows).unwrap();let path=PathBuf::from(result["packetPath"].as_str().unwrap());let metadata:Value=serde_json::from_slice(&fs::read(path.join("metadata.json")).unwrap()).unwrap();
+  assert_eq!(metadata["schema"],"tartarus_readonly_account_observation_v1");for k in ["executionAuthority","allocationBoundaryQualified","pendingProceedsCredited","openOrderOwnershipReconciled"]{assert_eq!(metadata[k],false);}
+  for(label,r)in ["account","collateral","positions","open-orders"].iter().zip(&rows){assert_eq!(fs::read(path.join(format!("{label}.json"))).unwrap(),fs::read(t.0.join("receipts").join(format!("{}.json",feedback::digest(r).unwrap()))).unwrap());}
+  assert!(!t.0.join("tartarus-snapshots").exists());assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert!(snapshot_write_observation(&c,&control,&bank,&log,&request,&sha,&rows).is_err());
+ }
  #[test]fn complete_held_census_must_match_native_inventory_and_preserves_original_fifo(){
   let(_t,mut bank,scope,mut rows)=economics_fixture();let original=Receipt{endpoint:rows[2].endpoint.clone(),status:200,request_started_at:iso(510),received_at:iso(550),data:json!({"positions":[{"exchangeId":"101","marketId":"201","quantity":2,"costBasis":0.8,"lots":[{"lotId":"1","quantity":2,"side":"YES","entryPrice":0.4,"openedAt":iso(510)}]}]})};
   let event=moloch_live_runtime::inventory::adoption(&original,bank.engine(),&scope.tournament_id,&scope.tournament_slug,&scope.exchanges,&iso(600)).unwrap();bank.accept("fixture-adoption",1,&event).unwrap();rows[2].data=original.data;let fifo=bank.engine().wallet.positions();snapshot_original_economics(&bank,&scope,&rows,1400).unwrap();assert_eq!(bank.engine().wallet.positions(),fifo);
@@ -3996,6 +4058,12 @@ mod local_final_guard_recovery_tests{
 }
 #[cfg(test)]mod rank_worker_tests{
  use super::*;
+ #[test]fn known_open_order_defers_rank_but_unknown_acceptance_remains_fatal(){
+  let p=std::env::temp_dir().join(format!("rank-dispatch-{}-{}.ndjson",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()));let mut log=DispatchLog::open(&p).unwrap();assert!(!rank_waits_for_known_orders(&log).unwrap());
+  log.append(json!({"kind":"intent","qid":1})).unwrap();log.append(json!({"kind":"attempt","qid":1})).unwrap();assert_eq!(rank_waits_for_known_orders(&log).unwrap_err().to_string(),"DISPATCH_UNKNOWN_ACCEPTANCE_MANUAL_RECONCILIATION");
+  log.append(json!({"kind":"ack","qid":1,"receipt":{"orderId":"123"}})).unwrap();let before=fs::read(&p).unwrap();assert!(rank_waits_for_known_orders(&log).unwrap());assert_eq!(fs::read(&p).unwrap(),before);
+  log.append(json!({"kind":"cancel_ack","qid":1})).unwrap();assert!(rank_waits_for_known_orders(&log).unwrap());log.append(json!({"kind":"closed","qid":1})).unwrap();assert!(!rank_waits_for_known_orders(&log).unwrap());drop(log);fs::remove_file(p).unwrap();
+ }
  #[test]fn rank_activation_preserves_exact_quote_and_handles_both_actions(){for action in ["buy","sell"]{let q=json!({"id":10,"action":action,"reviewedRankCampaign":{"campaignSha256":"a".repeat(64)},"retired":false,"filled":0,"activationAt":3000,"expiresAt":10000});assert_eq!(rank_activation(&q,&q,2000).unwrap(),Some(3000));assert_eq!(rank_activation(&q,&q,3000).unwrap(),None);assert!(rank_activation(&q,&q,10000).is_err());let mut changed=q.clone();changed["filled"]=json!(1);assert!(rank_activation(&changed,&q,3000).is_err());let mut ordinary=q.clone();ordinary.as_object_mut().unwrap().remove("reviewedRankCampaign");assert!(!rank_quote(&ordinary));assert!(rank_activation(&ordinary,&ordinary,3000).is_err());}}
  #[test]fn historical_control_omits_optional_tartarus_owner_paths(){let raw=json!({"activation":{"runId":"test","entryUntilMs":9000000,"maximumCommitted":"1000.000000","maximumMarketCost":"100.000000","maximumQuantity":2,"tournamentId":"cup","tournamentSlug":"cup","binarySha256":"a".repeat(64)},"scope":{"tournamentId":"cup","tournamentSlug":"cup","exchanges":{}},"policy":{},"root":"/fixture","credentials":"/unused","ownerLock":"/unused.lock","accountScope":"fixture"});let c:Control=serde_json::from_value(raw).unwrap();assert!(c.rank_campaign.is_none());assert!(serde_json::to_value(c).unwrap().get("rankCampaign").is_none());}
 }
