@@ -239,6 +239,10 @@ class ReferenceEnv:
         elif kind == 'preflight':
             qid, left = value
             if qid not in self.orders: return
+            if at>=self.orders[qid].expires_at:
+                self.orders.pop(qid)
+                self.execution_events.append({'order':qid,'at':at,'kind':'not_sent','reason':'PATIENCE_EXPIRED_BEFORE_SEND'})
+                return
             if left: self._read(qid, left)
             else: self.clock.schedule(at, 20, 'write_admit', qid)
         elif kind == 'read_receipt':
@@ -246,6 +250,10 @@ class ReferenceEnv:
             self.clock.schedule(at, 20, 'preflight', (qid, left-1))
         elif kind == 'write_admit':
             if value not in self.orders: return
+            if at>=self.orders[value].expires_at:
+                self.orders.pop(value)
+                self.execution_events.append({'order':value,'at':at,'kind':'not_sent','reason':'PATIENCE_EXPIRED_BEFORE_SEND'})
+                return
             if self._busy(kind, value): return
             o = self.orders[value]; ready = self.budget.ready_at(at, True)
             if ready > at:
@@ -262,7 +270,8 @@ class ReferenceEnv:
             self.clock.schedule(at+self.mechanics.arrival_latency_ms+self.mechanics.receipt_latency_ms, 30, 'write_receipt', rid)
         elif kind == 'arrival':
             o = self.orders[value]; o.phase = 'resting'; self._match(o)
-            # A zero-patience request still incurs actual admission/arrival/receipt.
+            # Patience is a local cancel deadline. Already-admitted requests
+            # can still arrive/fill before their charged cancellation succeeds.
             self.clock.schedule(max(at, o.expires_at), 40, 'expiry', value)
         elif kind == 'write_receipt':
             self.budget.complete(value, at)

@@ -1,0 +1,369 @@
+{
+  "dataset_manifest_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+  "classification": "development_coverage_diagnostic_not_strategy_returns",
+  "observed_minutes": [
+    {
+      "minute": 1,
+      "fresh_books": 159,
+      "fresh_mapped_kalshi": 230,
+      "jointly_observable": 156
+    },
+    {
+      "minute": 2,
+      "fresh_books": 191,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 187
+    },
+    {
+      "minute": 3,
+      "fresh_books": 169,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 164
+    },
+    {
+      "minute": 4,
+      "fresh_books": 113,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 110
+    },
+    {
+      "minute": 5,
+      "fresh_books": 186,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 181
+    },
+    {
+      "minute": 6,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 7,
+      "fresh_books": 165,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 161
+    },
+    {
+      "minute": 8,
+      "fresh_books": 134,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 133
+    },
+    {
+      "minute": 9,
+      "fresh_books": 174,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 171
+    },
+    {
+      "minute": 10,
+      "fresh_books": 184,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 178
+    },
+    {
+      "minute": 11,
+      "fresh_books": 169,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 164
+    },
+    {
+      "minute": 12,
+      "fresh_books": 166,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 162
+    },
+    {
+      "minute": 13,
+      "fresh_books": 167,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 161
+    },
+    {
+      "minute": 14,
+      "fresh_books": 153,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 149
+    },
+    {
+      "minute": 15,
+      "fresh_books": 154,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 149
+    },
+    {
+      "minute": 16,
+      "fresh_books": 143,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 140
+    },
+    {
+      "minute": 17,
+      "fresh_books": 179,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 175
+    },
+    {
+      "minute": 18,
+      "fresh_books": 129,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 125
+    },
+    {
+      "minute": 19,
+      "fresh_books": 171,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 167
+    },
+    {
+      "minute": 20,
+      "fresh_books": 187,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 183
+    },
+    {
+      "minute": 21,
+      "fresh_books": 162,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 156
+    },
+    {
+      "minute": 22,
+      "fresh_books": 180,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 176
+    },
+    {
+      "minute": 23,
+      "fresh_books": 142,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 138
+    },
+    {
+      "minute": 24,
+      "fresh_books": 143,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 140
+    },
+    {
+      "minute": 25,
+      "fresh_books": 126,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 125
+    },
+    {
+      "minute": 26,
+      "fresh_books": 181,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 177
+    },
+    {
+      "minute": 27,
+      "fresh_books": 155,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 151
+    },
+    {
+      "minute": 28,
+      "fresh_books": 160,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 155
+    },
+    {
+      "minute": 29,
+      "fresh_books": 192,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 187
+    },
+    {
+      "minute": 30,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 31,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 32,
+      "fresh_books": 145,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 139
+    },
+    {
+      "minute": 33,
+      "fresh_books": 81,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 79
+    },
+    {
+      "minute": 34,
+      "fresh_books": 168,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 164
+    },
+    {
+      "minute": 35,
+      "fresh_books": 173,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 167
+    },
+    {
+      "minute": 36,
+      "fresh_books": 150,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 146
+    },
+    {
+      "minute": 37,
+      "fresh_books": 54,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 50
+    },
+    {
+      "minute": 38,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 39,
+      "fresh_books": 111,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 107
+    },
+    {
+      "minute": 40,
+      "fresh_books": 172,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 167
+    },
+    {
+      "minute": 41,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 42,
+      "fresh_books": 120,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 117
+    },
+    {
+      "minute": 43,
+      "fresh_books": 123,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 119
+    },
+    {
+      "minute": 44,
+      "fresh_books": 174,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 170
+    },
+    {
+      "minute": 45,
+      "fresh_books": 28,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 28
+    },
+    {
+      "minute": 46,
+      "fresh_books": 148,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 144
+    },
+    {
+      "minute": 47,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 48,
+      "fresh_books": 150,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 145
+    },
+    {
+      "minute": 49,
+      "fresh_books": 158,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 155
+    },
+    {
+      "minute": 50,
+      "fresh_books": 135,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 130
+    },
+    {
+      "minute": 51,
+      "fresh_books": 161,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 155
+    },
+    {
+      "minute": 52,
+      "fresh_books": 56,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 54
+    },
+    {
+      "minute": 53,
+      "fresh_books": 95,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 94
+    },
+    {
+      "minute": 54,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 55,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 56,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 57,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 58,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 59,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    },
+    {
+      "minute": 60,
+      "fresh_books": 0,
+      "fresh_mapped_kalshi": 231,
+      "jointly_observable": 0
+    }
+  ],
+  "book_source_age_exceeds_10s": 6147,
+  "books": 107817,
+  "production_changed": false
+}

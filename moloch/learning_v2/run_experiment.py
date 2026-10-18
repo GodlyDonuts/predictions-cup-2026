@@ -52,7 +52,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
                        target_wealth_micros=protocol['planning_target_wealth_micros'],
                        burnin_ms=protocol['recurrent_burnin_ms'],advance_to_start=False)
     behavior = fingerprint(model); hidden = model.initial_state(1)
-    rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;begun=time.perf_counter()
+    rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;observable_market_frames=0;begun=time.perf_counter()
     for step,at in enumerate(range(start-protocol['recurrent_burnin_ms'],end,protocol['decision_interval_ms'])):
         env.advance(at); obs=env.observe()
         tensors={k:torch.as_tensor(obs[k],device=device).unsqueeze(0) for k in ['contracts','global_state','present']}
@@ -64,8 +64,10 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
         if baseline or at<start: action['family']=0
         if at>=start:
             families[FAMILIES[int(action['family'])]]+=1
-            tradable=int(obs['masks']['family'][:,1].sum())
+            tradable=int(obs['masks']['family'][:,[1,2,4]].any(-1).sum())
             tradable_frames+=int(tradable>0);tradable_market_frames+=tradable
+            ref_column=7 if mechanics.valuation_source=='Kalshi'else 10
+            observable_market_frames+=int(((obs['contracts'][:,17]>0)&(obs['contracts'][:,ref_column]>0)&obs['present']).sum())
             if obs['wealth'] is not None:peak_committed=max(peak_committed,float(obs['global_state'][7]+obs['global_state'][1]))
         env.act(action)
         env.advance(min(end,at+protocol['decision_interval_ms']))
@@ -108,6 +110,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     stats={'start_ms':start,'decision_end_ms':end,'terminal_ms':terminal,'decisions':length//protocol['decision_interval_ms'],
            'recurrent_burnin_frames':protocol['recurrent_burnin_ms']//protocol['decision_interval_ms'],'split_role':split_role,
            'tradable_decision_frames':tradable_frames,'tradable_market_frames':tradable_market_frames,
+           'observable_market_frames':observable_market_frames,
            'rollout_wall_seconds':time.perf_counter()-begun,'baseline':baseline,'qualified_accounting':qualified,
            'final_reference_wealth_micros':final,'reference_return':(final-initial)/initial if qualified else None,
            'missing_mark_observations':missing,'unresolved_orders':len(env.orders),
@@ -163,7 +166,7 @@ def main():
                 'classification':'inspected_history_conditional_development_only','source_sha256':source_hashes}
     checkpoint=args.output/'checkpoint.pt';checkpoint_sha=trainer.save(checkpoint,provenance)
     report={**plan,'episodes':results,'hold_baselines':baseline_results,'policy_epochs':trainer.policy_epoch,
-            'training_decisions':trainer.training_decisions,'checkpoint_sha256':checkpoint_sha,
+            'training_decisions':trainer.training_decisions,'accepted_optimizer_updates':trainer.accepted_optimizer_updates,'checkpoint_sha256':checkpoint_sha,
             'final_parameter_sha256':fingerprint(model),'total_wall_seconds':time.perf_counter()-begun,
             'production_changed':False,'competition_profitability_established':False,'matched_compute_ablation_complete':False}
     write_json(args.output/'report.json',report);write_json(args.output/'COMPLETE.json',{'report_sha256':sha(args.output/'report.json'),

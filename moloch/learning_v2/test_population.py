@@ -43,6 +43,13 @@ class PopulationMechanics(unittest.TestCase):
         e=self.episodes();e[1]['tradable_decision_frames']=0
         self.assertFalse(BehaviorArchive().consider('x','b'*64,e,(0,),'x.pt'))
 
+    def test_selection_cannot_rank_an_empty_evaluation_block_as_zero_profit(self):
+        from .run_population import score
+        e=self.episodes()
+        for row in e:row['observable_market_frames']=100
+        self.assertEqual(score(e),.01);e[1]['observable_market_frames']=0
+        self.assertEqual(score(e),-1e99)
+
     def test_archive_rejects_changed_policy_and_overlapping_search_blocks(self):
         e=self.episodes();e[1]['parameter_sha256']='c'*64
         with self.assertRaisesRegex(ValueError,'POLICY_CHANGED'):BehaviorArchive().consider('x','b'*64,e,(0,),'x')

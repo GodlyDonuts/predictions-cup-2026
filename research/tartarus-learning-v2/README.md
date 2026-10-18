@@ -11,7 +11,7 @@ The human specification and proposed configuration are preserved byte-for-byte i
 - Fresh-policy fingerprint checks, whole-episode recurrent recomputation, elapsed-time PPO, separate monetary targets and immutable checkpoint bundles: [trainer](../../moloch/learning_v2/train_inner.py).
 - Full-observation causal source compilation, predecoding outside the inner loop, mechanics-only target actions and a finite GPU historical trainer: [compiler](../../moloch/learning_v2/compile_trace.py), [episodes](../../moloch/learning_v2/episodes.py), [runner](../../moloch/learning_v2/run_experiment.py).
 
-These components pass82 focused checks. Correct component behavior does not establish trading profitability.
+These components pass89 focused checks. Correct component behavior does not establish trading profitability.
 
 ## First actual historical PPO run
 
@@ -33,9 +33,15 @@ The inspected capture supplies **SIG and Kalshi; Polymarket is absent**. It is d
 
 A four-member/two-cycle [end-to-end trial](population-smoke-result.json) completed in163.3 seconds, including a fresh-trajectory child after checkpoint transfer. The local mutation measured categorical market/family KL0.001031 against its0.001 target. All original losses are retained; the economic archive admitted zero entries. This is scheduler evidence, not a profitable-policy result.
 
-The full **32 logical learners / four islands / two cycles** experiment has started on the laptop, with one learner resident on the GPU at a time. It trains across fixed-depth bankroll stress points while evaluating every candidate on the same two search-development calendars. Physical limits are immutable inputs; mutation changes only learning parameters/weights. Parentage, protected elite checkpoints, optimizer resets, mutation diagnostics and failed evaluations are recorded. Final results remain pending.
+The first full **32 logical learners / four islands / two cycles** experiment completed in1459.34 seconds, with one learner resident on the GPU at a time. Its second search block had no fresh SIG books, so the run is disqualified for finalist selection and admitted no archive entries. [Full retained results](population-32-v1-result.json) and [coverage diagnostic](v5-observation-coverage.json) preserve that failure. A revised32-member run is now running from fresh lineages under [a new split](development-evaluation-protocol-v2.json) and [explicit mechanics](development-mechanics-v2.json). It trains across fixed-depth bankroll stress points while evaluating every candidate on the same two search-development calendars. Physical limits are immutable inputs; mutation changes only learning parameters/weights. Parentage, protected elite checkpoints, optimizer resets, mutation diagnostics and failed evaluations are recorded. Revised results remain pending.
 
 [The initial-run audit](initial-run-audit.md) records subsequent gap-depletion and recurrent burn-in corrections. [The independently compiled native-wallet differential](native-wallet-differential-result.json) matches ten exact accounting states. It is not full transport/simulator parity.
+
+## Current evidence and speed
+
+[The requirement map](IMPLEMENTATION_STATUS.md) distinguishes implemented code, executed evidence and unfinished requirements. [The real-history update benchmark](sequence-update-benchmark.json) measured8.356s versus.448s (18.65x) for batched stateless encoders/action likelihoods, preserving the original recurrent semantics. This is update speed, not end-to-end speed. A subsequent [two-episode trust-region run](ppo-v2-trust-smoke-result.json) accepted four backtracked updates in roughly1.18-1.59s each; its positive marked training returns are not validation or actual profits.
+
+[The prospective forward protocol](forward-cohort-protocol.json) reserves23:20-00:00UTC, with finalists required before23:15. Source gaps, missing equivalence and unknown processing/sequence guarantees remain explicit. New Polymarket public REST/WS data is captured locally; the existing20-read/s Kalshi collector is reused. SIG observations are read from the existing sole worker's files, without another account client.
 
 ## Remaining
 

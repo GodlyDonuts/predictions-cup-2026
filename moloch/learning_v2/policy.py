@@ -62,10 +62,13 @@ class RecurrentPolicy(nn.Module):
         Fractions are raw policy requests; exact integer projection stays outside.
         """
         encoded, h = self.encode(contracts, global_state, present, hidden, reset)
+        return self._act_from_encoding(encoded,h,present,masks,actions,deterministic)
+
+    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False):
         market_logits = (encoded * self.market_query(h).unsqueeze(1)).sum(-1) / 16
         market_dist = masked_categorical(market_logits, masks['market'] & present)
         market = actions['market'] if actions is not None else (market_logits.masked_fill(~(masks['market'] & present), -torch.inf).argmax(-1) if deterministic else market_dist.sample())
-        batch = torch.arange(contracts.shape[0], device=contracts.device)
+        batch = torch.arange(h.shape[0], device=h.device)
         selected = torch.cat([h, encoded[batch, market]], -1)
         out = {'market': market}
         logprob = market_dist.log_prob(market)
@@ -99,11 +102,26 @@ class RecurrentPolicy(nn.Module):
 
     def sequence(self, contracts, global_state, present, masks, reset, actions=None):
         """Recompute each policy's entire sequence; no inherited parent hidden state."""
-        hidden = self.initial_state(contracts.shape[1], device=contracts.device)
-        rows = []
-        for t in range(contracts.shape[0]):
-            row = self.step(contracts[t], global_state[t], present[t], {k:v[t] for k,v in masks.items()}, hidden,
-                            reset[t], None if actions is None else {k:v[t] for k,v in actions.items()})
-            hidden = row['hidden']
-            rows.append(row)
-        return rows
+        if contracts.ndim!=4 or contracts.shape[-1]!=self.contract_features:
+            raise ValueError('CONTRACT_SEQUENCE_SHAPE')
+        T,B,N,_=contracts.shape
+        if present.shape!=(T,B,N)or global_state.shape!=(T,B,self.global_features)or reset.shape!=(T,B):
+            raise ValueError('SEQUENCE_FEATURE_SHAPE')
+        if present.dtype!=torch.bool or not bool(present.any(-1).all()):raise ValueError('NO_OBSERVED_CONTRACT')
+        # Stateless encoders and action likelihoods batch across time. Only
+        # the GRU carries time dependence; future rows cannot affect a prefix.
+        # Parameter names/architecture and exact recurrent resets are retained.
+        encoded=self.encoder(contracts)
+        pooled=(encoded*present.unsqueeze(-1)).sum(2)/present.sum(2,keepdim=True)
+        globals_encoded=self.global_encoder(global_state)
+        hidden=self.initial_state(B,device=contracts.device);states=[]
+        for t in range(T):
+            hidden=self.recurrent(torch.cat([pooled[t],globals_encoded[t]],-1),hidden*(~reset[t]).unsqueeze(-1))
+            states.append(hidden)
+        h=torch.stack(states)
+        flat_masks={k:v.reshape(T*B,*v.shape[2:])for k,v in masks.items()}
+        flat_actions=None if actions is None else{k:v.reshape(T*B,*v.shape[2:])for k,v in actions.items()}
+        out=self._act_from_encoding(encoded.reshape(T*B,N,256),h.reshape(T*B,self.hidden_size),present.reshape(T*B,N),flat_masks,flat_actions)
+        values={k:v.reshape(T,B,*v.shape[1:])for k,v in out.items()if k!='actions'}
+        chosen={k:v.reshape(T,B,*v.shape[1:])for k,v in out['actions'].items()}
+        return [{**{k:v[t]for k,v in values.items()},'actions':{k:v[t]for k,v in chosen.items()}}for t in range(T)]

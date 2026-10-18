@@ -117,6 +117,19 @@ class EventAccount(unittest.TestCase):
         self.assertEqual(e.account().reserved_cash,0)
         self.assertEqual(list(e.budget.writes),[])
 
+    def test_preflight_cannot_submit_a_draft_after_its_local_patience_deadline(self):
+        e=ReferenceEnv(experiment(preflight_reads=16),0,1000*U)
+        e.add_book(self.b);e.add_reference('x',400000,0,'b'*64);e.advance(0)
+        e.submit(self.t,1000);e.advance(10000)
+        self.assertEqual(e.fill_events,[]);self.assertEqual(list(e.budget.writes),[])
+        self.assertEqual(e.account().reserved_cash,0)
+        self.assertEqual(e.execution_events[-1]['reason'],'PATIENCE_EXPIRED_BEFORE_SEND')
+
+    def test_previously_admitted_request_may_fill_after_local_patience_in_real_cancel_race(self):
+        self.e.submit(self.t,800);self.e.advance(1000)
+        self.assertEqual(sum(f['quantity']for f in self.e.fill_events),50)
+        self.assertEqual(list(self.e.budget.writes),[700])
+
     def test_two_environments_never_share_consumed_liquidity(self):
         other = ReferenceEnv(experiment(),0,1000*U)
         other.add_book(self.b);other.add_reference('x',400000,0,'b'*64);other.advance(0)

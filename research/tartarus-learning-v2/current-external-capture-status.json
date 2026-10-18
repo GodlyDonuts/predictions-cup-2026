@@ -1,0 +1,56 @@
+{
+  "classification": "observed_external_research_capture_not_live_pricing_authority",
+  "kalshi": {
+    "at": "2026-10-18T23:00:41.144Z",
+    "pid": 9956,
+    "state": "collecting",
+    "targetRequestsPerSecond": 20,
+    "observedStartsLastSecond": 19,
+    "successfullyCachedTickers": 237,
+    "oldestCachedReceiptAgeMs": 11903,
+    "fatalCode": null,
+    "coverage": {
+      "sigMarkets": 237,
+      "mappedSigMarkets": 234,
+      "unmappedSigMarkets": 3,
+      "uniqueTickers": 234,
+      "idealSweepSecondsAt20ReadsPerSecond": 11.7,
+      "recordedLeadRows": 451,
+      "rejectedReferenceRows": 0,
+      "directMappedSigMarkets": 234,
+      "analogCoveredSigMarkets": 3,
+      "totalReferenceCoveredSigMarkets": 237,
+      "uniqueCandidateAnalogTickers": 3,
+      "idealCombinedReferenceSweepSecondsAt20ReadsPerSecond": 11.85
+    }
+  },
+  "kalshi_existing_collector_reused": true,
+  "polymarket": {
+    "at": "2026-10-18T23:00:41.417Z",
+    "pid": 36132,
+    "state": "running",
+    "outcomes": 378,
+    "markets": 189,
+    "cachedBooks": 378,
+    "completeMarketCoverage": 189,
+    "configuredMaximumRps": 30,
+    "admissions": 44912,
+    "completions": 44908,
+    "journalRetention": {
+      "maximumBytes": 2147483648,
+      "prunedSegments": 0,
+      "prunedBytes": 0
+    }
+  },
+  "polymarket_ws": {
+    "at": "2026-10-18T23:00:41.416Z",
+    "rawFrames": 190593,
+    "wsOutcomes": 378,
+    "failed": false
+  },
+  "prior_vps_polymarket_process_state": "stopped after confirmed POLYMARKET_LOCK_UNVERIFIABLE restart loop; old journals retained",
+  "source_mapping_equivalence_verified": false,
+  "learned_model_production_authority": false,
+  "additional_SIG_account_client": false,
+  "polymarket_read_rate_primary_source": "https://docs.polymarket.com/api-reference/rate-limits"
+}

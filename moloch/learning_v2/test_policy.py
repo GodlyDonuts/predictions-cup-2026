@@ -43,6 +43,26 @@ class RecurrentActor(unittest.TestCase):
         a['target_fraction']=torch.full((2,),0.1);a['child_fraction']=torch.full((2,),0.9)
         self.assertTrue(torch.allclose(first,self.step(actions=a)['logprob'],atol=1e-6))
 
+    def test_batched_likelihood_matches_original_sequential_recurrence(self):
+        T=4;xs=torch.stack([self.x+i*.1 for i in range(T)]);gs=torch.stack([self.g]*T)
+        ps=torch.stack([self.present]*T);ms={k:torch.stack([v]*T)for k,v in self.m.items()}
+        reset=torch.zeros(T,2,dtype=torch.bool);reset[0]=True;reset[2,1]=True
+        h=self.p.initial_state(2);old=[]
+        for i in range(T):
+            r=self.p.step(xs[i],gs[i],ps[i],{k:v[i]for k,v in ms.items()},h,reset[i]);h=r['hidden'];old.append(r)
+        actions={k:torch.stack([r['actions'][k]for r in old])for k in old[0]['actions']}
+        new=self.p.sequence(xs,gs,ps,ms,reset,actions)
+        for a,b in zip(old,new):
+            for name in ['hidden','value','logprob','entropy','monetary_quantiles']:
+                self.assertTrue(torch.allclose(a[name],b[name],atol=2e-5),name)
+
+    def test_batched_encoding_does_not_leak_future_observations_into_prefix(self):
+        xs=torch.stack([self.x]*3);gs=torch.stack([self.g]*3);ps=torch.stack([self.present]*3)
+        ms={k:torch.stack([v]*3)for k,v in self.m.items()};rs=torch.zeros(3,2,dtype=torch.bool);rs[0]=True
+        a=self.p.sequence(xs,gs,ps,ms,rs);acts={k:torch.stack([r['actions'][k]for r in a])for k in a[0]['actions']}
+        xs[2]+=100;gs[2]-=100;b=self.p.sequence(xs,gs,ps,ms,rs,acts)
+        for i in [0,1]:self.assertTrue(torch.allclose(a[i]['value'],b[i]['value'],atol=1e-6))
+
     def test_masked_action_never_selected(self):
         self.m['market'][:, :2] = False
         self.m['family'][:, :, 1:] = False

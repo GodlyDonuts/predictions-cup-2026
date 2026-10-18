@@ -1,0 +1,151 @@
+{
+  "classification": "real_history_software_throughput_not_trading_performance",
+  "anchor_sha256": "c31438980f8a3d0c5108d74e768fa66ba9f585f49a2935ccaa6f8e4f07821f9f",
+  "original_behavior_sha256": "5a87cca0bffe0a866ff921bb255efb05ca2ba093f254211d793642c69dc8c951",
+  "frames": 360,
+  "markets": 238,
+  "maximum_initial_logprob_difference": 2.384185791015625e-06,
+  "results": {
+    "sequential_step": {
+      "warmup_rounds": 1,
+      "measured_rounds": 3,
+      "seconds": [
+        8.35615509992931,
+        8.836189499939792,
+        8.137779399985448
+      ],
+      "median_seconds": 8.35615509992931,
+      "updates": [
+        [
+          {
+            "epoch": 0,
+            "loss": -0.02866767719388008,
+            "policyLoss": 2.8610230629055877e-08,
+            "valueLoss": 0.001918590860441327,
+            "quantileLoss": 0.18921883404254913,
+            "successLabels": 0,
+            "gradientNormBeforeClip": 2.2289323806762695,
+            "sampledApproximateKl": 0.0
+          },
+          {
+            "epoch": 1,
+            "updateSkipped": "SAMPLED_KL_EARLY_STOP",
+            "sampledApproximateKl": 3.7602174282073975,
+            "successLabels": 0
+          }
+        ],
+        [
+          {
+            "epoch": 0,
+            "loss": -0.02866767719388008,
+            "policyLoss": 2.8610230629055877e-08,
+            "valueLoss": 0.001918590860441327,
+            "quantileLoss": 0.18921883404254913,
+            "successLabels": 0,
+            "gradientNormBeforeClip": 2.2289323806762695,
+            "sampledApproximateKl": 0.0
+          },
+          {
+            "epoch": 1,
+            "updateSkipped": "SAMPLED_KL_EARLY_STOP",
+            "sampledApproximateKl": 3.7602174282073975,
+            "successLabels": 0
+          }
+        ],
+        [
+          {
+            "epoch": 0,
+            "loss": -0.02866767719388008,
+            "policyLoss": 2.8610230629055877e-08,
+            "valueLoss": 0.001918590860441327,
+            "quantileLoss": 0.18921883404254913,
+            "successLabels": 0,
+            "gradientNormBeforeClip": 2.2289323806762695,
+            "sampledApproximateKl": 0.0
+          },
+          {
+            "epoch": 1,
+            "updateSkipped": "SAMPLED_KL_EARLY_STOP",
+            "sampledApproximateKl": 3.7602174282073975,
+            "successLabels": 0
+          }
+        ]
+      ]
+    },
+    "batched_encoder_heads": {
+      "warmup_rounds": 1,
+      "measured_rounds": 3,
+      "seconds": [
+        0.45011760003399104,
+        0.44811580004170537,
+        0.42297710001002997
+      ],
+      "median_seconds": 0.44811580004170537,
+      "updates": [
+        [
+          {
+            "epoch": 0,
+            "loss": -0.028667693957686424,
+            "policyLoss": 1.1126200405442432e-08,
+            "valueLoss": 0.0019185899291187525,
+            "quantileLoss": 0.18921883404254913,
+            "successLabels": 0,
+            "gradientNormBeforeClip": 2.2289316654205322,
+            "sampledApproximateKl": 3.1789145538141383e-08
+          },
+          {
+            "epoch": 1,
+            "updateSkipped": "SAMPLED_KL_EARLY_STOP",
+            "sampledApproximateKl": 3.7602198123931885,
+            "successLabels": 0
+          }
+        ],
+        [
+          {
+            "epoch": 0,
+            "loss": -0.028667693957686424,
+            "policyLoss": 1.1126200405442432e-08,
+            "valueLoss": 0.0019185899291187525,
+            "quantileLoss": 0.18921883404254913,
+            "successLabels": 0,
+            "gradientNormBeforeClip": 2.2289316654205322,
+            "sampledApproximateKl": 3.1789145538141383e-08
+          },
+          {
+            "epoch": 1,
+            "updateSkipped": "SAMPLED_KL_EARLY_STOP",
+            "sampledApproximateKl": 3.7602198123931885,
+            "successLabels": 0
+          }
+        ],
+        [
+          {
+            "epoch": 0,
+            "loss": -0.028667693957686424,
+            "policyLoss": 1.1126200405442432e-08,
+            "valueLoss": 0.0019185899291187525,
+            "quantileLoss": 0.18921883404254913,
+            "successLabels": 0,
+            "gradientNormBeforeClip": 2.2289316654205322,
+            "sampledApproximateKl": 3.1789145538141383e-08
+          },
+          {
+            "epoch": 1,
+            "updateSkipped": "SAMPLED_KL_EARLY_STOP",
+            "sampledApproximateKl": 3.7602198123931885,
+            "successLabels": 0
+          }
+        ]
+      ]
+    }
+  },
+  "measured_update_speedup": 18.647311920605382,
+  "source_sha256": {
+    "policy.py": "5a2800c4e76511dac03cbb3a0e8098fb060d5b516229b22c3c37663bc86f7226",
+    "train_inner.py": "73c09c61cf137204b60d197fa45862c519bd397e55bf971cda88bc0207d9c67d",
+    "benchmark_sequence.py": "91c7d86320d7cd905a3399d2e3a09d3354a42ef0a467258af8e322908d772515"
+  },
+  "device": "NVIDIA GeForce RTX 5070 Ti Laptop GPU",
+  "production_changed": false,
+  "end_to_end_speedup_measured": false
+}

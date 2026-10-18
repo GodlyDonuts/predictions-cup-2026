@@ -5,6 +5,7 @@ transfer invalidates old trajectories by a full parameter fingerprint. Market
 and execution assumptions are not trainer parameters.
 """
 from dataclasses import dataclass, asdict
+import copy
 import hashlib
 import math
 from pathlib import Path
@@ -25,11 +26,13 @@ class PPOConfig:
     success_coefficient: float = 0.1
     maximum_gradient_norm: float = 0.5
     maximum_sampled_kl: float = 0.03
+    maximum_step_backtracks: int = 8
 
     def __post_init__(self):
         if not (0 < self.learning_rate < 1 and 0 < self.clip_ratio < 1 and
                 0 < self.gamma_per_second <= 1 and 0 < self.lambda_per_second <= 1 and
-                type(self.epochs) is int and self.epochs > 0 and self.maximum_gradient_norm > 0 and self.maximum_sampled_kl>0):
+                type(self.epochs) is int and self.epochs > 0 and self.maximum_gradient_norm > 0 and self.maximum_sampled_kl>0
+                and type(self.maximum_step_backtracks)is int and self.maximum_step_backtracks>=0):
             raise ValueError('PPO_CONFIGURATION')
         if any(not math.isfinite(v) for v in asdict(self).values()):
             raise ValueError('NONFINITE_PPO_CONFIGURATION')
@@ -88,6 +91,7 @@ class PPOTrainer:
         self.optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
         self.policy_epoch = 0
         self.training_decisions = 0
+        self.accepted_optimizer_updates = 0
 
     def update(self, t: Trajectory):
         if t.split_role != 'fit_training' or t.split_manifest_sha256 != self.split:
@@ -115,8 +119,11 @@ class PPOTrainer:
             quantiles = torch.stack([r['monetary_quantiles'] for r in rows])
             success = torch.stack([r['success_logit'] for r in rows])
             sampled_kl=float((t.old_logprob-logprob).detach()[t.learn].mean())
-            if epoch and sampled_kl>self.config.maximum_sampled_kl:
-                results.append({'epoch':epoch,'updateSkipped':'SAMPLED_KL_EARLY_STOP','sampledApproximateKl':sampled_kl,'successLabels':int((torch.isfinite(t.target_success_labels)&t.learn).sum())})
+            with torch.no_grad():
+                delta=(logprob-t.old_logprob)[t.learn]
+                nonnegative_kl=float((delta.exp()-1-delta).mean())
+            if epoch and nonnegative_kl>self.config.maximum_sampled_kl:
+                results.append({'epoch':epoch,'updateSkipped':'SAMPLED_KL_EARLY_STOP','sampledApproximateKl':sampled_kl,'sampledNonnegativeKl':nonnegative_kl,'successLabels':int((torch.isfinite(t.target_success_labels)&t.learn).sum())})
                 break
             ratio = (logprob-t.old_logprob).exp()
             surrogate = torch.minimum(ratio*advantage, ratio.clamp(1-self.config.clip_ratio,1+self.config.clip_ratio)*advantage)
@@ -132,13 +139,33 @@ class PPOTrainer:
                     +self.config.success_coefficient*success_loss-self.config.entropy_coefficient*entropy[t.learn].mean())
             if not bool(torch.isfinite(loss)):
                 raise ValueError('NONFINITE_PPO_LOSS')
+            before={k:v.detach().clone()for k,v in self.model.state_dict().items()}
+            optimizer_before=copy.deepcopy(self.optimizer.state_dict())
             self.optimizer.zero_grad(set_to_none=True); loss.backward()
             norm = torch.nn.utils.clip_grad_norm_(self.model.parameters(),self.config.maximum_gradient_norm,error_if_nonfinite=True)
             self.optimizer.step()
+            proposal={k:v.detach().clone()for k,v in self.model.state_dict().items()}
+            accepted=False;step_scale=1.;post_kl=float('inf')
+            for backtrack in range(self.config.maximum_step_backtracks+1):
+                with torch.no_grad():
+                    if backtrack:self.model.load_state_dict({k:before[k]+step_scale*(proposal[k]-before[k])for k in before})
+                    candidate=self.model.sequence(t.contracts,t.global_state,t.present,t.masks,t.reset,t.actions)
+                    delta=(torch.stack([r['logprob']for r in candidate])-t.old_logprob)[t.learn]
+                    post_kl=float((delta.exp()-1-delta).mean())
+                    del candidate
+                if math.isfinite(post_kl)and post_kl<=self.config.maximum_sampled_kl:
+                    accepted=True;break
+                step_scale*=.5
+            if not accepted:
+                self.model.load_state_dict(before);self.optimizer.load_state_dict(optimizer_before)
+                results.append({'epoch':epoch,'updateSkipped':'TRUST_REGION_BACKTRACK_FAILED','postStepNonnegativeKl':None if not math.isfinite(post_kl)else post_kl,'successLabels':int(valid_success.sum())})
+                break
+            self.accepted_optimizer_updates+=1
             results.append({'epoch':epoch,'loss':float(loss.detach()),'policyLoss':float(policy_loss.detach()),
                             'valueLoss':float(value_loss.detach()),'quantileLoss':float(quantile_loss.detach()),
                             'successLabels':int(valid_success.sum()),'gradientNormBeforeClip':float(norm),
-                            'sampledApproximateKl':float((t.old_logprob-logprob).detach()[t.learn].mean())})
+                            'sampledApproximateKl':sampled_kl,'sampledNonnegativeKl':nonnegative_kl,
+                            'postStepNonnegativeKl':post_kl,'adamParameterStepScale':step_scale,'stepBacktracks':backtrack})
         self.policy_epoch += 1; self.training_decisions += int(t.learn.sum())
         return results
 
@@ -152,6 +179,7 @@ class PPOTrainer:
                   'global_features':self.model.global_features,'hidden_size':self.model.hidden_size,
                   'model':self.model.state_dict(),'optimizer':self.optimizer.state_dict(),
                   'config':asdict(self.config),'policy_epoch':self.policy_epoch,'training_decisions':self.training_decisions,
+                  'accepted_optimizer_updates':self.accepted_optimizer_updates,
                   'split_manifest_sha256':self.split,'parameter_sha256':fingerprint(self.model),
                   'provenance':provenance,'torch_version':str(torch.__version__),
                   'production_authority':False}

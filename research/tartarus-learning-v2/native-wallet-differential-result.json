@@ -1,1 +1,110 @@
-{"classification": "offline_wallet_semantics_not_execution_calibration", "matched_exact_states": 10, "rows": [{"label": "initial", "cash": "1000000000", "reserved": "0", "owned_cost": "0", "realized": "0", "fees": "0", "yes": 0, "no": 0}, {"label": "reserve_yes", "cash": "1000000000", "reserved": "4010000", "owned_cost": "0", "realized": "0", "fees": "0", "yes": 0, "no": 0}, {"label": "partial_yes", "cash": "998436000", "reserved": "2406000", "owned_cost": "1560000", "realized": "-4000", "fees": "4000", "yes": 4, "no": 0}, {"label": "complete_yes", "cash": "996030000", "reserved": "0", "owned_cost": "3960000", "realized": "-10000", "fees": "10000", "yes": 10, "no": 0}, {"label": "reserve_opposite", "cash": "996030000", "reserved": "3306000", "owned_cost": "3960000", "realized": "-10000", "fees": "10000", "yes": 10, "no": 0}, {"label": "partial_opposite_net", "cash": "997407000", "reserved": "1653000", "owned_cost": "2790000", "realized": "197000", "fees": "13000", "yes": 7, "no": 0}, {"label": "cancel_remainder", "cash": "997407000", "reserved": "0", "owned_cost": "2790000", "realized": "197000", "fees": "13000", "yes": 7, "no": 0}, {"label": "fifo_sale", "cash": "998605000", "reserved": "0", "owned_cost": "2000000", "realized": "605000", "fees": "15000", "yes": 5, "no": 0}, {"label": "reserve_flatten", "cash": "998605000", "reserved": "2505000", "owned_cost": "2000000", "realized": "605000", "fees": "15000", "yes": 5, "no": 0}, {"label": "complete_flatten", "cash": "1001100000", "reserved": "0", "owned_cost": "0", "realized": "1100000", "fees": "20000", "yes": 0, "no": 0}], "production_changed": false}
+{
+  "classification": "offline_wallet_semantics_not_execution_calibration",
+  "matched_exact_states": 10,
+  "rows": [
+    {
+      "label": "initial",
+      "cash": "1000000000",
+      "reserved": "0",
+      "owned_cost": "0",
+      "realized": "0",
+      "fees": "0",
+      "yes": 0,
+      "no": 0
+    },
+    {
+      "label": "reserve_yes",
+      "cash": "1000000000",
+      "reserved": "4010000",
+      "owned_cost": "0",
+      "realized": "0",
+      "fees": "0",
+      "yes": 0,
+      "no": 0
+    },
+    {
+      "label": "partial_yes",
+      "cash": "998436000",
+      "reserved": "2406000",
+      "owned_cost": "1560000",
+      "realized": "-4000",
+      "fees": "4000",
+      "yes": 4,
+      "no": 0
+    },
+    {
+      "label": "complete_yes",
+      "cash": "996030000",
+      "reserved": "0",
+      "owned_cost": "3960000",
+      "realized": "-10000",
+      "fees": "10000",
+      "yes": 10,
+      "no": 0
+    },
+    {
+      "label": "reserve_opposite",
+      "cash": "996030000",
+      "reserved": "3306000",
+      "owned_cost": "3960000",
+      "realized": "-10000",
+      "fees": "10000",
+      "yes": 10,
+      "no": 0
+    },
+    {
+      "label": "partial_opposite_net",
+      "cash": "997407000",
+      "reserved": "1653000",
+      "owned_cost": "2790000",
+      "realized": "197000",
+      "fees": "13000",
+      "yes": 7,
+      "no": 0
+    },
+    {
+      "label": "cancel_remainder",
+      "cash": "997407000",
+      "reserved": "0",
+      "owned_cost": "2790000",
+      "realized": "197000",
+      "fees": "13000",
+      "yes": 7,
+      "no": 0
+    },
+    {
+      "label": "fifo_sale",
+      "cash": "998605000",
+      "reserved": "0",
+      "owned_cost": "2000000",
+      "realized": "605000",
+      "fees": "15000",
+      "yes": 5,
+      "no": 0
+    },
+    {
+      "label": "reserve_flatten",
+      "cash": "998605000",
+      "reserved": "2505000",
+      "owned_cost": "2000000",
+      "realized": "605000",
+      "fees": "15000",
+      "yes": 5,
+      "no": 0
+    },
+    {
+      "label": "complete_flatten",
+      "cash": "1001100000",
+      "reserved": "0",
+      "owned_cost": "0",
+      "realized": "1100000",
+      "fees": "20000",
+      "yes": 0,
+      "no": 0
+    }
+  ],
+  "production_changed": false,
+  "oracle_binary_sha256": "6805a2cf4b9e3beecb2c69b17adeab71d17cef86c44276fb05462ef800cfee17",
+  "native_rlib_sha256": "ae17a587763f2439c35b9e063fad5a9d4144253049d2c0a6c44e4555500811384",
+  "oracle_source_lf_sha256": "3ae1ff0c1c3127842482b9eab77ebb729b9e90e274984e7ac245fcc9a4fe7b3d"
+}

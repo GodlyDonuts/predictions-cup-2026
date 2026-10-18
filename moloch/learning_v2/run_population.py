@@ -22,12 +22,13 @@ def load_trainer(path,expected_sha,protocol_sha,device):
     model=RecurrentPolicy(b['contract_features'],b['global_features'],b['hidden_size']).to(device)
     model.load_state_dict(b['model']);trainer=PPOTrainer(model,PPOConfig(**b['config']),protocol_sha)
     trainer.optimizer.load_state_dict(b['optimizer']);trainer.policy_epoch=b['policy_epoch'];trainer.training_decisions=b['training_decisions']
+    trainer.accepted_optimizer_updates=b.get('accepted_optimizer_updates',0)
     if fingerprint(model)!=b['parameter_sha256']:raise ValueError('POPULATION_PARAMETER_DIGEST')
     return trainer
 
 
 def score(evaluations):
-    if any(not e['qualified_accounting'] or e['reference_return'] is None for e in evaluations):return -1e99
+    if any(not e['qualified_accounting'] or e['reference_return'] is None or e.get('observable_market_frames',0)<=0 for e in evaluations):return -1e99
     return min(e['reference_return']for e in evaluations)
 
 
@@ -47,7 +48,7 @@ def main():
     minimum=max(tape.times[0],base['run_start_ms'])+base['recurrent_burnin_ms']
     maximum=base['fit_end_ms']-base['episode_length_ms']-base['maximum_receipt_drain_ms']
     train_starts=[[random.Random(args.seed+c*10000+i).randint(minimum,maximum)for i in range(args.islands)]for c in range(args.cycles)]
-    search_starts=[base['search_start_ms']+60000,base['search_start_ms']+390000]
+    search_starts=base.get('search_evaluation_starts_ms',[base['search_start_ms']+60000,base['search_start_ms']+390000])
     source={q.name:sha(q)for q in sorted(Path(__file__).parent.glob('*.py'))if not q.name.startswith('test_')}
     plan={'schema_version':1,'classification':'conditional_development_population_not_live_qualification',
           'base_protocol':base,'base_protocol_sha256':sha(args.protocol),'mechanics_manifest_sha256':sha(args.mechanics),
@@ -102,7 +103,7 @@ def main():
             admitted=archive.consider(m['id'],weights,evaluations,descriptor,str(checkpoint.resolve()))
             summary={'cycle':cycle,'slot':slot,'id':m['id'],'island':m['island'],'founder':m['founder'],
                      'fit':fit,'ppo_updates':updates,'search_evaluations':evaluations,'selection_score':None if score(evaluations)==-1e99 else score(evaluations),
-                     'checkpoint_sha256':checkpoint_sha,'parameter_sha256':weights,'archive_admitted':admitted,
+                     'checkpoint_sha256':checkpoint_sha,'parameter_sha256':weights,'archive_admitted':admitted,'accepted_optimizer_updates':trainer.accepted_optimizer_updates,
                      'wall_seconds':time.perf_counter()-started,'classification':'development_selection_not_locked_test'}
             m['score']=score(evaluations);summaries.append(summary);history.append(summary)
             write_json(args.output/f'c{cycle:03d}-s{slot:03d}.json',summary)
@@ -120,7 +121,7 @@ def main():
                 migrating=rng.random()<.20
                 pool=sorted(selection_pool if migrating else local,key=lambda m:m['score'],reverse=True)[:max(2,args.members//4 if migrating else 2)]
                 counts=founder_counts(members)
-                pool=[m for m in pool if counts[m['founder']]<max(2,args.members//4)and m['id']!=old['id']]
+                pool=[m for m in pool if m['score']>-1e99 and counts[m['founder']]<max(2,args.members//4)and m['id']!=old['id']]
                 parent=rng.choice(pool)if pool else None
                 if parent is None:operator='fresh'
                 seed=rng.randrange(1,2**31);identity=f'child-c{cycle+1}-{seed}';torch.manual_seed(seed)

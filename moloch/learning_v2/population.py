@@ -98,7 +98,7 @@ class BehaviorArchive:
         spans=sorted((e['start_ms'],e['terminal_ms'])for e in episodes)
         if any(a[1]>b[0]for a,b in zip(spans,spans[1:])):raise ValueError('ARCHIVE_EVALUATION_BLOCKS_OVERLAP')
         if any(e.get('parameter_sha256')!=parameter_sha for e in episodes):raise ValueError('ARCHIVE_POLICY_CHANGED_BETWEEN_EVALUATIONS')
-        if any(not e['qualified_accounting'] or e['reference_return'] is None or e['reference_return']<0 or e.get('tradable_decision_frames',0)<=0 for e in episodes):
+        if any(not e['qualified_accounting'] or e['reference_return'] is None or e['reference_return']<0 or e.get('observable_market_frames',e.get('tradable_decision_frames',0))<=0 for e in episodes):
             return False
         # Fixed bins preserve different activity/capital use. Selection remains
         # development optimization and must not be reported as held-out alpha.

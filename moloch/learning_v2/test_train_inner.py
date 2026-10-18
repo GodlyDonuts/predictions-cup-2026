@@ -31,6 +31,18 @@ class OnPolicyUpdates(unittest.TestCase):
         self.assertTrue(all(r['successLabels']==0 for r in results))
         self.assertEqual(self.trainer.training_decisions,8)
 
+    def test_accepted_updates_respect_declared_sampled_trust_region(self):
+        out=self.trainer.update(self.t)
+        accepted=[r for r in out if'updateSkipped'not in r]
+        self.assertTrue(accepted)
+        self.assertTrue(all(0<=r['postStepNonnegativeKl']<=self.cfg.maximum_sampled_kl for r in accepted))
+
+    def test_rejected_candidate_restores_weights_and_optimizer(self):
+        self.trainer.config=replace(self.cfg,maximum_sampled_kl=1e-15,maximum_step_backtracks=0)
+        old=fingerprint(self.p);out=self.trainer.update(self.t)
+        self.assertEqual(out[0]['updateSkipped'],'TRUST_REGION_BACKTRACK_FAILED')
+        self.assertEqual(fingerprint(self.p),old);self.assertEqual(len(self.trainer.optimizer.state),0)
+
     def test_parent_trajectories_cannot_train_mutated_child(self):
         with torch.no_grad(): next(self.p.parameters()).add_(0.01)
         with self.assertRaisesRegex(ValueError,'FRESH_TRAJECTORIES'):
