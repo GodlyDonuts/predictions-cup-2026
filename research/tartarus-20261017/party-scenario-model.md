@@ -1,5 +1,7 @@
 # Whole-account party scenarios
 
+The [wider original-contract reference search](universe-reference-study.md) now joins139 retained official identities to conditional current Kalshi quotes, including116 additional contracts. Current Kansas governor primary rules explicitly name the2026 election despite ticker`-27`; this narrows that reference ambiguity without changing the earlier model, source clocks or execution authority.
+
 The [field-aware compression follow-up](scenario-coalescing.md) preserves all five retained models while reducing the dated105-row matrix to74 under the supplied field assumptions. It keeps the native128-row bound and all source clocks; it adds no execution authority or profitability claim.
 
 The [offline compiler](../../moloch/tartarus/party_scenarios.py) supplies the native rank campaign's `scenarios` and `probabilityModels` fragments. It uses exact original official contract roots and explicitly supplied marginal intervals. It creates no account client, order, owner approval or financial event.

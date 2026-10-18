@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "decisionMs": 1792307289853,
+  "officialRootsRetained": 143,
+  "joinedConditionalReferences": 139,
+  "joinedHeldReferences": 23,
+  "joinedAdditionalReferences": 116,
+  "officeCounts": {
+    "Senate": 44,
+    "Governor": 39,
+    "House": 56
+  },
+  "missingOrRejected": [
+    {
+      "exchangeId": "969",
+      "reason": "UNSUPPORTED_PARTY_EVENT"
+    },
+    {
+      "exchangeId": "1025",
+      "reason": "REFERENCE_RULE_PARTY_CONFLICT"
+    },
+    {
+      "exchangeId": "968",
+      "reason": "EMPTY_BOOK_SIDE"
+    },
+    {
+      "exchangeId": "1049",
+      "reason": "REFERENCE_RULE_PARTY_CONFLICT"
+    }
+  ],
+  "sourceRootOriginalsVerified": true,
+  "maximumReceiptAgeMs": 30000,
+  "maximumMetadataAgeMs": 86400000,
+  "universeRawSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+  "privateCensusSha256": "aaddb4d9aa3e4d721ae1b180b1d944e1a5ce59fcee483a3b19715c0f6fcec5b5",
+  "executionAuthority": false,
+  "calibratedProbabilityClaimed": false,
+  "sigLiquidityClaimed": false,
+  "rulesAndReceiptClocksPreserved": true,
+  "networkRequests": 0,
+  "testsPassed": 8,
+  "kansasGovernorReference": {
+    "exchangeId": "993",
+    "marketId": "304",
+    "contractId": "305",
+    "kalshiTicker": "GOVPARTYKS-27-R",
+    "yesBid": "0.7500",
+    "yesAsk": "0.7600",
+    "metadataRecordSha256": "bc2a57b3afa4f9989817c187994f9910dedebb2fc334b1e0a4b5fe615b5e3d74",
+    "referenceRecordSha256": "d55b3054419bb614b8df6638370f9641dde689c3ed6bcbb38c9588688fd425e9",
+    "explicitRuleElectionYears": [
+      "2026"
+    ],
+    "rulesPrimary": "If a representative of the Republican party is inaugurated as the governor of Kansas pursuant to the 2026 election, then the market resolves to Yes."
+  }
+}
