@@ -69,7 +69,7 @@ impl Engine {
   need(cost<=dec(&risk["maximumGrossCost"])?&&quantity<=risk["maximumQuantity"].as_u64().ok_or("RANK_RISK")?&&(!buy||(cost<=self.wallet.cash-reserved&&cost<=self.policy.committed-self.wallet.owned_cost()-reserved&&cost<=self.policy.market-self.wallet.market_cost(&ex))),"RANK_FUNDING")?;
   let mut markets=BTreeSet::new();for((x,_),lots)in &self.wallet.lots{if !lots.is_empty(){markets.insert(x.clone());}}for q in self.orders.iter().filter(|q|!q.retired){markets.insert(q.exchange.clone());}need(!buy||markets.contains(&ex)||markets.len()<self.policy.markets,"RANK_MARKET_CAP")?;
   if let Some(i)=&self.inherited{let inherited=|x:&String|i.remaining.iter().any(|((y,_),l)|y==x&&!l.is_empty());need(!buy||markets.contains(&ex)||inherited(&ex)||markets.iter().filter(|x|!inherited(x)).count()<i.fresh_market_limit,"RANK_FRESH_MARKET_CAP")?;}
-  let scenarios=rows(&c["scenarios"],128)?;let mut ids=BTreeSet::new();let mut before=vec![];let mut delta=vec![];
+  let scenarios=rows(&c["scenarios"],256)?;let mut ids=BTreeSet::new();let mut before=vec![];let mut delta=vec![];
   for s in scenarios{need(ids.insert(string(&s["id"])?),"RANK_SCENARIO_ID")?;text(&s["assumptionLabel"])?;need(matches!(s["kind"].as_str(),Some("ordinary"|"exceptional")),"RANK_SCENARIO_KIND")?;let outcomes=s["payouts"].as_object().ok_or("RANK_PAYOUTS")?;need(outcomes.len()==contracts.len()&&contracts.keys().all(|x|outcomes.contains_key(x)),"RANK_INCOMPLETE_SCENARIO")?;
    let mut wealth=add(self.wallet.cash,-debt)?;
    for (contract,(exchange,_)) in &contracts{let kind=&outcomes[contract];payout(kind,Side::Yes,0,0)?;for held_side in [Side::Yes,Side::No]{if let Some(lots)=self.wallet.lots.get(&(exchange.clone(),held_side)){let n=lots.iter().try_fold(0u64,|n,l|n.checked_add(l.quantity).ok_or("RANK_RANGE"))?;let basis=lots.iter().try_fold(0i128,|v,l|add(v,mul(l.price,l.quantity as i128)?))?;wealth=add(wealth,payout(kind,held_side,n,basis)?)?;}}}
@@ -123,8 +123,8 @@ impl Engine {
    }
   }else{need(c.get("contingentPlan").is_none_or(Value::is_null),"RANK_UNDECLARED_CONTINGENCY")?;}
 
-  let mut probabilities=BTreeMap::new();for p in rows(&c["probabilityModels"],8)?{let weights=rows(&p["weightsPpm"],128)?;text(&p["assumptionLabel"])?;need(weights.len()==scenarios.len(),"RANK_WEIGHTS")?;let weights=weights.iter().map(|w|w.as_u64().filter(|x|*x<=1000000).ok_or("RANK_WEIGHTS")).collect::<Result<Vec<_>>>()?;need(weights.iter().sum::<u64>()==1000000&&probabilities.insert(string(&p["id"] )?,weights).is_none(),"RANK_WEIGHTS")?;}
-  let mut fields=BTreeMap::new();for f in rows(&c["fieldModels"],8)?{text(&f["assumptionLabel"])?;need(f["completeField"]==false,"RANK_FALSE_FIELD_COMPLETENESS")?;let thresholds=rows(&f["thresholds"],128)?.iter().map(dec).collect::<Result<Vec<_>>>()?;need(thresholds.iter().all(|t|t.unsigned_abs()<=1_000_000_000_000_000)&&thresholds.len()==scenarios.len()&&fields.insert(string(&f["id"] )?,thresholds).is_none(),"RANK_FIELD")?;}
+  let mut probabilities=BTreeMap::new();for p in rows(&c["probabilityModels"],8)?{let weights=rows(&p["weightsPpm"],256)?;text(&p["assumptionLabel"])?;need(weights.len()==scenarios.len(),"RANK_WEIGHTS")?;let weights=weights.iter().map(|w|w.as_u64().filter(|x|*x<=1000000).ok_or("RANK_WEIGHTS")).collect::<Result<Vec<_>>>()?;need(weights.iter().sum::<u64>()==1000000&&probabilities.insert(string(&p["id"] )?,weights).is_none(),"RANK_WEIGHTS")?;}
+  let mut fields=BTreeMap::new();for f in rows(&c["fieldModels"],8)?{text(&f["assumptionLabel"])?;need(f["completeField"]==false,"RANK_FALSE_FIELD_COMPLETENESS")?;let thresholds=rows(&f["thresholds"],256)?.iter().map(dec).collect::<Result<Vec<_>>>()?;need(thresholds.iter().all(|t|t.unsigned_abs()<=1_000_000_000_000_000)&&thresholds.len()==scenarios.len()&&fields.insert(string(&f["id"] )?,thresholds).is_none(),"RANK_FIELD")?;}
   let pairs=rows(&c["modelPairs"],16)?;let mut scores=vec![];let mut signs=BTreeSet::new();let mut contingent_signs=BTreeSet::new();let mut seen=BTreeSet::new();let mut branch_budget=100000usize;let required=risk["minimumTargetGainPpm"].as_u64().filter(|n|*n<=1000000).ok_or("RANK_TARGET_GAIN")?;
   need((prerequisite&&required==0)||(!prerequisite&&required>0),"RANK_TARGET_GAIN")?;
   let pareto=match risk.get("targetGainAggregation").and_then(Value::as_str){None|Some("all_pairs")=>false,Some("pareto")=>true,_=>return Err("RANK_TARGET_AGGREGATION")};need(risk.get("targetGainAggregation").is_none_or(Value::is_string),"RANK_TARGET_AGGREGATION")?;let mut any_direct_gain=false;let mut any_contingent_gain=false;
@@ -253,6 +253,12 @@ impl Engine {
   let c=f.campaign(true);assert!(f.b().engine().managed_inventory_planning_excludes("101"));assert!(f.b().engine().evaluate_rank_campaign(&c,BASE+3000).is_ok());
   let mut excluded=common;excluded["type"]=json!("ordinary_entry_exclusions_v1");excluded["bankHead"]=f.b().durable_head();excluded["expectedReportSha256"]=json!(hash(&f.b().engine().report().unwrap()));excluded["expectedPreviousExclusionSha256"]=Value::Null;f.put(&excluded).unwrap();
   assert!(f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap_err().contains("MANAGED_EXIT_PROOF"));
+ }
+ #[test]fn expanded_scenario_capacity_preserves_scores_and_rejects_over_bound(){
+  let f=F::new(false);let mut c=f.campaign(false);let original=f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap();
+  for i in 3..256{let mut s=c["scenarios"][0].clone();s["id"]=json!(format!("capacity-{i}"));c["scenarios"].as_array_mut().unwrap().push(s);c["probabilityModels"][0]["weightsPpm"].as_array_mut().unwrap().push(json!(0));let threshold=c["fieldModels"][0]["thresholds"][0].clone();c["fieldModels"][0]["thresholds"].as_array_mut().unwrap().push(threshold);}
+  let expanded=f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap();assert_eq!(expanded["modelScores"],original["modelScores"]);
+  let mut s=c["scenarios"][0].clone();s["id"]=json!("over-capacity");c["scenarios"].as_array_mut().unwrap().push(s);assert!(f.b().engine().evaluate_rank_campaign(&c,BASE+3000).is_err());
  }
  #[test]fn campaign_metadata_restarts_without_rewriting_original_financial_history(){let mut f=F::new(false);let c=f.campaign(false);f.put(&f.event(&c,3000)).unwrap();let head=f.b().durable_head();let orders=f.b().engine().order_records();let report=f.b().engine().report().unwrap();f.bank.take();f.bank=Some(Session::open_live(&f.root.join("bank"),&f.policy,&f.seed).unwrap());assert_eq!(f.b().durable_head(),head);assert_eq!(f.b().engine().order_records(),orders);assert_eq!(f.b().engine().report().unwrap(),report);}
 }

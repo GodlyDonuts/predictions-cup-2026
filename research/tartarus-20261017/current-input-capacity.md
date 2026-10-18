@@ -20,7 +20,7 @@ The public leader observation is a dated marked-PnL benchmark, not observed cash
 
 ## Verification
 
-38 focused Python checks pass, including exact target ties, inherited reacquisition, cash reservations, covered-sale prerequisites, native partition cardinality, complete held scope and compression that preserves each supplied model's money/win/tie scores. Native capacity qualification is in progress. Current production verification is linked separately and is not evidence that this new strategy has executed.
+38 focused Python checks pass, including exact target ties, inherited reacquisition, cash reservations, covered-sale prerequisites, native partition cardinality, complete held scope and compression that preserves each supplied model's money/win/tie scores. The native capacity candidate passed18 focused rank checks, including256-state score preservation and257-state rejection; broader native/worker and release qualification remain in progress. Current production verification is linked separately and is not evidence that this new strategy has executed.
 
 ## Concrete larger-capacity candidate
 

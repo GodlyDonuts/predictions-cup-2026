@@ -1,0 +1,23 @@
+{
+  "schema": "moloch_rank_capacity_candidate_qualification_v1",
+  "candidateOnly": true,
+  "deployed": false,
+  "productionRetained": "R45/790101",
+  "changedCompiledSourcePaths": [
+    "moloch/native/src/reviewed_rank_campaign.rs"
+  ],
+  "actualCompiledSourceRawSha256": "2077d3705a4c6425e3de0ce1da042edd21a1285d51b243636b6a7abdb65135dc",
+  "gitNormalizedSourceSha256": "95af8c90b9419d0c5b66400ddddbca93ac9ea80f37cc14a3da6802f093bc8b58",
+  "change": "Only scenario/weight/field vector capacity128 to256; all other physical, model-count, source-count, partial-fill, account and ownership checks unchanged.",
+  "focusedRankChecks": 18,
+  "focusedRankCheckFailures": 0,
+  "focusedRankTestSeconds": 59.94,
+  "expandedCapacityScorePreservationAndOverBoundTest": "passed",
+  "broaderNativeWorkerAndReleaseChecks": "running, not credited",
+  "pythonResearchChecks": 38,
+  "actualRankOrders": 0,
+  "actualRankFills": 0,
+  "riskOrDailyWindowsChanged": false,
+  "engineBridgeRequiredBeforeDeployment": true,
+  "ordersSubmittedByQualification": 0
+}
