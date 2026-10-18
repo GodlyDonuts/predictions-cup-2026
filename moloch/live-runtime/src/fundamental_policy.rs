@@ -38,6 +38,11 @@ use std::{collections::{BTreeMap, BTreeSet}, fs::{self, File, OpenOptions},
 const UNIT:i128=1_000_000;
 // One bounded generation may contain all32 original reviewed inputs.
 const MAX_ROW:usize=3*1024*1024;
+// Rank intents retain the full reviewed campaign and execution evidence.
+// Ordinary-row verification must accept the same 8MiB records already read
+// by worker adoption/cohort recovery, including unrelated rank records.
+// This is a parser bound, not permission to abandon an attempted order.
+const MAX_DISPATCH_ROW:usize=8*1024*1024;
 const MAX_LOG:u64=16*1024*1024;
 // One original source may use the entire unchanged per-review source budget.
 const MAX_SOURCE_BYTES:usize=16*1024*1024;
@@ -603,7 +608,7 @@ fn original_closed_rows(cache:&std::sync::Mutex<ClosedRowsCache>,ordinary_path:&
         need(pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_REARM_DISPATCH_TORN")?;
         let mut sequence=0u64;let mut previous="0".repeat(64);let mut found:BTreeMap<u64,Vec<Value>>=BTreeMap::new();
         for line in bytes.split(|b|*b==b'\n').filter(|l|!l.is_empty()){
-            need(line.len()<=2*1024*1024,"FUNDAMENTAL_REARM_DISPATCH_ROW_BOUND")?;let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_REARM_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_REARM_DISPATCH_HASH")?;
+            need(line.len()<=MAX_DISPATCH_ROW,"FUNDAMENTAL_REARM_DISPATCH_ROW_BOUND")?;let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_REARM_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_REARM_DISPATCH_HASH")?;
             need(row["sequence"]==sequence+1&&row["previous"]==previous&&sha==digest(&row)?,"FUNDAMENTAL_REARM_DISPATCH_CHAIN")?;
             if let Some(id)=row["event"]["qid"].as_u64().filter(|id|wanted.contains(id)){
                 if matches!(row["event"]["kind"].as_str(),Some("intent"|"attempt"|"ack"|"recovered_ack"|"closed")){let rows=found.entry(id).or_default();need(rows.len()<4,"FUNDAMENTAL_REARM_DUPLICATE_LIFECYCLE")?;rows.push(original);}}
@@ -670,7 +675,7 @@ fn original_not_sent_rows_uncached(ordinary_path:&PathBuf,ordinary_identity:&Val
         let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_ABANDON_DISPATCH_TORN")?;
         let mut sequence=0u64;let mut previous="0".repeat(64);let mut found=BTreeMap::new();
         for line in bytes.split(|b|*b==b'\n').filter(|l|!l.is_empty()){
-            need(line.len()<=2*1024*1024,"FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND")?;
+            need(line.len()<=MAX_DISPATCH_ROW,"FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND")?;
             let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_ABANDON_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_ABANDON_DISPATCH_HASH")?;
             need(row["sequence"]==sequence+1&&row["previous"]==previous&&sha==digest(&row)?,"FUNDAMENTAL_ABANDON_DISPATCH_CHAIN")?;
             if let Some(qid)=row["event"]["qid"].as_u64().filter(|id|wanted.contains(id)){

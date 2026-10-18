@@ -40,6 +40,23 @@ impl F{
     assert_eq!(a[&1]["event"]["kind"],"not_sent");assert_eq!(p.sha,q.sha);assert_eq!(q.identity,f.identity);p.validate().unwrap();q.validate().unwrap();assert_eq!(before,fs::read(&f.path).unwrap());
 }
 
+#[test]fn large_unrelated_rank_intent_is_verified_without_authorizing_its_retirement(){
+    let mut f=F::new();f.not_sent(1,0);
+    f.log.append(json!({"kind":"intent","qid":2,"reviewedRankCampaign":{"evidence":"x".repeat(2*1024*1024+100)}})).unwrap();
+    f.log.append(json!({"kind":"attempt","qid":2})).unwrap();
+    let before=fs::read(&f.path).unwrap();let(rows,pin)=f.read(&[1]).unwrap();
+    assert_eq!(rows.len(),1);pin.validate().unwrap();assert_eq!(fs::read(&f.path).unwrap(),before);
+    assert!(f.read(&[2]).is_err());
+    let mut changed=before;let at=changed.windows(8).position(|w|w==b"xxxxxxxx").unwrap();changed[at]=b'y';
+    fs::write(&f.path,changed).unwrap();assert!(f.read(&[1]).is_err());
+}
+
+#[test]fn dispatch_rows_above_supported_eight_mib_remain_rejected(){
+    let mut f=F::new();f.not_sent(1,0);
+    f.log.append(json!({"kind":"intent","qid":2,"evidence":"x".repeat(MAX_DISPATCH_ROW)})).unwrap();
+    assert!(f.read(&[1]).err().unwrap().to_string().contains("DISPATCH_ROW_BOUND"));
+}
+
 #[test]fn wanted_set_and_real_append_head_invalidate_without_rejecting_new_valid_rows(){
     let mut f=F::new();f.not_sent(1,0);f.not_sent(2,0);f.read(&[1]).unwrap();f.read(&[2]).unwrap();let(all,old)=f.read(&[1,2]).unwrap();f.read(&[1]).unwrap();assert_eq!(f.parses(),3);
     f.log.append(json!({"kind":"source","qid":90,"original":"ordinary append"})).unwrap();let(next,p)=f.read(&[1,2]).unwrap();assert_eq!(all,next);assert_eq!(f.parses(),4);assert!(old.validate().is_err());p.validate().unwrap();f.read(&[1,2]).unwrap();assert_eq!(f.parses(),4);

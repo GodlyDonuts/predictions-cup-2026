@@ -738,14 +738,35 @@ fn retire_proved_unadmitted(bank:&mut Session,log:&DispatchLog,qid:u64)->Result<
 /// Explicit local incident repair: no Transport, credentials or HTTP. The STOP
 /// remains armed. Original SDK generations must verify before an abort append.
 fn recover_unadmitted(c:&Control)->Result<()>{
- let stop=c.root.join("EXECUTION_STOP");if load(&stop)?["reason"]!="LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"{return Err("LIVE_UNADMITTED_INCIDENT_STOP_REQUIRED".into())}
+ let stop=c.root.join("EXECUTION_STOP");let stopped=fs::read(&stop)?;let incident:Value=serde_json::from_slice(&stopped)?;
+ let pre_transport=incident["reason"]=="FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND";
+ if !pre_transport&&incident["reason"]!="LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"{return Err("LIVE_UNADMITTED_INCIDENT_STOP_REQUIRED".into())}
  let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(c,&mut log)?;
  let pending:Vec<_>=log.attempted.iter().filter(|qid|!log.acknowledgments.contains_key(qid)&&!log.proved_no_network(**qid)).copied().collect();let mut recovered=Vec::new();
+ if pre_transport{
+  // A real stopped exception occurred between record_original_attempt and
+  // Transport.place. Record the diagnosis at recovery time, not as a forged
+  // historical SDK receipt. The full frozen SDK checkpoint/chain independently
+  // proves its last clock is BEFORE this attempt, with no key/active/unknown.
+  if pending.len()!=1{return Err("LIVE_PRE_TRANSPORT_EXACT_PENDING_REQUIRED".into())}
+  let qid=pending[0];
+  if log.original_error(qid).is_none(){
+   let original=log.intents.get(&qid).ok_or("LIVE_PRE_TRANSPORT_INTENT")?;
+   let spec:RequestSpec=serde_json::from_value(original["spec"].clone())?;let permit:Permit=serde_json::from_value(original["permit"].clone())?;
+   let attempt=log.original_attempt(qid).ok_or("LIVE_PRE_TRANSPORT_ATTEMPT")?;
+   let at=moloch_live_runtime::daily_windows::clock(attempt["at"].as_str().ok_or("LIVE_PRE_TRANSPORT_CLOCK")?)?;
+   if attempt["captureAtMs"]!=at||incident["at"].as_str().map(moloch_live_runtime::daily_windows::clock).transpose()?.is_none_or(|end|end<at){return Err("LIVE_PRE_TRANSPORT_STOP_CLOCK".into())}
+   let error=api::TransportError{code:"FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND".into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None};
+   let _positive_proof=api::verify_frozen_ordinary_pre_admission(&proof_config(c),&spec,&permit,at,&error)?;
+   if fs::read(&stop)?!=stopped{return Err("LIVE_PRE_TRANSPORT_STOP_CHANGED".into())}
+   log.append(json!({"kind":"error","qid":qid,"at":iso(now()),"error":error,"recoveredFromStoppedPreTransportException":true,"originalStop":incident,"originalStopSha256":format!("{:x}",Sha256::digest(&stopped)),"historicalSdkErrorReceipt":false}))?;
+  }
+ }
  for qid in pending{let(spec,permit,at,error)=log.pre_admission_originals(qid)?;
   if permit.run_id!=c.activation.run_id||spec.body.as_ref().is_none_or(|b|b["tournamentId"]!=c.scope.tournament_id){return Err("LIVE_UNADMITTED_ORIGINAL_SCOPE".into())}
   let proof=api::verify_frozen_ordinary_pre_admission(&proof_config(c),&spec,&permit,at,&error)?;
   log.append_aborted_before_admission(qid,&proof,&iso(now()))?;recovered.push(qid);
- }log.require_resolved_attempts()?;
+ }log.require_resolved_attempts()?;if fs::read(&stop)?!=stopped{return Err("LIVE_UNADMITTED_STOP_CHANGED".into())}
  atomic_json(&c.root.join("pre-admission-recovery.json"),&json!({"at":iso(now()),"recoveredOriginalQids":recovered,"sdkArchiveReverified":true,"dispatchHead":log.descriptor_identity()?,"networkRequests":0,"stopPreserved":stop.exists(),"sameIntentRetryAuthorized":false,"financialStateChanged":false}))?;Ok(())
 }
 /// File-only, exact-incident reconciliation. This authority can neither read an

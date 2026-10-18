@@ -1,0 +1,202 @@
+{
+  "qualifiedAt": "2026-10-18T22:21:05.148484+00:00",
+  "steps": [
+    {
+      "step": "debug-sdk",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:12:10.587108+00:00",
+      "finishedAt": "2026-10-18T22:12:17.536818+00:00"
+    },
+    {
+      "step": "sdk-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:12:17.537470+00:00",
+      "finishedAt": "2026-10-18T22:12:30.249067+00:00"
+    },
+    {
+      "step": "sdk-pre-admission-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:12:30.249783+00:00",
+      "finishedAt": "2026-10-18T22:12:31.560990+00:00"
+    },
+    {
+      "step": "debug-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:12:31.561570+00:00",
+      "finishedAt": "2026-10-18T22:13:02.535914+00:00"
+    },
+    {
+      "step": "worker-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:13:02.536694+00:00",
+      "finishedAt": "2026-10-18T22:13:25.722948+00:00"
+    },
+    {
+      "step": "rank-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:13:25.723666+00:00",
+      "finishedAt": "2026-10-18T22:13:28.242917+00:00"
+    },
+    {
+      "step": "cooperative-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:13:28.243545+00:00",
+      "finishedAt": "2026-10-18T22:13:41.828760+00:00"
+    },
+    {
+      "step": "library-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:13:41.829337+00:00",
+      "finishedAt": "2026-10-18T22:14:08.286419+00:00"
+    },
+    {
+      "step": "order-cache-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:14:08.287105+00:00",
+      "finishedAt": "2026-10-18T22:14:08.472522+00:00"
+    },
+    {
+      "step": "collateral-cache-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:14:08.473033+00:00",
+      "finishedAt": "2026-10-18T22:14:08.508682+00:00"
+    },
+    {
+      "step": "not-sent-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:14:08.509239+00:00",
+      "finishedAt": "2026-10-18T22:14:30.824476+00:00"
+    },
+    {
+      "step": "closure-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:14:30.824992+00:00",
+      "finishedAt": "2026-10-18T22:14:50.060978+00:00"
+    },
+    {
+      "step": "rank_cohort_ownership-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:14:50.061598+00:00",
+      "finishedAt": "2026-10-18T22:14:55.151844+00:00"
+    },
+    {
+      "step": "rank_cohort_ownership-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:14:55.152526+00:00",
+      "finishedAt": "2026-10-18T22:14:58.671715+00:00"
+    },
+    {
+      "step": "collateral_feedback-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:15:29.362869+00:00",
+      "finishedAt": "2026-10-18T22:15:34.752629+00:00"
+    },
+    {
+      "step": "collateral_feedback-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:15:34.753297+00:00",
+      "finishedAt": "2026-10-18T22:15:39.998037+00:00"
+    },
+    {
+      "step": "collateral_reconciliation-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:15:39.998641+00:00",
+      "finishedAt": "2026-10-18T22:15:43.968518+00:00"
+    },
+    {
+      "step": "collateral_reconciliation-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:15:43.969178+00:00",
+      "finishedAt": "2026-10-18T22:15:44.005535+00:00"
+    },
+    {
+      "step": "capital_allocation-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:15:44.006015+00:00",
+      "finishedAt": "2026-10-18T22:15:49.920357+00:00"
+    },
+    {
+      "step": "capital_allocation-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:15:49.921084+00:00",
+      "finishedAt": "2026-10-18T22:15:59.535695+00:00"
+    },
+    {
+      "step": "release-sdk",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:15:59.539444+00:00",
+      "finishedAt": "2026-10-18T22:16:44.112485+00:00"
+    },
+    {
+      "step": "release-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:16:44.113312+00:00",
+      "finishedAt": "2026-10-18T22:19:01.303916+00:00"
+    },
+    {
+      "step": "release-worker",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T22:19:01.304709+00:00",
+      "finishedAt": "2026-10-18T22:21:05.087384+00:00"
+    }
+  ],
+  "binarySha256": "eb1bf251794a12ece641a6757703f92db2018c241cdfa3cfe31a1203b0743afe",
+  "workerSha256": "bfdd0bfe63b46e1722358ca272c9384f7a23608790c9ed7089feae590e5308bc",
+  "sourceSha256": {
+    "backend-rust/transport-service/src/lib.rs": "2d302802d55886a278858669760c016ee653bbf251ea8f0bed3531ba60b752c9",
+    "backend-rust/transport-service/src/ordinary_pre_admission_tests.rs": "ca02650de9a6b75fb34098daec23035c49963a8ad73c6b67a86833a03eb42daf",
+    "moloch/live-runtime/src/fundamental_policy.rs": "ad631dc12a046e49b354b8eba0043475e6aa2d40615cb5caeec73e4f853983a9",
+    "moloch/live-runtime/src/worker.rs": "bfdd0bfe63b46e1722358ca272c9384f7a23608790c9ed7089feae590e5308bc",
+    "research/moloch-fundamental-closure-cache-20261017/tests.rs": "ec2772171537a238b3a6f818d4f393383d039e1baa296a38220d57233bce994e",
+    "research/moloch-fundamental-not-sent-cache-20261017/tests.rs": "116dcd8efd48443389ea824fcb2e19656f0f487d6be1c7dc2c6a34ebcf04ba23"
+  },
+  "unchangedNativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "nativeOrSdkCodeChanged": true,
+  "nativeCodeChanged": false,
+  "sdkNetworkOrAdmissionStateMachineChanged": false,
+  "sdkPreAdmissionProofAllowsExactPreTransportParserFailure": true,
+  "rankPublicCommitCadenceChanged": false,
+  "originalDispatchParserMaximumRowBytes": 8388608,
+  "rankPublicCommitCadenceMs": 20000,
+  "rankPublicFramesPerService": 1,
+  "privateAccountControlServiceMs": 25,
+  "leadingFrameDraftRetirementBeforeFinalFactClocks": true,
+  "actualOrderLatencyOrProfitImprovementEstablished": false,
+  "sourceTtlsRiskLimiterChanged": false,
+  "deployed": false,
+  "testResults": {
+    "rank-tests": [
+      "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 199 filtered out; finished in 2.51s"
+    ],
+    "cooperative-tests": [
+      "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 13.58s"
+    ],
+    "order-cache-tests": [
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 268 filtered out; finished in 0.18s"
+    ],
+    "collateral-cache-tests": [
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 269 filtered out; finished in 0.03s"
+    ],
+    "rank_cohort_ownership-tests": [
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.51s"
+    ],
+    "collateral_feedback-tests": [
+      "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.24s"
+    ],
+    "collateral_reconciliation-tests": [
+      "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+    ],
+    "capital_allocation-tests": [
+      "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.61s"
+    ],
+    "not-sent-tests": [
+      "test result: ok. 12 passed; 0 failed; 1 ignored; 0 measured; 258 filtered out; finished in 22.31s"
+    ],
+    "closure-tests": [
+      "test result: ok. 8 passed; 0 failed; 1 ignored; 0 measured; 262 filtered out; finished in 19.23s"
+    ],
+    "sdk-pre-admission-tests": [
+      "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 232 filtered out; finished in 1.31s"
+    ]
+  }
+}
