@@ -16,6 +16,23 @@ a rank top-up; both the MILP and independent exact auditor enforce it. A simulat
 sale is still not a live ownership transfer or actual cash. Original book flags
 and receipt clocks survive without becoming fresh API authority.
 
+The added covered-handoff dependency changes the retained393-fill comparison:
+29 conditional writes give weakest declared money+2932.587946 with zero target
+mass; a nonnegative-expectation rank search gives39 writes/+139.893669/zero mass.
+The unconstrained rank incumbent has129 writes,10,593.4ppm average flat-anchor
+strict mass and weakest declared monetary change−69386.850341. These are dated,
+uncalibrated hypotheses; adverse opposing fields still show zero winning mass.
+[Exact checked comparison](current393-handoff-frontier.json) preserves all three
+results and supersedes the earlier same-data figures without handoff constraints.
+
+The old future20-minute completion assumption must not be renewed:128 new rank
+roots through the current worker require2048 official reads before any extra
+fill reconciliation. At its600ms completion pacing, even2047 instantaneous-read
+gaps require20.47minutes; HTTP latency, writes, source work and fill confirmation
+add time. Future acquisition review must use an explicit longer execution-time
+assumption and compatible original deadlines. This does not change the account
+limiter, extend a live activation or authorize those future orders.
+
 The old retained393-fill report/view pair has different heads582928/583051,
 although financial fields match; it is not advertised as a matched snapshot.
 The finite [R45 capture](capture-r45-current.py) waits for the exact current worker
