@@ -1,0 +1,20 @@
+{
+  "objective": "rank",
+  "targetPairs": [
+    [
+      "price_midpoint_independent",
+      "public_anchor_plus_buffer_20261018T182426"
+    ]
+  ],
+  "solverStatus": 0,
+  "solverMessage": "Optimization terminated successfully. (HiGHS Status 7: Optimal)",
+  "status": "exact_sequence_checked",
+  "selectedAverageStrictMassPpm": 0.0,
+  "exactOptimalityClaimed": false,
+  "executionAuthority": false,
+  "calibratedProbabilities": false,
+  "legs": 82,
+  "originalRawSha256": "aa95cbdbc215bb0eea9ac5705ec95f482d460bfd4c169adfab7424990701caee",
+  "assumption": "Conditional retained-book liquidity; only supplied finite380-world matrix and original risk/dimension limits, not true-world first-place impossibility.",
+  "originalNumericIssuedAtMs": 1792348566528
+}
