@@ -40,6 +40,11 @@ class SharedLiquidity:
     def __init__(self, book: Book):
         self.book = book
         self.depleted: dict[tuple[str, int], int] = {}
+        self.invalidated = False
+
+    def invalidate(self):
+        # A stream gap removes tradability, never the counterfactual debt.
+        self.invalidated = True
 
     def update(self, book: Book):
         if book.exchange != self.book.exchange or book.available_at_ms < self.book.available_at_ms:
@@ -47,10 +52,11 @@ class SharedLiquidity:
         # A new timestamp/hash is evidence of a new observation, not evidence
         # that our counterfactual volume has been replenished.
         self.book = book
+        self.invalidated = False
 
     def visible(self, now_ms: int, maximum_age_ms: int) -> bool:
         age = now_ms - self.book.available_at_ms
-        if not 0 <= age <= maximum_age_ms:
+        if self.invalidated or not 0 <= age <= maximum_age_ms:
             return False
         return self.book.source_at_ms is None or 0 <= now_ms - self.book.source_at_ms <= maximum_age_ms
 

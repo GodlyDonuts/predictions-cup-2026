@@ -11,7 +11,7 @@ The human specification and proposed configuration are preserved byte-for-byte i
 - Fresh-policy fingerprint checks, whole-episode recurrent recomputation, elapsed-time PPO, separate monetary targets and immutable checkpoint bundles: [trainer](../../moloch/learning_v2/train_inner.py).
 - Full-observation causal source compilation, predecoding outside the inner loop, mechanics-only target actions and a finite GPU historical trainer: [compiler](../../moloch/learning_v2/compile_trace.py), [episodes](../../moloch/learning_v2/episodes.py), [runner](../../moloch/learning_v2/run_experiment.py).
 
-These components pass73 focused checks. Correct component behavior does not establish trading profitability.
+These components pass82 focused checks. Correct component behavior does not establish trading profitability.
 
 ## First actual historical PPO run
 
@@ -29,9 +29,17 @@ The inspected capture supplies **SIG and Kalshi; Polymarket is absent**. It is d
 
 [GPU readiness](gpu-readiness.json) verifies RTX5070Ti,12GB-class memory, PyTorch2.11.0/CUDA12.8 and an actual GPU kernel. Installation follows [official PyTorch instructions](https://pytorch.org/get-started/locally/).
 
+## Population execution
+
+A four-member/two-cycle [end-to-end trial](population-smoke-result.json) completed in163.3 seconds, including a fresh-trajectory child after checkpoint transfer. The local mutation measured categorical market/family KL0.001031 against its0.001 target. All original losses are retained; the economic archive admitted zero entries. This is scheduler evidence, not a profitable-policy result.
+
+The full **32 logical learners / four islands / two cycles** experiment has started on the laptop, with one learner resident on the GPU at a time. It trains across fixed-depth bankroll stress points while evaluating every candidate on the same two search-development calendars. Physical limits are immutable inputs; mutation changes only learning parameters/weights. Parentage, protected elite checkpoints, optimizer resets, mutation diagnostics and failed evaluations are recorded. Final results remain pending.
+
+[The initial-run audit](initial-run-audit.md) records subsequent gap-depletion and recurrent burn-in corrections. [The independently compiled native-wallet differential](native-wallet-differential-result.json) matches ten exact accounting states. It is not full transport/simulator parity.
+
 ## Remaining
 
-The complete experiment is unfinished:32-member multiscale PBT, genealogy, reevaluated behavior archive, matched-compute ablations, locked finalists and forward results remain pending. Rust differential verification, Polymarket integration and execution calibration/stress evidence are also required. The learned checkpoint is not deployed. Next comes checkpoint-safe population transfer, behavior-controlled mutations, islands/archive and comparisons under measured equal budgets.
+The complete experiment is unfinished: the full32-member run and useful reevaluated behavior archive, matched-compute ablations, locked finalists and forward results remain pending. Rust differential verification, Polymarket integration and execution calibration/stress evidence are also required. The learned checkpoint is not deployed. Next comes checkpoint-safe population transfer, behavior-controlled mutations, islands/archive and comparisons under measured equal budgets.
 
 ## Reproduce
 

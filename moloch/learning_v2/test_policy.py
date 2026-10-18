@@ -36,6 +36,13 @@ class RecurrentActor(unittest.TestCase):
         self.assertTrue(torch.isfinite(a['logprob']).all())
         self.assertEqual(tuple(a['monetary_quantiles'].shape), (2, 9))
 
+    def test_wait_likelihood_ignores_unused_trade_heads(self):
+        a=self.step()['actions'];a['family']=torch.zeros(2,dtype=torch.long)
+        first=self.step(actions=a)['logprob']
+        a['side']=1-a['side'];a['price']=(a['price']+1)%5;a['patience']=(a['patience']+1)%3
+        a['target_fraction']=torch.full((2,),0.1);a['child_fraction']=torch.full((2,),0.9)
+        self.assertTrue(torch.allclose(first,self.step(actions=a)['logprob'],atol=1e-6))
+
     def test_masked_action_never_selected(self):
         self.m['market'][:, :2] = False
         self.m['family'][:, :, 1:] = False

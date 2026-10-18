@@ -24,11 +24,12 @@ class PPOConfig:
     quantile_coefficient: float = 0.1
     success_coefficient: float = 0.1
     maximum_gradient_norm: float = 0.5
+    maximum_sampled_kl: float = 0.03
 
     def __post_init__(self):
         if not (0 < self.learning_rate < 1 and 0 < self.clip_ratio < 1 and
                 0 < self.gamma_per_second <= 1 and 0 < self.lambda_per_second <= 1 and
-                type(self.epochs) is int and self.epochs > 0 and self.maximum_gradient_norm > 0):
+                type(self.epochs) is int and self.epochs > 0 and self.maximum_gradient_norm > 0 and self.maximum_sampled_kl>0):
             raise ValueError('PPO_CONFIGURATION')
         if any(not math.isfinite(v) for v in asdict(self).values()):
             raise ValueError('NONFINITE_PPO_CONFIGURATION')
@@ -113,6 +114,10 @@ class PPOTrainer:
             entropy = torch.stack([r['entropy'] for r in rows])
             quantiles = torch.stack([r['monetary_quantiles'] for r in rows])
             success = torch.stack([r['success_logit'] for r in rows])
+            sampled_kl=float((t.old_logprob-logprob).detach()[t.learn].mean())
+            if epoch and sampled_kl>self.config.maximum_sampled_kl:
+                results.append({'epoch':epoch,'updateSkipped':'SAMPLED_KL_EARLY_STOP','sampledApproximateKl':sampled_kl,'successLabels':int((torch.isfinite(t.target_success_labels)&t.learn).sum())})
+                break
             ratio = (logprob-t.old_logprob).exp()
             surrogate = torch.minimum(ratio*advantage, ratio.clamp(1-self.config.clip_ratio,1+self.config.clip_ratio)*advantage)
             policy_loss = -surrogate[t.learn].mean()

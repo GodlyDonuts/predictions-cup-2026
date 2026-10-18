@@ -81,16 +81,18 @@ class RecurrentPolicy(nn.Module):
             dist = masked_categorical(logits, mask)
             value = actions[name] if actions is not None else (dist.probs.argmax(-1) if deterministic else dist.sample())
             out[name] = value
-            logprob = logprob + dist.log_prob(value)
-            entropy = entropy + dist.entropy()
+            meaningful = torch.ones_like(value,dtype=torch.bool) if name=='family' else ((out['family']==1)|(out['family']==2)|(out['family']==4))
+            logprob = logprob + torch.where(meaningful,dist.log_prob(value),0.)
+            entropy = entropy + torch.where(meaningful,dist.entropy(),0.)
             selected = selected + self.conditioners[name](value)
         parameters = torch.nn.functional.softplus(self.fractions(selected)) + 1
         for name, pair in [('target_fraction', (0, 1)), ('child_fraction', (2, 3))]:
             dist = Beta(parameters[:, pair[0]], parameters[:, pair[1]])
             value = actions[name] if actions is not None else (dist.mean if deterministic else dist.sample())
             out[name] = value
-            logprob = logprob + dist.log_prob(value)
-            entropy = entropy + dist.entropy()
+            meaningful = ((out['family']==1)|(out['family']==2)) if name=='target_fraction' else ((out['family']==1)|(out['family']==2)|(out['family']==4))
+            logprob = logprob + torch.where(meaningful,dist.log_prob(value),0.)
+            entropy = entropy + torch.where(meaningful,dist.entropy(),0.)
         return {'actions': out, 'logprob': logprob, 'entropy': entropy,
                 'value': self.value(h).squeeze(-1), 'monetary_quantiles': self.monetary_quantiles(h),
                 'success_logit': self.target_success(h).squeeze(-1), 'hidden': h}

@@ -20,6 +20,12 @@ class SharedDepthCounterfactual(unittest.TestCase):
         self.q.update(replace(self.b, available_at_ms=1100, original_sha256='b'*64))
         self.assertEqual(self.cross(n=100, limit=450000, at=1100), ())
 
+    def test_stream_gap_blocks_matching_without_erasing_counterfactual_depletion(self):
+        self.cross(n=80,limit=450000);self.q.invalidate()
+        self.assertEqual(self.cross(n=100,limit=450000),())
+        self.q.update(replace(self.b,available_at_ms=1100))
+        self.assertEqual(self.cross(n=100,limit=450000,at=1100),((450000,20),))
+
     def test_yes_buy_and_no_sell_share_asks(self):
         self.cross(n=80, limit=450000)
         self.assertEqual(self.cross(side='NO', action='SELL', limit=550000, n=100), ((550000, 20),))

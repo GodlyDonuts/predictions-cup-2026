@@ -40,16 +40,20 @@ def load_mechanics(path):
     return Mechanics(b,Limits(**limits),**obj['hypotheses'])
 
 
-def rollout(tape, mechanics, protocol, model, start, *, baseline=False):
+def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_role='fit_training'):
     device = next(model.parameters()).device
     length = protocol['episode_length_ms']; drain = protocol['maximum_receipt_drain_ms']
     initial = protocol['initial_cash_micros']; end = start+length; terminal = end+drain
+    role_start,role_end = ((protocol['run_start_ms'],protocol['fit_end_ms']) if split_role=='fit_training' else
+                          (protocol['search_start_ms'],protocol['run_start_ms']+protocol['run_duration_ms']) if split_role=='search_development' else (None,None))
+    if role_start is None or start-protocol['recurrent_burnin_ms']<role_start or terminal>role_end:
+        raise ValueError('EPISODE_OR_BURNIN_OUTSIDE_DECLARED_ROLE')
     env = tape.episode(mechanics,start,terminal,initial_cash_micros=initial,
                        target_wealth_micros=protocol['planning_target_wealth_micros'],
-                       burnin_ms=protocol['recurrent_burnin_ms'])
+                       burnin_ms=protocol['recurrent_burnin_ms'],advance_to_start=False)
     behavior = fingerprint(model); hidden = model.initial_state(1)
-    rows=[]; families=Counter(); missing=0; previous=initial; begun=time.perf_counter()
-    for step,at in enumerate(range(start,end,protocol['decision_interval_ms'])):
+    rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;begun=time.perf_counter()
+    for step,at in enumerate(range(start-protocol['recurrent_burnin_ms'],end,protocol['decision_interval_ms'])):
         env.advance(at); obs=env.observe()
         tensors={k:torch.as_tensor(obs[k],device=device).unsqueeze(0) for k in ['contracts','global_state','present']}
         masks={k:torch.as_tensor(v,device=device).unsqueeze(0)for k,v in obs['masks'].items()}
@@ -57,8 +61,12 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False):
         with torch.no_grad():
             row=model.step(**tensors,masks=masks,hidden=hidden,reset=reset)
         hidden=row['hidden']; action={k:v.item() for k,v in row['actions'].items()}
-        if baseline: action['family']=0
-        families[FAMILIES[int(action['family'])]]+=1
+        if baseline or at<start: action['family']=0
+        if at>=start:
+            families[FAMILIES[int(action['family'])]]+=1
+            tradable=int(obs['masks']['family'][:,1].sum())
+            tradable_frames+=int(tradable>0);tradable_market_frames+=tradable
+            if obs['wealth'] is not None:peak_committed=max(peak_committed,float(obs['global_state'][7]+obs['global_state'][1]))
         env.act(action)
         env.advance(min(end,at+protocol['decision_interval_ms']))
         current=env.marked_wealth(); valid=current is not None and obs['wealth'] is not None
@@ -69,7 +77,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False):
         # incorporates the whole unobserved interval, not an assumed flat P&L.
         rows.append({**tensors,'masks':masks,'reset':reset,'actions':row['actions'],
                      'old_logprob':row['logprob'],'old_values':row['value'],
-                     'reward':reward,'learn':valid,'elapsed':min(end,at+protocol['decision_interval_ms'])-at})
+                     'reward':reward,'learn':valid and at>=start,'elapsed':min(end,at+protocol['decision_interval_ms'])-at})
     env.advance(end)
     never_sent=[qid for qid,o in env.orders.items()if o.phase=='preflight']
     for qid in never_sent:
@@ -96,13 +104,16 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False):
         done=torch.tensor([[i==len(rows)-1]for i in range(len(rows))],device=device),
         learn=torch.tensor([[r['learn']]for r in rows],device=device),
         target_success_labels=torch.full((len(rows),1),float('nan'),device=device),
-        behavior_sha256=behavior,split_manifest_sha256=protocol['_sha256'],split_role='fit_training')
-    stats={'start_ms':start,'decision_end_ms':end,'terminal_ms':terminal,'decisions':len(rows),
+        behavior_sha256=behavior,split_manifest_sha256=protocol['_sha256'],split_role=split_role)
+    stats={'start_ms':start,'decision_end_ms':end,'terminal_ms':terminal,'decisions':length//protocol['decision_interval_ms'],
+           'recurrent_burnin_frames':protocol['recurrent_burnin_ms']//protocol['decision_interval_ms'],'split_role':split_role,
+           'tradable_decision_frames':tradable_frames,'tradable_market_frames':tradable_market_frames,
            'rollout_wall_seconds':time.perf_counter()-begun,'baseline':baseline,'qualified_accounting':qualified,
            'final_reference_wealth_micros':final,'reference_return':(final-initial)/initial if qualified else None,
            'missing_mark_observations':missing,'unresolved_orders':len(env.orders),
            'active_request_at_terminal':env.budget.active,'filled_shares':sum(e['quantity']for e in env.fill_events),
            'fill_receipts':len(env.fill_events),'realized_micros':env.realized,'fees_micros':env.fees,
+           'peak_cost_commitment_fraction':peak_committed,'gross_turnover_fraction':sum(e['quantity']*e['price']for e in env.fill_events)/initial,
            'families':dict(families),'never_sent_drafts_at_end':len(never_sent),
            'modeled_requests':len(env.budget.request_ids),'success_labels_available':False,
            'interpretation':'conditional_marked_capital_development_not_execution_calibration_or_competition_ROI'}

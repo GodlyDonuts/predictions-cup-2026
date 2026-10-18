@@ -32,14 +32,14 @@ class Tape:
         self.exchanges = ('__GLOBAL_WAIT__',) + tuple(sorted({r['exchange_id'] for r in self.rows if r['kind']=='book'}))
         self.index = {ex:i for i,ex in enumerate(self.exchanges)}
 
-    def episode(self, mechanics, start_ms, end_ms, *, initial_cash_micros, target_wealth_micros, burnin_ms=60_000):
+    def episode(self, mechanics, start_ms, end_ms, *, initial_cash_micros, target_wealth_micros, burnin_ms=60_000, advance_to_start=True):
         if start_ms-burnin_ms < self.times[0] or end_ms > self.times[-1] or start_ms>=end_ms:
             raise ValueError('EPISODE_OUTSIDE_AVAILABLE_CHRONOLOGY')
         env = Episode(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,target_wealth_micros,start_ms,end_ms)
         lo = bisect.bisect_left(self.times,start_ms-burnin_ms)
         hi = bisect.bisect_right(self.times,end_ms)
         for row in self.rows[lo:hi]: env.clock.schedule(row['available_at_ms'],10,'tape',row)
-        env.advance(start_ms)
+        if advance_to_start: env.advance(start_ms)
         return env
 
 
@@ -71,7 +71,8 @@ class Episode(ReferenceEnv):
             super()._event(at,'book',b); self._refresh_reference(market)
         elif r['kind']=='gap':
             selected = [r['exchange_id']] if r.get('exchange_id') else list(self.scope.get(market,[])) if market else list(self.books)
-            for ex in selected: self.books.pop(ex,None)
+            for ex in selected:
+                if ex in self.books: self.books[ex].invalidate()
         elif r['kind']=='reference':
             self.reference_cache[(market,r.get('source',r['venue']))] = r
             self._refresh_reference(market)
