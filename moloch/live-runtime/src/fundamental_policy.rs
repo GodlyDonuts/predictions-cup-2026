@@ -696,10 +696,13 @@ pub struct Cohorts{
     _owner:Arc<ExclusiveLock>,manifest:String,run:String,
     sequence:u64,previous:String,clock:u64,poisoned:bool,generation:Option<Value>,
     policies:BTreeMap<String,ReviewInput>,cohorts:BTreeMap<String,Cohort>,abandoned:BTreeMap<u64,AbandonedCohort>,
+    rank_exits:BTreeMap<u64,Value>,
     aborted_archives:std::sync::Mutex<BTreeMap<u64,FilePin>>,
     closed_rows_cache:std::sync::Mutex<ClosedRowsCache>,
     not_sent_rows_cache:std::sync::Mutex<NotSentRowsCache>,
 }
+#[path="fundamental_rank_ownership.rs"]mod rank_ownership;
+pub use rank_ownership::RankExitOwnership;
 #[cfg(unix)]fn identity(file:&File)->Result<Value>{use std::os::unix::fs::MetadataExt;let m=file.metadata()?;Ok(json!({"device":m.dev(),"inode":m.ino()}))}
 #[cfg(not(unix))]fn identity(_file:&File)->Result<Value>{Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
 fn path_pin(path:&Path,want:&Value)->Result<()>{
@@ -981,7 +984,7 @@ impl Cohorts{
     /// closures, used before nomination and again around the native reservation.
     /// allow_drafts is read-hint only; a plan/bind requires no other reservation.
     fn top_up_state(&self,bank:&Session,log:&DispatchLog,ex:&str,current_qid:Option<u64>,allow_drafts:bool)->Result<Option<Value>>{
-        let r=&self.policies[ex];let Some(p)=&r.same_side_top_ups else{return Ok(None)};let Some(c)=self.cohorts.get(ex)else{return Ok(None)};
+        if self.rank_paused(ex){return Ok(None)}let r=&self.policies[ex];let Some(p)=&r.same_side_top_ups else{return Ok(None)};let Some(c)=self.cohorts.get(ex)else{return Ok(None)};
         if (c.existing.is_none()&&(c.entry.is_none()||!c.exits.is_empty()))||(c.existing.is_some()&&!bank.engine().managed_inventory_planning_excludes(ex))||current_qid.is_some()&&current_qid==c.entry_id(){return Ok(None)}
         let prior:Vec<_>=c.entries().filter(|b|Some(b.qid)!=current_qid&&!c.retired_top_ups.contains_key(&b.qid)).collect();if (prior.is_empty()&&c.existing.is_none())||prior.len()+usize::from(c.existing.is_some())>=p.maximum_entries as usize||(c.top_ups.len()>=128&&!current_qid.is_some_and(|id|c.top_ups.contains_key(&id))){return Ok(None)}
         let owned=self.owned(bank,ex,c)?;let cost=bank.engine().wallet.market_cost(ex);
@@ -1022,7 +1025,7 @@ impl Cohorts{
     fn entry_hints_matching(&self,bank:&Session,log:&DispatchLog,scope:&Scope,trusted:&BTreeSet<String>,now:u64,only:Option<&str>)->Result<Vec<EntryHint>>{
         self.check(bank,log)?;log.require_resolved_attempts()?;let mut out=Vec::new();
         for (ex,r) in &self.policies{
-            if r.version!=2||(r.existing_origin.is_some()&&!self.cohorts.contains_key(&r.exchange_id))||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
+            if self.rank_paused(ex)||r.version!=2||(r.existing_origin.is_some()&&!self.cohorts.contains_key(&r.exchange_id))||r.revoke_existing||!current(r,now)||now>=r.hold_until_ms||!trusted.contains(&digest(r)?)||structure(r)?<=0{continue}
             need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id),"FUNDAMENTAL_ENTRY_SCOPE")?;
             // Keep global integrity/unknown and every cheap review/scope check,
             // but rebuild costly ownership/closure proofs only for this packet.
@@ -1142,7 +1145,7 @@ impl Cohorts{
         plan.validate_current(bank,log,transport,authority,now)?;Ok(Some(plan))
     }
     pub fn existing_exit_hint(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExitHint>>{
-        self.check(bank,log)?;log.require_resolved_attempts()?;
+        self.check(bank,log)?;if self.rank_paused(exchange){return Ok(None)} log.require_resolved_attempts()?;
         let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some()||(c.entry.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange)))else{return Ok(None)};
         if c.existing.is_none()&&c.pending_entry(log){return Ok(None)}
         if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(None)}
@@ -1173,7 +1176,7 @@ impl Cohorts{
     /// execution. Retire proved never-sent drafts first, accept this event once,
     /// then bind its actual native qid/spec and mint the normal opaque token.
     pub fn prepare_existing_exit(&self,bank:&Session,log:&DispatchLog,transport:&Transport,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExit>>{
-        self.check(bank,log)?;let queue=queue_view(transport)?;let Some(c)=self.cohorts.get(exchange)else{return Ok(None)};
+        self.check(bank,log)?;if self.rank_paused(exchange){return Ok(None)} let queue=queue_view(transport)?;let Some(c)=self.cohorts.get(exchange)else{return Ok(None)};
         if c.existing.is_none()&&(!bank.engine().managed_inventory_planning_excludes(exchange)||c.entry.is_none()){return Ok(None)}
         let r=&self.policies[exchange];let owned=self.owned(bank,exchange,c)?;if owned==0{return Ok(None)}
         need(digest(scope)?==digest(transport.scope())?&&scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
@@ -1296,7 +1299,7 @@ impl Cohorts{
             marker,
             manifest:bank.manifest_hash().as_str().ok_or("FUNDAMENTAL_MANIFEST")?.into(),
             run:bank.live_account_seed().ok_or("FUNDAMENTAL_LIVE_BANK")?["runId"].as_str().ok_or("FUNDAMENTAL_RUN")?.into(),
-            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new(),aborted_archives:Default::default(),closed_rows_cache:Default::default(),not_sent_rows_cache:Default::default()};
+            sequence:0,previous:"0".repeat(64),clock:0,poisoned:false,generation:None,policies:BTreeMap::new(),cohorts:BTreeMap::new(),abandoned:BTreeMap::new(),rank_exits:BTreeMap::new(),aborted_archives:Default::default(),closed_rows_cache:Default::default(),not_sent_rows_cache:Default::default()};
         let mut reader=BufReader::new(out.file.try_clone()?);let mut line=Vec::new();
         loop{line.clear();let n=reader.by_ref().take((MAX_ROW+1) as u64).read_until(b'\n',&mut line)?;if n==0{break}
             need(line.len()<=MAX_ROW&&line.last()==Some(&b'\n'),"FUNDAMENTAL_TORN_OR_OVERSIZED_ROW")?;
@@ -1384,6 +1387,7 @@ impl Cohorts{
                     &&event["closedZeroEvidence"].is_object()&&event["committedTerminal"].is_object()&&hex(event["factsSha256"].as_str().ok_or("FUNDAMENTAL_REARM_FACTS")?),"FUNDAMENTAL_REARM_EVENT")?;
                 let c=self.cohorts.remove(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;self.abandoned.insert(id,AbandonedCohort{exchange:ex.into(),cohort:c,not_sent:Value::Null,retirement:event["committedTerminal"].clone(),closed_zero:Some(event["closedZeroEvidence"].clone())});
             },
+            Some("rank_exit")=>self.apply_rank_exit(event)?,
             Some("exit")=>{let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let b:Binding=serde_json::from_value(event["binding"].clone())?;let c=self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
                 need(c.exits.len()<128&&!c.exits.contains_key(&b.qid),"FUNDAMENTAL_EXIT_BINDING_LIMIT_OR_DUPLICATE")?;c.exits.insert(b.qid,b);},
             _=>return Err("FUNDAMENTAL_EVENT".into()),
@@ -1528,7 +1532,7 @@ impl Cohorts{
     /// refresh at the fixed deadline, reviewed revocation/revision, or an already
     /// observed executable value exit; final `assess` must still pass afterward.
     pub fn exit_refresh_needed(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<bool>{
-        self.check(bank,log)?;let Some(r)=self.policies.get(exchange)else{return Ok(true)};
+        self.check(bank,log)?;if self.rank_paused(exchange){return Ok(false)} let Some(r)=self.policies.get(exchange)else{return Ok(true)};
         let Some(c)=self.cohorts.get(exchange)else{return Ok(false)};
         if self.owned(bank,exchange,c)?==0||c.pending_entry(log)
             ||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(false)}
@@ -1671,6 +1675,7 @@ impl Cohorts{
         self.check(bank,log)?;
         let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;
         let ex=q["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let Some(r)=self.policies.get(ex)else{return Ok(Decision::Unmanaged)};
+        if self.rank_paused(ex){return Ok(hold("tartarus_registered_inventory_handoff"))}
         if log.proved_no_network(qid){return Ok(hold("proved_aborted_intent_cannot_retry"))}
         need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id)&&q["marketId"]==r.market_id,"FUNDAMENTAL_SCOPE_CHANGED")?;
         if bank.engine().is_package_order(qid){return Ok(hold("package_cannot_consume_fundamental_inventory"))}
@@ -1805,7 +1810,7 @@ impl Cohorts{
     /// SELLs through the original cancel path; never invent unknown actual IDs.
     pub fn existing_exit_cancellations(&self,bank:&Session,log:&DispatchLog,trusted:&BTreeSet<String>,now:u64)->Result<Vec<u64>>{
         self.check(bank,log)?;let mut out=Vec::new();for(ex,c)in &self.cohorts{let r=&self.policies[ex];
-            for b in c.exits.values(){
+            for b in c.exits.values(){if self.rank_exits.contains_key(&b.qid){continue}
                 let cohort_exit=c.existing.is_none()&&c.entry.is_some()&&b.quote["reviewedInventoryExit"]["originKind"]=="original_entry_cohort";
                 if c.existing.is_none()&&!cohort_exit{continue}
                 if !log.acknowledgments.contains_key(&b.qid)||log.closed.contains(&b.qid){continue}

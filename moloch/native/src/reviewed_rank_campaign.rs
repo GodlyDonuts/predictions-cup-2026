@@ -37,7 +37,15 @@ impl Engine {
   // The inherited-inventory flag only disables the ordinary planner. A rank
   // review may manage that holding. The separate fundamental-cohort exclusion
   // remains binding until its execution owner explicitly hands the scope over.
-  need(!self.ordinary_entry_excluded(&ex)&&!self.package_protects_exchange(&ex)&&!self.package_blocks_submissions()&&self.wallet.quantity(&ex,side.other())==0&&self.orders.iter().all(|q|q.exchange!=ex||q.retired),"RANK_TARGET_LIABILITY_OR_MANAGED")?;
+  let managed_exit=if self.ordinary_entry_excluded(&ex){let proof=&c["managedExit"];
+   need(!buy&&proof["schemaVersion"]==1&&proof["exchangeId"]==ex
+    &&["cohortSha256","originSha256","generationSha256","reviewSha256","exclusionSha256"].iter().all(|k|hex(&proof[*k]))
+    &&source_hashes.contains(proof["cohortSha256"].as_str().ok_or("RANK_MANAGED_EXIT_PROOF")?)
+    &&proof["exclusionSha256"]==self.ordinary_entry_exclusion_record().ok_or("RANK_MANAGED_EXIT_PROOF")?["sha256"],"RANK_MANAGED_EXIT_PROOF")?;true
+  }else{need(c.get("managedExit").is_none_or(Value::is_null),"RANK_UNMANAGED_EXIT_PROOF")?;false};
+  // The native preview only checks the pinned ownership declaration. Dispatch
+  // additionally requires an opaque original-cohort registration capability.
+  need((!self.ordinary_entry_excluded(&ex)||managed_exit)&&!self.package_protects_exchange(&ex)&&!self.package_blocks_submissions()&&self.wallet.quantity(&ex,side.other())==0&&self.orders.iter().all(|q|q.exchange!=ex||q.retired),"RANK_TARGET_LIABILITY_OR_MANAGED")?;
   need(self.policy.entry(&ex,at),"RANK_ENTRY_DISABLED")?;
   let quantity=a["quantity"].as_u64().filter(|q|*q>0&&*q<=10000&&*q<=self.policy.quantity).ok_or("RANK_QUANTITY")?;let limit=price(dec(&a["limitPrice"])?)?;
   let b=self.books.get(&ex).ok_or("RANK_BOOK")?;need(b.market==market&&b.fresh(&self.policy,at)&&b.source<=at&&b.request<=at&&at-(if b.raw["transport"]=="official_sig_realtime"{b.source}else{b.source.min(b.request)})<=self.policy.book_age&&at-b.received<=self.policy.book_age,"RANK_BOOK_CHANGED_OR_STALE")?;
