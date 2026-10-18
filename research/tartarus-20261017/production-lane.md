@@ -2,8 +2,10 @@
 
 As of October 18, 00:11 UTC, production remains stopped at the original
 `LIVE_WRITE_NOT_CONFIRMED_NO_RETRY` incident. No profitable Tartarus execution
-has been established. The source below is undergoing ARM64 qualification;
+has been established. R39 has completed ARM64 qualification and independent artifact verification;
 it is not evidence that the service has migrated or that a campaign can win.
+The original incident was recovered without HTTP at 00:30:45 UTC. The STOP
+remains pending controlled deployment. See [build evidence](checked-production-lane/build-verification.json).
 
 ## Physical execution path
 
