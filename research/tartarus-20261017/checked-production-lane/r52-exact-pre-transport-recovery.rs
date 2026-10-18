@@ -16,10 +16,10 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
  let _owner=ExclusiveLock::acquire(&PathBuf::from(cfg["ownerLock"].as_str().unwrap()))?;
  let config=Config{queue_dir:root.join("account-queue"),account_scope:cfg["accountScope"].as_str().unwrap().into(),scope:serde_json::from_value(cfg["scope"].clone())?,maximum_pages:8,writes_enabled:false};
  let mut log=DispatchLog::open(&root.join("dispatch.ndjson"))?;
- let aborted:Vec<_>=log.aborted_records().iter().map(|(id,row)|(*id,row["proof"].clone())).collect();
- for(id,evidence)in aborted{let(s,p,a,e)=log.pre_admission_originals(id)?;let proof=api::verify_retained_ordinary_pre_admission(&config,&s,&p,a,&e,&evidence)?;log.verify_aborted_before_admission(id,&proof)?;}
- let guards:Vec<_>=log.local_final_guard_records().iter().map(|(id,row)|(*id,row["proof"].clone())).collect();for(id,evidence)in guards{let(s,p,a,e)=log.local_final_guard_originals(id)?;let proof=api::verify_retained_ordinary_local_guard_no_http(&config,&s,&p,a,&e,&evidence)?;log.verify_local_final_guard_no_http(id,&proof)?;}
- let unresolved:Vec<_>=log.attempted.iter().filter(|id|!log.acknowledgments.contains_key(id)&&!log.proved_no_network(**id)).copied().collect();
+ // Do not restore unrelated historical trust in this scoped helper. Their
+ // serialized records are classification only; normal startup independently
+ // revalidates every original proof before it can dispatch anything.
+ let unresolved:Vec<_>=log.attempted.iter().filter(|id|!log.acknowledgments.contains_key(id)&&!log.aborted_records().contains_key(id)&&!log.local_final_guard_records().contains_key(id)).copied().collect();
  assert_eq!(unresolved,vec![18533,19504]);
  // Historical18533 stays untrusted here. Normal startup must independently
  // restore it against its original committed native event and receipt file.
@@ -35,6 +35,6 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
  log.append(json!({"kind":"error","qid":19504,"at":iso(now)?,"error":error,"recoveredFromStoppedPreTransportException":true,"originalStop":incident,"originalStopSha256":args[2],"historicalSdkErrorReceipt":false}))?;
  log.append_aborted_before_admission(19504,&proof,&iso(now)?)?;
  assert!(log.proved_no_network(19504)&&!log.never_attempted(19504));assert!(!log.proved_no_network(18533));assert!(log.require_resolved_attempts().is_err());assert_eq!(fs::read(&stop)?,stopped);
- let result=json!({"at":iso(now)?,"recoveredOriginalQids":[19504],"networkRequests":0,"stopPreserved":true,"sdkArchiveReverified":true,"proof":proof.evidence(),"dispatchHead":log.descriptor_identity()?,"sameIntentRetryAuthorized":false,"financialStateChanged":false,"historical18533NativeRestorationStillRequired":true,"allDispatchAttemptsResolvedClaimed":false});
+ let result=json!({"at":iso(now)?,"recoveredOriginalQids":[19504],"networkRequests":0,"stopPreserved":true,"sdkArchiveReverified":true,"proof":proof.evidence(),"dispatchHead":log.descriptor_identity()?,"sameIntentRetryAuthorized":false,"financialStateChanged":false,"allOtherOriginalProofsMustBeReverifiedByNormalStartup":true,"historical18533NativeRestorationStillRequired":true,"allDispatchAttemptsResolvedClaimed":false});
  fs::write(&args[3],serde_json::to_vec_pretty(&result)?)?;fs::File::open(&args[3])?.sync_all()?;println!("{}",result);Ok(())
 }
