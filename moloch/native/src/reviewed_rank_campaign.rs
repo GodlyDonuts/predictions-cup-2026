@@ -198,7 +198,7 @@ impl Engine {
   f.put(&f.event(&c,3000)).unwrap();assert_eq!(f.b().engine().wallet.cash,cash);assert_eq!(f.b().engine().wallet.positions(),positions);assert_eq!(f.b().engine().fills().len(),0);let q=f.b().engine().order_records().into_iter().find(|q|q["reviewedRankCampaign"].is_object()).unwrap();assert_eq!(q["quantity"],1);
  }
  #[test]fn projected_sales_fund_only_later_tranches_and_double_selling_is_rejected(){
-  let mut f=F::funded("100.000000","100.000000",30);f.adopt(false);let c=mixed_campaign(&f,true);let before=f.b().engine().report().unwrap();let score=f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap();assert_eq!(score["conditionalCompletedTranchePrefixes"].as_array().unwrap().last().unwrap()["cashAfterAssumedFullFill"],"0.200000");
+  let mut f=F::funded("100.000000","100.000000",30);f.adopt(false);for q in f.b().engine().order_records().into_iter().filter(|q|q["retired"]==false){f.put(&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","confirmedNetworkAttempts":0,"receiptHash":"d".repeat(64),"deferPlanningForPackage":true,"orderId":q["id"],"receivedAt":iso(1000)})).unwrap();}let c=mixed_campaign(&f,true);let before=f.b().engine().report().unwrap();let score=f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap();assert_eq!(score["conditionalCompletedTranchePrefixes"].as_array().unwrap().last().unwrap()["cashAfterAssumedFullFill"],"0.200000");
   let mut no_sale=c.clone();no_sale["contingentPlan"]["tradeLegs"].as_array_mut().unwrap().remove(0);assert!(f.b().engine().evaluate_rank_campaign(&no_sale,BASE+3000).unwrap_err().contains("FUNDING"));
   let mut twice=c.clone();twice["contingentPlan"]["tradeLegs"][0]["quantity"]=json!(5);assert!(f.b().engine().evaluate_rank_campaign(&twice,BASE+3000).unwrap_err().contains("UNCOVERED_SELL"));
   let mut ambiguous=c.clone();ambiguous["contingentPlan"]["buyLegs"]=json!([c["contingentPlan"]["tradeLegs"][1].clone()]);assert!(f.b().engine().evaluate_rank_campaign(&ambiguous,BASE+3000).unwrap_err().contains("AMBIGUOUS_LEGS"));assert_eq!(f.b().engine().report().unwrap(),before);
@@ -252,7 +252,7 @@ impl Engine {
   let mut managed=common.clone();managed["type"]=json!("managed_inventory_planning_v1");f.put(&managed).unwrap();
   let c=f.campaign(true);assert!(f.b().engine().managed_inventory_planning_excludes("101"));assert!(f.b().engine().evaluate_rank_campaign(&c,BASE+3000).is_ok());
   let mut excluded=common;excluded["type"]=json!("ordinary_entry_exclusions_v1");excluded["bankHead"]=f.b().durable_head();excluded["expectedReportSha256"]=json!(hash(&f.b().engine().report().unwrap()));excluded["expectedPreviousExclusionSha256"]=Value::Null;f.put(&excluded).unwrap();
-  assert!(f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap_err().contains("LIABILITY_OR_MANAGED"));
+  assert!(f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap_err().contains("MANAGED_EXIT_PROOF"));
  }
  #[test]fn campaign_metadata_restarts_without_rewriting_original_financial_history(){let mut f=F::new(false);let c=f.campaign(false);f.put(&f.event(&c,3000)).unwrap();let head=f.b().durable_head();let orders=f.b().engine().order_records();let report=f.b().engine().report().unwrap();f.bank.take();f.bank=Some(Session::open_live(&f.root.join("bank"),&f.policy,&f.seed).unwrap());assert_eq!(f.b().durable_head(),head);assert_eq!(f.b().engine().order_records(),orders);assert_eq!(f.b().engine().report().unwrap(),report);}
 }
