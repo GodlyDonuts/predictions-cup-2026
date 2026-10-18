@@ -1,0 +1,34 @@
+{
+  "observedAt": "2026-10-18T15:07:33.019804+00:00",
+  "schema": "tartarus_refreshed_monetary_comparison_v1",
+  "numericModelIssuedAtMs": 1792332439231,
+  "originalModelRawSha256": "7a70762a71f8f13784dd348eb5fbd0fa8d9d4e11c80fd71303093f2cbde5d0ae",
+  "financialSnapshotAt": "2026-10-18T13:37:31.983Z",
+  "currentPhysicalEligibilityClaimed": false,
+  "hypotheticalNoAdditionalFillBranch": true,
+  "actualFillAndLiabilityReconciliationRequired": true,
+  "positiveMeanComparison": {
+    "legs": 31,
+    "declaredExpectedGain": {
+      "price_lower_common": "3240.738879",
+      "price_upper_common": "2663.445750",
+      "price_midpoint_independent": "3444.651564",
+      "active_review_lower_common": "3240.949000",
+      "active_review_upper_common": "2663.264000"
+    },
+    "realizedGain": false,
+    "calibratedProbabilities": false
+  },
+  "rankWithNonnegativeDeclaredMeanFloor": {
+    "status": "exact_sequence_checked",
+    "solverStatus": 1,
+    "solverMessage": "Time limit reached. (HiGHS Status 13: Time limit reached)",
+    "selectedAverageStrictMassPpm": 0.0,
+    "targetObjectiveImproved": false,
+    "researchDisposition": "retain_no_action_for_this_target_objective"
+  },
+  "limitedSearchProvesGlobalImpossibility": false,
+  "executionAuthority": false,
+  "productionOrdersSubmitted": 0,
+  "limitation": "Dated liquidity, uncalibrated model and portfolio branch. A monetary-positive comparison alone does not establish a route to first place or current executable alpha."
+}
