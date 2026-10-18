@@ -1,0 +1,41 @@
+{
+  "schema": "tartarus_public_leader_observation_v1",
+  "url": "https://sig.thesuper.market/leaderboards",
+  "requestStartedAt": "2026-10-18T16:56:05.788288+00:00",
+  "receivedAt": "2026-10-18T16:56:06.271465+00:00",
+  "status": 200,
+  "rawBytes": 216155,
+  "rawSha256": "3b5ed5b48575fa08b0b4449f6a0c31d2e49902cd61321e1da9e3021773c2ed36",
+  "unauthenticatedPublicPage": true,
+  "accountApiRequests": 0,
+  "tournamentSlug": "midterm-elections",
+  "originalQueryKey": [
+    "tournament-leaderboard-tab",
+    "tournament",
+    "midterm-elections",
+    "all",
+    null,
+    "",
+    "pnl"
+  ],
+  "limitedPublicCacheHeaders": {
+    "Date": "Sun, 18 Oct 2026 16:56:06 GMT",
+    "Age": "0",
+    "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate"
+  },
+  "sourcePublicationTime": null,
+  "publicRank": 1,
+  "publicUsername": "kind-brook-6861",
+  "publicPnl": "982253.17",
+  "publicTradesCount": 4392,
+  "publicVolume": "15577481.735",
+  "publicRoiField": "6.31",
+  "publicRoiDefinitionNotInferred": true,
+  "initialAllotmentAssumption": "100000.000000",
+  "derivedFlatMarkedWealthAnchor": "1082253.170000",
+  "anchorIsCash": false,
+  "anchorIsTerminalWealth": false,
+  "unknownOpposingPositions": true,
+  "projectionAssumption": "Assumed initial allotment plus dated public marked PnL. Holding this level flat is an incomplete-field hypothesis, not a rival forecast.",
+  "executionAuthority": false
+}

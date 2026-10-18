@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-18T17:01:50.891675+00:00",
+  "incident": "/home/archon/apps/moloch/shared/incidents/rank-packet-rollout-20261018T170129Z",
+  "sourceCommit": "84aba906cf969a6c3d2acab22f791d2ff831822e",
+  "binarySha256": "b76997845f99e0adb7ba427b93a2f993b8003b8666d26107340d49ab5ddae8c3",
+  "controlSha256": "0ec955e2a2ea2600c864d5cb3c29cc3f97258c81fa28d9505b7176ab0dbb3d1a",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "engineUpgradeCount": 20,
+  "nativeBridgeBytesUnchanged": true,
+  "originalFillCount": 393,
+  "originalFinancialAndFifoPreserved": true,
+  "prefixes": {
+    "financial": {
+      "bytes": 2089410002,
+      "sha256": "9443111452109aaf91a792b65a295f6f62e1a258fe0ab1e7a09445c306e7be97"
+    },
+    "dispatch": {
+      "bytes": 12229430,
+      "sha256": "5adeddebccd64d5f8f79c7a9fbded76a6ed0a683cb20b5486f843327370dc64b"
+    }
+  },
+  "originals": {
+    "head.original.json": "9a38b339a4c7aaa705459641321ecade8240c02258df4708f991653678f63935",
+    "report.original.json": "13f8462bd078704fc7495ed4877bab37d6aa979569ac34b49aa25c4fc5784eb7",
+    "manifest.original.json": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "upgrade.original.json": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c",
+    "unit.original.service": "7905be3ef1c5ba99ec56516b4a497f8c9a3cba0a0843c9d2309a8ba48e42b5da",
+    "control.original.json": "02b3891a47e7487150a963d250d34c05cffe3e9ba3f24c1d2293c0ef0edf13d2",
+    "fundamental.original.ndjson": "6b9676e79564cdad68407295dc124304d48863e9db817b7029d1542d8fec8d12"
+  },
+  "all14G12ReviewsPreserved": true,
+  "riskAndDailyWindowsChanged": false,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "exactDeadWorkerApplicationLockArchived": true,
+  "sourceManifestCheckpointJournalOrKeysEdited": false,
+  "ordersSubmittedByDeployment": 0,
+  "currentTradingVerified": false,
+  "pid": 811119,
+  "startTicks": "31256489",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}
