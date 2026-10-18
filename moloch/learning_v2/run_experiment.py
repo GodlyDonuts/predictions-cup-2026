@@ -21,6 +21,7 @@ from .episodes import Tape, CONTRACT_FEATURES, GLOBAL_FEATURES
 from .policy import RecurrentPolicy, FAMILIES
 from .reference_env import Mechanics
 from .train_inner import PPOConfig, PPOTrainer, Trajectory, fingerprint
+from .inventory_curriculum import seed_inventory
 
 
 def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -52,9 +53,13 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
                        target_wealth_micros=protocol['planning_target_wealth_micros'],
                        burnin_ms=protocol['recurrent_burnin_ms'],advance_to_start=False)
     behavior = fingerprint(model); hidden = model.initial_state(1)
-    rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;observable_market_frames=0;begun=time.perf_counter()
+    rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;observable_market_frames=0;begun=time.perf_counter();initial_portfolio=None
     for step,at in enumerate(range(start-protocol['recurrent_burnin_ms'],end,protocol['decision_interval_ms'])):
-        env.advance(at); obs=env.observe()
+        env.advance(at)
+        if at==start and protocol.get('initial_inventory_allocation_ppm',0):
+            initial_portfolio=seed_inventory(env,protocol['initial_inventory_allocation_ppm'],protocol['initial_inventory_seed'])
+            initial=initial_portfolio['initial_marked_wealth_micros'];previous=initial;env.initial_wealth=initial
+        obs=env.observe()
         if (model.contract_features,model.global_features)not in[(20,12),(CONTRACT_FEATURES,GLOBAL_FEATURES)]:
             raise ValueError('UNKNOWN_FEATURE_SEMANTICS')
         # The named legacy prefix keeps its original feature meanings. All
@@ -119,6 +124,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
            'tradable_decision_frames':tradable_frames,'tradable_market_frames':tradable_market_frames,
            'observable_market_frames':observable_market_frames,
            'rollout_wall_seconds':time.perf_counter()-begun,'baseline':baseline,'qualified_accounting':qualified,
+           'initial_reference_wealth_micros':initial,'synthetic_initial_portfolio':initial_portfolio,
            'final_reference_wealth_micros':final,'reference_return':(final-initial)/initial if qualified else None,
            'missing_mark_observations':missing,'unresolved_orders':len(env.orders),
            'active_request_at_terminal':env.budget.active,'filled_shares':sum(e['quantity']for e in env.fill_events),

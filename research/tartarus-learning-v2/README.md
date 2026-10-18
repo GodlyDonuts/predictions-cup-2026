@@ -58,3 +58,5 @@ python -m moloch.learning_v2.run_experiment --dataset COMPILED_CAPTURE --mechani
 ```
 
 Original captures and model weights remain outside Git. Hash-matched COMPLETE manifests, not partial files, establish completed runs.
+
+The [pre-forward SIG prefix proof](sig-prefix-pre-forward-verification.json) verifies587 original producer rows and the receiver chain across94,554,077 original transport bytes through23:19:59.999UTC. Exact pre-hash bytes are reconstructed without Python float reserialization. This closes byte/hash integrity for that prefix; it does not verify native frame semantics, cross-segment continuity, complete capture or executable fills. The reserved future window is not used to select a model.

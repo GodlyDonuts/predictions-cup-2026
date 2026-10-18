@@ -1,0 +1,30 @@
+{
+  "classification": "verified_original_byte_hash_prefix_not_native_semantic_or_execution_validation",
+  "source_file": "receipt-stream.jsonl",
+  "cutoff_ms": 1792365599999,
+  "transport_prefix_bytes": 94554077,
+  "transport_prefix_sha256": "134fe4f1a7120b6e306bb9b0b3536d705ae6414e3843eccba2af7127fc0efcb8",
+  "receiver_rows": 589,
+  "receiver_terminal_hash": "e593cd05576661eb28e69038c5c731b68bf8129ac86b09d45b31e5ce0c42298f",
+  "first_observed_ms": 1792364803910,
+  "last_observed_ms": 1792365599828,
+  "original_source_rows": 587,
+  "source_prefix_offsets": {
+    "breadth-859146-1792364803863.jsonl": 70654476
+  },
+  "source_chain_terminals": {
+    "breadth-859146-1792364803863.jsonl": [
+      587,
+      "9546edd35332f76aa86ed09bcaa6504777dc5a71db43a78cd2aaa9c97551e113"
+    ]
+  },
+  "declared_source_gaps": 0,
+  "original_producer_row_hashes_verified": true,
+  "native_semantic_replay_verified": false,
+  "whole_capture_complete": false,
+  "provider_tape_complete": false,
+  "cross_segment_continuity_verified": false,
+  "account_requests": 0,
+  "execution_authority": false,
+  "verifier_source_sha256": "464221beb5cfb8ca388433fd90f05f7fd89b8483170890761daacd25282686e5"
+}
