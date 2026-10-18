@@ -1,0 +1,93 @@
+{
+  "qualification": {
+    "qualifiedAt": "2026-10-18T08:29:35.177022+00:00",
+    "steps": [
+      {
+        "step": "release-library",
+        "exitCode": 0
+      },
+      {
+        "step": "token-test-build",
+        "exitCode": 0
+      },
+      {
+        "step": "token-tests",
+        "exitCode": 0
+      },
+      {
+        "step": "release-worker",
+        "exitCode": 0
+      },
+      {
+        "step": "identity-build",
+        "exitCode": 0
+      }
+    ],
+    "libraryChecks": 264,
+    "ignoredLibraryChecks": 2,
+    "tokenChecks": 8,
+    "binarySha256": "fcb092dc35f6aee1f7473f851e43e48d62f433915bc8528ee80f3bcfeef8a35e",
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "nativeSourceChanged": false,
+    "engineBridgeRequired": false,
+    "workerChange": "bounded token rejection diagnostic; structured token failure stays in original retry lane",
+    "earlierDebugLinkFailure": "ENOSPC, not a failed behavioral check",
+    "libraryPins": {
+      "moloch_live_runtime": "9cd99bd760710def3181d5549df604e2e6560dccc3e8fe7ca982b4ba8ef37814",
+      "moloch_replay": "028e08fd4a22a02ebd2aaa09dbf643b3fd818983e566a7bdeb549ab9cddf6f11",
+      "baal_transport_service": "a1132d2cbd5c8876c618b912635a1a2bc30c7d40eec02cfe53ff5c0313114c03"
+    },
+    "ordersSubmitted": 0
+  },
+  "archive": {
+    "completedAt": "2026-10-18T08:27:30.406502+00:00",
+    "inactiveSegmentsArchived": 388,
+    "rawBytesRetainedLosslessly": 25904375735,
+    "compressedBytes": 90105076,
+    "freedBytes": 25814270659,
+    "availableBytes": 29050048512,
+    "activeManifestCheckpointJournalAndGuardUnchanged": true,
+    "retainedProofCapsulesUntouched": true,
+    "financialJournalUntouched": true,
+    "sdkTransitions": 0,
+    "officialRequests": 0,
+    "archiveIndex": "/home/archon/apps/moloch/shared/live-production-v1/account-queue/compressed-inactive-v1/verified-archive-index.ndjson"
+  },
+  "deployment": {
+    "observedAt": "2026-10-18T08:34:43.331470+00:00",
+    "sourceCommit": "67e34365e4b8d0d1dd8f69face11dbbaf9c6b2a6",
+    "binarySha256": "fcb092dc35f6aee1f7473f851e43e48d62f433915bc8528ee80f3bcfeef8a35e",
+    "controlSha256": "205a48b0367a13b069fb1b6af273ca112f461c749f4f4653c80af64570ba75af",
+    "unitSha256": "c3361d67fb5c9b56d16d3cd26d8fa4c44f5fb5fd9d16bbcda6bdb83583a5ced0",
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "engineBridgeChanged": false,
+    "sequence": 574174,
+    "originalFillTokensPreserved": 387,
+    "sameOriginalFinancialFieldsAndFifo": true,
+    "sdkUnknownCount": 0,
+    "sdkActive": false,
+    "sdkManualReview": false,
+    "original18533KeyRetained": true,
+    "nativeSuffixTypes": [
+      "actual_order_terminal",
+      "expired_attempt_exposure_reconciled_v1",
+      "managed_inventory_planning_v1"
+    ],
+    "riskAndDailyWindowsChanged": false,
+    "ordersSubmittedByDeployment": 0,
+    "currentTradingVerified": false,
+    "retainedOriginalHashes": {
+      "stop.original.json": "9eabf7c1b201453dba397fe62ac635194f2e11266872d21995bc9d2d754aa84e",
+      "control.original.json": "034d50e9ec098bcd0c348cfffcd2e7a175e889ad086cc61934934f07310f9850",
+      "unit.original.service": "eb9557f6b191e428dbb386151b5b685aa6543649327dc697fac9ddad32152f2e",
+      "head.original.json": "002ad839d949b20f7406002fb81f88402397305fe7de32f63473e1641ecbf8de",
+      "report.original.json": "7ef5cc59906d676cded6fd67d3c2cb4e7057c03e7835eb4f2b144115a805f41d",
+      "engine-upgrade.original.json": "f53eb69dd8bb8b0809484b49a5568915af3ce915ccc329b92afa0147d2a92307",
+      "sdk-manifest.original.json": "3a0b3d02e4222679970cfdf0b4ee89d98e8ee34a04d1e2bac5e21aa2e96ef29e"
+    },
+    "pid": 778730,
+    "startTicks": "28213733",
+    "actualExecutableAndArgumentsVerified": true,
+    "phase": "restoring_original_financial_ledger"
+  }
+}
