@@ -1,0 +1,722 @@
+{
+  "schemaVersion": 1,
+  "evidenceClass": "dated joint five-model sequential liquidity hypotheses; not production opportunities",
+  "financialSequence": 574174,
+  "holds": 23,
+  "inheritedExchangesWithRemainingOriginalLots": 14,
+  "existingNonInheritedMarkets": 9,
+  "totalNonInheritedMarketLimit": 12,
+  "sourceFileRawSha256": {
+    "public-prototype-v3-checked.private.json": "5935db83d21b858b70278763236bc0606545fca1a01836ca411c4b4b8f52f23f",
+    "financial-lots-with-inherited-capacity-v3-574174.private.json": "83e23a78959fc47710d170902e1edd36fe92bf058dd80364dc57240991487803",
+    "global-five-model.private.json": "f4cc752c9dfabbc4411ffea5872778e89aedf5333f00e49f8ee04287c3621ea9",
+    "dated-sig-depth.private.json": "4192af9378d5a94edb754f72545a85891465dad29481d61c9588dc7191af885a"
+  },
+  "assumptions": {
+    "zeroFees": true,
+    "zeroTerminalDebt": true,
+    "draftRetirement": "conditional proved-unadmitted only, not performed",
+    "datedInvalidatedLiquidity": "hypothetical future availability only",
+    "conditionalSaleFundingIsActualCash": false
+  },
+  "candidates": [
+    {
+      "index": 0,
+      "targetWealthInSelectedWorld": 0,
+      "solverStatus": 0,
+      "exactOptimalityClaimed": false,
+      "contracts": 29,
+      "projectedRows": 70,
+      "audit": {
+        "trades": 25,
+        "cashMicros": 15000,
+        "ownedCostMicros": 94654085000,
+        "fifoBreakpointsScored": 55,
+        "minimumPrefixWealthMicros": 32493015000,
+        "maximumPrefixLossVersusHoldMicros": 45031770000,
+        "models": [
+          {
+            "id": "price_lower_common",
+            "expectedChangeMicrosNumerator": 3759134409000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_upper_common",
+            "expectedChangeMicrosNumerator": 3759060483000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_midpoint_independent",
+            "expectedChangeMicrosNumerator": 4353855447000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_lower-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": 5499363000000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_upper-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": 3759065000000000,
+            "denominator": 1000000
+          }
+        ],
+        "fieldPairs": [
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          }
+        ],
+        "classification": "nonnegative_declared_money",
+        "executionAuthority": false,
+        "calibratedProbabilities": false,
+        "actualProceedsCredited": false
+      }
+    },
+    {
+      "index": 1,
+      "targetWealthInSelectedWorld": 250000,
+      "solverStatus": 0,
+      "exactOptimalityClaimed": false,
+      "contracts": 33,
+      "projectedRows": 76,
+      "audit": {
+        "trades": 49,
+        "cashMicros": 20000,
+        "ownedCostMicros": 94139385000,
+        "fifoBreakpointsScored": 124,
+        "minimumPrefixWealthMicros": 10199020000,
+        "maximumPrefixLossVersusHoldMicros": 67325765000,
+        "models": [
+          {
+            "id": "price_lower_common",
+            "expectedChangeMicrosNumerator": 233372490000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_upper_common",
+            "expectedChangeMicrosNumerator": 233405457000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_midpoint_independent",
+            "expectedChangeMicrosNumerator": 554368087000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_lower-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": 3861502000000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_upper-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": 233375000000000,
+            "denominator": 1000000
+          }
+        ],
+        "fieldPairs": [
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          }
+        ],
+        "classification": "nonnegative_declared_money",
+        "executionAuthority": false,
+        "calibratedProbabilities": false,
+        "actualProceedsCredited": false
+      }
+    },
+    {
+      "index": 2,
+      "targetWealthInSelectedWorld": 500000,
+      "solverStatus": 0,
+      "exactOptimalityClaimed": false,
+      "contracts": 33,
+      "projectedRows": 75,
+      "audit": {
+        "trades": 79,
+        "cashMicros": 0,
+        "ownedCostMicros": 93757625000,
+        "fifoBreakpointsScored": 161,
+        "minimumPrefixWealthMicros": 100000000,
+        "maximumPrefixLossVersusHoldMicros": 77424785000,
+        "models": [
+          {
+            "id": "price_lower_common",
+            "expectedChangeMicrosNumerator": -9491112453000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_upper_common",
+            "expectedChangeMicrosNumerator": -9446846763000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_midpoint_independent",
+            "expectedChangeMicrosNumerator": -9491085795000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_lower-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": -5646429000000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_upper-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": -9491111000000000,
+            "denominator": 1000000
+          }
+        ],
+        "fieldPairs": [
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          }
+        ],
+        "classification": "negative_declared_money",
+        "executionAuthority": false,
+        "calibratedProbabilities": false,
+        "actualProceedsCredited": false
+      }
+    },
+    {
+      "index": 3,
+      "targetWealthInSelectedWorld": 925300,
+      "solverStatus": 0,
+      "exactOptimalityClaimed": false,
+      "contracts": 34,
+      "projectedRows": 82,
+      "audit": {
+        "trades": 125,
+        "cashMicros": 0,
+        "ownedCostMicros": 93650330000,
+        "fifoBreakpointsScored": 219,
+        "minimumPrefixWealthMicros": 0,
+        "maximumPrefixLossVersusHoldMicros": 101378785000,
+        "models": [
+          {
+            "id": "price_lower_common",
+            "expectedChangeMicrosNumerator": -38121927381000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_upper_common",
+            "expectedChangeMicrosNumerator": -35320894218000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_midpoint_independent",
+            "expectedChangeMicrosNumerator": -38121912021000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_lower-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": -38121932000000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_upper-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": -38094543000000000,
+            "denominator": 1000000
+          }
+        ],
+        "fieldPairs": [
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          }
+        ],
+        "classification": "negative_declared_money",
+        "executionAuthority": false,
+        "calibratedProbabilities": false,
+        "actualProceedsCredited": false
+      }
+    },
+    {
+      "index": 4,
+      "targetWealthInSelectedWorld": 1081242,
+      "solverStatus": 0,
+      "exactOptimalityClaimed": false,
+      "contracts": 35,
+      "projectedRows": 102,
+      "audit": {
+        "trades": 129,
+        "cashMicros": 30000,
+        "ownedCostMicros": 93639355000,
+        "fifoBreakpointsScored": 231,
+        "minimumPrefixWealthMicros": 94030000,
+        "maximumPrefixLossVersusHoldMicros": 109295755000,
+        "models": [
+          {
+            "id": "price_lower_common",
+            "expectedChangeMicrosNumerator": -52389358624000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_upper_common",
+            "expectedChangeMicrosNumerator": -47707863805000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "price_midpoint_independent",
+            "expectedChangeMicrosNumerator": -55831206017000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_lower-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": -50986881000000000,
+            "denominator": 1000000
+          },
+          {
+            "id": "retained_ctm_upper-extended-current-price-universe",
+            "expectedChangeMicrosNumerator": -55775136000000000,
+            "denominator": 1000000
+          }
+        ],
+        "fieldPairs": [
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 999
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 18981
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 1000
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "dated_flat_anchor",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 10000
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "adverse_growing_field",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_lower_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_upper_common",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "price_midpoint_independent",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_lower-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          },
+          {
+            "modelId": "retained_ctm_upper-extended-current-price-universe",
+            "fieldId": "held_alaska_correlated_adverse",
+            "beforeStrictMassPpm": 0,
+            "afterStrictMassPpm": 0
+          }
+        ],
+        "classification": "negative_declared_money",
+        "executionAuthority": false,
+        "calibratedProbabilities": false,
+        "actualProceedsCredited": false
+      }
+    }
+  ],
+  "executionAuthority": false,
+  "calibratedWinProbability": false,
+  "actualProfits": false
+}

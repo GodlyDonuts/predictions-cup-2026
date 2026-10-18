@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "evidenceClass": "noncontemporaneous original depth and declared three-model scenario capacity sensitivity",
+  "financialSequence": 574172,
+  "sourceModelSha256": "6519c32261becb2334eb01d55d484d6450553ca78f66061f8e645b2fddb8642f",
+  "scenarios": 198,
+  "sourceModels": 3,
+  "contracts": 139,
+  "heldSides": 23,
+  "variants": [
+    {
+      "hypotheticallyReinstatesInvalidatedBooks": false,
+      "books": 15,
+      "excludedBooks": [],
+      "ordinaryRows": 197,
+      "exceptionalRowsUnbounded": 1,
+      "maximumOrdinaryRelaxedWealthMicros": 474498315789,
+      "ordinaryRowsPotentiallyAboveDatedAnchor": 0,
+      "fieldPairs": [
+        {
+          "probabilityModelId": "price_lower_common",
+          "fieldModelId": "dated_flat_anchor",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_upper_common",
+          "fieldModelId": "dated_flat_anchor",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_midpoint_independent",
+          "fieldModelId": "dated_flat_anchor",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_lower_common",
+          "fieldModelId": "adverse_growing_field",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_upper_common",
+          "fieldModelId": "adverse_growing_field",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_midpoint_independent",
+          "fieldModelId": "adverse_growing_field",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_lower_common",
+          "fieldModelId": "held_alaska_correlated_adverse",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_upper_common",
+          "fieldModelId": "held_alaska_correlated_adverse",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_midpoint_independent",
+          "fieldModelId": "held_alaska_correlated_adverse",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        }
+      ],
+      "privateArtifactSha256": "2d82e3d0d4734ca8cc68f930f6a5580f3e2965ccb122a0ed5c8a9683374f4c91",
+      "elapsedSeconds": 0.547
+    },
+    {
+      "hypotheticallyReinstatesInvalidatedBooks": true,
+      "books": 139,
+      "excludedBooks": [],
+      "ordinaryRows": 197,
+      "exceptionalRowsUnbounded": 1,
+      "maximumOrdinaryRelaxedWealthMicros": 1250061529411,
+      "ordinaryRowsPotentiallyAboveDatedAnchor": 22,
+      "fieldPairs": [
+        {
+          "probabilityModelId": "price_lower_common",
+          "fieldModelId": "dated_flat_anchor",
+          "staticOracleFirstPlaceMassUpperPpm": 30970,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_upper_common",
+          "fieldModelId": "dated_flat_anchor",
+          "staticOracleFirstPlaceMassUpperPpm": 35965,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_midpoint_independent",
+          "fieldModelId": "dated_flat_anchor",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_lower_common",
+          "fieldModelId": "adverse_growing_field",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_upper_common",
+          "fieldModelId": "adverse_growing_field",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_midpoint_independent",
+          "fieldModelId": "adverse_growing_field",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_lower_common",
+          "fieldModelId": "held_alaska_correlated_adverse",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_upper_common",
+          "fieldModelId": "held_alaska_correlated_adverse",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        },
+        {
+          "probabilityModelId": "price_midpoint_independent",
+          "fieldModelId": "held_alaska_correlated_adverse",
+          "staticOracleFirstPlaceMassUpperPpm": 1000,
+          "unboundedExceptionalMassPpm": 1000,
+          "calibratedWinProbability": false
+        }
+      ],
+      "privateArtifactSha256": "1631fe946bbc065aa69dc1e0b276ae2d7faf6d326bf9cf872f0fd1234da84d3b",
+      "elapsedSeconds": 5.11
+    }
+  ],
+  "sourceClockRenewed": false,
+  "currentOrFutureGlobalBound": false,
+  "calibratedWinProbability": false,
+  "executionAuthority": false,
+  "networkRequests": 0,
+  "testsPassed": 11
+}
