@@ -13,9 +13,20 @@ fn classified(e:TransportError)->Box<dyn std::error::Error>{TokenFailure::from_t
   let original=error(code,status);let got=classified(original.clone());assert!(got.downcast_ref::<TokenFailure>().is_none(),"{code} {status:?}");let retained=got.downcast_ref::<TransportError>().unwrap();assert_eq!(serde_json::to_value(retained).unwrap(),serde_json::to_value(original).unwrap());
  }
 }
-#[test]fn possibly_executed_order_identity_and_api_codes_never_enter_token_lane(){
+#[test]fn possibly_executed_order_identity_and_unknown_api_codes_never_enter_token_lane(){
  for field in 0..3{let mut e=error("OFFICIAL_REQUEST_REJECTED",Some(503));match field{0=>e.may_have_executed=true,1=>e.order_id=Some("123".into()),_=>e.api_code=Some("ORDER_STATUS_UNKNOWN".into())}assert!(classified(e).downcast_ref::<TokenFailure>().is_none());}
  let text:Box<dyn std::error::Error>=Box::new(std::io::Error::other("CONNECTION_UNCONFIRMED"));assert!(text.downcast_ref::<TokenFailure>().is_none());
+}
+#[test]fn structured_transient_token_codes_retain_original_error_and_cooldown(){
+ for(status,code)in[(500,"INTERNAL_ERROR"),(502,"INTERNAL_ERROR"),(503,"INTERNAL_ERROR"),(504,"INTERNAL_ERROR"),(429,"RATE_LIMITED"),(429,"RATE_LIMIT_EXCEEDED"),(429,"TOO_MANY_REQUESTS")]{
+  let mut e=error("OFFICIAL_REQUEST_REJECTED",Some(status));e.api_code=Some(code.into());e.retry_after_ms=10000;
+  let got=classified(e);let f=got.downcast_ref::<TokenFailure>().expect("token-only structured transient");assert_eq!(f.api_code(),Some(code));assert_eq!(f.status(),Some(status));assert_eq!(f.retry_after_ms(),10000);
+  let b=stream_connect_retry::prepare_attempt(&RecoveryBudget::new(1000).unwrap(),1000,None).unwrap();let original=serde_json::to_vec(&b).unwrap();assert_eq!(after_token_failure(&b,2000,Some(1002),f).unwrap(),61002);assert_eq!(serde_json::to_vec(&b).unwrap(),original);
+ }
+}
+#[test]fn mismatched_structured_codes_auth_and_possible_execution_remain_fatal(){
+ for(status,code)in[(400,"INTERNAL_ERROR"),(401,"INTERNAL_ERROR"),(403,"RATE_LIMITED"),(500,"RATE_LIMITED"),(429,"INTERNAL_ERROR"),(503,"ORDER_STATUS_UNKNOWN"),(429,"AUTHENTICATION_REQUIRED"),(503,"UNKNOWN_NEW_CODE")]{let mut e=error("OFFICIAL_REQUEST_REJECTED",Some(status));e.api_code=Some(code.into());assert!(classified(e).downcast_ref::<TokenFailure>().is_none());}
+ for(field,status,code)in[(0,500,"INTERNAL_ERROR"),(1,429,"RATE_LIMITED")]{let mut e=error("OFFICIAL_REQUEST_REJECTED",Some(status));e.api_code=Some(code.into());if field==0{e.may_have_executed=true}else{e.order_id=Some("123".into())};assert!(classified(e).downcast_ref::<TokenFailure>().is_none());}
 }
 #[test]fn mixed_token_and_native_failures_consume_one_shared_persisted_budget(){
  let mut b=stream_connect_retry::prepare_attempt(&RecoveryBudget::new(1000).unwrap(),1000,None).unwrap();

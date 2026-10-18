@@ -2546,7 +2546,11 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  let marker=c.root.join("stream-auth-admission.json");let at=now();
  if marker.exists()&&load(&marker)?["atMs"].as_u64().is_none_or(|old|at<old+60000){return Err("LIVE_AUTH_MINT_BACKOFF".into())}
  atomic_json(&marker,&json!({"atMs":at}))?;
- let material=t.realtime_token().map_err(moloch_live_runtime::stream_token_retry::TokenFailure::from_token_error)?;let auth=Auth::from_official_response(material)?;
+ let material=t.realtime_token().map_err(|error|{
+  let api_code=error.api_code.as_deref().map(|v|if v.len()<=64&&v.bytes().all(|b|b.is_ascii_uppercase()||b.is_ascii_digit()||b==b'_'){v}else{"noncanonical_code_redacted"});
+  let _=atomic_json(&c.root.join("stream-token-failure.json"),&json!({"at":iso(now()),"endpoint":"/realtime/token","code":error.code,"status":error.status,"apiCode":api_code,"mayHaveExecuted":error.may_have_executed,"orderIdPresent":error.order_id.is_some(),"retryAfterMs":error.retry_after_ms,"contestOrderRetried":false}));
+  moloch_live_runtime::stream_token_retry::TokenFailure::from_token_error(error)
+ })?;let auth=Auth::from_official_response(material)?;
  // Only the native connection boundary produces this retryable type. HTTP,
  // credentials, JOIN and durable source errors retain their original types.
  let stream=if c.account_realtime{Realtime::connect_with_account(auth,&c.scope.tournament_id,moloch_live_runtime::account_realtime::options(&c.scope,&c.root)?)}else{Realtime::connect(auth,&c.scope.tournament_id)}.map_err(moloch_live_runtime::stream_connect_retry::ConnectionFailure::from_connect_error)?;
@@ -2619,7 +2623,7 @@ fn connect_with_budget(t:&mut Transport,c:&Control,bank:&mut Session,log:&Dispat
     if let Some(failure)=error.downcast_ref::<TokenFailure>(){
      let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
      token_not_before=stream_token_retry::after_token_failure(budget,now(),Some(auth),failure)?;
-     atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"token_retry_wait","reason":failure.reason(),"status":failure.status(),"notBefore":iso(token_not_before),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
+     atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"token_retry_wait","reason":failure.reason(),"status":failure.status(),"apiCode":failure.api_code(),"notBefore":iso(token_not_before),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
     }else if let Some(failure)=error.downcast_ref::<ConnectionFailure>(){
      let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
      let until=stream_connect_retry::after_connect_failure(budget,now(),Some(auth),*failure)?;

@@ -13,7 +13,16 @@ impl TokenFailure {
  /// The caller must use this ONLY on the concrete token endpoint SDK result.
  pub fn from_token_error(error:TransportError)->Box<dyn Error>{
   let transient_status=|s:u16|matches!(s,408|429|500|502|503|504);
-  let eligible=!error.may_have_executed&&error.order_id.is_none()&&error.api_code.is_none()
+  // The official API can attach its structured transient code. Rejecting every
+  // Some(code) discards the existing charged retry lane even for a token-only
+  // rate limit or internal error. Unknown/financial codes remain fatal.
+  let token_api_code=match error.api_code.as_deref(){
+   None=>true,
+   Some("INTERNAL_ERROR")=>matches!(error.status,Some(500|502|503|504)),
+   Some("RATE_LIMITED"|"RATE_LIMIT_EXCEEDED"|"TOO_MANY_REQUESTS")=>error.status==Some(429),
+   _=>false,
+  };
+  let eligible=!error.may_have_executed&&error.order_id.is_none()&&token_api_code
    &&match error.code.as_str(){
     "CONNECTION_UNCONFIRMED"=>error.status.is_none(),
     "BODY_UNCONFIRMED"=>error.status.is_some_and(|s|(200..300).contains(&s)||transient_status(s)),
@@ -25,6 +34,7 @@ impl TokenFailure {
  pub fn reason(&self)->&str{&self.original.code}
  pub fn status(&self)->Option<u16>{self.original.status}
  pub fn retry_after_ms(&self)->u64{self.original.retry_after_ms}
+ pub fn api_code(&self)->Option<&str>{self.original.api_code.as_deref()}
 }
 impl fmt::Display for TokenFailure{fn fmt(&self,f:&mut fmt::Formatter<'_>)->fmt::Result{write!(f,"STREAM_TOKEN_{}",self.reason())}}
 impl Error for TokenFailure{fn source(&self)->Option<&(dyn Error+'static)>{Some(&self.original)}}
