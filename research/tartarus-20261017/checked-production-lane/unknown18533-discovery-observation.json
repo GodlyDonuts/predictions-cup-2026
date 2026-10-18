@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "classification": "dated_complete_history_and_account_comparison_not_recovery_authority",
+  "verifiedAt": "2026-10-18T05:42:25.274058+00:00",
+  "qid": 18533,
+  "historyRequestStartedAt": "2026-10-18T05:31:40.068Z",
+  "historyReceivedAt": "2026-10-18T05:31:50.571Z",
+  "historyRows": 1888,
+  "historyCoverage": {
+    "complete": true,
+    "projectedThroughSequence": 195326948
+  },
+  "historyPagination": {
+    "hasMore": false,
+    "limit": 200,
+    "nextCursor": null
+  },
+  "exactFieldCandidates": 0,
+  "openOrders": 0,
+  "allSignedPositionsMatchCapturedNative": true,
+  "physicalNonzeroPositions": 23,
+  "nativeNonzeroPositions": 23,
+  "cashMatchesCapturedNative": true,
+  "cash": "10213.785",
+  "unknownBindingPreserved": true,
+  "unknownCount": 1,
+  "nativeFinancialSequence": 574171,
+  "ordersSubmitted": 0,
+  "stopPreserved": true,
+  "receiptRawSha256": {
+    "orders": "7dd6d216da819e36e4abc6c57f3f91bcb6e163dc34113ad1e66643ce50305f77",
+    "account": "fe161c30b1e61578be7c4ea5510977b5e04063e376b3eeef4e3f22c0429dc351",
+    "positions": "aea5776c786ab048368d965b155bda3080cc0f8b518db63a3d59428de56ba864",
+    "collateral": "f0f693796c8e144793cb7a6e43e3626841ed62fd07d358d3f5c3bdeee6769ecb"
+  },
+  "recoveryApplied": false
+}
