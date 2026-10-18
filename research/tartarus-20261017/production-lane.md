@@ -49,7 +49,8 @@ holdings and managed cohorts cannot be released by that mechanism.
 ## Migration evidence and remaining work
 
 - R39 ARM64 qualification and real-journal financial parity are complete; the
-  acquisition-continuation follow-up remains in qualification.
+  acquisition-continuation follow-up has also passed qualification; deployment
+  and fresh-account verification remain separate.
 - The exact retained incident is resolved with the source-bound no-HTTP proof.
   The failed intent, original error and permanent key remain; no retry occurred.
 - The sole migrated worker is installed and observed restoring. Fresh account
@@ -69,11 +70,13 @@ the original execution incident and source-bound proof are tracked in #174.
 
 R39 can review a funding sale but requires direct BUYs to improve immediate
 threshold hits. With a10,000-share physical cap and a distant tournament target,
-early acquisition tranches cannot satisfy that condition. The follow-up adds an
+early acquisition tranches cannot satisfy that condition. The checked follow-up adds an
 explicit `acquisition_prerequisite`, preserving zero immediate gain plus strictly
 positive declared conditional target improvement. Current BUY funding, the first
 BUY in cumulative committed/market/count limits, partial loss, unavailable future
-liquidity and fresh reapproval remain binding. This follow-up is not deployed.
+liquidity and fresh reapproval remain binding. This follow-up passes13rank/117native/261library/191worker checks and an
+optimized ARM64 release; its293-member/279-input artifact is independently
+verified. It is not deployed. [Build evidence](checked-production-lane/acquisition-build-verification.json).
 Existing fundamental cohort targets remain excluded from the rank lane; ownership
 of those cohorts must be reconciled before any broader rotation handoff.
 

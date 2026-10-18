@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "parentSource": "b1885572a11aa1833635cbc09cfdef1397e59b1a",
+  "candidateSource": "55cc4c58b163abb3315a466a35d36fe4a43ed6ee",
+  "changedPaths": [
+    "moloch/live-runtime/src/rank_campaign.rs",
+    "moloch/native/src/reviewed_rank_campaign.rs"
+  ],
+  "nativeProductionChangeConfinedTo": "Engine::evaluate_rank_campaign",
+  "runtimeProductionLogicUnchanged": true,
+  "allOtherSourcePinsUnchanged": true,
+  "historicalReuseCondition": "Complete sealed historical event census must contain zero reviewed_rank_campaign_reserved_v1 events; final stopped suffix must also be checked. New worker still verifies every native upgrade prefix before returning its Session.",
+  "notACompletedR40FinancialReplay": true,
+  "productionAuthorization": false
+}
