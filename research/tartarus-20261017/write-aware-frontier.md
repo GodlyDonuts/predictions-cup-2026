@@ -54,3 +54,12 @@ directory and output path; account originals are not committed. It requires
 NumPy/SciPy and makes no network requests. The next production step is a
 fresh-source, current-account owner review through the existing worker. No
 candidate in this report has been installed or claimed profitable.
+
+
+## Direct joint-target follow-up
+
+The [sequential SELL/BUY search](sequential-rank-frontier.md) now optimizes the
+whole declared target matrix directly and offers both acquisition sides. Seven
+actual incumbents were independently audited. Its best weakest declared monetary
+change is+4489.684029; the129-write average-target alternative is explicitly
+negative mean, uncalibrated and unapproved. No new live profit is established.

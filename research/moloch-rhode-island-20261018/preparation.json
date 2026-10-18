@@ -1,0 +1,61 @@
+{
+  "preparedAt": "2026-10-18T10:02:53.111928+00:00",
+  "exchangeId": "1077",
+  "side": "NO",
+  "ordinaryProbability": "0.999000",
+  "exceptionalAllowance": "0.010000",
+  "marginPerShare": "0.010000",
+  "modelAcquisitionCeilingBeforeTick": "0.979010",
+  "maximumPrincipal": "10000.000000",
+  "principalIsInsideExistingSharedBank": true,
+  "correlatedWithInheritedDemocraticYes1076": true,
+  "unchangedOriginalReviews": 13,
+  "totalProspectiveReviews": 14,
+  "baseControlSha256": "e0bb89a3dcea5e11d171b17bdf573ce8bd27772166f18d3ec6dcb2b1b1b49afd",
+  "overlaySha256": "43cb161ff99630972b00ac4df1c85dbd62781a52f2a256869ea20d6eb9488602",
+  "reviewSha256": "0338b3cc49108f4559472c7ff51507a890db32bd12df37ac6a23212ed49ca757",
+  "previousGeneration": "a28b77a2638e0c83cf4d8657e195f1b0cbce09013fd22ffba2b576e4d0f123fa",
+  "typedChecksPassed": true,
+  "sources": [
+    {
+      "kind": "forecast",
+      "url": "https://www.callthemap.com/senate/rhode-island",
+      "status": 200,
+      "requestStartedAt": "2026-10-18T09:59:20.741056+00:00",
+      "receivedAt": "2026-10-18T09:59:27.077601+00:00",
+      "sha256": "be66f3259f6ac77fdd85a9faaf259053d7a3a272b8fd8b2e98bad8a855562b01",
+      "bytes": 182022,
+      "ReedPresent": true,
+      "RepublicanPresent": true
+    },
+    {
+      "kind": "official_ballot",
+      "url": "https://vote.sos.ri.gov/Candidates/CandidateSearchSummary?Election=18144&OfficeType=620",
+      "status": 403,
+      "requestStartedAt": "2026-10-18T09:59:27.080129+00:00",
+      "receivedAt": "2026-10-18T09:59:29.173680+00:00",
+      "sha256": "4c9cf76a8ee95aff98a2fe7df8cabc0860762de0371a764cf1fe0724e37622a0",
+      "bytes": 5656,
+      "ReedPresent": false,
+      "RepublicanPresent": false
+    },
+    {
+      "kind": "official_candidate_list",
+      "url": "https://vote.sos.ri.gov/Candidates/CandidateSearchSummary?Election=18144&OfficeType=620",
+      "status": 200,
+      "transport": "primary_official_page_web_tool_text_extraction_not_raw_http_html",
+      "receivedAt": "2026-10-18T10:00:49Z",
+      "sha256": "a49e75e4f7cb3dcc8160708210a31a6cdae25a3c236109f2fb4fc7d465b165bb",
+      "bytes": 2164,
+      "directHttp403PreservedSeparately": true
+    }
+  ],
+  "publicationInstantKnown": false,
+  "forecastEdition": "2026-10-17",
+  "calibratedProbabilityClaimed": false,
+  "workerRestarted": false,
+  "activationSent": false,
+  "activationCommitted": false,
+  "newFillOrProfitEstablished": false,
+  "delivery": "Finite same-PID owner-socket update waits for original R44 recovery, exact executable/control/generation and fresh trading; no automatic retry"
+}
