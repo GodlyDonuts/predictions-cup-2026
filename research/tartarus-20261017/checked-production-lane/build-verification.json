@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "qualificationPhase": "checked-tartarus-production-lane-release",
+  "sourceCommit": "b1885572a11aa1833635cbc09cfdef1397e59b1a",
+  "publicationCandidate": "8071882e397a1e456f24e10851107b2eb746ab9f",
+  "sourceFiles": 279,
+  "archiveMembers": 303,
+  "archiveSha256": "16f6e2096579e6895767a68d1588cc131d66ff0617c70b89dc5611b6be61b1cb",
+  "binarySha256": "b9b35ea001480200e5df8ca8341162309ed522d3c94528f9c7d66c7615bf4da8",
+  "nativeIdentity": "4d6a93b83043420d7253a0911f1df72fe67421fb96fcb83bd9faecdedee465c8",
+  "actualChecks": {
+    "capital": [
+      13
+    ],
+    "startup-focused": [
+      7
+    ],
+    "library": [
+      261
+    ],
+    "fundamental": [
+      132
+    ],
+    "snapshot": [
+      9
+    ],
+    "worker-recovery-focused": [
+      4
+    ],
+    "worker-rank-focused": [
+      2
+    ],
+    "worker": [
+      191
+    ],
+    "release": []
+  },
+  "inheritedUnchangedSourceChecks": {
+    "sdk-focused": [
+      10
+    ],
+    "sdk": [
+      243
+    ],
+    "check": [],
+    "rank-native-focused": [
+      10
+    ],
+    "native": [
+      114
+    ]
+  },
+  "sourceEquality": "Git LF normalization only; compiled raw source bytes remain individually pinned",
+  "productionActivation": false,
+  "profitabilityEstablished": false
+}
