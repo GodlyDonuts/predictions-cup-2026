@@ -1,0 +1,83 @@
+{
+  "at": "2026-10-18T21:00:26.142177+00:00",
+  "incident": "/home/archon/apps/moloch/shared/incidents/physical-packet-storage-recovery-20261018T210017Z",
+  "sourceCommit": "7b72e03717df6170911fcc1dff2b3d15bdd6b41f",
+  "binarySha256": "d4199edbf16d9da0d5ff54bad8cfe6f98550c814b93ec675e58fa8045d14ceee",
+  "controlSha256": "eeed6244f8bb5eb8e7e56dbf48311690671ddca048c2d43dabec952cd7969fe8",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "engineUpgradeCount": 20,
+  "nativeBridgeBytesUnchanged": true,
+  "originalFillCount": 393,
+  "originalFinancialAndFifoPreserved": true,
+  "prefixes": {
+    "financial": {
+      "bytes": 2140674194,
+      "sha256": "7a1ba0281c124d90a03af2dfafc83ee2261c77b982e35ea0cead72ad86a88a82"
+    },
+    "dispatch": {
+      "bytes": 12255650,
+      "sha256": "184e4e8335a536fc57c0d190c492e9ec8d431de2afed04359d03eaa63ff874a9"
+    }
+  },
+  "originals": {
+    "head.original.json": "927afce488308466791067c96325cb88a9c56c04da9d8c9e0f2098d610f52e70",
+    "report.original.json": "ddb666fe6a4cdcef97b7c8a07f211bb33a810ef2a73981c909b92e539b59fb28",
+    "manifest.original.json": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "upgrade.original.json": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c",
+    "unit.original.service": "3bf2c1ec32b33da1be369f1c4f6e2a3eb2fceb94b76ffff28f19446f6e11a536",
+    "control.original.json": "42b7c5fe94afd5605cbd628e57653aa272cf2a9640a167b6fcbec5220a51c5ca",
+    "fundamental.original.ndjson": "4c258dbf49d50a9c6c789d349dda374923682983efe93f97d7c60dc193db9388"
+  },
+  "all14G12ReviewsPreserved": true,
+  "riskAndDailyWindowsChanged": false,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "exactDeadWorkerApplicationLockArchived": false,
+  "sdkApplicationLockAlreadyAbsentAfterWorkerExit": true,
+  "sourceManifestCheckpointOrKeysEdited": false,
+  "uncommittedReadTailOnlyRemoved": {
+    "at": "2026-10-18T20:54:08.810676+00:00",
+    "incident": "/home/archon/apps/moloch/shared/incidents/storage-enospc-20261018T205406Z",
+    "originalJournalBytes": 30380032,
+    "originalJournalSha256": "7647e0209bc735ee4466671eda7fa262f3e1c36a63353d74d47c42f17b79fd7b",
+    "retainedCompletePrefixBytes": 30378774,
+    "retainedCompletePrefixSha256": "1fbb1303e6f06c510c56f1637bb0f266e557ffd0f36574d3ad1e63bc598b9a1f",
+    "archivedUncommittedTailBytes": 1258,
+    "archivedUncommittedTailSha256": "7501c82c277d5ee0f4aa26d686454378e674b0488b0c170237d6195ec614b37b",
+    "completeRecordsVerified": 31,
+    "lastCompleteSequence": 304272,
+    "lastCompletePrevious": "b8bbf2f95d12f1ab0a4cfa56fd3c8dc289abca1036272bdddf7defaacbe52ca5",
+    "exactUnstartedReadAdmissionPrefixVerified": true,
+    "partialWrite": false,
+    "partialNetworkStarted": false,
+    "sdkUnknownCount": 0,
+    "sdkActive": null,
+    "sdkManualReview": false,
+    "permanentBindingsPreserved": 2423,
+    "idempotencyKeysPreserved": 2423,
+    "readProfilePreserved": {
+      "cap": 100,
+      "gap_ms": 600
+    },
+    "sdkManifestCheckpointOrKeyMapsChanged": false,
+    "completeRecordsRemovedOrRenumbered": false,
+    "nativeFinancialOrDispatchHistoryChanged": false,
+    "all393OriginalFillRowsAndFifoPreserved": true,
+    "nativeHeadMatchesCommittedTail": true,
+    "nativeReportAnchoredAtSequence": 639579,
+    "nativeHeadSequence": 639591,
+    "verifiedReportLagBookOnlyRecords": 12,
+    "nativeReportRebuiltYet": false,
+    "newActivationOrOrderSubmitted": false,
+    "stopRetained": true,
+    "runtimeRecoveredYet": false
+  },
+  "storageStopArchivedAfterExactReadTailProof": true,
+  "activationRenewedByDeployment": false,
+  "ordersSubmittedByDeployment": 0,
+  "currentTradingVerified": false,
+  "pid": 831812,
+  "startTicks": "32688015",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}
