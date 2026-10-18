@@ -1,7 +1,7 @@
 #![cfg(unix)]
 //! Offline real Session/queue/log fixtures. The one Transport uses loopback
 //! configuration. The final-guard fixture invokes place but proves that no socket send occurs.
-use moloch_live_runtime::{authority,dispatch,feedback,package_dispatch};
+use moloch_live_runtime::{authority,dispatch,feedback,order_snapshot,package_dispatch};
 #[path="../src/collateral_feedback.rs"]mod collateral_feedback;
 use collateral_feedback::{Boundary,RetainedReceipt,ReceiptStore};
 #[path="../src/capital_allocation.rs"]mod capital_allocation;

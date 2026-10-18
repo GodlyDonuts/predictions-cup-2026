@@ -78,7 +78,7 @@ impl Cohorts{
   need(a["marketId"]==r.market_id&&bank.engine().wallet.quantity(ex,if side==Side::Yes{Side::No}else{Side::Yes})==0
    &&if buy{self.rank_paused(ex)||bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)==0}else{n<=bank.engine().wallet.quantity(ex,side)},"RANK_COHORT_FUNDED_ACTION_REQUIRED")?;
   if !self.rank_paused(ex){need(if buy{bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)==0}else{a["side"]==r.side},"RANK_COHORT_FIRST_HANDOFF_REQUIRES_COVERED_OR_FLAT_ORIGIN")?;}
-  let registered=bank.engine().order_records().iter().find(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).and_then(|q|q["id"].as_u64()).and_then(|id|self.rank_bindings.get(&id));
+  let registered=crate::order_snapshot::snapshot(bank).records().iter().find(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).and_then(|q|q["id"].as_u64()).and_then(|id|self.rank_bindings.get(&id));
   if let Some(old)=registered{need(old["managedInventory"]==*proof,"RANK_COHORT_ORIGINAL_HANDOFF_CHANGED")?;}else{
    let current=self.rank_inventory_state(bank,log,ex)?;
    for k in ["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256","positionsSha256","handoffEstablished","emptyOriginalInventory","sourceSha256"]{need(proof[k]==current[k],"RANK_COHORT_HANDOFF_CHANGED")?;}
@@ -126,7 +126,7 @@ impl Cohorts{
   need(q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()&&q["retired"]==false&&q["filled"]==0
    &&q["side"]==review.action()["side"]&&q["action"]==if review.action()["action"]=="BUY"{"buy"}else{"sell"}
    &&q["quantity"]==review.action()["quantity"]&&scope.tournament_id==r.tournament_id&&scope.exchanges.get(ex)==Some(&r.market_id),"RANK_COHORT_QUOTE_CHANGED")?;
-  need(log.acknowledgments.keys().all(|id|log.closed.contains(id))&&bank.engine().order_records().iter().all(|v|v["exchangeId"]!=ex||v["retired"]==true||v["id"]==qid),"RANK_COHORT_OTHER_PHYSICAL_OR_DRAFT_LIABILITY")?;
+  need(log.acknowledgments.keys().all(|id|log.closed.contains(id))&&crate::order_snapshot::snapshot(bank).records().iter().all(|v|v["exchangeId"]!=ex||v["retired"]==true||v["id"]==qid),"RANK_COHORT_OTHER_PHYSICAL_OR_DRAFT_LIABILITY")?;
   request_matches(spec,&q,&self.run,&scope.tournament_id,q["quantity"].as_u64().ok_or("RANK_COHORT_QUANTITY")?)?;
   if let Some(previous)=self.rank_bindings.get(&qid){let b:Binding=serde_json::from_value(previous["binding"].clone())?;
    need(b.quote==compact_quote(&q)&&b.spec_sha256==digest(spec)?&&previous["managedInventory"]==*review.managed_inventory().unwrap(),"RANK_COHORT_ORIGINAL_BINDING_CHANGED")?;

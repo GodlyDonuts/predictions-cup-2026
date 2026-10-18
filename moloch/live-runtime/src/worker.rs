@@ -50,9 +50,9 @@ fn rank_yield_candidates(c:&Control,bank:&Session,log:&DispatchLog,managed:&std:
  // An unused SELL draft also pins a market slot after a hypothetical sale.
  // Yielding it releases no cash or holdings; every physical/reviewed origin
  // retains the same protections as an unused BUY draft.
- Ok(bank.engine().order_records().into_iter().filter(|q|q["retired"]==false&&matches!(q["action"].as_str(),Some("buy"|"sell"))&&q["filled"]==0&&!rank_quote(q)&&q.get("reviewedFundamentalEntry").is_none_or(Value::is_null)&&q.get("reviewedInventoryExit").is_none_or(Value::is_null)
+ Ok(moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false&&matches!(q["action"].as_str(),Some("buy"|"sell"))&&q["filled"]==0&&!rank_quote(q)&&q.get("reviewedFundamentalEntry").is_none_or(Value::is_null)&&q.get("reviewedInventoryExit").is_none_or(Value::is_null)
   &&q["exchangeId"].as_str().is_some_and(|ex|c.scope.exchanges.contains_key(ex)&&!managed.contains(ex))
-  &&q["id"].as_u64().is_some_and(|id|!bank.engine().is_package_order(id)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!log.acknowledgments.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))).collect())
+  &&q["id"].as_u64().is_some_and(|id|!bank.engine().is_package_order(id)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!log.acknowledgments.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))).cloned().collect())
 }
 fn rank_after_yield_reserved(bank:&Session,quotes:&[Value])->Result<i128>{
  let mut hypothetical=bank.engine().wallet.clone();for q in quotes{if q["action"]=="buy"{hypothetical.release(&q["id"].as_u64().ok_or("RANK_YIELD_QUOTE")?.to_string())?;}}Ok(hypothetical.reserved()?)
@@ -146,7 +146,11 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
   Ok(None)=>break,Ok(Some(at))=>std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100))),
   Err(e)=>{if log.never_attempted(qid)&&q["retired"]==false{retire_never_sent(bank,log,&q)?;}return rank_deferred(c,"activation",&e.to_string())}
  }}
- let(facts,collateral)=match rank_snapshots(c,bank,source,&market,Some(&original),&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe}){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
+ let mut final_reads=LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe};
+ // The same one leading public frame may create an unused ordinary draft.
+ // Commit/retire it before expiring account facts, rather than afterward.
+ final_reads.service_before_read(bank,source)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;
+ let(facts,collateral)=match rank_snapshots(c,bank,source,&market,Some(&original),&mut final_reads){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
  accept_fresh_book(bank,c,&target,&facts.book,source)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;let current=quote(bank,qid)?;
  if current!=original||!log.never_attempted(qid){return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_CHANGED")}
  pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
@@ -189,8 +193,11 @@ const RANK_REALTIME_FRAMES_PER_SERVICE:usize=1;
 // another durable stream commit on every 25ms SDK wait notification: that
 // commit can outlive the GET and age the entire seven-receipt packet.
 // Controls/stream health are still checked on EVERY notification; slow GETs
-// additionally admit a frame each second. Other read paths are unchanged.
-const RANK_READ_STREAM_SERVICE_INTERVAL:Duration=Duration::from_millis(1000);
+// admit one public frame before the first expiring fact, keeping later frames
+// queued through a bounded rank packet. A20s packet is already outside the
+// unchanged account-fact window. Private account/control checks stay25ms;
+// no frame is dropped and other read paths are unchanged.
+const RANK_READ_STREAM_SERVICE_INTERVAL:Duration=Duration::from_millis(20000);
 fn preflight_stream_service_due(frames:usize,elapsed:Duration)->bool{
  frames!=RANK_REALTIME_FRAMES_PER_SERVICE||elapsed>=RANK_READ_STREAM_SERVICE_INTERVAL
 }
@@ -4300,6 +4307,10 @@ mod local_final_guard_recovery_tests{
 }
 #[cfg(test)]mod rank_worker_tests{
  use super::*;
+ #[test]fn rank_packet_defers_public_commits_through_original_fact_window_without_changing_ordinary_service(){
+  for ms in [0,1000,9999,19999]{assert!(!preflight_stream_service_due(RANK_REALTIME_FRAMES_PER_SERVICE,Duration::from_millis(ms)));assert!(preflight_stream_service_due(MAX_REALTIME_FRAMES_PER_DRAIN,Duration::from_millis(ms)));}
+  assert!(preflight_stream_service_due(RANK_REALTIME_FRAMES_PER_SERVICE,Duration::from_millis(20000)));assert_eq!(RANK_REALTIME_FRAMES_PER_SERVICE,1);
+ }
  #[test]fn rank_packet_shares_completion_gate_between_reads_and_wait_notifications(){
   assert!(preflight_stream_service_ready(RANK_REALTIME_FRAMES_PER_SERVICE,None));let last=Some(std::time::Instant::now());
   for _ in 0..8{assert!(!preflight_stream_service_ready(RANK_REALTIME_FRAMES_PER_SERVICE,last));for _ in 0..4{assert!(!preflight_stream_service_ready(RANK_REALTIME_FRAMES_PER_SERVICE,last));}assert!(preflight_stream_service_ready(MAX_REALTIME_FRAMES_PER_DRAIN,last));}

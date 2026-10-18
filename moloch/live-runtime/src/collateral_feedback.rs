@@ -112,12 +112,12 @@ fn capture_checked(bank:&Session,b:&Boundary<'_>,at:i64,allow_proved:bool)->Resu
  b.ordinary.require_resolved_attempts()?;need(o.attempted==b.ordinary.attempted&&o.acknowledged==b.ordinary.acknowledgments.keys().copied().collect()&&o.closed==b.ordinary.closed,"COLLATERAL_DISPATCH_PROJECTION")?;
  let mut allocation_aborted=BTreeSet::new();let mut allocation_expired=BTreeSet::new();
  if allow_proved{need(o.aborted==*b.ordinary.aborted_records(),"CAPITAL_ABORT_PROJECTION")?;need(o.local_final_guard==*b.ordinary.local_final_guard_records(),"CAPITAL_LOCAL_GUARD_PROJECTION")?;for q in o.attempted.difference(&o.closed){
-  let original=bank.engine().order_records().into_iter().find(|r|r["id"]==*q).ok_or("CAPITAL_ABORT_NATIVE_QUOTE")?;
+  let original=crate::order_snapshot::snapshot(bank).quote(*q).cloned().ok_or("CAPITAL_ABORT_NATIVE_QUOTE")?;
   need(original["retired"]==true&&original["filled"]==0&&!b.ordinary.acknowledgments.contains_key(q)&&!bank.engine().live_order_bindings().contains_key(q)&&!bank.engine().fills().iter().any(|f|f["orderId"]==*q),"CAPITAL_UNVERIFIED_ABORT")?;
   if b.ordinary.proved_no_network(*q)&&(o.aborted.contains_key(q)||o.local_final_guard.contains_key(q)){allocation_aborted.insert(*q);}else{need(exact_expired_resolution(b.ordinary,&o.expired_exposure,*q),"CAPITAL_UNVERIFIED_EXPIRED_EXPOSURE")?;allocation_expired.insert(*q);}
  }}
  need(o.attempted.iter().all(|q|o.closed.contains(q)||allocation_aborted.contains(q)||allocation_expired.contains(q))&&!b.packages.unresolved()&&!bank.engine().package_blocks_new_submissions(),"COLLATERAL_UNRESOLVED_EXECUTION")?;
- let pending:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).map(|q|q["id"].as_u64().ok_or("COLLATERAL_QUOTE_ID")).collect::<std::result::Result<_,_>>()?;
+ let pending:Vec<_>=crate::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false).map(|q|q["id"].as_u64().ok_or("COLLATERAL_QUOTE_ID")).collect::<std::result::Result<_,_>>()?;
  need(pending.iter().all(|q|!o.attempted.contains(q)&&b.ordinary.never_attempted(*q)&&!bank.engine().live_order_bindings().contains_key(q)),"COLLATERAL_UNSUBMITTED_PROOF")?;
  need(ordinary==b.ordinary.descriptor_identity()?&&packages==b.packages.descriptor_identity()?,"COLLATERAL_DISPATCH_CHANGED")?;
  let seed=bank.live_account_seed().ok_or("COLLATERAL_LIVE_BANK")?;

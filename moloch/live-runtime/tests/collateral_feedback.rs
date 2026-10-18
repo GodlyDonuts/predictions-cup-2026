@@ -1,7 +1,7 @@
 #![cfg(unix)]
 //! Offline real Session/queue/log fixtures. The one Transport uses loopback
 //! configuration and DisabledCredentials; no test invokes a network method.
-use moloch_live_runtime::{dispatch,feedback,package_dispatch};
+use moloch_live_runtime::{dispatch,feedback,order_snapshot,package_dispatch};
 #[path="../src/collateral_feedback.rs"]mod collateral_feedback;
 use collateral_feedback::*;
 use baal_transport_service::{Receipt,Scope,Config,Transport,DisabledCredentials,SystemClock,ReadOnlyAuthority,admission::AccountAdmission};

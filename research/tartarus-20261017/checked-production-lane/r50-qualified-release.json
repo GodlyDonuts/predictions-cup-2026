@@ -1,0 +1,152 @@
+{
+  "qualifiedAt": "2026-10-18T20:59:45.922434+00:00",
+  "steps": [
+    {
+      "step": "debug-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:53:33.716868+00:00",
+      "finishedAt": "2026-10-18T20:53:55.410714+00:00"
+    },
+    {
+      "step": "worker-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:53:55.411474+00:00",
+      "finishedAt": "2026-10-18T20:54:09.491392+00:00"
+    },
+    {
+      "step": "rank-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:09.491957+00:00",
+      "finishedAt": "2026-10-18T20:54:11.808087+00:00"
+    },
+    {
+      "step": "cooperative-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:11.808581+00:00",
+      "finishedAt": "2026-10-18T20:54:20.605852+00:00"
+    },
+    {
+      "step": "library-test-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:20.606403+00:00",
+      "finishedAt": "2026-10-18T20:54:45.390897+00:00"
+    },
+    {
+      "step": "order-cache-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:45.391475+00:00",
+      "finishedAt": "2026-10-18T20:54:45.580199+00:00"
+    },
+    {
+      "step": "collateral-cache-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:45.580647+00:00",
+      "finishedAt": "2026-10-18T20:54:45.617394+00:00"
+    },
+    {
+      "step": "rank_cohort_ownership-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:45.617813+00:00",
+      "finishedAt": "2026-10-18T20:54:50.995482+00:00"
+    },
+    {
+      "step": "rank_cohort_ownership-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:50.996051+00:00",
+      "finishedAt": "2026-10-18T20:54:54.579454+00:00"
+    },
+    {
+      "step": "collateral_feedback-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:54:54.580033+00:00",
+      "finishedAt": "2026-10-18T20:55:00.147609+00:00"
+    },
+    {
+      "step": "collateral_feedback-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:55:00.148163+00:00",
+      "finishedAt": "2026-10-18T20:55:05.196650+00:00"
+    },
+    {
+      "step": "collateral_reconciliation-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:55:05.197276+00:00",
+      "finishedAt": "2026-10-18T20:55:09.413757+00:00"
+    },
+    {
+      "step": "collateral_reconciliation-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:55:09.414398+00:00",
+      "finishedAt": "2026-10-18T20:55:09.451837+00:00"
+    },
+    {
+      "step": "capital_allocation-build",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:55:09.452366+00:00",
+      "finishedAt": "2026-10-18T20:55:15.714802+00:00"
+    },
+    {
+      "step": "capital_allocation-tests",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:55:15.715465+00:00",
+      "finishedAt": "2026-10-18T20:55:24.132062+00:00"
+    },
+    {
+      "step": "release-library",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:55:24.135590+00:00",
+      "finishedAt": "2026-10-18T20:57:42.260970+00:00"
+    },
+    {
+      "step": "release-worker",
+      "exitCode": 0,
+      "startedAt": "2026-10-18T20:57:42.261712+00:00",
+      "finishedAt": "2026-10-18T20:59:45.834955+00:00"
+    }
+  ],
+  "binarySha256": "d4199edbf16d9da0d5ff54bad8cfe6f98550c814b93ec675e58fa8045d14ceee",
+  "workerSha256": "2897bdf81abd75de0960921716ffc9a1e4ac311e4880b77ca2393bde7e799497",
+  "sourceSha256": {
+    "moloch/live-runtime/src/collateral_feedback.rs": "1e5d4f35d6266c911295c963afd510366a497ce93c11cb75758f37df2158e3e4",
+    "moloch/live-runtime/src/fundamental_rank_ownership.rs": "71ef147604c0da2a3d7dc4b42ce4d5730878facc6f95ea60765bd4876f455dc8",
+    "moloch/live-runtime/src/worker.rs": "2897bdf81abd75de0960921716ffc9a1e4ac311e4880b77ca2393bde7e799497",
+    "moloch/live-runtime/tests/capital_allocation.rs": "932d6bc683b0508927a45523008ccb44964f5200659697ecb91a0762b43f2033",
+    "moloch/live-runtime/tests/collateral_feedback.rs": "40fe90e46e96adfb3dc72fec7c21ec3f637ed2854ab314263fdc96e222ef9230"
+  },
+  "unchangedNativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "nativeOrSdkCodeChanged": false,
+  "rankPublicCommitCadenceChanged": true,
+  "rankPublicCommitCadenceMs": 20000,
+  "rankPublicFramesPerService": 1,
+  "privateAccountControlServiceMs": 25,
+  "leadingFrameDraftRetirementBeforeFinalFactClocks": true,
+  "actualOrderLatencyOrProfitImprovementEstablished": false,
+  "sourceTtlsRiskLimiterChanged": false,
+  "deployed": false,
+  "testResults": {
+    "rank-tests": [
+      "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 199 filtered out; finished in 2.31s"
+    ],
+    "cooperative-tests": [
+      "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 194 filtered out; finished in 8.79s"
+    ],
+    "order-cache-tests": [
+      "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 265 filtered out; finished in 0.18s"
+    ],
+    "collateral-cache-tests": [
+      "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 266 filtered out; finished in 0.03s"
+    ],
+    "rank_cohort_ownership-tests": [
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.58s"
+    ],
+    "collateral_feedback-tests": [
+      "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.04s"
+    ],
+    "collateral_reconciliation-tests": [
+      "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s"
+    ],
+    "capital_allocation-tests": [
+      "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.41s"
+    ]
+  }
+}
