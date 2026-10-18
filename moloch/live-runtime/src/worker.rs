@@ -52,10 +52,10 @@ fn rank_yield_candidates(c:&Control,bank:&Session,log:&DispatchLog,managed:&std:
   &&q["id"].as_u64().is_some_and(|id|!bank.engine().is_package_order(id)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!log.acknowledgments.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))).collect())
 }
 fn rank_after_yield_reserved(bank:&Session,quotes:&[Value])->Result<i128>{
- let mut hypothetical=bank.engine().wallet.clone();for q in quotes{hypothetical.release(&q["id"].as_u64().ok_or("RANK_YIELD_QUOTE")?.to_string())?;}Ok(hypothetical.reserved()?)
+ let mut hypothetical=bank.engine().wallet.clone();for q in quotes{if q["action"]=="buy"{hypothetical.release(&q["id"].as_u64().ok_or("RANK_YIELD_QUOTE")?.to_string())?;}}Ok(hypothetical.reserved()?)
 }
 fn rank_yield_unsubmitted_drafts(c:&Control,bank:&mut Session,log:&mut DispatchLog,managed:&std::collections::BTreeSet<String>)->Result<usize>{
- let drafts=rank_yield_candidates(c,bank,log,managed)?;let mut yielded=0;
+ log.require_resolved_attempts()?;let drafts=rank_yield_candidates(c,bank,log,managed)?;let mut yielded=0;
  for original in drafts{let id=original["id"].as_u64().ok_or("RANK_YIELD_QUOTE")?;
   let current=quote(bank,id)?;if current!=original{return Err("RANK_YIELD_ORIGINAL_CHANGED".into())}
   let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
@@ -64,15 +64,18 @@ fn rank_yield_unsubmitted_drafts(c:&Control,bank:&mut Session,log:&mut DispatchL
 }
 // A reviewed handoff may yield only the target's exact never-submitted drafts.
 // Original bindings and all positive not-sent/retirement records remain intact.
+fn rank_managed_yield_candidates(bank:&Session,log:&DispatchLog,ex:&str)->Vec<Value>{
+ bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]==ex&&q["retired"]==false&&!rank_quote(q)&&q["filled"]==0
+  &&q["id"].as_u64().is_some_and(|id|!bank.engine().is_package_order(id)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))).collect()
+}
 fn rank_yield_managed_drafts(bank:&mut Session,log:&mut DispatchLog,ex:&str)->Result<()>{
  log.require_resolved_attempts()?;
- for q in bank.engine().order_records(){let id=q["id"].as_u64().ok_or("RANK_MANAGED_DRAFT_ID")?;
-  if q["exchangeId"]!=ex||q["retired"]!=false||rank_quote(&q)||q["filled"]!=0||bank.engine().is_package_order(id)
-   ||!log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().live_order_bindings().contains_key(&id)||bank.engine().fills().iter().any(|f|f["orderId"]==id){continue}
+ for q in rank_managed_yield_candidates(bank,log,ex){let id=q["id"].as_u64().ok_or("RANK_MANAGED_DRAFT_ID")?;
   let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof}))?;
   accept(bank,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(now())}))?;
  }Ok(())
 }
+
 fn rank_activation(q:&Value,original:&Value,at:u64)->Result<Option<u64>>{
  if q!=original||!rank_quote(q)||q["retired"]!=false||q["filled"]!=0||q.get("cancelEffectiveAt").is_some_and(|v|!v.is_null())||q["expiresAt"].as_u64().is_none_or(|t|at>=t){return Err("RANK_RESERVATION_EXPIRED_OR_CHANGED".into())}
  let active=q["activationAt"].as_u64().ok_or("RANK_ACTIVATION")?;Ok((at<active).then_some(active))
@@ -419,10 +422,12 @@ fn write_tartarus_native_view(c:&Control,bank:&Session,ordinary:&DispatchLog,f:O
  let orders:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).collect();
  let managed=f.map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();let yieldable=rank_yield_candidates(c,bank,ordinary,&managed)?;
  let after_yield=rank_after_yield_reserved(bank,&yieldable)?;
+ let mut target_projections=serde_json::Map::new();for ex in &managed{let selected=rank_managed_yield_candidates(bank,ordinary,ex);let mut all=yieldable.clone();all.extend(selected.iter().cloned());target_projections.insert(ex.clone(),json!({"expectedReservedCash":money(rank_after_yield_reserved(bank,&all)?),"targetQuoteIds":selected.iter().map(|q|q["id"].clone()).collect::<Vec<_>>(),"alreadyRetired":false,"actualCashCredited":"0.000000","executionAuthority":false}));}
+
 
  let view=json!({"schema":"tartarus_native_research_view_v1","writtenAt":iso(now()),"nativeHead":bank.durable_head(),"manifestHash":bank.manifest_hash(),
   "account":{"positions":bank.engine().wallet.positions(),"positionsSha256":hash(&bank.engine().wallet.positions()),"cash":money(bank.engine().wallet.cash),"reservedCash":money(bank.engine().wallet.reserved()?),"actualFillsSha256":hash(&json!(bank.engine().fills())),"fillCount":bank.engine().fills().len()},
-  "scope":c.scope,"admissionProjectionAfterOrdinaryDraftRetirement":{"expectedReservedCash":money(after_yield),"eligibleQuoteIds":yieldable.iter().map(|q|q["id"].clone()).collect::<Vec<_>>(),"alreadyRetired":false,"actualCashCredited":"0.000000","executionAuthority":false},"policy":bank.engine().policy(),"generationSha256":f.map(|f|f.cohorts.generation_sha()),"managedOwnership":ownership,"activeNativeOrders":orders,"knownUnclosedAcknowledgments":ordinary.acknowledgments.keys().filter(|q|!ordinary.closed.contains(q)).copied().collect::<Vec<_>>(),
+  "scope":c.scope,"managedTargetAdmissionProjections":target_projections,"admissionProjectionAfterOrdinaryDraftRetirement":{"expectedReservedCash":money(after_yield),"eligibleQuoteIds":yieldable.iter().map(|q|q["id"].clone()).collect::<Vec<_>>(),"alreadyRetired":false,"actualCashCredited":"0.000000","executionAuthority":false},"policy":bank.engine().policy(),"generationSha256":f.map(|f|f.cohorts.generation_sha()),"managedOwnership":ownership,"activeNativeOrders":orders,"knownUnclosedAcknowledgments":ordinary.acknowledgments.keys().filter(|q|!ordinary.closed.contains(q)).copied().collect::<Vec<_>>(),
   "unresolvedOrdinaryAttempt":ordinary.require_resolved_attempts().is_err(),"originalObservationReceiptClocks":receipts,"books":bank.engine().live_package_books(),
   "booksCompleteUniverse":false,"allBooksCurrent":false,"officialAtomicAccountSnapshot":false,"sdkQueueBoundaryChecked":false,"economicFreshnessQualified":false,"physicalPreflightRequired":true,"networkRequests":0,"researchOnly":true,"executionAuthority":false});
  // A research export IO failure does not acquire STOP or execution authority.
