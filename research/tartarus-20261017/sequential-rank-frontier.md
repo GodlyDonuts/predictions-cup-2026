@@ -6,6 +6,18 @@ candidate was rebuilt with all25 held sides,393 actual fills,157.305 cash and
 95579.405 remaining original FIFO principal. The historical table is not a
 current-price or current-holdings projection.
 
+A new bounded search on the exact393-fill,25-held-side input independently
+checks27 conditional trades with weakest declared expected monetary change
++2943.874938 and zero strict first-place mass against the dated flat leader
+benchmark. Requiring nonnegative expectation in every supplied view yields a
+39-trade incumbent with weakest change+47.620397 and zero first-place mass.
+These use retained original/datelabeled depth as conditional future liquidity;
+they are neither current executable prices nor calibrated return forecasts.
+Both searches ran on the laptop and submitted no order. The earlier
+unconstrained129-trade rank alternative remains separately negative in declared
+monetary expectation; no positive-money result silently replaces its risks.
+
+
 The October18 update preserves slots occupied by original managed drafts even
 following a hypothetical full inventory sale, excludes purchases lacking actual
 cohort ownership evidence, and uses exact integer wealth lattices so numerical
