@@ -1,0 +1,83 @@
+import copy
+import json
+import unittest
+
+from moloch.tartarus.party_scenarios import compile_scenarios, canonical, sha, PPM
+
+
+def fixture(count=3):
+    registry, originals, marginals = [], {}, []
+    for i in range(count):
+        cid, ex, market = str(100+i), str(200+i), str(300+i)
+        root = {"node_type":"contract", "node_id":cid, "contract_id":cid,
+                "contract_details":{"resolutionType":"Party Winner", "raceStage":"General",
+                 "winnerName":"Democratic Party" if i == 1 else "Republican Party",
+                 "raceId":1 if i < 2 else i, "stageId":9, "electionDate":"2026-11-03",
+                 "raceName":"Same race" if i < 2 else str(i), "officeLevel":"Federal", "usState":"AK"}}
+        raw = canonical({"data":{"market_id":market, "root":root}})
+        originals[sha(raw)] = raw
+        registry.append({"contractId":cid, "exchangeId":ex, "marketId":market,
+                         "semanticSourceSha256":sha(raw), "officialContractRootSha256":sha(canonical(root))})
+        source = canonical({"synthetic_marginal":i})
+        originals[sha(source)] = source
+        point = 300_000 if i == 1 else 400_000
+        marginals.append({"exchangeId":ex, "lowerPpm":point, "upperPpm":point,
+                          "sourceSha256":sha(source), "observedAtMs":100, "maximumAgeMs":100,
+                          "assumptionLabel":"Explicit synthetic marginal; not market calibration"})
+    profiles = [{"id":"shared", "marginalPoint":"midpoint", "dependence":"common_party_swing",
+                 "hypotheticalRefundWeightPpm":0, "assumptionLabel":"Synthetic shared latent rank"},
+                {"id":"independent", "marginalPoint":"midpoint", "dependence":"independent",
+                 "hypotheticalRefundWeightPpm":10000, "assumptionLabel":"Synthetic independent stratified sample"}]
+    return registry, originals, marginals, profiles
+
+
+class PartyScenarioTests(unittest.TestCase):
+    def test_same_race_parties_never_both_win_and_other_winner_is_retained(self):
+        r = compile_scenarios(*fixture(), 150)
+        rows = [s for s in r["scenarios"] if s["kind"] == "ordinary"]
+        self.assertTrue(any(s["payouts"]["100"] == s["payouts"]["101"] == "resolved_no" for s in rows))
+        self.assertTrue(all(not(s["payouts"]["100"] == s["payouts"]["101"] == "resolved_yes") for s in rows))
+        self.assertEqual(r, compile_scenarios(*fixture(), 150))
+        for p in r["probabilityModels"]:
+            self.assertEqual(sum(p["weightsPpm"]), PPM)
+            self.assertEqual(len(p["weightsPpm"]), len(r["scenarios"]))
+
+    def test_exact_common_swing_preserves_rare_state_instead_of_rounding_it_out(self):
+        registry, originals, marginals, profiles = fixture(1)
+        marginals[0].update(lowerPpm=1000, upperPpm=1000)
+        r = compile_scenarios(registry, originals, marginals, profiles[:1], 150, draws_per_profile=2)
+        probability = sum(w for s, w in zip(r["scenarios"], r["probabilityModels"][0]["weightsPpm"])
+                          if s["payouts"]["100"] == "resolved_yes")
+        self.assertEqual(probability, 1000)
+        self.assertFalse(r["calibratedProbabilitiesClaimed"])
+        self.assertFalse(r["executionAuthority"])
+
+    def test_missing_stale_future_forged_and_incoherent_inputs_reject(self):
+        base = fixture()
+        for case in ("missing", "stale", "future", "forged", "incoherent"):
+            a = copy.deepcopy(base)
+            if case == "missing": a[2].pop()
+            if case == "stale": a[2][0]["observedAtMs"] = 0
+            if case == "future": a[2][0]["observedAtMs"] = 151
+            if case == "forged": a[0][0]["officialContractRootSha256"] = "f"*64
+            if case == "incoherent":
+                for m in a[2][:2]: m.update(lowerPpm=700000, upperPpm=800000)
+            with self.subTest(case=case), self.assertRaises(ValueError):
+                compile_scenarios(*a, 150)
+
+    def test_23_contracts_all_modeled_and_unknown_interval_remains_explicit(self):
+        a = fixture(23)
+        a[2][-1].update(lowerPpm=0, upperPpm=PPM, assumptionLabel="Explicit ignorance, no pricing evidence")
+        r = compile_scenarios(*a, 150)
+        self.assertLessEqual(len(r["scenarios"]), 128)
+        self.assertTrue(all(set(s["payouts"]) == {c["contractId"] for c in a[0]} for s in r["scenarios"]))
+        self.assertTrue(r["commonSwingIntervalsExactWithinDeclaredCopula"])
+        self.assertTrue(r["independentRareEventsMayBeUnrepresented"])
+        a = list(a)
+        a[3] = [dict(a[3][1], id=str(i)) for i in range(8)]
+        with self.assertRaisesRegex(ValueError, "NATIVE_SCENARIO_BOUND"):
+            compile_scenarios(*a, 150, draws_per_profile=64)
+
+
+if __name__ == "__main__":
+    unittest.main()
