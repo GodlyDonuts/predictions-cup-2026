@@ -128,5 +128,36 @@ class PartyScenarioTests(unittest.TestCase):
             compile_scenarios(*a, 150, draws_per_profile=64)
 
 
+    def test_explicit_wide_research_preserves_models_until_field_aware_reduction(self):
+        from moloch.tartarus.scenario_coalescing import coalesce
+        a = list(fixture())
+        a[3] = [dict(a[3][1], id=f"independent-{i}") for i in range(8)]
+        with self.assertRaisesRegex(ValueError, "NATIVE_SCENARIO_BOUND"):
+            compile_scenarios(*a, 150, draws_per_profile=64)
+        wide = compile_scenarios(*a, 150, draws_per_profile=64, research_scenario_limit=1024)
+        self.assertEqual(len(wide["scenarios"]), 513)
+        self.assertTrue(wide["requiresFieldAwareNativeReduction"])
+        self.assertFalse(wide["executionAuthority"])
+        fields = [{"id": "hypothetical_flat", "completeField": False,
+                   "assumptionLabel": "Synthetic fixed opposing threshold, not a field observation",
+                   "thresholds": ["100.000000"]*513}]
+        reduced = coalesce(wide["scenarios"], wide["probabilityModels"], fields)
+        self.assertLessEqual(len(reduced["scenarios"]), 128)
+        self.assertEqual(len(reduced["probabilityModels"]), 8)
+        def distribution(rows, model):
+            out = {}
+            for row, weight in zip(rows, model["weightsPpm"]):
+                signature = canonical([row["kind"], row["payouts"]])
+                out[signature] = out.get(signature, 0)+weight
+            return out
+        for before, after in zip(wide["probabilityModels"], reduced["probabilityModels"]):
+            self.assertEqual(before["id"], after["id"])
+            self.assertEqual(distribution(wide["scenarios"], before),
+                             distribution(reduced["scenarios"], after))
+        for invalid in [True, 127, 4097]:
+            with self.assertRaisesRegex(ValueError, "RESEARCH_SCENARIO_LIMIT"):
+                compile_scenarios(*a, 150, research_scenario_limit=invalid)
+
+
 if __name__ == "__main__":
     unittest.main()

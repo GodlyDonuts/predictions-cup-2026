@@ -51,7 +51,7 @@ def _marginal_records(records, originals, decision_ms):
 
 
 def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
-                      draws_per_profile=16, seed=17023):
+                      draws_per_profile=16, seed=17023, research_scenario_limit=128):
     """Return native scenarios/probabilityModels, never a nomination/approval.
 
     Each marginal names exchangeId, lowerPpm, upperPpm, sourceSha256,
@@ -64,10 +64,15 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
     and a hypothetical all-refund stress weight. Same-race intervals must admit
     a coherent categorical distribution. Inconsistent quotes do not get silently
     normalized beyond their supplied intervals.
+
+    The default retains the native128-row bound. An explicitly larger research
+    limit retains every row/model and grants no live authority; a complete
+    field-aware reduction must satisfy native dimensions before nomination.
     """
     integer(decision_ms, 0, 2**63-1, "DECISION_CLOCK")
     integer(seed, 0, 2**63-1, "SEED")
     integer(draws_per_profile, 2, 64, "DRAW_BOUND")
+    integer(research_scenario_limit, 128, 4096, "RESEARCH_SCENARIO_LIMIT")
     need(type(registry) is list and 1 <= len(registry) <= 64, "REGISTRY_BOUND")
     need(type(profiles) is list and 1 <= len(profiles) <= 8, "NATIVE_MODEL_BOUND")
     need(type(originals) is dict and type(marginals) is list, "INPUT_SHAPE")
@@ -139,7 +144,8 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
             cells = [((2*i+1)*PPM)//(2*draws_per_profile) for i in range(draws_per_profile)]
             share, remainder = divmod(PPM, draws_per_profile)
             masses = [share+(i < remainder) for i in range(draws_per_profile)]
-        need(len(scenarios)+len(cells)+1 <= 128, "NATIVE_SCENARIO_BOUND")
+        need(len(scenarios)+len(cells)+1 <= research_scenario_limit,
+             "NATIVE_SCENARIO_BOUND" if research_scenario_limit == 128 else "RESEARCH_SCENARIO_BOUND")
         payouts = [{} for _ in cells]
         for event, parties, mass in event_specs:
             permutation = list(range(len(cells)))
@@ -175,7 +181,7 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
         weights[-1] = model.pop("refund")
         model.pop("offset")
         model["weightsPpm"] = weights
-    return {"schemaVersion":1, "scenarios":scenarios, "probabilityModels":models,
+    result = {"schemaVersion":1, "scenarios":scenarios, "probabilityModels":models,
         "diagnostics":diagnostics, "drawsPerProfile":draws_per_profile, "seed":seed,
         "registrySha256":sha(canonical(registry)), "marginalInputSha256":sha(canonical(marginals)),
         "profileInputSha256":sha(canonical(profiles)), "decisionAtMs":decision_ms,
@@ -183,3 +189,7 @@ def compile_scenarios(registry, originals, marginals, profiles, decision_ms,
         "finiteSamplesExhaustive":False, "independentRareEventsMayBeUnrepresented":True,
         "commonSwingIntervalsExactWithinDeclaredCopula":True, "physicalPreflightRequired":True,
         "executionAuthority":False, "networkRequests":0}
+    if research_scenario_limit != 128:
+        result["researchScenarioLimit"] = research_scenario_limit
+        result["requiresFieldAwareNativeReduction"] = len(scenarios) > 128
+    return result
