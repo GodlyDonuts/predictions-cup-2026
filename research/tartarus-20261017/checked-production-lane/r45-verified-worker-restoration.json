@@ -1,0 +1,44 @@
+{
+  "verifiedAt": "2026-10-18T11:28:32.791837+00:00",
+  "sourceCommit": "886081f0",
+  "workerChecks": 207,
+  "newExpiryBoundaryChecks": 4,
+  "tokenRetryChecks": 8,
+  "priorExactUnchangedSdkChecks": 245,
+  "priorExactUnchangedLibraryChecks": 264,
+  "sourceInputs": 284,
+  "changedFromR44": [
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "binarySha256": "0accc0884b24a91fa5ba7d46e4e818df8a40bd39823a298563b2c9f9f02b6342",
+  "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+  "runtime": {
+    "observedAt": "2026-10-18T11:28:02.830349+00:00",
+    "binarySha256": "0accc0884b24a91fa5ba7d46e4e818df8a40bd39823a298563b2c9f9f02b6342",
+    "controlSha256": "834b1343e63e208061e18d15340d314ad4da34a0fddbae1298961d6388e4ab84",
+    "nativeIdentity": "85d4c4c5114176cc9472cd7f5e6bf7f889f92115112e856d5a8d223f1e598442",
+    "nativeEngineBridgeChanged": false,
+    "modelGeneration": "2f6dedcda8278345f55a821cc5690c96c753c5005f427f11765288e9979800fa",
+    "all14ModelReviewsPreserved": true,
+    "original393FillsAndFinancialPrefixesPreserved": true,
+    "noRankReservationIntentAttemptOrOrder": true,
+    "sdkUnknown": 0,
+    "ordersSubmittedByRecovery": 0,
+    "riskAndDailyWindowsChanged": false,
+    "expiredRankApprovalArchivedNotRenewed": true,
+    "currentTradingVerified": false,
+    "pid": 790101,
+    "startTicks": "29253683",
+    "actualExecutableAndArgumentsVerified": true,
+    "phase": "restoring_original_financial_ledger"
+  },
+  "ownerAndFinancialLocksHeld": {
+    "owner": true,
+    "financial": true
+  },
+  "actualPidExecutableArgumentsAndStartTicksReverified": true,
+  "executionStopAbsent": true,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_financial_ledger",
+  "notes": "Control derives from exact active G12 overlay; binary binding alone changed. Copied overlay hash typo in handoff notes was rejected before any deployment mutation, then matched original activation evidence. Old unexecuted rank authorization archived without renewal."
+}
