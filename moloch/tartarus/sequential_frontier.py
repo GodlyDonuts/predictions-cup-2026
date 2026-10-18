@@ -102,7 +102,9 @@ def _columns(fin, registry, books):
 
 def solve(financial, registry, books, model, fields, *, target_pairs,
           objective="rank", seconds=20, minimum_expected_change=None,
-          minimum_terminal_wealth=None):
+          minimum_terminal_wealth=None, forbidden_new_market_sets=(),
+          required_covered_sale_exchanges=(), maximum_native_scenarios=None,
+          required_target_hits=()):
     """Search both BUY sides and FIFO SELL prefixes; report actual model scores.
 
     target_pairs is an explicit nonempty list of (modelId, fieldId). ``rank``
@@ -142,6 +144,9 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     active = {ex: variable() for ex in sorted(set(financial["positions"]) | {v["ex"] for v in cols}
                                             | set(financial.get("retainedMarketExchanges", [])))}
     choices = {ex: variable() for ex in sorted({ex for ex, side in buys})}
+    inherited_quantities = financial.get("inheritedRemainingQuantities")
+    inherited_survives = {ex: variable() for ex in inherited_quantities} if inherited_quantities is not None else {}
+    inherited_fresh = {ex: variable() for ex in inherited_survives}
     hits = {(f, i): variable() for f in sorted({f for _, f in target_pairs}) for i in range(len(worlds))}
     tcol = variable(-1e9 if objective == "mean" else 0,
                     1e9 if objective == "mean" else UNIT, 0)
@@ -149,6 +154,77 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
 
     def row(values, lo=-np.inf, hi=np.inf):
         rows.append(values); low.append(lo); high.append(hi)
+
+    # Target-conditioned feasibility retains every world, field and model;
+    # it never increases the selected world's probability.
+    world_indices = {world["id"]: i for i, world in enumerate(worlds)}
+    for fid, sid in required_target_hits:
+        need(sid in world_indices and (fid, world_indices[sid]) in hits,
+             "REQUIRED_TARGET_HIT")
+        row({hits[fid, world_indices[sid]]: 1}, lo=1)
+
+    for forbidden in forbidden_new_market_sets:
+        need(type(forbidden) in (list, tuple, set) and forbidden
+             and len(set(forbidden)) == len(forbidden)
+             and all(ex in active and ex not in financial["positions"] for ex in forbidden),
+             "NATIVE_SCOPE_EXCLUSION")
+        row({active[ex]: 1 for ex in forbidden}, hi=len(forbidden)-1)
+    for ex in required_covered_sale_exchanges:
+        starts = [js[0] for (sx, _), js in sales.items() if sx == ex and js]
+        need(ex in financial["positions"] and starts, "REQUIRED_COVERED_SALE_UNAVAILABLE")
+        row({j: 1 for j in starts}, lo=1)
+
+    if maximum_native_scenarios is not None:
+        need(type(maximum_native_scenarios) is int and 1 <= maximum_native_scenarios <= 256,
+             "NATIVE_SCENARIO_BUDGET")
+        held_ids = sorted(byex[ex]["contractId"] for ex in financial["positions"])
+        new_buys = {}
+        for j in z:
+            if cols[j]["ex"] not in financial["positions"]:
+                new_buys.setdefault(cols[j]["ex"], []).append(z[j])
+        selected = {}
+        for ex, flags in new_buys.items():
+            selected[ex] = variable()
+            for flag in flags:
+                row({selected[ex]: 1, flag: -1}, lo=0)
+            row({selected[ex]: 1, **{flag: -1 for flag in flags}}, hi=0)
+        row({flag: 1 for flag in selected.values()}, hi=64-len(held_ids))
+        groups = {}
+        for i, world in enumerate(worlds):
+            signature = (world["kind"], tuple(world["payouts"][cid] for cid in held_ids),
+                         tuple(field["thresholds"][i] for field in fields))
+            groups.setdefault(signature, []).append(i)
+        need(len(groups) <= maximum_native_scenarios, "HELD_MODEL_EXCEEDS_NATIVE_SCENARIO_BOUND")
+        representatives, equality_flags = [], {}
+        for indices in groups.values():
+            prior, seen = [], set()
+            for i in indices:
+                full = tuple(worlds[i]["payouts"][byex[ex]["contractId"]] for ex in sorted(selected))
+                if full in seen:
+                    continue
+                seen.add(full)
+                if prior:
+                    same_flags = []
+                    for earlier in prior:
+                        differences = tuple(ex for ex in sorted(selected)
+                            if worlds[i]["payouts"][byex[ex]["contractId"]]
+                            != worlds[earlier]["payouts"][byex[ex]["contractId"]])
+                        need(differences, "NATIVE_PARTITION_DUPLICATE")
+                        if differences not in equality_flags:
+                            same = variable(); equality_flags[differences] = same
+                            for ex in differences:
+                                row({same: 1, selected[ex]: 1}, hi=1)
+                            row({same: 1, **{selected[ex]: 1 for ex in differences}}, lo=1)
+                        same_flags.append(equality_flags[differences])
+                    representative = variable(); representatives.append(representative)
+                    # Duplicated equality flags still represent distinct earlier rows.
+                    coefficients = {representative: 1}
+                    for same in same_flags:
+                        coefficients[same] = coefficients.get(same, 0) + 1
+                        row({representative: 1, same: 1}, hi=1)
+                    row(coefficients, lo=1)
+                prior.append(i)
+        row({flag: 1 for flag in representatives}, hi=maximum_native_scenarios-len(groups))
 
     cash, owned, writes, market = {}, {}, {}, {}
     deltas = np.zeros((len(worlds), N))
@@ -203,7 +279,19 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
     row(writes, hi=financial["conditionalFutureLegs"] + 1)
     row({a: 1 for a in active.values()}, hi=financial["maximumMarkets"])
     inherited = set(financial["inheritedExchanges"])
-    row({a: 1 for ex, a in active.items() if ex not in inherited}, hi=financial["freshMarketLimit"])
+    fresh_count = {a: 1 for ex, a in active.items() if ex not in inherited}
+    for ex, alive in inherited_survives.items():
+        original_inherited = inherited_quantities[ex]
+        sold = {j: cols[j]["n"] for (sx, _), js in sales.items() if sx == ex for j in js}
+        maximum_sale = sum(sold.values())
+        row({**sold, alive: original_inherited}, lo=original_inherited)
+        row({**sold, alive: maximum_sale}, hi=original_inherited - 1 + maximum_sale)
+        fresh, present = inherited_fresh[ex], active[ex]
+        row({fresh: 1, present: -1}, hi=0)
+        row({fresh: 1, alive: 1}, hi=1)
+        row({fresh: 1, present: -1, alive: 1}, lo=0)
+        fresh_count[fresh] = 1
+    row(fresh_count, hi=financial["freshMarketLimit"])
     for ex, values in market.items():
         old = sum(l["quantity"] * amount(l["price"]) for ls in financial["positions"].get(ex, {}).values() for l in ls)
         row(values, hi=(amount(financial["maximumMarketCost"]) - old) / UNIT)
@@ -264,6 +352,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
                solverMessage=str(result.message), exactOptimalityClaimed=False,
                calibratedProbabilities=False, executionAuthority=False,
                minimumExpectedChange=minimum_expected_change,
+               requiredTargetHits=list(required_target_hits),
                minimumTerminalWealth=minimum_terminal_wealth, baseline=baseline_audit)
     if result.x is None:
         return dict(out, status="no_incumbent")
@@ -293,6 +382,7 @@ def solve(financial, registry, books, model, fields, *, target_pairs,
         try:
             out["nativeProjection"] = project(worlds, model["probabilityModels"], fields,
                 retained_contract_ids=retained,
+                maximum_native_scenarios=maximum_native_scenarios or 128,
                 complete_held_contract_ids=[byex[ex]["contractId"] for ex in financial["positions"]])
         except ValueError as error:
             out["nativeProjectionUnavailable"] = str(error)

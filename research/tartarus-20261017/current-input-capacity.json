@@ -1,0 +1,145 @@
+{
+  "schema": "tartarus_current_input_execution_capacity_v1",
+  "issuedAtMs": 1792328347221,
+  "inputCutoffMs": 1792328339942,
+  "currentInputsAtIssue": true,
+  "calibratedProbabilityClaimed": false,
+  "activeOriginalReviews": 14,
+  "cachedKalshiMarkets": 237,
+  "candidateUniverse": 139,
+  "heldSides": 25,
+  "fullOriginalScenarios": 376,
+  "nativeLosslessScenarioCount": 157,
+  "retainedContracts": 35,
+  "modelCount": 5,
+  "adverseFieldsRetained": true,
+  "conditionalTradeLegs": 129,
+  "actualRankOrders": 0,
+  "actualRankFills": 0,
+  "requiredCapacity": 256,
+  "deployed": false,
+  "selectedAverageFlatTargetMassPpm": 10794.6,
+  "fieldPairs": [
+    {
+      "modelId": "price_lower_common",
+      "fieldId": "public_flat_anchor_20261018T115653",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 999
+    },
+    {
+      "modelId": "price_upper_common",
+      "fieldId": "public_flat_anchor_20261018T115653",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 25974
+    },
+    {
+      "modelId": "price_midpoint_independent",
+      "fieldId": "public_flat_anchor_20261018T115653",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "active_review_lower_common",
+      "fieldId": "public_flat_anchor_20261018T115653",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 1000
+    },
+    {
+      "modelId": "active_review_upper_common",
+      "fieldId": "public_flat_anchor_20261018T115653",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 26000
+    },
+    {
+      "modelId": "price_lower_common",
+      "fieldId": "adverse_growing_field",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "price_upper_common",
+      "fieldId": "adverse_growing_field",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "price_midpoint_independent",
+      "fieldId": "adverse_growing_field",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "active_review_lower_common",
+      "fieldId": "adverse_growing_field",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "active_review_upper_common",
+      "fieldId": "adverse_growing_field",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "price_lower_common",
+      "fieldId": "held_alaska_correlated_adverse",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "price_upper_common",
+      "fieldId": "held_alaska_correlated_adverse",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "price_midpoint_independent",
+      "fieldId": "held_alaska_correlated_adverse",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "active_review_lower_common",
+      "fieldId": "held_alaska_correlated_adverse",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    },
+    {
+      "modelId": "active_review_upper_common",
+      "fieldId": "held_alaska_correlated_adverse",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    }
+  ],
+  "declaredExpectedMoneyChanges": {
+    "price_lower_common": "-73436.747594",
+    "price_upper_common": "-55615.321859",
+    "price_midpoint_independent": "-64974.627959",
+    "active_review_lower_common": "-82289.919000",
+    "active_review_upper_common": "-58090.563000"
+  },
+  "firstOnlyProposal": {
+    "exchangeId": "1068",
+    "description": "Massachusetts Democratic Senate YES",
+    "action": "SELL",
+    "quantity": 7061,
+    "minimumLimitPrice": "0.955000",
+    "originalFifoBasis": "6624.170000",
+    "conditionalGrossProceeds": "6743.255000",
+    "conditionalRealizedChange": "119.085000",
+    "freshCurrentDepthRequired": true
+  },
+  "originalClocksRenewed": false,
+  "futurePhysicalAuthority": false,
+  "maximumPrefixLossVersusHold": "119168.260000",
+  "minimumPrefixWealth": "53.045000",
+  "modelOriginalSha256": "a80fd03f2607c06710dbca5cbe9820b480bbbb8c02593a1547a3705301d784bf",
+  "originalReportSha256": "ada8f6a7b3933b6472776cfeadd33486d31d7527c8ab356e7468b695c41c5687",
+  "originalViewSha256": "53392cfaecfbe0ce6d1e370a1ae3ce67ebd44f0a65457b38924d57fe32924401",
+  "limitations": [
+    "Uncalibrated probabilities and incomplete opposing field; no actual forecast skill established.",
+    "Dated future liquidity, every new actual leg requires fresh account/book/current original owner review.",
+    "Negative declared campaign expectation with near-total loss possible; target mass is not a calibrated probability of winning.",
+    "First proposal only; no approval published or trade submitted."
+  ]
+}

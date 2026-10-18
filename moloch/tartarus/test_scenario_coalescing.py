@@ -103,6 +103,13 @@ class CoalescingTests(unittest.TestCase):
         fields[0]["thresholds"] = [str(i) for i in range(129)]
         with self.assertRaisesRegex(ValueError, "EXCEEDS_NATIVE_BOUND"):
             coalesce(rows, models, fields)
+        expanded = coalesce(rows, models, fields, maximum_output=256)
+        self.assertEqual(len(expanded["scenarios"]), 129)
+        self.assertEqual(scores(rows, models, fields, 90, {"101": (3, 2, 4), "102": (2, 3, 1)}),
+                         scores(expanded["scenarios"], expanded["probabilityModels"],
+                                expanded["fieldModels"], 90, {"101": (3, 2, 4), "102": (2, 3, 1)}))
+        with self.assertRaisesRegex(ValueError, "NATIVE_OUTPUT_BOUND"):
+            coalesce(rows, models, fields, maximum_output=257)
 
     def test_incomplete_vectors_false_completeness_and_hidden_fields_are_rejected(self):
         for case in range(6):

@@ -1,0 +1,23 @@
+{
+  "observedAt": "2026-10-18T13:13:14.639078+00:00",
+  "pid": 790101,
+  "startTicks": "29253683",
+  "binarySha256": "0accc0884b24a91fa5ba7d46e4e818df8a40bd39823a298563b2c9f9f02b6342",
+  "controlSha256": "834b1343e63e208061e18d15340d314ad4da34a0fddbae1298961d6388e4ab84",
+  "servicePid": "790101",
+  "stopExists": false,
+  "progress": {
+    "actualFills": 393,
+    "actualOrders": 1636,
+    "at": "2026-10-18T13:12:56.323Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 790101,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 39,
+    "terminalOrders": 1634
+  },
+  "rankCampaignApproved": false
+}

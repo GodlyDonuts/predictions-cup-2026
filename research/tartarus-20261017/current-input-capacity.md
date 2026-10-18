@@ -1,0 +1,29 @@
+# Current-input whole-account search — October 18
+
+R45 is actually trading; the remaining priority is a funded Tartarus rank order and subsequent returns. No Tartarus order or fill has been established. This work adds strategy search and addresses its specific native execution bound; it does not add another account client.
+
+## What changed
+
+The file-only portfolio compiler now preserves remaining inherited quantities rather than exempting reacquired holdings forever. Current original reservations remain wealth but cannot fund purchases. Managed holdings requiring an original covered-sale handoff remain constrained. Missing empty-cohort ownership excludes purchases instead of inventing a release.
+
+The optimizer constrains exact, field-aware native scenario cardinality while retaining every held position, input world, model and adverse field. Explicitly target-conditioned searches can require winning in a named world without changing its probability. All incumbents still undergo separate exact decimal/FIFO/depth/prefix audits. Time limits and anchored infeasibility are not proof of global impossibility.
+
+`current-reference-model.py` compiles the existing Kalshi cache and all14 current original owner reviews; it issues new numerical sensitivities only when the cache and source points satisfy their original clocks at issuance. A dated-research override explicitly disqualifies current-input status. The genuine12:59:07 issuance used237 cached markets and139 matched contracts, with five uncalibrated models and376 worlds. Two categorical price conflicts remain explicit ignorance; publication timestamps unavailable from cache remain unknown. No additional venue request is made by this builder. The directional party envelope is a sensitivity family, not a fitted or calibrated forecast.
+
+## Current result and blocker
+
+With the installed128-state capacity, the general90-second search found an85-leg candidate with zero target improvement; it cannot be activated as an improved target portfolio. Several explicitly anchored winning-world cases were infeasible under that same capacity. Removing only that capacity constraint found positive conditional target candidates, all separately marked unavailable for the installed runtime. Their future prices/depth remain dated hypotheses, with fresh actual reconciliation required for every physical action. Opposing holdings and terminal wealth are unknown.
+
+A minimal native256-state candidate is being built. Python defaults remain128 for compatibility; callers must explicitly select the larger bound. The candidate changes only scenario/weight/field vector capacity, preserving contract/source/model counts, exact risk arithmetic, partial-fill checks, account budgets, ownership, source freshness, daily windows and physical order limits. It is not deployed and has not placed orders. Every future leg remains conditional; a first-leg approval cannot authorize all projected legs.
+
+The public leader observation is a dated marked-PnL benchmark, not observed cash or terminal wealth. Counterfactual target-hit mass and purchases are not realized profit. Negative declared expected-money catch-up alternatives remain explicitly labeled; they are not positive trading alpha.
+
+## Verification
+
+38 focused Python checks pass, including exact target ties, inherited reacquisition, cash reservations, covered-sale prerequisites, native partition cardinality, complete held scope and compression that preserves each supplied model's money/win/tie scores. Native capacity qualification is in progress. Current production verification is linked separately and is not evidence that this new strategy has executed.
+
+## Concrete larger-capacity candidate
+
+The current157-state/35-contract projection retains all25 held sides,376 original worlds, five model views and three fields. A target-conditioned129-tranche incumbent scores10794.6ppm equal-weight average flat-anchor target mass. That is an uncalibrated counterfactual score, not a predicted win rate. The weakest supplied monetary view loses82289.919 SUSQies in expectation. The independently rechecked reordered path can approach near-total loss; this is explicitly a rank-risk alternative, not positive alpha.
+
+Only a first covered1068YES sale is being prepared:7061 shares at0.955 minimum, original FIFO6624.17 and conditional proceeds6743.255 (119.085 conditional realized gain before any unknown extra costs). No current depth, approval, order, fill or future128-leg execution is claimed. The installed runtime remains128-state R45. [Machine-readable evidence](current-input-capacity.json).

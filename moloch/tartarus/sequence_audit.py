@@ -68,6 +68,12 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
                 need(type(lot["quantity"]) is int and lot["quantity"] >= 0
                      and 0 <= amount(lot["price"]) <= UNIT, "HOLDING_LOT")
     inherited = set(financial["inheritedExchanges"])
+    inherited_remaining = deepcopy(financial.get("inheritedRemainingQuantities"))
+    if inherited_remaining is not None:
+        need(type(inherited_remaining) is dict and set(inherited_remaining) == inherited
+             and all(type(n) is int and 0 < n <= sum(l["quantity"]
+                 for lots in positions.get(ex, {}).values() for l in lots)
+                 for ex, n in inherited_remaining.items()), "ORIGINAL_INHERITED_QUANTITIES")
     fresh_limit = financial["freshMarketLimit"]
     need(type(fresh_limit) is int and fresh_limit > 0, "FRESH_MARKET_LIMIT")
     cash = amount(financial["cash"])
@@ -154,6 +160,10 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
                     break
             need(not left, "SELL_EXCEEDS_ORIGINAL_FIFO")
             covered_sales.add(ex)
+            if inherited_remaining is not None:
+                inherited_remaining[ex] = max(0, inherited_remaining.get(ex, 0) - n)
+                if not inherited_remaining[ex]:
+                    inherited.discard(ex)
         need(cash >= reserved and owned + reserved <= amount(financial["maximumCommitted"])
              and market[ex] <= amount(financial["maximumMarketCost"]), "PREFIX_FUNDING_OR_BANK_LIMIT")
         active = {ex for ex, sides in positions.items()

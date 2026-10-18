@@ -63,7 +63,11 @@ def _remaining_inherited(source, fills, positions):
                 held[0]["quantity"] -= take
                 if not held[0]["quantity"]:
                     held.pop(0)
-    return sorted({ex for (ex, _), lots in remaining.items() if lots})
+    quantities = {}
+    for (ex, _), lots in remaining.items():
+        if lots:
+            quantities[ex] = quantities.get(ex, 0) + sum(l["quantity"] for l in lots)
+    return sorted(quantities), quantities
 
 
 def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
@@ -131,7 +135,7 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
     need(all(ex in byex for ex in retained), "CURRENT_UNMODELED_RESERVED_MARKET")
     inherited = report.get("inheritedInventory")
     need(type(inherited) is dict, "ORIGINAL_INHERITED_HISTORY_REQUIRED")
-    inherited_exchanges = _remaining_inherited(inherited, sealed["fills"], report["positions"])
+    inherited_exchanges, inherited_quantities = _remaining_inherited(inherited, sealed["fills"], report["positions"])
     policy = view["policy"]
     need(digest(policy) == report["policyHash"], "CURRENT_POLICY_BINDING")
     financial = {"nativeSequence": sealed["sequence"],
@@ -143,6 +147,7 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
         "maximumMarkets": policy["maximumMarkets"], "physicalOrderQuantity": policy["quantity"],
         "conditionalFutureLegs": conditional_future_legs,
         "inheritedExchanges": inherited_exchanges, "freshMarketLimit": inherited["freshMarketLimit"],
+        "inheritedRemainingQuantities": inherited_quantities,
         "sourceModelGeneration": view["generationSha256"], "retainedMarketExchanges": retained,
         "excludedBuyExchanges": sorted(set(view["managedTargetAdmissionProjections"]) - set(ownership)),
         "buyRequiresPriorCoveredSellExchanges": sorted(ex for ex, record in ownership.items()

@@ -41,7 +41,7 @@ def coalesce(scenarios, probability_models, field_models, maximum_output=128):
     supplying ALL state-dependent field models. A later field model requires
     recompression from the original rows, never invention of a latent mapping.
     """
-    _need(type(maximum_output) is int and 1 <= maximum_output <= 128,
+    _need(type(maximum_output) is int and 1 <= maximum_output <= 256,
           "NATIVE_OUTPUT_BOUND")
     _need(type(scenarios) is list and 1 <= len(scenarios) <= 4096,
           "RESEARCH_INPUT_BOUND")

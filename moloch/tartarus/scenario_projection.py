@@ -22,7 +22,7 @@ def digest(value):
 
 
 def project(scenarios, probability_models, field_models, *, retained_contract_ids,
-            complete_held_contract_ids):
+            complete_held_contract_ids, maximum_native_scenarios=128):
     """Keep the exact joint distribution relevant to a candidate/account subset.
 
     No omitted candidate is included in a plan. Existing account compilation and
@@ -51,7 +51,8 @@ def project(scenarios, probability_models, field_models, *, retained_contract_id
             scope = set(payouts)
         need(set(payouts) == scope and retained <= scope, "PROJECTION_INCOMPLETE_SCOPE")
         projected.append(dict(row, payouts={c:deepcopy(payouts[c]) for c in sorted(retained)}))
-    reduced = coalesce(projected, probability_models, field_models)
+    reduced = coalesce(projected, probability_models, field_models,
+                       maximum_output=maximum_native_scenarios)
     reduced["projection"] = {
         "originalScenariosSha256":digest(scenarios),
         "originalProbabilityModelsSha256":digest(probability_models),

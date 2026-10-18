@@ -138,6 +138,41 @@ class SequentialFrontier(unittest.TestCase):
         self.assertEqual(result["baseline"]["terminalWealthMicros"], [U, U, U])
         self.assertEqual(result["independentExactAudit"]["cashMicros"], U)
 
+    def test_consumed_inherited_origin_cannot_exempt_reacquisition_or_retained_slot(self):
+        from .sequence_audit import audit
+        from .sequential_frontier import ASSUMPTIONS
+        f = fixture(); f[0].update(cash="0.000000", ownedCost="0.400000",
+            positions={"safe": {"YES": [{"quantity": 4, "price": "0.100000"}]}},
+            inheritedExchanges=["safe"], freshMarketLimit=1, retainedMarketExchanges=["safe"])
+        f[2]["safe"]["bids"] = [{"price": "0.600000", "quantity": 4}]
+        f[2]["safe"]["asks"] = [{"price": "0.650000", "quantity": 10}]
+        static = self.run_search(f, objective="rank")
+        self.assertEqual(static["selectedAverageStrictMassPpm"], 10000)
+        f[0]["inheritedRemainingQuantities"] = {"safe": 4}
+        with self.assertRaisesRegex(ValueError, "MARKET_COUNT"):
+            audit(*f, static["legs"], assumptions=ASSUMPTIONS)
+        dynamic = self.run_search(f, objective="rank")
+        self.assertEqual(dynamic["selectedAverageStrictMassPpm"], 0)
+
+    def test_exact_native_partition_budget_never_drops_scenarios(self):
+        f = fixture(); original = copy.deepcopy(f)
+        constrained = self.run_search(f, objective="rank", maximum_native_scenarios=2)
+        self.assertEqual(constrained["legs"], [])
+        admitted = self.run_search(f, objective="rank", maximum_native_scenarios=3)
+        self.assertEqual(admitted["selectedAverageStrictMassPpm"], 10000)
+        self.assertEqual(f, original)
+
+    def test_target_conditioned_feasibility_preserves_worlds_and_models(self):
+        f = fixture(); original = copy.deepcopy(f)
+        found = self.run_search(f, required_target_hits=[("flat", "rare")],
+                                maximum_native_scenarios=3)
+        self.assertEqual(found["selectedAverageStrictMassPpm"], 10000)
+        self.assertEqual(found["requiredTargetHits"], [("flat", "rare")])
+        self.assertEqual(f, original)
+        impossible = solve(*f, target_pairs=[("view", "flat")], seconds=3,
+                           required_target_hits=[("flat", "refund")])
+        self.assertEqual(impossible["status"], "no_incumbent")
+
 
 if __name__ == "__main__":
     unittest.main()
