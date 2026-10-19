@@ -66,8 +66,12 @@ class Experiment:
         self.dataset_sha=self.original.manifest_sha256
         from .state_encoding import validate
         validate(config.get('global_state_encoding','raw'))
-        from .observation_protocol import validate as protocol,CURRENT
-        if protocol(config.get('observation_protocol',CURRENT))!=CURRENT:
+        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW
+        windows=config.get('trade_query_windows',False)
+        if type(windows)is not bool or(windows and config.get('full_depth_observations')is not True):
+            raise ValueError('QUERY_WINDOWS_REQUIRE_EXPLICIT_FULL_DEPTH_PROFILE')
+        expected_protocol=QUERY_WINDOW if windows else CURRENT
+        if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .world_confidence import validate_lifetime
         lifetime=validate_lifetime(config.get('world_book_lifetime_ms'))
@@ -129,6 +133,8 @@ class Experiment:
         tape.maximum_boundary_gap_ms=self.gap
         tape.world_book_lifetime_ms=self.config.get('world_book_lifetime_ms')
         tape.global_state_encoding=self.config.get('global_state_encoding','raw')
+        from .observation_protocol import CURRENT
+        tape.observation_protocol=self.config.get('observation_protocol',CURRENT)
         tape.counterparty_replay_enabled=self.config.get('passive_flow_mode')is not None
         tape.counterparty_information_bounds=(self.train_bounds if role=='train'else
             self.evolution_bounds if role=='evolution'else self.split.bounds('test'))
@@ -431,6 +437,9 @@ class Experiment:
             del model,opt
 
     def policy_type(self):
+        if self.config.get('trade_query_windows',False):
+            from .query_policy import QueryWindowPolicy
+            return QueryWindowPolicy
         enabled=self.config.get('full_depth_observations',False)
         if type(enabled)is not bool:raise ValueError('EXPLICIT_FULL_DEPTH_OBSERVATION_PROFILE')
         if enabled:
@@ -441,6 +450,7 @@ class Experiment:
     def make_policy(self):
         model=self.policy_type()(self.model_size).to(self.device)
         model.global_state_encoding=self.config.get('global_state_encoding','raw')
+        model.observation_protocol=self.config.get('observation_protocol',model.observation_protocol)
         return model
 
     def founder_hyperparameters(self,member):
@@ -497,11 +507,18 @@ class Experiment:
                         from .clock_prior import migrate_shared_prior
                         frozen(self.output/('founder-%03d-clock-migration.json'%member),migrate_shared_prior(model))
                 if type(model)is not self.policy_type():
-                    if self.config.get('migrate_full_depth_encoder')is not True or self.policy_type()is ApiPolicy:
-                        raise ValueError('EXPLICIT_DEPTH_ARCHITECTURE_MIGRATION_REQUIRED')
-                    from .full_depth import migrate_legacy_policy
-                    model,migration=migrate_legacy_policy(model)
-                    frozen(self.output/('founder-%03d-depth-migration.json'%member),migration)
+                    if type(model)is ApiPolicy:
+                        if self.config.get('migrate_full_depth_encoder')is not True or self.policy_type()is ApiPolicy:
+                            raise ValueError('EXPLICIT_DEPTH_ARCHITECTURE_MIGRATION_REQUIRED')
+                        from .full_depth import migrate_legacy_policy
+                        model,migration=migrate_legacy_policy(model)
+                        frozen(self.output/('founder-%03d-depth-migration.json'%member),migration)
+                    if type(model)is not self.policy_type():
+                        from .query_policy import QueryWindowPolicy,migrate_full_depth
+                        if self.policy_type()is not QueryWindowPolicy or self.config.get('migrate_query_window_heads')is not True:
+                            raise ValueError('EXPLICIT_QUERY_WINDOW_ARCHITECTURE_MIGRATION_REQUIRED')
+                        model,migration=migrate_full_depth(model)
+                        frozen(self.output/('founder-%03d-query-window-migration.json'%member),migration)
                 del parent
                 if member>=len(parents):
                     with torch.no_grad():

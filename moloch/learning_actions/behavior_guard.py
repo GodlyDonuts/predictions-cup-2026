@@ -14,7 +14,8 @@ def identity(model,mode='sha256'):
     if mode=='sha256':return fingerprint(model)
     if mode!='tensor_versions_v1':raise ValueError('EXPLICIT_ON_POLICY_GUARD_MODE')
     from .full_depth import FullDepthPolicy
-    if type(model)not in(ApiPolicy,FullDepthPolicy)or list(model.named_buffers()):raise ValueError('FAST_GUARD_REQUIRES_FIXED_BUFFER_FREE_RAW_POLICY')
+    from .query_policy import QueryWindowPolicy
+    if type(model)not in(ApiPolicy,FullDepthPolicy,QueryWindowPolicy)or list(model.named_buffers()):raise ValueError('FAST_GUARD_REQUIRES_FIXED_BUFFER_FREE_RAW_POLICY')
     values=[id(model),model.training,getattr(model,'global_state_encoding','raw'),model.observation_protocol]
     for name,p in model.named_parameters():
         values.append((name,id(p),p.data_ptr(),tuple(p.shape),tuple(p.stride()),str(p.dtype),

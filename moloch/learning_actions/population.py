@@ -40,7 +40,7 @@ def freeze_probe(frames,*,role,dataset_sha256,bounds):
             row[key]=frame[key].detach().cpu().clone()
         if row['contracts'].shape[0]!=1 or row['reset'].shape!=(1,):raise ValueError('ONE_CAUSAL_PROBE_HISTORY')
         if index==0 and not bool(row['reset'][0]):raise ValueError('PROBE_REQUIRES_EPISODE_RESET')
-        for key in ('market','family'):row['masks'][key]=frame['masks'][key].detach().cpu().clone()
+        for key in frame['masks']:row['masks'][key]=frame['masks'][key].detach().cpu().clone()
         digest.update(str(at).encode())
         for key,tensor in [(k,row[k])for k in ('contracts','global_state','present','reset')]+list(row['masks'].items()):
             digest.update((key+str(tensor.dtype)+repr(tuple(tensor.shape))).encode());digest.update(tensor.numpy().tobytes())
@@ -74,6 +74,9 @@ def behavior(model,probe):
         selected=model._act_from_encoding(encoded,hidden,present,masks,deterministic=True)['actions']
         raw=torch.stack((selected['target_fraction'],selected['child_fraction'],
                          selected['price'].double()/199,selected['patience'].double()),-1)
+        if 'query_filter'in selected:
+            raw=torch.cat((raw,torch.stack([selected[k].double()for k in
+                ('query_filter','query_from_fraction','query_to_fraction')],-1)),-1)
         if not bool(torch.isfinite(joint).all()and torch.isfinite(raw).all()):raise ValueError('NONFINITE_MUTATION_PROBE')
         rows.append((joint.cpu().double(),raw.cpu()))
     return rows
@@ -93,7 +96,7 @@ def distance(parent,child):
 
 def _actor_parameter(name,operator):
     if name.startswith(('value.','monetary_quantiles.','target_success.')):return False
-    if operator=='local':return name.startswith(('heads.','conditioners.','fractions.','market_query.'))
+    if operator=='local':return name.startswith(('heads.','conditioners.','fractions.','market_query.','query_filter.','query_times.'))
     return True
 
 
@@ -113,8 +116,10 @@ def mutate(model,probe,operator,seed,*,maximum_trials=8,fresh_initializer=None):
                 model.load_state_dict(type(model)(model.hidden_size).to(device).state_dict())
                 if fresh_initializer is not None:report['fresh_initialization']=fresh_initializer(model)
             elif operator=='head_reset':
-                for module in (model.heads,model.conditioners,model.fractions,model.market_query,
-                               model.value,model.monetary_quantiles,model.target_success):
+                modules=[model.heads,model.conditioners,model.fractions,model.market_query,
+                         model.value,model.monetary_quantiles,model.target_success]
+                if hasattr(model,'query_filter'):modules.extend((model.query_filter,model.query_times))
+                for module in modules:
                     for part in module.modules():
                         if hasattr(part,'reset_parameters'):part.reset_parameters()
             else:

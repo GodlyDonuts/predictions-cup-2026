@@ -34,6 +34,8 @@ def planning_observation(env,base):
             (env.now-action['at_ms'])/1000.]
         row[8:15]=_identity('local_result_status',action['result_status'])
         row[24]=6.;row[33:40]=action['target_identity']
+        if 'query_filter'in a:
+            row[15:18]=[a['query_filter'],a['query_from_fraction'],a['query_to_fraction']]
         rows.append(row);entities.append(('local_action',0))
     if not rows:return base
     extra=len(rows)

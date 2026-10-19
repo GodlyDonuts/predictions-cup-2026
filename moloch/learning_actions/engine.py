@@ -235,7 +235,7 @@ class ApiEpisode(PreparedEpisode):
         self.clock.schedule(self.busy_until,30,'api_receipt',idempotency_key)
         return record
 
-    def request_observation(self,venue,key,*,trade_limit=50,continue_trade_page=True):
+    def request_observation(self,venue,key,*,trade_limit=50,continue_trade_page=True,trade_from_ms=0,trade_to_ms=None):
         if venue not in ('SIG','Kalshi','Polymarket'):raise ValueError('READ_ONLY_REFERENCE_VENUE')
         if key not in self.keys[venue]:return {'status':'SOURCE_NOT_AVAILABLE'}
         if venue=='SIG'and key[0]=='realtime_token':return self.realtime.mint()
@@ -247,7 +247,8 @@ class ApiEpisode(PreparedEpisode):
             if key[0]=='trade_flow':
                 previous=self.known_trade_pages.get(key[1],{})
                 cursor=previous.get('pagination',{}).get('nextCursor')if continue_trade_page else None
-                payload=self.trade_history.page(key[1],self.now,limit=trade_limit,cursor=cursor)
+                payload=self.trade_history.page(key[1],self.now,limit=trade_limit,cursor=cursor,
+                    from_ms=trade_from_ms,to_ms=trade_to_ms)
                 self.feed_sequence+=1;rid=f'trade-read:{self.feed_sequence}'
                 assert self.budget.admit(rid,self.now,False)
                 self.busy_until=self.now+self.mechanics.read_latency_ms
@@ -529,8 +530,16 @@ class ApiEpisode(PreparedEpisode):
         elif family==4:operation,payload='CANCEL_ALL',key if kind=='contract'else{'market':key}if kind=='market'else None
         elif family in (7,8,9):
             operation=('BATCH','MULTI','ALL_OR_NONE')[family-7];payload=list(self.builder)
-        elif family==10:return self.request_observation(*key,
-            trade_limit=min(200,1+int(fraction*200)),continue_trade_page=bool(int(action['side'])))
+        elif family==10:
+            query={}
+            if 'query_filter'in action:
+                from .observation_protocol import QUERY_WINDOW
+                if self.observation_protocol!=QUERY_WINDOW:raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
+                if key[0]=='SIG'and key[1][0]=='trade_flow':
+                    from .query_window import parameters
+                    query=parameters(action)
+            return self.request_observation(*key,trade_limit=min(200,1+int(fraction*200)),
+                continue_trade_page=bool(int(action['side'])),**query)
         else:
             if kind=='stream_control':return self.realtime.disconnect()
             self.builder.clear();return {'status':'BUILDER_CLEARED'}
@@ -564,6 +573,8 @@ class ApiTape(PreparedTape):
         env=self.episode_type(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,
                        target_wealth_micros,start_ms,end_ms)
         env.role=self.role;env.delivery=self.delivery;env.prepared_books=self.prepared_books
+        from .observation_protocol import validate as protocol,CURRENT
+        env.observation_protocol=protocol(getattr(self,'observation_protocol',CURRENT))
         from .world_confidence import validate_lifetime
         env.world_book_lifetime_ms=validate_lifetime(getattr(self,'world_book_lifetime_ms',None))
         from .state_encoding import validate
