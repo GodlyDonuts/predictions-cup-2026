@@ -19,6 +19,7 @@ class StrictPriorityFlow:
         self.exclusion_source_sha256=exclusion_source_sha256
         self.seen={};self.crossing_debt={};self.source_volume=0;self.intercepted_volume=0
         self.excluded_prints=0
+        self.unknown_liquidity_print_volume=0
 
     def on_fill(self,exchange,quantity,origin):
         if origin=='crossing_book':self.crossing_debt[exchange]=self.crossing_debt.get(exchange,0)+quantity
@@ -57,6 +58,10 @@ class StrictPriorityFlow:
         debt=self.crossing_debt.get(exchange,0);paid=min(debt,quantity)
         self.crossing_debt[exchange]=debt-paid
         available=(quantity-paid)*self.env.mechanics.depth_fraction_ppm//UNIT
+        from .world_confidence import known
+        if not known(self.env,exchange):
+            self.unknown_liquidity_print_volume+=available
+            return
         orders=[]
         for order in self.env.api_orders.values():
             s=order.spec

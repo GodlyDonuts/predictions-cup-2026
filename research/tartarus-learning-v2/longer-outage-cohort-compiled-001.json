@@ -1,0 +1,124 @@
+{
+  "classification": "retrospective_original_three_venue_development_not_independent_test",
+  "sourceCoveragePolicy": "recorded_reset_unknown_liquidity_development_v1",
+  "requiredWorldBookLifetimeMs": 60000,
+  "completeObservedSourceCoverage": false,
+  "calendarRolesMs": {
+    "fit": [
+      1792409400000,
+      1792415700000
+    ],
+    "search": [
+      1792416000000,
+      1792419000000
+    ]
+  },
+  "observationCounts": {
+    "fit/SIG/book": 150972,
+    "fit/SIG/gap": 659,
+    "search/SIG/gap": 239,
+    "search/SIG/book": 79326,
+    "fit/Polymarket/reference": 307908,
+    "fit/Polymarket/reference_gap": 5072,
+    "fit/Kalshi/reference": 122460,
+    "fit/Kalshi/reference_gap": 1056,
+    "search/Polymarket/reference": 146262,
+    "search/Polymarket/reference_gap": 2962,
+    "search/Kalshi/reference": 58326,
+    "search/Kalshi/reference_gap": 502
+  },
+  "sourceCoverage": {
+    "fit/SIG": {
+      "validRows": 150972,
+      "maximumObservedGapMs": 84413,
+      "firstAtMs": 1792409402243,
+      "lastAtMs": 1792415698844,
+      "completeObservedCoverage": false,
+      "recordedUnknownIntervals": [
+        {
+          "start_ms": 1792415156933,
+          "end_ms": 1792415241346,
+          "duration_ms": 84413,
+          "recorded_reset_at_ms": [
+            1792415240036
+          ],
+          "continuous_hidden_liquidity_known": false,
+          "observable_reset_backdated": false
+        }
+      ]
+    },
+    "fit/Kalshi": {
+      "validRows": 122460,
+      "maximumObservedGapMs": 484,
+      "firstAtMs": 1792409400088,
+      "lastAtMs": 1792415699978,
+      "completeObservedCoverage": true,
+      "recordedUnknownIntervals": []
+    },
+    "fit/Polymarket": {
+      "validRows": 307908,
+      "maximumObservedGapMs": 1484,
+      "firstAtMs": 1792409400017,
+      "lastAtMs": 1792415699994,
+      "completeObservedCoverage": true,
+      "recordedUnknownIntervals": []
+    },
+    "search/SIG": {
+      "validRows": 79326,
+      "maximumObservedGapMs": 29143,
+      "firstAtMs": 1792416000323,
+      "lastAtMs": 1792418999745,
+      "completeObservedCoverage": true,
+      "recordedUnknownIntervals": []
+    },
+    "search/Kalshi": {
+      "validRows": 58326,
+      "maximumObservedGapMs": 205,
+      "firstAtMs": 1792416000011,
+      "lastAtMs": 1792418999965,
+      "completeObservedCoverage": true,
+      "recordedUnknownIntervals": []
+    },
+    "search/Polymarket": {
+      "validRows": 146262,
+      "maximumObservedGapMs": 1095,
+      "firstAtMs": 1792416000923,
+      "lastAtMs": 1792418999969,
+      "completeObservedCoverage": true,
+      "recordedUnknownIntervals": []
+    }
+  },
+  "originalSigExchangesByRole": {
+    "fit": 237,
+    "search": 237
+  },
+  "mappedReferenceMarketsByRole": {
+    "fit": {
+      "Kalshi": 232,
+      "Polymarket": 156
+    },
+    "search": {
+      "Kalshi": 232,
+      "Polymarket": 156
+    }
+  },
+  "tradeRows": 4202,
+  "originalBreadthArchiveSha256": "264e2bfdbaf28c10c1be1a5bbfad8e4e7860d526f4f114e6f2559212e0d96206",
+  "originalBreadthSourceManifestSha256": "590e4ef32c14962f76480e0d62daa60e2eb30571744bc4ea939a7e9cbb945965",
+  "baseManifestSha256": "037d23c981e8f5626883878012150b398cbca77db761db4dbfec6619c9b14687",
+  "tradeRowsSha256": "86becad44c004291e16d58757bd12df3b69d06666bf58e87505deb5a64289485",
+  "compilerSourceSha256": "8c0b105e5af5cf2166fbb79474c1db4116cf7713e5693d746fdad0d9e5e780b3",
+  "decoderSourceSha256": "f9de03359c4f7511ab2482034be531bfd2c5b98be250ca4a3f9703723a4e69a9",
+  "heldoutFeaturesIncluded": false,
+  "executionCalibrated": false,
+  "accountRequests": 0,
+  "productionAuthority": false,
+  "fullHistoryReady": false,
+  "independentTestEligible": false,
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "externalOriginalFilesVerified": 419,
+  "externalOriginalBytesVerified": 2374683219,
+  "oldStrictDatasetStillFailed": true,
+  "activeRun014Changed": false,
+  "independentProfitableRoiEstablished": false
+}

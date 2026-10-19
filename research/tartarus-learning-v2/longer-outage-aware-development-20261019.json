@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "classification": "retrospective_development_with_explicit_unknown_liquidity_not_four_day_qualification",
+  "calendarRolesUtc": {
+    "fit": [
+      "2026-10-19T11:30:00Z",
+      "2026-10-19T13:15:00Z"
+    ],
+    "search": [
+      "2026-10-19T13:20:00Z",
+      "2026-10-19T14:10:00Z"
+    ]
+  },
+  "embargoMinutes": 5,
+  "maximumBoundaryOrObservationGapMs": 60000,
+  "source": "existing_original_SIG_breadth_journals_and_immutable_Kalshi_Polymarket_receipts",
+  "sigSourceProducerPid": 886899,
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "sigUniverseMustMatchOriginalSource": true,
+  "requiredVenues": [
+    "SIG",
+    "Kalshi",
+    "Polymarket"
+  ],
+  "sourceClocks": "original_recorded_information_and_receiver_clocks_not_historical_laptop_receipts",
+  "minimumMappedReferenceMarketsPerExternalVenue": 20,
+  "minimumOriginalSigExchanges": 20,
+  "kalshiUniverseSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+  "polymarketUniverseSha256": "6fc2e7f4b53ebd300d97d3bd74faa505b246156b30b320c99ba8f201ad2889a5",
+  "maximumKnownPolymarketOutageExcludedUtc": [
+    "2026-10-19T11:14:33Z",
+    "2026-10-19T11:25:00Z"
+  ],
+  "protectedCalendarsExcludedUtc": [
+    [
+      "2026-10-19T05:25:00Z",
+      "2026-10-19T05:55:00Z"
+    ],
+    [
+      "2026-10-19T07:10:00Z",
+      "2026-10-19T07:40:00Z"
+    ],
+    [
+      "2026-10-19T07:15:00Z",
+      "2026-10-19T07:32:30Z"
+    ],
+    [
+      "2026-10-19T08:25:00Z",
+      "2026-10-19T08:42:30Z"
+    ]
+  ],
+  "referenceContractEquivalenceVerified": false,
+  "passiveExecutionCalibrated": false,
+  "fullHistoryReady": false,
+  "independentTestIncluded": false,
+  "productionAuthority": false,
+  "accountRequests": 0,
+  "failurePolicy": "Unexplained gaps or missing external coverage still fail; recorded SIG reset gaps remain explicitly unknown, not complete coverage. Never move the original calendars.",
+  "originalStrictProtocolSha256": "29304c3098c8db8ba0051dcde89455a04492309a6bab63048657a7711f7bebaa",
+  "worldBookLifetimeMs": 60000,
+  "sourceCoveragePolicy": "recorded_reset_unknown_liquidity_development_v1",
+  "fullObservedSourceCoverageEstablished": false,
+  "originalFailedCohortRetained": true,
+  "actorResetTiming": "unchanged_original_receipt_never_backdated",
+  "worldConfidenceExpiry": "fixed_timeout_after_each_original_source_snapshot_no_actor_notification"
+}

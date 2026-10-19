@@ -14,6 +14,9 @@ from moloch.research.compile_native_learning_history import role_at
 from moloch.learning_flow.episodes import FEATURE_SCHEMA
 from moloch.learning_flow.features import FEATURE_NAMES,Flow
 
+STRICT='retrospective_development_only_not_four_day_evolution_or_independent_test'
+OUTAGE='retrospective_development_with_explicit_unknown_liquidity_not_four_day_qualification'
+
 
 def digest(raw):return hashlib.sha256(raw).hexdigest()
 
@@ -60,32 +63,49 @@ def reference_rows(index,kuniverse,puniverse,roles,pins):
         pins.append({**entry,'originalRowsVerified':total,'selectedNormalizedRows':selected,'completeGzipVerified':True})
 
 
-def coverage(rows,roles,maximum_gap):
+def coverage(rows,roles,maximum_gap,*,allow_recorded_sig_resets=False):
     if type(maximum_gap)is not int or maximum_gap<=0:raise ValueError('EXPLICIT_POSITIVE_COVERAGE_GAP')
+    if type(allow_recorded_sig_resets)is not bool:raise ValueError('EXPLICIT_RECORDED_OUTAGE_PROFILE')
     times=defaultdict(list)
+    resets=defaultdict(list)
     for row in rows:
         role=row['calendar_role'];lo,hi=roles[role];at=row['available_at_ms']
         if not lo<=at<hi:raise ValueError('ROW_OUTSIDE_FROZEN_DEVELOPMENT_ROLE')
         if row['kind']in('book','reference'):times[role,row['venue']].append(at)
+        if row['venue']=='SIG'and row.get('gap_reason')=='original_stream_reset'and row.get('snapshot_origin')=='original_official_sig_realtime_frame':
+            resets[role].append(at)
     result={}
     for role,(lo,hi)in roles.items():
         for venue in('SIG','Kalshi','Polymarket'):
             values=sorted(times[role,venue])
             if not values:raise ValueError('ARCHIVED_COHORT_NO_VALID_SOURCE:'+role+':'+venue)
-            gap_start,gap_end=max(zip([lo]+values,values+[hi]),key=lambda ab:ab[1]-ab[0])
+            pairs=list(zip([lo]+values,values+[hi]))
+            gap_start,gap_end=max(pairs,key=lambda ab:ab[1]-ab[0])
             gap=gap_end-gap_start
-            if gap>maximum_gap:
-                exc=ValueError('ARCHIVED_COHORT_COVERAGE_GAP:'+role+':'+venue)
-                exc.coverage_gap={'role':role,'venue':venue,'start_ms':gap_start,'end_ms':gap_end,'duration_ms':gap}
-                raise exc
-            result[role+'/'+venue]={'validRows':len(values),'maximumObservedGapMs':gap,'firstAtMs':values[0],'lastAtMs':values[-1]}
+            unknown=[]
+            for a,b in pairs:
+                if b-a<=maximum_gap:continue
+                witnesses=[at for at in resets[role]if a<at<=b]
+                if not(allow_recorded_sig_resets and venue=='SIG'and witnesses):
+                    exc=ValueError('ARCHIVED_COHORT_COVERAGE_GAP:'+role+':'+venue)
+                    exc.coverage_gap={'role':role,'venue':venue,'start_ms':a,'end_ms':b,'duration_ms':b-a}
+                    raise exc
+                unknown.append({'start_ms':a,'end_ms':b,'duration_ms':b-a,'recorded_reset_at_ms':witnesses,
+                                'continuous_hidden_liquidity_known':False,'observable_reset_backdated':False})
+            result[role+'/'+venue]={'validRows':len(values),'maximumObservedGapMs':gap,'firstAtMs':values[0],
+                'lastAtMs':values[-1],'completeObservedCoverage':not unknown,'recordedUnknownIntervals':unknown}
     return result
 
 
 def compile_cohort(source,index_path,protocol_path,kuniverse_path,puniverse_path,output,tournament):
     protocol_raw=Path(protocol_path).read_bytes();protocol=json.loads(protocol_raw)
-    if protocol['classification']!='retrospective_development_only_not_four_day_evolution_or_independent_test':
+    if protocol['classification']not in(STRICT,OUTAGE):
         raise ValueError('EXPLICIT_RETROSPECTIVE_DEVELOPMENT_COHORT')
+    outage=protocol['classification']==OUTAGE
+    lifetime=protocol.get('worldBookLifetimeMs')
+    if outage and(type(lifetime)is not int or not 0<lifetime<=protocol['maximumBoundaryOrObservationGapMs']):
+        raise ValueError('OUTAGE_PROFILE_REQUIRES_CAUSAL_LIQUIDITY_EXPIRY')
+    if not outage and lifetime is not None:raise ValueError('STRICT_COHORT_CANNOT_REINTERPRET_SOURCE_GAPS')
     if protocol['independentTestIncluded']is not False or protocol['productionAuthority']is not False:
         raise ValueError('NO_TEST_OR_PRODUCTION_AUTHORITY')
     if tournament!=protocol['tournamentId']:raise ValueError('FROZEN_TOURNAMENT_SCOPE')
@@ -107,7 +127,7 @@ def compile_cohort(source,index_path,protocol_path,kuniverse_path,puniverse_path
         for event,original,at,role in frames(source,source_manifest['archive_sha256'],digest(raw_manifest)):
             books,prints=decoder.decode(event,original,at,role);rows.extend(books);trades.extend(prints)
         pins=[];rows.extend(reference_rows(index,json.loads(ku),json.loads(pu),roles,pins))
-        observed_coverage=coverage(rows,roles,protocol['maximumBoundaryOrObservationGapMs'])
+        observed_coverage=coverage(rows,roles,protocol['maximumBoundaryOrObservationGapMs'],allow_recorded_sig_resets=outage)
         counts=dict(Counter('/'.join((r['calendar_role'],r['venue'],r['kind']))for r in rows))
         sig={role:len({r['exchange_id']for r in rows if r['calendar_role']==role and r['kind']=='book'})for role in roles}
         references={role:{venue:len({r['market_id']for r in rows if r['calendar_role']==role and r['venue']==venue and r['kind']=='reference'})for venue in('Kalshi','Polymarket')}for role in roles}
@@ -128,6 +148,9 @@ def compile_cohort(source,index_path,protocol_path,kuniverse_path,puniverse_path
             'originalBreadthSourceManifestSha256':digest(raw_manifest),'sourceOriginalBreadthSlicesDirectory':str(source.resolve()),
             'originalsStoredByReferenceNotDuplicated':True,'originalPrefixes':pins,
             'referenceContractEquivalenceVerified':False,'fullHistoryReady':False,'independentTestEligible':False,
+            'sourceCoveragePolicy':'recorded_reset_unknown_liquidity_development_v1'if outage else'strict_continuous_observation_v1',
+            'requiredWorldBookLifetimeMs':lifetime,
+            'completeObservedSourceCoverage':all(v['completeObservedCoverage']for v in observed_coverage.values()),
             'heldoutFeaturesIncluded':False,'executionCalibrated':False,'accountRequests':0,'productionAuthority':False}
         base_sha=seal(base,{**common,'observationsSha256':digest((base/'observations.jsonl.gz').read_bytes()),'totalRows':len(rows)})
         write_rows(output/'trade-flow.jsonl.gz',flow)
@@ -151,4 +174,5 @@ if __name__=='__main__':
         p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--tournament',required=True);a=p.parse_args()
     result=compile_cohort(a.source,a.index,a.protocol,a.kalshi_universe,a.polymarket_universe,a.output,a.tournament)
-    print(json.dumps({k:result[k]for k in('tradeRows','originalSigExchangesByRole','mappedReferenceMarketsByRole','sourceCoverage','accountRequests')}),flush=True)
+    print(json.dumps({k:result[k]for k in('tradeRows','originalSigExchangesByRole','mappedReferenceMarketsByRole','sourceCoverage',
+                                       'completeObservedSourceCoverage','requiredWorldBookLifetimeMs','accountRequests')}),flush=True)

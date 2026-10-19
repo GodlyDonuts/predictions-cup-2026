@@ -40,6 +40,7 @@ class ApiEpisode(PreparedEpisode):
         self.realtime=None
         self.passive=None
         self.private_fill_push=True  # Legacy profile; new stream profile opts out.
+        self.world_book_lifetime_ms=None;self.world_confidence_expiries=0
         self.scheduled_reads=set();self.pending_reads=deque()
         self.expiry_scheduled=set()
         self.external_ready={'Kalshi':0,'Polymarket':0}
@@ -263,6 +264,9 @@ class ApiEpisode(PreparedEpisode):
         self.observation_revision+=1
 
     def _event(self,at,kind,value):
+        if kind=='api_world_book_expiry':
+            from .world_confidence import expire
+            expire(self,at,value);return
         if kind=='api_snapshot_world':
             from .snapshot_clock import world_event
             world_event(self,at,value);return
@@ -506,6 +510,10 @@ class ApiTape(PreparedTape):
         env=self.episode_type(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,
                        target_wealth_micros,start_ms,end_ms)
         env.role=self.role;env.delivery=self.delivery;env.prepared_books=self.prepared_books
+        from .world_confidence import validate_lifetime
+        env.world_book_lifetime_ms=validate_lifetime(getattr(self,'world_book_lifetime_ms',None))
+        if env.world_book_lifetime_ms is not None and not separate_world:
+            raise ValueError('WORLD_BOOK_LIFETIME_REQUIRES_SEPARATE_SNAPSHOT_WORLD')
         if separate_world:
             from .snapshot_clock import source_clock
             env.prepared_world_books=self.prepared_world_books;env.world_market_mapping={}

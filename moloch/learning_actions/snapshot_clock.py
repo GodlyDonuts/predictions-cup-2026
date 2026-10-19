@@ -82,6 +82,8 @@ def world_event(env,at,row):
         ex=row['exchange_id'];env.world_market_mapping[ex]=row['market_id']
         ReferenceEnv._event(env,at,'book',env.prepared_world_books[id(row)])
         env.books[ex].source_state_at_ms=at
+        from .world_confidence import schedule
+        schedule(env,ex,at)
         if env.passive is not None:env.passive.on_book(ex)
         for q,order in list(env.api_orders.items()):
             if order.spec.exchange==ex:

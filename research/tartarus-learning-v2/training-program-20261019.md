@@ -1,3 +1,5 @@
+October19 outage-aware development: the longer cohort is now separately compiled with causal book-confidence expiry, actual reset clocks and an explicit incomplete-source label. Original strict failure remains. Real-source/full-size CPU probes pass;179covered checks. [Evidence and limits](outage-aware-development-20261019.md).
+
 October19 source expansion: the longer cohort failed its frozen60s SIG coverage check on an84.413s gap. Failed outputs/boundaries are retained; no data imputation or trainer switch.171 focused checks pass. [Exact source evidence](longer-cohort-20261019.md).
 
 October19 evaluation update: optional case-local-RNG batch evaluation passes167 focused checks and matches paired real-source GPU traces, but its measured4-6% collection saving is modest. Phase014 remains frozen/running; two completed members have negative worst development ROI. [Evidence and limits](batched-evaluation-20261019.md).

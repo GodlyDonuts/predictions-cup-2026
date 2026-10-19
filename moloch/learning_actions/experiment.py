@@ -55,6 +55,12 @@ class Experiment:
             self.gap=spec['maximum_venue_gap_ms']
             self.train_bounds=self.split.bounds('train');self.evolution_bounds=self.split.bounds('evolution')
         self.dataset_sha=self.original.manifest_sha256
+        from .world_confidence import validate_lifetime
+        lifetime=validate_lifetime(config.get('world_book_lifetime_ms'))
+        required=self.original.manifest.get('requiredWorldBookLifetimeMs')
+        if required is not None and lifetime!=required:raise ValueError('DATASET_REQUIRES_EXACT_WORLD_BOOK_LIFETIME')
+        if lifetime is not None and(not self.development or config.get('snapshot_world_clock')is None):
+            raise ValueError('WORLD_LIQUIDITY_CONFIDENCE_IS_EXPLICIT_SNAPSHOT_DEVELOPMENT_ONLY')
         # Exact source pins are part of the experiment identity, including
         # simulator, policy, reward, optimizer and role definitions.
         pins={str(p):hashlib.sha256(p.read_bytes()).hexdigest()
@@ -107,6 +113,7 @@ class Experiment:
         tape=tape_type.from_loaded(self.original,split=self.split,role=actual,
                                 frozen_finalist_sha256=finalist)
         tape.maximum_boundary_gap_ms=self.gap
+        tape.world_book_lifetime_ms=self.config.get('world_book_lifetime_ms')
         tape.counterparty_replay_enabled=self.config.get('passive_flow_mode')is not None
         tape.counterparty_information_bounds=(self.train_bounds if role=='train'else
             self.evolution_bounds if role=='evolution'else self.split.bounds('test'))

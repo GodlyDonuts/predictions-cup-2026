@@ -93,7 +93,9 @@ def main():
     if args.guard=='tensor_versions_v1'and any(r['accepted']for r in result)and not guard_changed:
         raise ValueError('GPU_OPTIMIZER_MUTATION_NOT_DETECTED')
     serial=statistics.median(x['serial']for x in timings);batched=statistics.median(x['batched']for x in timings)
-    out={'classification':'controlled_inspected_history_raw_api_gpu_batch_benchmark_not_roi',
+    out={'classification':('controlled_inspected_history_raw_api_gpu_batch_benchmark_not_roi'if next(model.parameters()).is_cuda
+                           else'controlled_inspected_history_raw_api_cpu_batch_benchmark_not_roi'),
+        'device':str(next(model.parameters()).device),
         'worlds':args.worlds,'steps_per_world':args.steps,'parameters':sum(p.numel()for p in model.parameters()),
         'finished_worlds_at_chunk_start':args.finished_worlds,'ppo_batch_worlds':len(last_chunk.initial_hidden),
         'contract_features':model.contract_features,'priming_book_reads_per_world':args.prime_books,

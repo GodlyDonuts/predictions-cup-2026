@@ -89,5 +89,15 @@
     "focused_worktree_checks": 163,
     "real_source_probe": "finished-world-compaction-gpu-001.json",
     "all_active_eight_world_memory_proved": false
+  },
+  "recorded_outage_development": {
+    "source_world_timeout_is_optional_and_development_only": true,
+    "source_gap_is_not_complete_coverage": true,
+    "zero_inferred_fills_are_not_a_pnl_lower_bound": true,
+    "action_support_unchanged": true,
+    "real_source_audit": "outage-world-real-source-audit-001.json",
+    "dataset": "longer-outage-cohort-compiled-001.json",
+    "active_run014_changed": false,
+    "focused_checks_covered": 179
   }
 }

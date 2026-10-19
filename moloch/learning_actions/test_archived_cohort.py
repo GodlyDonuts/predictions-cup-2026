@@ -54,3 +54,19 @@ class ArchivedCohortTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'PROTECTED_CALENDAR'):
                 compile_cohort(root,root/'missing',p,root/'missing',root/'missing',out,'correct')
             self.assertFalse(out.exists())
+
+    def test_outage_mode_requires_real_sig_reset_for_every_gap_and_keeps_incomplete_label(self):
+        roles={'fit':(0,90),'search':(100,190)}
+        rows=[r for r in self.rows()if not(r['calendar_role']=='fit'and r['venue']=='SIG'and r['available_at_ms']==30)]
+        reset=dict(calendar_role='fit',venue='SIG',kind='gap',available_at_ms=59,
+                   gap_reason='original_stream_reset',snapshot_origin='original_official_sig_realtime_frame')
+        with self.assertRaisesRegex(ValueError,'COVERAGE_GAP'):coverage(rows,roles,30,allow_recorded_sig_resets=True)
+        rows.append(reset);proof=coverage(rows,roles,30,allow_recorded_sig_resets=True)
+        self.assertFalse(proof['fit/SIG']['completeObservedCoverage'])
+        self.assertEqual(proof['fit/SIG']['recordedUnknownIntervals'][0]['recorded_reset_at_ms'],[59])
+        with self.assertRaisesRegex(ValueError,'COVERAGE_GAP'):coverage(rows,roles,30)
+        with self.assertRaisesRegex(ValueError,'COVERAGE_GAP'):
+            coverage([r for r in rows if not(r['calendar_role']=='search'and r['venue']=='SIG'and r['available_at_ms']==130)],roles,30,allow_recorded_sig_resets=True)
+        # A SIG reset cannot excuse a missing external venue observation.
+        with self.assertRaisesRegex(ValueError,'COVERAGE_GAP'):
+            coverage([r for r in rows if not(r['calendar_role']=='fit'and r['venue']=='Kalshi'and r['available_at_ms']==30)],roles,30,allow_recorded_sig_resets=True)

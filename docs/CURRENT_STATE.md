@@ -1,4 +1,4 @@
-October19 ML source update: the longer retained three-venue cohort failed strict coverage on an84.413s SIG book gap; it was not adopted.171 focused checks pass. Frozen phase014 continues training, with negative completed development results. See research/tartarus-learning-v2/longer-cohort-20261019.md.
+October19 ML update: a longer three-venue development dataset is compiled with explicitly unknown outage liquidity, mandatory causal60s book expiry and438-feature compatibility. Real-source clock/read-back and full-size CPU PPO probes pass;179checks are covered. Frozen014 continues on its earlier GPU profile. No independent profitable ROI or full-history/API parity is established. See research/tartarus-learning-v2/outage-aware-development-20261019.md.
 
 Production observation14:37UTC: the VPS service is inactive, MainPID0, blocked by existing EXECUTION_STOP (mtime14:17UTC). The saved old PID/healthy progress is stale. This ML task has not cleared STOP or changed production state. [Read-only evidence](../research/tartarus-learning-v2/production-observation-20261019-1437.json).
 
