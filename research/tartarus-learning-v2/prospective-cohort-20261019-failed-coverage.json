@@ -1,0 +1,14 @@
+{
+  "observedAtUtc": "2026-10-19T02:53:40.240356+00:00",
+  "protocolSha256": "f9d36663e7aaaf47da2c950e7367b17e0466ba76d3c3ff1fbb05a06f79700c4a",
+  "classification": "failed_prospective_cohort_not_a_model_performance_result",
+  "originalCalendarUnchanged": true,
+  "fitWindowEndedUtc": "2026-10-19T02:50:00Z",
+  "failure": "Required SIG producer stopped02:09:48Z, before02:10fit start; replacement still restoring past02:50fit end. No complete required SIG fit coverage.",
+  "finalistsEligible": 0,
+  "heldOutPricesInspectedForRepair": false,
+  "lockedCalendarRetimed": false,
+  "laterCheckpointsRetroactivelyAdmitted": false,
+  "missingPricesSynthesized": false,
+  "productionAuthority": false
+}
