@@ -113,7 +113,7 @@ pub fn prepare(bank:&Session,b:&Boundary<'_>,review:&Reviewed,f:&SnapshotSet,col
  let result=Reservation{event,boundary:before,review:review.clone(),until,receipts,collateral:cr};result.validate_current(bank,b,at)?;Ok(result)
 }
 /// Opaque process-local physical proof. JSON research records cannot construct it.
-pub struct PhysicalDecision{head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>}
+pub struct PhysicalDecision{head:Value,quote_sha:String,ledger:std::sync::Arc<crate::ledger_snapshot::Snapshot>,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>}
 /// Exact full JSON is checked once, then held by immutable shared owners.
 /// No deserialization, mutation or caller-supplied digest can create this seal.
 /// Physical checks still bind the same decision, quote and ledger allocations
@@ -148,7 +148,7 @@ impl PhysicalDecision{
  pub fn freeze(self:&std::sync::Arc<Self>,quote:std::sync::Arc<Value>,ledger:std::sync::Arc<Value>,qid:u64,at:u64)->Result<FrozenState>{
   self.validate_frozen(&quote,&ledger,qid,at)?;Ok(FrozenState{decision:self.clone(),quote,ledger,qid})
  }
- pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{self.current(at)?;need(qid==self.qid&&hash(q)?==self.quote_sha&&hash(ledger)?==self.ledger_sha,"RANK_PHYSICAL_FROZEN_CHANGED")?;if let Some(o)=&self.ownership{o.validate_frozen(q,ledger,qid,at)?;}Ok(())}
+ pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{self.current(at)?;need(qid==self.qid&&hash(q)?==self.quote_sha&&self.ledger.matches_value(ledger)?,"RANK_PHYSICAL_FROZEN_CHANGED")?;if let Some(o)=&self.ownership{o.validate_frozen(q,ledger,qid,at)?;}Ok(())}
  pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,at:u64)->Result<()>{self.current(at)?;need(hash(scope)?==self.scope_sha&&hash(spec)?==self.spec_sha&&hash(permit)?==self.permit_sha,"RANK_PHYSICAL_REQUEST_CHANGED")?;self.dispatch.validate()?;if let Some(o)=&self.ownership{o.authorize(scope,spec,permit,at)?;}for r in &self.receipts{r.verify()?;}self.collateral.verify()?;Ok(())}
 }
 /// Mint ONLY after activation and new seven facts. No intent/attempt may exist.
@@ -170,10 +170,11 @@ fn mint_inner(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&Snapshot
  let evaluation=bank.engine().evaluate_reserved_rank_campaign(qid,&review.campaign,i64::try_from(at)?)?;
  let expected_body=json!({"idempotencyKey":format!("{}:{qid}",permit.run_id),"exchangeId":q["exchangeId"],"side":if q["side"]=="YES"{"yes"}else{"no"},"action":q["action"],"quantity":q["quantity"],"price":serde_json::from_str::<Value>(q["price"].as_str().ok_or("RANK_QUOTE_PRICE")?)?,"expirationDate":daily_windows::iso(q["expiresAt"].as_u64().ok_or("RANK_QUOTE_CLOCK")?)?,"tournamentId":scope.tournament_id});
  need(spec.method=="POST"&&spec.endpoint=="/orders"&&spec.body.as_ref()==Some(&expected_body)&&spec.body_json.as_ref().is_some_and(|v|serde_json::from_str::<Value>(v).ok().as_ref()==Some(&expected_body))&&permit.owner=="Codex"&&bank.live_account_seed().is_some_and(|s|s["runId"]==permit.run_id)&&permit.intent_id==qid.to_string()&&u64::from(permit.maximum_quantity)==q["quantity"].as_u64().ok_or("RANK_QUANTITY")?&&decimal_units(&permit.maximum_cost)?==amount(&q["price"])?*i128::from(permit.maximum_quantity),"RANK_PHYSICAL_SPEC_OR_PERMIT")?;
- if let Some(o)=&ownership{o.validate_frozen(&q,&bank.engine().report()?,qid,at)?;o.authorize(scope,spec,permit,at)?;need(o.native_head()==&bank.durable_head(),"RANK_COHORT_NATIVE_HEAD_CHANGED")?;until=until.min(o.expires_at_ms());}
+ let ledger=crate::ledger_snapshot::snapshot(bank)?;
+ if let Some(o)=&ownership{o.validate_frozen(&q,ledger.value().as_ref(),qid,at)?;o.authorize(scope,spec,permit,at)?;need(o.native_head()==&bank.durable_head(),"RANK_COHORT_NATIVE_HEAD_CHANGED")?;until=until.min(o.expires_at_ms());}
  until=until.min(q["expiresAt"].as_u64().ok_or("RANK_QUOTE_CLOCK")?).min(permit.expires_at_ms);let dispatch=DispatchPin::new(b)?;need(collateral_feedback::allocation_boundary(bank,b,i64::try_from(at)?)?==before,"RANK_BOUNDARY_CHANGED")?;
  let cr=RetainedReceipt::open(b.root,collateral.receipt(),ReceiptStore::Ordinary)?;
- Ok(PhysicalDecision{head:bank.durable_head(),quote_sha:hash(&q)?,ledger_sha:hash(&bank.engine().report()?)?,scope_sha:hash(scope)?,spec_sha:hash(spec)?,permit_sha:hash(permit)?,qid,minted:at,until,review:review.clone(),receipts,collateral:cr,dispatch,evaluation,ownership})
+ Ok(PhysicalDecision{head:bank.durable_head(),quote_sha:hash(&q)?,ledger,scope_sha:hash(scope)?,spec_sha:hash(spec)?,permit_sha:hash(permit)?,qid,minted:at,until,review:review.clone(),receipts,collateral:cr,dispatch,evaluation,ownership})
 }
 
 #[cfg(test)]mod tests{

@@ -1,0 +1,43 @@
+{
+  "accountRequests": 0,
+  "allCompleteDigestChecksMatch": true,
+  "classification": "operation_level_full_retained_report_clone_hash_comparison_not_live_dispatch_benchmark",
+  "engineReportCanonicalSha256": "2644a6114a3ae3bb2ede538e07e759bc09b5fb62795749f7f5caf3dea14678cd",
+  "engineReportEncodedBytes": 18386550,
+  "everyOriginalFieldRetained": true,
+  "interleavedSamples": [
+    {
+      "mode": "old",
+      "pair": 0,
+      "seconds": 1.443493593
+    },
+    {
+      "mode": "new",
+      "pair": 0,
+      "seconds": 0.283878117
+    },
+    {
+      "mode": "new",
+      "pair": 1,
+      "seconds": 0.287826426
+    },
+    {
+      "mode": "old",
+      "pair": 1,
+      "seconds": 1.429813116
+    },
+    {
+      "mode": "old",
+      "pair": 2,
+      "seconds": 1.427178185
+    },
+    {
+      "mode": "new",
+      "pair": 2,
+      "seconds": 0.286124823
+    }
+  ],
+  "legacyCompleteCloneAndHashPasses": 5,
+  "newCompleteCloneAndHashPasses": 1,
+  "originalReportRawSha256": "a377950336eccee8ca4f0046aa6ca62f8a53cb72086f93ebc6eca2e9ab72eb28"
+}

@@ -7,7 +7,7 @@ use super::*;
 /// SELL. It cannot be deserialized from a nomination or an approval JSON file.
 pub struct RankInventoryOwnership{
     qid:u64,quote:Value,scope_sha:String,spec_sha:String,permit_sha:String,
-    ledger_sha:String,head:Value,tag:Value,minted:u64,until:u64,
+    ledger:Arc<crate::ledger_snapshot::Snapshot>,head:Value,tag:Value,minted:u64,until:u64,
     sidecar:FilePin,marker:FilePin,ordinary:File,ordinary_path:PathBuf,
     ordinary_identity:Value,_owner:Arc<ExclusiveLock>,
 }
@@ -20,7 +20,7 @@ impl RankInventoryOwnership{
     }
     pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{
         need(at>=self.minted&&at<self.until&&qid==self.qid&&q==&self.quote
-            &&digest(ledger)?==self.ledger_sha,"RANK_COHORT_FROZEN_CHANGED")
+            &&self.ledger.matches_value(ledger)?,"RANK_COHORT_FROZEN_CHANGED")
     }
     pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,at:u64)->Result<()>{
         need(at>=self.minted&&at<self.until&&digest(scope)?==self.scope_sha
@@ -139,7 +139,7 @@ impl Cohorts{
    self.append(json!({"kind":"rank_trade","exchangeId":ex,"campaignSha256":review.campaign_sha256(),"managedInventory":review.managed_inventory(),"handoff":handoff,"originalNativeQuoteSha256":digest(&q)?,"binding":binding,"ownershipOnly":true,"positiveMonetaryAlphaClaimed":false}),at)?;
   }
   self.check_rank_bound(bank,log,scope,qid,spec)?;
-  Ok(RankInventoryOwnership{qid,quote:q,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,ledger_sha:digest(&bank.engine().report()?)?,head:bank.durable_head(),tag:self.durable_tag(qid).ok_or("RANK_COHORT_TAG")?,minted:at,until,
+  Ok(RankInventoryOwnership{qid,quote:q,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,ledger:crate::ledger_snapshot::snapshot(bank)?,head:bank.durable_head(),tag:self.durable_tag(qid).ok_or("RANK_COHORT_TAG")?,minted:at,until,
    sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary:File::open(&self.ordinary_path)?,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
  }
  pub fn check_rank_bound(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec)->Result<()>{
