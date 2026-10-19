@@ -36,6 +36,7 @@ class ApiEpisode(PreparedEpisode):
         self.known_orders={};self.known_cash=self.cash;self.known_lots={}
         self.known_advance=0;self.observation_revision=0;self.api_sequence=0
         self.idempotency={};self.builder=[];self.collateral_oracle=None
+        self.order_history=None
         self.constraint_validator=None;self.ledger_basis_known=True
         self.relationships={}
         self.realtime=None
@@ -96,6 +97,7 @@ class ApiEpisode(PreparedEpisode):
             basis=self._take(key,quantity);self.cash+=quantity*price-fee
             self.realized+=quantity*price-basis-fee
         order.remaining-=quantity;self.fees+=fee
+        if self.order_history is not None:self.order_history.filled(order,quantity,self.now)
         self.finance_revision+=1
         self.api_fills.append({'order':order.id,'exchange':s.exchange,'side':s.side,'action':s.action,
                                'quantity':quantity,'price':price,'filled_at_ms':self.now,'fee':fee,
@@ -151,6 +153,7 @@ class ApiEpisode(PreparedEpisode):
                 remaining=min(remaining,(self.buying_power()-committed)//max(1,cost+self.mechanics.limits.fee_per_share))
                 if not remaining:raise ValueError('INSUFFICIENT_BUYING_POWER')
         self.api_id+=1;order=Resting(self.api_id,spec,remaining,self.now)
+        if self.order_history is not None:self.order_history.placed(order,self.now)
         self._match_api(order)
         if order.remaining and not spec.market:
             # Never execute against our own injected resting quotes. Other
@@ -164,14 +167,17 @@ class ApiEpisode(PreparedEpisode):
             if not crossed:
                 self.api_orders[order.id]=order
                 if self.passive is not None:self.passive.on_rest(order)
+            elif self.order_history is not None:self.order_history.closed(order.id,self.now,'SelfTradePrevented')
+        if self.order_history is not None and order.id not in self.api_orders:
+            self.order_history.closed(order.id,self.now)
         return order
 
     def _snapshot_finance(self):
         debt=None if self.passive is None else (self.passive.crossing_debt,getattr(self.passive,'queues',None))
-        return deepcopy((self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision,debt))
+        return deepcopy((self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision,debt,self.order_history))
 
     def _restore_finance(self,state):
-        self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision,debt=state
+        self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision,debt,self.order_history=state
         if self.passive is not None:
             self.passive.crossing_debt,queues=debt
             if queues is not None:self.passive.queues=queues
@@ -204,12 +210,17 @@ class ApiEpisode(PreparedEpisode):
                 return results
             except Exception:
                 self._restore_finance(before);raise
-        if operation=='CANCEL':return self.api_orders.pop(payload,None)
+        if operation=='CANCEL':
+            value=self.api_orders.pop(payload,None)
+            if value is not None and self.order_history is not None:self.order_history.closed(payload,self.now)
+            return value
         if operation=='CANCEL_ALL':
             ids=[q for q,o in self.api_orders.items()if payload is None or
                  (isinstance(payload,str)and o.spec.exchange==payload)or
                  (isinstance(payload,dict)and self.mapping.get(o.spec.exchange)==payload.get('market'))]
-            for q in ids:self.api_orders.pop(q)
+            for q in ids:
+                self.api_orders.pop(q)
+                if self.order_history is not None:self.order_history.closed(q,self.now)
             return ids
         raise ValueError('UNSUPPORTED_API_OPERATION')
 
@@ -236,7 +247,13 @@ class ApiEpisode(PreparedEpisode):
         self.clock.schedule(self.busy_until,30,'api_receipt',idempotency_key)
         return record
 
-    def request_observation(self,venue,key,*,trade_limit=50,continue_trade_page=True,trade_from_ms=0,trade_to_ms=None):
+    def request_observation(self,venue,key,*,trade_limit=50,continue_trade_page=True,trade_from_ms=0,trade_to_ms=None,
+                            order_status='open',order_limit=50,continue_order_page=False,order_cursor=None,
+                            order_exchange=None,order_market=None):
+        if self.order_history is not None and venue=='SIG'and key[0]=='owned_orders':
+            from .order_pages import request
+            return request(self,key,status=order_status,limit=order_limit,continuation=continue_order_page,cursor=order_cursor,
+                exchange=order_exchange,market=order_market)
         if venue not in ('SIG','Kalshi','Polymarket'):raise ValueError('READ_ONLY_REFERENCE_VENUE')
         if key not in self.keys[venue]:return {'status':'SOURCE_NOT_AVAILABLE'}
         if venue=='SIG'and key[0]=='realtime_token':return self.realtime.mint()
@@ -342,7 +359,8 @@ class ApiEpisode(PreparedEpisode):
             else:self._publish_account(record['receipt_snapshot'])
             return
         if kind=='api_expiry':
-            self.api_orders.pop(value,None);self.finance_revision+=1
+            expired=self.api_orders.pop(value,None);self.finance_revision+=1
+            if expired is not None and self.order_history is not None:self.order_history.closed(value,at,'Expired')
             from .execution_receipts import enabled
             if enabled(self):
                 if self.realtime is not None:self.realtime.source_order_close(value)
@@ -354,6 +372,10 @@ class ApiEpisode(PreparedEpisode):
             rid,key,snapshot=value;self.budget.complete(rid,at);publish(self,snapshot)
             self.feed_receipts.append({'venue':'SIG','at_ms':at,'key':key})
             self.feed_receipt_counts['SIG']+=1;return
+        if kind=='api_order_page_receipt':
+            from .order_pages import publish
+            rid,key,page=value;self.budget.complete(rid,at,status=400 if'error'in page else 200);publish(self,page)
+            self.feed_receipts.append({'venue':'SIG','at_ms':at,'key':key});self.feed_receipt_counts['SIG']+=1;return
         if kind=='feed_receipt':
             venue,rid,key,payload=value
             if key[0]=='book':
@@ -564,9 +586,20 @@ class ApiEpisode(PreparedEpisode):
             operation=('BATCH','MULTI','ALL_OR_NONE')[family-7];payload=list(self.builder)
         elif family==10:
             query={}
+            if self.order_history is not None and key[0]=='SIG'and key[1][0]=='owned_orders':
+                from .order_history import STATUSES
+                filters={};target=key[1]
+                if target[1:2]!=('cursor',)and int(action.get('query_filter',0)):
+                    markets=sorted(self.scope);exchanges=self.exchanges[1:]
+                    if len(target)==1 or target[1]=='exchange':
+                        if markets:filters['order_market']=markets[min(len(markets)-1,int(float(action['query_from_fraction'])*len(markets)))]
+                    if len(target)==1 or target[1]=='market':
+                        if exchanges:filters['order_exchange']=exchanges[min(len(exchanges)-1,int(float(action['query_to_fraction'])*len(exchanges)))]
+                return self.request_observation(*key,order_status=STATUSES[int(action['price'])%4],
+                    order_limit=min(200,1+int(fraction*200)),continue_order_page=bool(int(action['side'])),**filters)
             if 'query_filter'in action:
-                from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT
-                if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
+                from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES
+                if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
                 if key[0]=='SIG'and key[1][0]=='trade_flow':
                     from .query_window import parameters
                     query=parameters(action)

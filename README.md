@@ -1,4 +1,4 @@
-[Current ML: GPU017 learning; measured selection acceleration queued for018; ROI unproven](research/tartarus-learning-v2/evaluation-heads-gpu-20261019.md). Older runtime statements below are historical.
+[Current ML: paid owned-order pages checked offline; GPU017 training and pending018 unchanged; no independent ROI](research/tartarus-learning-v2/owned-order-pages-20261019.md). Older runtime statements below are historical.
 
 October19 ML update: GPU016 continues; its first candidate loses worst development marked30.35% and is ineligible. Optional full-episode return PPO is implemented and passes213 action checks plus a real8world small-CPU integration (5,075decisions/60updates/2cycles); short-window returns0 are not ROI evidence. Full-size GPU/paired comparison for this option, full history/API/calibration and independent positive ROI remain incomplete. [Evidence](research/tartarus-learning-v2/closed-episode-returns-20261019.md).
 

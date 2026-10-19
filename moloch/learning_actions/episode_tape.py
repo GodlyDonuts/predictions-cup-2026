@@ -39,6 +39,7 @@ def financial_digest(env):
     books=[(key,b.book,b.invalidated,sorted(b.depleted.items()))for key,b in sorted(env.books.items())]
     value=(env.now,env.cash,sorted(env.lots.items()),env.realized,env.fees,
            sorted(env.api_orders.items()),env.api_id,len(env.api_fills),history.hexdigest(),env.finance_revision,books)
+    if env.order_history is not None:value=(*value,env.order_history.digest)
     return hashlib.sha256(repr(value).encode()).hexdigest()
 
 

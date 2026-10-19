@@ -5,11 +5,11 @@ available advance require their paid baselines; raw visible fills remain usable
 as information. This does not claim calibrated account-topic delivery.
 """
 from copy import deepcopy
-from .observation_protocol import SCOPED_EXECUTION,MEMORY_JOINT
+from .observation_protocol import SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES
 from .contract import UNIT
 
 
-def enabled(env):return env.observation_protocol in(SCOPED_EXECUTION,MEMORY_JOINT)
+def enabled(env):return env.observation_protocol in(SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES)
 
 
 def orders(env,values,revision,*,complete=False):

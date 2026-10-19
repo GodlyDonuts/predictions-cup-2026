@@ -182,10 +182,8 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     encoding=validate(getattr(model,'global_state_encoding','raw'))
     from .observation_protocol import validate as protocol,LEGACY
     observation_protocol=protocol(getattr(model,'observation_protocol',LEGACY))
-    from .joint_memory_policy import JointMemoryPolicy
-    from .observation_protocol import MEMORY_JOINT
-    if (type(model)is JointMemoryPolicy)!=(observation_protocol==MEMORY_JOINT):
-        raise ValueError('JOINT_MEMORY_ARCHITECTURE_PROTOCOL_MISMATCH')
+    from .observation_protocol import validate_architecture
+    validate_architecture(model)
     bundle={'architecture':model.architecture,'hidden_size':model.hidden_size,'global_state_encoding':encoding,
         'observation_protocol':observation_protocol,
         'model':model.state_dict(),'optimizer':optimizer.state_dict(),
@@ -201,11 +199,13 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     from .full_depth import FullDepthPolicy
     from .query_policy import QueryWindowPolicy
     from .joint_memory_policy import JointMemoryPolicy
+    from .order_policy import OrderPagePolicy
     path=Path(path)
     if hashlib.sha256(path.read_bytes()).hexdigest()!=expected_sha256:raise ValueError('FROZEN_RAW_API_CHECKPOINT_CHANGED')
     bundle=torch.load(path,map_location=device,weights_only=True)
     architectures={ApiPolicy.architecture:ApiPolicy,FullDepthPolicy.architecture:FullDepthPolicy,
-                   QueryWindowPolicy.architecture:QueryWindowPolicy,JointMemoryPolicy.architecture:JointMemoryPolicy}
+                   QueryWindowPolicy.architecture:QueryWindowPolicy,JointMemoryPolicy.architecture:JointMemoryPolicy,
+                   OrderPagePolicy.architecture:OrderPagePolicy}
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
@@ -213,8 +213,7 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     model.global_state_encoding=validate(bundle.get('global_state_encoding','raw'))
     from .observation_protocol import validate as protocol,LEGACY
     model.observation_protocol=protocol(bundle.get('observation_protocol',LEGACY))
-    from .observation_protocol import MEMORY_JOINT
-    if (type(model)is JointMemoryPolicy)!=(model.observation_protocol==MEMORY_JOINT):
-        raise ValueError('JOINT_MEMORY_ARCHITECTURE_PROTOCOL_MISMATCH')
+    from .observation_protocol import validate_architecture
+    validate_architecture(model)
     if fingerprint(model)!=bundle['parameter_sha256']:raise ValueError('RAW_API_PARAMETERS_CHANGED')
     return model,bundle
