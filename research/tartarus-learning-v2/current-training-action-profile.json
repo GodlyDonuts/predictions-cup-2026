@@ -59,14 +59,13 @@
   "development_last_observed_marking": "explicit_opt_in_reported_staleness_never_full_history_qualification",
   "busy_or_rate_limited_request_suspends_policy": false,
   "batched_training_collector": "moloch.learning_actions.batched.BatchStream",
-  "current_development_training_worlds": 32,
+  "current_development_training_worlds": 8,
   "parallel_worlds_are_not_independent_historical_days": true,
   "mechanical_api_admission_masks": true,
   "derived_sig_realtime_modes": [
     "disabled",
     "producer_validated_derived_books_not_raw_topic_replay"
   ],
-  "current_live_learning_run007_realtime_mode": "disabled_prior_profile",
   "full_raw_realtime_topic_parity_established": false,
   "independence_requires_positive_source_provenance_and_data_use_audit": true,
   "optional_passive_execution_modes": [
@@ -75,5 +74,12 @@
   ],
   "passive_models_calibrated": false,
   "event_wait_interrupts_on_newly_created_observable_receipts": true,
-  "optional_private_fill_notifications": "requires_active_sig_stream_one_second_coalescing_plus_receipt_latency"
+  "optional_private_fill_notifications": "requires_active_sig_stream_one_second_coalescing_plus_receipt_latency",
+  "active_development_run": "raw-api-growth-development-013",
+  "active_development_entrypoint": "python -m moloch.learning_actions.experiment",
+  "original_sig_exchanges": 237,
+  "unique_engine_prints": 1668,
+  "role_prefix_initial_state": true,
+  "observable_wakeup_index": true,
+  "historical_run007_realtime_mode": "disabled_prior_profile"
 }

@@ -1,3 +1,5 @@
+Current phase013 uses the recovered237-exchange raw feed; older measurements below remain dated evidence. [Active learning profile](profile-013-learning-20261019.md).
+
 # Longer credit assignment without narrowing API choices
 
 The first phase-011 learner used 805 updates. Across 5,848 active-world chunks,

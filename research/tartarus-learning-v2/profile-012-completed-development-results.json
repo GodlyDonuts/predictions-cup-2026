@@ -1,0 +1,1903 @@
+{
+  "classification": "negative_completed_development_candidates_not_independent_or_contest_ROI",
+  "results": [
+    {
+      "member": 0,
+      "cycle": 0,
+      "checkpoint_sha256": "08e9be65d8a5e9891fa52ef6e7b444e832f8fa8be8ed3d9bb155cd4b3f9426c0",
+      "training": {
+        "all_worlds_preserve_financial_state_through_horizon": true,
+        "cases": [
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3574,
+              "1": 28,
+              "2": 346,
+              "3": 23,
+              "4": 21,
+              "5": 290,
+              "6": 3257,
+              "7": 1,
+              "8": 1,
+              "9": 2,
+              "10": 1261,
+              "11": 7445
+            },
+            "fees_micros": 0,
+            "fill_count": 21,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.008129775000000006,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 6818
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.008163001827733215,
+            "stale_mark_exchanges": [
+              "1051",
+              "1063",
+              "1068",
+              "1070",
+              "1072",
+              "1076",
+              "975"
+            ],
+            "stale_mark_observations": 6125,
+            "terminal_reward_correction": -9.020562075079397e-17,
+            "terminal_wealth_twice_micros": 198374045000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 2250,
+              "1": 31,
+              "2": 160,
+              "3": 10,
+              "4": 7,
+              "5": 45,
+              "6": 506,
+              "9": 2,
+              "10": 894,
+              "11": 4396
+            },
+            "fees_micros": 0,
+            "fill_count": 22,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.08604182500000002,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 207
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.08997046896889892,
+            "stale_mark_exchanges": [
+              "959"
+            ],
+            "stale_mark_observations": 2888,
+            "terminal_reward_correction": -1.3877787807814457e-17,
+            "terminal_wealth_twice_micros": 182791635000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3221,
+              "1": 38,
+              "2": 321,
+              "3": 30,
+              "4": 14,
+              "5": 286,
+              "6": 2915,
+              "7": 1,
+              "9": 1,
+              "10": 1172,
+              "11": 8061
+            },
+            "fees_micros": 0,
+            "fill_count": 31,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.063672175,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 483
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -741970000,
+            "reward": -0.06578962343977575,
+            "stale_mark_exchanges": [
+              "1065",
+              "960"
+            ],
+            "stale_mark_observations": 855,
+            "terminal_reward_correction": -1.3877787807814457e-17,
+            "terminal_wealth_twice_micros": 187265565000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3915,
+              "1": 26,
+              "2": 353,
+              "3": 27,
+              "4": 9,
+              "5": 274,
+              "6": 3515,
+              "7": 1,
+              "8": 1,
+              "9": 2,
+              "10": 1290,
+              "11": 5532
+            },
+            "fees_micros": 0,
+            "fill_count": 30,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.028085024999999986,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 4149
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.028486952627631294,
+            "stale_mark_exchanges": [
+              "1042",
+              "1044",
+              "1051",
+              "1057",
+              "1058",
+              "1064",
+              "1066",
+              "1067",
+              "1070"
+            ],
+            "stale_mark_observations": 4347,
+            "terminal_reward_correction": 1.942890293094024e-16,
+            "terminal_wealth_twice_micros": 194382995000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3293,
+              "1": 23,
+              "2": 333,
+              "3": 18,
+              "4": 9,
+              "5": 244,
+              "6": 2829,
+              "9": 1,
+              "10": 1335,
+              "11": 6501
+            },
+            "fees_micros": 0,
+            "fill_count": 17,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.0595637,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 483
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.06141136246571514,
+            "stale_mark_exchanges": [
+              "1002",
+              "1065"
+            ],
+            "stale_mark_observations": 1115,
+            "terminal_reward_correction": -6.245004513516506e-17,
+            "terminal_wealth_twice_micros": 188087260000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 4001,
+              "1": 51,
+              "2": 350,
+              "3": 22,
+              "4": 14,
+              "5": 293,
+              "6": 2952,
+              "8": 1,
+              "9": 2,
+              "10": 1198,
+              "11": 7975
+            },
+            "fees_micros": 0,
+            "fill_count": 39,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.08241759999999998,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 3523
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.08601289382171705,
+            "stale_mark_exchanges": [
+              "1023",
+              "1059",
+              "1066",
+              "1070",
+              "1072"
+            ],
+            "stale_mark_observations": 6644,
+            "terminal_reward_correction": 1.3877787807814457e-17,
+            "terminal_wealth_twice_micros": 183516480000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 2297,
+              "1": 23,
+              "2": 222,
+              "3": 22,
+              "4": 14,
+              "5": 297,
+              "6": 3174,
+              "8": 2,
+              "9": 1,
+              "10": 1155,
+              "11": 8137
+            },
+            "fees_micros": 0,
+            "fill_count": 60,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.07105209999999995,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 6818
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.07370262354933803,
+            "stale_mark_exchanges": [
+              "1043",
+              "1063",
+              "1066",
+              "1067",
+              "1068",
+              "1070",
+              "1071"
+            ],
+            "stale_mark_observations": 1318,
+            "terminal_reward_correction": -1.3877787807814457e-17,
+            "terminal_wealth_twice_micros": 185789580000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 2816,
+              "1": 26,
+              "2": 261,
+              "3": 34,
+              "4": 15,
+              "5": 314,
+              "6": 3335,
+              "9": 3,
+              "10": 1195,
+              "11": 8379
+            },
+            "fees_micros": 0,
+            "fill_count": 11,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.01030397500000002,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 6818
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.010357428456153816,
+            "stale_mark_exchanges": [
+              "1066",
+              "1068",
+              "1076"
+            ],
+            "stale_mark_observations": 1757,
+            "terminal_reward_correction": -7.112366251504909e-17,
+            "terminal_wealth_twice_micros": 197939205000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          }
+        ],
+        "classification": "independent_simulated_worlds_not_additional_historical_evidence",
+        "eligible": false,
+        "fill_count": 231,
+        "marked_roi": -0.051158271874999994,
+        "reward": -0.0529867943946204,
+        "worlds": 8
+      },
+      "selection": {
+        "cases": [
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 701,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403699500,
+            "entity_counts": {
+              "contract": 208,
+              "global": 388,
+              "order": 4,
+              "read": 46,
+              "stream_control": 55
+            },
+            "family_counts": {
+              "0": 321,
+              "1": 1,
+              "2": 32,
+              "3": 4,
+              "4": 3,
+              "5": 63,
+              "6": 109,
+              "8": 1,
+              "10": 46,
+              "11": 121
+            },
+            "fees_micros": 0,
+            "fill_count": 13,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.018770775000000017,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 12313
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.018949182084170593,
+            "selection_seed": 281032,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403400000,
+            "status_counts": {
+              "ALARM": 321,
+              "BUILDER_CLEARED": 66,
+              "BUILDER_UPDATED": 172,
+              "IN_FLIGHT": 87,
+              "STREAM_DISCONNECTED": 55
+            },
+            "stress": false,
+            "terminal_reward_correction": 3.469446951953614e-18,
+            "terminal_wealth_twice_micros": 196245845000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 1925,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403699500,
+            "entity_counts": {
+              "contract": 472,
+              "global": 1306,
+              "market": 2,
+              "order": 3,
+              "read": 87,
+              "stream_control": 55
+            },
+            "family_counts": {
+              "0": 1250,
+              "1": 7,
+              "2": 121,
+              "3": 3,
+              "4": 7,
+              "5": 108,
+              "6": 231,
+              "8": 1,
+              "9": 1,
+              "10": 87,
+              "11": 109
+            },
+            "fees_micros": 0,
+            "fill_count": 43,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.36572954999999996,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 12313
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.4552798382160695,
+            "selection_seed": 281033,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403400000,
+            "status_counts": {
+              "ALARM": 1250,
+              "BUILDER_CLEARED": 54,
+              "BUILDER_UPDATED": 339,
+              "IN_FLIGHT": 227,
+              "STREAM_DISCONNECTED": 55
+            },
+            "stress": true,
+            "terminal_reward_correction": 1.6653345369377348e-16,
+            "terminal_wealth_twice_micros": 126854090000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 1578,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403999000,
+            "entity_counts": {
+              "contract": 463,
+              "global": 1008,
+              "market": 1,
+              "order": 7,
+              "read": 59,
+              "stream_control": 40
+            },
+            "family_counts": {
+              "0": 940,
+              "1": 7,
+              "2": 104,
+              "3": 7,
+              "4": 11,
+              "5": 121,
+              "6": 221,
+              "8": 1,
+              "9": 1,
+              "10": 59,
+              "11": 106
+            },
+            "fees_micros": 0,
+            "fill_count": 27,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.029816474999999953,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8915
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.030270024350038425,
+            "selection_seed": 281034,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403699500,
+            "status_counts": {
+              "ALARM": 940,
+              "BUILDER_CLEARED": 66,
+              "BUILDER_UPDATED": 342,
+              "IN_FLIGHT": 190,
+              "STREAM_DISCONNECTED": 40
+            },
+            "stress": false,
+            "terminal_reward_correction": 6.591949208711867e-17,
+            "terminal_wealth_twice_micros": 194036705000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 1040,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403999000,
+            "entity_counts": {
+              "contract": 242,
+              "global": 706,
+              "market": 1,
+              "order": 5,
+              "read": 52,
+              "stream_control": 34
+            },
+            "family_counts": {
+              "0": 646,
+              "2": 58,
+              "3": 5,
+              "4": 10,
+              "5": 63,
+              "6": 112,
+              "9": 1,
+              "10": 52,
+              "11": 93
+            },
+            "fees_micros": 0,
+            "fill_count": 32,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.057664174999999984,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8915
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.0593935658144146,
+            "selection_seed": 281035,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403699500,
+            "status_counts": {
+              "ALARM": 646,
+              "BUILDER_CLEARED": 59,
+              "BUILDER_UPDATED": 175,
+              "IN_FLIGHT": 126,
+              "STREAM_DISCONNECTED": 34
+            },
+            "stress": true,
+            "terminal_reward_correction": 5.551115123125783e-17,
+            "terminal_wealth_twice_micros": 188467165000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          }
+        ],
+        "checkpoint_sha256": "08e9be65d8a5e9891fa52ef6e7b444e832f8fa8be8ed3d9bb155cd4b3f9426c0",
+        "eligible": false,
+        "marked_roi_min": -0.36572954999999996,
+        "production_profitability_established": false,
+        "reward": -0.4552798382160695,
+        "role": "development_selection",
+        "source_and_execution_calibration_complete": false
+      }
+    },
+    {
+      "member": 1,
+      "cycle": 0,
+      "checkpoint_sha256": "ecdf07f0ddc995ec1aa98358ade5f9c61cb15a1949ac4b4e330d8c38604c50ec",
+      "training": {
+        "all_worlds_preserve_financial_state_through_horizon": true,
+        "cases": [
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 827,
+              "2": 1,
+              "3": 10,
+              "4": 125,
+              "5": 2354,
+              "6": 176,
+              "7": 1,
+              "8": 3,
+              "9": 2,
+              "10": 1864,
+              "11": 240
+            },
+            "fees_micros": 0,
+            "fill_count": 9,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.08163385000000001,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 206
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.08515911167448953,
+            "stale_mark_exchanges": [
+              "1064"
+            ],
+            "stale_mark_observations": 587,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 183673230000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 3
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 711,
+              "1": 1,
+              "2": 2,
+              "3": 8,
+              "4": 89,
+              "5": 2232,
+              "6": 156,
+              "7": 1,
+              "8": 2,
+              "10": 1923,
+              "11": 220
+            },
+            "fees_micros": 0,
+            "fill_count": 0,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": 0.0,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 207
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": 0.0,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 200000000000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 609,
+              "1": 2,
+              "3": 8,
+              "4": 78,
+              "5": 2346,
+              "6": 185,
+              "7": 4,
+              "8": 1,
+              "10": 1859,
+              "11": 239
+            },
+            "fees_micros": 0,
+            "fill_count": 17,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.044948575000000046,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 209
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -3375000,
+            "reward": -0.04599009178362812,
+            "stale_mark_exchanges": [
+              "1002",
+              "948",
+              "960"
+            ],
+            "stale_mark_observations": 73,
+            "terminal_reward_correction": -6.938893903907228e-17,
+            "terminal_wealth_twice_micros": 191010285000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 852,
+              "1": 1,
+              "3": 9,
+              "4": 124,
+              "5": 2471,
+              "6": 189,
+              "7": 4,
+              "8": 2,
+              "9": 1,
+              "10": 1946,
+              "11": 246
+            },
+            "fees_micros": 0,
+            "fill_count": 29,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.07936279999999996,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 2010
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.08268923998610928,
+            "stale_mark_exchanges": [
+              "1004",
+              "1042",
+              "1043",
+              "1062",
+              "1069",
+              "1072"
+            ],
+            "stale_mark_observations": 3860,
+            "terminal_reward_correction": 6.938893903907228e-17,
+            "terminal_wealth_twice_micros": 184127440000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 763,
+              "1": 4,
+              "2": 2,
+              "3": 3,
+              "4": 121,
+              "5": 2248,
+              "6": 180,
+              "7": 3,
+              "8": 4,
+              "9": 1,
+              "10": 1879,
+              "11": 232
+            },
+            "fees_micros": 0,
+            "fill_count": 0,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": 0.0,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8532
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": 0.0,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 200000000000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 815,
+              "1": 2,
+              "2": 2,
+              "3": 7,
+              "4": 118,
+              "5": 2454,
+              "6": 201,
+              "7": 4,
+              "8": 3,
+              "10": 1956,
+              "11": 229
+            },
+            "fees_micros": 0,
+            "fill_count": 11,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.004609850000000026,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 6818
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.004620508126033436,
+            "stale_mark_exchanges": [
+              "1004",
+              "1058",
+              "1072",
+              "974"
+            ],
+            "stale_mark_observations": 197,
+            "terminal_reward_correction": -2.42861286636753e-17,
+            "terminal_wealth_twice_micros": 199078030000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 782,
+              "1": 2,
+              "2": 1,
+              "3": 4,
+              "4": 128,
+              "5": 2330,
+              "6": 181,
+              "7": 1,
+              "8": 3,
+              "10": 1842,
+              "11": 228
+            },
+            "fees_micros": 0,
+            "fill_count": 0,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": 0.0,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 6818
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": 0.0,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 200000000000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 0,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 709,
+              "1": 2,
+              "3": 14,
+              "4": 107,
+              "5": 2122,
+              "6": 168,
+              "7": 2,
+              "8": 6,
+              "9": 1,
+              "10": 1816,
+              "11": 236
+            },
+            "fees_micros": 0,
+            "fill_count": 0,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": 0.0,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 1768
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": 0.0,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 200000000000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          }
+        ],
+        "classification": "independent_simulated_worlds_not_additional_historical_evidence",
+        "eligible": false,
+        "fill_count": 66,
+        "marked_roi": -0.026319384375000004,
+        "reward": -0.027307368946282544,
+        "worlds": 8
+      },
+      "selection": {
+        "cases": [
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 392,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403699500,
+            "entity_counts": {
+              "contract": 177,
+              "global": 187,
+              "market": 9,
+              "read": 19
+            },
+            "family_counts": {
+              "0": 183,
+              "2": 1,
+              "4": 37,
+              "5": 143,
+              "6": 7,
+              "7": 1,
+              "10": 19,
+              "11": 1
+            },
+            "fees_micros": 0,
+            "fill_count": 3,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.0009985249999999724,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 12313
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.0009990238581970197,
+            "selection_seed": 281032,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403400000,
+            "status_counts": {
+              "ALARM": 183,
+              "BUILDER_CLEARED": 1,
+              "BUILDER_UPDATED": 150,
+              "IN_FLIGHT": 58
+            },
+            "stress": false,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 199800295000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 183,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403699500,
+            "entity_counts": {
+              "contract": 73,
+              "global": 84,
+              "market": 7,
+              "order": 1,
+              "read": 17,
+              "stream_control": 1
+            },
+            "family_counts": {
+              "0": 84,
+              "1": 1,
+              "3": 1,
+              "4": 29,
+              "5": 46,
+              "6": 4,
+              "10": 17,
+              "11": 1
+            },
+            "fees_micros": 0,
+            "fill_count": 0,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": 0.0,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 12313
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": 0.0,
+            "selection_seed": 281033,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403400000,
+            "status_counts": {
+              "ALARM": 84,
+              "BUILDER_UPDATED": 50,
+              "IN_FLIGHT": 48,
+              "STREAM_DISCONNECTED": 1
+            },
+            "stress": true,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 200000000000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 306,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403999000,
+            "entity_counts": {
+              "contract": 74,
+              "global": 200,
+              "market": 14,
+              "order": 2,
+              "read": 16
+            },
+            "family_counts": {
+              "0": 198,
+              "1": 1,
+              "2": 2,
+              "3": 2,
+              "4": 37,
+              "5": 48,
+              "6": 2,
+              "10": 16
+            },
+            "fees_micros": 0,
+            "fill_count": 0,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": 0.0,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8915
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": 0.0,
+            "selection_seed": 281034,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403699500,
+            "status_counts": {
+              "ALARM": 198,
+              "BUILDER_UPDATED": 50,
+              "IN_FLIGHT": 58
+            },
+            "stress": false,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 200000000000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 382,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403999000,
+            "entity_counts": {
+              "contract": 141,
+              "global": 217,
+              "market": 7,
+              "order": 3,
+              "read": 14
+            },
+            "family_counts": {
+              "0": 214,
+              "3": 3,
+              "4": 37,
+              "5": 109,
+              "6": 2,
+              "7": 3,
+              "10": 14
+            },
+            "fees_micros": 0,
+            "fill_count": 10,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.03769434999999999,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8915
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.03842315528712731,
+            "selection_seed": 281035,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403699500,
+            "status_counts": {
+              "ALARM": 214,
+              "BUILDER_UPDATED": 111,
+              "IN_FLIGHT": 57
+            },
+            "stress": true,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 192461130000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          }
+        ],
+        "checkpoint_sha256": "ecdf07f0ddc995ec1aa98358ade5f9c61cb15a1949ac4b4e330d8c38604c50ec",
+        "eligible": false,
+        "marked_roi_min": -0.03769434999999999,
+        "production_profitability_established": false,
+        "reward": -0.03842315528712731,
+        "role": "development_selection",
+        "source_and_execution_calibration_complete": false
+      }
+    },
+    {
+      "member": 2,
+      "cycle": 0,
+      "checkpoint_sha256": "662cfaf62d64c91507a46163f90864ff96ed610faa69b8c7a6aad23fba7bd471",
+      "training": {
+        "all_worlds_preserve_financial_state_through_horizon": true,
+        "cases": [
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 155,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 4138,
+              "1": 27,
+              "2": 98,
+              "3": 7,
+              "4": 48,
+              "5": 48,
+              "6": 1777,
+              "7": 8,
+              "10": 4307,
+              "11": 56
+            },
+            "fees_micros": 0,
+            "fill_count": 58,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.08390257499999998,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 132
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -9200000,
+            "reward": -0.08763256079343662,
+            "stale_mark_exchanges": [
+              "1002",
+              "1004",
+              "1043",
+              "1044",
+              "1051",
+              "1064",
+              "1072",
+              "948",
+              "975"
+            ],
+            "stale_mark_observations": 7683,
+            "terminal_reward_correction": 2.636779683484747e-16,
+            "terminal_wealth_twice_micros": 183219485000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 19,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3046,
+              "1": 29,
+              "2": 74,
+              "3": 10,
+              "4": 36,
+              "5": 33,
+              "6": 1067,
+              "7": 4,
+              "10": 2975,
+              "11": 34
+            },
+            "fees_micros": 0,
+            "fill_count": 40,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.06263447499999997,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 315
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -645000,
+            "reward": -0.06468197142607181,
+            "stale_mark_exchanges": [
+              "1002",
+              "1023",
+              "1042",
+              "1064",
+              "959",
+              "960"
+            ],
+            "stale_mark_observations": 108,
+            "terminal_reward_correction": -1.3877787807814457e-17,
+            "terminal_wealth_twice_micros": 187473105000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 51,
+              "mints": 4
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3814,
+              "1": 23,
+              "2": 108,
+              "3": 10,
+              "4": 50,
+              "5": 56,
+              "6": 2021,
+              "7": 5,
+              "9": 1,
+              "10": 4082,
+              "11": 88
+            },
+            "fees_micros": 0,
+            "fill_count": 36,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.12054745,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 207
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -20000,
+            "reward": -0.12845566736852201,
+            "stale_mark_exchanges": [
+              "1002",
+              "1004",
+              "1023",
+              "1044",
+              "1064",
+              "948",
+              "959"
+            ],
+            "stale_mark_observations": 1148,
+            "terminal_reward_correction": -8.326672684688674e-17,
+            "terminal_wealth_twice_micros": 175890510000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 21,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3453,
+              "1": 22,
+              "2": 86,
+              "3": 10,
+              "4": 31,
+              "5": 59,
+              "6": 2140,
+              "7": 7,
+              "10": 3955,
+              "11": 72
+            },
+            "fees_micros": 0,
+            "fill_count": 28,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.08614357500000003,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 209
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -645000,
+            "reward": -0.09008180411208588,
+            "stale_mark_exchanges": [
+              "1002",
+              "1042",
+              "1064",
+              "948",
+              "959",
+              "960"
+            ],
+            "stale_mark_observations": 69,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 182771285000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 19,
+              "mints": 3
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 4190,
+              "1": 26,
+              "2": 108,
+              "3": 10,
+              "4": 47,
+              "5": 43,
+              "6": 1861,
+              "7": 7,
+              "8": 1,
+              "10": 4284,
+              "11": 68
+            },
+            "fees_micros": 0,
+            "fill_count": 82,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.08828607499999996,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8532
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -6615000,
+            "reward": -0.09242901684333851,
+            "stale_mark_exchanges": [
+              "1024",
+              "1063",
+              "1066",
+              "1068",
+              "1070",
+              "1076",
+              "948",
+              "974"
+            ],
+            "stale_mark_observations": 342,
+            "terminal_reward_correction": 4.85722573273506e-16,
+            "terminal_wealth_twice_micros": 182342785000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 26,
+              "mints": 2
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3693,
+              "1": 27,
+              "2": 90,
+              "3": 10,
+              "4": 34,
+              "5": 50,
+              "6": 1930,
+              "7": 2,
+              "10": 4013,
+              "11": 84
+            },
+            "fees_micros": 0,
+            "fill_count": 30,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.016937100000000038,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 483
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -775000,
+            "reward": -0.01708217308962998,
+            "stale_mark_exchanges": [
+              "1023",
+              "1042",
+              "948",
+              "959"
+            ],
+            "stale_mark_observations": 76,
+            "terminal_reward_correction": 5.551115123125783e-17,
+            "terminal_wealth_twice_micros": 196612580000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 9,
+              "mints": 1
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3585,
+              "1": 18,
+              "2": 100,
+              "3": 14,
+              "4": 42,
+              "5": 61,
+              "6": 2096,
+              "7": 9,
+              "9": 1,
+              "10": 3986,
+              "11": 66
+            },
+            "fees_micros": 0,
+            "fill_count": 57,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.11547154999999998,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 206
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -16480000,
+            "reward": -0.1227006008345732,
+            "stale_mark_exchanges": [
+              "1002",
+              "1023",
+              "1042",
+              "1044",
+              "1048",
+              "1064",
+              "1065",
+              "1072",
+              "948",
+              "959"
+            ],
+            "stale_mark_observations": 2581,
+            "terminal_reward_correction": 8.326672684688674e-17,
+            "terminal_wealth_twice_micros": 176905690000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "derived_stream": {
+              "book_deliveries": 9,
+              "mints": 4
+            },
+            "eligible": false,
+            "family_counts": {
+              "0": 3828,
+              "1": 18,
+              "2": 105,
+              "3": 7,
+              "4": 43,
+              "5": 42,
+              "6": 1771,
+              "7": 9,
+              "8": 1,
+              "10": 4111,
+              "11": 77
+            },
+            "fees_micros": 0,
+            "fill_count": 47,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.07220977500000003,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 132
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.0749496223957866,
+            "stale_mark_exchanges": [
+              "1004",
+              "1044",
+              "1058",
+              "948",
+              "975"
+            ],
+            "stale_mark_observations": 9040,
+            "terminal_reward_correction": -5.551115123125783e-17,
+            "terminal_wealth_twice_micros": 185558045000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          }
+        ],
+        "classification": "independent_simulated_worlds_not_additional_historical_evidence",
+        "eligible": false,
+        "fill_count": 378,
+        "marked_roi": -0.080766571875,
+        "reward": -0.08475167710793058,
+        "worlds": 8
+      },
+      "selection": {
+        "cases": [
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 108,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403699500,
+            "entity_counts": {
+              "contract": 54,
+              "global": 39,
+              "order": 1,
+              "read": 13,
+              "stream_control": 1
+            },
+            "family_counts": {
+              "0": 39,
+              "2": 4,
+              "3": 1,
+              "5": 4,
+              "6": 46,
+              "10": 13,
+              "11": 1
+            },
+            "fees_micros": 0,
+            "fill_count": 0,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": 0.0,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 12313
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": 0.0,
+            "selection_seed": 281032,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403400000,
+            "status_counts": {
+              "ALARM": 39,
+              "BUILDER_UPDATED": 50,
+              "IN_FLIGHT": 18,
+              "STREAM_DISCONNECTED": 1
+            },
+            "stress": false,
+            "terminal_reward_correction": 0.0,
+            "terminal_wealth_twice_micros": 200000000000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 632,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403699500,
+            "entity_counts": {
+              "contract": 116,
+              "global": 477,
+              "market": 2,
+              "order": 2,
+              "read": 35
+            },
+            "family_counts": {
+              "0": 475,
+              "1": 7,
+              "2": 35,
+              "3": 2,
+              "4": 17,
+              "5": 2,
+              "6": 57,
+              "7": 1,
+              "9": 1,
+              "10": 35
+            },
+            "fees_micros": 0,
+            "fill_count": 14,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.07659755000000001,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 12313
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.079690115674735,
+            "selection_seed": 281033,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403400000,
+            "status_counts": {
+              "ALARM": 475,
+              "BUILDER_UPDATED": 59,
+              "IN_FLIGHT": 98
+            },
+            "stress": true,
+            "terminal_reward_correction": -1.3877787807814457e-17,
+            "terminal_wealth_twice_micros": 184680490000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 844,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403999000,
+            "entity_counts": {
+              "contract": 213,
+              "global": 575,
+              "market": 2,
+              "order": 4,
+              "read": 50
+            },
+            "family_counts": {
+              "0": 573,
+              "1": 8,
+              "2": 42,
+              "3": 4,
+              "4": 15,
+              "5": 13,
+              "6": 137,
+              "7": 1,
+              "10": 50,
+              "11": 1
+            },
+            "fees_micros": 0,
+            "fill_count": 37,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.20156385,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8915
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": -797980000,
+            "reward": -0.22510027695379084,
+            "selection_seed": 281034,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403699500,
+            "status_counts": {
+              "ALARM": 573,
+              "BUILDER_CLEARED": 1,
+              "BUILDER_UPDATED": 150,
+              "IN_FLIGHT": 120
+            },
+            "stress": false,
+            "terminal_reward_correction": -1.6653345369377348e-16,
+            "terminal_wealth_twice_micros": 159687230000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          },
+          {
+            "D": null,
+            "N": null,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "decisions": 815,
+            "depth_executable_roi_established": false,
+            "eligible": false,
+            "end_ms": 1792403999000,
+            "entity_counts": {
+              "contract": 199,
+              "global": 568,
+              "market": 2,
+              "order": 6,
+              "read": 40
+            },
+            "family_counts": {
+              "0": 566,
+              "1": 9,
+              "2": 46,
+              "3": 6,
+              "4": 13,
+              "5": 12,
+              "6": 121,
+              "7": 2,
+              "10": 40
+            },
+            "fees_micros": 0,
+            "fill_count": 40,
+            "initial_wealth_twice_micros": 200000000000,
+            "marked_roi": -0.09395175,
+            "passive_execution": {
+              "calibrated": false,
+              "intercepted_volume": 0,
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 8915
+            },
+            "production_profitability_established": false,
+            "realized_fifo_micros": 0,
+            "reward": -0.09866271828657174,
+            "selection_seed": 281035,
+            "stale_mark_exchanges": [],
+            "stale_mark_observations": 0,
+            "start_ms": 1792403699500,
+            "status_counts": {
+              "ALARM": 566,
+              "BUILDER_UPDATED": 133,
+              "IN_FLIGHT": 116
+            },
+            "stress": true,
+            "terminal_reward_correction": -1.3877787807814457e-16,
+            "terminal_wealth_twice_micros": 181209650000,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+          }
+        ],
+        "checkpoint_sha256": "662cfaf62d64c91507a46163f90864ff96ed610faa69b8c7a6aad23fba7bd471",
+        "eligible": false,
+        "marked_roi_min": -0.20156385,
+        "production_profitability_established": false,
+        "reward": -0.22510027695379084,
+        "role": "development_selection",
+        "source_and_execution_calibration_complete": false
+      }
+    }
+  ],
+  "independent_test_used": false,
+  "production_changed": false
+}

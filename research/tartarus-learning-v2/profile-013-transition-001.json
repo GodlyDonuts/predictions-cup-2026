@@ -1,0 +1,72 @@
+{
+  "classification": "intentional_raw_source_and_replay_efficiency_transition_not_profit",
+  "prepared_utc": "2026-10-19T14:27:13.432942+00:00",
+  "reason": "verified_raw_feed_237_vs36_exchanges_and1668_vs73_prints_and_equivalent_indexed_wakeups",
+  "source_commit": "afda40135eea5837c0591be7c619e2a2e12937e8",
+  "source_run": "raw-api-growth-development-012",
+  "target_run": "raw-api-growth-development-013",
+  "last_training_decisions": 391807,
+  "last_accepted_updates": 411,
+  "partial": {
+    "member": 3,
+    "sha256": "e5317e784427213b9dca36824cd5092320cbf2500ba10779e0007ed3bdd13ef6",
+    "updates": 384
+  },
+  "parents": [
+    {
+      "origin": "completed_trained_and_evaluated_candidate",
+      "sha256": "08e9be65d8a5e9891fa52ef6e7b444e832f8fa8be8ed3d9bb155cd4b3f9426c0"
+    },
+    {
+      "origin": "completed_trained_and_evaluated_candidate",
+      "sha256": "ecdf07f0ddc995ec1aa98358ade5f9c61cb15a1949ac4b4e330d8c38604c50ec"
+    },
+    {
+      "origin": "completed_trained_and_evaluated_candidate",
+      "sha256": "662cfaf62d64c91507a46163f90864ff96ed610faa69b8c7a6aad23fba7bd471"
+    },
+    {
+      "origin": "preserved_partial_neural_weights_not_completed_episode",
+      "sha256": "e5317e784427213b9dca36824cd5092320cbf2500ba10779e0007ed3bdd13ef6"
+    },
+    {
+      "origin": "preserved_original_founder",
+      "sha256": "d8e1243eba0b276bd91262f545391ee673cd57f1bc0a453d740cc209b63f9963"
+    },
+    {
+      "origin": "preserved_original_founder",
+      "sha256": "23dca29be4ed2f56c2fe3c91f9d31e850f91ecfc05dde206cdfce09cf5d19993"
+    },
+    {
+      "origin": "preserved_original_founder",
+      "sha256": "7d36ba22615f4b590c2a4c0756f74ce83b170b33ae519d3a02bcd023f78a95ea"
+    },
+    {
+      "origin": "preserved_original_founder",
+      "sha256": "c602cc6d6105bb90d779b262ce927f1382cf89773d2f7fafb2a7ea3156715ab9"
+    }
+  ],
+  "completed_results": [
+    {
+      "member": 0,
+      "cycle": 0,
+      "reward": -0.4552798382160695
+    },
+    {
+      "member": 1,
+      "cycle": 0,
+      "reward": -0.03842315528712731
+    },
+    {
+      "member": 2,
+      "cycle": 0,
+      "reward": -0.22510027695379084
+    }
+  ],
+  "all_eight_lineages_preserved": true,
+  "simulated_financial_world_not_resumed": true,
+  "optimizer_and_rollout_reset": true,
+  "production_changed": false,
+  "independent_test_used": false,
+  "old_processes_confirmed_stopped": true
+}
