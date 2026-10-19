@@ -22,8 +22,8 @@ class IntervalEpisode(Episode):
             raise ValueError('ORIGINAL_POSITIVE_FUNDED_CAPITAL')
 
     def venue_interval(self,ex,venue):
-        rows=[r for (market,_),r in self.reference_cache.items()
-              if market==self.mapping.get(ex) and r.get('venue')==venue
+        rows=[r for (market,_),r in self.reference_cache.for_market(self.mapping.get(ex))
+              if r.get('venue')==venue
               and r.get('mapping_kind')=='direct_party_reference'
               and r.get('mapping_semantics')=='same_party_conditional_not_contract_equivalence']
         if not rows:return None

@@ -1,0 +1,15 @@
+{
+  "run": "market-memory-interval-004",
+  "classification": "inspected_three_venue_feasible_deadline_development_not_heldout",
+  "reportSha256": "0441f12a6a56dde1d7042e7e327ee9b470796e3205b84581be031c07bb2c6e5d",
+  "trainingDecisions": 46080,
+  "optimizerUpdates": 128,
+  "wallSeconds": 250.54095729999244,
+  "fitFillReceipts": 15,
+  "fitModeledRequests": 21845,
+  "strictPositiveEvaluatedCheckpoints": 0,
+  "evaluatedCheckpoints": 8,
+  "allFourPositiveRealizedCheckpoints": 0,
+  "profitabilityEstablished": false,
+  "productionChanged": false
+}

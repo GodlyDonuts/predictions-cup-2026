@@ -1,0 +1,57 @@
+{
+  "classification": "local_single_cpu_actual_data_replay_not_cuda_or_production_forecast",
+  "sourceExchanges": 27,
+  "observedFitExchanges": 23,
+  "before": {
+    "classification": "single_cpu_causal_replay_benchmark_not_cuda_training_or_production",
+    "samples": [
+      {
+        "wallSeconds": 0.8633574000559747,
+        "fullTrajectoryAndAccountingSha256": "efa7b60ef0c3b839b3c4e7b5d37648a4b03fe0a88c74d00c38ce5fb672100dbc",
+        "fillReceipts": 0,
+        "modeledRequests": 32
+      },
+      {
+        "wallSeconds": 0.7504657000536099,
+        "fullTrajectoryAndAccountingSha256": "eeddcab339c61d38781e101b8778120ca482e947a8d60bc46429319d8ce3922b",
+        "fillReceipts": 0,
+        "modeledRequests": 32
+      },
+      {
+        "wallSeconds": 0.7902403000043705,
+        "fullTrajectoryAndAccountingSha256": "b251ea68ec21996c9bc11f09dae5e2616be57df3880e17e83bec78dd023e752b",
+        "fillReceipts": 0,
+        "modeledRequests": 48
+      }
+    ],
+    "medianWallSeconds": 0.7902403000043705
+  },
+  "after": {
+    "classification": "single_cpu_causal_replay_benchmark_not_cuda_training_or_production",
+    "samples": [
+      {
+        "wallSeconds": 0.39727279997896403,
+        "fullTrajectoryAndAccountingSha256": "efa7b60ef0c3b839b3c4e7b5d37648a4b03fe0a88c74d00c38ce5fb672100dbc",
+        "fillReceipts": 0,
+        "modeledRequests": 32
+      },
+      {
+        "wallSeconds": 0.32863109989557415,
+        "fullTrajectoryAndAccountingSha256": "eeddcab339c61d38781e101b8778120ca482e947a8d60bc46429319d8ce3922b",
+        "fillReceipts": 0,
+        "modeledRequests": 32
+      },
+      {
+        "wallSeconds": 0.33177779999095947,
+        "fullTrajectoryAndAccountingSha256": "b251ea68ec21996c9bc11f09dae5e2616be57df3880e17e83bec78dd023e752b",
+        "fillReceipts": 0,
+        "modeledRequests": 48
+      }
+    ],
+    "medianWallSeconds": 0.33177779999095947
+  },
+  "medianSpeedup": 2.3818359758425776,
+  "allFullObservationActionAccountingHashesExactlyEqual": true,
+  "timingCaveat": "Small local three-run sample; before ran alongside a CUDA training job, after did not. Exact semantics compare is stronger than timing attribution.",
+  "productionChanged": false
+}

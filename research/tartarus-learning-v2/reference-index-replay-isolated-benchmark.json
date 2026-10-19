@@ -1,0 +1,64 @@
+{
+  "classification": "local_single_cpu_actual_data_replay_not_cuda_or_production_forecast",
+  "interleavedOldAndNewSameProcess": true,
+  "cudaTrainingActive": false,
+  "samples": [
+    {
+      "mode": "old",
+      "seed": 48001,
+      "wallSeconds": 0.7984119000611827,
+      "fullTrajectoryAndAccountingSha256": "efa7b60ef0c3b839b3c4e7b5d37648a4b03fe0a88c74d00c38ce5fb672100dbc",
+      "fillReceipts": 0,
+      "modeledRequests": 32
+    },
+    {
+      "mode": "new",
+      "seed": 48001,
+      "wallSeconds": 0.33027639996726066,
+      "fullTrajectoryAndAccountingSha256": "efa7b60ef0c3b839b3c4e7b5d37648a4b03fe0a88c74d00c38ce5fb672100dbc",
+      "fillReceipts": 0,
+      "modeledRequests": 32
+    },
+    {
+      "mode": "new",
+      "seed": 48002,
+      "wallSeconds": 0.33015910000540316,
+      "fullTrajectoryAndAccountingSha256": "eeddcab339c61d38781e101b8778120ca482e947a8d60bc46429319d8ce3922b",
+      "fillReceipts": 0,
+      "modeledRequests": 32
+    },
+    {
+      "mode": "old",
+      "seed": 48002,
+      "wallSeconds": 0.7338945999508724,
+      "fullTrajectoryAndAccountingSha256": "eeddcab339c61d38781e101b8778120ca482e947a8d60bc46429319d8ce3922b",
+      "fillReceipts": 0,
+      "modeledRequests": 32
+    },
+    {
+      "mode": "old",
+      "seed": 48003,
+      "wallSeconds": 0.72807469998952,
+      "fullTrajectoryAndAccountingSha256": "b251ea68ec21996c9bc11f09dae5e2616be57df3880e17e83bec78dd023e752b",
+      "fillReceipts": 0,
+      "modeledRequests": 48
+    },
+    {
+      "mode": "new",
+      "seed": 48003,
+      "wallSeconds": 0.3266234000911936,
+      "fullTrajectoryAndAccountingSha256": "b251ea68ec21996c9bc11f09dae5e2616be57df3880e17e83bec78dd023e752b",
+      "fillReceipts": 0,
+      "modeledRequests": 48
+    }
+  ],
+  "oldMedianWallSeconds": 0.7338945999508724,
+  "newMedianWallSeconds": 0.33015910000540316,
+  "medianSpeedup": 2.2228513463323045,
+  "allFullObservationActionAccountingHashesExactlyEqual": true,
+  "legacySourceSha256": {
+    "episodes.py": "263a7634cfd14b924100abaaf0a28c1169f109d069e765e5fc4bf9aeca6e6715",
+    "interval_episodes.py": "a74e46576b2a79b50549a1b94ac3bfdc540d0d405d934e1c47a65d45df0c06a6"
+  },
+  "productionChanged": false
+}

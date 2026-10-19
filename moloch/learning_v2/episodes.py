@@ -10,6 +10,7 @@ from .account import UNIT, Target, project, wealth
 from .liquidity import Book
 from .reference_env import ReferenceEnv
 from .policy import FAMILIES, HEAD_SIZES
+from .reference_cache import ReferenceCache
 
 CONTRACT_FEATURES = 24
 GLOBAL_FEATURES = 14
@@ -49,7 +50,7 @@ class Episode(ReferenceEnv):
         super().__init__(mechanics,clock_start,cash)
         self.exchanges = exchanges; self.target_wealth = target; self.initial_wealth = cash
         self.start = start; self.end = end
-        self.scope = {}; self.reference_cache = {}; self.mapping = {}
+        self.scope = {}; self.reference_cache = ReferenceCache(); self.mapping = {}
         self.action_projections = []; self._depth_totals = {}
 
     def _displayed_totals(self, ex, book):
@@ -64,7 +65,7 @@ class Episode(ReferenceEnv):
         return totals
 
     def _refresh_reference(self, market):
-        points = [(k,r) for k,r in self.reference_cache.items() if k[0]==market and r['mapping_kind']=='direct_party_reference']
+        points = [(k,r) for k,r in self.reference_cache.for_market(market) if r['mapping_kind']=='direct_party_reference']
         for ex in self.scope.get(market,[]):
             for venue in ['Kalshi','Polymarket']:
                 candidates = [r for k,r in points if r['venue']==venue]

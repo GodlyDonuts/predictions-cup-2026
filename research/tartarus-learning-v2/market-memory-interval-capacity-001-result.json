@@ -1,0 +1,52 @@
+{
+  "run": "market-memory-interval-capacity-001",
+  "classification": "inspected_short_history_gpu_capacity_study_not_heldout_or_deployment",
+  "reportSha256": "8a63f9f9aae730a76ef943fe43e40996019438af654d76831745e1aebb12ef6b",
+  "parameters": 56537118,
+  "batchWorlds": 64,
+  "globalHiddenSize": 4096,
+  "marketHiddenSize": 128,
+  "trainingDecisions": 46080,
+  "optimizerUpdates": 32,
+  "wallSeconds": 109.48546479991637,
+  "peakCudaReservedBytes": 7841251328,
+  "gpuTelemetryMeanUtilizationPercent": 26.762376237623762,
+  "gpuTelemetryMaxUtilizationPercent": 94.0,
+  "fitFillReceipts": 30,
+  "evaluations": [
+    {
+      "block": 3,
+      "strictPositiveExcess": false,
+      "excessMicros": [
+        -397280000,
+        0,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "block": 7,
+      "strictPositiveExcess": false,
+      "excessMicros": [
+        -397280000,
+        236347000,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "profitabilityEstablished": false,
+  "productionChanged": false
+}

@@ -12,7 +12,7 @@ from .market_memory_policy import MarketMemoryPolicy
 from .interval_market_policy import IntervalMarketPolicy
 from .train_inner import fingerprint
 
-SEMANTIC_SOURCES=('episodes.py','reference_env.py','account.py','liquidity.py',
+SEMANTIC_SOURCES=('episodes.py','reference_env.py','account.py','liquidity.py','reference_cache.py',
                   'policy.py','fused_policy.py','market_memory_policy.py','run_experiment.py')
 
 
