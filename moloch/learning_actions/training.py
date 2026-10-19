@@ -96,7 +96,7 @@ def collect_chunk(stream,decisions=128,*,reward_ledger=None):
 
 
 def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epochs=2,
-           checkpoint_encoder=False,entropy_coefficient=.01):
+           checkpoint_encoder=False,entropy_coefficient=.01,episode_session=None):
     """Economic rewards must be supplied for every decision, never imputed.
 
     Default no time discount matches the requested compounded-growth objective.
@@ -105,7 +105,13 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     """
     if role!='train'or chunk.role!='train':raise ValueError('INDEPENDENT_TEST_OR_EVOLUTION_CANNOT_OPTIMIZE_WEIGHTS')
     from .behavior_guard import identity
-    if identity(model,chunk.behavior_guard)!=chunk.behavior_sha256:raise ValueError('FRESH_ON_POLICY_CHUNK_REQUIRED')
+    prescribed=None;global_advantage=None
+    if episode_session is None:
+        if identity(model,chunk.behavior_guard)!=chunk.behavior_sha256:raise ValueError('FRESH_ON_POLICY_CHUNK_REQUIRED')
+    else:
+        from .episode_training import EpisodeSession
+        if type(episode_session)is not EpisodeSession:raise ValueError('SEALED_TRAIN_EPISODE_SESSION_REQUIRED')
+        prescribed,global_advantage=episode_session.authorize(model,chunk)
     if type(entropy_coefficient)not in(int,float)or not math.isfinite(entropy_coefficient)or entropy_coefficient<0:
         raise ValueError('NONNEGATIVE_FINITE_ENTROPY_COEFFICIENT')
     flattened=[x for row in rewards for x in (row if isinstance(row,(list,tuple))else[row])]
@@ -125,8 +131,13 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
         value=rewards[i]+(~terminal)*value
         returns.append(value)
     returns=torch.stack(list(reversed(returns))).detach()
+    if prescribed is not None:
+        returns=torch.tensor(prescribed,dtype=torch.float64,device=device)
+        if returns.shape!=old_values.shape or not bool(torch.isfinite(returns).all()):raise ValueError('COMPLETE_CLOSED_EPISODE_TARGETS_REQUIRED')
     advantage=returns-old_values
-    advantage=(advantage-advantage[learn].mean())/advantage[learn].std(unbiased=False).clamp_min(1e-8)
+    if global_advantage is None:
+        advantage=(advantage-advantage[learn].mean())/advantage[learn].std(unbiased=False).clamp_min(1e-8)
+    else:advantage=(advantage-global_advantage[0])/global_advantage[1]
     reports=[]
     prepared=sequence_inputs(chunk.frames)
     for epoch in range(epochs):
@@ -155,6 +166,9 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
                         'encoder_activation_checkpointing':bool(checkpoint_encoder),'behavior_guard':chunk.behavior_guard,
                         'accepted':accepted,'recurrent_state_carried':True})
         if not accepted:break
+    if episode_session is not None:
+        episode_session.finished(model)
+        for report in reports:report['return_source']='sealed_full_training_episode';report['recurrent_context']='stored_behavior_state_at_chunk_boundary'
     return reports
 
 

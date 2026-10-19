@@ -1,0 +1,150 @@
+{
+  "classification": "remote_20261016_schema_compatible_derived_observer_clock_inventory_only",
+  "observedDateUtc": "2026-10-19",
+  "filesDateFilter": "20261016*.jsonl.gz",
+  "sourceDirectories": [
+    {
+      "directory": "crossvenue-observer-trade-v1",
+      "files": 1,
+      "compressedBytes": 66024,
+      "compatibleDecisionRows": 4,
+      "firstDecisionMs": 1792164255392,
+      "lastDecisionMs": 1792165005979,
+      "externalSources": {
+        "kalshi_official_ws_v2": 4,
+        "kalshi_official_v2": 0
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v1",
+      "files": 1,
+      "compressedBytes": 2984,
+      "compatibleDecisionRows": 0,
+      "firstDecisionMs": null,
+      "lastDecisionMs": null,
+      "externalSources": {
+        "kalshi_official_ws_v2": 0,
+        "kalshi_official_v2": 0
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v10",
+      "files": 2,
+      "compressedBytes": 3966688,
+      "compatibleDecisionRows": 6144,
+      "firstDecisionMs": 1792162303258,
+      "lastDecisionMs": 1792163092319,
+      "externalSources": {
+        "kalshi_official_ws_v2": 4605,
+        "kalshi_official_v2": 1539
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v2",
+      "files": 1,
+      "compressedBytes": 83086,
+      "compatibleDecisionRows": 0,
+      "firstDecisionMs": null,
+      "lastDecisionMs": null,
+      "externalSources": {
+        "kalshi_official_ws_v2": 0,
+        "kalshi_official_v2": 0
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v4",
+      "files": 5,
+      "compressedBytes": 157301,
+      "compatibleDecisionRows": 340,
+      "firstDecisionMs": 1792146144468,
+      "lastDecisionMs": 1792148423236,
+      "externalSources": {
+        "kalshi_official_ws_v2": 96,
+        "kalshi_official_v2": 244
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v5",
+      "files": 1,
+      "compressedBytes": 48687,
+      "compatibleDecisionRows": 113,
+      "firstDecisionMs": 1792148472902,
+      "lastDecisionMs": 1792151290598,
+      "externalSources": {
+        "kalshi_official_ws_v2": 91,
+        "kalshi_official_v2": 22
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v6",
+      "files": 2,
+      "compressedBytes": 660887,
+      "compatibleDecisionRows": 1348,
+      "firstDecisionMs": 1792151308771,
+      "lastDecisionMs": 1792152060624,
+      "externalSources": {
+        "kalshi_official_ws_v2": 816,
+        "kalshi_official_v2": 532
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v7",
+      "files": 1,
+      "compressedBytes": 2598985,
+      "compatibleDecisionRows": 3883,
+      "firstDecisionMs": 1792152097211,
+      "lastDecisionMs": 1792154167245,
+      "externalSources": {
+        "kalshi_official_ws_v2": 2809,
+        "kalshi_official_v2": 1074
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v8",
+      "files": 2,
+      "compressedBytes": 3412344,
+      "compatibleDecisionRows": 4930,
+      "firstDecisionMs": 1792155530779,
+      "lastDecisionMs": 1792157681993,
+      "externalSources": {
+        "kalshi_official_ws_v2": 3554,
+        "kalshi_official_v2": 1376
+      },
+      "noncausalOrMissingExternalClocks": 0
+    },
+    {
+      "directory": "crossvenue-observer-v9",
+      "files": 2,
+      "compressedBytes": 15034683,
+      "compatibleDecisionRows": 22579,
+      "firstDecisionMs": 1792159499581,
+      "lastDecisionMs": 1792161346570,
+      "externalSources": {
+        "kalshi_official_ws_v2": 14701,
+        "kalshi_official_v2": 7878
+      },
+      "noncausalOrMissingExternalClocks": 0
+    }
+  ],
+  "protectedLaterCalendarsOpened": false,
+  "pricesOrReturnsExported": false,
+  "newAccountRequests": 0,
+  "productionChanged": false,
+  "qualifyingFullHistoryEstablished": false,
+  "zeroCompatibleRowsDoesNotProveNoObservations": true,
+  "limits": [
+    "derived decision features, not original raw book depth",
+    "repeated rows are not independent external receipts",
+    "only examined directory/date scope, not complete VPS history inventory",
+    "original bytes/provenance must verify before any compiler uses these rows"
+  ],
+  "compatibleDecisionRows": 39341
+}

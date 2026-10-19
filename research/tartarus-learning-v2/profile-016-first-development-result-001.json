@@ -1,0 +1,53 @@
+{
+  "classification": "first_corrected_GPU_candidate_development_result_not_independent_test",
+  "observedUtc": "2026-10-19T20:26:47.203226+00:00",
+  "run": "raw-api-growth-development-016",
+  "sourceCommit": "79f630caf6f60d8ce81e01718aa4c2bd0cbd05bd",
+  "checkpointSha256": "711dd6923bd825e8e1ac74a4ce25fde971f7a8ba8edb7b36fadb569c08e25e6c",
+  "cycle": 0,
+  "member": 0,
+  "worstMarkedRoi": -0.30347539999999995,
+  "selectionReward": -0.3616521669315789,
+  "cases": [
+    {
+      "start_ms": 1792416001000,
+      "end_ms": 1792417500000,
+      "stress": false,
+      "marked_roi": -0.30347539999999995,
+      "fill_count": 65,
+      "realized_fifo_micros": -100000,
+      "decisions": 7156
+    },
+    {
+      "start_ms": 1792416001000,
+      "end_ms": 1792417500000,
+      "stress": true,
+      "marked_roi": -0.19772277500000002,
+      "fill_count": 72,
+      "realized_fifo_micros": 0,
+      "decisions": 595
+    },
+    {
+      "start_ms": 1792417500000,
+      "end_ms": 1792418999000,
+      "stress": false,
+      "marked_roi": -0.08268240000000004,
+      "fill_count": 20,
+      "realized_fifo_micros": 0,
+      "decisions": 208
+    },
+    {
+      "start_ms": 1792417500000,
+      "end_ms": 1792418999000,
+      "stress": true,
+      "marked_roi": -0.037894399999999995,
+      "fill_count": 15,
+      "realized_fifo_micros": 0,
+      "decisions": 599
+    }
+  ],
+  "eligible": false,
+  "productionApproved": false,
+  "independentTestUsed": false,
+  "independentProfitableRoiEstablished": false
+}

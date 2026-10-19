@@ -1,0 +1,12 @@
+{
+  "classification": "small_CUDA_episode_replay_late_failure_rollback_not_full_size_capacity_or_ROI",
+  "checks": 1,
+  "lateFailureAfterAcceptedUpdatesRestoresWeights": true,
+  "nonemptyAdamStateRestoredExactly": true,
+  "cpuBackedOptimizerBackupExercised": true,
+  "externalStudentMutationRefused": true,
+  "peakAllocatedBytes": 32068608,
+  "activeGpuRunChanged": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

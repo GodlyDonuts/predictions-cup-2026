@@ -184,5 +184,18 @@
     "worlds": 8,
     "compute_chunk_decisions": 64,
     "evidence": "profile-016-live-001.json"
+  },
+  "optional_closed_episode_return_replay": {
+    "flag": "closed_episode_return_replay",
+    "active_run016_uses_profile": false,
+    "behavior_frozen_until_episode_closes": true,
+    "complete_undiscounted_train_returns": true,
+    "exact_source_reconstruction": true,
+    "bounded_minibatch_memory": true,
+    "student_full_rollback_on_replay_error": true,
+    "recurrent_gradient_horizon": "compute_chunk_with_original_behavior_hidden_state",
+    "full_size_gpu_capacity_verified": false,
+    "comparative_roi_improvement_proved": false,
+    "evidence": "closed-episode-real-cpu-proof-001.json"
   }
 }

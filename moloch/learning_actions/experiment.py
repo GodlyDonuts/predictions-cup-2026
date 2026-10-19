@@ -33,6 +33,8 @@ class Experiment:
         if config['mode']not in('inspected_development','full_history'):
             raise ValueError('EXPLICIT_EXPERIMENT_MODE_REQUIRED')
         self.device=config.get('device','cuda');self.seed=config.get('seed',190019)
+        if type(config.get('closed_episode_return_replay',False))is not bool:
+            raise ValueError('EXPLICIT_CLOSED_EPISODE_TRAINING_PROFILE')
         if 'cuda_memory_fraction'in config:
             fraction=config['cuda_memory_fraction']
             if type(fraction)not in(int,float)or not 0<fraction<=1:raise ValueError('VALID_CUDA_ALLOCATION_FRACTION')
@@ -243,7 +245,7 @@ class Experiment:
                   'selection_or_profitability_result':False,'rotating_recovery_copy':True,'retention_slots':2})
 
     def train_episode(self,model,optimizer):
-        if self.config.get('training_worlds',1)>1:return self.train_parallel(model,optimizer)
+        if self.config.get('closed_episode_return_replay',False)or self.config.get('training_worlds',1)>1:return self.train_parallel(model,optimizer)
         a,b=self.train_bounds
         if self.development:
             length=min(self.config.get('development_episode_ms',120000),b-a)
@@ -280,8 +282,9 @@ class Experiment:
 
     def train_parallel(self,model,optimizer):
         from .batched import BatchStream
-        count=self.config['training_worlds']
-        if type(count)is not int or count<2:raise ValueError('AT_LEAST_TWO_INDEPENDENT_TRAINING_WORLDS')
+        count=self.config.get('training_worlds',1)
+        minimum=1 if self.config.get('closed_episode_return_replay',False)else 2
+        if type(count)is not int or count<minimum:raise ValueError('AT_LEAST_TWO_INDEPENDENT_TRAINING_WORLDS')
         a,b=self.train_bounds
         length=(min(self.config.get('development_episode_ms',120000),b-a)if self.development
                 else self.config.get('training_days',2)*DAY)
@@ -297,7 +300,9 @@ class Experiment:
         stream=BatchStream(envs,model,ledgers,calibration=self.calibration,
                            behavior_guard=self.config.get('on_policy_guard','sha256'),
                            compact_finished=self.config.get('compact_finished_worlds',False))
-        while any(e.now<e.end for e in envs):
+        closed=self.config.get('closed_episode_return_replay',False)
+        if closed:self.train_closed_episode(stream,model,optimizer)
+        while not closed and any(e.now<e.end for e in envs):
             chunk=stream.collect(self.config.get('compute_chunk_decisions',32))
             rewards=[f['economic_reward']for f in chunk.frames]
             reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1),**self.training_arguments(optimizer))
@@ -323,6 +328,41 @@ class Experiment:
             'marked_roi':sum(c['marked_roi']for c in cases)/count,
             'fill_count':sum(c['fill_count']for c in cases),'eligible':False,
             'cases':cases,'all_worlds_preserve_financial_state_through_horizon':True}
+
+    def train_closed_episode(self,stream,model,optimizer):
+        from .episode_tape import EpisodeWriter,EpisodeReader
+        from .episode_training import optimize
+        index=getattr(self,'closed_episode_counter',0);self.closed_episode_counter=index+1
+        path=self.output/'closed-episodes'/('cohort-%06d'%index)
+        writer=EpisodeWriter(path,stream,dataset_sha256=self.dataset_sha,specification_sha256=self.spec_sha)
+        try:
+            while any(e.now<e.end for e in stream.envs):
+                chunk=stream.collect(self.config.get('compute_chunk_decisions',32));writer.record(chunk)
+                decisions=sum(int(f['learn'].sum())for f in chunk.frames);self.total_decisions+=decisions
+                self.log({'event':'closed_episode_rollout_chunk','decisions':decisions,'updates':[],
+                    'behavior_weights_frozen':True,'virtual_ms':[e.now for e in stream.envs],
+                    'completed_worlds':len(stream.completed)})
+                del chunk
+            manifest_sha=writer.seal()
+        finally:writer.close()
+        reader=EpisodeReader(path,manifest_sha)
+        def ledger_factory(env):return GrowthLedger(env,development=self.development,
+            historical_last_mark=self.config.get('development_last_observed_marks',False),
+            maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
+        def progress(rows,attempted):
+            self.log({'event':'closed_episode_optimizer_progress','attempted_updates':attempted,
+                'provisional_updates':rows,'cohort_commit_pending':True})
+        try:
+            reports=optimize(reader,model,optimizer,lambda a,b:self.world('train',a,b),ledger_factory,
+                epochs=self.config.get('ppo_epochs',1),progress=progress,**self.training_arguments(optimizer))
+            self.total_updates+=sum(r['accepted']for r in reports)
+            self.log({'event':'parallel_train_chunk','phase':'closed_episode_optimization_committed',
+                'decisions':0,'worlds':len(stream.envs),'updates':reports,'closed_episode_complete':True,
+                'episode_manifest_sha256':manifest_sha,'full_episode_targets':True,
+                'old_behavior_policy_frozen_during_collection':True,
+                'cuda_peak_bytes':torch.cuda.max_memory_allocated()if self.device.startswith('cuda')else 0})
+            self.training_snapshot(model,optimizer)
+        finally:reader.close()
 
     def evaluate(self,model,checkpoint,role='evolution',finalist=None):
         if role=='test'and self.development:raise ValueError('INSPECTED_DEVELOPMENT_HAS_NO_INDEPENDENT_TEST')
