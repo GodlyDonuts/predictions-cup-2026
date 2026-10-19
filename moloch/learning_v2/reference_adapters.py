@@ -64,14 +64,15 @@ def gap(raw,venue,market,source,available):
             'reason':'TWO_SIDED_REFERENCE_UNAVAILABLE','pricing_authority':False}
 
 
-def kalshi_references(raw,mappings,available_at_ms):
+def kalshi_references(raw,mappings,available_at_ms,*,mapping_kind=None):
     row=json.loads(raw)
-    if row.get('mappingKind')!='direct_party_reference':return []
+    if row.get('mappingKind',mapping_kind)!='direct_party_reference':return []
     checked=receipt(row,available_at_ms)
     if checked is None:return []
     _,body,received=checked;book=body.get('orderbook_fp')
     if book is None:return []
-    selected=[m for m in mappings if str(m['sigMarketId'])in set(map(str,row['sigMarketIds']))]
+    allowed=set(map(str,row.get('sigMarketIds',[m['sigMarketId']for m in mappings])))
+    selected=[m for m in mappings if str(m['sigMarketId'])in allowed]
     try:bid=top(book['yes_dollars'],True);ask=UNIT-top(book['no_dollars'],True)
     except ValueError as error:
         if str(error)!='TWO_SIDED_REFERENCE_REQUIRED':raise
