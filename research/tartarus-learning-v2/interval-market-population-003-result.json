@@ -1,0 +1,20 @@
+{
+  "classification": "inspected_history_population_development_not_locked_test",
+  "wallSeconds": 224.81744110002182,
+  "memberEvaluations": 24,
+  "populationMembers": 8,
+  "islands": 2,
+  "cycles": 3,
+  "strictPositiveAcrossEverySearchCase": 0,
+  "modeledSearchFillReceiptsAcrossReusedEvaluationWorlds": 31,
+  "distinctLiveFills": 0,
+  "realizedSearchPnlMicrosValues": [
+    0
+  ],
+  "genealogyEvents": 2,
+  "peakCudaAllocatedBytes": 1249794560,
+  "lockedTestUsed": false,
+  "productionChanged": false,
+  "profitabilityEstablished": false,
+  "duplicateCalendarSimulationsAreNotIndependentMarketEvidence": true
+}

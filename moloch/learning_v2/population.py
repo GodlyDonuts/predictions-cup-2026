@@ -11,6 +11,7 @@ import math
 import torch
 from .policy import masked_categorical
 from .train_inner import PPOTrainer, fingerprint
+from .market_memory_policy import MarketMemoryPolicy
 
 OPERATORS=('local','medium','large','head_reset','fresh')
 OPERATOR_WEIGHTS=(.50,.25,.15,.05,.05)
@@ -25,14 +26,21 @@ def probe(model,t,maximum_points=16):
     chosen=set(eligible[::max(1,math.ceil(len(eligible)/maximum_points))]);hidden=model.initial_state(t.contracts.shape[1])
     market=[];family=[];raw=[]
     for i in range(t.contracts.shape[0]):
-        before=hidden;encoded,hidden=model.encode(t.contracts[i],t.global_state[i],t.present[i],hidden,t.reset[i])
+        before=hidden
+        if isinstance(model,MarketMemoryPolicy):
+            row=model.step(t.contracts[i],t.global_state[i],t.present[i],{k:v[i]for k,v in t.masks.items()},hidden,t.reset[i],deterministic=True,behavior_probabilities=True)
+            hidden=row['hidden']
+        else:encoded,hidden=model.encode(t.contracts[i],t.global_state[i],t.present[i],hidden,t.reset[i])
         if i not in chosen: continue
         masks={k:v[i]for k,v in t.masks.items()}
-        logits=(encoded*model.market_query(hidden).unsqueeze(1)).sum(-1)/16
-        pm=masked_categorical(logits,masks['market']&t.present[i]).probs
-        conditioned=torch.cat([hidden.unsqueeze(1).expand(-1,encoded.shape[1],-1),encoded],-1)
-        pf=masked_categorical(model.heads['family'](conditioned),masks['family']).probs
-        a=model.step(t.contracts[i],t.global_state[i],t.present[i],masks,before,t.reset[i],deterministic=True)['actions']
+        if isinstance(model,MarketMemoryPolicy):pm=row['behavior_market_probs'];pf=row['behavior_family_probs'];a=row['actions']
+        else:
+            logits=(encoded*model.market_query(hidden).unsqueeze(1)).sum(-1)/16
+            pm=masked_categorical(logits,masks['market']&t.present[i]).probs
+            conditioned=torch.cat([hidden.unsqueeze(1).expand(-1,encoded.shape[1],-1),encoded],-1)
+            active=masks['market']&t.present[i];family_mask=masks['family'].clone();family_mask[:,:,0]|=~active
+            pf=masked_categorical(model.heads['family'](conditioned),family_mask).probs*active.unsqueeze(-1)
+            a=model.step(t.contracts[i],t.global_state[i],t.present[i],masks,before,t.reset[i],deterministic=True)['actions']
         market.append(pm.cpu());family.append(pf.cpu())
         raw.append(torch.stack([a['target_fraction'],a['child_fraction'],a['price']/4,a['patience']/2],-1).cpu())
     return {'market':torch.stack(market),'family':torch.stack(family),'raw':torch.stack(raw)}
@@ -88,9 +96,14 @@ def change_hyperparameters(config,rng):
                    entropy_coefficient=min(.1,max(.0001,config.entropy_coefficient*rng.choice([.8,1.2]))))
 
 
+QUALITY_FIELDS={'reference_return','matched_hold_excess_return','interval_lower_excess_return','modeled_realized_return'}
+
+
 class BehaviorArchive:
     """Protected, reevaluated DEVELOPMENT alternatives, not validated profits."""
-    def __init__(self,maximum=32):self.maximum=maximum;self.entries={}
+    def __init__(self,maximum=32,quality_field='reference_return'):
+        if quality_field not in QUALITY_FIELDS:raise ValueError('EXPLICIT_ARCHIVE_QUALITY_FIELD')
+        self.maximum=maximum;self.entries={};self.quality_field=quality_field
 
     def consider(self,identity,parameter_sha,episodes,descriptor,checkpoint):
         if len(episodes)<2 or any(e.get('split_role')!='search_development'for e in episodes):
@@ -103,20 +116,22 @@ class BehaviorArchive:
             calendars.append(spans)
         if any(spans!=calendars[0]for spans in calendars):raise ValueError('ARCHIVE_PROFILE_CALENDARS_DIFFER')
         if any(e.get('parameter_sha256')!=parameter_sha for e in episodes):raise ValueError('ARCHIVE_POLICY_CHANGED_BETWEEN_EVALUATIONS')
-        if any(not e['qualified_accounting'] or e['reference_return'] is None or e['reference_return']<0 or e.get('observable_market_frames',e.get('tradable_decision_frames',0))<=0 for e in episodes):
+        qualification='qualified_relative_interval_accounting' if self.quality_field=='interval_lower_excess_return' else 'qualified_accounting'
+        if any(not e.get(qualification,False) or e.get(self.quality_field)is None or e[self.quality_field]<0 or e.get('observable_market_frames',e.get('tradable_decision_frames',0))<=0 for e in episodes):
             return False
         # Fixed bins preserve different activity/capital use. Selection remains
         # development optimization and must not be reported as held-out alpha.
-        key=tuple(descriptor);score=min(e['reference_return']for e in episodes)
+        key=tuple(descriptor);score=min(e[self.quality_field]for e in episodes)
         old=self.entries.get(key)
-        if old is not None and old['worst_block_reference_return']>=score:return False
+        if old is not None and old['worst_block_quality_score']>=score:return False
         entry={'identity':identity,'parameter_sha256':parameter_sha,'checkpoint':checkpoint,
-               'descriptor':list(key),'worst_block_reference_return':score,'evaluations':episodes,
+               'descriptor':list(key),'quality_field':self.quality_field,'worst_block_quality_score':score,
+               'worst_block_reference_return':min(e['reference_return']for e in episodes) if all(e['reference_return'] is not None for e in episodes) else None,'evaluations':episodes,
                'classification':'provisional_conditional_development_archive_not_locked_test'}
         if old is None and len(self.entries)>=self.maximum:return False
         self.entries[key]=entry;return True
 
-    def json(self):return {'entries':list(self.entries.values()),'protected_from_weak_slot_replacement':True,
+    def json(self):return {'entries':list(self.entries.values()),'quality_field':self.quality_field,'protected_from_weak_slot_replacement':True,
                            'locked_test_evaluated':False,'execution_authority':False}
 
 

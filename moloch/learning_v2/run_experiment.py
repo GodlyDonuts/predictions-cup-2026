@@ -57,10 +57,20 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     env = tape.episode(mechanics,start,terminal,initial_cash_micros=initial,
                        target_wealth_micros=protocol['planning_target_wealth_micros'],
                        burnin_ms=protocol['recurrent_burnin_ms'],advance_to_start=False)
+    historical=protocol.get('historical_wallet')
+    if historical:
+        if protocol.get('initial_inventory_allocation_ppm',0) or objective not in ['interval_hold_lower_excess','realized_pnl']:
+            raise ValueError('HISTORICAL_WALLET_REQUIRES_EXPLICIT_PARTIAL_WEALTH_OBJECTIVE')
+        from .historical_wallet import install_wallet
+        installed=install_wallet(env,historical)
     behavior = fingerprint(model); hidden = model.initial_state(1)
-    rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;observable_market_frames=0;begun=time.perf_counter();initial_portfolio=None
+    rows=[]; families=Counter(); missing=0; previous=initial; peak_committed=0.;tradable_frames=0;tradable_market_frames=0;observable_market_frames=0;begun=time.perf_counter();initial_portfolio=installed if historical else None
+    initial_observed=None if historical else initial
     for step,at in enumerate(range(start-protocol['recurrent_burnin_ms'],end,protocol['decision_interval_ms'])):
         env.advance(at)
+        if at==start and historical:
+            initial_observed=env.marked_wealth()
+            initial_portfolio['initial_marked_wealth_micros']=initial_observed
         if at==start and protocol.get('initial_inventory_allocation_ppm',0):
             initial_portfolio=seed_inventory(env,protocol['initial_inventory_allocation_ppm'],protocol['initial_inventory_seed'],
                                             selection=protocol.get('initial_inventory_selection','shuffle'))
@@ -128,7 +138,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     env.advance(terminal)
     final=env.marked_wealth()
     unresolved=bool(env.orders or env.budget.active or env.budget.unknown)
-    qualified=final is not None and not unresolved
+    qualified=final is not None and initial_observed is not None and not unresolved
     terminal_excess=hold_reward.observe(final,env.marks())
     if objective=='interval_hold_lower_excess':
         interval_observation=interval_reward.observe(env.account(),env.yes_intervals())
@@ -160,9 +170,10 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
            'tradable_decision_frames':tradable_frames,'tradable_market_frames':tradable_market_frames,
            'observable_market_frames':observable_market_frames,
            'rollout_wall_seconds':time.perf_counter()-begun,'baseline':baseline,'qualified_accounting':qualified,
-           'initial_reference_wealth_micros':initial,'synthetic_initial_portfolio':initial_portfolio,
+           'initial_reference_wealth_micros':initial_observed if historical else initial,'synthetic_initial_portfolio':initial_portfolio,
+           'historical_wallet_used':bool(historical),'return_normalization_capital_micros':initial,
            'modeled_realized_return':env.realized/initial,'realized_pnl_includes_fees':True,
-           'final_reference_wealth_micros':final,'reference_return':(final-initial)/initial if qualified else None,
+           'final_reference_wealth_micros':final,'reference_return':(final-(initial_observed if historical else initial))/(initial_observed if historical else initial) if qualified else None,
            'missing_mark_observations':missing,'unresolved_orders':len(env.orders),
            'active_request_at_terminal':env.budget.active,'filled_shares':sum(e['quantity']for e in env.fill_events),
            'fill_receipts':len(env.fill_events),'realized_micros':env.realized,'fees_micros':env.fees,

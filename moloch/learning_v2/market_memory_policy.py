@@ -7,6 +7,7 @@ No new action, accounting or execution authority is introduced.
 import torch
 from torch import nn
 from .fused_policy import FusedRecurrentPolicy
+from .policy import masked_categorical
 
 
 class MarketMemoryPolicy(FusedRecurrentPolicy):
@@ -25,7 +26,7 @@ class MarketMemoryPolicy(FusedRecurrentPolicy):
         if hidden.ndim!=2 or hidden.shape[1]!=self.hidden_size:raise ValueError('PACKED_MARKET_MEMORY_STATE')
         return hidden[:,:g],hidden[:,g:g+n*h].reshape(-1,n,h),hidden[:,g+n*h:]>0.5
 
-    def step(self,contracts,global_state,present,masks,hidden,reset,actions=None,deterministic=False):
+    def step(self,contracts,global_state,present,masks,hidden,reset,actions=None,deterministic=False,behavior_probabilities=False):
         B,N,F=contracts.shape
         if N!=self.market_slots or F!=self.contract_features or global_state.shape!=(B,self.global_features)or present.shape!=(B,N)or present.dtype!=torch.bool or not bool(present.any(-1).all()):raise ValueError('MARKET_MEMORY_FEATURE_SCOPE')
         gh,mh,was_present=self._parts(hidden);encoded=self.encoder(contracts)
@@ -36,6 +37,12 @@ class MarketMemoryPolicy(FusedRecurrentPolicy):
         pooled=(context*present.unsqueeze(-1)).sum(1)/present.sum(1,keepdim=True)
         _,gh=self.recurrent(torch.cat([pooled,self.global_encoder(global_state)],-1).unsqueeze(0),(gh*~reset.unsqueeze(-1)).unsqueeze(0));gh=gh.squeeze(0)
         out=self._act_from_encoding(context,gh,present,masks,actions,deterministic)
+        if behavior_probabilities:
+            logits=(context*self.market_query(gh).unsqueeze(1)).sum(-1)/16
+            out['behavior_market_probs']=masked_categorical(logits,masks['market']&present).probs
+            conditioned=torch.cat([gh.unsqueeze(1).expand(-1,N,-1),context],-1)
+            active=masks['market']&present;family_mask=masks['family'].clone();family_mask[:,:,0]|=~active
+            out['behavior_family_probs']=masked_categorical(self.heads['family'](conditioned),family_mask).probs*active.unsqueeze(-1)
         out['hidden']=torch.cat([gh,mh.flatten(1),present.to(gh.dtype)],-1);return out
 
     def sequence(self,contracts,global_state,present,masks,reset,actions=None):

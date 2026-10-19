@@ -1,3 +1,21 @@
+## October19,06:17UTC — population mutation and original-wallet replay
+
+Eight members/two islands/three cycles completed in224.817seconds. All24evaluations failed strict-positive matched-HOLD excess in all four development cases; realized search PnL was zero. Parent-child mutations and exact packed checkpoint/optimizer restore were exercised. [Result](interval-market-population-003-result.json).
+
+Original-wallet replay pins causal source bytes and FIFO/cash; it creates no new cash or fills and preserves unknown absolute ROI. An8member/2island/3cycle original-wallet run is training on interval excess versus unchanged HOLD.22focused tests pass. No learned policy is live or profitable.
+
+## October19,06:17UTC — actual population mutation completes; original-wallet replay training
+
+
+
+Eight members/two islands/three cycles completed in224.817seconds with genuine parent-child mutations and exact packed-memory checkpoint/optimizer restoration. All24member evaluations failed strict-positive matched-HOLD excess across both independent development calendars and both execution profiles; realized search PnL was zero. Passing local software checks and a nonnegative archive are not evidence of trading alpha. Failed engineering runs001/002 remain preserved separately. [Completed result](interval-market-population-003-result.json).
+
+
+
+Historical-wallet replay now pins original wallet bytes, causal observation before burn-in, exact FIFO/cash and funded sizing. It creates no episode fills or extra funds, disables synthetic inventory/cash scaling, and preserves unknown absolute ROI when some original holdings lack marks. An8member/2island/3cycle actual-wallet population is training using conditional interval excess versus unchanged HOLD. This remains inspected development history; no heldout or production model promotion.22focused wallet/population/checkpoint checks pass. The next forward cohort retains its frozen2/3development and1/3heldout chronology.
+
+
+
 ## October19,05:08UTC — replay indexing and larger measured GPU capacity
 
 Per-market reference indexing preserves all original row objects, clocks, invalidations and ordering. Full observations/actions/trajectory/accounting hashes match in all three actual-data CPU samples;19focused index/episode/checkpoint checks pass. The observed local median improves0.79024to0.33178seconds(2.38x), but the earlier sample ran alongside CUDA training and the later one did not, so do not treat this as an isolated performance attribution or production forecast. [Initial comparison](reference-index-replay-benchmark.json). An additional interleaved old/new comparison with no CUDA job active gives0.733895versus0.330159seconds(2.223x), with identical whole-trajectory and accounting hashes for each paired seed. [Isolated comparison](reference-index-replay-isolated-benchmark.json).
