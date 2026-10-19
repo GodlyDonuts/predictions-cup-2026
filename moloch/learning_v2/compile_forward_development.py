@@ -44,8 +44,9 @@ def pin_prefix(source,destination):
     return {'source':str(source),'copiedPrefixBytes':size,'sha256':digest.hexdigest(),'device':before.st_dev,'inode':before.st_ino}
 
 
-def native_rows(path,roles,emit):
-    verifier=NativeVerifier();previous='0'*64;sequence=0;last=-1;tail=0
+def native_rows(path,roles,emit,native_clock='receiver'):
+    if native_clock not in ('receiver','producer_processed'):raise ValueError('EXPLICIT_NATIVE_CLOCK_REQUIRED')
+    verifier=NativeVerifier();previous='0'*64;sequence=0;last=-1;producer_last=-1;tail=0
     with path.open('rb')as stream:
         while raw:=stream.readline(24*1024*1024+1):
             if len(raw)>24*1024*1024:raise ValueError('NATIVE_RECEIVER_ROW_BOUND')
@@ -57,7 +58,12 @@ def native_rows(path,roles,emit):
             last=at;event=row['event'];verifier.accept(event)
             if event['kind']!='native_row':continue
             original=json.loads(base64.b64decode(event['raw_base64'],validate=True));e=original['event']
-            available=max(at,millis(e.get('processedAt',e['receivedAt'])))
+            processed=millis(e.get('processedAt',e['receivedAt']))
+            if native_clock=='producer_processed':
+                if processed>at or processed<producer_last or processed<millis(e['receivedAt']):
+                    raise ValueError('ORIGINAL_PRODUCER_CLOCK_NOT_CAUSAL')
+                producer_last=processed
+            available=max(at,processed)if native_clock=='receiver'else processed
             role=role_at(available,roles)
             if role not in ('fit','search'):continue
             observation=extract(e,original['hash'],available)
@@ -66,8 +72,10 @@ def native_rows(path,roles,emit):
                 observation.update(calendar_role=role,receiver_observed_at_ms=at,receiver_row_hash=claimed)
                 emit(observation)
     if verifier.anchor is None:raise ValueError('NATIVE_PRODUCER_ANCHOR_MISSING')
-    return {'receiverRowsVerified':sequence,'nativeRowsVerified':verifier.rows,'anchor':verifier.anchor,
+    result={'receiverRowsVerified':sequence,'nativeRowsVerified':verifier.rows,'anchor':verifier.anchor,
             'terminalReceiverHash':previous,'excludedIncompleteTailBytes':tail,'prefixSemanticReplayOnReceiver':False}
+    if native_clock!='receiver':result['nativeAvailabilityClock']='original_producer_processed_utc_not_laptop_archive_receipt'
+    return result
 
 
 def gzip_rows(path,allow_incomplete):
@@ -86,6 +94,11 @@ def gzip_rows(path,allow_incomplete):
 def compile_development(native,kalshi,polys,protocol_path,source_pin_path,output):
     protocol_raw=protocol_path.read_bytes();protocol=json.loads(protocol_raw);source_pin_raw=source_pin_path.read_bytes();source_pin=json.loads(source_pin_raw)
     if source_pin['protocolSha256']!=sha(protocol_raw):raise ValueError('FROZEN_PROTOCOL_SOURCE_PIN')
+    native_clock=protocol.get('nativeAvailabilityClock','receiver')
+    if native_clock!='receiver'and(native_clock!='producer_processed'or
+        protocol.get('requireReceiverAvailabilityClocks')is not False or
+        protocol.get('classification')!='retrospective_original_producer_clock_development_only_not_prospective_test'):
+        raise ValueError('EXPLICIT_RETROSPECTIVE_PRODUCER_CLOCK_PROTOCOL_REQUIRED')
     roles={k:tuple(map(millis,v))for k,v in protocol['calendarRolesUtc'].items()}
     if time.time_ns()//1000000<roles['search'][1]:raise ValueError('SEARCH_CAPTURE_NOT_COMPLETE_YET')
     ku=(kalshi/'universe.json').read_bytes();pu=Path(source_pin['polymarketUniversePath']).read_bytes()
@@ -101,7 +114,7 @@ def compile_development(native,kalshi,polys,protocol_path,source_pin_path,output
             if row['kind']=='book':exchanges.add(row['exchange_id'])
             elif row['kind']=='reference':markets[row['venue']].add(row['market_id'])
     try:
-        n=originals/'native.original.jsonl';pins.append(pin_prefix(native,n));nv=native_rows(n,roles,emit)
+        n=originals/'native.original.jsonl';pins.append(pin_prefix(native,n));nv=native_rows(n,roles,emit,native_clock)
         anchor=nv['anchor'];expected=protocol['nativeProducer']
         if anchor['producer_pid']!=expected['pid']or anchor['producer_start_ticks']!=expected['startTicks']:raise ValueError('EXACT_NATIVE_PRODUCER_REQUIRED')
         first_hour=protocol['calendarRolesUtc']['fit'][0][:13].replace('-','').replace(':','');last_hour=protocol['calendarRolesUtc']['search'][1][:13].replace('-','').replace(':','')
@@ -148,6 +161,9 @@ def compile_development(native,kalshi,polys,protocol_path,source_pin_path,output
                   'nativeTransportVerification':nv,'heldoutFeaturesIncluded':False,'referenceContractEquivalenceVerified':False,
                   'nativeProducerBinaryIndependentlyVerifiedByCompiler':False,'developmentReceiptBodyHashesVerified':True,
                   'executionCalibrated':False,'accountRequests':0,'productionAuthority':False}
+        if native_clock!='receiver':
+            manifest['classification']='retrospective_three_venue_producer_clock_development_not_locked_test'
+            manifest['nativeAvailabilityClock']=nv['nativeAvailabilityClock']
         raw=(json.dumps(manifest,indent=2)+'\n').encode();(output/'dataset-manifest.json').write_bytes(raw);(output/'COMPLETE.json').write_text(json.dumps({'manifestSha256':sha(raw)})+'\n');return manifest
     except BaseException:
         (output/'FAILED').write_text('No completed dataset; preserve pinned originals and diagnostics.\n');raise

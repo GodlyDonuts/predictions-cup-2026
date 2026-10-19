@@ -1,0 +1,235 @@
+{
+  "classification": "fit_only_information_content_not_validation_or_profit",
+  "contracts": 32,
+  "book_rows": 4014,
+  "contracts_with_best_price_changes": 11,
+  "best_price_pair_changes": 64,
+  "contracts_without_two_sided_book": 0,
+  "by_contract": [
+    {
+      "exchange": "1062",
+      "records": 152,
+      "two_sided": 152,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1048",
+      "records": 258,
+      "two_sided": 258,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 1
+    },
+    {
+      "exchange": "1057",
+      "records": 138,
+      "two_sided": 138,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1064",
+      "records": 118,
+      "two_sided": 118,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 6
+    },
+    {
+      "exchange": "1061",
+      "records": 168,
+      "two_sided": 168,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 2
+    },
+    {
+      "exchange": "1063",
+      "records": 149,
+      "two_sided": 149,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1002",
+      "records": 125,
+      "two_sided": 125,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1042",
+      "records": 186,
+      "two_sided": 186,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 4
+    },
+    {
+      "exchange": "1044",
+      "records": 301,
+      "two_sided": 301,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 4
+    },
+    {
+      "exchange": "1043",
+      "records": 259,
+      "two_sided": 259,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1004",
+      "records": 254,
+      "two_sided": 254,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 2
+    },
+    {
+      "exchange": "1059",
+      "records": 89,
+      "two_sided": 89,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1069",
+      "records": 154,
+      "two_sided": 154,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "948",
+      "records": 167,
+      "two_sided": 167,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1051",
+      "records": 154,
+      "two_sided": 154,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1070",
+      "records": 118,
+      "two_sided": 118,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1058",
+      "records": 178,
+      "two_sided": 178,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 2
+    },
+    {
+      "exchange": "1072",
+      "records": 176,
+      "two_sided": 176,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1066",
+      "records": 141,
+      "two_sided": 141,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1073",
+      "records": 93,
+      "two_sided": 93,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 37
+    },
+    {
+      "exchange": "1067",
+      "records": 103,
+      "two_sided": 103,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 2
+    },
+    {
+      "exchange": "1074",
+      "records": 12,
+      "two_sided": 12,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "959",
+      "records": 217,
+      "two_sided": 217,
+      "unique_best_price_pairs": 3,
+      "best_price_pair_changes": 3
+    },
+    {
+      "exchange": "960",
+      "records": 56,
+      "two_sided": 56,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1023",
+      "records": 42,
+      "two_sided": 42,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1024",
+      "records": 94,
+      "two_sided": 94,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1065",
+      "records": 11,
+      "two_sided": 11,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "974",
+      "records": 24,
+      "two_sided": 24,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "975",
+      "records": 2,
+      "two_sided": 2,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1068",
+      "records": 31,
+      "two_sided": 31,
+      "unique_best_price_pairs": 2,
+      "best_price_pair_changes": 1
+    },
+    {
+      "exchange": "1071",
+      "records": 32,
+      "two_sided": 32,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    },
+    {
+      "exchange": "1076",
+      "records": 12,
+      "two_sided": 12,
+      "unique_best_price_pairs": 1,
+      "best_price_pair_changes": 0
+    }
+  ],
+  "heldout_inspected": false
+}

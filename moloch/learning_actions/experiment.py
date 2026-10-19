@@ -72,7 +72,16 @@ class Experiment:
         self.data_use.record('train',*self.train_bounds,self.spec_sha)
         self.data_use.record('selection',*self.evolution_bounds,self.spec_sha)
         self.population=[];self.calibration=None;self.total_decisions=0;self.total_updates=0
+        self.last_snapshot_bucket=0
         self.tape_cache={}
+        self.search_config=config.get('population_search')
+        self.archive=None
+        if self.search_config is not None:
+            from .population import ResearchArchive,island_replacements
+            members=config.get('members',4)
+            island_replacements([{'member':i,'selection':{'reward':0.}}for i in range(members)],
+                members=members,islands=self.search_config['islands'],cycle=0,rng=random.Random(self.seed))
+            self.archive=ResearchArchive(self.dataset_sha,self.spec_sha,self.search_config.get('archive_size',32))
 
     def log(self,event):
         event={**event,'wall_time_unix':time.time(),'total_decisions':self.total_decisions,
@@ -140,6 +149,31 @@ class Experiment:
                             split_specification_sha256=self.spec_sha)
         return {'path':str(path),'sha256':sha}
 
+    def training_snapshot(self,model,optimizer):
+        interval=self.config.get('training_snapshot_every_updates',0)
+        if type(interval)is not int or interval<0:raise ValueError('NONNEGATIVE_TRAINING_SNAPSHOT_INTERVAL')
+        if not interval:return
+        bucket=self.total_updates//interval
+        if bucket<=self.last_snapshot_bucket:return
+        # Two rotating recovery slots bound disk use. Completed candidates and
+        # archive checkpoint files remain immutable. A slot is NOT an evaluated
+        # candidate or a restoration of the in-progress simulated account.
+        root=self.output/'training-recovery';root.mkdir(exist_ok=True)
+        temporary=root/('pending-%09d.pt'%self.total_updates)
+        sha=save_checkpoint(temporary,model,optimizer,dataset_manifest_sha256=self.dataset_sha,
+                            split_specification_sha256=self.spec_sha)
+        path=root/('slot-%d.pt'%(bucket%2));temporary.replace(path)
+        checkpoint={'path':str(path),'sha256':sha}
+        record={'checkpoint':checkpoint,'total_decisions':self.total_decisions,
+                'total_updates':self.total_updates,'financial_world_resume_supported':False,
+                'selection_or_profitability_result':False,'rotating_recovery_copy':True}
+        metadata=root/('pending-%09d.json'%self.total_updates);frozen(metadata,record)
+        metadata.replace(path.with_suffix('.json'))
+        self.last_snapshot_bucket=bucket
+        self.log({'event':'training_weight_snapshot','checkpoint':checkpoint,
+                  'episode_completed':False,'financial_world_resume_supported':False,
+                  'selection_or_profitability_result':False,'rotating_recovery_copy':True,'retention_slots':2})
+
     def train_episode(self,model,optimizer):
         if self.config.get('training_worlds',1)>1:return self.train_parallel(model,optimizer)
         a,b=self.train_bounds
@@ -167,6 +201,7 @@ class Experiment:
             self.log({'event':'train_chunk','virtual_ms':env.now,'episode_end_ms':end,
                 'decisions':len(chunk.frames),'chunk_reward':sum(rewards),'updates':reports,
                 'fills':len(env.api_fills),'cuda_peak_bytes':torch.cuda.max_memory_allocated()if self.device.startswith('cuda')else 0})
+            self.training_snapshot(model,optimizer)
         if final is None:raise ValueError('COMPLETE_ECONOMIC_EPISODE_RESULT_REQUIRED')
         return {**final,'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
             'entity_counts':dict(stream.entity_counts),
@@ -204,6 +239,7 @@ class Experiment:
                 'completed_worlds':len(stream.completed),'updates':reports,
                 'fills':sum(len(e.api_fills)for e in envs),
                 'cuda_peak_bytes':torch.cuda.max_memory_allocated()if self.device.startswith('cuda')else 0})
+            self.training_snapshot(model,optimizer)
         cases=[{**stream.completed[i],'family_counts':dict(stream.action_counts[i]),
             'passive_execution':None if envs[i].passive is None else {
                 'mode':envs[i].passive.mode,'source_volume':envs[i].passive.source_volume,
@@ -223,17 +259,22 @@ class Experiment:
             raise ValueError('INDEPENDENT_TEST_SOURCE_PROVENANCE_NOT_ESTABLISHED')
         start,end=self.evolution_bounds if role=='evolution'else self.split.bounds('test')
         if role=='test':self.data_use.record('test',start,end,self.spec_sha)
+        blocks=(self.search_config or{}).get('development_selection_blocks',1)
+        if type(blocks)is not int or blocks<1 or blocks>end-start:raise ValueError('VALID_DEVELOPMENT_SELECTION_BLOCKS')
+        if not self.development and blocks!=1:raise ValueError('FULL_DAILY_GROWTH_EVALUATION_MUST_REMAIN_CONTINUOUS')
+        calendars=[(start+(end-start)*i//blocks,start+(end-start)*(i+1)//blocks)for i in range(blocks)]
         cases=[]
-        for seed_offset,stress in enumerate((False,True)):
+        for seed_offset,(case_start,case_end,stress)in enumerate((a,b,s)for a,b in calendars for s in(False,True)):
             torch.manual_seed(self.seed+90000+seed_offset)
-            env=self.world(role,start,end,finalist,stress);stream=self.stream(model,env)
+            env=self.world(role,case_start,case_end,finalist,stress);stream=self.stream(model,env)
             ledger=GrowthLedger(env,development=self.development,
                 historical_last_mark=self.config.get('development_last_observed_marks',False),
                 maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
-            while env.now<end:
+            while env.now<case_end:
                 stream.run_chunk(self.config.get('compute_chunk_decisions',32),deterministic=False)
                 ledger.transition()
-            result=ledger.finish();cases.append({**result,'stress':stress,'decisions':stream.decisions,
+            result=ledger.finish();cases.append({**result,'stress':stress,'start_ms':case_start,'end_ms':case_end,
+                'selection_seed':self.seed+90000+seed_offset,'decisions':stream.decisions,
                 'passive_execution':None if env.passive is None else {
                     'mode':env.passive.mode,'source_volume':env.passive.source_volume,
                     'intercepted_volume':env.passive.intercepted_volume,'calibrated':False},
@@ -246,6 +287,55 @@ class Experiment:
             'checkpoint_sha256':checkpoint['sha256'],'reward':min(c['reward']for c in cases),
             'cases':cases,'marked_roi_min':min(c['marked_roi']for c in cases),
             'source_and_execution_calibration_complete':False,'production_profitability_established':False}
+
+    def mutation_probe(self,model,cycle,slot):
+        from .population import freeze_probe
+        start,end=self.train_bounds
+        env=self.world('train',start,end);stream=self.stream(model,env,training=True);frames=[]
+        count=self.search_config.get('probe_decisions',16)
+        if type(count)is not int or count<1:raise ValueError('POSITIVE_TRAINING_PROBE_SIZE')
+        for _ in range(count):
+            row=stream.step(deterministic=True)
+            if 'at_ms'not in row:break
+            frames.append({**{k:stream.last_frame[k]for k in ('contracts','global_state','present','masks','reset')},
+                           'at_ms':row['at_ms']})
+            if row.get('terminal'):break
+        probe=freeze_probe(frames,role='train',dataset_sha256=self.dataset_sha,bounds=self.train_bounds)
+        path=self.output/('mutation-probe-%03d-%03d.pt'%(cycle,slot))
+        with path.open('xb')as f:torch.save({'frames':probe.frames,'sha256':probe.sha256,
+            'dataset_sha256':probe.dataset_sha256,'bounds':probe.bounds},f)
+        return probe,hashlib.sha256(path.read_bytes()).hexdigest()
+
+    def replace_population(self,ranking,cycle):
+        from .population import island_replacements,mutate
+        replacements=island_replacements(ranking,members=len(self.population),
+            islands=self.search_config['islands'],cycle=cycle,rng=self.rng,
+            migration_every=self.search_config.get('migration_every',4))
+        by_member={r['member']:r for r in ranking}
+        for r in replacements:
+            donor=by_member[r['donor']]['checkpoint'];slot=r['loser']
+            donor_source='current_island_population'
+            if r['migration']and self.archive.entries and self.rng.random()<.25:
+                archived=self.rng.choice(list(self.archive.entries.values()))
+                donor=archived['checkpoint'];donor_source='protected_development_archive'
+                r['donor']=archived['member'];r['migration']=r['donor']%self.search_config['islands']!=r['island']
+            model,bundle=load_checkpoint(donor['path'],donor['sha256'],self.device)
+            if bundle['split_specification_sha256']!=self.spec_sha:raise ValueError('FOREIGN_ISLAND_DONOR')
+            donor_rate=bundle['optimizer']['param_groups'][0]['lr']
+            del bundle
+            probe,probe_file_sha=self.mutation_probe(model,cycle,slot)
+            report=mutate(model,probe,r['operator'],self.seed+cycle*1000+slot+70000)
+            scales={'local':(.8,1.2),'medium':(.5,2.),'large':(.25,4.),'head_reset':(.5,2.)}
+            rate=(self.config.get('learning_rate',1e-5)if r['operator']=='fresh'else
+                  min(.001,max(.000001,donor_rate*self.rng.choice(scales[r['operator']]))))
+            opt=torch.optim.Adam(model.parameters(),lr=rate)
+            child=self.checkpoint('offspring-%03d-%03d'%(cycle,slot),model,opt)
+            self.population[slot]=child
+            self.log({'event':'population_replacement',**r,'mutation':report,'checkpoint':child,
+                      'donor_checkpoint':donor,'probe_file_sha256':probe_file_sha,
+                      'donor_source':donor_source,'parent_learning_rate':donor_rate,'child_learning_rate':rate,
+                      'child_receives_full_training_block_before_selection':True})
+            del model,opt
 
     def run(self):
         members=self.config.get('members',4);cycles=self.config.get('cycles',8)
@@ -261,7 +351,13 @@ class Experiment:
             inherited=parents[member%len(parents)]if parents and member<members-fresh else None
             if inherited:
                 model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
-                if parent['dataset_manifest_sha256']!=self.dataset_sha:raise ValueError('DEVELOPMENT_PARENT_DATASET_CHANGED')
+                from .lineage import development_parent
+                lineage=development_parent(parent,inherited['path'],new_dataset_sha256=self.dataset_sha,
+                    allow_cross_dataset=self.config.get('development_allow_cross_dataset_transfer',False))
+                if lineage is not None:
+                    for role,bounds in lineage['prior_calendar_bounds_ms'].items():
+                        self.data_use.record('train'if role=='train'else'selection',*bounds,lineage['source_experiment_sha256'])
+                    frozen(self.output/('founder-%03d-lineage.json'%member),lineage)
                 del parent
                 if member>=len(parents):
                     with torch.no_grad():
@@ -293,9 +389,14 @@ class Experiment:
                 del model,opt
             ranking.sort(key=lambda x:x['selection']['reward'],reverse=True)
             if best is None or ranking[0]['selection']['reward']>best['selection']['reward']:best=ranking[0]
-            # Retain the champion; replace the weakest member with a mutated
-            # copy and a reset optimizer (never inherit stale donor moments).
-            if cycle+1<cycles:
+            if self.archive is not None:
+                for row in ranking:self.archive.consider(row)
+                frozen(self.output/('research-archive-%03d.json'%cycle),self.archive.json())
+            # Opt-in search keeps island champions and applies measured
+            # multiscale operators. Legacy runs retain their original operator.
+            if cycle+1<cycles and self.search_config is not None:
+                self.replace_population(ranking,cycle)
+            elif cycle+1<cycles:
                 donor=ranking[0]['checkpoint'];loser=ranking[-1]['member']
                 model,donor_bundle=load_checkpoint(donor['path'],donor['sha256'],self.device)
                 del donor_bundle

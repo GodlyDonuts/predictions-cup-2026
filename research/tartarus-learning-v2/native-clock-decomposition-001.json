@@ -1,0 +1,18 @@
+{
+  "classification": "fit_only_native_clock_decomposition_not_profit",
+  "books": 4014,
+  "archive_receiver_minus_producer_processed_ms": {
+    "min": 1608,
+    "median": 1854.0,
+    "p95": 4941,
+    "max": 35858
+  },
+  "producer_processed_minus_book_receipt_ms": {
+    "min": 19,
+    "median": 4152.0,
+    "p95": 24858,
+    "max": 41940
+  },
+  "heldout_prices_inspected": false,
+  "world_clock_parity_established": false
+}

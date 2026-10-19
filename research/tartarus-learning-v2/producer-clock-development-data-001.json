@@ -1,0 +1,52 @@
+{
+  "classification": "retrospective_three_venue_producer_clock_development_not_locked_test",
+  "nativeAvailabilityClock": "original_producer_processed_utc_not_laptop_archive_receipt",
+  "protocolSha256": "5f44c464a8bcc069d2b3ad33c466950587b42376617d7b4d2f7bdcd95715b330",
+  "fitSigExchanges": 36,
+  "fitReferenceMarkets": {
+    "Kalshi": 232,
+    "Polymarket": 156
+  },
+  "observationCounts": {
+    "fit/SIG/book": 2913,
+    "fit/SIG/gap": 1015,
+    "search/SIG/book": 1355,
+    "fit/Kalshi/reference": 51865,
+    "fit/Kalshi/reference_gap": 447,
+    "search/Kalshi/reference": 11638,
+    "search/Kalshi/reference_gap": 100,
+    "fit/Polymarket/reference": 130530,
+    "fit/Polymarket/reference_gap": 2748,
+    "search/Polymarket/reference": 29070,
+    "search/Polymarket/reference_gap": 696
+  },
+  "heldoutFeaturesIncluded": false,
+  "accountRequests": 0,
+  "executionCalibrated": false,
+  "base_manifest_sha256": "9c5cc7916e9d9dc3a08b47541bafb0e0939d913c9fb34f7c2cd410e0863900c5",
+  "flow_manifest_sha256": "91352db1d6b76896f86a8c25a1df06885cf8597a6092d87cbeefc0da7692b02a",
+  "official_trade_rows": 73,
+  "source_parent_manifest_sha256": "b07b8fd0b0be76d7527d62ceddb5ccd66b48fb9d4617f0d69251e437d9af9438",
+  "calendar_roles_utc": {
+    "fit": [
+      "2026-10-19T09:00:00Z",
+      "2026-10-19T09:45:00Z"
+    ],
+    "search": [
+      "2026-10-19T09:50:00Z",
+      "2026-10-19T10:00:00Z"
+    ]
+  },
+  "venue_role_gaps_ms": {
+    "fit/Polymarket": 2156,
+    "fit/Kalshi": 985,
+    "fit/SIG": 59026,
+    "search/Kalshi": 171,
+    "search/Polymarket": 1111,
+    "search/SIG": 36730
+  },
+  "world_clock_parity_established": false,
+  "independent_test": false,
+  "production_changed": false,
+  "positive_roi_established": false
+}

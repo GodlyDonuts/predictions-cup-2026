@@ -23,7 +23,12 @@
     "persistent_local_calendar_data_use_audit_across_dataset_versions_and_shifted_holdouts",
     "positive_heldout_provenance_required_in_addition_to_clock_coverage",
     "full_replay_specification_bytes_and_actual_split_pinned_in_future_experiments",
-    "future_experiments_persist_actual_compute_calibration"
+    "future_experiments_persist_actual_compute_calibration",
+    "opt_in_raw_action_multiscale_behavior_mutations_and_independent_islands",
+    "protected_development_archive_without_test_or_production_authority",
+    "audited_development_only_cross_dataset_weight_transfer",
+    "bounded_hashed_training_weight_recovery_slots",
+    "explicit_retrospective_producer_clock_with_receiver_provenance_and_role_fencing"
   ],
   "not_established": [
     "full_raw_topic_revision_and_private_account_stream_replay",
@@ -35,8 +40,9 @@
     "full_competition_three_venue_history",
     "independent_profitable_generalization"
   ],
-  "live_run007_unchanged_prior_code_profile": true,
+  "live_run007_unchanged_prior_code_profile": false,
   "new_stream_mode_opt_in_future_phase_only": true,
-  "focused_checks_passed": 55,
-  "production_changed": false
+  "focused_checks_passed": 106,
+  "production_changed": false,
+  "phase007_status": "superseded_and_preserved"
 }

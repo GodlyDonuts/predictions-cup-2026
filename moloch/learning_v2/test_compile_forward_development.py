@@ -96,5 +96,45 @@ class ForwardPrefixTests(unittest.TestCase):
                 compile_development(p/'absent',p/'absent',[],p/'protocol',p/'pin',p/'output')
             self.assertFalse((p/'output').exists())
 
+    def test_retrospective_producer_clock_preserves_laptop_receipts_and_excludes_heldout_prices(self):
+        from .reference_adapters import millis
+        head=sealed({'sequence':20,'previous':'a'*64,'manifestHash':'b'*64})
+        anchor={'kind':'native_anchor','sequence':20,'previous':'a'*64,'start_offset':100,'file':'events.jsonl','identity':[1,2],
+            'head_raw_base64':base64.b64encode(head).decode(),'head_raw_sha256':h(head)}
+        events=[(anchor,'2000-01-01T00:01:00Z')];offset=100;previous='a'*64
+        for i,(processed,received,price)in enumerate([
+            ('2000-01-01T00:00:15Z','2000-01-01T00:01:15Z','0.4'),
+            ('2000-01-01T00:00:30Z','2000-01-01T00:01:30Z','DO_NOT_INTERPRET_HELDOUT')]):
+            e={'type':'book','receivedAt':processed,'processedAt':processed,'book':{'receivedAt':processed,'sourceAt':processed,
+                'marketId':'1','exchangeId':'x','sequence':i+1,'bids':[{'price':price,'quantity':10}],
+                'asks':[{'price':'0.6','quantity':10}]}}
+            original=sealed({'sequence':21+i,'previous':previous,'event':e})+b'\n';previous=json.loads(original)['hash']
+            events.append(({'kind':'native_row','file':'events.jsonl','identity':[1,2],'start_offset':offset,
+                'end_offset':offset+len(original),'original_sequence':21+i,'original_hash':previous,
+                'raw_sha256':h(original),'raw_base64':base64.b64encode(original).decode()},received));offset+=len(original)
+        previous='0'*64;rows=[]
+        for i,(event,at)in enumerate(events):
+            raw=sealed({'sequence':i+1,'previous':previous,'observed_at_ms':millis(at),'event':event})+b'\n'
+            previous=json.loads(raw)['hash'];rows.append(raw)
+        roles={k:tuple(map(millis,v))for k,v in {'fit':['2000-01-01T00:00:10Z','2000-01-01T00:00:20Z'],
+            'search':['2000-01-01T00:00:40Z','2000-01-01T00:00:50Z'],
+            'heldout':['2000-01-01T00:00:25Z','2000-01-01T00:00:35Z']}.items()}
+        with tempfile.TemporaryDirectory()as d:
+            p=Path(d)/'capture';p.write_bytes(b''.join(rows));observations=[]
+            native_rows(p,roles,observations.append)
+            self.assertEqual(observations,[])
+            report=native_rows(p,roles,observations.append,'producer_processed')
+            self.assertEqual(len(observations),1)
+            self.assertEqual(observations[0]['available_at_ms'],millis('2000-01-01T00:00:15Z'))
+            self.assertEqual(observations[0]['receiver_observed_at_ms'],millis('2000-01-01T00:01:15Z'))
+            self.assertIn('nativeAvailabilityClock',report)
+
+    def test_producer_clock_requires_explicit_retrospective_protocol(self):
+        with tempfile.TemporaryDirectory()as d:
+            p=Path(d);protocol={'nativeAvailabilityClock':'producer_processed'};raw=json.dumps(protocol).encode()
+            (p/'protocol').write_bytes(raw);(p/'pin').write_text(json.dumps({'protocolSha256':h(raw)}))
+            with self.assertRaisesRegex(ValueError,'RETROSPECTIVE_PRODUCER_CLOCK_PROTOCOL'):
+                compile_development(p/'absent',p/'absent',[],p/'protocol',p/'pin',p/'output')
+
 
 if __name__=='__main__':unittest.main()

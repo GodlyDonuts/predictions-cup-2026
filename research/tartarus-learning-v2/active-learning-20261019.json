@@ -1,34 +1,34 @@
 {
   "classification": "observed_active_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T11:44:51.540852+00:00",
-  "source_commit": "29bdde28d1acce07103c371604e73ed11d1bb8a2",
-  "run": "raw-api-growth-development-008",
+  "observed_utc": "2026-10-19T12:19:14.902554+00:00",
+  "source_commit": null,
+  "run": "raw-api-growth-development-011",
   "parameters": 58106855,
-  "worlds_per_learner": 32,
-  "population_members": 4,
+  "worlds_per_learner": 16,
+  "population_members": 8,
   "planned_cycles": 16,
   "verified_parent_checkpoints": [
-    "e44689f758497c30f5c4120d4f3e2f43f11cbc3f1fe4d0af7786a9f6eb0a9110",
-    "0a70ecd82fe8b2cdf77fd1baf16c40d3eb03990e845778860ed05deff83a57f2",
-    "c58d85f1a21a9e616fe8aa8d0d8cacb6eee32a2032058d684e857b117ee1a281"
+    "508274e4f194aa830c54aa876c8cac77aed3d73453567aa83b3bcfc07892dce6",
+    "0741c68c3baa0a7aa2dc8b2eed13d55c7b2826326c04b396ed907127193a77ec",
+    "3ac3e1ad67225ae69ffd20a66797850c151a4aa7f62cca7f3736e81bfad880a1"
   ],
-  "fresh_founders": 1,
+  "fresh_founders": 5,
   "dataset_role": "previously_inspected_development_only",
   "training_bounds_ms": [
-    1792383361040,
-    1792383960040
+    1792399800035,
+    1792402499976
   ],
   "selection_bounds_ms": [
-    1792384020040,
-    1792384258040
+    1792402800000,
+    1792403999981
   ],
   "sig_realtime_mode": "producer_validated_derived_books_not_raw_topic_replay",
   "passive_flow_mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
   "private_fill_notifications": "requires_active_sig_stream",
-  "config_sha256": "b2b358fe3f6234a231ec95558019aab4eb83ed9cdd57ac95aaacfebd9de3619d",
-  "training_decisions": 120752,
-  "accepted_updates": 257,
-  "current_member_modeled_fills": 304,
+  "config_sha256": "4cfcc7ef79311dd644f6ecea55a23bcbf2ccb76ba445ca0d7b6bd50dfd8e6680",
+  "training_decisions": 74971,
+  "accepted_updates": 452,
+  "current_member_modeled_fills": 184,
   "modeled_fills_are_not_contest_transactions": true,
   "older_phase_transition": {
     "training_decisions_at_transition": 811051,
@@ -55,18 +55,7 @@
   "full_history_coverage_established": false,
   "execution_calibrated": false,
   "positive_independent_roi_established": false,
-  "completed_candidate_development_rewards": [
-    {
-      "member": 0,
-      "cycle": 0,
-      "reward": -0.05380265071659585
-    },
-    {
-      "member": 1,
-      "cycle": 0,
-      "reward": -0.12183794256568127
-    }
-  ],
+  "completed_candidate_development_rewards": [],
   "native_capture_continuation": {
     "producer_pid": 886899,
     "producer_start_ticks": "36095048",
@@ -91,7 +80,43 @@
     "fit_sig_exchanges": 32,
     "official_engine_match_prints": 107,
     "maximum_aggregate_venue_gap_ms": 52491,
-    "next_training_phase": "queued_after_all_four_cycle_zero_candidates",
+    "next_training_phase": "phase011_running",
     "training_episode_ms": 900000
+  },
+  "source_snapshot_identity": "raw-development-011_exact_python_bytes",
+  "experiment_source_sha256": "6a9aa05cdc43191b383cbfa685526db75c070036673d2d4976ae4287a5a3fdf4",
+  "population_search": {
+    "islands": 4,
+    "probe_decisions": 16,
+    "archive_size": 32,
+    "migration_every": 4,
+    "development_selection_blocks": 2
+  },
+  "compute_chunk_decisions": 16,
+  "development_episode_ms": 900000,
+  "training_recovery_slots": 2,
+  "failed_phases": {
+    "009": "explicit_dataset_parent_guard_rejected_transfer_preserved",
+    "010": {
+      "reason": "verified_CUDA_out_of_memory_process_exited",
+      "decisions": 63964,
+      "accepted_updates": 64,
+      "failure_preserved": true
+    }
+  },
+  "cuda_peak_allocated_bytes": 2846793728,
+  "completed_counterfactual_worlds_current_member": 9,
+  "training_recovery": {
+    "retention_slots": 2,
+    "verified_slot_manifests_present": 2,
+    "financial_world_resume_supported": false,
+    "immutable_evaluated_candidates_are_separate": true
+  },
+  "producer_clock_cohort": {
+    "status": "compiled_and_flow_verified_not_active011_dataset",
+    "fit_SIG_exchanges": 36,
+    "official_trade_rows": 73,
+    "maximum_aggregate_venue_gap_ms": 59026,
+    "physical_exchange_parity_established": false
   }
 }

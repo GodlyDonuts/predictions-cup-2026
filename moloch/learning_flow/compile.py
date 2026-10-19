@@ -17,7 +17,8 @@ def sha(raw):return hashlib.sha256(raw).hexdigest()
 
 
 def trade_reader(extractor=trade):
-    return types.FunctionType(native_rows.__code__,{**native_rows.__globals__,'extract':extractor},'verified_trade_rows')
+    return types.FunctionType(native_rows.__code__,{**native_rows.__globals__,'extract':extractor},
+                              'verified_trade_rows',native_rows.__defaults__)
 
 
 def compile_flow(base,output):
@@ -33,7 +34,7 @@ def compile_flow(base,output):
     def extract(event,original,available):
         if event['type']=='trade':namespaces[str(event.get('idNamespace'))]+=1
         return trade(event,original,available)
-    verified=trade_reader(extract)(native,roles,emit)
+    verified=trade_reader(extract)(native,roles,emit,protocol.get('nativeAvailabilityClock','receiver'))
     if verified!=t.manifest['nativeTransportVerification']:raise ValueError('ORIGINAL_TRANSPORT_VERIFICATION_CHANGED')
     output.mkdir(parents=True,exist_ok=False)
     p=output/'trade-flow.jsonl.gz'

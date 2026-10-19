@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "classification": "retrospective_original_producer_clock_development_only_not_prospective_test",
+  "frozenAt": "2026-10-19T12:14:26.009701+00:00",
+  "calendarRolesUtc": {
+    "fit": [
+      "2026-10-19T09:00:00Z",
+      "2026-10-19T09:45:00Z"
+    ],
+    "search": [
+      "2026-10-19T09:50:00Z",
+      "2026-10-19T10:00:00Z"
+    ]
+  },
+  "warmupAndReceiptDrainMustRemainInsideEachRole": true,
+  "developmentFractionExcludingEmbargo": 0.6666666666666666,
+  "nativeProducer": {
+    "pid": 886899,
+    "startTicks": "36095048",
+    "binarySha256": "120bdb492c5f87651a3333dbcb28c73fceb025c4ac034db44bb481e476333658"
+  },
+  "requiredVenues": [
+    "SIG",
+    "Kalshi",
+    "Polymarket"
+  ],
+  "minimumFitObservedSigExchanges": 20,
+  "minimumFitMappedReferenceMarketsPerExternalVenue": 20,
+  "requireReceiverAvailabilityClocks": false,
+  "referenceResolutionEquivalenceVerified": false,
+  "executionCalibrationAvailable": false,
+  "previousFailedCohortsRemainFailed": true,
+  "failurePolicy": "Missing producer or required source coverage makes this cohort fail; never retime it or admit heldout rows into fitting.",
+  "polymarketUniverseSha256": "6fc2e7f4b53ebd300d97d3bd74faa505b246156b30b320c99ba8f201ad2889a5",
+  "competitionProfitabilityEstablished": false,
+  "productionAuthority": false,
+  "previousHeldoutNotReused": {
+    "r55": [
+      "2026-10-19T05:25:00Z",
+      "2026-10-19T05:55:00Z"
+    ],
+    "r56": [
+      "2026-10-19T07:10:00Z",
+      "2026-10-19T07:40:00Z"
+    ],
+    "r57": [
+      "2026-10-19T07:15:00Z",
+      "2026-10-19T07:32:30Z"
+    ],
+    "r57b": [
+      "2026-10-19T08:25:00Z",
+      "2026-10-19T08:42:30Z"
+    ]
+  },
+  "priorR56HeldoutUsedOnlyAsHeldoutSubsetNotFitting": true,
+  "previousFailedCohort": "r57-886375;failed before fit after OOM; never retimed",
+  "coverageFloorReason": "20 declared prospectively before the new fit; previous inspected subset had23. Every original record and observed coverage is retained; no30-exchange claim.",
+  "independentTestIncluded": false,
+  "nativeAvailabilityClock": "producer_processed",
+  "clockPolicy": "Verified original producer processing UTC; retain first laptop receipt separately. This is retrospective development, not physical exchange-time calibration or a prospective test."
+}
