@@ -44,8 +44,8 @@ def load_mechanics(path):
 
 def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_role='fit_training'):
     objective=protocol.get('training_reward_objective','marked_wealth_return')
-    if objective not in ['marked_wealth_return','matched_hold_excess']:raise ValueError('UNKNOWN_TRAINING_REWARD_OBJECTIVE')
-    hold_reward=None;excess_observation=None
+    if objective not in ['marked_wealth_return','matched_hold_excess','realized_pnl']:raise ValueError('UNKNOWN_TRAINING_REWARD_OBJECTIVE')
+    hold_reward=None;excess_observation=None;previous_realized=0
     device = next(model.parameters()).device
     length = protocol['episode_length_ms']; drain = protocol['maximum_receipt_drain_ms']
     initial = protocol['initial_cash_micros']; end = start+length; terminal = end+drain
@@ -97,6 +97,8 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
             excess_observation=hold_reward.observe(current,env.marks())if hold_reward else None
             reward=excess_observation.normalized_increment if excess_observation else 0.
             valid=valid and excess_observation is not None and excess_observation.available
+        elif objective=='realized_pnl':
+            reward=(env.realized-previous_realized)/initial;previous_realized=env.realized
         # Missing intermediates are explicitly masked; any eventual mark
         # incorporates the whole unobserved interval, not an assumed flat P&L.
         rows.append({**tensors,'masks':masks,'reset':reset,'actions':row['actions'],
@@ -120,6 +122,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     if objective=='matched_hold_excess':
         qualified=qualified and terminal_excess.available
         rows[-1]['reward']+=terminal_excess.normalized_increment
+    elif objective=='realized_pnl':rows[-1]['reward']+=(env.realized-previous_realized)/initial
     elif final is not None: rows[-1]['reward']+=(final-previous)/initial
     rows[-1]['elapsed']+=drain
     def stack(name): return torch.stack([r[name].detach()for r in rows])
@@ -141,6 +144,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
            'observable_market_frames':observable_market_frames,
            'rollout_wall_seconds':time.perf_counter()-begun,'baseline':baseline,'qualified_accounting':qualified,
            'initial_reference_wealth_micros':initial,'synthetic_initial_portfolio':initial_portfolio,
+           'modeled_realized_return':env.realized/initial,'realized_pnl_includes_fees':True,
            'final_reference_wealth_micros':final,'reference_return':(final-initial)/initial if qualified else None,
            'missing_mark_observations':missing,'unresolved_orders':len(env.orders),
            'active_request_at_terminal':env.budget.active,'filled_shares':sum(e['quantity']for e in env.fill_events),
