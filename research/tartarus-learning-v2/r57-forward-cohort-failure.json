@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-19T06:29:28.142067+00:00",
+  "classification": "frozen_cohort_failed_before_fit",
+  "producerPid": 886375,
+  "producerEndReason": "systemd_oom_kill_at_2GiB_ceiling",
+  "fitStarted": false,
+  "heldoutUsed": false,
+  "oldCalendarNotRetimed": true,
+  "noTrainingEvidenceClaimed": true
+}
