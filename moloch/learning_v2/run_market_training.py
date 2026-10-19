@@ -50,6 +50,11 @@ def main():
     if base.get('feature_schema')not in [None,FEATURE_SCHEMA]:raise ValueError('UNKNOWN_MARKET_FEATURE_SCHEMA')
     tape=(IntervalTape if interval else Tape)(args.dataset)
     if tape.manifest_sha256!=base['initial_dataset_manifest_sha256']or base['history_roles']!=['fit_training','search_development']:raise ValueError('FIXED_DEVELOPMENT_DATASET_ROLE_REQUIRED')
+    evaluation_length=base.get('search_episode_length_ms',150000)
+    if type(evaluation_length)is not int or evaluation_length<=0:raise ValueError('FINITE_SEARCH_EPISODE_LENGTH')
+    for start in base['search_evaluation_starts_ms']:
+        if start-base['recurrent_burnin_ms']<max(tape.times[0],base['search_start_ms'])or start+evaluation_length+base['maximum_receipt_drain_ms']>min(tape.times[-1],base['run_start_ms']+base['run_duration_ms']):
+            raise ValueError('SEARCH_WINDOW_OUTSIDE_AVAILABLE_ROLE')
     minimum=max(tape.times[0],base['run_start_ms'])+base['recurrent_burnin_ms'];maximum=base['fit_end_ms']-base['episode_length_ms']-base['maximum_receipt_drain_ms']
     if maximum<minimum:raise ValueError('NO_COMPLETE_FIT_WINDOW')
     rng=random.Random(args.seed);starts=[[rng.randint(minimum,maximum)for _ in range(args.batch_worlds)]for _ in range(args.blocks)]
@@ -101,7 +106,7 @@ def main():
                               'qualified_worlds':int(qualified.sum()),'returns':[e['reference_return']for e in results],
                               'peak_cuda_reserved_bytes':row['peak_cuda_reserved_bytes']}),flush=True)
             if (block+1)%args.evaluate_every==0 or block+1==args.blocks:
-                before=fingerprint(model);ep={**protocol,'episode_length_ms':150000};out=[]
+                before=fingerprint(model);ep={**protocol,'episode_length_ms':evaluation_length};out=[]
                 for name,mechanics in profiles:
                     torch.manual_seed(args.seed+900000)
                     t,r,profile=rollout_batch(tape,mechanics,ep,model,base['search_evaluation_starts_ms'],split_role='search_development');del t

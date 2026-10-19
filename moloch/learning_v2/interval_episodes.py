@@ -60,6 +60,23 @@ class IntervalEpisode(Episode):
 
     def observe(self):
         observation=super().observe();n=len(self.exchanges);extra=np.zeros((n,8),np.float32)
+        reads=self.mechanics.preflight_reads
+        read_span=reads*self.mechanics.read_latency_ms+max(0,reads-1)*self.mechanics.budget.read_completion_gap_ms
+        if self.budget.active is not None or self.budget.unknown or self.budget.poisoned:
+            minimum_delay=60000
+        else:
+            read_wait=max(0,self.budget.ready_at(self.now,False)-self.now)if reads else 0
+            minimum_delay=max(read_wait+read_span,max(0,self.budget.ready_at(self.now,True)-self.now))
+        feasible=np.array([patience>minimum_delay for patience in [1000,10000,60000]],bool)
+        masks=observation['masks']
+        # Patience is measured from decision, including all preflight reads.
+        # Mask only choices that cannot reach admission even at the modeled
+        # physical lower bound. Never reward abandoned drafts as actual trades.
+        for family in [1,2,4]:
+            masks['patience'][:,family,:,:]&=feasible
+            if not feasible.any():masks['side'][:,family,:]=False
+            masks['family'][:,family]=masks['side'][:,family,:].any(-1)
+        masks['market'][1:]=masks['family'][1:,1:].any(-1)
         for i,ex in enumerate(self.exchanges[1:],1):
             for j,venue in enumerate(['Kalshi','Polymarket']):
                 interval=self.venue_interval(ex,venue)
@@ -69,6 +86,7 @@ class IntervalEpisode(Episode):
         observation['global_state']=np.concatenate([observation['global_state'],np.array([
             self.sizing_capital_micros/self.initial_wealth,float(observation['wealth']is None)],np.float32)])
         observation['sizing_capital_micros']=self.sizing_capital_micros
+        observation['minimum_modeled_admission_delay_ms']=minimum_delay
         observation['valuation_classification']='conditional_external_intervals_not_executable_or_realized_roi'
         return observation
 

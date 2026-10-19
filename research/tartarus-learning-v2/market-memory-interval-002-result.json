@@ -1,0 +1,190 @@
+{
+  "run": "market-memory-interval-002",
+  "classification": "inspected_short_three_venue_engineering_not_heldout",
+  "reportSha256": "83845ae490817015c4f8081ccfc28baeef116d045ab59d67898b68f384dd39a3",
+  "trainingDecisions": 46080,
+  "optimizerUpdates": 128,
+  "wallSeconds": 250.60039749997668,
+  "fitFillReceipts": 28,
+  "strictPositiveEvaluatedCheckpoints": 0,
+  "evaluatedCheckpoints": 8,
+  "fitSigExchanges": 23,
+  "allSigExchangeSlots": 27,
+  "mappedReferenceMarkets": {
+    "Kalshi": 232,
+    "Polymarket": 156
+  },
+  "originalFailedProspectiveCohortPreserved": true,
+  "profitabilityEstablished": false,
+  "productionChanged": false,
+  "evaluations": [
+    {
+      "block": 3,
+      "excessMicros": [
+        0,
+        -1110749000,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        4,
+        0,
+        0
+      ]
+    },
+    {
+      "block": 7,
+      "excessMicros": [
+        0,
+        -545330000,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        2,
+        0,
+        0
+      ]
+    },
+    {
+      "block": 11,
+      "excessMicros": [
+        0,
+        -540576000,
+        0,
+        -103977500
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        2,
+        0,
+        1
+      ]
+    },
+    {
+      "block": 15,
+      "excessMicros": [
+        58644000,
+        0,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "block": 19,
+      "excessMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "block": 23,
+      "excessMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "block": 27,
+      "excessMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "block": 31,
+      "excessMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "realizedMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

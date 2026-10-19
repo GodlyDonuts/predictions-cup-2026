@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-19T05:00:24.686623+00:00",
+  "classification": "current_probability_sensitivity_with_dated_liquidity_not_profit_forecast",
+  "modelRawSha256": "6a4910c15623c6a0d3290be94a893ce304d82cf1d8221bade91d0181cab4380f",
+  "financialSnapshotFillCount": 395,
+  "currentFinancialReconciliationRequired": true,
+  "liquidityIsDatedConditionalHypothesis": true,
+  "probabilitiesCalibrated": false,
+  "executionAuthority": false,
+  "actualReturnsEstablished": false,
+  "variants": [
+    {
+      "objective": "mean",
+      "status": "exact_sequence_checked",
+      "sourceResultSha256": "3d0bda8f16364f1352c83de9afb9d15be9080eda899833ef4941b39bd73c96a3",
+      "conditionalLegs": 34,
+      "declaredModelExpectedGainSusqies": {
+        "price_lower_common": "4390.104172",
+        "price_upper_common": "3520.775371",
+        "price_midpoint_independent": "4481.131156",
+        "historical_review_envelope_lower_common": "4259.888000",
+        "historical_review_envelope_upper_common": "3520.820000"
+      },
+      "minimumPrefixWealthSusqies": "32262.720000",
+      "maximumLossVsHoldSusqies": "55073.640000",
+      "selectedStrictTargetMassPpm": 0.0,
+      "allFutureOrdersRequireFreshPhysicalEvidence": true
+    },
+    {
+      "objective": "rank",
+      "status": "exact_sequence_checked",
+      "sourceResultSha256": "03757f4724b21faca8653e3ddb1e00625136105662c382e76b07e57836c293e4",
+      "conditionalLegs": 32,
+      "declaredModelExpectedGainSusqies": {
+        "price_lower_common": "168.765384",
+        "price_upper_common": "574.850892",
+        "price_midpoint_independent": "393.358801",
+        "historical_review_envelope_lower_common": "42.766000",
+        "historical_review_envelope_upper_common": "1523.296000"
+      },
+      "minimumPrefixWealthSusqies": "50993.360000",
+      "maximumLossVsHoldSusqies": "34432.365000",
+      "selectedStrictTargetMassPpm": 0.0,
+      "allFutureOrdersRequireFreshPhysicalEvidence": true
+    }
+  ]
+}

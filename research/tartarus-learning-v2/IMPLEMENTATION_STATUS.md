@@ -1,3 +1,9 @@
+## October19,05:03UTC — actual three-venue replay and feasible deadlines
+
+The v4 interval run002 completed46080decisions/128updates in250.600seconds on the explicitly inspected23-SIG-exchange/27-slot subset, with232Kalshi and156Polymarket mapped reference markets. It produced28modeled fit fill receipts;0of8checkpoints passed all-four-positive development HOLD excess. No realized profitability or live learned policy is established. [Exact run002 result](market-memory-interval-002-result.json).
+
+The matched next run004 masks physically impossible decision-to-admission deadlines: sixteen600ms reads plus completion pacing need at least18.6seconds, so1second and10second patience cannot submit. Actual active/unknown/poisoned queues retain WAIT and cannot create new admissions. Fixed-wallet units and a full actual-data CPU replay passed; new GPU run004 is finite and not complete. Run001 failed on an inherited hardcoded150second search window, now explicit/prevalidated; run003 failed on busy-queue observation, now handled without changing the queue. Both originals are retained. Neither failed run is reported complete. Source/weights/protocols remain independently pinned.
+
 ## October19 — interval observations and partial valuation implemented; R56 restoring
 
 The completed v7 realized-only run made153592decisions/256updates in1236.994seconds. Checkpoint23 beat HOLD in all four development cases, but net realized FIFO was-12.58/0/-23.515/0 SUSQies; later checkpoints collapsed to WAIT. It is not profitable validation and is not promoted. [Exact result](market-memory-realized-001-result.json).

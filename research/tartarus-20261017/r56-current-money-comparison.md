@@ -1,0 +1,7 @@
+# R56: expected money and tournament target comparison
+
+The fresh04:38UTC probability sensitivity was re-audited against the retained395-fill financial branch and dated conditional liquidity. The mean-focused34-leg alternative improves declared expected terminal wealth versus holding by3520.775371–4481.131156SUSQies across all five models. Its minimum modeled prefix wealth is32262.72 and maximum loss versus holding55073.64. These probabilities are uncalibrated, dated full-position depth is hypothetical, and actual current financial matching/contract eligibility/fresh depth are still required. This is not a profit or daily ROI forecast.
+
+The32-leg nonnegative-rank comparison has42.766–1523.296declared expected gain. Both alternatives have zero selected strict mass above the1.1m planning target. The current129-leg tournament candidate has a positive declared target score but negative expected money of roughly54k–68k versus holding. Thus the current model does not establish both positive expected money and a chance above that target simultaneously. Zero solver score here is a result for these bounded hypotheses, not a proof that the tournament is unwinnable.
+
+Only the common first covered sale is prepared for physical review; no future plan is activated by this comparison. Original FIFO, cash, observed marks and settlement payouts stay distinct. [Exact aggregate comparison](r56-current-money-comparison.json).

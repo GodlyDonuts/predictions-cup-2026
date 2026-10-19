@@ -68,6 +68,23 @@ class PartialValuationEpisodes(unittest.TestCase):
         e.reference_cache[('m','Kalshi')]['mapping_semantics']='race_context_only'
         self.assertIsNone(e.venue_interval('x','Kalshi'));self.assertNotIn(('x','YES'),e.marks())
 
+    def test_patience_must_allow_the_actual_preflight_not_just_exchange_arrival(self):
+        from dataclasses import replace
+        e=self.fixture();e.mechanics=replace(e.mechanics,read_latency_ms=600,preflight_reads=16)
+        a=e.observe();self.assertEqual(a['minimum_modeled_admission_delay_ms'],18600)
+        self.assertEqual(a['masks']['patience'][1,1,0].tolist(),[False,False,True])
+        self.assertTrue(a['masks']['side'][1,1,0])
+        e.mechanics=replace(e.mechanics,read_latency_ms=4000)
+        b=e.observe();self.assertFalse(b['masks']['family'][:,[1,2,4]].any())
+        self.assertTrue(b['masks']['market'][0])
+
+    def test_observing_during_an_actual_preflight_read_preserves_busy_state(self):
+        e=self.fixture();p=e.submit(Target('x','YES',UNIT,UNIT,450000,'BUY'),60000)
+        self.assertGreater(p.admitted_quantity,0);e.advance(0)
+        self.assertIsNotNone(e.budget.active)
+        o=e.observe();self.assertFalse(o['masks']['family'][:,[1,2,4]].any())
+        self.assertTrue(o['masks']['market'][0]);self.assertIsNotNone(e.budget.active)
+
 
     def test_interval_rollout_credits_only_relative_result_when_absolute_roi_unknown(self):
         import torch
