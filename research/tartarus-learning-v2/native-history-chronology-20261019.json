@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "frozenAtUtc": "2026-10-19T02:36:34.054937+00:00",
+  "classification": "retrospective_chronological_holdout_not_pristine_forward_evidence",
+  "calendarRolesUtc": {
+    "fit": [
+      "2026-10-15T08:00:00Z",
+      "2026-10-17T08:00:00Z"
+    ],
+    "search": [
+      "2026-10-17T08:05:00Z",
+      "2026-10-17T20:00:00Z"
+    ],
+    "heldOut": [
+      "2026-10-17T20:05:00Z",
+      "2026-10-19T02:00:00Z"
+    ]
+  },
+  "approximateDevelopmentFraction": 0.667,
+  "minimumGapMs": 300000,
+  "allMarketsShareCalendarRole": true,
+  "warmupAndDrainMustRemainInRole": true,
+  "existingInspectedOct16DataRole": "development_only",
+  "someProductionAggregatesPreviouslyInspected": true,
+  "modelSelectionCannotUseHeldOutReturns": true,
+  "compilerMayOnlyReportHeldOutClockCoverageAndTransportIntegrityBeforeFreeze": true,
+  "sourceAxis": "original_producer_processedAt_with_original_receivedAt_and_sourceAt_separate",
+  "originalNativePrefixSha256": "c1e98765516fceb130475ecaea36918261555155d2cd093b2f618d75e71534d2",
+  "originalNativePrefixBytes": 2192954720,
+  "maximumFinalists": 2,
+  "noQualifiedModelClaimed": true,
+  "productionAuthority": false
+}

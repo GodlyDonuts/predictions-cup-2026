@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "classification": "inspected_native_development_history_only",
+  "venuesPresent": [
+    "SIG"
+  ],
+  "originalPrefix": {
+    "originalBytes": 2192954720,
+    "originalSha256": "c1e98765516fceb130475ecaea36918261555155d2cd093b2f618d75e71534d2",
+    "terminalSequence": 654922,
+    "terminalHash": "c445c5a787bc406dd6c3e59f436c35ec9c9cb649541e7525cd86d8c6fbfd8d4e",
+    "firstAvailableAtMs": 1792051073249,
+    "lastAvailableAtMs": 1792375785409,
+    "calendarRowCounts": {
+      "gap_calendar": 2433,
+      "fit": 440979,
+      "search": 89921,
+      "heldOut": 121589
+    },
+    "nativeTypeCounts": {
+      "gap": 87167,
+      "coverage": 6794,
+      "book": 497108,
+      "trade": 37807
+    },
+    "developmentExchanges": 199
+  },
+  "sourcePinSha256": "f74600a71a042e5cd35b88d4e73aafb633478d792a58e500d1e9ac196a7988b4",
+  "protocolSha256": "4913631d66d43e884c729a6f496a3fefcdd393757f768f44fe140d57d9412e14",
+  "compilerSha256": "6ed47866d40955d91666497c673a5f2eae86afeee4ed64da99a8d4a8d1717f15",
+  "observationsSha256": "9a9bdf9de609713176593c9c5f21c687e95a9da008bf4fdf639e882ffcc6f47f",
+  "observationCounts": {
+    "gap": 73006,
+    "book": 398774
+  },
+  "heldOutPricesIncluded": false,
+  "lockedTestEligible": false,
+  "prefixSemanticReplayOnReceiver": false,
+  "executionCalibrationAvailable": false,
+  "productionChanged": false,
+  "executionAuthority": false,
+  "trainingUsedThisDataset": false,
+  "independentValuationReferencesJoined": false
+}
