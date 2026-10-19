@@ -63,6 +63,15 @@ fn permit(q:&Value)->Permit{Permit{run_id:"passive-inherited-fixture".into(),int
  let(mut f,review,c)=setup();let q=reserve(&mut f,&c);let id=q["id"].as_u64().unwrap();let spec=f.spec(&q);let p=permit(&q);
  let t=f.store.as_mut().unwrap().bind_rank_trade(&f.bank,&f.log,&f.scope,&review,id,&spec,&p,NOW+12000,NOW+25000).unwrap();drop(t);let before=std::fs::read(f.root.0.join("fundamental.ndjson")).unwrap();
  let t=f.store.as_mut().unwrap().bind_rank_trade(&f.bank,&f.log,&f.scope,&review,id,&spec,&p,NOW+12001,NOW+25000).unwrap();assert_eq!(std::fs::read(f.root.0.join("fundamental.ndjson")).unwrap(),before);
+ let ledger=f.bank.engine().report().unwrap();t.validate_frozen(&q.clone(),&ledger,id,NOW+12002).unwrap();
+ // The complete original row remains authoritative, including fields omitted
+ // from compact intent attribution. Independent altered values cannot use the
+ // immutable-allocation fast path.
+ let mut altered=q.clone();altered["reviewedRankCampaign"]["evaluation"]["changedAfterBinding"]=json!(true);
+ assert!(t.validate_frozen(&altered,&ledger,id,NOW+12002).is_err());
+ let mut altered_ledger=ledger.clone();altered_ledger["cash"]=json!("999.000000");
+ assert!(t.validate_frozen(&q,&altered_ledger,id,NOW+12002).is_err());
+ assert!(t.validate_frozen(&q,&ledger,id+1,NOW+12002).is_err());assert!(t.validate_frozen(&q,&ledger,id,NOW+25000).is_err());
  let mut changed=p.clone();changed.maximum_quantity=2;assert!(t.authorize(&f.scope,&spec,&changed,NOW+12002).is_err());assert!(t.authorize(&f.scope,&spec,&p,NOW+25000).is_err());
 }
 

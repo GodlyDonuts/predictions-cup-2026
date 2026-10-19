@@ -1,0 +1,109 @@
+{
+  "classification": "causal_conditional_crossvenue_exit_probe_on_inspected_history_not_deployed_or_calibrated",
+  "rule": "covered SELL only when executable SIG bid exceeds external conditional upper interval plus fee; no future observations",
+  "initial_cash_micros": 158360000,
+  "results": [
+    {
+      "profile": "nominal",
+      "start_ms": 1792384030000,
+      "end_ms": 1792384060000,
+      "terminal_ms": 1792384120000,
+      "candidate_frames": 2,
+      "submitted_drafts": 1,
+      "fill_receipts": 0,
+      "realized_micros": 0,
+      "interval_lower_excess_micros": 0,
+      "interval_excess_available": true,
+      "whole_account_wealth_micros": null,
+      "opportunities": [
+        {
+          "at_ms": 1792384030000,
+          "exchange": "1067",
+          "conditional_edge_micros_per_share": 70000,
+          "requested_quantity": 10000
+        }
+      ],
+      "unresolved_orders": 0,
+      "unknown_acceptance": false
+    },
+    {
+      "profile": "nominal",
+      "start_ms": 1792384150000,
+      "end_ms": 1792384180000,
+      "terminal_ms": 1792384240000,
+      "candidate_frames": 2,
+      "submitted_drafts": 2,
+      "fill_receipts": 1,
+      "realized_micros": -1950000,
+      "interval_lower_excess_micros": 1170000,
+      "interval_excess_available": true,
+      "whole_account_wealth_micros": null,
+      "opportunities": [
+        {
+          "at_ms": 1792384154000,
+          "exchange": "1066",
+          "conditional_edge_micros_per_share": 40000,
+          "requested_quantity": 100
+        },
+        {
+          "at_ms": 1792384174000,
+          "exchange": "1002",
+          "conditional_edge_micros_per_share": 15000,
+          "requested_quantity": 78
+        }
+      ],
+      "unresolved_orders": 0,
+      "unknown_acceptance": false
+    },
+    {
+      "profile": "joint_adverse",
+      "start_ms": 1792384030000,
+      "end_ms": 1792384060000,
+      "terminal_ms": 1792384120000,
+      "candidate_frames": 2,
+      "submitted_drafts": 1,
+      "fill_receipts": 0,
+      "realized_micros": 0,
+      "interval_lower_excess_micros": 0,
+      "interval_excess_available": true,
+      "whole_account_wealth_micros": null,
+      "opportunities": [
+        {
+          "at_ms": 1792384030000,
+          "exchange": "1067",
+          "conditional_edge_micros_per_share": 70000,
+          "requested_quantity": 10000
+        }
+      ],
+      "unresolved_orders": 0,
+      "unknown_acceptance": false
+    },
+    {
+      "profile": "joint_adverse",
+      "start_ms": 1792384150000,
+      "end_ms": 1792384180000,
+      "terminal_ms": 1792384240000,
+      "candidate_frames": 1,
+      "submitted_drafts": 1,
+      "fill_receipts": 0,
+      "realized_micros": 0,
+      "interval_lower_excess_micros": 0,
+      "interval_excess_available": true,
+      "whole_account_wealth_micros": null,
+      "opportunities": [
+        {
+          "at_ms": 1792384154000,
+          "exchange": "1066",
+          "conditional_edge_micros_per_share": 40000,
+          "requested_quantity": 100
+        }
+      ],
+      "unresolved_orders": 0,
+      "unknown_acceptance": false
+    }
+  ],
+  "contract_equivalence_verified": false,
+  "competition_profitability_established": false,
+  "network_requests": 0,
+  "implementationSourceSha256": "a23c4070bf41fc3a492a85e6b2766a17b53a4976cc7878344d5e4a76242b1988"
+}

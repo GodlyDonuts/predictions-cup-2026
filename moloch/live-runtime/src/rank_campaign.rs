@@ -113,7 +113,7 @@ pub fn prepare(bank:&Session,b:&Boundary<'_>,review:&Reviewed,f:&SnapshotSet,col
  let result=Reservation{event,boundary:before,review:review.clone(),until,receipts,collateral:cr};result.validate_current(bank,b,at)?;Ok(result)
 }
 /// Opaque process-local physical proof. JSON research records cannot construct it.
-pub struct PhysicalDecision{head:Value,quote_sha:String,ledger:std::sync::Arc<crate::ledger_snapshot::Snapshot>,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>}
+pub struct PhysicalDecision{head:Value,quote:std::sync::Arc<Value>,quote_sha:String,ledger:std::sync::Arc<crate::ledger_snapshot::Snapshot>,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>}
 /// Exact full JSON is checked once, then held by immutable shared owners.
 /// No deserialization, mutation or caller-supplied digest can create this seal.
 /// Physical checks still bind the same decision, quote and ledger allocations
@@ -131,6 +131,7 @@ fn same_frozen_values(q:&std::sync::Arc<Value>,l:&std::sync::Arc<Value>,id:u64,o
 fn physical_clock(minted:u64,until:u64,at:u64)->Result<()>{need(at>=minted,"RANK_PHYSICAL_CLOCK_REGRESSED")?;need(at<until,"RANK_PHYSICAL_FACTS_EXPIRED")}
 impl PhysicalDecision{
  pub fn native_head(&self)->&Value{&self.head}
+ pub(crate) fn original_quote(&self)->&std::sync::Arc<Value>{&self.quote}
  pub fn allows_managed_inventory(&self)->bool{self.ownership.is_some()&&self.review.managed_inventory().is_some()}
  pub fn cohort_ownership_tag(&self)->Option<&Value>{self.ownership.as_ref().map(|o|o.durable_tag())}
  /// Full cohort/financial checks precede minting this opaque decision. Between
@@ -148,7 +149,7 @@ impl PhysicalDecision{
  pub fn freeze(self:&std::sync::Arc<Self>,quote:std::sync::Arc<Value>,ledger:std::sync::Arc<Value>,qid:u64,at:u64)->Result<FrozenState>{
   self.validate_frozen(&quote,&ledger,qid,at)?;Ok(FrozenState{decision:self.clone(),quote,ledger,qid})
  }
- pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{self.current(at)?;need(qid==self.qid&&hash(q)?==self.quote_sha&&self.ledger.matches_value(ledger)?,"RANK_PHYSICAL_FROZEN_CHANGED")?;if let Some(o)=&self.ownership{o.validate_frozen(q,ledger,qid,at)?;}Ok(())}
+ pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{self.current(at)?;need(qid==self.qid&&(std::ptr::eq(q,self.quote.as_ref())||hash(q)?==self.quote_sha)&&self.ledger.matches_value(ledger)?,"RANK_PHYSICAL_FROZEN_CHANGED")?;if let Some(o)=&self.ownership{o.validate_frozen(q,ledger,qid,at)?;}Ok(())}
  pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,at:u64)->Result<()>{self.current(at)?;need(hash(scope)?==self.scope_sha&&hash(spec)?==self.spec_sha&&hash(permit)?==self.permit_sha,"RANK_PHYSICAL_REQUEST_CHANGED")?;self.dispatch.validate()?;if let Some(o)=&self.ownership{o.authorize(scope,spec,permit,at)?;}for r in &self.receipts{r.verify()?;}self.collateral.verify()?;Ok(())}
 }
 /// Mint ONLY after activation and new seven facts. No intent/attempt may exist.
@@ -165,7 +166,9 @@ fn mint_inner(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&Snapshot
  need(review.managed_inventory().is_some()==ownership.is_some(),"RANK_COHORT_OPAQUE_OWNERSHIP_REQUIRED")?;
 
  let before=collateral_feedback::allocation_boundary(bank,b,i64::try_from(at)?)?;need(b.ordinary.never_attempted(qid)&&!b.ordinary.intents.contains_key(&qid),"RANK_ORIGINAL_INTENT_EXISTS")?;
- let(receipts,mut until)=facts(bank,b,review,f,collateral,at)?;let q=crate::order_snapshot::snapshot(bank).records().iter().find(|q|q["id"]==qid).cloned().ok_or("RANK_NATIVE_QUOTE")?;let a=review.action();let scope=b.transport.scope();
+ let(receipts,mut until)=facts(bank,b,review,f,collateral,at)?;
+ let quote=if let Some(o)=&ownership{need(o.native_head()==&bank.durable_head(),"RANK_COHORT_NATIVE_HEAD_CHANGED")?;o.original_quote().clone()}else{std::sync::Arc::new(crate::order_snapshot::quote(bank,qid).ok_or("RANK_NATIVE_QUOTE")?)};
+ let q=quote.as_ref();let a=review.action();let scope=b.transport.scope();
  need(q["reviewedRankCampaign"]["campaignSha256"]==review.canonical_sha&&q["marketId"]==a["marketId"]&&q["exchangeId"]==a["exchangeId"]&&q["side"]==a["side"]&&q["action"]==(if a["action"]=="BUY"{"buy"}else{"sell"})&&q["quantity"]==a["quantity"]&&q["price"]==a["limitPrice"]&&q["filled"]==0&&q["retired"]==false,"RANK_NATIVE_QUOTE_CHANGED")?;
  let evaluation=bank.engine().evaluate_reserved_rank_campaign(qid,&review.campaign,i64::try_from(at)?)?;
  let expected_body=json!({"idempotencyKey":format!("{}:{qid}",permit.run_id),"exchangeId":q["exchangeId"],"side":if q["side"]=="YES"{"yes"}else{"no"},"action":q["action"],"quantity":q["quantity"],"price":serde_json::from_str::<Value>(q["price"].as_str().ok_or("RANK_QUOTE_PRICE")?)?,"expirationDate":daily_windows::iso(q["expiresAt"].as_u64().ok_or("RANK_QUOTE_CLOCK")?)?,"tournamentId":scope.tournament_id});
@@ -174,7 +177,7 @@ fn mint_inner(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&Snapshot
  if let Some(o)=&ownership{o.validate_frozen(&q,ledger.value().as_ref(),qid,at)?;o.authorize(scope,spec,permit,at)?;need(o.native_head()==&bank.durable_head(),"RANK_COHORT_NATIVE_HEAD_CHANGED")?;until=until.min(o.expires_at_ms());}
  until=until.min(q["expiresAt"].as_u64().ok_or("RANK_QUOTE_CLOCK")?).min(permit.expires_at_ms);let dispatch=DispatchPin::new(b)?;need(collateral_feedback::allocation_boundary(bank,b,i64::try_from(at)?)?==before,"RANK_BOUNDARY_CHANGED")?;
  let cr=RetainedReceipt::open(b.root,collateral.receipt(),ReceiptStore::Ordinary)?;
- Ok(PhysicalDecision{head:bank.durable_head(),quote_sha:hash(&q)?,ledger,scope_sha:hash(scope)?,spec_sha:hash(spec)?,permit_sha:hash(permit)?,qid,minted:at,until,review:review.clone(),receipts,collateral:cr,dispatch,evaluation,ownership})
+ Ok(PhysicalDecision{head:bank.durable_head(),quote_sha:hash(q)?,quote,ledger,scope_sha:hash(scope)?,spec_sha:hash(spec)?,permit_sha:hash(permit)?,qid,minted:at,until,review:review.clone(),receipts,collateral:cr,dispatch,evaluation,ownership})
 }
 
 #[cfg(test)]mod tests{

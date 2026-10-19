@@ -1,0 +1,13 @@
+{
+  "classification": "checked_source_candidate_not_deployed",
+  "compiledBinarySha256": "ca0fe8ad5d8a77e21a04154fdc8314c3f3577fd061935dda7e249fccb0bda3ae",
+  "normalizedRustSourceFilesVerified": 233,
+  "allCompiledSourceMatchesWorkingTree": true,
+  "nativeIdentityUnchanged": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "sdkReusedUnchanged": true,
+  "completeQuoteLedgerQidClockTamperRefusalsVerified": true,
+  "sourceTtlRiskLimiterWindowsChanged": false,
+  "deployed": false,
+  "endToEndLatencyImprovementVerified": false,
+  "newFillOrProfitEstablished": false
+}

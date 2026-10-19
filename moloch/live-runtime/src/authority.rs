@@ -132,7 +132,10 @@ impl ProductionAuthority {
   if bank.engine().is_package_order(qid){return Err("PACKAGE_REQUIRES_BASKET_AUTHORITY".into())}
   if spec.method=="POST"&&bank.engine().package_blocks_submissions(){return Err("PACKAGE_UNRESOLVED".into())}
   let orders=crate::order_snapshot::snapshot(bank);
-  let quote=orders.records().iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).cloned().ok_or("LIVE_INTENT_NOT_FUNDED")?;
+  let quote=if let Some(r)=&rank{
+   if r.native_head()!=&bank.durable_head(){return Err("LIVE_RANK_SCOPE_OR_NATIVE_HEAD".into())}
+   let q=r.original_quote();if q["id"].as_u64()!=Some(qid)||q["retired"]!=false{return Err("LIVE_INTENT_NOT_FUNDED".into())}q.clone()
+  }else{Arc::new(orders.records().iter().find(|q|q["id"].as_u64()==Some(qid)&&q["retired"]==false).cloned().ok_or("LIVE_INTENT_NOT_FUNDED")?)};
   let exchange=quote["exchangeId"].as_str().ok_or("LIVE_INTENT_SCOPE")?;
   if usize::from(maker.is_some())+usize::from(fundamental.is_some())+usize::from(rank.is_some())>1{return Err("LIVE_EXCLUSIVE_ORDER_OBJECTIVE".into())}
   if rank.is_some()!=rank_owner.is_some(){return Err("LIVE_RANK_OWNER_APPROVAL_REQUIRED".into())}if let Some(pins)=&rank_owner{pins.validate()?;}
@@ -146,7 +149,7 @@ impl ProductionAuthority {
   let expected_signed=bank.engine().wallet.quantity(ex,moloch_replay::Side::Yes) as i128-bank.engine().wallet.quantity(ex,moloch_replay::Side::No) as i128;
   let market_cost=bank.engine().wallet.market_cost(ex)+orders.records().iter().filter(|q|q["exchangeId"]==ex&&q["action"]=="buy"&&q["retired"]==false).map(|q|decimal_units(q["price"].as_str().unwrap_or("invalid")).map(|p|p*(q["quantity"].as_u64().unwrap_or(0)-q["filled"].as_u64().unwrap_or(0)) as i128)).collect::<std::result::Result<Vec<_>,_>>()?.iter().sum::<i128>();
   let expected_cash=reconciled_expected_cash(bank)?;
-  let quote=Arc::new(quote);let ledger=if rank.is_some(){let snapshot=crate::ledger_snapshot::snapshot(bank)?;if !snapshot.validate_current(bank){return Err("LIVE_RANK_LEDGER_HEAD_CHANGED".into())}snapshot.value().clone()}else{Arc::new(bank.engine().report()?)};
+  let ledger=if rank.is_some(){let snapshot=crate::ledger_snapshot::snapshot(bank)?;if !snapshot.validate_current(bank){return Err("LIVE_RANK_LEDGER_HEAD_CHANGED".into())}snapshot.value().clone()}else{Arc::new(bank.engine().report()?)};
   let rank_frozen=rank.as_ref().map(|r|r.freeze(quote.clone(),ledger.clone(),qid,u64::try_from(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_millis())?)).transpose()?.map(Arc::new);
   *self.ready.lock().unwrap()=Some(Ready::Order(OrderReady{account_stamp,spec,permit,quote,ledger,rank_frozen,snapshots,owned,expected_signed,market_cost,expected_cash,entry_until:self.entry_until_ms(),maker,fundamental,rank,rank_owner}));Ok(())
  }

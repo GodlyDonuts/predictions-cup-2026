@@ -6,20 +6,21 @@ use super::*;
 /// Constructed only after the held original Cohorts writer registers the exact
 /// SELL. It cannot be deserialized from a nomination or an approval JSON file.
 pub struct RankInventoryOwnership{
-    qid:u64,quote:Value,scope_sha:String,spec_sha:String,permit_sha:String,
+    qid:u64,quote:Arc<Value>,scope_sha:String,spec_sha:String,permit_sha:String,
     ledger:Arc<crate::ledger_snapshot::Snapshot>,head:Value,tag:Value,minted:u64,until:u64,
     sidecar:FilePin,marker:FilePin,ordinary:File,ordinary_path:PathBuf,
     ordinary_identity:Value,_owner:Arc<ExclusiveLock>,
 }
 impl RankInventoryOwnership{
     pub fn native_head(&self)->&Value{&self.head}
+    pub(crate) fn original_quote(&self)->&Arc<Value>{&self.quote}
     pub fn expires_at_ms(&self)->u64{self.until}
     pub fn durable_tag(&self)->&Value{&self.tag}
     pub fn validate_intent_tag(&self,sidecar:Option<&Value>,intent:&Value)->Result<()>{
         need(sidecar==Some(&self.tag)&&intent==&self.tag,"RANK_COHORT_INTENT_TAG_CHANGED")
     }
     pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{
-        need(at>=self.minted&&at<self.until&&qid==self.qid&&q==&self.quote
+        need(at>=self.minted&&at<self.until&&qid==self.qid&&(std::ptr::eq(q,self.quote.as_ref())||q==self.quote.as_ref())
             &&self.ledger.matches_value(ledger)?,"RANK_COHORT_FROZEN_CHANGED")
     }
     pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,at:u64)->Result<()>{
@@ -139,7 +140,7 @@ impl Cohorts{
    self.append(json!({"kind":"rank_trade","exchangeId":ex,"campaignSha256":review.campaign_sha256(),"managedInventory":review.managed_inventory(),"handoff":handoff,"originalNativeQuoteSha256":digest(&q)?,"binding":binding,"ownershipOnly":true,"positiveMonetaryAlphaClaimed":false}),at)?;
   }
   self.check_rank_bound(bank,log,scope,qid,spec)?;
-  Ok(RankInventoryOwnership{qid,quote:q,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,ledger:crate::ledger_snapshot::snapshot(bank)?,head:bank.durable_head(),tag:self.durable_tag(qid).ok_or("RANK_COHORT_TAG")?,minted:at,until,
+  Ok(RankInventoryOwnership{qid,quote:Arc::new(q),scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,ledger:crate::ledger_snapshot::snapshot(bank)?,head:bank.durable_head(),tag:self.durable_tag(qid).ok_or("RANK_COHORT_TAG")?,minted:at,until,
    sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary:File::open(&self.ordinary_path)?,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
  }
  pub fn check_rank_bound(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec)->Result<()>{

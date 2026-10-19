@@ -1,0 +1,62 @@
+{
+  "classification": "actual_original_quote_operation_comparison_not_full_dispatch_latency",
+  "completeQuoteSha256": "a931daacd6793ea6bed028c6e98ea32f149b6870ca2031bbe259e035e7066a8d",
+  "deployed": false,
+  "encodedQuoteBytes": 1767529,
+  "legacyQuoteClones": 3,
+  "legacyQuoteHashes": 2,
+  "nativeQid": 19645,
+  "networkRequests": 0,
+  "newQuoteClones": 1,
+  "newQuoteHashes": 1,
+  "productionWorkerRestoringDuringBothInterleavedArms": true,
+  "sameAllOriginalFieldsAndDigest": true,
+  "samples": [
+    {
+      "cpuSeconds": 0.08127804799999999,
+      "mode": "old",
+      "pair": 0,
+      "wallSeconds": 0.081804392
+    },
+    {
+      "cpuSeconds": 0.03452214399999999,
+      "mode": "new",
+      "pair": 0,
+      "wallSeconds": 0.034956545
+    },
+    {
+      "cpuSeconds": 0.025595904000000003,
+      "mode": "new",
+      "pair": 1,
+      "wallSeconds": 0.025680191
+    },
+    {
+      "cpuSeconds": 0.06648505599999999,
+      "mode": "old",
+      "pair": 1,
+      "wallSeconds": 0.066982048
+    },
+    {
+      "cpuSeconds": 0.07529664,
+      "mode": "old",
+      "pair": 2,
+      "wallSeconds": 0.075646601
+    },
+    {
+      "cpuSeconds": 0.03478492799999999,
+      "mode": "new",
+      "pair": 2,
+      "wallSeconds": 0.034906338
+    }
+  ],
+  "medians": {
+    "old": {
+      "cpuSeconds": 0.07529664,
+      "wallSeconds": 0.075646601
+    },
+    "new": {
+      "cpuSeconds": 0.03452214399999999,
+      "wallSeconds": 0.034906338
+    }
+  }
+}
