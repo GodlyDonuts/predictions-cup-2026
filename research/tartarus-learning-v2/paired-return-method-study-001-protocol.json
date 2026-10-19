@@ -1,0 +1,73 @@
+{
+  "classification": "predeclared_paired_development_return_method_comparison_not_independent_test",
+  "predeclaredUtc": "2026-10-19T20:40:38.865912+00:00",
+  "arms": [
+    "streaming_bootstrap",
+    "closed_episode_returns"
+  ],
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "architecture": "tartarus-raw-api-full-depth-query-window-gru-v4",
+  "observationProtocol": "sig_scoped_execution_receipts_v3",
+  "device": "cpu",
+  "cpuThreads": 2,
+  "hiddenSize": 128,
+  "foundersPerArm": 4,
+  "worldsPerFounder": 4,
+  "cycles": 1,
+  "computeChunkDecisions": 16,
+  "trainingEpisodeMs": 60000,
+  "trainingBoundsMs": [
+    1792410601000,
+    1792411201000
+  ],
+  "selectionBoundsMs": [
+    1792416001000,
+    1792416121000
+  ],
+  "selectionBlocks": 2,
+  "executionCases": [
+    "nominal",
+    "adverse_half_depth_plus_tick"
+  ],
+  "founderSeeds": [
+    191034,
+    191035,
+    191036,
+    191037
+  ],
+  "pairedInitialParametersMustMatch": true,
+  "sharedInferenceLatency": "single_pre_run_measured_CPU_actor_p95_frozen_for_both_arms",
+  "initialLearningRates": [
+    1e-05,
+    1e-05,
+    8.000000000000001e-06,
+    1e-05
+  ],
+  "initialEntropyCoefficients": [
+    0.0,
+    0.001,
+    0.012,
+    0.03
+  ],
+  "noExtraDecisionOrCapitalCaps": true,
+  "samePublishedApiBudgets": true,
+  "sameReward": true,
+  "sameDataUseRegistry": true,
+  "primaryComparison": "paired_difference_in_worst_development_marked_ROI",
+  "secondary": [
+    "accepted_updates",
+    "decisions",
+    "modeled_fills",
+    "elapsed_time_with_shared_host_load"
+  ],
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "newAccountRequests": 0,
+  "activeGpuRunChanged": false,
+  "limits": [
+    "four fresh seeds and minute windows are exploratory, not robust independent daily evaluation",
+    "CPU128width cannot qualify4096width GPU memory or throughput",
+    "unverified execution/valuation assumptions remain explicit",
+    "no automatic promotion or mode change from comparison results"
+  ]
+}
