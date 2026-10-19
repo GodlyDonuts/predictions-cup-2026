@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "classification": "current_human_directed_training_action_profile_not_live_activation",
-  "actor": "moloch.learning_actions.policy.ApiPolicy",
+  "actor": "moloch.learning_actions.full_depth.FullDepthPolicy",
   "entrypoint": "moloch.learning_actions.entry.open_experiment",
   "collector": "moloch.learning_actions.stream.Stream",
   "optimizer": "moloch.learning_actions.training.update",
@@ -49,7 +49,7 @@
   "full_history_coverage_established": false,
   "full_api_parity_established": false,
   "production_controls_changed": false,
-  "actor_architecture": "tartarus-raw-api-family-first-dynamic-gru-v2",
+  "actor_architecture": "tartarus-raw-api-full-depth-family-first-gru-v3",
   "population_runner": "moloch.learning_actions.experiment",
   "economic_reward_coordinator": "moloch.learning_actions.economics.GrowthLedger",
   "independent_test_registry": "moloch.learning_actions.selection.IndependentTest",
@@ -75,27 +75,27 @@
   "passive_models_calibrated": false,
   "event_wait_interrupts_on_newly_created_observable_receipts": true,
   "optional_private_fill_notifications": "requires_active_sig_stream_one_second_coalescing_plus_receipt_latency",
-  "active_development_run": "raw-api-growth-development-014",
+  "active_development_run": "raw-api-growth-development-015",
   "active_development_entrypoint": "python -m moloch.learning_actions.experiment",
   "original_sig_exchanges": 237,
-  "unique_engine_prints": 1668,
+  "unique_engine_prints": 4202,
   "role_prefix_initial_state": true,
   "observable_wakeup_index": true,
   "historical_run007_realtime_mode": "disabled_prior_profile",
   "first_cycle_member_order": [
+    0,
+    1,
+    2,
     3,
     4,
     5,
     6,
-    7,
-    0,
-    1,
-    2
+    7
   ],
   "evaluation_wealth_schedule": "start_daily_boundaries_terminal",
   "optional_official_mark_ledger": "moloch.learning_actions.official_marks.OfficialGrowthLedger",
   "official_mark_adapter_is_active_training_reward": false,
-  "active_observation_features": 40,
+  "active_observation_features": 438,
   "available_opt_in_full_depth_profile": {
     "flag": "full_depth_observations",
     "features": 438,
@@ -105,14 +105,16 @@
     "last_local_action_visible": true,
     "explicit_migration_flag": "migrate_full_depth_encoder",
     "active_run014_uses_profile": false,
-    "large_population_memory_capacity_verified": false
+    "large_population_memory_capacity_verified": "finite_eight_world_64_step_probe_not_all_dynamic_states",
+    "active_run015_uses_profile": true
   },
   "optional_finished_world_compute_compaction": {
     "flag": "compact_finished_worlds",
     "boundary": "next_compute_chunk",
     "active_run014_uses_profile": false,
     "preserves_world_identity_and_economic_results": true,
-    "removes_legal_actions": false
+    "removes_legal_actions": false,
+    "active_run015_uses_profile": true
   },
   "optional_batched_evaluation": {
     "flag": "batched_evaluation",
@@ -129,18 +131,17 @@
     "actor_reset_receipts_never_backdated": true,
     "full_history_qualification_allowed": false,
     "new_dataset_manifest_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
-    "large_gpu_capacity_verified": false
+    "large_gpu_capacity_verified": "finite_eight_world_64_step_probe_not_all_future_dynamic_states",
+    "active_run015_uses_profile": true
   },
   "queued_population_handoff": {
-    "classification": "verified_live_controller_waiting_for_first_generation",
-    "source_commit": "afeaa2376b6b99133a6416e5e2301f34ed8d4d03",
-    "keeps_existing_training_until_complete_generation_verified": true,
-    "new_population_training": false,
-    "capacity_candidates": [
-      64,
-      32
-    ],
-    "training_worlds": 8,
-    "evidence": "population-handoff-installed-001.json"
-  }
+    "classification": "completed_verified_handoff_to_profile015",
+    "source_commit": "8e07f6452c446e345b5ca319342d5b91c5443230",
+    "new_population_training": true,
+    "worlds": 8,
+    "compute_chunk_decisions": 64,
+    "evidence": "population-transition-completed-001.json"
+  },
+  "global_state_encoding": "signed_log_time_counts_v1",
+  "world_book_lifetime_ms": 60000
 }

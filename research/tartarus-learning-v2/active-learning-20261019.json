@@ -1,149 +1,85 @@
 {
-  "classification": "observed_active_raw_breadth_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T17:09:36.349922+00:00",
-  "source_commit": "06d49d317576a1512d5b39845fccf1046f075e29",
-  "run": "raw-api-growth-development-014",
+  "classification": "verified_active_conditioned_full_depth_raw_api_development_training_not_independent_roi",
+  "observed_utc": "2026-10-19T17:33:32.169934+00:00",
+  "run": "raw-api-growth-development-015",
+  "source_commit": "8e07f6452c446e345b5ca319342d5b91c5443230",
   "process_ids": {
-    "launcher": 20392,
-    "trainer": 42704
+    "launcher": 23908,
+    "trainer": 18300
   },
-  "parameters": 58106855,
+  "parameters": 58157799,
+  "observation_features": 438,
+  "global_state_encoding": "signed_log_time_counts_v1",
   "worlds_per_learner": 8,
   "population_members": 8,
   "islands": 4,
   "planned_cycles": 16,
-  "first_cycle_member_order": [
-    3,
-    4,
-    5,
-    6,
-    7,
-    0,
-    1,
-    2
-  ],
-  "dataset_manifest_sha256": "7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69",
+  "compute_chunk_decisions": 64,
+  "compact_finished_worlds": true,
+  "dataset_manifest_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
   "original_sig_exchanges": 237,
-  "unique_engine_prints": 1668,
-  "config_sha256": "9fdf3c3cbb43374f0ff6830611c045ec8a3ee50f9004eab61c50abf6be089e30",
-  "experiment_sha256": "91f8108735707471b87a9ad68807a4b75af3520fefa656d55241e7d1321166c8",
+  "unique_engine_prints": 4202,
   "training_bounds_ms": [
-    1792400401000,
-    1792403100000
+    1792409401000,
+    1792415699000
   ],
   "selection_bounds_ms": [
-    1792403400000,
-    1792403999000
+    1792416001000,
+    1792418999000
   ],
-  "source_snapshot_files_verified": 83,
-  "compute_chunk_decisions": 128,
-  "training_decisions": 521214,
-  "accepted_updates": 540,
-  "current_member_modeled_fills": 234,
-  "cuda_peak_allocated_bytes": 7332549632,
-  "role_prefix_initial_state": true,
-  "observable_wakeup_index": true,
-  "evaluation_wealth_schedule": "start_daily_boundaries_terminal",
-  "training_dense_reward_changed": false,
-  "verified_parent_checkpoints": [
-    "4d33779ab336cb74c604ed1322219a45415909ac8e5fa1928b0e85e21644dd3a",
-    "1017ddca1a1e113a929120365d2fb18e8717ee2733ebdd0a76de04c1900d1b8b",
-    "90f187cb4d25fdd8e8cdac2069b743485180216718fb54ff411ea19d16d2d6ec",
-    "c643e7c1965974c85be3dd3c8ed327dedeba8845cc619941375f1ca36abc0d49",
-    "3b6748c0ce3919ef175e3842b4aad880217d505effdc04513e2d758579eb0450",
-    "3be855ff7ade35280c2830d53494a52e372437fab69879a85022a664cdf30d21",
-    "b4b14db88c8fae9efc2e0a6d2d2f5cb84c978ff506561273e0aec6ddff492f83",
-    "8b618b90c157f3f21b452caf55581b3c65e5fd4308f1470ac4a55909d1445bdc"
+  "world_book_lifetime_ms": 60000,
+  "complete_observed_source_coverage": false,
+  "experiment_sha256": "b97ba55e047521f7d39c9600d1778a014440627a1396ddc078d6e42f07ed48ed",
+  "critical_source_files_verified": 92,
+  "private_source_snapshot_matches_experiment": true,
+  "training_decisions": 20194,
+  "accepted_updates": 47,
+  "cuda_peak_allocated_bytes": 6625483776,
+  "selected_parent_checkpoints": [
+    "33e1b385161ab3e492020d026c93803d903db49453b1c66b0f5164e2e8a5381a",
+    "de8ca916507be6c5df6b4e8ba5572e540bfbc24cd6f05651f3c403243715134b",
+    "0ecbe3dd975610e0bd082b2524d122bd47baab12818b8c35e2ab49bfc9ef1718",
+    "399277a51f8c90fdc07e5baa2f8592e4312f6fa63dd2bace7f25d970c4ba76ff",
+    "a1131262542754ce42982b8cae99d4697d35fc0b763d0a5d270a338ce6e37dce",
+    "1961bc720de96b463e2a3c97589aa174cabcb35ef015f61f271e3ef1c3fcdd6a",
+    "68f56e5a3821cebb954e9b108730011fd6df3a89dfe4f437875a57436dba70b9",
+    "5de8a7787513dd9d9d39421befb176b01fc5e7abee2216f219deea3b087d92f7"
   ],
-  "fresh_founders": 0,
-  "checkpoint_recovery_interval_updates": 32,
-  "recovery_rotating_slots": 2,
-  "sig_reads_per_world_per_minute": 100,
-  "sig_writes_per_world_per_minute": 30,
-  "additional_completion_gap_ms": 0,
-  "external_execution_enabled": false,
-  "sig_realtime_mode": "producer_validated_derived_books_not_raw_topic_replay",
-  "passive_flow_mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
-  "private_fill_notifications": "requires_active_sig_stream",
-  "prior_run_terminal_failure": {
-    "exception": "ValueError",
-    "production_changed": false,
-    "profitability_established": false,
-    "reason": "INCOMPLETE_SIG_WEALTH_MARK:860"
-  },
-  "prior_run_last_training_decisions": 113239,
-  "prior_run_last_accepted_updates": 129,
-  "prior_run_completed_selection_reports": 2,
-  "interrupted_member_corrected_evaluation": "profile013-member002-corrected-evaluation.json",
-  "optional_official_valuation_marks": {
-    "exchanges": 25,
-    "observations": 600,
-    "active_training_reward_changed": false,
-    "complete_universe_coverage": false
-  },
-  "focused_checks_passed": 149,
-  "modeled_fills_are_not_contest_transactions": true,
-  "production_changed": false,
-  "full_history_ready": false,
+  "parent_learning_rates": [
+    1e-05,
+    1e-05,
+    8.000000000000001e-06,
+    1e-05,
+    2e-05,
+    5e-06,
+    1e-05,
+    2.5e-06
+  ],
+  "parent_entropy_coefficients": [
+    0.0,
+    0.001,
+    0.012,
+    0.03,
+    0.0,
+    0.002,
+    0.01,
+    0.0075
+  ],
+  "source_lineage_migrations": 8,
+  "full_depth_input_migrations": 8,
+  "global_state_encoding_migrations": 8,
+  "focused_checks_passed": 188,
   "independent_test_used": false,
+  "production_changed": false,
+  "modeled_fills_are_not_contest_transactions": true,
+  "full_history_ready": false,
   "independent_profitable_roi_established": false,
   "remaining": [
-    "full competition three-venue history and chronological multi-day qualification",
-    "complete official tournament valuation coverage",
-    "authoritative relationship collateral component debt parity",
-    "lifecycle settlement refund replay",
-    "complete API metadata/history interfaces",
-    "execution and own-trade calibration",
+    "full competition three-venue history and multi-day train/evolution/heldout qualification",
+    "complete official tournament valuation",
+    "relationship/component collateral debt parity",
+    "lifecycle settlement/refund and complete API metadata",
+    "execution/own-trade calibration",
     "independently positive ROI"
-  ],
-  "frozen_source_snapshot_matches_experiment": true,
-  "current_worktree_matches_frozen_source": false,
-  "modified_worktree_files_for_future_profile": [
-    "moloch\\learning_actions\\batched.py",
-    "moloch\\learning_actions\\batch_benchmark.py",
-    "moloch\\learning_actions\\behavior_guard.py",
-    "moloch\\learning_actions\\engine.py",
-    "moloch\\learning_actions\\entry.py",
-    "moloch\\learning_actions\\experiment.py",
-    "moloch\\learning_actions\\passive.py",
-    "moloch\\learning_actions\\population.py",
-    "moloch\\learning_actions\\snapshot_clock.py",
-    "moloch\\learning_actions\\training.py"
-  ],
-  "full_depth_prototype": {
-    "features": 438,
-    "parameters": 58157799,
-    "delivered_book_levels": true,
-    "local_planning_state": true,
-    "active_run_uses_prototype": false,
-    "worktree_checks_passed": 184
-  },
-  "next_or_active_member": 0,
-  "completed_members_in_this_run": [
-    {
-      "member": 3,
-      "cycle": 0,
-      "worst_marked_roi": -0.14543102500000005
-    },
-    {
-      "member": 4,
-      "cycle": 0,
-      "worst_marked_roi": -0.357214825
-    },
-    {
-      "member": 5,
-      "cycle": 0,
-      "worst_marked_roi": -0.160194175
-    },
-    {
-      "member": 6,
-      "cycle": 0,
-      "worst_marked_roi": -0.14369145000000005
-    },
-    {
-      "member": 7,
-      "cycle": 0,
-      "worst_marked_roi": -0.27788559999999995
-    }
   ]
 }

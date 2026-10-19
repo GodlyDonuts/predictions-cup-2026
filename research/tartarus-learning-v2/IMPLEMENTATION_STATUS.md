@@ -1,3 +1,5 @@
+October19 active015: the checked richer profile is now training on the GPU after a verified generation-preserving handoff.188focused checks and eight-world/64-step GPU capacity pass. No independent profitable ROI or full-history completion. [Actual runtime/source evidence](profile-015-learning-20261019.md).
+
 October19 numerical conditioning: trained-fit diagnostics show62%update-gate saturation; explicit time/count conditioning removes it in the diagnostic and passes188checks/full-size CPU PPO. This is not profitability evidence. Old014continues;pending handoffv1 was cancelled before transition. [Evidence](global-state-conditioning-20261019.md).
 
 October19 next-profile handoff:184checks pass for complete-generation selection, evolved hyperparameter transfer and exact local training-process targeting. Actual handoff remains pending;014continues. [Transition and evidence scope](population-boundary-handoff-20261019.md).

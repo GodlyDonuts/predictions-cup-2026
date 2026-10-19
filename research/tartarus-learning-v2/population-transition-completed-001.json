@@ -1,0 +1,97 @@
+{
+  "classification": "verified_simulated_training_generation_handoff_not_account_ownership",
+  "observedUtc": "2026-10-19T17:33:32.169934+00:00",
+  "phase": "new_population_training_verified",
+  "sourceCommit": "8e07f6452c446e345b5ca319342d5b91c5443230",
+  "sourceSnapshotFilesVerified": 200,
+  "sourceManifestSha256": "2d76415f64ff0e4950d6984951f0197f04457be4901b3b86c1d732dfc407b25b",
+  "oldRun": "raw-api-growth-development-014",
+  "oldTrainerPid": 42704,
+  "oldCompletedCycle": 0,
+  "oldCompletedCycleTrainingDecisions": 580440,
+  "oldCompletedCycleAcceptedUpdates": 614,
+  "oldLastLoggedTrainingDecisionsAtStop": 585560,
+  "postBoundaryPartialRolloutResumed": false,
+  "oldCheckpointAndArchiveFilesRetained": true,
+  "oldGenerationAllMembersEvaluated": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "sourceProgressPrefixBytes": 757978,
+  "sourceProgressPrefixSha256": "8992c6c07c7eb9e2faa02d8e9cc7ec38b70967a0d6068bd9fd1adbd549d6fcc4",
+  "sourceResearchArchiveSha256": "ab9323aacec59c283413a2de7e4b553e4f382c54e11a06601afe67c213576089",
+  "selectedSlots": [
+    {
+      "member": 0,
+      "sha256": "33e1b385161ab3e492020d026c93803d903db49453b1c66b0f5164e2e8a5381a",
+      "origin": "checked_retained_generation_member",
+      "learning_rate": 1e-05,
+      "entropy_coefficient": 0.0
+    },
+    {
+      "member": 1,
+      "sha256": "de8ca916507be6c5df6b4e8ba5572e540bfbc24cd6f05651f3c403243715134b",
+      "origin": "checked_retained_generation_member",
+      "learning_rate": 1e-05,
+      "entropy_coefficient": 0.001
+    },
+    {
+      "member": 2,
+      "sha256": "0ecbe3dd975610e0bd082b2524d122bd47baab12818b8c35e2ab49bfc9ef1718",
+      "origin": "checked_evolved_child",
+      "learning_rate": 8.000000000000001e-06,
+      "entropy_coefficient": 0.012
+    },
+    {
+      "member": 3,
+      "sha256": "399277a51f8c90fdc07e5baa2f8592e4312f6fa63dd2bace7f25d970c4ba76ff",
+      "origin": "checked_retained_generation_member",
+      "learning_rate": 1e-05,
+      "entropy_coefficient": 0.03
+    },
+    {
+      "member": 4,
+      "sha256": "a1131262542754ce42982b8cae99d4697d35fc0b763d0a5d270a338ce6e37dce",
+      "origin": "checked_evolved_child",
+      "learning_rate": 2e-05,
+      "entropy_coefficient": 0.0
+    },
+    {
+      "member": 5,
+      "sha256": "1961bc720de96b463e2a3c97589aa174cabcb35ef015f61f271e3ef1c3fcdd6a",
+      "origin": "checked_evolved_child",
+      "learning_rate": 5e-06,
+      "entropy_coefficient": 0.002
+    },
+    {
+      "member": 6,
+      "sha256": "68f56e5a3821cebb954e9b108730011fd6df3a89dfe4f437875a57436dba70b9",
+      "origin": "checked_retained_generation_member",
+      "learning_rate": 1e-05,
+      "entropy_coefficient": 0.01
+    },
+    {
+      "member": 7,
+      "sha256": "5de8a7787513dd9d9d39421befb176b01fc5e7abee2216f219deea3b087d92f7",
+      "origin": "checked_evolved_child",
+      "learning_rate": 2.5e-06,
+      "entropy_coefficient": 0.0075
+    }
+  ],
+  "newRun": "raw-api-growth-development-015",
+  "launcherPid": 23908,
+  "trainerPid": 18300,
+  "newDatasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "oldScoresReusedForNewSelection": false,
+  "newOptimizerMomentsAndSimulatedWorlds": true,
+  "capacityEvidence": "conditioned-full-depth-gpu-capacity-001.json",
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "profitableRoiEstablished": false
+}

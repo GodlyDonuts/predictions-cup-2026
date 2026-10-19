@@ -99,5 +99,18 @@
     "dataset": "longer-outage-cohort-compiled-001.json",
     "active_run014_changed": false,
     "focused_checks_covered": 179
+  },
+  "active_training_profile": {
+    "run": "raw-api-growth-development-015",
+    "source_commit": "8e07f6452c446e345b5ca319342d5b91c5443230",
+    "full_depth_features": 438,
+    "global_state_encoding": "signed_log_time_counts_v1",
+    "world_book_lifetime_ms": 60000,
+    "simulated_worlds": 8,
+    "compute_chunk_decisions": 64,
+    "verified_actual_accepted_updates": true,
+    "complete_full_history_or_api_parity": false,
+    "independent_profitable_roi": false,
+    "evidence": "profile-015-learning-20261019.md"
   }
 }

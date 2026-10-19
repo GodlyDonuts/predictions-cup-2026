@@ -1,0 +1,74 @@
+{
+  "batch_ppo_update_seconds": 0.6954229000257328,
+  "batched_median_seconds": 5.267018800019287,
+  "behavior_guard": "tensor_versions_v1",
+  "classification": "controlled_inspected_history_raw_api_gpu_batch_benchmark_not_roi",
+  "collection_speedup": 1.5348910753652594,
+  "compute_calibration": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 23,
+    "device": "cuda:0",
+    "measured_ms": [
+      21.50260005146265,
+      21.896000020205975,
+      22.24749990273267,
+      13.005799963138998,
+      7.437099935486913,
+      7.815200020559132,
+      7.572100032120943,
+      7.763999979943037,
+      8.065600064583123,
+      7.822599960491061,
+      7.928799954243004,
+      8.062300039455295
+    ]
+  },
+  "contract_features": 438,
+  "cuda_peak_allocated_bytes": 5107724288,
+  "dataset_manifest_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "device": "cuda:0",
+  "encoder_activation_checkpointing": true,
+  "finished_worlds_at_chunk_start": 0,
+  "http_requests": 0,
+  "identical_wallets_orders_fills_and_clocks": true,
+  "independent_test_used": false,
+  "minimum_initial_delivered_books": 72,
+  "on_policy_guard_changed_after_optimizer_step": true,
+  "parameters": 58157799,
+  "ppo": [
+    {
+      "accepted": true,
+      "behavior_guard": "tensor_versions_v1",
+      "encoder_activation_checkpointing": true,
+      "entropy_coefficient": 0.01,
+      "epoch": 0,
+      "loss": -0.005580062676919361,
+      "mean_entropy": 0.5582866416045458,
+      "policy_loss": 3.1694092038347943e-09,
+      "post_update_kl": 7.608335680945807e-07,
+      "recurrent_state_carried": true,
+      "value_loss": 5.601139433785984e-06
+    }
+  ],
+  "ppo_batch_worlds": 8,
+  "priming_book_reads_per_world": 8,
+  "process_memory_fraction_cap": 0.9,
+  "production_changed": false,
+  "recurrent_states_match_tolerance": true,
+  "serial_median_seconds": 8.084300149930641,
+  "start_offset_ms": 1200000,
+  "steps_per_world": 64,
+  "tf32_enabled": false,
+  "timings": [
+    {
+      "batched": 4.812593700014986,
+      "serial": 8.1682165999664
+    },
+    {
+      "batched": 5.721443900023587,
+      "serial": 8.000383699894883
+    }
+  ],
+  "worlds": 8,
+  "experimentSha256": "b97ba55e047521f7d39c9600d1778a014440627a1396ddc078d6e42f07ed48ed"
+}
