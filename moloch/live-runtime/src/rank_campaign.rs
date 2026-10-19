@@ -114,6 +114,21 @@ pub fn prepare(bank:&Session,b:&Boundary<'_>,review:&Reviewed,f:&SnapshotSet,col
 }
 /// Opaque process-local physical proof. JSON research records cannot construct it.
 pub struct PhysicalDecision{head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,spec_sha:String,permit_sha:String,qid:u64,minted:u64,until:u64,review:Reviewed,receipts:Vec<RetainedReceipt>,collateral:RetainedReceipt,dispatch:DispatchPin,evaluation:Value,ownership:Option<std::sync::Arc<crate::fundamental_policy::RankInventoryOwnership>>}
+/// Exact full JSON is checked once, then held by immutable shared owners.
+/// No deserialization, mutation or caller-supplied digest can create this seal.
+/// Physical checks still bind the same decision, quote and ledger allocations
+/// and recheck every original clock; external files are checked by authorize.
+pub struct FrozenState{decision:std::sync::Arc<PhysicalDecision>,quote:std::sync::Arc<Value>,ledger:std::sync::Arc<Value>,qid:u64}
+impl FrozenState{
+ pub fn validate(&self,decision:&std::sync::Arc<PhysicalDecision>,quote:&std::sync::Arc<Value>,ledger:&std::sync::Arc<Value>,qid:u64,at:u64)->Result<()>{
+  need(std::sync::Arc::ptr_eq(decision,&self.decision)&&same_frozen_values(&self.quote,&self.ledger,self.qid,quote,ledger,qid),"RANK_PHYSICAL_FROZEN_CHANGED")?;
+  decision.current(at)
+ }
+}
+fn same_frozen_values(q:&std::sync::Arc<Value>,l:&std::sync::Arc<Value>,id:u64,other_q:&std::sync::Arc<Value>,other_l:&std::sync::Arc<Value>,other_id:u64)->bool{
+ id==other_id&&std::sync::Arc::ptr_eq(q,other_q)&&std::sync::Arc::ptr_eq(l,other_l)
+}
+fn physical_clock(minted:u64,until:u64,at:u64)->Result<()>{need(at>=minted,"RANK_PHYSICAL_CLOCK_REGRESSED")?;need(at<until,"RANK_PHYSICAL_FACTS_EXPIRED")}
 impl PhysicalDecision{
  pub fn native_head(&self)->&Value{&self.head}
  pub fn allows_managed_inventory(&self)->bool{self.ownership.is_some()&&self.review.managed_inventory().is_some()}
@@ -121,8 +136,12 @@ impl PhysicalDecision{
  pub fn expires_at_ms(&self)->u64{self.until}
  pub fn evaluation(&self)->&Value{&self.evaluation}
  pub fn validate_contract(&self,scope:&Scope,r:&Receipt)->Result<()>{validate_contract(&self.review,scope,r)}
- pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{self.review.current(at)?;need(at>=self.minted&&at<self.until&&qid==self.qid&&hash(q)?==self.quote_sha&&hash(ledger)?==self.ledger_sha,"RANK_PHYSICAL_FROZEN_CHANGED_OR_EXPIRED")?;if let Some(o)=&self.ownership{o.validate_frozen(q,ledger,qid,at)?;}Ok(())}
- pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,at:u64)->Result<()>{self.review.current(at)?;need(at>=self.minted&&at<self.until&&hash(scope)?==self.scope_sha&&hash(spec)?==self.spec_sha&&hash(permit)?==self.permit_sha,"RANK_PHYSICAL_REQUEST_CHANGED_OR_EXPIRED")?;self.dispatch.validate()?;if let Some(o)=&self.ownership{o.authorize(scope,spec,permit,at)?;}for r in &self.receipts{r.verify()?;}self.collateral.verify()?;Ok(())}
+ fn current(&self,at:u64)->Result<()>{self.review.current(at)?;physical_clock(self.minted,self.until,at)}
+ pub fn freeze(self:&std::sync::Arc<Self>,quote:std::sync::Arc<Value>,ledger:std::sync::Arc<Value>,qid:u64,at:u64)->Result<FrozenState>{
+  self.validate_frozen(&quote,&ledger,qid,at)?;Ok(FrozenState{decision:self.clone(),quote,ledger,qid})
+ }
+ pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{self.current(at)?;need(qid==self.qid&&hash(q)?==self.quote_sha&&hash(ledger)?==self.ledger_sha,"RANK_PHYSICAL_FROZEN_CHANGED")?;if let Some(o)=&self.ownership{o.validate_frozen(q,ledger,qid,at)?;}Ok(())}
+ pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,at:u64)->Result<()>{self.current(at)?;need(hash(scope)?==self.scope_sha&&hash(spec)?==self.spec_sha&&hash(permit)?==self.permit_sha,"RANK_PHYSICAL_REQUEST_CHANGED")?;self.dispatch.validate()?;if let Some(o)=&self.ownership{o.authorize(scope,spec,permit,at)?;}for r in &self.receipts{r.verify()?;}self.collateral.verify()?;Ok(())}
 }
 /// Mint ONLY after activation and new seven facts. No intent/attempt may exist.
 /// ProductionAuthority must additionally enforce its normal account stream,
@@ -151,6 +170,22 @@ fn mint_inner(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&Snapshot
 
 #[cfg(test)]mod tests{
  use super::*;
+ #[test]fn frozen_allocations_cannot_be_changed_or_replaced_with_equal_json(){
+  use std::sync::Arc;
+  let mut q=Arc::new(json!({"id":7,"review":{"large":"original"}}));let l=Arc::new(json!({"cash":"10.000000"}));let pinned_q=q.clone();let pinned_l=l.clone();
+  assert!(Arc::get_mut(&mut q).is_none());
+  assert!(same_frozen_values(&pinned_q,&pinned_l,7,&q,&l,7));
+  assert!(!same_frozen_values(&pinned_q,&pinned_l,7,&Arc::new((*q).clone()),&l,7));
+  assert!(!same_frozen_values(&pinned_q,&pinned_l,7,&q,&Arc::new((*l).clone()),7));
+  assert!(!same_frozen_values(&pinned_q,&pinned_l,7,&q,&l,8));
+  Arc::make_mut(&mut q)["id"]=json!(8);
+  assert_eq!(pinned_q["id"],7);assert!(!same_frozen_values(&pinned_q,&pinned_l,7,&q,&l,7));
+ }
+ #[test]fn final_clock_is_exclusive_and_distinguishes_regression_from_expiry(){
+  assert!(physical_clock(100,110,100).is_ok());assert!(physical_clock(100,110,109).is_ok());
+  assert_eq!(physical_clock(100,110,110).unwrap_err().to_string(),"RANK_PHYSICAL_FACTS_EXPIRED");
+  assert_eq!(physical_clock(100,110,99).unwrap_err().to_string(),"RANK_PHYSICAL_CLOCK_REGRESSED");
+ }
  fn fixture()->(Vec<u8>,String,BTreeSet<String>,Vec<u8>){
   let original=b"Synthetic retained research source, not an official account receipt".to_vec();
   let c=json!({"schemaVersion":1,"objective":"declared_first_place_rank_risk","reviewedAtMs":1000,"validUntilMs":10000,"action":{"exchangeId":"101"},"sources":[{"sha256":rawhash(&original),"observedAtMs":500,"maximumAgeMs":2000,"assumptionLabel":"Synthetic source clock"}]});

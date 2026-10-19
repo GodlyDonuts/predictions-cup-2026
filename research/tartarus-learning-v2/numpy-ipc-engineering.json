@@ -1,0 +1,9 @@
+{
+  "classification": "single_seeded_block_engineering_comparison_not_profitability",
+  "beforeSeconds": 38.26787399989553,
+  "afterSeconds": 17.677403899957426,
+  "speedRatio": 2.164790385311482,
+  "all16EconomicActionAccountingResultsIdentical": true,
+  "simulationOrModelMathChanged": false,
+  "productionChanged": false
+}

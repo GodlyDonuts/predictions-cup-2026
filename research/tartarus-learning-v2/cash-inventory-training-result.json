@@ -1,0 +1,16 @@
+{
+  "run": "batched-cash-inventory-training-001",
+  "completed": true,
+  "trainingDecisions": 115199,
+  "optimizerUpdates": 96,
+  "seconds": 1165.7621540999971,
+  "checkpoints": 6,
+  "checkpointsBeatingMatchedHoldAcrossAllFourDevelopmentCases": 0,
+  "gpuSamples": 984,
+  "meanGpuComputePercent": 6.005081300813008,
+  "maxGpuComputePercent": 100.0,
+  "peakCudaReservedBytes": 10252976128,
+  "lockedTestUsed": false,
+  "productionChanged": false,
+  "profitableModelEstablished": false
+}

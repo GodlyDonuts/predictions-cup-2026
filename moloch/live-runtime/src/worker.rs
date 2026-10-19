@@ -161,9 +161,9 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  let decision={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
   match if let Some(o)=ownership{moloch_live_runtime::rank_campaign::mint_managed(bank,&b,&review,qid,&facts,&retained,&spec,&permit,now(),o)}else{moloch_live_runtime::rank_campaign::mint(bank,&b,&review,qid,&facts,&retained,&spec,&permit,now())}{Ok(d)=>d,Err(e)if e.to_string().starts_with("RANK_")=>{retire_never_sent(bank,log,&current)?;return rank_deferred(c,"physical_review",&e.to_string())},Err(e)=>return Err(e)}
  };
- let evaluation=decision.evaluation().clone();let rank=RankDispatch{order,spec,permit,decision:Arc::new(decision),owner:pins,raw_sha:review.raw_sha256().into(),campaign_sha:review.campaign_sha256().into()};
+ let decision=Arc::new(decision);let evaluation=decision.clone();let rank=RankDispatch{order,spec,permit,decision:decision.clone(),owner:pins,raw_sha:review.raw_sha256().into(),campaign_sha:review.campaign_sha256().into()};
  submit_order_with_rank(t,c,bank,log,authority,&current,facts,None,if managed.contains(&ex){fundamental.as_deref_mut()}else{None},Some(rank))?;
- atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid)&&!log.proved_no_network(qid),"evaluation":evaluation,"profitabilityEstablished":false}))?;Ok(())
+ atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid)&&!log.proved_no_network(qid),"evaluation":evaluation.evaluation(),"profitabilityEstablished":false}))?;Ok(())
 }
 fn rank_waits_for_known_orders(log:&DispatchLog)->Result<bool>{
  log.require_resolved_attempts()?;Ok(log.acknowledgments.keys().any(|qid|!log.closed.contains(qid)))
@@ -1472,7 +1472,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
   authority.clear_ready();atomic_json(&c.root.join("ordinary-entry-quarantine-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":"unreviewed_new_exposure","physicalAttempted":false}))?;return Ok(())
  }
  let prepared=if let Some(r)=&rank{authority.prepare_with_rank(bank,qid,request_spec.clone(),p.clone(),facts,r.decision.clone(),r.owner.clone())}else{authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision)};
- if let Err(error)=prepared{if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
+ if let Err(error)=prepared{if rank.is_some()&&error.to_string()=="RANK_PHYSICAL_FACTS_EXPIRED"{authority.clear_ready();retire_never_sent(bank,log,q)?;return Ok(())}if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
@@ -1485,7 +1485,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
    if let Ok(proof)=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error){
     // A proved no-HTTP rank clock expiry retires this exact key. Request or
     // owner changes and every unproved/unknown outcome remain fatal.
-    let rank_expired=if let Some(r)=&rank{at>=r.decision.expires_at_ms()&&matches!(error.code.as_str(),"RANK_PHYSICAL_REQUEST_CHANGED_OR_EXPIRED"|"RANK_PHYSICAL_FROZEN_CHANGED_OR_EXPIRED")&&serde_json::to_value(&r.spec)?==serde_json::to_value(&spec)?&&serde_json::to_value(&r.permit)?==serde_json::to_value(&permit)?&&r.owner.validate().is_ok()}else{false};
+    let rank_expired=if let Some(r)=&rank{end>=r.decision.expires_at_ms()&&error.code=="RANK_PHYSICAL_FACTS_EXPIRED"&&serde_json::to_value(&r.spec)?==serde_json::to_value(&spec)?&&serde_json::to_value(&r.permit)?==serde_json::to_value(&permit)?&&r.owner.validate().is_ok()}else{false};
     log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return if expected_ordinary_final_guard(&error.code)||rank_expired{Ok(())}else{Err(error.code.into())}
    }
   }

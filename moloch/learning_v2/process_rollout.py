@@ -10,7 +10,7 @@ from .episodes import Tape
 from .run_experiment import rollout
 from .batched_rollout import combine
 from .train_inner import fingerprint
-from .packed_io import transfer
+from .packed_io import transfer,ipc_pack,ipc_unpack
 
 
 class ProcessProxy:
@@ -21,9 +21,9 @@ class ProcessProxy:
     def state_dict(self):return self.state
     def initial_state(self,batch):return torch.zeros(batch,self.hidden_size)
     def step(self,**kwargs):
-        self.requests.put(('step',self.index,kwargs))
+        self.requests.put(('step',self.index,ipc_pack(kwargs)))
         while not self.stop.is_set():
-            try:return self.replies.get(timeout=.2)
+            try:return ipc_unpack(self.replies.get(timeout=.2))
             except queue.Empty:pass
         raise RuntimeError('CPU_REPLAY_POOL_STOPPED')
 
@@ -93,7 +93,7 @@ class ProcessRollouts:
             while len(batch)<self.worlds:
                 kind,i,value=self.receive()
                 if kind!='step':raise RuntimeError('ACTOR_ENDED_BEFORE_BATCH_BOUNDARY')
-                batch.append((i,value))
+                batch.append((i,ipc_unpack(value)))
             batch.sort();wait+=time.perf_counter()-at
             if [i for i,_ in batch]!=list(range(self.worlds)):raise ValueError('ACTOR_IDENTITY')
             kwargs={k:torch.cat([v[k]for _,v in batch])for k in ['contracts','global_state','present','hidden','reset']}
@@ -103,7 +103,7 @@ class ProcessRollouts:
             if device.type=='cuda':b.record()
             host=transfer(out,'cpu')
             if device.type=='cuda':gpu_ms+=a.elapsed_time(b)
-            for i in range(self.worlds):self.replies[i].put({k:({n:v[i:i+1].clone()for n,v in value.items()}if isinstance(value,dict)else value[i:i+1].clone())for k,value in host.items()})
+            for i in range(self.worlds):self.replies[i].put(ipc_pack({k:({n:v[i:i+1]for n,v in value.items()}if isinstance(value,dict)else value[i:i+1])for k,value in host.items()}))
         results={}
         while len(results)<self.worlds:
             kind,i,value=self.receive()

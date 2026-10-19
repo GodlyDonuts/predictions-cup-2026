@@ -1,0 +1,45 @@
+{
+  "qualifiedAt": "2026-10-19T02:27:39.645494+00:00",
+  "steps": [
+    {
+      "step": "compile-library-tests",
+      "exitCode": 0,
+      "start": "2026-10-19T02:21:51.357780+00:00",
+      "end": "2026-10-19T02:22:42.380021+00:00"
+    },
+    {
+      "step": "library-all-tests",
+      "exitCode": 0,
+      "start": "2026-10-19T02:22:42.380640+00:00",
+      "end": "2026-10-19T02:23:20.213506+00:00"
+    },
+    {
+      "step": "release-library",
+      "exitCode": 0,
+      "start": "2026-10-19T02:23:20.214315+00:00",
+      "end": "2026-10-19T02:25:36.708623+00:00"
+    },
+    {
+      "step": "release-worker",
+      "exitCode": 0,
+      "start": "2026-10-19T02:25:36.709371+00:00",
+      "end": "2026-10-19T02:27:39.580574+00:00"
+    }
+  ],
+  "onlyChangedPaths": [
+    "moloch/live-runtime/src/worker.rs",
+    "moloch/live-runtime/src/rank_campaign.rs",
+    "moloch/live-runtime/src/authority.rs"
+  ],
+  "binarySha256": "ed6c4555a92c2cc285399c6b779232658f34528a0910573ee868ed4d55e37354",
+  "nativeIdentityUnchanged": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "sdkBinaryReusedUnchanged": true,
+  "sourceTtlsRiskLimiterChanged": false,
+  "deployed": false,
+  "testResults": [
+    "test result: ok. 273 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 37.82s"
+  ],
+  "sourceFileCount": 231,
+  "allLocalRustSourcesMatchAfterCheckoutNewlineNormalization": true,
+  "checkoutNewlineOnlyDifferences": 45
+}
