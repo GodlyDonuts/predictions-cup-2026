@@ -22,6 +22,7 @@ from .policy import RecurrentPolicy, FAMILIES
 from .reference_env import Mechanics
 from .train_inner import PPOConfig, PPOTrainer, Trajectory, fingerprint
 from .inventory_curriculum import seed_inventory
+from .excess_reward import MatchedHoldReward
 
 
 def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -42,6 +43,9 @@ def load_mechanics(path):
 
 
 def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_role='fit_training'):
+    objective=protocol.get('training_reward_objective','marked_wealth_return')
+    if objective not in ['marked_wealth_return','matched_hold_excess']:raise ValueError('UNKNOWN_TRAINING_REWARD_OBJECTIVE')
+    hold_reward=None;excess_observation=None
     device = next(model.parameters()).device
     length = protocol['episode_length_ms']; drain = protocol['maximum_receipt_drain_ms']
     initial = protocol['initial_cash_micros']; end = start+length; terminal = end+drain
@@ -60,6 +64,7 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
             initial_portfolio=seed_inventory(env,protocol['initial_inventory_allocation_ppm'],protocol['initial_inventory_seed'],
                                             selection=protocol.get('initial_inventory_selection','shuffle'))
             initial=initial_portfolio['initial_marked_wealth_micros'];previous=initial;env.initial_wealth=initial
+        if at>=start and hold_reward is None:hold_reward=MatchedHoldReward(env.account(),initial)
         obs=env.observe()
         if (model.contract_features,model.global_features)not in[(20,12),(CONTRACT_FEATURES,GLOBAL_FEATURES)]:
             raise ValueError('UNKNOWN_FEATURE_SEMANTICS')
@@ -88,6 +93,10 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
         if current is None: missing+=1; reward=0.
         else:
             reward=(current-previous)/initial; previous=current
+        if objective=='matched_hold_excess':
+            excess_observation=hold_reward.observe(current,env.marks())if hold_reward else None
+            reward=excess_observation.normalized_increment if excess_observation else 0.
+            valid=valid and excess_observation is not None and excess_observation.available
         # Missing intermediates are explicitly masked; any eventual mark
         # incorporates the whole unobserved interval, not an assumed flat P&L.
         rows.append({**tensors,'masks':masks,'reset':reset,'actions':row['actions'],
@@ -107,7 +116,11 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     final=env.marked_wealth()
     unresolved=bool(env.orders or env.budget.active or env.budget.unknown)
     qualified=final is not None and not unresolved
-    if final is not None: rows[-1]['reward']+=(final-previous)/initial
+    terminal_excess=hold_reward.observe(final,env.marks())
+    if objective=='matched_hold_excess':
+        qualified=qualified and terminal_excess.available
+        rows[-1]['reward']+=terminal_excess.normalized_increment
+    elif final is not None: rows[-1]['reward']+=(final-previous)/initial
     rows[-1]['elapsed']+=drain
     def stack(name): return torch.stack([r[name].detach()for r in rows])
     trajectory=Trajectory(
@@ -120,7 +133,9 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
         learn=torch.tensor([[r['learn']]for r in rows],device=device),
         target_success_labels=torch.full((len(rows),1),float('nan'),device=device),
         behavior_sha256=behavior,split_manifest_sha256=protocol['_sha256'],split_role=split_role)
-    stats={'start_ms':start,'decision_end_ms':end,'terminal_ms':terminal,'decisions':length//protocol['decision_interval_ms'],
+    stats={'training_reward_objective':objective,'terminal_hold_wealth_micros':terminal_excess.hold_wealth_micros,
+           'terminal_excess_wealth_micros':terminal_excess.excess_wealth_micros,
+           'start_ms':start,'decision_end_ms':end,'terminal_ms':terminal,'decisions':length//protocol['decision_interval_ms'],
            'recurrent_burnin_frames':protocol['recurrent_burnin_ms']//protocol['decision_interval_ms'],'split_role':split_role,
            'tradable_decision_frames':tradable_frames,'tradable_market_frames':tradable_market_frames,
            'observable_market_frames':observable_market_frames,

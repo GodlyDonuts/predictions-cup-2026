@@ -1,0 +1,30 @@
+[
+  {
+    "run": "batched-numpy-cash-inventory-001",
+    "reportSha256": "7f834299354429f4a55f381e002cd1a3f0e9d9d1973eea618debc4f7f815bc8d",
+    "architecture": "tartarus-set-fused-gru-v2",
+    "trainingDecisions": 614390,
+    "optimizerUpdates": 512,
+    "wallSeconds": 2830.7989450999303,
+    "evaluatedCheckpoints": 16,
+    "allFourMatchedCasesPositive": 0,
+    "peakCudaReservedBytes": 10324279296,
+    "heldoutDataUsed": false,
+    "productionPolicyChanged": false,
+    "profitabilityEstablished": false
+  },
+  {
+    "run": "market-memory-engineering-001",
+    "reportSha256": "b09cbbbab788ca3bf6d282c29f3667c3e6af72f011d84cb72ce60c8908d955b7",
+    "architecture": "tartarus-market-and-global-gru-v3",
+    "trainingDecisions": 2400,
+    "optimizerUpdates": 3,
+    "wallSeconds": 66.36666439997498,
+    "evaluatedCheckpoints": 1,
+    "allFourMatchedCasesPositive": 0,
+    "peakCudaReservedBytes": 11274289152,
+    "heldoutDataUsed": false,
+    "productionPolicyChanged": false,
+    "profitabilityEstablished": false
+  }
+]
