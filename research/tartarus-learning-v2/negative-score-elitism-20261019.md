@@ -1,0 +1,21 @@
+# Evolution before profitability
+
+Research evolution ranks candidates by the supplied reward even when every reward is negative. A score of -0.05 beats -0.10; neither requires permission to reproduce. The positive-score condition at the independent-test entry is separate from search reproduction. The current development corpus is still too short for the requested complete-day reward, so its scores remain explicitly partial-history development evidence.
+
+## Corrected weaknesses
+
+Previously, each generation retained its current island winners during mutation, but every policy—including those winners—underwent further PPO training in the next generation. That training could regress. The old best checkpoint remained on disk and sometimes in the behavior archive, but there was no guaranteed path returning it to the active island. Also, a full behavior archive rejected every unseen descriptor, even if the new candidate was better than its weakest entry.
+
+The new search keeps an explicit historical champion per island, including losing champions. After evaluating a complete generation, it compares each island's current best against its incumbent on identical fixed search cases. If all current candidates are worse, it restores the incumbent into that island's weakest slot. Ordinary reproduction then uses the restored ranking: weak slots receive new children and the champion remains available. If a newly trained candidate improves the score, it becomes the incumbent even if its return remains negative. Current challengers and rejected regressions retain their original immutable checkpoint/results; restoration does not relabel them as newly evaluated models.
+
+Each generation writes an `island-champions-NNN.json` record pinned to the dataset and experiment. A generation handoff now preserves historical champion slots as well as actual mutated offspring and verifies the source-bound manifest against the progress events. Restored models retain their original saved optimizer state; mutated children continue to receive fresh optimizer state and fresh training trajectories. A full archive admits a strictly better unseen behavior by replacing its weakest entry. This favors quality without imposing a profitability gate on research candidates.
+
+Elitism requires the same search role, evaluation calendars, stress cases, sampling seeds, compute mode and valuation/classification fields. Independent-test scores are prohibited as elite-selection inputs. It cannot carry scores across a changed experiment, dataset or simulator profile; a version transfer takes weights and starts new selection evidence. `population_search.retain_island_champions` is explicitly boolean and defaults true in this source version; older frozen workers retain their original behavior.
+
+## Verification and remaining limits
+
+Focused fixtures exercise all-negative ranking, regressed champions, improved-but-still-negative successors, reproduction from restored checkpoints, fixed-case mismatch rejection, test-score exclusion, a full archive accepting a better negative candidate and a later generation handoff retaining both historical champions and children. The end-to-end regression fixture performs real PPO/checkpoint operations but injects synthetic negative evaluation scores: it is a mechanics test, not observed strategy performance.
+
+The complete learning-actions suite passed **261 tests in 62.722 seconds**. Its first attempt found an invalid two-member/two-island paired-comparison fixture; that fixture now uses one island. The real experiment constructor already rejected fewer than two members per island. No live training profile was weakened to accommodate the fixture.
+
+This makes the best recorded fixed-search score nondecreasing within each island. It does not make fresh future returns monotonic, guarantee that mutation/PPO will discover a profitable strategy, or prevent overfitting to repeatedly reused search data. The requested chronological training/evolution/four-day independent-test design remains necessary. Multi-day data coverage, calibrated execution/collateral/valuation behavior and independently demonstrated profitable ROI remain incomplete. No account client or production financial control is changed by this research feature.

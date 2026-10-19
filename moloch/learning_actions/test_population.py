@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 import torch
 from .policy import ApiPolicy
-from .population import freeze_probe,behavior,distance,mutate,island_replacements,ResearchArchive
+from .population import freeze_probe,behavior,distance,mutate,island_replacements,retain_island_champions,ResearchArchive
 from .stream import tensors
 from .test_actions import environment
 from moloch.learning_v2.train_inner import fingerprint
@@ -86,6 +86,46 @@ class RawPopulationTests(unittest.TestCase):
         self.assertFalse(archive.json()['entries'][0]['independent_test_qualification'])
         row['selection']['role']='test'
         with self.assertRaisesRegex(ValueError,'NOT_INDEPENDENT_TEST'):archive.consider(row)
+
+    def test_all_negative_generations_keep_least_loss_and_restore_regressed_champions(self):
+        from copy import deepcopy
+        def rows(cycle,scores):
+            return [{'member':m,'cycle':cycle,'checkpoint':{'path':f'{cycle}-{m}','sha256':str(m)*64},
+                'selection':{'role':'development_selection','checkpoint_sha256':str(m)*64,
+                    'reward':score,'cases':[{'reward':score,'start_ms':10,'end_ms':20,'stress':False}]}}
+                for m,score in enumerate(scores)]
+        first=rows(0,[-.4,-.3,-.1,-.2])
+        selected,champions,events=retain_island_champions(first,{},members=4,islands=2)
+        self.assertFalse(events);self.assertEqual([champions[i]['member']for i in range(2)],[2,3])
+        second=rows(1,[-.8,-.9,-.7,-.6]);saved=deepcopy(second)
+        selected,next_champions,events=retain_island_champions(second,champions,members=4,islands=2)
+        self.assertEqual(second,saved);self.assertEqual(len(events),2)
+        self.assertEqual([next_champions[i]['selection']['reward']for i in range(2)],[-.1,-.2])
+        replacements=island_replacements(selected,members=4,islands=2,cycle=1,rng=random.Random(1))
+        self.assertEqual({r['donor']for r in replacements},{0,1})
+        self.assertEqual({r['checkpoint']['path']for r in selected if r['member']in(0,1)},{'0-2','0-3'})
+        third=rows(2,[-.05,-.06,-.7,-.8])
+        _,best,events=retain_island_champions(third,next_champions,members=4,islands=2)
+        self.assertFalse(events);self.assertEqual([best[i]['selection']['reward']for i in range(2)],[-.05,-.06])
+        third[0]['selection']['cases'][0]['start_ms']=11
+        with self.assertRaisesRegex(ValueError,'CONTEXT_CHANGED'):
+            retain_island_champions(third,best,members=4,islands=2)
+        third=rows(2,[-.05,-.06,-.7,-.8]);third[0]['selection']['role']='test'
+        with self.assertRaisesRegex(ValueError,'NOT_INDEPENDENT_TEST'):
+            retain_island_champions(third,best,members=4,islands=2)
+
+    def test_full_archive_admits_better_negative_unseen_behavior(self):
+        archive=ResearchArchive('a'*64,'b'*64,maximum=1)
+        def row(score,family):
+            return {'member':0,'cycle':0,'checkpoint':{'path':'fixture','sha256':'c'*64},
+                'selection':{'role':'development_selection','checkpoint_sha256':'c'*64,'reward':score,
+                    'cases':[{'reward':score,'stress':False,'start_ms':10,'end_ms':20,'family_counts':{family:3}}]}}
+        self.assertTrue(archive.consider(row(-.3,1)))
+        self.assertTrue(archive.consider(row(-.1,2)))
+        self.assertEqual(len(archive.entries),1)
+        self.assertEqual(next(iter(archive.entries.values()))['score'],-.1)
+        self.assertFalse(archive.consider(row(-.2,3)))
+        self.assertFalse(next(iter(archive.entries.values()))['positive_repeated_development_evidence'])
 
     def test_failed_behavior_measurement_restores_original_parameters(self):
         model=ApiPolicy(16);p=probe();before=fingerprint(model);parent=behavior(model,p)

@@ -4,7 +4,7 @@ import torch
 from types import SimpleNamespace
 from unittest.mock import patch
 from .population_handoff import boundary,select_population,next_configuration
-from .test_population_experiment import FixtureExperiment
+from .test_population_experiment import FixtureExperiment,RegressingExperiment
 from .population import ResearchArchive
 from .selection import frozen
 from .training_process import TrainingProcess
@@ -12,6 +12,28 @@ from .continue_population import run as run_handoff
 
 
 class PopulationHandoffTests(unittest.TestCase):
+    def test_later_handoff_keeps_historical_elites_as_well_as_mutated_children(self):
+        torch.set_num_threads(1)
+        with tempfile.TemporaryDirectory()as directory:
+            x=RegressingExperiment(Path(directory));x.config.update(mode='inspected_development',cycles=3)
+            x.spec_sha=frozen(x.output/'experiment.json',{'config':x.config,'production_authority':False,
+                'full_history_experiment':False,'independent_test_used':False,'dataset_manifest_sha256':x.dataset_sha})
+            x.archive=ResearchArchive(x.dataset_sha,x.spec_sha,8);x.run()
+            (x.output/'progress.jsonl').write_text('\n'.join(json.dumps(e)for e in x.events)+'\n')
+            plan=select_population(x.output,cycle=1,members=4,hidden_size=16)
+            self.assertEqual(len(plan['retentions']),2)
+            retained={r['slot']:r['retained_checkpoint']for r in plan['retentions']}
+            children={r['loser']:r['checkpoint']for r in plan['replacements']}
+            self.assertFalse(set(retained)&set(children))
+            for p in plan['parents']:
+                expected=(children if p['member']in children else retained)[p['member']]
+                self.assertEqual(p['sha256'],expected['sha256'])
+            self.assertEqual(sum(p['origin']=='checked_historical_island_champion'for p in plan['parents']),2)
+            path=x.output/'island-champions-001.json';proof=json.loads(path.read_text())
+            proof['champions']['0']['checkpoint']['sha256']='f'*64;path.write_text(json.dumps(proof))
+            with self.assertRaisesRegex(ValueError,'RETAINED_CHAMPION_CHECKPOINT_CHANGED'):
+                select_population(x.output,cycle=1,members=4,hidden_size=16)
+
     def test_complete_generation_keeps_actual_children_and_parent_hyperparameters(self):
         torch.set_num_threads(1)
         with tempfile.TemporaryDirectory()as directory:

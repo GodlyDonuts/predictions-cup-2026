@@ -27,7 +27,35 @@ class FixtureExperiment(Experiment):
     def log(self,event):self.events.append(event)
 
 
+class RegressingExperiment(FixtureExperiment):
+    """Synthetic scores exercise elitism; not market-performance evidence."""
+    def evaluate(self,model,checkpoint,role='evolution',finalist=None):
+        result=super().evaluate(model,checkpoint,role,finalist)
+        cycle=int(Path(checkpoint['path']).stem.split('-')[1])
+        member=int(Path(checkpoint['path']).stem.split('-')[3])
+        score=-.1*(member+1)-(cycle*.5)
+        result['reward']=score
+        for case in result['cases']:case['reward']=score
+        return result
+
+
 class PopulationExperimentTests(unittest.TestCase):
+    def test_negative_only_search_restores_older_winners_and_reproduces_from_them(self):
+        torch.set_num_threads(1)
+        with tempfile.TemporaryDirectory()as d:
+            experiment=RegressingExperiment(Path(d));experiment.config['cycles']=3
+            result=experiment.run()
+            retained=[e for e in experiment.events if e['event']=='research_champion_retained']
+            self.assertEqual(len(retained),4)
+            self.assertTrue(all(e['retained_score']<0 and e['retained_score']>e['current_best_score']for e in retained))
+            restored={e['retained_checkpoint']['sha256']for e in retained if e['cycle']==1}
+            donors=[e['donor_checkpoint']['sha256']for e in experiment.events
+                    if e['event']=='population_replacement'and 'offspring-001' in e['checkpoint']['path']]
+            self.assertEqual(set(donors),restored)
+            self.assertLess(result['best']['selection']['reward'],0)
+            self.assertFalse(result['independent_test_used'])
+            for cycle in range(3):self.assertTrue((experiment.output/f'island-champions-{cycle:03d}.json').exists())
+
     def test_two_real_training_cycles_keep_island_elites_and_use_fresh_child_rollouts(self):
         torch.set_num_threads(1);torch.manual_seed(81)
         with tempfile.TemporaryDirectory()as d:

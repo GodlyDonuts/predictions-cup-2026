@@ -14,6 +14,7 @@ class ComparisonFixture(FixtureExperiment):
         Path(output).mkdir(parents=True)
         super().__init__(Path(output))
         self.config.update(config);self.frozen={'source_sha256':{'software_fixture':'a'*64}}
+        self.search_config['islands']=1  # Two fixture members require one valid island.
         self.spec_sha=frozen(self.output/'experiment.json',{'config':self.config,'production_authority':False,
             'full_history_experiment':False,'independent_test_used':False,'dataset_manifest_sha256':self.dataset_sha})
         self.archive=ResearchArchive(self.dataset_sha,self.spec_sha,8)

@@ -6,8 +6,10 @@ this is not full joint-action KL, executed behavior, or a financial risk limit.
 Each policy recomputes its own recurrent history from the episode reset.
 """
 from dataclasses import dataclass
+from copy import deepcopy
 import hashlib
 import math
+import random
 import torch
 from .policy import ApiPolicy
 from moloch.learning_v2.policy import masked_categorical
@@ -166,6 +168,50 @@ def island_replacements(ranking,*,members,islands,cycle,rng,migration_every=4):
     return replacements
 
 
+def retain_island_champions(ranking,incumbents,*,members,islands):
+    """Elitist search on fixed search cases, including strictly negative scores.
+
+    Historical scores are reused only within one experiment's fixed search
+    context. The caller owns that experiment boundary; independent test scores
+    are forbidden. Returned rows retain their actual evaluation cycle.
+    """
+    island_replacements(ranking,members=members,islands=islands,cycle=0,
+                        rng=random.Random(0))
+    def context(row):
+        s=row['selection']
+        if s['role']not in('development_selection','evolution'):
+            raise ValueError('ELITES_REQUIRE_SEARCH_NOT_INDEPENDENT_TEST')
+        if s['checkpoint_sha256']!=row['checkpoint']['sha256']:
+            raise ValueError('ELITE_CHECKPOINT_SCORE_IDENTITY')
+        if not s['cases']or not all(math.isfinite(c['reward'])for c in s['cases']):
+            raise ValueError('FINITE_ELITE_CASES_REQUIRED')
+        if not math.isclose(s['reward'],min(c['reward']for c in s['cases']),rel_tol=1e-12,abs_tol=1e-12):
+            raise ValueError('ELITE_FIXED_WORST_CASE_SCORE_REQUIRED')
+        fields=('start_ms','end_ms','stress','selection_seed','evaluation_compute_mode','classification','valuation')
+        return s['role'],tuple(tuple(c.get(k)for k in fields)for c in s['cases'])
+    expected=context(ranking[0])
+    if any(context(row)!=expected for row in ranking):raise ValueError('ELITE_SEARCH_CONTEXT_CHANGED')
+    selected=list(ranking);champions={};events=[]
+    if set(incumbents)-set(range(islands)):raise ValueError('ELITE_ISLAND_LAYOUT_CHANGED')
+    for island in range(islands):
+        group=sorted((r for r in selected if r['member']%islands==island),
+                     key=lambda r:r['selection']['reward'],reverse=True)
+        current=group[0];old=incumbents.get(island)
+        if old is not None:
+            if context(old)!=expected:raise ValueError('ELITE_SEARCH_CONTEXT_CHANGED')
+            if old['selection']['reward']>current['selection']['reward']:
+                loser=group[-1];restored=deepcopy(old);restored['member']=loser['member']
+                selected=[restored if r['member']==loser['member']else r for r in selected]
+                events.append({'island':island,'slot':loser['member'],
+                    'retained_checkpoint':restored['checkpoint'],'retained_evaluation_cycle':old['cycle'],
+                    'retained_score':old['selection']['reward'],'current_best_score':current['selection']['reward'],
+                    'rejected_checkpoint':loser['checkpoint'],'fixed_search_score_reused':True,
+                    'independent_test_used':False})
+                current=restored
+        champions[island]=deepcopy(current)
+    return sorted(selected,key=lambda r:r['selection']['reward'],reverse=True),champions,events
+
+
 class ResearchArchive:
     """Protected development stepping stones; never a deployment qualification.
 
@@ -208,7 +254,10 @@ class ResearchArchive:
                'production_eligible':False,'independent_test_qualification':False}
         old=self.entries.get(descriptor)
         if old is not None and old['score']>=entry['score']:return False
-        if old is None and len(self.entries)>=self.maximum:return False
+        if old is None and len(self.entries)>=self.maximum:
+            weakest=min(self.entries,key=lambda key:self.entries[key]['score'])
+            if self.entries[weakest]['score']>=entry['score']:return False
+            del self.entries[weakest]
         self.entries[descriptor]=entry;return True
 
     def json(self):

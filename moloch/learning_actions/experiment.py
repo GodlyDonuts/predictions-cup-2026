@@ -116,6 +116,8 @@ class Experiment:
         self.search_config=config.get('population_search')
         self.archive=None
         if self.search_config is not None:
+            if type(self.search_config.get('retain_island_champions',True))is not bool:
+                raise ValueError('EXPLICIT_RESEARCH_ELITISM_PROFILE')
             from .population import ResearchArchive,island_replacements
             members=config.get('members',4)
             island_replacements([{'member':i,'selection':{'reward':0.}}for i in range(members)],
@@ -612,7 +614,7 @@ class Experiment:
             opt=self.make_optimizer(model,rate=rate,entropy=entropy)
             self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
             del model,opt
-        best=None
+        best=None;island_champions={}
         for cycle in range(cycles):
             ranking=[]
             for member in self.member_order(cycle,members):
@@ -631,6 +633,18 @@ class Experiment:
                 self.log({'event':'member_evaluated',**row})
                 del model,opt
             ranking.sort(key=lambda x:x['selection']['reward'],reverse=True)
+            if self.search_config is not None and self.search_config.get('retain_island_champions',True):
+                from .population import retain_island_champions
+                ranking,island_champions,retentions=retain_island_champions(ranking,island_champions,
+                    members=members,islands=self.search_config['islands'])
+                for retained in retentions:
+                    self.population[retained['slot']]=retained['retained_checkpoint']
+                    self.log({'event':'research_champion_retained','cycle':cycle,**retained})
+                frozen(self.output/('island-champions-%03d.json'%cycle),{
+                    'classification':'fixed_search_incumbents_not_independent_evidence',
+                    'dataset_sha256':self.dataset_sha,'experiment_sha256':self.spec_sha,
+                    'champions':{str(k):v for k,v in island_champions.items()},
+                    'independent_test_used':False,'production_authority':False})
             if best is None or ranking[0]['selection']['reward']>best['selection']['reward']:best=ranking[0]
             if self.archive is not None:
                 for row in ranking:self.archive.consider(row)
