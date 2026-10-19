@@ -1,0 +1,64 @@
+{
+  "classification": "pending_completed_generation_handoff_not_live_optimized_training_or_roi",
+  "observedUtc": "2026-10-19T22:43:26.879977+00:00",
+  "sourceCommit": "bb948445143d8fbaa889dd232c531aa5b35161af",
+  "sourceManifestSha256": "4ffdf0524875e40f5b87ec07f3c3e6021cade2a007d208e0f4aa738c6493fd8a",
+  "specSha256": "0f017a4e24555c9a30900acfbecf50ece7e97ab61ac107cbdd79e77089de8472",
+  "sourceFiles": 240,
+  "runtimePinsMatchFrozenSource": 115,
+  "controllerPid": 35976,
+  "controllerLauncherPid": 7424,
+  "existingTrainerPid": 39824,
+  "existingTrainerCreation": 134369173614560850,
+  "phase": "waiting_for_completed_generation",
+  "sourceRun": "raw-api-growth-development-017",
+  "pendingRun": "raw-api-growth-development-018",
+  "actingValidation": "consolidated_v1",
+  "retainIslandChampions": true,
+  "batchedEvaluation": false,
+  "batchedEvaluationActionHeads": false,
+  "ownedOrderPagesEnabled": false,
+  "componentDebtAccountingEnabled": false,
+  "observationProtocol": "sig_scoped_local_memory_joint_v4",
+  "populationMembers": 8,
+  "trainingWorlds": 8,
+  "completeGenerationRequired": true,
+  "allEvolvedPopulationWeightsRequiredBeforeTransfer": true,
+  "capacityProbeStillPending": true,
+  "capacityChunks": [
+    64,
+    32
+  ],
+  "oldScoresReused": false,
+  "oldFinancialWorldsResumed": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "previousController": {
+    "pid": 33568,
+    "verifiedExited": true,
+    "phase": "cancelled_before_handoff"
+  },
+  "separateComputeEvidenceManuallyVerified": true,
+  "controllerRevalidatesSeparateComputeEvidence": false,
+  "frozenComputeEvidenceSha256": "4eb8c03a333455d128bda413c4808de0520f0c4ff5db55f00e4ecd148178b6dc",
+  "frozenComputeSpeedup": 1.2735962744680371,
+  "exactActionsRngFinanceKnowledgeHiddenClocksAndBudgets": true,
+  "earlierCheckoutProof": {
+    "speedup": 1.262011665847048,
+    "byteDifferentRuntimeFiles": 110,
+    "differencesBeyondCRLFNormalization": 0,
+    "separateFrozenBuildMeasurementRequiredAndCompleted": true
+  },
+  "fullLearningActionsSuite": {
+    "tests": 284,
+    "seconds": 66.406,
+    "passed": true
+  },
+  "limitations": [
+    "new mode is queued, not yet in activeGPU017",
+    "all8 evaluations/replacements/archive/boundary must complete first",
+    "full trainingGPU capacity and accepted new updates not yet verified",
+    "finite compute comparison is not ROI or full future-path equivalence proof",
+    "full chronological corpus/engine calibration/independent profitable ROI remain missing"
+  ]
+}
