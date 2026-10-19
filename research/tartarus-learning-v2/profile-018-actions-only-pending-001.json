@@ -1,0 +1,49 @@
+{
+  "classification": "checked_pending_generation_handoff_not_active_learner_or_roi",
+  "observedUtc": "2026-10-19T23:50:25.208495+00:00",
+  "sourceCommit": "4ae154396a3649c4cea25b2cd150ed894806c328",
+  "sourceManifestSha256": "34daff0406cf5d9e7545cc78adb91ac61a004cf6ae29ee05402fa7e906ef642e",
+  "specSha256": "7d8cbab890830ad4779d6c8a297a561794cfa6b5d0a2a7172b5d228b588b7b68",
+  "sourceFiles": 247,
+  "controllerPid": 6928,
+  "controllerLauncherPid": 38732,
+  "existingTrainerPid": 39824,
+  "existingTrainerCreation": 134369173614560850,
+  "phase": "waiting_for_completed_generation",
+  "sourceRun": "raw-api-growth-development-017",
+  "pendingRun": "raw-api-growth-development-018",
+  "populationMembers": 8,
+  "trainingWorlds": 8,
+  "retainIslandChampions": true,
+  "actingValidation": "consolidated_v1",
+  "evaluationActionsOnly": true,
+  "batchedEvaluation": false,
+  "batchedEvaluationActionHeads": false,
+  "observationProtocol": "sig_scoped_local_memory_joint_v4",
+  "completeGenerationRequired": true,
+  "allEvolvedPopulationWeightsRequiredBeforeTransfer": true,
+  "memoryProbeChunks": [
+    64,
+    32
+  ],
+  "gpuTrainingCapacityStillPending": true,
+  "oldScoresReused": false,
+  "oldFinancialWorldsResumed": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "reviewedExactActionsOnlyEvidence": {
+    "path": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\studies\\actions-only-frozen-gpu-001\\comparison\\RESULT.json",
+    "sha256": "99221fb60195e0bcd4ece567289d22b5e56e1ca7aae21c47a02c46faedf7f5f6",
+    "exactPaths": true,
+    "fullEpisode": false,
+    "independentTest": false,
+    "speedup": 1.1997937268013918
+  },
+  "separateComputeEvidenceCheckedBeforeInstallation": true,
+  "controllerIndependentlyChecksComputeEvidence": false,
+  "supersededController": {
+    "pid": 35976,
+    "verifiedExited": true,
+    "phase": "cancelled_before_handoff"
+  }
+}
