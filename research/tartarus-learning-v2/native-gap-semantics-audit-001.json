@@ -1,0 +1,22 @@
+{
+  "classification": "authorized_fit_gap_shape_and_source_adapter_audit_not_book_reconstruction",
+  "bounds_ms": [
+    1792400401000,
+    1792403100000
+  ],
+  "gap_rows": 1015,
+  "all_exchange_scoped": true,
+  "field_shape": [
+    "exchangeId",
+    "processedAt",
+    "receivedAt",
+    "sourceRef",
+    "type"
+  ],
+  "native_adapter": "moloch/native/src/source.rs:115",
+  "native_adapter_behavior": "Either empty bid or empty ask array becomes scoped gap; native gap carries neither side of the underlying book. This proves adapter semantics, not that every original receipt was independently recovered.",
+  "source_sha256": "bdffcae1165db715e9e7fda8835aaa9dbf79a4541a63584717d0bb8a09c2e1dd",
+  "cannot_infer_missing_one_sided_depth": true,
+  "account_requests": 0,
+  "independent_test_used": false
+}

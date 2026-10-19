@@ -31,6 +31,51 @@ def episode(t,read_latency=None,end=5000):
 
 
 class SnapshotClockTests(unittest.TestCase):
+    def test_role_prefix_retains_quiet_book_without_free_actor_prices_or_freshness(self):
+        t=tape([book(0,100)],bounds=(0,5000));prepare(t,(0,5000),role_prefix_initial_state=True)
+        e=t.episode(fixture().mechanics,3000,5000,initial_cash_micros=1000*UNIT,
+            target_wealth_micros=10000*UNIT,burnin_ms=100)
+        self.assertEqual(e.books['x'].source_state_at_ms,0)
+        self.assertEqual(e.books['x'].book.available_at_ms,0)
+        self.assertEqual(e.initial_market_state['world_rows'],1)
+        self.assertIn(('book','x'),e.keys['SIG']);self.assertFalse(e.actor_books)
+        self.assertFalse(e.api_fills);self.assertFalse(e.budget.reads);self.assertFalse(e.budget.writes)
+        self.assertEqual(e.cash,1000*UNIT)
+        e.request_observation('SIG',('book','x'));e.advance(3100)
+        self.assertEqual(e.actor_books['x'].book.available_at_ms,0)
+        self.assertEqual(len(e.budget.reads),1)
+
+    def test_role_prefix_preserves_gap_and_never_imports_other_role(self):
+        gap={'venue':'SIG','kind':'gap','exchange_id':'x','available_at_ms':200,
+            'native_event_received_at_ms':150,'native_processed_at_ms':200,'original_sha256':'d'*64}
+        t=tape([book(0,100),gap]);prepare(t,(0,5000),role_prefix_initial_state=True)
+        e=t.episode(fixture().mechanics,3000,5000,initial_cash_micros=1000*UNIT,
+            target_wealth_micros=10000*UNIT,burnin_ms=100)
+        self.assertTrue(e.books['x'].invalidated);self.assertEqual(e.books['x'].source_state_at_ms,150)
+        prepare(t,(1000,5000),role_prefix_initial_state=True)
+        e=t.episode(fixture().mechanics,3000,5000,initial_cash_micros=1000*UNIT,
+            target_wealth_micros=10000*UNIT,burnin_ms=100)
+        self.assertFalse(e.books);self.assertNotIn(('book','x'),e.keys['SIG'])
+
+    def test_role_prefix_external_references_remain_unobserved_until_read(self):
+        ref={'kind':'reference','venue':'Kalshi','market_id':'m','available_at_ms':100,
+            'received_at_ms':100,'source_at_ms':0,'price_yes':600000,'source':'fixture',
+            'original_sha256':'e'*64}
+        t=tape([book(0,0),ref]);prepare(t,(0,5000),role_prefix_initial_state=True)
+        e=t.episode(fixture().mechanics,3000,5000,initial_cash_micros=1000*UNIT,
+            target_wealth_micros=10000*UNIT,burnin_ms=100)
+        self.assertIn(('reference','Kalshi','m','fixture'),e.keys['Kalshi'])
+        self.assertFalse(e.references);self.assertFalse(e.actor_books)
+        self.assertEqual(e.latest[('reference','Kalshi','m','fixture')]['available_at_ms'],100)
+
+    def test_role_prefix_is_opt_in_and_rejects_non_boolean(self):
+        t=tape([book(0,100)])
+        e=t.episode(fixture().mechanics,3000,5000,initial_cash_micros=1000*UNIT,
+            target_wealth_micros=10000*UNIT,burnin_ms=100)
+        self.assertFalse(e.books)
+        with self.assertRaisesRegex(ValueError,'EXPLICIT_ROLE_PREFIX'):
+            prepare(t,(0,5000),role_prefix_initial_state='true')
+
     def test_hidden_world_changes_execution_before_delayed_information_without_waking_actor(self):
         e=episode(tape([book(0,1000),book(200,2000,600000)]))
         self.assertNotIn('x',e.actor_books);revision=e.observation_revision

@@ -1,6 +1,6 @@
 {
   "classification": "observed_active_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T13:48:06.009939+00:00",
+  "observed_utc": "2026-10-19T14:04:56.603983+00:00",
   "source_commit": "36ef508d939c1a134aed681959260b40bf7c61ad",
   "run": "raw-api-growth-development-012",
   "parameters": 58106855,
@@ -31,9 +31,9 @@
   "passive_flow_mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
   "private_fill_notifications": "requires_active_sig_stream",
   "config_sha256": "6b72d7893686934ed2a39c1e76f96db234b7199a994cf7cfa938ae09856201e5",
-  "training_decisions": 101485,
-  "accepted_updates": 104,
-  "current_member_modeled_fills": 117,
+  "training_decisions": 217034,
+  "accepted_updates": 231,
+  "current_member_modeled_fills": 251,
   "modeled_fills_are_not_contest_transactions": true,
   "older_phase_transition": {
     "training_decisions_at_transition": 811051,
@@ -228,5 +228,11 @@
       "marked_roi_min": -0.03908199999999995,
       "checkpoint_sha256": "cd15b066e44b26ad195ad7829f9fb6fb6951ce43e6376d40bf41ac5a01da3436"
     }
-  ]
+  ],
+  "pending_opt_in_improvement": {
+    "role_prefix_initial_state": true,
+    "active_run_changed": false,
+    "focused_checks_passed": 124,
+    "audit": "role-prefix-state-audit-001.json"
+  }
 }

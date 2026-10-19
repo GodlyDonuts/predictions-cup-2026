@@ -21,7 +21,8 @@ def source_clock(row):
     return at
 
 
-def prepare(tape,information_bounds):
+def prepare(tape,information_bounds,*,role_prefix_initial_state=False):
+    if type(role_prefix_initial_state)is not bool:raise ValueError('EXPLICIT_ROLE_PREFIX_INITIAL_STATE')
     lo,hi=information_bounds
     if lo>=hi:raise ValueError('AUTHORIZED_SNAPSHOT_INFORMATION_BOUNDS')
     rows=[];books={}
@@ -37,6 +38,31 @@ def prepare(tape,information_bounds):
     tape.snapshot_world_mode=MODE;tape.snapshot_world_information_bounds=tuple(information_bounds)
     tape.snapshot_world_rows=tuple(rows);tape.snapshot_world_times=tuple(map(source_clock,rows))
     tape.prepared_world_books=MappingProxyType(books)
+    tape.role_prefix_initial_state=role_prefix_initial_state
+
+
+def initialize_role_prefix(tape,env,before):
+    """Restore only earlier same-role market state, never actor/financial state.
+
+    Prices remain server-side until a charged read delivers them. Original
+    snapshot ages and invalidations survive initialization; prints, orders,
+    wallets, rate admissions and recurrent policy state are deliberately fresh.
+    """
+    import bisect
+    lo,hi=tape.snapshot_world_information_bounds
+    if not lo<=before<hi:raise ValueError('PREFIX_INITIAL_STATE_OUTSIDE_ROLE')
+    count=0
+    for row in tape.snapshot_world_rows[:bisect.bisect_left(tape.snapshot_world_times,before)]:
+        world_event(env,source_clock(row),row);count+=1
+    for row in tape.rows[bisect.bisect_left(tape.times,lo):bisect.bisect_left(tape.times,before)]:
+        if row['venue']=='SIG'and row['kind']in('book','gap'):
+            # Mirror prepare's double clock fence, including old-role books
+            # reported only after the boundary. They cannot seed this world.
+            if lo<=source_clock(row)<hi:information_event(env,row['available_at_ms'],row)
+        elif row['venue']in('Kalshi','Polymarket')and row['kind']in('reference','reference_gap'):
+            env._remember(row['venue'],('reference',row['venue'],row['market_id'],row.get('source',row['venue'])),row)
+    env.initial_market_state={'mode':'same_authorized_role_prefix_v1','before_ms':before,
+        'world_rows':count,'known_books':len(env.books),'actor_books':len(env.actor_books)}
 
 
 def older(payload,current):

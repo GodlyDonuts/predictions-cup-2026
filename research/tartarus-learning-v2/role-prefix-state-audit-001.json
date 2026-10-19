@@ -1,0 +1,41 @@
+{
+  "classification": "same_authorized_fit_prefix_initialization_not_profit",
+  "dataset_manifest_sha256": "3d6a963ccef25fd72be7209b07f1f5aa02e86b00c36945397a3c57f416d96e17",
+  "at_ms": 1792401601000,
+  "results": [
+    {
+      "enabled": false,
+      "initialization_seconds": 0.016781700076535344,
+      "known_books": 13,
+      "valid_books": 4,
+      "actor_books": 0,
+      "read_targets": {
+        "SIG": 19,
+        "Kalshi": 234,
+        "Polymarket": 158
+      },
+      "cash": 100000000000,
+      "fills": 0,
+      "reads": 0,
+      "writes": 1
+    },
+    {
+      "enabled": true,
+      "initialization_seconds": 0.05269179993774742,
+      "known_books": 27,
+      "valid_books": 4,
+      "actor_books": 0,
+      "read_targets": {
+        "SIG": 33,
+        "Kalshi": 234,
+        "Polymarket": 158
+      },
+      "cash": 100000000000,
+      "fills": 0,
+      "reads": 0,
+      "writes": 1
+    }
+  ],
+  "account_requests": 0,
+  "independent_test_used": false
+}

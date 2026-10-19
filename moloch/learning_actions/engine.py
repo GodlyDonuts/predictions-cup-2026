@@ -508,6 +508,9 @@ class ApiTape(PreparedTape):
         if separate_world:
             from .snapshot_clock import source_clock
             env.prepared_world_books=self.prepared_world_books;env.world_market_mapping={}
+            if getattr(self,'role_prefix_initial_state',False):
+                from .snapshot_clock import initialize_role_prefix
+                initialize_role_prefix(self,env,start_ms-burnin_ms)
             a=bisect.bisect_left(self.snapshot_world_times,start_ms-burnin_ms)
             b=bisect.bisect_left(self.snapshot_world_times,end_ms)
             for row in self.snapshot_world_rows[a:b]:

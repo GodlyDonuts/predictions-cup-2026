@@ -1,0 +1,14 @@
+{
+  "classification": "authorized_fit_prefix_market_state_coverage_audit_not_profit",
+  "at_ms": 1792401601000,
+  "episode_start_known_books": 13,
+  "episode_start_valid_books": 4,
+  "all_prior_authorized_fit_known_books": 27,
+  "all_prior_authorized_fit_valid_books": 4,
+  "known_book_read_targets": 13,
+  "authorized_information_bounds": [
+    1792400401000,
+    1792403100000
+  ],
+  "account_requests": 0
+}

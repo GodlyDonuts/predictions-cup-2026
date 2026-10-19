@@ -109,7 +109,10 @@ class Experiment:
         if self.config.get('snapshot_world_clock')is not None:
             from .snapshot_clock import MODE,prepare
             if self.config['snapshot_world_clock']!=MODE:raise ValueError('EXPLICIT_SNAPSHOT_WORLD_CLOCK_MODE')
-            prepare(tape,tape.counterparty_information_bounds)
+            prepare(tape,tape.counterparty_information_bounds,
+                role_prefix_initial_state=self.config.get('role_prefix_initial_state',False))
+        elif self.config.get('role_prefix_initial_state',False):
+            raise ValueError('ROLE_PREFIX_REQUIRES_OBSERVED_SNAPSHOT_WORLD')
         self.tape_cache[key]=tape
         return tape
 
