@@ -29,6 +29,8 @@ class Experiment:
         if config['mode']not in('inspected_development','full_history'):
             raise ValueError('EXPLICIT_EXPERIMENT_MODE_REQUIRED')
         self.device=config.get('device','cuda');self.seed=config.get('seed',190019)
+        torch.backends.cuda.matmul.allow_tf32=config.get('allow_tf32',False)
+        torch.backends.cudnn.allow_tf32=config.get('allow_tf32',False)
         torch.set_num_threads(config.get('cpu_threads',2));torch.manual_seed(self.seed)
         self.rng=random.Random(self.seed)
         self.model_size=config.get('hidden_size',4096)
@@ -102,6 +104,7 @@ class Experiment:
         return {'path':str(path),'sha256':sha}
 
     def train_episode(self,model,optimizer):
+        if self.config.get('training_worlds',1)>1:return self.train_parallel(model,optimizer)
         a,b=self.train_bounds
         if self.development:
             length=min(self.config.get('development_episode_ms',120000),b-a)
@@ -132,6 +135,40 @@ class Experiment:
             'entity_counts':dict(stream.entity_counts),
             'configured_initial_world_history_ms':self.config.get('initial_world_history_ms',120000)}
 
+    def train_parallel(self,model,optimizer):
+        from .batched import BatchStream
+        count=self.config['training_worlds']
+        if type(count)is not int or count<2:raise ValueError('AT_LEAST_TWO_INDEPENDENT_TRAINING_WORLDS')
+        a,b=self.train_bounds
+        length=(min(self.config.get('development_episode_ms',120000),b-a)if self.development
+                else self.config.get('training_days',2)*DAY)
+        if length>b-a or (not self.development and length<2*DAY):raise ValueError('COMPLETE_TRAINING_CALENDAR_REQUIRED')
+        starts=[self.rng.randrange(a,b-length+1)for _ in range(count)]
+        envs=[self.world('train',start,start+length)for start in starts]
+        ledgers=[GrowthLedger(e,development=self.development,
+            historical_last_mark=self.config.get('development_last_observed_marks',False),
+            maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for e in envs]
+        if self.calibration is None:self.calibration=calibrate(envs[0],model)
+        stream=BatchStream(envs,model,ledgers,calibration=self.calibration)
+        while any(e.now<e.end for e in envs):
+            chunk=stream.collect(self.config.get('compute_chunk_decisions',32))
+            rewards=[f['economic_reward']for f in chunk.frames]
+            reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1))
+            self.total_updates+=sum(r['accepted']for r in reports)
+            decisions=sum(int(f['learn'].sum())for f in chunk.frames)
+            self.total_decisions+=decisions
+            self.log({'event':'parallel_train_chunk','worlds':count,'decisions':decisions,
+                'virtual_ms':[e.now for e in envs],'episode_end_ms':[e.end for e in envs],
+                'completed_worlds':len(stream.completed),'updates':reports,
+                'fills':sum(len(e.api_fills)for e in envs),
+                'cuda_peak_bytes':torch.cuda.max_memory_allocated()if self.device.startswith('cuda')else 0})
+        cases=[stream.completed[i]for i in range(count)]
+        return {'classification':'independent_simulated_worlds_not_additional_historical_evidence',
+            'worlds':count,'reward':sum(c['reward']for c in cases)/count,
+            'marked_roi':sum(c['marked_roi']for c in cases)/count,
+            'fill_count':sum(c['fill_count']for c in cases),'eligible':False,
+            'cases':cases,'all_worlds_preserve_financial_state_through_horizon':True}
+
     def evaluate(self,model,checkpoint,role='evolution',finalist=None):
         if role=='test'and self.development:raise ValueError('INSPECTED_DEVELOPMENT_HAS_NO_INDEPENDENT_TEST')
         start,end=self.evolution_bounds if role=='evolution'else self.split.bounds('test')
@@ -158,12 +195,21 @@ class Experiment:
         members=self.config.get('members',4);cycles=self.config.get('cycles',8)
         if type(members)is not int or members<2 or type(cycles)is not int or cycles<1:
             raise ValueError('POSITIVE_POPULATION_AND_CYCLE_COUNTS_REQUIRED')
+        inherited=self.config.get('development_initial_checkpoint')
+        if inherited and not self.development:raise ValueError('DEVELOPMENT_WEIGHT_TRANSFER_CANNOT_QUALIFY_FULL_HISTORY')
         for member in range(members):
             torch.manual_seed(self.seed+member)
-            model=ApiPolicy(self.model_size).to(self.device)
+            if inherited:
+                model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
+                if parent['dataset_manifest_sha256']!=self.dataset_sha:raise ValueError('DEVELOPMENT_PARENT_DATASET_CHANGED')
+                del parent
+                if member:
+                    with torch.no_grad():
+                        for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
+            else:model=ApiPolicy(self.model_size).to(self.device)
             # Initialization changes exploration probability, never legal action
             # support: favor initially short alarms without forbidding long ones.
-            if self.config.get('initial_short_alarm_prior',True):
+            if not inherited and self.config.get('initial_short_alarm_prior',True):
                 with torch.no_grad():model.fractions.bias[2]=-3.;model.fractions.bias[3]=9.
             opt=torch.optim.Adam(model.parameters(),lr=self.config.get('learning_rate',1e-5))
             self.population.append(self.checkpoint('founder-%03d'%member,model,opt))

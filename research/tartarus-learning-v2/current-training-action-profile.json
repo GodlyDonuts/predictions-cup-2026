@@ -57,5 +57,8 @@
   "fused_variable_entity_recurrent_updates": true,
   "checkpoint_qualified_for_production": false,
   "development_last_observed_marking": "explicit_opt_in_reported_staleness_never_full_history_qualification",
-  "busy_or_rate_limited_request_suspends_policy": false
+  "busy_or_rate_limited_request_suspends_policy": false,
+  "batched_training_collector": "moloch.learning_actions.batched.BatchStream",
+  "current_development_training_worlds": 32,
+  "parallel_worlds_are_not_independent_historical_days": true
 }

@@ -99,27 +99,33 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     """
     if role!='train'or chunk.role!='train':raise ValueError('INDEPENDENT_TEST_OR_EVOLUTION_CANNOT_OPTIMIZE_WEIGHTS')
     if fingerprint(model)!=chunk.behavior_sha256:raise ValueError('FRESH_ON_POLICY_CHUNK_REQUIRED')
-    if len(rewards)!=len(chunk.frames)or any(type(x)not in(int,float)or not math.isfinite(x)for x in rewards):
+    flattened=[x for row in rewards for x in (row if isinstance(row,(list,tuple))else[row])]
+    if len(rewards)!=len(chunk.frames)or any(type(x)not in(int,float)or not math.isfinite(x)for x in flattened):
         raise ValueError('COMPLETE_VERIFIED_ECONOMIC_REWARDS_REQUIRED')
     device=next(model.parameters()).device
-    rewards=torch.tensor(rewards,dtype=torch.float64,device=device).reshape(-1,1)
     old_values=torch.stack([f['old_value']for f in chunk.frames]).double()
+    rewards=torch.tensor(rewards,dtype=torch.float64,device=device).reshape(old_values.shape)
     old_logprob=torch.stack([f['old_logprob']for f in chunk.frames]).detach()
+    learn=torch.stack([f.get('learn',torch.ones_like(f['old_value'],dtype=torch.bool))for f in chunk.frames])
+    count=learn.sum().clamp_min(1)
+    if not bool(learn.any()):raise ValueError('NO_ACTIVE_ECONOMIC_TRAINING_TRANSITIONS')
     value=chunk.bootstrap_value.double()if bootstrap_value is None else bootstrap_value.double()
     returns=[]
     for i in reversed(range(len(chunk.frames))):
-        value=rewards[i]+(0 if chunk.frames[i]['terminal']else value)
+        terminal=torch.as_tensor(chunk.frames[i]['terminal'],device=device,dtype=torch.bool)
+        value=rewards[i]+(~terminal)*value
         returns.append(value)
     returns=torch.stack(list(reversed(returns))).detach()
-    advantage=returns-old_values;advantage=(advantage-advantage.mean())/advantage.std(unbiased=False).clamp_min(1e-8)
+    advantage=returns-old_values
+    advantage=(advantage-advantage[learn].mean())/advantage[learn].std(unbiased=False).clamp_min(1e-8)
     reports=[]
     prepared=sequence_inputs(chunk.frames)
     for epoch in range(epochs):
         out,hidden=sequence_forward(model,chunk.frames,chunk.initial_hidden,prepared)
         delta=out['logprob']-old_logprob;ratio=delta.exp()
-        policy=-torch.minimum(ratio*advantage,ratio.clamp(1-clip,1+clip)*advantage).mean()
-        value_loss=(out['value'].double()-returns).square().mean()
-        loss=policy+.5*value_loss-.01*out['entropy'].mean()
+        policy=-(torch.minimum(ratio*advantage,ratio.clamp(1-clip,1+clip)*advantage)*learn).sum()/count
+        value_loss=((out['value'].double()-returns).square()*learn).sum()/count
+        loss=policy+.5*value_loss-.01*(out['entropy']*learn).sum()/count
         if not bool(torch.isfinite(loss)):raise ValueError('NONFINITE_API_POLICY_UPDATE')
         before={k:v.detach().clone()for k,v in model.state_dict().items()}
         import copy
@@ -129,7 +135,7 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
         with torch.no_grad():
             checked,hidden=sequence_forward(model,chunk.frames,chunk.initial_hidden,prepared)
             difference=checked['logprob']-old_logprob
-            kl=float((difference.exp()-1-difference).mean())
+            kl=float(((difference.exp()-1-difference)*learn).sum()/count)
         accepted=math.isfinite(kl)and kl<=.03
         if not accepted:model.load_state_dict(before);optimizer.load_state_dict(optimizer_before)
         elif chunk.stream is not None:chunk.stream.hidden=hidden.detach()

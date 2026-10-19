@@ -92,7 +92,7 @@ resync, metadata/lifecycle endpoints, engine resizing and passive queue fills.
 The policy has not earned deployment from these development studies. No production
 worker, live financial ledger, risk/STOP control or account client was changed.
 
-45 focused action/economic/replay/archive checks pass. The first completed GPU
+47 focused action/economic/replay/archive checks pass. The first completed GPU
 population evaluated 16 candidates, with 1,822 training decisions and 21 accepted
 PPO updates. Best worst-case marked ROI was -3.7146%; none qualified. This short
 study is development evidence, not the requested multi-day test.
@@ -110,3 +110,28 @@ reserves 100 GiB of free disk. The first pass preserved 1,197 files totaling
 7,870,677,997 bytes. It adds zero API requests and never changes original
 collector files. These byte snapshots still require transport/semantic
 verification before compilation.
+
+## Batched GPU continuation
+
+A controlled FP32 benchmark of the new raw-action collector uses32worlds and
+32decisions/world (1,024decisions). Interleaved serial/batched comparisons give
+10.260s versus2.685s median collection (3.82x). Exact clocks, wallets, orders and
+fills match; recurrent state matches declared numeric tolerance. One batched
+PPO update takes0.825s and is accepted, peaking3.67GB allocated CUDA memory.
+This is the new raw-action collector, separate from the older9.51x legacy result.
+[Measured result](raw-api-batch-benchmark-003.json).
+
+Batched learners retain separate clocks, cash, inventories, orders, rate budgets
+and recurrent memory. Completed worlds are masked out of learning while others
+continue. Repeated simulated worlds do not create new independent historical
+evidence. Training run007 now uses32worlds per learner,4population members,
+16planned cycles and five-minute development episodes. It transfers a verified
+raw-action development checkpoint from run006 and resets founder optimizer
+moments, preserving learning progress rather than calling old narrow policies
+unrestricted. This transfer is forbidden from full-history qualification.
+
+The [raw archive first-receipt inventory](raw-archive-first-receipt-inventory-20261019.json)
+finds earliest preserved Kalshi segment receipts on Oct18 05:55UTC and Polymarket
+on Oct18 22:35UTC. This samples first rows, not full interval coverage. It still
+does not supply the requested competition-start/8-day/4-day history. Remote or
+other original archives have not been exhausted by this local inventory.

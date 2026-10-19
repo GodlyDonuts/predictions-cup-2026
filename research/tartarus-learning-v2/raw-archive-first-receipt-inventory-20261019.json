@@ -1,0 +1,39 @@
+{
+  "classification": "archived_raw_segment_first_receipt_inventory_not_complete_coverage",
+  "first_rows_only": true,
+  "sources": {
+    "Kalshi": {
+      "files": 57,
+      "first_receipt_utc": "2026-10-18T05:55:06.266000+00:00",
+      "latest_file_first_receipt_utc": "2026-10-19T09:53:03.790000+00:00",
+      "unreadable_first_rows": 0
+    },
+    "forward_polymarket_002": {
+      "files": 430,
+      "first_receipt_utc": "2026-10-19T01:18:46.191000+00:00",
+      "latest_file_first_receipt_utc": "2026-10-19T05:14:10.446000+00:00",
+      "unreadable_first_rows": 0
+    },
+    "forward_polymarket_004_r57b": {
+      "files": 218,
+      "first_receipt_utc": "2026-10-19T08:14:32.839000+00:00",
+      "latest_file_first_receipt_utc": "2026-10-19T10:11:52.010000+00:00",
+      "unreadable_first_rows": 0
+    },
+    "forward_polymarket_001": {
+      "files": 167,
+      "first_receipt_utc": "2026-10-18T22:35:30.904000+00:00",
+      "latest_file_first_receipt_utc": "2026-10-19T00:05:29.220000+00:00",
+      "unreadable_first_rows": 0
+    },
+    "forward_polymarket_003_r56": {
+      "files": 332,
+      "first_receipt_utc": "2026-10-19T05:14:23.153000+00:00",
+      "latest_file_first_receipt_utc": "2026-10-19T08:13:51.420000+00:00",
+      "unreadable_first_rows": 0
+    }
+  },
+  "network_requests": 0,
+  "prices_or_returns_exported": false,
+  "full_competition_history_verified": false
+}
