@@ -88,6 +88,25 @@ class CollateralLedgerTests(unittest.TestCase):
         self.assertEqual(l.available(),{'a':0});self.assertEqual(l.buying_power(),0)
         self.assertEqual(l.equity({'x':500000,'y':500000}),-1500000)
 
+    def test_zero_component_accepted_fill_accounting_matches_existing_fifo_api_episode(self):
+        import random
+        from .test_actions import environment
+        from .contract import OrderSpec
+        env=environment(20*UNIT);ledger=CollateralLedger(cash=env.cash,positions={},components=[],scope='fixture-cup')
+        rng=random.Random(991882);seen=0
+        for i in range(100):
+            spec=OrderSpec('x',rng.choice(('YES','NO')),rng.choice(('BUY','SELL')),rng.randint(1,15),
+                rng.choice((300000,450000,550000,700000)))
+            env.dispatch('ORDER',[spec],idempotency_key='fixture-%d'%i);env.advance(env.now+3000)
+            for f in env.api_fills[seen:]:
+                ledger.apply('existing-fill-%d'%seen,Fill(f['exchange'],f['side'],f['action'],f['quantity'],f['price']))
+                seen+=1
+            self.assertEqual(ledger.cash,env.cash)
+            self.assertEqual({k:v for k,v in ledger.positions.items()if v},
+                {ex:env.held(ex,'YES')-env.held(ex,'NO')for ex in env.exchanges[1:]if env.held(ex,'YES')or env.held(ex,'NO')})
+            self.assertEqual(sum(ledger.debt.values()),0)
+        self.assertGreater(seen,0)
+
     def test_random_fill_paths_conserve_equity_at_execution_marks_and_failed_fills_do_not_mutate(self):
         import random
         rng=random.Random(491103);l=self.ledger(cash=20*UNIT,components=[component(),component('b',('v','w'))],
