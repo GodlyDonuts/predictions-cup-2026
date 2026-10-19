@@ -97,7 +97,7 @@ def _actor_parameter(name,operator):
     return True
 
 
-def mutate(model,probe,operator,seed,*,maximum_trials=8):
+def mutate(model,probe,operator,seed,*,maximum_trials=8,fresh_initializer=None):
     if operator not in OPERATORS:raise ValueError('KNOWN_POPULATION_OPERATOR_REQUIRED')
     if type(maximum_trials)is not int or maximum_trials<1:raise ValueError('POSITIVE_MUTATION_TRIALS')
     original={k:v.detach().clone()for k,v in model.state_dict().items()};parent_sha=fingerprint(model)
@@ -109,7 +109,9 @@ def mutate(model,probe,operator,seed,*,maximum_trials=8):
     try:
         with torch.random.fork_rng(devices=[device]if device.type=='cuda'else[]):
             torch.manual_seed(seed)
-            if operator=='fresh':model.load_state_dict(ApiPolicy(model.hidden_size).to(device).state_dict())
+            if operator=='fresh':
+                model.load_state_dict(ApiPolicy(model.hidden_size).to(device).state_dict())
+                if fresh_initializer is not None:report['fresh_initialization']=fresh_initializer(model)
             elif operator=='head_reset':
                 for module in (model.heads,model.conditioners,model.fractions,model.market_query,
                                model.value,model.monetary_quantiles,model.target_success):

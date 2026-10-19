@@ -1,0 +1,16 @@
+{
+  "classification": "training_only_compute_chunk_duration_diagnostic_not_causal_failure_proof",
+  "member": 0,
+  "chunks": 805,
+  "active_world_chunks": 5848,
+  "median_virtual_span_ms": 425.0,
+  "p10_virtual_span_ms": 368,
+  "p90_virtual_span_ms": 2164,
+  "fraction_shorter_than_600ms_order_arrival": 0.7014363885088919,
+  "fraction_shorter_than_900ms_arrival_plus_receipt": 0.7741108071135431,
+  "configured_compute_decisions": 16,
+  "configured_inference_ms": 23,
+  "financial_world_and_recurrent_state_continue_between_chunks": true,
+  "bootstrap_value_used": true,
+  "missing_action_level_fill_credit_trace": true
+}

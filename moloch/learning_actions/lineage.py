@@ -22,4 +22,5 @@ def development_parent(bundle,checkpoint_path,*,new_dataset_sha256,allow_cross_d
     return {'classification':'development_weights_only_new_scores_required','source_experiment_sha256':source_sha,
             'source_dataset_sha256':bundle['dataset_manifest_sha256'],'new_dataset_sha256':new_dataset_sha256,
             'prior_calendar_bounds_ms':bounds,'same_dataset':same_dataset,
+            'parent_short_alarm_prior_scope':source['config'].get('short_alarm_prior_scope','legacy_global'),
             'optimizer_moments_reset':True,'independent_test_qualification':False}

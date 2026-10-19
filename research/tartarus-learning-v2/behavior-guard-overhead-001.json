@@ -1,0 +1,22 @@
+{
+  "classification": "real_58M_GPU_parameter_guard_overhead_not_end_to_end_training_speedup",
+  "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b",
+  "parameters": 58106855,
+  "measurements": {
+    "sha256": {
+      "repetitions": 5,
+      "median_seconds": 0.14758449990767986
+    },
+    "tensor_versions_v1": {
+      "repetitions": 100,
+      "median_seconds": 8.270004764199257e-05
+    }
+  },
+  "process_GPU_allocation_cap_fraction": 0.15,
+  "cuda_peak_allocated_bytes": 440760320,
+  "current_training_process_unmodified": true,
+  "on_policy_fast_guard_supported_mutations": "PyTorch version-counted writes and parameter replacement; raw storage/.data alias writes unsupported",
+  "persistent_checkpoint_full_sha256_unchanged": true,
+  "production_changed": false,
+  "account_requests": 0
+}

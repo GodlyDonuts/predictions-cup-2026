@@ -29,6 +29,10 @@ class Experiment:
         if config['mode']not in('inspected_development','full_history'):
             raise ValueError('EXPLICIT_EXPERIMENT_MODE_REQUIRED')
         self.device=config.get('device','cuda');self.seed=config.get('seed',190019)
+        if 'cuda_memory_fraction'in config:
+            fraction=config['cuda_memory_fraction']
+            if type(fraction)not in(int,float)or not 0<fraction<=1:raise ValueError('VALID_CUDA_ALLOCATION_FRACTION')
+            if self.device.startswith('cuda'):torch.cuda.set_per_process_memory_fraction(fraction)
         torch.backends.cuda.matmul.allow_tf32=config.get('allow_tf32',False)
         torch.backends.cudnn.allow_tf32=config.get('allow_tf32',False)
         torch.set_num_threads(config.get('cpu_threads',2));torch.manual_seed(self.seed)
@@ -147,7 +151,28 @@ class Experiment:
         if self.calibration is None:
             self.calibration=calibrate(env,model)
             frozen(self.output/'compute-calibration.json',self.calibration)
-        return Stream(env,model,calibration=self.calibration,record_training=training)
+        return Stream(env,model,calibration=self.calibration,record_training=training,
+                      behavior_guard=self.config.get('on_policy_guard','sha256'))
+
+    def make_optimizer(self,model,rate=None,entropy=None):
+        entropy=self.config.get('entropy_coefficient',.01)if entropy is None else entropy
+        if type(entropy)not in(int,float)or not math.isfinite(entropy)or entropy<0:raise ValueError('VALID_LEARNING_ENTROPY_COEFFICIENT')
+        opt=torch.optim.Adam(model.parameters(),lr=self.config.get('learning_rate',1e-5)if rate is None else rate)
+        opt.param_groups[0]['tartarus_entropy_coefficient']=entropy
+        return opt
+
+    def initialize_alarm_prior(self,model):
+        scope=self.config.get('short_alarm_prior_scope','legacy_global')
+        if scope=='wait_only':
+            from .clock_prior import initialize_wait_only
+            return initialize_wait_only(model)
+        if scope!='legacy_global':raise ValueError('EXPLICIT_SHORT_ALARM_PRIOR_SCOPE')
+        with torch.no_grad():model.fractions.bias[2]=-3.;model.fractions.bias[3]=9.
+        return {'operator':'legacy_global_fraction_clock_bias'}
+
+    def training_arguments(self,optimizer):
+        return {'checkpoint_encoder':self.config.get('checkpoint_entity_encoder',False),
+                'entropy_coefficient':optimizer.param_groups[0].get('tartarus_entropy_coefficient',self.config.get('entropy_coefficient',.01))}
 
     def checkpoint(self,name,model,optimizer):
         path=self.output/(name+'.pt')
@@ -200,7 +225,7 @@ class Experiment:
         while env.now<end:
             chunk=collect_chunk(stream,self.config.get('compute_chunk_decisions',32),reward_ledger=ledger)
             rewards=[f['economic_reward']for f in chunk.frames]
-            reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1))
+            reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1),**self.training_arguments(optimizer))
             self.total_updates+=sum(r['accepted']for r in reports)
             self.total_decisions+=len(chunk.frames)
             final=chunk.frames[-1].get('economic_result')
@@ -232,11 +257,12 @@ class Experiment:
         if self.calibration is None:
             self.calibration=calibrate(envs[0],model)
             frozen(self.output/'compute-calibration.json',self.calibration)
-        stream=BatchStream(envs,model,ledgers,calibration=self.calibration)
+        stream=BatchStream(envs,model,ledgers,calibration=self.calibration,
+                           behavior_guard=self.config.get('on_policy_guard','sha256'))
         while any(e.now<e.end for e in envs):
             chunk=stream.collect(self.config.get('compute_chunk_decisions',32))
             rewards=[f['economic_reward']for f in chunk.frames]
-            reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1))
+            reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1),**self.training_arguments(optimizer))
             self.total_updates+=sum(r['accepted']for r in reports)
             decisions=sum(int(f['learn'].sum())for f in chunk.frames)
             self.total_decisions+=decisions
@@ -328,18 +354,23 @@ class Experiment:
             model,bundle=load_checkpoint(donor['path'],donor['sha256'],self.device)
             if bundle['split_specification_sha256']!=self.spec_sha:raise ValueError('FOREIGN_ISLAND_DONOR')
             donor_rate=bundle['optimizer']['param_groups'][0]['lr']
+            donor_entropy=bundle['optimizer']['param_groups'][0].get('tartarus_entropy_coefficient',.01)
             del bundle
             probe,probe_file_sha=self.mutation_probe(model,cycle,slot)
-            report=mutate(model,probe,r['operator'],self.seed+cycle*1000+slot+70000)
+            report=mutate(model,probe,r['operator'],self.seed+cycle*1000+slot+70000,
+                fresh_initializer=(self.initialize_alarm_prior if self.config.get('initial_short_alarm_prior',True)else None))
             scales={'local':(.8,1.2),'medium':(.5,2.),'large':(.25,4.),'head_reset':(.5,2.)}
             rate=(self.config.get('learning_rate',1e-5)if r['operator']=='fresh'else
                   min(.001,max(.000001,donor_rate*self.rng.choice(scales[r['operator']]))))
-            opt=torch.optim.Adam(model.parameters(),lr=rate)
+            entropy=(self.rng.choice(self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)]))
+                if r['operator']=='fresh'else min(.1,max(0.,donor_entropy*self.rng.choice(scales[r['operator']]))))
+            opt=self.make_optimizer(model,rate,entropy)
             child=self.checkpoint('offspring-%03d-%03d'%(cycle,slot),model,opt)
             self.population[slot]=child
             self.log({'event':'population_replacement',**r,'mutation':report,'checkpoint':child,
                       'donor_checkpoint':donor,'probe_file_sha256':probe_file_sha,
                       'donor_source':donor_source,'parent_learning_rate':donor_rate,'child_learning_rate':rate,
+                      'parent_entropy_coefficient':donor_entropy,'child_entropy_coefficient':entropy,
                       'child_receives_full_training_block_before_selection':True})
             del model,opt
 
@@ -364,6 +395,12 @@ class Experiment:
                     for role,bounds in lineage['prior_calendar_bounds_ms'].items():
                         self.data_use.record('train'if role=='train'else'selection',*bounds,lineage['source_experiment_sha256'])
                     frozen(self.output/('founder-%03d-lineage.json'%member),lineage)
+                    if (self.config.get('short_alarm_prior_scope')=='wait_only'and
+                        lineage['parent_short_alarm_prior_scope']!='wait_only'):
+                        if self.config.get('migrate_shared_short_alarm_prior')is not True:
+                            raise ValueError('EXPLICIT_PRIOR_MIGRATION_REQUIRED')
+                        from .clock_prior import migrate_shared_prior
+                        frozen(self.output/('founder-%03d-clock-migration.json'%member),migrate_shared_prior(model))
                 del parent
                 if member>=len(parents):
                     with torch.no_grad():
@@ -372,8 +409,10 @@ class Experiment:
             # Initialization changes exploration probability, never legal action
             # support: favor initially short alarms without forbidding long ones.
             if not inherited and self.config.get('initial_short_alarm_prior',True):
-                with torch.no_grad():model.fractions.bias[2]=-3.;model.fractions.bias[3]=9.
-            opt=torch.optim.Adam(model.parameters(),lr=self.config.get('learning_rate',1e-5))
+                self.initialize_alarm_prior(model)
+            entropies=self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)])
+            if not entropies:raise ValueError('NONEMPTY_INITIAL_ENTROPY_COEFFICIENTS')
+            opt=self.make_optimizer(model,entropy=entropies[member%len(entropies)])
             self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
             del model,opt
         best=None
@@ -383,7 +422,7 @@ class Experiment:
                 torch.manual_seed(self.seed+cycle*1000+member)
                 model,bundle=load_checkpoint(previous['path'],previous['sha256'],self.device)
                 if bundle['split_specification_sha256']!=self.spec_sha:raise ValueError('FOREIGN_EXPERIMENT_CHECKPOINT')
-                opt=torch.optim.Adam(model.parameters(),lr=self.config.get('learning_rate',1e-5))
+                opt=self.make_optimizer(model)
                 opt.load_state_dict(bundle['optimizer']);del bundle
                 training=self.train_episode(model,opt)
                 checkpoint=self.checkpoint('cycle-%03d-member-%03d'%(cycle,member),model,opt)
@@ -409,7 +448,7 @@ class Experiment:
                 torch.manual_seed(self.seed+cycle+70000)
                 with torch.no_grad():
                     for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
-                opt=torch.optim.Adam(model.parameters(),lr=self.config.get('learning_rate',1e-5))
+                opt=self.make_optimizer(model)
                 self.population[loser]=self.checkpoint('offspring-%03d'%cycle,model,opt)
                 del model,opt
             self.log({'event':'cycle_complete','cycle':cycle,'best_selection_reward':best['selection']['reward']})

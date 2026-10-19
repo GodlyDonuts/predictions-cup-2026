@@ -13,7 +13,8 @@ class FixtureExperiment(Experiment):
         self.development=True;self.model_size=16;self.dataset_sha='a'*64;self.spec_sha='b'*64
         self.config={'members':4,'cycles':2,'fresh_founders':4,'development_episode_ms':200,
                      'compute_chunk_decisions':4,'learning_rate':1e-4,'maximum_mark_age_ms':120000,
-                     'training_snapshot_every_updates':4}
+                     'training_snapshot_every_updates':4,'on_policy_guard':'tensor_versions_v1',
+                     'checkpoint_entity_encoder':True,'initial_entropy_coefficients':[0.,.001]}
         self.search_config={'islands':2,'probe_decisions':4,'archive_size':8,'development_selection_blocks':2}
         self.archive=ResearchArchive(self.dataset_sha,self.spec_sha,8)
         self.train_bounds=(1,501);self.evolution_bounds=(501,1001)
@@ -41,6 +42,7 @@ class PopulationExperimentTests(unittest.TestCase):
                 self.assertTrue(r['mutation']['training_only_probe'])
                 child=torch.load(r['checkpoint']['path'],map_location='cpu',weights_only=True)
                 self.assertEqual(child['optimizer']['state'],{})
+                self.assertEqual(child['optimizer']['param_groups'][0]['tartarus_entropy_coefficient'],r['child_entropy_coefficient'])
                 later=json.loads((experiment.output/('result-001-%03d.json'%r['loser'])).read_bytes())
                 self.assertGreater(sum(later['training']['family_counts'].values()),0)
                 cases=later['selection']['cases'];self.assertEqual(len(cases),4)

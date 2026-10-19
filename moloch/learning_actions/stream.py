@@ -34,11 +34,12 @@ def calibrate(environment,model,rounds=12):
 
 
 class Stream:
-    def __init__(self,environment,model,*,calibration=None,record_training=False):
+    def __init__(self,environment,model,*,calibration=None,record_training=False,behavior_guard='sha256'):
         self.env=environment;self.model=model;self.device=next(model.parameters()).device
         self.hidden=model.initial_state(1);self.decisions=0;self.rows=deque(maxlen=4096)
         self.calibration=calibration or calibrate(environment,model)
         self.record_training=record_training;self.last_frame=None
+        self.behavior_guard=behavior_guard
         self.action_counts=Counter();self.status_counts=Counter();self.entity_counts=Counter()
         self.latency=self.calibration['decision_latency_ms']
         if type(self.latency)is not int or self.latency<=0:raise ValueError('NONZERO_MEASURED_COMPUTE_COST')

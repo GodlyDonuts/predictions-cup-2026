@@ -1,0 +1,10 @@
+{
+  "classification": "fresh_founder_clock_prior_diagnostic_synthetic_observation_not_roi",
+  "alpha": 1.1140236854553223,
+  "beta": 8.865091323852539,
+  "modeled_arrival_ms": 600,
+  "probability_limit_expiration_before_arrival": 0.824327188115186,
+  "median_expiration_delta_ms": 16.431363075322437,
+  "same_head_also_controls_WAIT": true,
+  "account_requests": 0
+}

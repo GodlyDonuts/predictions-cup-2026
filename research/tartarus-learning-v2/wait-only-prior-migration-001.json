@@ -1,0 +1,22 @@
+{
+  "classification": "clock_prior_parameter_migration_check_not_profit_or_population_statistics",
+  "source_founder_checkpoint_sha256": "ed05fbbf47ff4b502b933dedbd2150909e81e6a170334670bc356e05cbfea490",
+  "synthetic_observation": true,
+  "WAIT_parameter_max_abs_difference": 0.0,
+  "order_quantity_parameter_max_abs_difference": 0.0,
+  "selected_expiring_limit_probability_before_600ms": {
+    "before": 0.824327188115186,
+    "after": 0.036433488962927175
+  },
+  "migration": {
+    "operator": "migrate_global_short_alarm_to_wait_only",
+    "maximum_linear_residual": 2.761350303970289e-08,
+    "embedding_shift_norm": 16.523130829325698,
+    "legal_deadline_domain_changed": false,
+    "quantity_head_shift_target": 0.0,
+    "WAIT_distribution_preserved_up_to_floating_point": true,
+    "order_expiration_distribution_intentionally_changed": true,
+    "optimizer_moments_must_be_reset": true
+  },
+  "account_requests": 0
+}

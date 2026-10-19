@@ -14,15 +14,21 @@ from .selection import frozen
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--worlds',type=int,default=8)
-    p.add_argument('--steps',type=int,default=32);args=p.parse_args()
+    p.add_argument('--steps',type=int,default=32)
+    p.add_argument('--guard',choices=('sha256','tensor_versions_v1'),default='sha256')
+    p.add_argument('--checkpoint-encoder',action='store_true')
+    p.add_argument('--start-offset-ms',type=int,default=120000)
+    p.add_argument('--memory-fraction',type=float,default=1.);args=p.parse_args()
     config=json.loads(args.config.read_text(encoding='utf-8-sig'))
+    if not 0<args.memory_fraction<=1:raise ValueError('VALID_BENCHMARK_MEMORY_FRACTION')
+    if config.get('device','cuda').startswith('cuda'):torch.cuda.set_per_process_memory_fraction(args.memory_fraction)
     # Compare mathematical batching without TF32's shape-dependent rounding.
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     experiment=Experiment(config,args.output);torch.manual_seed(191104)
     model=ApiPolicy(config.get('hidden_size',4096)).to(config.get('device','cuda'))
     with torch.no_grad():model.fractions.bias[2]=-3.;model.fractions.bias[3]=9.
     def worlds():
-        a,b=experiment.train_bounds;start=a+120000
+        a,b=experiment.train_bounds;start=a+args.start_offset_ms
         return [experiment.world('train',start+i*500,start+i*500+60000)for i in range(args.worlds)]
     calibration=calibrate(worlds()[0],model)
     def sync():
@@ -38,13 +44,13 @@ def main():
             envs=worlds();ledgers=[GrowthLedger(e,development=True,historical_last_mark=True)for e in envs]
             sync();started=time.perf_counter()
             if mode=='serial':
-                streams=[Stream(e,model,calibration=calibration,record_training=True)for e in envs]
+                streams=[Stream(e,model,calibration=calibration,record_training=True,behavior_guard=args.guard)for e in envs]
                 for stream,ledger in zip(streams,ledgers):
                     # Use the same deterministic neural actions as the batch.
                     for _ in range(args.steps):stream.step(deterministic=True);ledger.transition()
                 hidden=torch.cat([s.hidden for s in streams])
             else:
-                stream=BatchStream(envs,model,ledgers,calibration=calibration)
+                stream=BatchStream(envs,model,ledgers,calibration=calibration,behavior_guard=args.guard)
                 last_chunk=stream.collect(args.steps,deterministic=True);hidden=stream.hidden
             sync();durations[mode]=time.perf_counter()-started
             states[mode]=([{'clock':e.now,'cash':e.cash,'lots':e.lots,'fills':e.api_fills,
@@ -53,14 +59,23 @@ def main():
         torch.testing.assert_close(states['serial'][1],states['batched'][1],atol=1e-5,rtol=1e-4)
         timings.append(durations)
     optimizer=torch.optim.Adam(model.parameters(),lr=1e-6);sync();started=time.perf_counter()
-    result=update(model,optimizer,last_chunk,[f['economic_reward']for f in last_chunk.frames],role='train',epochs=1)
+    result=update(model,optimizer,last_chunk,[f['economic_reward']for f in last_chunk.frames],role='train',epochs=1,
+                  checkpoint_encoder=args.checkpoint_encoder)
     sync();elapsed=time.perf_counter()-started
+    from .behavior_guard import identity
+    guard_changed=identity(model,args.guard)!=last_chunk.behavior_sha256
+    if args.guard=='tensor_versions_v1'and any(r['accepted']for r in result)and not guard_changed:
+        raise ValueError('GPU_OPTIMIZER_MUTATION_NOT_DETECTED')
     serial=statistics.median(x['serial']for x in timings);batched=statistics.median(x['batched']for x in timings)
     out={'classification':'controlled_inspected_history_raw_api_gpu_batch_benchmark_not_roi',
         'worlds':args.worlds,'steps_per_world':args.steps,'parameters':sum(p.numel()for p in model.parameters()),
         'timings':timings,'serial_median_seconds':serial,'batched_median_seconds':batched,
         'collection_speedup':serial/batched,'identical_wallets_orders_fills_and_clocks':True,
         'tf32_enabled':False,
+        'behavior_guard':args.guard,'encoder_activation_checkpointing':args.checkpoint_encoder,
+        'start_offset_ms':args.start_offset_ms,
+        'process_memory_fraction_cap':args.memory_fraction,
+        'on_policy_guard_changed_after_optimizer_step':guard_changed,
         'recurrent_states_match_tolerance':True,'batch_ppo_update_seconds':elapsed,'ppo':result,
         'cuda_peak_allocated_bytes':torch.cuda.max_memory_allocated()if next(model.parameters()).is_cuda else 0,
         'http_requests':0,'independent_test_used':False,'production_changed':False,

@@ -20,6 +20,7 @@ class Chunk:
     initial_hidden:torch.Tensor
     bootstrap_value:torch.Tensor
     stream:object=None
+    behavior_guard:str='sha256'
 
 
 def sequence_inputs(frames):
@@ -34,11 +35,14 @@ def sequence_inputs(frames):
     return contracts,torch.stack([f['global_state']for f in frames]),present,masks
 
 
-def sequence_forward(model,frames,initial_hidden,prepared=None):
+def sequence_forward(model,frames,initial_hidden,prepared=None,*,checkpoint_encoder=False):
     """One fused GRU sequence, equivalent to per-decision teacher forcing."""
     contracts,global_state,present,masks=prepared or sequence_inputs(frames)
     t,b,n,_=contracts.shape
-    encoded=model.encoder(contracts)
+    if checkpoint_encoder and torch.is_grad_enabled():
+        from torch.utils.checkpoint import checkpoint
+        encoded=checkpoint(model.encoder,contracts,use_reentrant=False)
+    else:encoded=model.encoder(contracts)
     pooled=(encoded*present.unsqueeze(-1)).sum(2)/present.sum(2,keepdim=True)
     inputs=torch.cat((pooled,model.global_encoder(global_state)),-1)
     resets=torch.stack([f['reset']for f in frames])
@@ -59,7 +63,8 @@ def collect_chunk(stream,decisions=128,*,reward_ledger=None):
     if getattr(stream.env,'role',None)!='train':raise ValueError('TRAINING_CAPTURE_ONLY_FROM_TRAIN_ROLE')
     if not stream.record_training:raise ValueError('TRAINING_CAPTURE_MUST_BE_EXPLICIT')
     if type(decisions)is not int or decisions<=0:raise ValueError('POSITIVE_MEMORY_CHUNK')
-    before=fingerprint(stream.model);frames=[]
+    from .behavior_guard import identity
+    guard=getattr(stream,'behavior_guard','sha256');before=identity(stream.model,guard);frames=[]
     for _ in range(decisions):
         stream.last_frame=None;row=stream.step()
         if stream.last_frame is not None:
@@ -87,10 +92,11 @@ def collect_chunk(stream,decisions=128,*,reward_ledger=None):
             value=stream.model.step(**view,hidden=stream.hidden,
                 reset=torch.tensor([False],device=stream.device),deterministic=True)['value']
     return Chunk(frames,before,stream.env.role if hasattr(stream.env,'role')else'train',
-                 frames[0]['initial_hidden'],value.detach(),stream)
+                 frames[0]['initial_hidden'],value.detach(),stream,guard)
 
 
-def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epochs=2):
+def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epochs=2,
+           checkpoint_encoder=False,entropy_coefficient=.01):
     """Economic rewards must be supplied for every decision, never imputed.
 
     Default no time discount matches the requested compounded-growth objective.
@@ -98,7 +104,10 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     coordinator. This function neither opens held-out data nor selects finalists.
     """
     if role!='train'or chunk.role!='train':raise ValueError('INDEPENDENT_TEST_OR_EVOLUTION_CANNOT_OPTIMIZE_WEIGHTS')
-    if fingerprint(model)!=chunk.behavior_sha256:raise ValueError('FRESH_ON_POLICY_CHUNK_REQUIRED')
+    from .behavior_guard import identity
+    if identity(model,chunk.behavior_guard)!=chunk.behavior_sha256:raise ValueError('FRESH_ON_POLICY_CHUNK_REQUIRED')
+    if type(entropy_coefficient)not in(int,float)or not math.isfinite(entropy_coefficient)or entropy_coefficient<0:
+        raise ValueError('NONNEGATIVE_FINITE_ENTROPY_COEFFICIENT')
     flattened=[x for row in rewards for x in (row if isinstance(row,(list,tuple))else[row])]
     if len(rewards)!=len(chunk.frames)or any(type(x)not in(int,float)or not math.isfinite(x)for x in flattened):
         raise ValueError('COMPLETE_VERIFIED_ECONOMIC_REWARDS_REQUIRED')
@@ -121,11 +130,12 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     reports=[]
     prepared=sequence_inputs(chunk.frames)
     for epoch in range(epochs):
-        out,hidden=sequence_forward(model,chunk.frames,chunk.initial_hidden,prepared)
+        out,hidden=sequence_forward(model,chunk.frames,chunk.initial_hidden,prepared,checkpoint_encoder=checkpoint_encoder)
         delta=out['logprob']-old_logprob;ratio=delta.exp()
         policy=-(torch.minimum(ratio*advantage,ratio.clamp(1-clip,1+clip)*advantage)*learn).sum()/count
         value_loss=((out['value'].double()-returns).square()*learn).sum()/count
-        loss=policy+.5*value_loss-.01*(out['entropy']*learn).sum()/count
+        entropy=(out['entropy']*learn).sum()/count
+        loss=policy+.5*value_loss-entropy_coefficient*entropy
         if not bool(torch.isfinite(loss)):raise ValueError('NONFINITE_API_POLICY_UPDATE')
         before={k:v.detach().clone()for k,v in model.state_dict().items()}
         import copy
@@ -140,6 +150,9 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
         if not accepted:model.load_state_dict(before);optimizer.load_state_dict(optimizer_before)
         elif chunk.stream is not None:chunk.stream.hidden=hidden.detach()
         reports.append({'epoch':epoch,'loss':float(loss.detach()),'post_update_kl':kl,
+                        'policy_loss':float(policy.detach()),'value_loss':float(value_loss.detach()),
+                        'mean_entropy':float(entropy.detach()),'entropy_coefficient':entropy_coefficient,
+                        'encoder_activation_checkpointing':bool(checkpoint_encoder),'behavior_guard':chunk.behavior_guard,
                         'accepted':accepted,'recurrent_state_carried':True})
         if not accepted:break
     return reports

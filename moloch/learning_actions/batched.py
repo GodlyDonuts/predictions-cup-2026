@@ -23,7 +23,7 @@ def inputs(observations,device):
 
 
 class BatchStream:
-    def __init__(self,envs,model,ledgers,*,calibration=None):
+    def __init__(self,envs,model,ledgers,*,calibration=None,behavior_guard='sha256'):
         if not envs or len(envs)!=len(ledgers)or any(e.role!='train'for e in envs):
             raise ValueError('ONE_TRAIN_ROLE_LEDGER_PER_INDEPENDENT_WORLD_REQUIRED')
         if len({id(e)for e in envs})!=len(envs):raise ValueError('WORLDS_MUST_NOT_SHARE_MUTABLE_ACCOUNTS')
@@ -31,6 +31,7 @@ class BatchStream:
         self.device=next(model.parameters()).device
         self.hidden=model.initial_state(len(envs));self.decisions=[0]*len(envs)
         self.calibration=calibration or calibrate(envs[0],model)
+        self.behavior_guard=behavior_guard
         self.latency=self.calibration['decision_latency_ms']
         self.completed={};self.action_counts=[Counter()for e in envs]
 
@@ -69,7 +70,8 @@ class BatchStream:
 
     def collect(self,compute_steps=32,*,deterministic=False):
         if type(compute_steps)is not int or compute_steps<=0:raise ValueError('POSITIVE_COMPUTE_CHUNK')
-        before=fingerprint(self.model);frames=[]
+        from .behavior_guard import identity
+        before=identity(self.model,self.behavior_guard);frames=[]
         for _ in range(compute_steps):
             frame=self.step(deterministic=deterministic)
             if frame is None:break
@@ -80,4 +82,4 @@ class BatchStream:
             value=self.model.step(**prepared,hidden=self.hidden,
                 reset=torch.zeros(len(self.envs),device=self.device,dtype=torch.bool),deterministic=True)['value']
             value=value*torch.tensor([e.now<e.end for e in self.envs],device=self.device)
-        return Chunk(frames,before,'train',frames[0]['initial_hidden'],value.detach(),self)
+        return Chunk(frames,before,'train',frames[0]['initial_hidden'],value.detach(),self,self.behavior_guard)
