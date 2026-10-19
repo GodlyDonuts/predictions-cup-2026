@@ -7,7 +7,7 @@ There is no new decision throttle, coalescing, horizon or event truncation.
 import heapq
 from moloch.learning_v2.clock import EventClock
 
-OBSERVABLE=frozenset(('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt',
+OBSERVABLE=frozenset(('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt','api_trade_receipt',
     'derived_book_receipt','derived_token_receipt','derived_token_expiry','derived_baseline_expiry',
     'derived_account_receipt'))
 

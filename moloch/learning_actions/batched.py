@@ -19,7 +19,7 @@ def inputs(observations,device):
         'global_state':torch.cat([v['global_state']for v in values]),
         'present':torch.cat([F.pad(v['present'],(0,n-v['contracts'].shape[1]))for v in values]),
         'masks':{k:torch.cat([F.pad(v['masks'][k],(0,n-v['contracts'].shape[1])if k=='market'
-                    else(0,0,0,n-v['contracts'].shape[1]))for v in values])for k in ('market','family')}}
+                    else(0,0,0,n-v['contracts'].shape[1]))for v in values])for k in values[0]['masks']}}
 
 
 class BatchStream:

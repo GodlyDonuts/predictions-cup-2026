@@ -1,0 +1,30 @@
+{
+  "classification": "file_only_fit_role_paginated_tape_replay_not_roi",
+  "observedUtc": "2026-10-19T17:49:11.476162+00:00",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "exchange": "1076",
+  "queryOpenedAtMs": 1792410001000,
+  "sourcePrintsInFrozenQuery": 10,
+  "pageLimit": 5,
+  "deliveredPageLengths": [
+    5,
+    5
+  ],
+  "chargedReads": 2,
+  "duplicateDeliveredMatchIds": false,
+  "originalPrintClocksPreserved": true,
+  "paidReceiptOnlyRawTokens": 5,
+  "continuationSnapshotUnaffectedByLaterSource": true,
+  "newAccountRequests": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "active015SourceChanged": false,
+  "reportingProjectionCalibrated": false,
+  "sourceSha256": {
+    "moloch/learning_actions/trade_history.py": "2268d81d759ddcd2a967c9e8a3af065973e067c79f3cbdfdcc326232aa7b4818",
+    "moloch/learning_actions/engine.py": "7e85f96efc8cbdc97603ca8a0d4f4b76f59121acc97eea0d3487f875c804ff36",
+    "moloch/learning_actions/policy.py": "10d702b310a6fbad1c50d57be5e1a3fb9dad4990c81cb3ab070d4520025ce3f5",
+    "moloch/learning_actions/batched.py": "4a0335451c2712b9fdf1bfb80c0aecdb8e5b647d31abd6dab620c5541328b6a8",
+    "moloch/learning_actions/training.py": "c78f3f412ecd222b5d0be0b7fe88c35c0d506d85b084622a3f0f650eecb0ff5d"
+  }
+}

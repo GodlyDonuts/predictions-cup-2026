@@ -34,6 +34,8 @@ class ApiPolicy(FusedRecurrentPolicy):
         market=actions['market']if actions is not None else dist.probs.argmax(-1)if deterministic else dist.sample()
         selected=torch.cat((h,encoded[batch,market]),-1)+self.conditioners['family'](family)
         out={'market':market,'family':family}
+        query_mask=masks.get('trade_query')
+        trade_query=(family==10)&(query_mask[batch,market,0]if query_mask is not None else torch.zeros_like(family,dtype=torch.bool))
         logprob=dist.log_prob(market).double()+family_dist.log_prob(family).double()
         entropy=dist.entropy().double()+family_dist.entropy().double()
         for name,head in self.heads.items():
@@ -44,6 +46,7 @@ class ApiPolicy(FusedRecurrentPolicy):
             value=actions[name]if actions is not None else d.probs.argmax(-1)if deterministic else d.sample()
             out[name]=value
             meaningful=torch.ones_like(value,dtype=torch.bool)if name=='family'else ((out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6))
+            if name=='side':meaningful=meaningful|trade_query
             if name=='patience':meaningful=meaningful&(out['price']!=0)
             logprob+=torch.where(meaningful,d.log_prob(value).double(),0.)
             entropy+=torch.where(meaningful,d.entropy().double(),0.)
@@ -54,7 +57,7 @@ class ApiPolicy(FusedRecurrentPolicy):
             value=actions[name]if actions is not None else d.mean if deterministic else d.sample()
             out[name]=value
             order=(out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6)
-            meaningful=order if name=='target_fraction'else ((out['family']==0)|(order&(out['patience']==1)&(out['price']!=0)))
+            meaningful=(order|trade_query)if name=='target_fraction'else ((out['family']==0)|(order&(out['patience']==1)&(out['price']!=0)))
             logprob+=torch.where(meaningful,d.log_prob(value),0.)
             entropy+=torch.where(meaningful,d.entropy(),0.)
         return {'actions':out,'logprob':logprob,'entropy':entropy,'hidden':h,

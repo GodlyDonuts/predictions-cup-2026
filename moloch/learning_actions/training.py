@@ -31,7 +31,7 @@ def sequence_inputs(frames):
     present=torch.stack([F.pad(f['present'],(0,n-f['present'].shape[1]))for f in frames])
     masks={key:torch.stack([F.pad(f['masks'][key],
         (0,n-f['contracts'].shape[1])if key=='market'else(0,0,0,n-f['contracts'].shape[1]))for f in frames])
-        for key in ('market','family')}
+        for key in frames[0]['masks']}
     return contracts,torch.stack([f['global_state']for f in frames]),present,masks
 
 

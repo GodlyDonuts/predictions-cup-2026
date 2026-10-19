@@ -46,8 +46,13 @@ class ApiEpisode(PreparedEpisode):
         self.expiry_scheduled=set()
         self.external_ready={'Kalshi':0,'Polymarket':0}
         self.finance_revision=0;self.known_finance_revision=-1
+        from .trade_history import TradeHistory
+        self.trade_history=TradeHistory();self.known_trade_pages={}
         for key in (('account',),('collateral',),('owned_orders',)):
             self.keys['SIG'].append(key)
+        # Endpoint identity is public metadata, not a free signal that a hidden
+        # print just occurred. Empty and active exchanges have the same targets.
+        self.keys['SIG'].extend(('trade_flow',ex)for ex in self.exchanges[1:])
 
     def start_delivery(self):
         # Fully policy-controlled reads, no compulsory round-robin collector.
@@ -226,7 +231,7 @@ class ApiEpisode(PreparedEpisode):
         self.clock.schedule(self.busy_until,30,'api_receipt',idempotency_key)
         return record
 
-    def request_observation(self,venue,key):
+    def request_observation(self,venue,key,*,trade_limit=50,continue_trade_page=True):
         if venue not in ('SIG','Kalshi','Polymarket'):raise ValueError('READ_ONLY_REFERENCE_VENUE')
         if key not in self.keys[venue]:return {'status':'SOURCE_NOT_AVAILABLE'}
         if venue=='SIG'and key[0]=='realtime_token':return self.realtime.mint()
@@ -235,6 +240,17 @@ class ApiEpisode(PreparedEpisode):
         if venue=='SIG':
             ready=self.budget.ready_at(self.now,False)
             if ready>self.now:return {'status':'RATE_WAIT','ready_ms':ready}
+            if key[0]=='trade_flow':
+                previous=self.known_trade_pages.get(key[1],{})
+                cursor=previous.get('pagination',{}).get('nextCursor')if continue_trade_page else None
+                payload=self.trade_history.page(key[1],self.now,limit=trade_limit,cursor=cursor)
+                self.feed_sequence+=1;rid=f'trade-read:{self.feed_sequence}'
+                assert self.budget.admit(rid,self.now,False)
+                self.busy_until=self.now+self.mechanics.read_latency_ms
+                self.feed_requests.append({'venue':venue,'at_ms':self.now,'key':key,'request_id':rid})
+                self.feed_request_counts[venue]+=1
+                self.clock.schedule(self.busy_until,30,'api_trade_receipt',(rid,key,payload))
+                return {'status':'IN_FLIGHT'}
             if key[0]in('account','collateral','owned_orders'):
                 self.feed_sequence+=1;rid=f'api-read:{self.feed_sequence}'
                 assert self.budget.admit(rid,self.now,False)
@@ -265,6 +281,16 @@ class ApiEpisode(PreparedEpisode):
         self.observation_revision+=1
 
     def _event(self,at,kind,value):
+        if kind=='trade_flow':
+            self.trade_history.accept(at,value);return
+        if kind=='api_trade_receipt':
+            rid,key,page=value;self.budget.complete(rid,at)
+            self.known_trade_pages[key[1]]=page
+            for original in page['data']:
+                row=dict(original);row['original_available_at_ms']=row['available_at_ms']
+                row['available_at_ms']=at;self.flow.accept(at,row)
+            self.feed_receipts.append({'venue':'SIG','at_ms':at,'key':key})
+            self.feed_receipt_counts['SIG']+=1;self.observation_revision+=1;return
         if kind=='api_world_book_expiry':
             from .world_confidence import expire
             expire(self,at,value);return
@@ -374,9 +400,12 @@ class ApiEpisode(PreparedEpisode):
         entities += [('relationship',r)for r in sorted(self.relationships)]
         entities += [('order',q)for q in sorted(self.known_orders)]
         entities += [('read',(v,key))for v in ('SIG','Kalshi','Polymarket')for key in self.keys[v]]
+        entities += [('trade_print',(ex,j))for ex,page in self.known_trade_pages.items()
+                     for j in range(len(page['data']))]
         if self.realtime is not None:entities.append(('stream_control','disconnect'))
         features=np.zeros((len(entities),40),np.float32)
-        masks={'market':np.ones(len(entities),bool),'family':np.zeros((len(entities),12),bool)}
+        masks={'market':np.ones(len(entities),bool),'family':np.zeros((len(entities),12),bool),
+               'trade_query':np.zeros((len(entities),1),bool)}
         def ready(write):
             if self.budget.active is not None or self.budget.poisoned:return False
             if write and self.budget.unknown:return False
@@ -421,10 +450,21 @@ class ApiEpisode(PreparedEpisode):
                                    float(o.spec.side=='YES'),float(o.spec.action=='BUY')]
             elif kind=='stream_control':
                 masks['family'][i,11]=True;features[i,:6]=self.realtime.features();features[i,24]=4.
+            elif kind=='trade_print':
+                ex,j=key;page=self.known_trade_pages[ex];row=page['data'][j]
+                features[i,:5]=[row['yes_price_micros']/UNIT,np.log1p(row['quantity'])/16.,
+                    np.log1p(self.now-row['executed_at_ms'])/32.,
+                    np.log1p(self.now-row['received_at_ms'])/32.,np.log1p(self.now-page['opened_at_ms'])/32.]
+                features[i,24]=7.
+                features[i,33:40]=np.frombuffer(hashlib.sha256(repr(('contract',ex)).encode()).digest()[:7],dtype=np.uint8)/255.
             else:
                 masks['family'][i,10]=((write_ready if key[1][0]=='realtime_token'else read_ready)
                     if key[0]=='SIG'else self.now>=self.external_ready[key[0]])
                 features[i,30+('SIG','Kalshi','Polymarket').index(key[0])]=1.
+                if key[0]=='SIG'and key[1][0]=='trade_flow':
+                    masks['trade_query'][i,0]=True
+                    page=self.known_trade_pages.get(key[1][1])
+                    if page is not None:features[i,25:28]=[1.,float(page['pagination']['hasMore']),len(page['data'])/200.]
                 if key[0]!='SIG':
                     target=key[1];r=self.reference_cache.get((target[2],target[3]))
                     if r is not None:features[i,8:11]=[r.get('bid_yes_micros',0)/UNIT,r.get('ask_yes_micros',UNIT)/UNIT,
@@ -480,7 +520,8 @@ class ApiEpisode(PreparedEpisode):
         elif family==4:operation,payload='CANCEL_ALL',key if kind=='contract'else{'market':key}if kind=='market'else None
         elif family in (7,8,9):
             operation=('BATCH','MULTI','ALL_OR_NONE')[family-7];payload=list(self.builder)
-        elif family==10:return self.request_observation(*key)
+        elif family==10:return self.request_observation(*key,
+            trade_limit=min(200,1+int(fraction*200)),continue_trade_page=bool(int(action['side'])))
         else:
             if kind=='stream_control':return self.realtime.disconnect()
             self.builder.clear();return {'status':'BUILDER_CLEARED'}
@@ -536,6 +577,8 @@ class ApiTape(PreparedTape):
         for row in self.rows[a:b]:
             kind=('api_snapshot_information'if separate_world and row['venue']=='SIG'and row['kind']in('book','gap')else'tape')
             env.clock.schedule(row['available_at_ms'],10,kind,row)
+        from .trade_history import seed_role_history
+        seed_role_history(self,env,start_ms-burnin_ms)
         a=bisect.bisect_left(self.flow_times,start_ms-burnin_ms);b=bisect.bisect_left(self.flow_times,end_ms)
         for row in self.flow_rows[a:b]:
             env.clock.schedule(row['available_at_ms'],10,'trade_flow',row)
