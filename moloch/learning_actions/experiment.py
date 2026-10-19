@@ -66,11 +66,13 @@ class Experiment:
         self.dataset_sha=self.original.manifest_sha256
         from .state_encoding import validate
         validate(config.get('global_state_encoding','raw'))
-        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW
+        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION
         windows=config.get('trade_query_windows',False)
         if type(windows)is not bool or(windows and config.get('full_depth_observations')is not True):
             raise ValueError('QUERY_WINDOWS_REQUIRE_EXPLICIT_FULL_DEPTH_PROFILE')
-        expected_protocol=QUERY_WINDOW if windows else CURRENT
+        scoped=config.get('scoped_execution_receipts',False)
+        if type(scoped)is not bool or(scoped and not windows):raise ValueError('SCOPED_EXECUTION_REQUIRES_QUERY_PROFILE')
+        expected_protocol=SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
         if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .world_confidence import validate_lifetime

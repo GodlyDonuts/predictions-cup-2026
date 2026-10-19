@@ -19,6 +19,7 @@ class DerivedStream:
         self.control_revision=0;self.connection=0;self.synced={}
         self.deliveries=0;self.mints=0;self.gaps=0
         self.private_pending=False
+        self.private_fills=[];self.private_orders=[];self.private_fill_cursor=len(env.api_fills)
 
     def invalidate(self):
         self.synced.clear()
@@ -28,6 +29,7 @@ class DerivedStream:
     def disconnect(self):
         self.control_revision+=1;self.connection+=1;self.enabled=False
         self.private_pending=False
+        self.private_fills.clear();self.private_orders.clear();self.private_fill_cursor=len(self.env.api_fills)
         self.invalidate()
         return {'status':'STREAM_DISCONNECTED'}
 
@@ -53,6 +55,7 @@ class DerivedStream:
             if revision!=self.control_revision:return True
             self.connection+=1;self.enabled=True;self.expires_at=at+self.token_lifetime_ms
             self.private_pending=False
+            self.private_fills.clear();self.private_orders.clear();self.private_fill_cursor=len(env.api_fills)
             self.invalidate()
             env.clock.schedule(self.expires_at,30,'derived_token_expiry',self.connection)
             return True
@@ -62,12 +65,20 @@ class DerivedStream:
         if kind=='derived_private_publish':
             if self.enabled and value==self.connection:
                 self.private_pending=False
+                from .execution_receipts import enabled
+                if enabled(env):
+                    snapshot={'fills':self.private_fills,'orders':self.private_orders}
+                    self.private_fills=[];self.private_orders=[]
+                else:snapshot=env._capture_account()
                 env.clock.schedule(at+env.mechanics.receipt_latency_ms,30,'derived_account_receipt',
-                                    (self.connection,env._capture_account()))
+                                    (self.connection,snapshot))
             return True
         if kind=='derived_account_receipt':
             connection,snapshot=value
-            if self.enabled and connection==self.connection:env._publish_account(snapshot)
+            if self.enabled and connection==self.connection:
+                from .execution_receipts import enabled,publish_private
+                if enabled(env):publish_private(env,snapshot)
+                else:env._publish_account(snapshot)
             return True
         if kind=='derived_baseline_expiry':
             exchange,baseline,connection=value
@@ -88,9 +99,22 @@ class DerivedStream:
         return False
 
     def source_private_fill(self):
+        from .execution_receipts import enabled,fill
+        if enabled(self.env):
+            if self.enabled:self.private_fills.extend(fill(r,self.env.finance_revision)
+                for r in self.env.api_fills[self.private_fill_cursor:])
+            self.private_fill_cursor=len(self.env.api_fills)
         if self.enabled and not self.private_pending:
             self.private_pending=True
             self.env.clock.schedule(self.env.now+1000,30,'derived_private_publish',self.connection)
+
+    def source_order_close(self,order_id):
+        from .execution_receipts import enabled
+        if enabled(self.env)and self.enabled:
+            self.private_orders.append((self.env.finance_revision,{order_id:None}))
+            if not self.private_pending:
+                self.private_pending=True
+                self.env.clock.schedule(self.env.now+1000,30,'derived_private_publish',self.connection)
 
     def source_book(self,at,exchange,payload=None):
         if self.enabled:

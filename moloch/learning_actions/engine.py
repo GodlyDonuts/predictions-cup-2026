@@ -50,6 +50,7 @@ class ApiEpisode(PreparedEpisode):
         from .account_reads import FIELDS
         self.known_resource_revisions={k:-1 for k in FIELDS}
         self.finance_observation_count=0
+        self.known_order_revisions={};self.known_acknowledgments=[];self.known_private_fills=[]
         from .trade_history import TradeHistory
         self.trade_history=TradeHistory();self.known_trade_pages={}
         for key in (('account',),('collateral',),('owned_orders',),('positions',)):
@@ -319,11 +320,15 @@ class ApiEpisode(PreparedEpisode):
         if kind=='feed_poll':return  # no compulsory observation schedule
         if kind=='api_arrival':
             operation,payload,key,constraint=value;record=self.idempotency[key]
+            fill_start=len(self.api_fills)
             try:
                 record['result']=deepcopy(self._execute(operation,payload,constraint));record['status']='EXECUTED'
                 self.finance_revision+=1
             except ValueError as exc:record['error']=str(exc);record['status']='REJECTED'
-            record['receipt_snapshot']=self._capture_account()
+            from .execution_receipts import enabled,ack
+            record['receipt_snapshot']=(ack(self,operation,payload,record,fill_start)if enabled(self)
+                                        else self._capture_account())
+            if enabled(self)and len(self.api_fills)>fill_start:self.notify_fill()
             for order in self.api_orders.values():
                 if order.spec.expiration_ms is not None and order.spec.expiration_ms>=at and order.id not in self.expiry_scheduled:
                     self.expiry_scheduled.add(order.id)
@@ -331,10 +336,18 @@ class ApiEpisode(PreparedEpisode):
             return
         if kind=='api_receipt':
             record=self.idempotency[value];self.budget.complete(record['request_id'],at)
-            self.responses.append((at,value,record['status']));self._publish_account(record['receipt_snapshot']);return
+            self.responses.append((at,value,record['status']))
+            from .execution_receipts import enabled,publish_ack
+            if enabled(self):publish_ack(self,record['receipt_snapshot'])
+            else:self._publish_account(record['receipt_snapshot'])
+            return
         if kind=='api_expiry':
-            self.api_orders.pop(value,None);self.known_orders.pop(value,None)
-            self.finance_revision+=1;self.observation_revision+=1;return
+            self.api_orders.pop(value,None);self.finance_revision+=1
+            from .execution_receipts import enabled
+            if enabled(self):
+                if self.realtime is not None:self.realtime.source_order_close(value)
+            else:self.known_orders.pop(value,None);self.observation_revision+=1
+            return
         if kind=='api_account_receipt':self._publish_account(value);return
         if kind=='api_read_receipt':
             from .account_reads import publish
@@ -367,7 +380,10 @@ class ApiEpisode(PreparedEpisode):
         if kind=='feed_receipt':self.observation_revision+=1
 
     def notify_fill(self):
-        if self.private_fill_push:
+        from .execution_receipts import enabled
+        if enabled(self):
+            if self.realtime is not None:self.realtime.source_private_fill()
+        elif self.private_fill_push:
             self.clock.schedule(self.now+self.mechanics.receipt_latency_ms,30,'api_account_receipt',self._capture_account())
         elif self.realtime is not None:self.realtime.source_private_fill()
 
@@ -412,6 +428,8 @@ class ApiEpisode(PreparedEpisode):
         entities += [('read',(v,key))for v in ('SIG','Kalshi','Polymarket')for key in self.keys[v]]
         entities += [('trade_print',(ex,j))for ex,page in self.known_trade_pages.items()
                      for j in range(len(page['data']))]
+        entities += [('execution_ack',j)for j in range(len(self.known_acknowledgments))]
+        entities += [('private_fill',j)for j in range(len(self.known_private_fills))]
         if self.realtime is not None:entities.append(('stream_control','disconnect'))
         features=np.zeros((len(entities),40),np.float32)
         masks={'market':np.ones(len(entities),bool),'family':np.zeros((len(entities),12),bool),
@@ -459,6 +477,20 @@ class ApiEpisode(PreparedEpisode):
                                    float(o.spec.side=='YES'),float(o.spec.action=='BUY')]
             elif kind=='stream_control':
                 masks['family'][i,11]=True;features[i,:6]=self.realtime.features();features[i,24]=4.
+            elif kind=='execution_ack':
+                row=self.known_acknowledgments[key]
+                features[i,:8]=[log_quantity(row['quantity'])/16.,log_quantity(row['remaining'])/16.,
+                    log_quantity(row['quantity_traded'])/16.,row['total_cost_micros']/max(1,self.initial_wealth),
+                    (row['last_price_micros']or 0)/UNIT,float(row['side']=='YES'),
+                    float(row['action']=='BUY'),(self.now-row['at_ms'])/1000.]
+                features[i,24]=8.;features[i,33:40]=identity('contract',row['exchange'])
+                features[i,8:15]=identity('order',row['order']);features[i,15]=float(row['open'])
+            elif kind=='private_fill':
+                row=self.known_private_fills[key]
+                features[i,:3]=[row['yes_price_micros']/UNIT,log_quantity(row['quantity'])/16.,
+                    (self.now-row['executed_at_ms'])/1000.]
+                features[i,8:15]=identity('order',row['order'])
+                features[i,24]=9.;features[i,33:40]=identity('contract',row['exchange'])
             elif kind=='trade_print':
                 ex,j=key;page=self.known_trade_pages[ex];row=page['data'][j]
                 features[i,:5]=[row['yes_price_micros']/UNIT,log_quantity(row['quantity'])/16.,
@@ -533,8 +565,8 @@ class ApiEpisode(PreparedEpisode):
         elif family==10:
             query={}
             if 'query_filter'in action:
-                from .observation_protocol import QUERY_WINDOW
-                if self.observation_protocol!=QUERY_WINDOW:raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
+                from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION
+                if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
                 if key[0]=='SIG'and key[1][0]=='trade_flow':
                     from .query_window import parameters
                     query=parameters(action)

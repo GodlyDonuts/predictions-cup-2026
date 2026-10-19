@@ -33,8 +33,10 @@ def publish(env, snapshot):
         elif field=='lots':env.known_lots=value
         elif field=='advance':env.known_advance=value
         else:
-            env.known_orders={q:o for q,o in value.items()
-                if o.spec.expiration_ms is None or o.spec.expiration_ms>env.now}
+            from .execution_receipts import enabled,orders
+            if enabled(env):orders(env,value,revision,complete=True)
+            else:env.known_orders={q:o for q,o in value.items()
+                  if o.spec.expiration_ms is None or o.spec.expiration_ms>env.now}
         env.known_resource_revisions[field]=revision
         applied=True
     if applied:

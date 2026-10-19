@@ -41,6 +41,7 @@ def migrate_full_depth(parent):
     if type(parent)is not FullDepthPolicy:raise ValueError('EXACT_FULL_DEPTH_PARENT_REQUIRED_FOR_QUERY_MIGRATION')
     child=QueryWindowPolicy(parent.hidden_size).to(next(parent.parameters()).device)
     child.global_state_encoding=getattr(parent,'global_state_encoding','raw')
+    child.observation_protocol=parent.observation_protocol
     values=child.state_dict();old=parent.state_dict()
     for key,value in old.items():values[key].copy_(value)
     child.load_state_dict(values)
