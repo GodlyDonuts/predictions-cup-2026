@@ -1,0 +1,10 @@
+{
+  "allArtifactsRetained": true,
+  "classification": "unfinished_legacy_likelihood_study_quarantined",
+  "creationUtc": "2026-10-19T20:41:22.111745Z",
+  "exitCode": 42,
+  "observedUtc": "2026-10-19T20:56:17.0744300Z",
+  "processId": 27948,
+  "productionAuthority": false,
+  "reason": "Raw local-memory latents omitted from legacy PPO joint density; no method comparison conclusion"
+}

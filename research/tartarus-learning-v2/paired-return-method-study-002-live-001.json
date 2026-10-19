@@ -1,0 +1,41 @@
+{
+  "acceptedUpdates": 115,
+  "actualPlanSha256": "d81a26121936ca4df8e5fce8e04c34cb741b685d199df03dce6f2beedf988caa",
+  "architecture": "tartarus-raw-api-full-depth-joint-memory-gru-v5",
+  "bothArmsComplete": false,
+  "classification": "corrected_joint_likelihood_cpu_method_comparison_live_not_roi",
+  "commonCalibration": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 4,
+    "device": "cpu",
+    "measured_ms": [
+      3.165600006468594,
+      3.14110005274415,
+      3.051399951800704,
+      3.0767000280320644,
+      2.9055000049993396,
+      2.8874999843537807,
+      2.89939995855093,
+      2.8930000262334943,
+      3.098099958151579,
+      3.285399987362325,
+      3.3463999861851335,
+      3.188899951055646
+    ]
+  },
+  "configSha256": "7006c08aa94d655ffd7ff1315ce6ef2532fbb2fd35843990c5213a8ae9f3395b",
+  "creation": "2026-10-19T13:01:36.840444-08:00",
+  "currentArm": "streaming",
+  "decisions": 7360,
+  "founderParameterEqualityVerifiedAfterBothArmsComplete": false,
+  "fullSizeGpuQualified": false,
+  "independentProfitableRoiEstablished": false,
+  "independentTestUsed": false,
+  "launcherPid": 22648,
+  "observedUtc": "2026-10-19T21:03:45.791144+00:00",
+  "parameters": 493165,
+  "productionChanged": false,
+  "sourceCommit": "d8fbf96a8db3e91c2e938cbf36ff6df18f9c40a7",
+  "sourceManifestSha256": "761dadb3ba089d8df36fdf2d531a157844512ab74d95aa13504b68183ed0162b",
+  "trainerPid": 37040
+}

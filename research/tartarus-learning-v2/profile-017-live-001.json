@@ -1,0 +1,130 @@
+{
+  "acceptedUpdates": 3,
+  "architecture": "tartarus-raw-api-full-depth-joint-memory-gru-v5",
+  "classification": "verified_live_joint_memory_corrected_gpu_population_not_roi",
+  "computeDecisionsPerChunk": 64,
+  "configSha256": "429971827dfcb1653e1cfae04c35bc039ef646281928710b6e237a7082fd7a1d",
+  "controllerPhase": "new_population_training_verified",
+  "cudaPeakAllocatedBytes": 7279702016,
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "decisions": 1415,
+  "fullHistoryQualified": false,
+  "hiddenSize": 4096,
+  "independentProfitableRoiEstablished": false,
+  "independentTestUsed": false,
+  "lastChunkAccepted": true,
+  "lastProgressUnix": 1792443832.1832237,
+  "launcherPid": 28580,
+  "newAccountRequests": 0,
+  "observationProtocol": "sig_scoped_local_memory_joint_v4",
+  "observedUtc": "2026-10-19T21:04:07.151523+00:00",
+  "oldCheckpointsRemoved": false,
+  "oldCompletedMembers": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "oldCountersResumed": false,
+  "oldFinancialWorldsResumed": false,
+  "oldGenerationComplete": false,
+  "oldLastObservedAcceptedUpdates": 291,
+  "oldLastObservedDecisions": 97654,
+  "oldOptimizerReused": false,
+  "oldQueuedMembers": [
+    5,
+    6,
+    7
+  ],
+  "oldScoresReused": false,
+  "oldTrainedUnevaluatedMember": 4,
+  "parameters": 58183917,
+  "parents": [
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "1aa84a8832d8f24e4c591295c18e6e0feae611cda3206e9921a189f75f92a877",
+      "member": 0,
+      "optimizerReset": true,
+      "origin": "checked_evaluated_partial_generation_member",
+      "parameterSha256": "07af898f6a4f1c930cf2842c5ca0f05b72c65c1079a83f8d7c8680c2c11a0314",
+      "parentCheckpointSha256": "711dd6923bd825e8e1ac74a4ce25fde971f7a8ba8edb7b36fadb569c08e25e6c"
+    },
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "06a44d8ffbb9e999f47b0a93630ac447765cbb9a332f2b59be174658741aab23",
+      "member": 1,
+      "optimizerReset": true,
+      "origin": "checked_evaluated_partial_generation_member",
+      "parameterSha256": "47284076d182e1157195100eea2e420a994d38b04fdc99509a171ef7c8944feb",
+      "parentCheckpointSha256": "e64b1ee162ce97244136c07ab3c8def517e0c8413ba5215a94d036207ae364d2"
+    },
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "484019fecb74ccf5cdbfdfa591510b3c13704d5cd82e014f8ff4389819e555de",
+      "member": 2,
+      "optimizerReset": true,
+      "origin": "checked_evaluated_partial_generation_member",
+      "parameterSha256": "72effa531aa22dd6d3ccaee8342d1cb72ce64f1f1d7cb99b883f06af5fd44c32",
+      "parentCheckpointSha256": "4236818deafdf5e8988b74602d961f51a7c3145409da9001a34e38b0c2394f32"
+    },
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "49f9ee2422daca3fc263efdee8837c77100bc9c91906a9f7e46501bd57570c9c",
+      "member": 3,
+      "optimizerReset": true,
+      "origin": "checked_evaluated_partial_generation_member",
+      "parameterSha256": "dab8aeb5d631198123981e52a7bb00031e36c0f6dd7779407f13a3e384ddff06",
+      "parentCheckpointSha256": "e30fadd771615c50dc3f965e9d5bf371fe2171c4afd5bc758869075bac91478c"
+    },
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "0a851cf854cef5b4137618945c2c900339c7562dcdf3f61f02436fd1e2ab5a42",
+      "member": 4,
+      "optimizerReset": true,
+      "origin": "checked_trained_unevaluated_member",
+      "parameterSha256": "e109e547d667c4c61c675fc65e9aadc1d6d87a3954f27b1707392b9a8119e99a",
+      "parentCheckpointSha256": "49d69433e41e899fd71669a891da17f450b46ab97ae25db47e89f1188413d8a6"
+    },
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "bfd7e4f0c294795f00f3ef7b5291db105dbd73e8a8a0cd0519089b1a4d8fb999",
+      "member": 5,
+      "optimizerReset": true,
+      "origin": "checked_queued_first_cycle_founder",
+      "parameterSha256": "03af77698a41fd4730d710fdcbe7b3be1a37c920784972058eae821053d83dcb",
+      "parentCheckpointSha256": "401f859064aed01d0281af8af881dd573201062f84556958fe7de35cd12b6898"
+    },
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "fdea87acbaa16c325fa056713af5030ca261a74a98fb7daba030af64941c9646",
+      "member": 6,
+      "optimizerReset": true,
+      "origin": "checked_queued_first_cycle_founder",
+      "parameterSha256": "91301c9b1e82c88e3c785315a46f60d404f58960bfa2b7dd3b23633d6285371a",
+      "parentCheckpointSha256": "a4cab808d947f602c92a728bb428bb5a9d5ef9985f90a6788112e2736f75f42b"
+    },
+    {
+      "allWeightsPreservedExactly": true,
+      "founderCheckpointSha256": "90e5137f1b87ff18be16f2057e8c7083e671d7c0161b088c0fb33e163f404eb3",
+      "member": 7,
+      "optimizerReset": true,
+      "origin": "checked_queued_first_cycle_founder",
+      "parameterSha256": "86b45b468a76ef2ef811e3134be214cfa78ec0c6e4e31b7940daba659842285b",
+      "parentCheckpointSha256": "bdf8d39b7a8acfb3f7b8c794453321601a7ea0e640e8221248317b24ffd1b0b8"
+    }
+  ],
+  "partialPlanSha256": "5c2acea8d6d8b44aa362eac1ad35f0e2587f9a14642ead06c28dac502b9fc9a6",
+  "plannedCycles": 16,
+  "plannedMembers": 8,
+  "productionChanged": false,
+  "replayCacheManifestSha256": "8f984b2bbddd53d867b5701483c48127fe262ace98153f25ea21faed32dea375",
+  "run": "raw-api-growth-development-017",
+  "runtimeSourceFilesVerified": 106,
+  "sourceCommit": "d8fbf96a8db3e91c2e938cbf36ff6df18f9c40a7",
+  "sourceFilesVerified": 225,
+  "sourceManifestSha256": "761dadb3ba089d8df36fdf2d531a157844512ab74d95aa13504b68183ed0162b",
+  "specSha256": "365cafc2b19388a184adcfda6035be5de23f22bd5db05c054c4d27b42896e63b",
+  "trainerCreation": 134369173614560850,
+  "trainerPid": 39824,
+  "worlds": 8
+}
