@@ -231,3 +231,21 @@ then assemble substantially longer three-venue development history from retained
 originals. Full eight-day chronology, calibrated complete API/ALL/lifecycle parity
 and independently positive ROI remain incomplete. None of this changes official
 production holdings, bank history or execution controls.
+
+## Active phase008 and recorder continuity
+
+[Observed active phase](active-learning-20261019.json): the expanded profile is
+now actually training on the laptop GPU, with32worlds/learner, three verified
+completed parent checkpoints from phase007 and one genuinely fresh founder.
+It enables derived SIG delivery, displayed-queue flow and private fills that
+require an active stream. Initial observed work exceeds45kdecisions/85accepted
+updates; counters in the linked observation are authoritative for that time.
+Phase007 was superseded from completed checkpoints; its unfinished work is not
+claimed completed. No qualified positive ROI has been established.
+
+The public Polymarket recorder reached its prior3h finite duration and was
+confirmed stopped with no matching process. Its existing journal segments were
+verified archived before restarting the same public recorder/cache for24h at30
+HTTP admissions/s. The fresh process is verified running with378cached books
+across189markets. Kalshi collection continues. This adds no SIG account client
+or production writes; original recording evidence and financial state remain.

@@ -1,0 +1,58 @@
+{
+  "classification": "observed_active_development_training_not_independent_roi",
+  "observed_utc": "2026-10-19T11:30:23.141460+00:00",
+  "source_commit": "29bdde28d1acce07103c371604e73ed11d1bb8a2",
+  "run": "raw-api-growth-development-008",
+  "parameters": 58106855,
+  "worlds_per_learner": 32,
+  "population_members": 4,
+  "planned_cycles": 16,
+  "verified_parent_checkpoints": [
+    "e44689f758497c30f5c4120d4f3e2f43f11cbc3f1fe4d0af7786a9f6eb0a9110",
+    "0a70ecd82fe8b2cdf77fd1baf16c40d3eb03990e845778860ed05deff83a57f2",
+    "c58d85f1a21a9e616fe8aa8d0d8cacb6eee32a2032058d684e857b117ee1a281"
+  ],
+  "fresh_founders": 1,
+  "dataset_role": "previously_inspected_development_only",
+  "training_bounds_ms": [
+    1792383361040,
+    1792383960040
+  ],
+  "selection_bounds_ms": [
+    1792384020040,
+    1792384258040
+  ],
+  "sig_realtime_mode": "producer_validated_derived_books_not_raw_topic_replay",
+  "passive_flow_mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+  "private_fill_notifications": "requires_active_sig_stream",
+  "config_sha256": "b2b358fe3f6234a231ec95558019aab4eb83ed9cdd57ac95aaacfebd9de3619d",
+  "training_decisions": 49961,
+  "accepted_updates": 102,
+  "current_member_modeled_fills": 304,
+  "modeled_fills_are_not_contest_transactions": true,
+  "older_phase_transition": {
+    "training_decisions_at_transition": 811051,
+    "classification": "superseded_by_stream_flow_training_phase",
+    "all_completed_checkpoints_preserved": true,
+    "production_changed": false,
+    "unfinished_member_not_claimed_completed": true,
+    "accepted_updates_at_transition": 934
+  },
+  "independent_test_used": false,
+  "production_changed": false,
+  "public_polymarket_recorder": {
+    "pid": 43224,
+    "at": "2026-10-19T11:30:22.340Z",
+    "state": "running",
+    "admissions": 8195,
+    "cached_books": 378,
+    "configured_rps": 30,
+    "prior_finite_recorder_confirmed_absent": true,
+    "old_segments_archived_before_retention": true,
+    "continuation_duration_seconds": 86400,
+    "SIG_account_requests_added": 0
+  },
+  "full_history_coverage_established": false,
+  "execution_calibrated": false,
+  "positive_independent_roi_established": false
+}
