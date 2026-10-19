@@ -565,8 +565,8 @@ class ApiEpisode(PreparedEpisode):
         elif family==10:
             query={}
             if 'query_filter'in action:
-                from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION
-                if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
+                from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT
+                if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
                 if key[0]=='SIG'and key[1][0]=='trade_flow':
                     from .query_window import parameters
                     query=parameters(action)

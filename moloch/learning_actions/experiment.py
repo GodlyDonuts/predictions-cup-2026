@@ -68,13 +68,15 @@ class Experiment:
         self.dataset_sha=self.original.manifest_sha256
         from .state_encoding import validate
         validate(config.get('global_state_encoding','raw'))
-        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION
+        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT
         windows=config.get('trade_query_windows',False)
         if type(windows)is not bool or(windows and config.get('full_depth_observations')is not True):
             raise ValueError('QUERY_WINDOWS_REQUIRE_EXPLICIT_FULL_DEPTH_PROFILE')
         scoped=config.get('scoped_execution_receipts',False)
         if type(scoped)is not bool or(scoped and not windows):raise ValueError('SCOPED_EXECUTION_REQUIRES_QUERY_PROFILE')
-        expected_protocol=SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
+        joint=config.get('joint_local_memory_density',False)
+        if type(joint)is not bool or(joint and not scoped):raise ValueError('JOINT_MEMORY_REQUIRES_SCOPED_QUERY_PROFILE')
+        expected_protocol=MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
         if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .world_confidence import validate_lifetime
@@ -479,6 +481,9 @@ class Experiment:
             del model,opt
 
     def policy_type(self):
+        if self.config.get('joint_local_memory_density',False):
+            from .joint_memory_policy import JointMemoryPolicy
+            return JointMemoryPolicy
         if self.config.get('trade_query_windows',False):
             from .query_policy import QueryWindowPolicy
             return QueryWindowPolicy
@@ -555,12 +560,20 @@ class Experiment:
                         from .full_depth import migrate_legacy_policy
                         model,migration=migrate_legacy_policy(model)
                         frozen(self.output/('founder-%03d-depth-migration.json'%member),migration)
-                    if type(model)is not self.policy_type():
+                    from .full_depth import FullDepthPolicy
+                    if type(model)is FullDepthPolicy and type(model)is not self.policy_type():
                         from .query_policy import QueryWindowPolicy,migrate_full_depth
-                        if self.policy_type()is not QueryWindowPolicy or self.config.get('migrate_query_window_heads')is not True:
+                        from .joint_memory_policy import JointMemoryPolicy
+                        if self.policy_type()not in(QueryWindowPolicy,JointMemoryPolicy)or self.config.get('migrate_query_window_heads')is not True:
                             raise ValueError('EXPLICIT_QUERY_WINDOW_ARCHITECTURE_MIGRATION_REQUIRED')
                         model,migration=migrate_full_depth(model)
                         frozen(self.output/('founder-%03d-query-window-migration.json'%member),migration)
+                    if type(model)is not self.policy_type():
+                        from .joint_memory_policy import JointMemoryPolicy,migrate_query_memory
+                        if self.policy_type()is not JointMemoryPolicy or self.config.get('migrate_joint_memory_density')is not True:
+                            raise ValueError('EXPLICIT_JOINT_MEMORY_ARCHITECTURE_MIGRATION_REQUIRED')
+                        model,migration=migrate_query_memory(model)
+                        frozen(self.output/('founder-%03d-joint-memory-migration.json'%member),migration)
                 del parent
                 if member>=len(parents):
                     with torch.no_grad():

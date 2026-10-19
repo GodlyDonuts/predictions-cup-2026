@@ -1,0 +1,38 @@
+{
+  "classification": "verified_live_predeclared_CPU_method_comparison_not_result",
+  "observedUtc": "2026-10-19T20:45:50.631114+00:00",
+  "workerPid": 27948,
+  "launcherPid": 40208,
+  "processCreationUtc": "2026-10-19T20:41:22.111745+00:00",
+  "sourceCommit": "827cdcbb53f03880490b84a2bd95e4a189de5dcd",
+  "sourceFilesVerified": 223,
+  "runtimeSourceFilesVerified": 105,
+  "sourceManifestSha256": "26aabc18059cc521f4e945e82d17c58a934d38c814531a581716e1064db481bd",
+  "configSha256": "984fb035d1d3d07e14303f222a33f51070425046639a425eff3239fb95ca87f9",
+  "predeclaredProtocolSha256": "a6edf8742b3d0c1ee4c50476ad3e26916a461177a747c9f60d96181883a04f9f",
+  "actualPlanSha256": "08919ef40308bbdd2cfe1e06be36ca6f8a6dec04ddd5a663249649f8860174d9",
+  "parameters": 493165,
+  "hiddenSize": 128,
+  "worldsPerFounder": 4,
+  "foundersPerArm": 4,
+  "commonMeasuredDecisionLatencyMs": 5,
+  "commonTrainBoundsMs": [
+    1792410601000,
+    1792411201000
+  ],
+  "commonSelectionBoundsMs": [
+    1792416001000,
+    1792416121000
+  ],
+  "currentArm": "streaming",
+  "decisionsObserved": 15149,
+  "acceptedUpdatesObserved": 257,
+  "closedArmStarted": false,
+  "bothArmsComplete": false,
+  "initialWeightEqualityVerifiedAtCompletion": false,
+  "activeGpuRunChanged": false,
+  "newAccountRequests": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "independentProfitableRoiEstablished": false
+}

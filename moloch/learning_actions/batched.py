@@ -90,7 +90,7 @@ class BatchStream:
                 self.decisions[i]=view.decisions[j]
                 if j in view.completed:self.completed[i]=view.completed[j]
             return chunk
-        from .behavior_guard import identity
+        from .behavior_guard import identity,contract
         before=identity(self.model,self.behavior_guard);frames=[]
         for _ in range(compute_steps):
             frame=self.step(deterministic=deterministic)
@@ -102,7 +102,7 @@ class BatchStream:
             value=self.model.step(**prepared,hidden=self.hidden,
                 reset=torch.zeros(len(self.envs),device=self.device,dtype=torch.bool),deterministic=True)['value']
             value=value*torch.tensor([e.now<e.end for e in self.envs],device=self.device)
-        return Chunk(frames,before,'train',frames[0]['initial_hidden'],value.detach(),self,self.behavior_guard)
+        return Chunk(frames,before,'train',frames[0]['initial_hidden'],value.detach(),self,self.behavior_guard,contract(self.model))
 
 
 class _ActiveWorldView(BatchStream):

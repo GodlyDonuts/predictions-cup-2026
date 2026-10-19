@@ -21,6 +21,7 @@ class Chunk:
     bootstrap_value:torch.Tensor
     stream:object=None
     behavior_guard:str='sha256'
+    behavior_contract:tuple=None
 
 
 def sequence_inputs(frames):
@@ -63,7 +64,7 @@ def collect_chunk(stream,decisions=128,*,reward_ledger=None):
     if getattr(stream.env,'role',None)!='train':raise ValueError('TRAINING_CAPTURE_ONLY_FROM_TRAIN_ROLE')
     if not stream.record_training:raise ValueError('TRAINING_CAPTURE_MUST_BE_EXPLICIT')
     if type(decisions)is not int or decisions<=0:raise ValueError('POSITIVE_MEMORY_CHUNK')
-    from .behavior_guard import identity
+    from .behavior_guard import identity,contract
     guard=getattr(stream,'behavior_guard','sha256');before=identity(stream.model,guard);frames=[]
     for _ in range(decisions):
         stream.last_frame=None;row=stream.step()
@@ -92,7 +93,7 @@ def collect_chunk(stream,decisions=128,*,reward_ledger=None):
             value=stream.model.step(**view,hidden=stream.hidden,
                 reset=torch.tensor([False],device=stream.device),deterministic=True)['value']
     return Chunk(frames,before,stream.env.role if hasattr(stream.env,'role')else'train',
-                 frames[0]['initial_hidden'],value.detach(),stream,guard)
+                 frames[0]['initial_hidden'],value.detach(),stream,guard,contract(stream.model))
 
 
 def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epochs=2,
@@ -104,7 +105,8 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     coordinator. This function neither opens held-out data nor selects finalists.
     """
     if role!='train'or chunk.role!='train':raise ValueError('INDEPENDENT_TEST_OR_EVOLUTION_CANNOT_OPTIMIZE_WEIGHTS')
-    from .behavior_guard import identity
+    from .behavior_guard import identity,require_contract
+    require_contract(model,chunk.behavior_contract)
     prescribed=None;global_advantage=None
     if episode_session is None:
         if identity(model,chunk.behavior_guard)!=chunk.behavior_sha256:raise ValueError('FRESH_ON_POLICY_CHUNK_REQUIRED')
@@ -180,6 +182,10 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     encoding=validate(getattr(model,'global_state_encoding','raw'))
     from .observation_protocol import validate as protocol,LEGACY
     observation_protocol=protocol(getattr(model,'observation_protocol',LEGACY))
+    from .joint_memory_policy import JointMemoryPolicy
+    from .observation_protocol import MEMORY_JOINT
+    if (type(model)is JointMemoryPolicy)!=(observation_protocol==MEMORY_JOINT):
+        raise ValueError('JOINT_MEMORY_ARCHITECTURE_PROTOCOL_MISMATCH')
     bundle={'architecture':model.architecture,'hidden_size':model.hidden_size,'global_state_encoding':encoding,
         'observation_protocol':observation_protocol,
         'model':model.state_dict(),'optimizer':optimizer.state_dict(),
@@ -194,11 +200,12 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     from .policy import ApiPolicy
     from .full_depth import FullDepthPolicy
     from .query_policy import QueryWindowPolicy
+    from .joint_memory_policy import JointMemoryPolicy
     path=Path(path)
     if hashlib.sha256(path.read_bytes()).hexdigest()!=expected_sha256:raise ValueError('FROZEN_RAW_API_CHECKPOINT_CHANGED')
     bundle=torch.load(path,map_location=device,weights_only=True)
     architectures={ApiPolicy.architecture:ApiPolicy,FullDepthPolicy.architecture:FullDepthPolicy,
-                   QueryWindowPolicy.architecture:QueryWindowPolicy}
+                   QueryWindowPolicy.architecture:QueryWindowPolicy,JointMemoryPolicy.architecture:JointMemoryPolicy}
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
@@ -206,5 +213,8 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     model.global_state_encoding=validate(bundle.get('global_state_encoding','raw'))
     from .observation_protocol import validate as protocol,LEGACY
     model.observation_protocol=protocol(bundle.get('observation_protocol',LEGACY))
+    from .observation_protocol import MEMORY_JOINT
+    if (type(model)is JointMemoryPolicy)!=(model.observation_protocol==MEMORY_JOINT):
+        raise ValueError('JOINT_MEMORY_ARCHITECTURE_PROTOCOL_MISMATCH')
     if fingerprint(model)!=bundle['parameter_sha256']:raise ValueError('RAW_API_PARAMETERS_CHANGED')
     return model,bundle

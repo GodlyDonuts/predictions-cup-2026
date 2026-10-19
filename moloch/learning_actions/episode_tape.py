@@ -9,7 +9,7 @@ import hashlib,io,json,math,sqlite3
 from pathlib import Path
 import numpy as np
 import torch
-from .behavior_guard import identity
+from .behavior_guard import identity,contract,require_contract
 from .selection import frozen
 from .batched import BatchStream,inputs
 from .training import Chunk
@@ -57,6 +57,7 @@ class EpisodeWriter:
         self.metadata={'classification':'closed_frozen_behavior_training_episode','role':'train',
             'dataset_sha256':dataset_sha256,'specification_sha256':specification_sha256,
             'actor_sha256':self.actor,'architecture':stream.model.architecture,
+            'behavior_contract':contract(stream.model),
             'observation_protocol':stream.model.observation_protocol,'calibration':stream.calibration,
             'world_bounds':[[e.now,e.end]for e in stream.envs],
             'production_authority':False,'independent_test_used':False}
@@ -70,6 +71,7 @@ CREATE INDEX target_world ON targets(world,batch,step);
 ''')
 
     def record(self,chunk):
+        require_contract(self.stream.model,chunk.behavior_contract)
         if self.sealed or chunk.role!='train' or not isinstance(chunk.stream,BatchStream):raise ValueError('OPEN_TRAIN_EPISODE_REQUIRED')
         if identity(self.stream.model,self.stream.behavior_guard)!=self.guard or chunk.behavior_sha256!=self.guard:
             raise ValueError('BEHAVIOR_POLICY_CHANGED_DURING_EPISODE')
@@ -98,6 +100,9 @@ CREATE INDEX target_world ON targets(world,batch,step);
 
     def seal(self):
         if self.sealed:raise ValueError('EPISODE_ALREADY_SEALED')
+        require_contract(self.stream.model,self.metadata['behavior_contract'])
+        if identity(self.stream.model,self.stream.behavior_guard)!=self.guard:
+            raise ValueError('BEHAVIOR_POLICY_CHANGED_DURING_EPISODE')
         if any(e.now!=e.end or not ledger.closed for e,ledger in zip(self.stream.envs,self.stream.ledgers)):
             raise ValueError('ALL_TRAIN_EPISODES_MUST_COMPLETE_BEFORE_RETURNS')
         if self.clocks!=[e.end for e in self.stream.envs]:raise ValueError('EVERY_EPISODE_DECISION_MUST_BE_RECORDED')
@@ -176,7 +181,7 @@ class EpisodeReader:
                 returns.append([targets[i]for i in worlds])
             if [financial_digest(e)for e in selected]!=json.loads(final_json):raise ValueError('EXACT_ACTION_REPLAY_FINANCIAL_STATE_REQUIRED')
             chunk=Chunk(frames,self.metadata['actor_sha256'],'train',hidden,
-                torch.zeros(len(worlds),device=device),None,'sha256')
+                torch.zeros(len(worlds),device=device),None,'sha256',self.metadata.get('behavior_contract'))
             chunk.episode_reader=self;chunk.episode_batch=batch;chunk.episode_worlds=worlds
             yield chunk,returns
         if any(e.now!=e.end or not l.closed for e,l in zip(envs,ledgers)):

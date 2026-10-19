@@ -53,8 +53,10 @@ def preserve(run,destination,*,members=8,hidden_size=4096,reason):
     if any(e['event']in('cycle_complete','population_replacement')for e in events):
         raise ValueError('USE_COMPLETED_GENERATION_OR_LATER_CYCLE_HANDOFF')
     completed=[(i,e)for i,e in enumerate(events)if e['event']=='member_evaluated']
-    if [e['member']for _,e in completed]!=list(range(members-1))or any(e['cycle']!=0 for _,e in completed):
-        raise ValueError('ALL_BUT_LAST_FIRST_CYCLE_MEMBERS_MUST_BE_EVALUATED')
+    if len(completed)>=members or [e['member']for _,e in completed]!=list(range(len(completed)))or any(e['cycle']!=0 for _,e in completed):
+        raise ValueError('EXACT_UNFINISHED_SEQUENTIAL_FIRST_CYCLE_REQUIRED')
+    active_member=len(completed);last_completed=completed[-1][0]if completed else -1
+    active_checkpoint=run/('cycle-000-member-%03d.pt'%active_member)
     candidates=[]
     for path in(run/'training-recovery').glob('slot-*.json'):
         metadata=json.loads(path.read_text())
@@ -64,12 +66,17 @@ def preserve(run,destination,*,members=8,hidden_size=4096,reason):
         if p.parent!=(run/'training-recovery')or p.stem!=path.stem:raise ValueError('EXACT_RECOVERY_SLOT_REQUIRED')
         matches=[i for i,e in enumerate(events)if e['event']=='training_weight_snapshot'
             and e['checkpoint']==cp and e['total_updates']==metadata['total_updates']]
-        if matches and matches[-1]>completed[-1][0]:candidates.append((metadata['total_updates'],metadata))
-    if not candidates:raise ValueError('LAST_ACTIVE_MEMBER_ACCEPTED_SNAPSHOT_REQUIRED')
-    _,recovery=max(candidates,key=lambda item:item[0]);destination.mkdir(parents=True,exist_ok=False)
+        if matches and matches[-1]>last_completed:candidates.append((metadata['total_updates'],metadata))
+    recovery=None
+    if not active_checkpoint.is_file():
+        if not candidates:raise ValueError('LAST_ACTIVE_MEMBER_ACCEPTED_SNAPSHOT_REQUIRED')
+        _,recovery=max(candidates,key=lambda item:item[0])
+    destination.mkdir(parents=True,exist_ok=False)
     active=destination/'active-parent';active.mkdir();(active/'experiment.json').write_bytes(source)
-    selected=active/('member-%03d.pt'%(members-1));shutil.copyfile(recovery['checkpoint']['path'],selected)
-    if sha_file(selected)!=recovery['checkpoint']['sha256']:raise ValueError('RECOVERY_ROTATED_DURING_COPY')
+    selected=active/('member-%03d.pt'%active_member)
+    active_cp=({'path':str(active_checkpoint),'sha256':sha_file(active_checkpoint)}if recovery is None else recovery['checkpoint'])
+    shutil.copyfile(active_cp['path'],selected)
+    if sha_file(selected)!=active_cp['sha256']:raise ValueError('RECOVERY_ROTATED_DURING_COPY')
     checkpoints=[]
     for _,event in completed:
         member=event['member'];row=json.loads((run/('result-000-%03d.json'%member)).read_text())
@@ -78,24 +85,34 @@ def preserve(run,destination,*,members=8,hidden_size=4096,reason):
         expected=run/('cycle-000-member-%03d.pt'%member)
         if Path(row['checkpoint']['path']).resolve()!=expected:raise ValueError('EXACT_COMPLETED_MEMBER_CHECKPOINT_REQUIRED')
         checkpoints.append(row['checkpoint'])
-    checkpoints.append({'path':str(selected),'sha256':recovery['checkpoint']['sha256']})
+    checkpoints.append({'path':str(selected),'sha256':active_cp['sha256']})
+    for member in range(active_member+1,members):
+        p=run/('founder-%03d.pt'%member)
+        checkpoints.append({'path':str(p),'sha256':sha_file(p)})
     parents=[];source_sha=hashlib.sha256(source).hexdigest()
     for member,cp in enumerate(checkpoints):
         model,bundle=load_checkpoint(cp['path'],cp['sha256'],'cpu')
         if bundle['split_specification_sha256']!=source_sha or bundle['dataset_manifest_sha256']!=experiment['dataset_manifest_sha256']:
             raise ValueError('PARTIAL_CHECKPOINT_SOURCE_CHANGED')
         if bundle['hidden_size']!=hidden_size:raise ValueError('PARTIAL_MODEL_SIZE_CHANGED')
+        if bundle.get('observation_protocol')!=config.get('observation_protocol',model.observation_protocol):
+            raise ValueError('PARTIAL_PARENT_PROTOCOL_CHANGED')
         if bundle.get('global_state_encoding','raw')!=config.get('global_state_encoding','raw'):
             raise ValueError('PARTIAL_PARENT_ENCODING_CHANGED')
         group=bundle['optimizer']['param_groups'][0];rate=group['lr'];entropy=group['tartarus_entropy_coefficient']
         if not math.isfinite(rate)or rate<=0 or not math.isfinite(entropy)or entropy<0:raise ValueError('FINITE_PARTIAL_HYPERPARAMETERS')
         parents.append({'member':member,**cp,'hiddenSize':hidden_size,'learning_rate':rate,'entropy_coefficient':entropy,
-            'origin':'checked_unfinished_member_accepted_weights'if member==members-1 else'checked_evaluated_partial_generation_member'})
+            'origin':('checked_evaluated_partial_generation_member'if member<active_member else
+                'checked_queued_first_cycle_founder'if member>active_member else
+                'checked_trained_unevaluated_member'if recovery is None else'checked_unfinished_member_accepted_weights')})
         del model,bundle
     plan={'classification':CLASSIFICATION,'completedGeneration':False,'cycle':0,'sourceRun':str(run),
         'reason':reason,'sourceExperimentSha256':source_sha,'sourceDatasetSha256':experiment['dataset_manifest_sha256'],
-        'completedMembers':list(range(members-1)),'unfinishedMember':members-1,'activeSnapshotUpdates':recovery['total_updates'],
-        'activeSnapshotDecisions':recovery['total_decisions'],'parents':parents,'progressPrefixBytes':len(prefix),
+        'completedMembers':list(range(active_member)),'unfinishedMember':active_member,
+        'queuedMembers':list(range(active_member+1,members)),
+        'activeSnapshotUpdates':recovery['total_updates']if recovery else None,
+        'activeSnapshotDecisions':recovery['total_decisions']if recovery else None,
+        'activeTrainedCheckpointUnevaluated':recovery is None,'parents':parents,'progressPrefixBytes':len(prefix),
         'progressPrefixSha256':hashlib.sha256(prefix).hexdigest(),'oldScoresReusedForNewSelection':False,
         'oldFinancialWorldsResumed':False,'productionAuthority':False}
     return verify(plan,run,members=members,hidden_size=hidden_size)

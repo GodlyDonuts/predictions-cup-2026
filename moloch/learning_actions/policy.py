@@ -49,8 +49,11 @@ class ApiPolicy(FusedRecurrentPolicy):
             meaningful=torch.ones_like(value,dtype=torch.bool)if name=='family'else ((out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6))
             if name=='side':meaningful=meaningful|trade_query
             if name=='patience':meaningful=meaningful&(out['price']!=0)
-            logprob+=torch.where(meaningful,d.log_prob(value).double(),0.)
-            entropy+=torch.where(meaningful,d.entropy().double(),0.)
+            # V5 exposes every sampled latent in next-step local memory. Keep
+            # the original sampling/conditioning law, but score its full joint.
+            scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
+            logprob+=torch.where(scored,d.log_prob(value).double(),0.)
+            entropy+=torch.where(scored,d.entropy().double(),0.)
             selected=selected+self.conditioners[name](value)*meaningful.unsqueeze(-1)
         parameters=(torch.nn.functional.softplus(self.fractions(selected))+1).double()
         for name,pair in [('target_fraction',(0,1)),('child_fraction',(2,3))]:
@@ -59,8 +62,9 @@ class ApiPolicy(FusedRecurrentPolicy):
             out[name]=value
             order=(out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6)
             meaningful=(order|trade_query)if name=='target_fraction'else ((out['family']==0)|(order&(out['patience']==1)&(out['price']!=0)))
-            logprob+=torch.where(meaningful,d.log_prob(value),0.)
-            entropy+=torch.where(meaningful,d.entropy(),0.)
+            scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
+            logprob+=torch.where(scored,d.log_prob(value),0.)
+            entropy+=torch.where(scored,d.entropy(),0.)
         return {'actions':out,'logprob':logprob,'entropy':entropy,'hidden':h,
                 'value':self.value(h).squeeze(-1),'monetary_quantiles':self.monetary_quantiles(h),
                 'success_logit':self.target_success(h).squeeze(-1)}

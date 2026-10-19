@@ -6,7 +6,7 @@ Training returns include every later reward and the existing terminal correction
 """
 import torch
 from .episode_tape import EpisodeReader,EpisodeWriter
-from .behavior_guard import identity
+from .behavior_guard import identity,require_contract
 from moloch.learning_v2.train_inner import fingerprint
 
 
@@ -32,6 +32,10 @@ def release_worlds(envs):
 class EpisodeSession:
     def __init__(self,reader,model):
         if type(reader)is not EpisodeReader:raise ValueError('SEALED_TRAIN_EPISODE_READER_REQUIRED')
+        if (model.architecture!=reader.metadata['architecture']or
+            model.observation_protocol!=reader.metadata['observation_protocol']):
+            raise ValueError('BEHAVIOR_ARCHITECTURE_OR_PROTOCOL_CHANGED')
+        require_contract(model,reader.metadata.get('behavior_contract'))
         if fingerprint(model)!=reader.metadata['actor_sha256']:raise ValueError('ORIGINAL_BEHAVIOR_WEIGHTS_REQUIRED')
         self.reader=reader;self.model=model;self.expected=identity(model,'tensor_versions_v1');self.next_batch=0
 

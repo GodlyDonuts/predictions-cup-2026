@@ -24,16 +24,18 @@ class QueryWindowPolicy(FullDepthPolicy):
         logits=self.query_filter(selected);d=masked_categorical(logits,torch.ones_like(logits,dtype=torch.bool))
         value=actions['query_filter']if actions is not None else d.probs.argmax(-1)if deterministic else d.sample()
         a['query_filter']=value
-        out['logprob']=out['logprob']+torch.where(query,d.log_prob(value).double(),0.)
-        out['entropy']=out['entropy']+torch.where(query,d.entropy().double(),0.)
+        scored=torch.ones_like(query)if getattr(self,'local_memory_joint_density',False)else query
+        out['logprob']=out['logprob']+torch.where(scored,d.log_prob(value).double(),0.)
+        out['entropy']=out['entropy']+torch.where(scored,d.entropy().double(),0.)
         active=query&(value==1)
         params=(torch.nn.functional.softplus(self.query_times(selected))+1).double()
         for name,pair in [('query_from_fraction',(0,1)),('query_to_fraction',(2,3))]:
             dist=Beta(params[:,pair[0]],params[:,pair[1]])
             value=actions[name]if actions is not None else dist.mean if deterministic else dist.sample()
             a[name]=value
-            out['logprob']=out['logprob']+torch.where(active,dist.log_prob(value),0.)
-            out['entropy']=out['entropy']+torch.where(active,dist.entropy(),0.)
+            scored=torch.ones_like(active)if getattr(self,'local_memory_joint_density',False)else active
+            out['logprob']=out['logprob']+torch.where(scored,dist.log_prob(value),0.)
+            out['entropy']=out['entropy']+torch.where(scored,dist.entropy(),0.)
         return out
 
 

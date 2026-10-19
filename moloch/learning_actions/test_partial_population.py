@@ -10,6 +10,29 @@ from .population_handoff import next_configuration
 
 
 class PartialPopulationTests(unittest.TestCase):
+    def test_evaluated_prefix_trained_unevaluated_and_queued_founders_stay_distinct(self):
+        with tempfile.TemporaryDirectory()as directory:
+            root=Path(directory);run=self.fixture(root)
+            spec=json.loads((run/'experiment.json').read_bytes());spec['config']['members']=4
+            (run/'experiment.json').unlink();sha=frozen(run/'experiment.json',spec)
+            model=ApiPolicy(16);opt=torch.optim.Adam(model.parameters(),lr=1e-5)
+            opt.param_groups[0]['tartarus_entropy_coefficient']=.001
+            def cp(path):
+                path.unlink(missing_ok=True)
+                return {'path':str(path.resolve()),'sha256':save_checkpoint(path,model,opt,
+                    dataset_manifest_sha256='a'*64,split_specification_sha256=sha)}
+            evaluated=cp(run/'cycle-000-member-000.pt')
+            row={'member':0,'cycle':0,'checkpoint':evaluated,'training':{},'selection':{'reward':-.1}}
+            (run/'result-000-000.json').unlink();frozen(run/'result-000-000.json',row)
+            active=cp(run/'cycle-000-member-001.pt');queued=[cp(run/('founder-%03d.pt'%i))for i in (2,3)]
+            (run/'progress.jsonl').write_text(json.dumps({'event':'member_evaluated',**row})+'\n')
+            plan=preserve(run,root/'kept',members=4,hidden_size=16,reason='joint density fixture')
+            self.assertEqual(plan['completedMembers'],[0]);self.assertEqual(plan['queuedMembers'],[2,3])
+            self.assertTrue(plan['activeTrainedCheckpointUnevaluated']);self.assertIsNone(plan['activeSnapshotUpdates'])
+            self.assertEqual([p['sha256']for p in plan['parents']],[evaluated['sha256'],active['sha256'],*[p['sha256']for p in queued]])
+            self.assertEqual(plan['parents'][1]['origin'],'checked_trained_unevaluated_member')
+            self.assertEqual(plan['parents'][2]['origin'],'checked_queued_first_cycle_founder')
+
     def fixture(self,root):
         run=root/'old';run.mkdir();recovery=run/'training-recovery';recovery.mkdir()
         spec=frozen(run/'experiment.json',{'config':{'mode':'inspected_development','members':2},

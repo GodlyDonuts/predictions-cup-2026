@@ -1,0 +1,50 @@
+{
+  "classification": "dated_GPU016_development_progress_not_independent_roi",
+  "observedUtc": "2026-10-19T20:46:29.748293+00:00",
+  "sourceCommit": "79f630caf6f60d8ce81e01718aa4c2bd0cbd05bd",
+  "trainerPid": 38512,
+  "decisions": 97654,
+  "acceptedUpdates": 291,
+  "completedResults": [
+    {
+      "cycle": 0,
+      "member": 0,
+      "checkpointSha256": "711dd6923bd825e8e1ac74a4ce25fde971f7a8ba8edb7b36fadb569c08e25e6c",
+      "worstDevelopmentMarkedRoi": -0.30347539999999995,
+      "selectionReward": -0.3616521669315789,
+      "eligible": false
+    },
+    {
+      "cycle": 0,
+      "member": 1,
+      "checkpointSha256": "e64b1ee162ce97244136c07ab3c8def517e0c8413ba5215a94d036207ae364d2",
+      "worstDevelopmentMarkedRoi": -0.25304550000000003,
+      "selectionReward": -0.2917510060123262,
+      "eligible": false
+    },
+    {
+      "cycle": 0,
+      "member": 2,
+      "checkpointSha256": "4236818deafdf5e8988b74602d961f51a7c3145409da9001a34e38b0c2394f32",
+      "worstDevelopmentMarkedRoi": -0.214984575,
+      "selectionReward": -0.24205191171125243,
+      "eligible": false
+    },
+    {
+      "cycle": 0,
+      "member": 3,
+      "checkpointSha256": "e30fadd771615c50dc3f965e9d5bf371fe2171c4afd5bc758869075bac91478c",
+      "worstDevelopmentMarkedRoi": -0.26234182500000003,
+      "selectionReward": -0.3042747391882749,
+      "eligible": false
+    }
+  ],
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "independentProfitableRoiEstablished": false,
+  "limits": [
+    "partial-history marked development returns, not executable liquidation or cash profit",
+    "completed candidates are not whole-generation completion",
+    "no new method or strategy promoted"
+  ]
+}
