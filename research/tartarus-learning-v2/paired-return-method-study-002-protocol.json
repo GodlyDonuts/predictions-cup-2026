@@ -1,0 +1,36 @@
+{
+  "activeGpuRunChanged": false,
+  "allLegacyStudyArtifactsRetained": true,
+  "architecture": "tartarus-raw-api-full-depth-joint-memory-gru-v5",
+  "arms": [
+    "streaming",
+    "closed_episode"
+  ],
+  "classification": "predeclared_corrected_joint_likelihood_cpu_development_method_comparison",
+  "configSha256": "7006c08aa94d655ffd7ff1315ce6ef2532fbb2fd35843990c5213a8ae9f3395b",
+  "cycles": 1,
+  "episodeMs": 60000,
+  "fullSizeGpuQualification": false,
+  "hiddenSize": 128,
+  "identicalFounderParameterHashesMustBeVerifiedAfterBothArmsComplete": true,
+  "independentProfitableRoiEstablished": false,
+  "independentTestUsed": false,
+  "members": 4,
+  "newAccountRequests": 0,
+  "observationProtocol": "sig_scoped_local_memory_joint_v4",
+  "seed": 191034,
+  "selectionBoundsMs": [
+    1792416001000,
+    1792416121000
+  ],
+  "sharedMeasuredCalibrationRequired": true,
+  "sourceCommit": "d8fbf96a8db3e91c2e938cbf36ff6df18f9c40a7",
+  "sourceFiles": 225,
+  "sourceManifestSha256": "761dadb3ba089d8df36fdf2d531a157844512ab74d95aa13504b68183ed0162b",
+  "supersedes": "paired-return-method-001 quarantined unfinished for omitted local-memory density",
+  "trainBoundsMs": [
+    1792410601000,
+    1792411201000
+  ],
+  "worlds": 4
+}
