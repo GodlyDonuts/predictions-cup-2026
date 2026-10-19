@@ -1,4 +1,4 @@
-October19 active015: the checked richer profile is now training on the GPU after a verified generation-preserving handoff.188focused checks and eight-world/64-step GPU capacity pass. No independent profitable ROI or full-history completion. [Actual runtime/source evidence](profile-015-learning-20261019.md).
+October19 ML update: actor-selected trade-query windows are implemented with explicit new architecture/protocol,194 action and12 realism checks, and a real8world CPU PPO proof. Original015 GPU trainer18300 continues (317,165 decisions/774 updates); verified controller29172 queues checked query source5c926030 after the completed generation. Successor GPU capacity/learning, full API/history and independent positive ROI remain unproved. [Evidence](query-windows-20261019.md).
 
 October19 numerical conditioning: trained-fit diagnostics show62%update-gate saturation; explicit time/count conditioning removes it in the diagnostic and passes188checks/full-size CPU PPO. This is not profitability evidence. Old014continues;pending handoffv1 was cancelled before transition. [Evidence](global-state-conditioning-20261019.md).
 
