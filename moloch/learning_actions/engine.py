@@ -63,6 +63,7 @@ class ApiEpisode(PreparedEpisode):
         return spec
 
     def _apply_fill(self,order,price,quantity):
+        cash_before=self.cash;realized_before=self.realized
         s=order.spec;key=(s.exchange,s.side);fee=quantity*self.mechanics.limits.fee_per_share
         if s.action=='BUY':
             self.cash-=quantity*price+fee;self.realized-=fee
@@ -78,7 +79,9 @@ class ApiEpisode(PreparedEpisode):
         order.remaining-=quantity;self.fees+=fee
         self.finance_revision+=1
         self.api_fills.append({'order':order.id,'exchange':s.exchange,'side':s.side,'action':s.action,
-                               'quantity':quantity,'price':price,'filled_at_ms':self.now,'fee':fee})
+                               'quantity':quantity,'price':price,'filled_at_ms':self.now,'fee':fee,
+                               'cash_delta_micros':self.cash-cash_before,
+                               'realized_delta_micros':self.realized-realized_before})
 
     def _match_api(self,order):
         s=order.spec;world=self.books.get(s.exchange)
@@ -243,6 +246,8 @@ class ApiEpisode(PreparedEpisode):
         self.observation_revision+=1
 
     def _event(self,at,kind,value):
+        if kind=='economic_boundary':
+            value.capture_boundary(self,at);return
         if kind=='feed_poll':return  # no compulsory observation schedule
         if kind=='api_arrival':
             operation,payload,key,constraint=value;record=self.idempotency[key]
@@ -286,7 +291,9 @@ class ApiEpisode(PreparedEpisode):
         candidates.extend(at for at,_,_,kind,_ in self.clock._events
             if kind in ('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt'))
         if self.budget.active is not None:candidates.append(self.busy_until)
-        else:candidates.append(self.budget.ready_at(self.now,False))
+        else:
+            candidates.append(self.budget.ready_at(self.now,False))
+            if not self.budget.unknown:candidates.append(self.budget.ready_at(self.now,True))
         return min((v for v in candidates if v>self.now),default=self.end)
 
     def observe(self):
@@ -396,6 +403,26 @@ class ApiEpisode(PreparedEpisode):
 class ApiTape(PreparedTape):
     episode_type=ApiEpisode
 
-    def episode(self,*args,**kwargs):
-        env=super().episode(*args,**kwargs);env.role=self.role
+    def episode(self,mechanics,start_ms,end_ms,*,initial_cash_micros,target_wealth_micros,
+                burnin_ms=60000,advance_to_start=True):
+        import bisect
+        from moloch.learning_realism.protocol import valid_sha
+        lo,hi=self.split.bounds(self.role)
+        if not lo<=start_ms-burnin_ms<end_ms<=hi:
+            raise ValueError('WHOLE_RAW_API_EPISODE_MUST_STAY_IN_ROLE')
+        if self.role=='test'and not valid_sha(self.finalist):raise ValueError('FROZEN_FINALIST_REQUIRED')
+        gap=getattr(self,'maximum_boundary_gap_ms',0)
+        if start_ms-burnin_ms<self.times[0] or end_ms>self.times[-1]+gap:
+            raise ValueError('EPISODE_OUTSIDE_AVAILABLE_CHRONOLOGY')
+        env=ApiEpisode(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,
+                       target_wealth_micros,start_ms,end_ms)
+        env.role=self.role;env.delivery=self.delivery;env.prepared_books=self.prepared_books
+        # Half-open source interval: an observation at next role's boundary
+        # cannot change this role's terminal wealth. Receipt clocks remain real.
+        a=bisect.bisect_left(self.times,start_ms-burnin_ms);b=bisect.bisect_left(self.times,end_ms)
+        for row in self.rows[a:b]:env.clock.schedule(row['available_at_ms'],10,'tape',row)
+        a=bisect.bisect_left(self.flow_times,start_ms-burnin_ms);b=bisect.bisect_left(self.flow_times,end_ms)
+        for row in self.flow_rows[a:b]:env.clock.schedule(row['available_at_ms'],10,'trade_flow',row)
+        env.start_delivery()
+        if advance_to_start:env.advance(start_ms)
         return env

@@ -1,0 +1,455 @@
+{
+  "classification": "completed_inspected_development_population_not_independent_daily_test",
+  "architecture": "tartarus-raw-api-family-first-dynamic-gru-v2",
+  "parameters": 58106855,
+  "members": 4,
+  "cycles": 4,
+  "candidate_evaluations": 16,
+  "training_decisions": 1822,
+  "accepted_ppo_updates": 21,
+  "dataset_manifest_sha256": "ff7c0816b934ecd35f9534f22e741b1138b3d7a416f98fca49775c336c12d9e0",
+  "source_sha256": {
+    "moloch\\learning_actions\\__init__.py": "cd14ef4b4bff6c39d04a0f3b7caca94d6d37965728e169e886119e7aa9427a20",
+    "moloch\\learning_actions\\contract.py": "d8edbdba231e340fa15ac335c4e23c181e68fdb0aeae2a95d7dbc9804467e109",
+    "moloch\\learning_actions\\economics.py": "b2952943c1fded3ce7ce07f9837db199d679a682a5dd6481db2d24aa493f8691",
+    "moloch\\learning_actions\\engine.py": "efbaf1e43e9ca64b7921d0af7209bb9078a5570a07f37ddc9ac199d83d6410fb",
+    "moloch\\learning_actions\\entry.py": "a213ff97091202456f1fc8b243ac0eebc3d8b8201a7332ae16325c3a70b8af28",
+    "moloch\\learning_actions\\experiment.py": "87b1ae42eec9971373adf8258b16bc696102ad6d2d1b68f7d73c68f95db5f6da",
+    "moloch\\learning_actions\\inventory.py": "6312a115d41541a66dd70c118e6b2b9627fd2d4a2350f865d9d4f71d4932e5aa",
+    "moloch\\learning_actions\\policy.py": "eaa86b7ea6b92fc87c9297853efccccbc52ea283a55cf6cdf6c0e170b87d5089",
+    "moloch\\learning_actions\\selection.py": "72ccd8ad3de9e0a716b0e7fb4d02bce9369f3edbda63a9a296f265bdfffb62cf",
+    "moloch\\learning_actions\\smoke.py": "958d9ffc90ec7695d8ecfcd858283c5702056c8ed7148d06b3c3d5c60a6c1f28",
+    "moloch\\learning_actions\\stream.py": "09e55463045069d0a8a1850d8fae5b256429e5f8bc95e0af607f46f2100268c5",
+    "moloch\\learning_actions\\training.py": "31a73e91b8e26021d3061141a7084a542ddb3db7ae21df483d7f55ab32b94625",
+    "moloch\\learning_flow\\__init__.py": "bfde45b018e64662c67a85f2e5ef4e2567608ca2d616c998d4e5f5db1538b732",
+    "moloch\\learning_flow\\batched_rollout.py": "a646a36f057c271e377e4f023f53d3d23c5f923d76bcf51c8b48daf6258a53c7",
+    "moloch\\learning_flow\\compile.py": "04a327616572e0e563b33386efd91feeee82717e71f390ef499c1968c9362483",
+    "moloch\\learning_flow\\episodes.py": "f790c8cb7c9b7fe677aeda51a07a0cd089e6c3d9b22941ee6e89fced906e8108",
+    "moloch\\learning_flow\\features.py": "3cecdc4b532005494f6b0b9e594915beccc73efcde9f8877f5a84e4b0330aa2c",
+    "moloch\\learning_flow\\policy.py": "694deafb7a2ef4a65474a659377788875d50f4e8a69bc58339ef8415e3846df3",
+    "moloch\\learning_flow\\rollout.py": "83a142fab3efd477a39e1fd3a2c838f76a43846226b698479bc391f57e7fde1e",
+    "moloch\\learning_flow\\run_population.py": "94cd05b4cb887170abf99d16f72d6f517b85edf84eb2a216dc64746b15955541",
+    "moloch\\learning_realism\\__init__.py": "b371cacb8e85b1370ef914cf4ca0a3a69fed35faaedf8f0de26dc8701d6393e6",
+    "moloch\\learning_realism\\benchmark.py": "b57c72d61303eb097cd538801f3ca4b44efad5718c77370888495d6d797db046",
+    "moloch\\learning_realism\\fast_replay.py": "df9999aaaebcd44328be063d4b60ffb210745f49660eece27817457025b18a58",
+    "moloch\\learning_realism\\prepare.py": "4fdac3dcf7d3288efb63a01707421049e0a57c3bf3504e6924bd7abdae6054b2",
+    "moloch\\learning_realism\\protocol.py": "d98b0bd8d8f54b63dfa057d730a5d06611bd660334bfaaea908913825ef6849b",
+    "moloch\\learning_realism\\replay.py": "5826498233f58a5668f1f5e49fa7ba674dfe85143e06f671b7cd8b776e59b48c",
+    "moloch\\learning_realism\\smoke.py": "50b8e35c2f397ef195350d9968ffd5217fea611732ea4820b0c0347d977276ca",
+    "moloch\\learning_realism\\vector_rollout.py": "7b863a8c215464afa4f5fb520b15181c94ca8fb807ca4462ddf176a49e215d48",
+    "moloch\\learning_v2\\__init__.py": "4fc8d351b2f0256f116dc44525a2eda7bcca90f6f17997182f3c47a4060943e4",
+    "moloch\\learning_v2\\account.py": "9b6038e6106f43de6da6319635e46e801cf0e3a5009b5fe29ec13d954062db70",
+    "moloch\\learning_v2\\batched_rollout.py": "8b0c10c0d9faf8d33e0baeb86b183e0bf53b6168f9f946010c3ce110bf4c950b",
+    "moloch\\learning_v2\\benchmark_sequence.py": "91c7d86320d7cd905a3399d2e3a09d3354a42ef0a467258af8e322908d772515",
+    "moloch\\learning_v2\\capture_native_stream.py": "a3eb2c7957f4ee76b541d2c5f0b9dbb3caeedc6fb8ebedafc3e55ea3377ebb6d",
+    "moloch\\learning_v2\\capture_receipt_stream.py": "8721eafff3e4e708a20d7ca0b0cff4d17f11a8e5c15672ca1faefd8df80c8400",
+    "moloch\\learning_v2\\checkpoint_inference.py": "9e9104dee8f7b2351f8e6d1e78db7e0250b2428a1fc9a738079678f301a0708d",
+    "moloch\\learning_v2\\clock.py": "e108cb165eba1ab779a2b5d6e316d8334841de4a04cc6bae2bdd7229d7fc47bd",
+    "moloch\\learning_v2\\compile_forward_development.py": "1f31f8988a9d05cf0a6b85f644238ee1ca7237c59e6a0a7c3a0508ce3662ecc8",
+    "moloch\\learning_v2\\compile_trace.py": "3bc432c9664aa6b11e21688d42a2828e69e6a6a4f59d77ba3a8a353681b98cd9",
+    "moloch\\learning_v2\\episodes.py": "be5b3206d2499e377fb21da2537b1dbd1b04b5420a015b307372f6cbe4ad9c12",
+    "moloch\\learning_v2\\excess_reward.py": "aa966f5faa8a4be1be5c50840640362a17d2e96469a26b6d1c258d67541e4b85",
+    "moloch\\learning_v2\\execution_profiles.py": "3a8ec0d37c408fa8b67b0da747a30f92c0ab7cf994f910a2bb3383d3ae174e84",
+    "moloch\\learning_v2\\feature_migration.py": "1d5010cafe216536bf3bbaeb6d84b0f0186d97b63ce04eef8b7f3062bb3a4cc2",
+    "moloch\\learning_v2\\freeze_finalists.py": "57bc4c594848f8939df9be47cbb40aac3effad3192533bb46ad72f396a8a7709",
+    "moloch\\learning_v2\\fused_policy.py": "62b4d834728b02039ca8726f738bbfef16925290c4772f13a9a5a92500571d14",
+    "moloch\\learning_v2\\historical_wallet.py": "a228ac355e92bacbf9aed2a2322a9707bc9c7ddbc2867799caea65f535cd8f78",
+    "moloch\\learning_v2\\interval_episodes.py": "6d6028681df32692aedd07d330c4b3edbcc4f7c172cd61b2c61d78b4fd0eefd3",
+    "moloch\\learning_v2\\interval_excess_reward.py": "7d0edb1c079d12a0d02d40cab3f3a60a9c9008b4dfd68fae259ac0b174131581",
+    "moloch\\learning_v2\\interval_market_policy.py": "5b9ff84b8a7f2efdb0554609c02310198be1d6e0b74d5c6b92fec55d7883dd56",
+    "moloch\\learning_v2\\inventory_curriculum.py": "873cc78ca548269b636e7b827d7d69304f862a9655f399475263cca1ea53000b",
+    "moloch\\learning_v2\\liquidity.py": "c765ae793296640e00b6f100f83117926e3f489eb4e3b224791e0880773c100f",
+    "moloch\\learning_v2\\market_memory_policy.py": "77ed4ea49462dd33872e914d307b6d8156e6138822e956875278639d31d72a6b",
+    "moloch\\learning_v2\\native_capture_tail.py": "9d3d6f83e81311fb60c03824a8bea2dbf684ce7d1fc428b8d3d29ce002a2a516",
+    "moloch\\learning_v2\\packed_io.py": "6bb3d8b1e139a5854e8f89f4f9268d71ce93b6e9fdc410f8f1a356d6cd68d5d8",
+    "moloch\\learning_v2\\policy.py": "694c150b320eea2dabd88aa06407423c5ab5f5bf6ac4a044d0a14e92ac7c06f4",
+    "moloch\\learning_v2\\population.py": "626235e64ed6ccf97dc6ee7c31590a5adc42c2918e656d49f3b44379ecc77346",
+    "moloch\\learning_v2\\process_rollout.py": "21501e73da06c9fe943433c294a5a3a83305973116c62e2749e944e95eedb145",
+    "moloch\\learning_v2\\reference_adapters.py": "088767df8386248121d437d74558fc2f8df571bd514045b61a1b0f6e8a8f52aa",
+    "moloch\\learning_v2\\reference_cache.py": "86aae383c3fb78e5eeee98a9f8467b2a2eab758edb4e6ccdd49bae9bba068c57",
+    "moloch\\learning_v2\\reference_env.py": "2885f51095217e1e51104c3028adad5d1ac85690b10e5e8b1f5f3bc72e6b3667",
+    "moloch\\learning_v2\\run_batched_training.py": "cb1bacd643c728a3cb9ce3f1a6fd824a410e2f89594a1122ce7bbb8d9a512256",
+    "moloch\\learning_v2\\run_comparison.py": "e0c4185e59a024334bc4db428df7b820e1d3435eeed77efce9cb4e4535fdddf9",
+    "moloch\\learning_v2\\run_experiment.py": "1fe75c89a3bafae2989ff8d99cf31b317c69139d63d8db5db90980124ca7eacb",
+    "moloch\\learning_v2\\run_market_training.py": "5b0eec1de2550cccc77c75f06b9067c744e7e9b91999e757f5b0c6f745fde3b4",
+    "moloch\\learning_v2\\run_population.py": "f1e646ad9408368dc27644be20b6606f96c46ba01ca0744aa7fa43a71783ffe3",
+    "moloch\\learning_v2\\sig_capture_tail.py": "5217a6578cdcbbd5d23dc8f4e94269efb1e4e20134f52d79bae923112f339109",
+    "moloch\\learning_v2\\train_inner.py": "0fe1dc353662a472a39be2f2771fe09d5f965dc105e2960d4ef1f7b127ae12f5",
+    "moloch\\learning_v2\\wallet_differential.py": "fe2e3f84e90e04dcbfb1e65aa79691692c0b499f2de30226c2e87c7289205790"
+  },
+  "best_worst_marked_roi": -0.03714572500000002,
+  "independent_test_used": false,
+  "full_history_qualification_established": false,
+  "production_changed": false,
+  "profitable_candidates_across_both_cases": 0,
+  "candidates": [
+    {
+      "cycle": 0,
+      "member": 0,
+      "checkpoint_sha256": "dd0d5268e9903dc17c7d8de0140b1aadae79f2919b77f52c12ce42cec56588ed",
+      "training_fills": 0,
+      "training_marked_roi": 0.0,
+      "selection_worst_marked_roi": -0.03714572500000002,
+      "selection_reward": -0.03785320262218024,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.02228862499999995,
+          "fills": 9,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714572500000002,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 0,
+      "member": 1,
+      "checkpoint_sha256": "0e8f08f9409a5bec31bd49d4af329dc63bee53c4bd4d39558df6f73a25c4c8f3",
+      "training_fills": 1,
+      "training_marked_roi": -6.967499999999127e-05,
+      "selection_worst_marked_roi": -0.03714594999999998,
+      "selection_reward": -0.037853436302428746,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": 0.0,
+          "fills": 0,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714594999999998,
+          "fills": 9,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 0,
+      "member": 2,
+      "checkpoint_sha256": "b8a9aa0e07c2374df1bb34ac744ddc4732c12efc2f003cca1aea7984832560ab",
+      "training_fills": 3,
+      "training_marked_roi": -0.00011677499999995788,
+      "selection_worst_marked_roi": -0.08780299999999996,
+      "selection_reward": -0.09189930346241147,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": 0.0,
+          "fills": 0,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.08780299999999996,
+          "fills": 26,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 0,
+      "member": 3,
+      "checkpoint_sha256": "e255fa267a70072db62e6292cc3cc1dea357ee3cf9de17a5e9e53c2c4ef5c047",
+      "training_fills": 6,
+      "training_marked_roi": -0.022273575000000045,
+      "selection_worst_marked_roi": -0.08615819999999996,
+      "selection_reward": -0.0900978078481515,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": 0.0,
+          "fills": 0,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.08615819999999996,
+          "fills": 16,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 1,
+      "member": 0,
+      "checkpoint_sha256": "5e195fc055b8d43d1fcd7b93e7c8ff5af9ca1cbacfd1cdafa3524837931cc0e4",
+      "training_fills": 6,
+      "training_marked_roi": -0.02314697499999996,
+      "selection_worst_marked_roi": -0.03714572500000002,
+      "selection_reward": -0.03785320262218024,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.022340525000000055,
+          "fills": 9,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714572500000002,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 1,
+      "member": 1,
+      "checkpoint_sha256": "437dec92a6bf0c826b369743a4223193aabc1b9de7983d1b45f1fff6da689091",
+      "training_fills": 0,
+      "training_marked_roi": 0.0,
+      "selection_worst_marked_roi": -0.037145824999999966,
+      "selection_reward": -0.03785330648006169,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": 0.0,
+          "fills": 0,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.037145824999999966,
+          "fills": 8,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 1,
+      "member": 2,
+      "checkpoint_sha256": "a4fd2f6a5cfe268e86bfe12fc74876d9db451d678f94342a2f93303d69eb110d",
+      "training_fills": 23,
+      "training_marked_roi": -0.1183653,
+      "selection_worst_marked_roi": -0.04046412499999996,
+      "selection_reward": -0.04130557496810125,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.04046412499999996,
+          "fills": 14,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714572500000002,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 1,
+      "member": 3,
+      "checkpoint_sha256": "26ab246364f5348aab66de7c22fc19316aee8956add4a49d1618a1f4eb8041fb",
+      "training_fills": 7,
+      "training_marked_roi": -0.02342445000000004,
+      "selection_worst_marked_roi": -0.08611745000000004,
+      "selection_reward": -0.09005321687905195,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": 0.0,
+          "fills": 0,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.08611745000000004,
+          "fills": 15,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 2,
+      "member": 0,
+      "checkpoint_sha256": "23b2d9a3ce7bfe167771ad9f5b89f2d590db8c88307232de21efef930b096c40",
+      "training_fills": 0,
+      "training_marked_roi": 0.0,
+      "selection_worst_marked_roi": -0.03714572500000002,
+      "selection_reward": -0.03785320262218024,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.02236640000000001,
+          "fills": 9,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714572500000002,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 2,
+      "member": 1,
+      "checkpoint_sha256": "8f39622586b80a715b36c15db5cef503e80792c8fdca9a14737c3801cdb9968d",
+      "training_fills": 0,
+      "training_marked_roi": 0.0,
+      "selection_worst_marked_roi": -0.03714597500000005,
+      "selection_reward": -0.037853462266904246,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": 0.0,
+          "fills": 0,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714597500000005,
+          "fills": 9,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 2,
+      "member": 2,
+      "checkpoint_sha256": "581309a659a92d2a48cbca809afd9feef8dea32c67b602730ba370f7c0bbb24b",
+      "training_fills": 6,
+      "training_marked_roi": -0.019652250000000038,
+      "selection_worst_marked_roi": -0.04046412499999996,
+      "selection_reward": -0.04130557496810125,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.04046412499999996,
+          "fills": 14,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714594999999998,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 2,
+      "member": 3,
+      "checkpoint_sha256": "ff6378703fb398d7db8914ac0357046ab7ef825974c659bbbaafc78edb72df83",
+      "training_fills": 12,
+      "training_marked_roi": -0.059365250000000036,
+      "selection_worst_marked_roi": -0.03714572500000002,
+      "selection_reward": -0.03785320262218024,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.022323125,
+          "fills": 9,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714572500000002,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 3,
+      "member": 0,
+      "checkpoint_sha256": "5dfeda77e1c9df98ddf76ed328614112a6b173c59b944310b08fa40bc7a90067",
+      "training_fills": 16,
+      "training_marked_roi": -0.172618025,
+      "selection_worst_marked_roi": -0.03714572500000002,
+      "selection_reward": -0.03785320262218024,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.022383900000000012,
+          "fills": 9,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714572500000002,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 3,
+      "member": 1,
+      "checkpoint_sha256": "107be740a1fe7c3b71ad417b847b2a0ca6210bdc45c737b1bce49ac0fb052c40",
+      "training_fills": 7,
+      "training_marked_roi": -0.004288700000000034,
+      "selection_worst_marked_roi": -0.03714605000000004,
+      "selection_reward": -0.03785354016033458,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": 0.0,
+          "fills": 0,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714605000000004,
+          "fills": 10,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 3,
+      "member": 2,
+      "checkpoint_sha256": "2b38bab69a78730be120f2bb9b490452559daf03f7c40ded8515744040928fae",
+      "training_fills": 15,
+      "training_marked_roi": -0.07680777500000002,
+      "selection_worst_marked_roi": -0.037879549999999984,
+      "selection_reward": -0.03861562825407755,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.037879549999999984,
+          "fills": 12,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714594999999998,
+          "fills": 7,
+          "stale_mark_observations": 0
+        }
+      ]
+    },
+    {
+      "cycle": 3,
+      "member": 3,
+      "checkpoint_sha256": "d4ebc9c712148d1fb029699685d2299c0d903d0f6aaf1e7ac51495c1f1608566",
+      "training_fills": 0,
+      "training_marked_roi": 0.0,
+      "selection_worst_marked_roi": -0.109726875,
+      "selection_reward": -0.11622698131213599,
+      "selection_cases": [
+        {
+          "stress": false,
+          "marked_roi": -0.109726875,
+          "fills": 9,
+          "stale_mark_observations": 0
+        },
+        {
+          "stress": true,
+          "marked_roi": -0.03714565000000003,
+          "fills": 6,
+          "stale_mark_observations": 0
+        }
+      ]
+    }
+  ]
+}

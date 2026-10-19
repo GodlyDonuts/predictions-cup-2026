@@ -1,0 +1,145 @@
+{
+  "classification": "all_local_compiled_dataset_clock_inventory_not_price_research",
+  "utc": "2026-10-19T09:55:56.679990+00:00",
+  "datasets": [
+    {
+      "dataset": "native-r54-development-002",
+      "manifest_sha256": "49c28d1c057e110e761e6fae2ef61706c5ab5a8e02acfb97b6266b90a303fccf",
+      "classification": "inspected_native_development_history_only",
+      "locked_test_eligible": false,
+      "status": "CLOCK_AUDITED",
+      "rows": 471780,
+      "clock_regressions": 0,
+      "explicit_gap_rows": 73006,
+      "venues": {
+        "SIG": {
+          "observations": 398774,
+          "first_ms": 1792051755854,
+          "last_ms": 1792267184826,
+          "maximum_observation_gap_ms": 11510785
+        }
+      }
+    },
+    {
+      "dataset": "three-venue-r55-inspected-subset-004",
+      "manifest_sha256": "a43636fb867f791bea4977776a7f81bad03af5578c66e372e4a563f5911dbf2a",
+      "classification": "frozen_three_venue_development_prefix_not_locked_test",
+      "locked_test_eligible": false,
+      "status": "CLOCK_AUDITED",
+      "rows": 60145,
+      "clock_regressions": 0,
+      "explicit_gap_rows": 855,
+      "venues": {
+        "Kalshi": {
+          "observations": 16316,
+          "first_ms": 1792383360040,
+          "last_ms": 1792384259888,
+          "maximum_observation_gap_ms": 60016
+        },
+        "Polymarket": {
+          "observations": 41021,
+          "first_ms": 1792383360353,
+          "last_ms": 1792384259995,
+          "maximum_observation_gap_ms": 60013
+        },
+        "SIG": {
+          "observations": 1953,
+          "first_ms": 1792383365496,
+          "last_ms": 1792384259313,
+          "maximum_observation_gap_ms": 90171
+        }
+      }
+    },
+    {
+      "dataset": "three-venue-r55-trade-flow-001",
+      "manifest_sha256": "ff7c0816b934ecd35f9534f22e741b1138b3d7a416f98fca49775c336c12d9e0",
+      "classification": "trade_flow_extension_of_verified_base_not_live_or_calibrated",
+      "locked_test_eligible": false,
+      "status": "EXTENSION_OF_BASE_DATASET",
+      "base_manifest_sha256": "a43636fb867f791bea4977776a7f81bad03af5578c66e372e4a563f5911dbf2a"
+    },
+    {
+      "dataset": "three-venue-r57b-development-001",
+      "manifest_sha256": "b2c56d5d3105ebb62871b761cb8bacc27b0e9c8f0868bcd92f2e7ac88448fc96",
+      "classification": "frozen_three_venue_development_prefix_not_locked_test",
+      "locked_test_eligible": false,
+      "status": "CLOCK_AUDITED",
+      "rows": 148191,
+      "clock_regressions": 0,
+      "explicit_gap_rows": 2061,
+      "venues": {
+        "Polymarket": {
+          "observations": 101995,
+          "first_ms": 1792395600019,
+          "last_ms": 1792397999991,
+          "maximum_observation_gap_ms": 300080
+        },
+        "Kalshi": {
+          "observations": 40728,
+          "first_ms": 1792395600051,
+          "last_ms": 1792397999971,
+          "maximum_observation_gap_ms": 300099
+        },
+        "SIG": {
+          "observations": 3407,
+          "first_ms": 1792395618091,
+          "last_ms": 1792397998151,
+          "maximum_observation_gap_ms": 304599
+        }
+      }
+    },
+    {
+      "dataset": "v5-compiled-1",
+      "manifest_sha256": "29f59886eacb9cdfb615280541253e5c5201569565f2fe9355db46a8c5006bba",
+      "classification": "inspected_history_development_only",
+      "locked_test_eligible": false,
+      "status": "CLOCK_AUDITED",
+      "rows": 248328,
+      "clock_regressions": 0,
+      "explicit_gap_rows": 25070,
+      "venues": {
+        "Kalshi": {
+          "observations": 115441,
+          "first_ms": 1792172291119,
+          "last_ms": 1792175891639,
+          "maximum_observation_gap_ms": 2243
+        },
+        "SIG": {
+          "observations": 107817,
+          "first_ms": 1792172292016,
+          "last_ms": 1792175475554,
+          "maximum_observation_gap_ms": 34063
+        }
+      }
+    },
+    {
+      "dataset": "v5-compiled-2",
+      "manifest_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+      "classification": "inspected_history_development_only",
+      "locked_test_eligible": false,
+      "status": "CLOCK_AUDITED",
+      "rows": 248331,
+      "clock_regressions": 0,
+      "explicit_gap_rows": 25073,
+      "venues": {
+        "Kalshi": {
+          "observations": 115441,
+          "first_ms": 1792172291119,
+          "last_ms": 1792175891639,
+          "maximum_observation_gap_ms": 2243
+        },
+        "SIG": {
+          "observations": 107817,
+          "first_ms": 1792172292016,
+          "last_ms": 1792175475554,
+          "maximum_observation_gap_ms": 34063
+        }
+      }
+    }
+  ],
+  "duplicate_relocated_datasets_must_not_be_counted_as_more_history": true,
+  "clock_coverage_is_not_complete_market_or_execution_calibration": true,
+  "full_competition_history_verified": false,
+  "prices_or_returns_exported": false,
+  "production_changed": false
+}

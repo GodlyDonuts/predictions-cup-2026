@@ -7,7 +7,7 @@ chunk yields control/memory to the trainer; it never resets time or inventory.
 import time
 import math
 import torch
-from collections import deque
+from collections import deque,Counter
 
 
 def tensors(observation,device):
@@ -39,6 +39,7 @@ class Stream:
         self.hidden=model.initial_state(1);self.decisions=0;self.rows=deque(maxlen=4096)
         self.calibration=calibration or calibrate(environment,model)
         self.record_training=record_training;self.last_frame=None
+        self.action_counts=Counter();self.status_counts=Counter();self.entity_counts=Counter()
         self.latency=self.calibration['decision_latency_ms']
         if type(self.latency)is not int or self.latency<=0:raise ValueError('NONZERO_MEASURED_COMPUTE_COST')
 
@@ -52,15 +53,19 @@ class Stream:
         self.hidden=out['hidden']
         action={k:v.item()for k,v in out['actions'].items()}if forced_action is None else forced_action
         self.env.advance(min(self.env.end,before+self.latency))
-        if self.env.now>=self.env.end:return {'terminal':True}
-        result=self.env.act_raw(action,observed)
+        result=({'status':'HORIZON_REACHED_NO_DISPATCH'}if self.env.now>=self.env.end
+                else self.env.act_raw(action,observed))
         # Builder tokens and independent venue requests can be issued without
-        # a fake 1-second pause. WAIT is a chosen alarm; blocked requests wake
-        # at the next observable response or real request-capacity boundary.
-        if result['status'] in ('ALARM','BUSY','RATE_WAIT'):
+        # a fake 1-second pause. Only WAIT suspends the policy. A busy SIG queue
+        # or exhausted write budget cannot prevent independent external reads
+        # or planning at the next measured inference tick.
+        if result['status']=='ALARM':
             target=self.env.decision_times(result.get('ready_ms'))
             self.env.advance(min(self.env.end,max(before+1,target)))
         self.decisions+=1
+        self.action_counts[int(action['family'])]+=1
+        self.status_counts[result['status']]+=1
+        self.entity_counts[observed['entities'][int(action['market'])][0]]+=1
         row={'at_ms':before,'next_ms':self.env.now,'action':action,'status':result['status'],
              'reset':self.decisions==1,'terminal':self.env.now>=self.env.end}
         self.rows.append(row)

@@ -22,19 +22,61 @@ class Chunk:
     stream:object=None
 
 
-def collect_chunk(stream,decisions=128):
+def sequence_inputs(frames):
+    """Pad variable entity counts, without truncating any entity or action."""
+    import torch.nn.functional as F
+    n=max(f['contracts'].shape[1]for f in frames)
+    contracts=torch.stack([F.pad(f['contracts'],(0,0,0,n-f['contracts'].shape[1]))for f in frames])
+    present=torch.stack([F.pad(f['present'],(0,n-f['present'].shape[1]))for f in frames])
+    masks={key:torch.stack([F.pad(f['masks'][key],
+        (0,n-f['contracts'].shape[1])if key=='market'else(0,0,0,n-f['contracts'].shape[1]))for f in frames])
+        for key in ('market','family')}
+    return contracts,torch.stack([f['global_state']for f in frames]),present,masks
+
+
+def sequence_forward(model,frames,initial_hidden,prepared=None):
+    """One fused GRU sequence, equivalent to per-decision teacher forcing."""
+    contracts,global_state,present,masks=prepared or sequence_inputs(frames)
+    t,b,n,_=contracts.shape
+    encoded=model.encoder(contracts)
+    pooled=(encoded*present.unsqueeze(-1)).sum(2)/present.sum(2,keepdim=True)
+    inputs=torch.cat((pooled,model.global_encoder(global_state)),-1)
+    resets=torch.stack([f['reset']for f in frames])
+    boundaries=[0]+[int(i)for i in resets.any(-1).nonzero().flatten().tolist()if i>0]+[t]
+    hidden=initial_hidden.unsqueeze(0);segments=[]
+    for lo,hi in zip(boundaries,boundaries[1:]):
+        hidden=hidden*(~resets[lo]).unsqueeze(0).unsqueeze(-1)
+        values,hidden=model.recurrent(inputs[lo:hi],hidden);segments.append(values)
+    states=torch.cat(segments)
+    actions={key:torch.stack([f['actions'][key]for f in frames]).reshape(t*b)
+             for key in frames[0]['actions']}
+    output=model._act_from_encoding(encoded.reshape(t*b,n,256),states.reshape(t*b,model.hidden_size),
+        present.reshape(t*b,n),{k:v.reshape(t*b,*v.shape[2:])for k,v in masks.items()},actions)
+    return {k:output[k].reshape(t,b)for k in ('logprob','value','entropy')},states[-1]
+
+
+def collect_chunk(stream,decisions=128,*,reward_ledger=None):
     if getattr(stream.env,'role',None)!='train':raise ValueError('TRAINING_CAPTURE_ONLY_FROM_TRAIN_ROLE')
     if not stream.record_training:raise ValueError('TRAINING_CAPTURE_MUST_BE_EXPLICIT')
     if type(decisions)is not int or decisions<=0:raise ValueError('POSITIVE_MEMORY_CHUNK')
     before=fingerprint(stream.model);frames=[]
     for _ in range(decisions):
         stream.last_frame=None;row=stream.step()
-        if stream.last_frame is not None:frames.append(stream.last_frame)
+        if stream.last_frame is not None:
+            if reward_ledger is not None:stream.last_frame['economic_reward']=reward_ledger.transition()
+            frames.append(stream.last_frame)
         if row.get('terminal'):break
     if not frames:raise ValueError('NO_POLICY_FRAMES')
     if stream.env.now>=stream.env.end:
         frames[-1]['elapsed_ms']+=max(0,stream.env.now-frames[-1]['known_at_ms'])
         frames[-1]['terminal']=True
+        if reward_ledger is not None:
+            # Account for a final compute interval that reached the horizon
+            # without dispatching another action. It belongs to the last frame.
+            frames[-1]['economic_reward']+=reward_ledger.transition()
+            final=reward_ledger.finish()
+            frames[-1]['economic_reward']+=final['terminal_reward_correction']
+            frames[-1]['economic_result']=final
     from .stream import tensors
     with torch.no_grad():
         # Critic bootstrap is training bookkeeping; it sends no API request and
@@ -71,16 +113,13 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     returns=torch.stack(list(reversed(returns))).detach()
     advantage=returns-old_values;advantage=(advantage-advantage.mean())/advantage.std(unbiased=False).clamp_min(1e-8)
     reports=[]
+    prepared=sequence_inputs(chunk.frames)
     for epoch in range(epochs):
-        hidden=chunk.initial_hidden;logprob=[];values=[];entropy=[]
-        for frame in chunk.frames:
-            out=model.step(**{k:frame[k]for k in ('contracts','global_state','present','masks','reset')},
-                           hidden=hidden,actions=frame['actions'])
-            hidden=out['hidden'];logprob.append(out['logprob']);values.append(out['value']);entropy.append(out['entropy'])
-        delta=torch.stack(logprob)-old_logprob;ratio=delta.exp()
+        out,hidden=sequence_forward(model,chunk.frames,chunk.initial_hidden,prepared)
+        delta=out['logprob']-old_logprob;ratio=delta.exp()
         policy=-torch.minimum(ratio*advantage,ratio.clamp(1-clip,1+clip)*advantage).mean()
-        value_loss=(torch.stack(values).double()-returns).square().mean()
-        loss=policy+.5*value_loss-.01*torch.stack(entropy).mean()
+        value_loss=(out['value'].double()-returns).square().mean()
+        loss=policy+.5*value_loss-.01*out['entropy'].mean()
         if not bool(torch.isfinite(loss)):raise ValueError('NONFINITE_API_POLICY_UPDATE')
         before={k:v.detach().clone()for k,v in model.state_dict().items()}
         import copy
@@ -88,12 +127,8 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
         optimizer.zero_grad(set_to_none=True);loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(),.5);optimizer.step()
         with torch.no_grad():
-            hidden=chunk.initial_hidden;checked=[]
-            for frame in chunk.frames:
-                out=model.step(**{k:frame[k]for k in ('contracts','global_state','present','masks','reset')},
-                               hidden=hidden,actions=frame['actions'])
-                hidden=out['hidden'];checked.append(out['logprob'])
-            difference=torch.stack(checked)-old_logprob
+            checked,hidden=sequence_forward(model,chunk.frames,chunk.initial_hidden,prepared)
+            difference=checked['logprob']-old_logprob
             kl=float((difference.exp()-1-difference).mean())
         accepted=math.isfinite(kl)and kl<=.03
         if not accepted:model.load_state_dict(before);optimizer.load_state_dict(optimizer_before)

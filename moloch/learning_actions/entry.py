@@ -21,6 +21,8 @@ def open_experiment(specification,dataset,mechanics_path,role,*,start_ms,end_ms,
                                          frozen_finalist_sha256=frozen_finalist_sha256)
     tape=ApiTape.from_loaded(original,split=original.split,role=role,delivery=original.delivery,
                             frozen_finalist_sha256=original.finalist)
+    import json
+    tape.maximum_boundary_gap_ms=json.loads(Path(specification).read_text())['maximum_venue_gap_ms']
     env=tape.episode(mechanics,start_ms,end_ms,initial_cash_micros=initial_cash_micros,
                      target_wealth_micros=target_wealth_micros,burnin_ms=0)
     if policy_checkpoint is None:policy=ApiPolicy(hidden_size=hidden_size).to(device)

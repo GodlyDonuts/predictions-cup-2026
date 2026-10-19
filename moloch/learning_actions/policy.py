@@ -10,7 +10,7 @@ from moloch.learning_v2.fused_policy import FusedRecurrentPolicy
 from moloch.learning_v2.policy import masked_categorical
 
 class ApiPolicy(FusedRecurrentPolicy):
-    architecture='tartarus-raw-api-dynamic-entity-gru-v1'
+    architecture='tartarus-raw-api-family-first-dynamic-gru-v2'
 
     def __init__(self,hidden_size=4096):
         super().__init__(40,16,hidden_size)
@@ -19,12 +19,25 @@ class ApiPolicy(FusedRecurrentPolicy):
         self.conditioners=nn.ModuleDict({k:nn.Embedding(n,hidden_size+256)for k,n in sizes.items()})
 
     def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False):
+        # Choose an operation before its target. Otherwise hundreds of read
+        # tokens implicitly crowd out trading simply by outnumbering contracts.
+        # This changes the factorization, not the available action set.
+        pooled=(encoded*present.unsqueeze(-1)).sum(1)/present.sum(1,keepdim=True)
+        family_mask=(masks['family']&present.unsqueeze(-1)).any(1)
+        family_dist=masked_categorical(self.heads['family'](torch.cat((h,pooled),-1)),family_mask)
+        family=(actions['family']if actions is not None else
+                family_dist.probs.argmax(-1)if deterministic else family_dist.sample())
         logits=(encoded*self.market_query(h).unsqueeze(1)).sum(-1)/16
-        dist=masked_categorical(logits,masks['market']&present)
+        batch=torch.arange(h.shape[0],device=h.device)
+        eligible=masks['family'].gather(2,family[:,None,None].expand(-1,present.shape[1],1)).squeeze(-1)
+        dist=masked_categorical(logits,masks['market']&present&eligible)
         market=actions['market']if actions is not None else dist.probs.argmax(-1)if deterministic else dist.sample()
-        batch=torch.arange(h.shape[0],device=h.device);selected=torch.cat((h,encoded[batch,market]),-1)
-        out={'market':market};logprob=dist.log_prob(market).double();entropy=dist.entropy().double()
+        selected=torch.cat((h,encoded[batch,market]),-1)+self.conditioners['family'](family)
+        out={'market':market,'family':family}
+        logprob=dist.log_prob(market).double()+family_dist.log_prob(family).double()
+        entropy=dist.entropy().double()+family_dist.entropy().double()
         for name,head in self.heads.items():
+            if name=='family':continue
             head_logits=head(selected)
             mask=masks[name][batch,market]if name=='family'else torch.ones_like(head_logits,dtype=torch.bool)
             d=masked_categorical(head_logits,mask)

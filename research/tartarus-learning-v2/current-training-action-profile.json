@@ -9,15 +9,28 @@
   "fixed_decision_interval_ms": null,
   "lifetime_decision_limit": null,
   "compute_chunks_preserve_clock_inventory_orders_builder_and_recurrent_state": true,
-  "quantity_domain": [1, 2147483647],
+  "quantity_domain": [
+    1,
+    2147483647
+  ],
   "limit_price_tick_micros": 5000,
-  "limit_price_domain_micros": [5000, 995000],
+  "limit_price_domain_micros": [
+    5000,
+    995000
+  ],
   "market_orders": true,
   "expiration": "none_or_any_supported_future_RFC3339_timestamp",
   "arbitrary_training_portfolio_order_and_market_caps": false,
   "observation_reads": "policy_selected_SIG_Kalshi_Polymarket",
   "execution_venue": "SIG",
-  "mutation_operations": ["ORDER", "BATCH", "MULTI", "ALL_OR_NONE", "CANCEL", "CANCEL_ALL"],
+  "mutation_operations": [
+    "ORDER",
+    "BATCH",
+    "MULTI",
+    "ALL_OR_NONE",
+    "CANCEL",
+    "CANCEL_ALL"
+  ],
   "batch_maximum": 50,
   "multi_leg_maximum": 10,
   "all_collateral": "automatic_only_with_verified_guaranteed_payout_oracle",
@@ -35,5 +48,14 @@
   "missing_reward_or_wealth": "unavailable_never_imputed_as_zero_profit",
   "full_history_coverage_established": false,
   "full_api_parity_established": false,
-  "production_controls_changed": false
+  "production_controls_changed": false,
+  "actor_architecture": "tartarus-raw-api-family-first-dynamic-gru-v2",
+  "population_runner": "moloch.learning_actions.experiment",
+  "economic_reward_coordinator": "moloch.learning_actions.economics.GrowthLedger",
+  "independent_test_registry": "moloch.learning_actions.selection.IndependentTest",
+  "independent_test_access": "one_frozen_finalist_once_per_competition_test_calendar_across_compiled_dataset_versions",
+  "fused_variable_entity_recurrent_updates": true,
+  "checkpoint_qualified_for_production": false,
+  "development_last_observed_marking": "explicit_opt_in_reported_staleness_never_full_history_qualification",
+  "busy_or_rate_limited_request_suspends_policy": false
 }

@@ -1,3 +1,5 @@
+**October19 ML update: raw-action population training is running on the laptop GPU.** Daily economic scoring, fused recurrent updates, causal world warm-up and one-shot frozen testing are connected;45 focused checks pass. Early development candidates lose under adverse execution. The complete local compiled-history inventory does not yet support the requested multi-day three-venue split. Full API parity and profitable independent performance remain unproved. [Training program and gaps](training-program-20261019.md).
+
 **October19: current human-directed action profile is raw API/event-driven.** Use `moloch.learning_actions.entry.open_experiment` with [current-training-action-profile.json](current-training-action-profile.json). Legacy five-family/fixed-step checkpoints need retraining.75 checks and a58.1M GPU smoke pass; complete daily reward coordination, full-history coverage, API calibration and profitable independent results remain outstanding. [Scope and evidence](raw-api-action-space.md).
 
 ## October19,06:17UTC — population mutation and original-wallet replay
