@@ -1,0 +1,105 @@
+{
+  "classification": "checked_pending_generation_handoff_not_active_learner_or_roi",
+  "observedUtc": "2026-10-19T22:11:10.791928+00:00",
+  "sourceCommit": "03cb235479016f14c848177a4af54494ddeaa144",
+  "sourceManifestSha256": "82bdeefde6fe66f86cee68f873b3e71f3d76189bb0b6f4244ba5c791a3edd855",
+  "specSha256": "cf3ba3a625f633396e6038114ac2edd7c96d8d54ec33eacc64434c5df55a7a91",
+  "sourceFiles": 235,
+  "controllerPid": 33568,
+  "controllerLauncherPid": 48872,
+  "existingTrainerPid": 39824,
+  "existingTrainerCreation": 134369173614560850,
+  "phase": "waiting_for_completed_generation",
+  "sourceRun": "raw-api-growth-development-017",
+  "pendingRun": "raw-api-growth-development-018",
+  "populationMembers": 8,
+  "trainingWorlds": 8,
+  "retainIslandChampions": true,
+  "batchedEvaluation": false,
+  "batchedEvaluationActionHeads": false,
+  "observationProtocol": "sig_scoped_local_memory_joint_v4",
+  "ownedOrderPagesEnabled": false,
+  "completeGenerationRequired": true,
+  "allEvolvedPopulationWeightsRequiredBeforeTransfer": true,
+  "gpuTrainingCapacityStillPending": true,
+  "memoryProbeChunks": [
+    64,
+    32
+  ],
+  "oldScoresReused": false,
+  "oldFinancialWorldsResumed": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "supersededController": {
+    "pid": 35184,
+    "verifiedExited": true,
+    "phase": "cancelled_before_handoff"
+  },
+  "batchedCompatibilityAttempt001": "invalid237-target priming request rejected; retained",
+  "batchedCompatibilityAttempt002": {
+    "accountRequests": 0,
+    "caseClocks": [
+      1792416015829,
+      1792416015924,
+      1792417648800,
+      1792417649615
+    ],
+    "caseRngEqual": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "classification": "failed_paired_numerical_path_not_performance_qualification",
+    "differentFields": [
+      "finance"
+    ],
+    "financeFieldsByCase": [
+      [
+        "orders"
+      ],
+      [],
+      [],
+      []
+    ],
+    "independentTestUsed": false,
+    "mode": "batch_encoding",
+    "referenceCaseClocks": [
+      1792416015829,
+      1792416015924,
+      1792417648800,
+      1792417649615
+    ]
+  },
+  "computeCalibrationAttempt002": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 18,
+    "device": "cuda:0",
+    "measured_ms": [
+      13.045000028796494,
+      13.145199976861477,
+      11.84679998550564,
+      11.358699994161725,
+      11.422300012782216,
+      14.673399971798062,
+      15.710600069724023,
+      17.030499991960824,
+      11.732199927791953,
+      10.709099937230349,
+      10.708000045269728,
+      14.454000047408044
+    ]
+  },
+  "fullLearningActionsSuite": {
+    "tests": 261,
+    "seconds": 62.722,
+    "passed": true
+  },
+  "limitations": [
+    "elite source queued, not active until completed generation and capacity/update proof",
+    "first fresh generation establishes new search incumbents; no old scores imported",
+    "batch evaluation disabled after observed order-state mismatch",
+    "full chronological corpus/calibration/independent profitable ROI remain missing"
+  ]
+}
+

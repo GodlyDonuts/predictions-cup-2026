@@ -1,4 +1,4 @@
-[Current: optional v6 paid owned-order pages checked offline; GPU017 and pending018 unchanged; independent ROI unproven](owned-order-pages-20261019.md). Older profile statements below are historical.
+[Current: least-loss evolution with historical champions checked and queued; GPU017 continues; no independent ROI](negative-score-elitism-20261019.md). Older profile statements below are historical.
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 

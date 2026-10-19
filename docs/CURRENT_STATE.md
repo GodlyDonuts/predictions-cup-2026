@@ -1,4 +1,4 @@
-[October19 ML: owned-order pagination checked offline; GPU017 remains active;018 remains pending; ROI unproven](../research/tartarus-learning-v2/owned-order-pages-20261019.md). Offline training is not a production-running claim.
+[October19 ML: negative-score elitism checked and queued for018; GPU017 remains active; ROI unproven](../research/tartarus-learning-v2/negative-score-elitism-20261019.md). Offline training is not a production-running claim.
 
 October19 ML update: GPU016 continues; its first candidate loses worst development marked30.35% and is ineligible. Optional full-episode return PPO is implemented and passes213 action checks plus a real8world small-CPU integration (5,075decisions/60updates/2cycles); short-window returns0 are not ROI evidence. Full-size GPU/paired comparison for this option, full history/API/calibration and independent positive ROI remain incomplete. [Evidence](../research/tartarus-learning-v2/closed-episode-returns-20261019.md).
 
