@@ -1,0 +1,31 @@
+{
+  "classification": "installed_live_training_boundary_controller_waiting_not_new_population_training",
+  "observedUtc": "2026-10-19T17:09:35.902817+00:00",
+  "phase": "waiting_for_completed_generation",
+  "oldTrainerPid": 42704,
+  "controllerLauncherPid": 25432,
+  "controllerWorkerPid": 39360,
+  "controllerToolSession": 43372,
+  "sourceCommit": "afeaa2376b6b99133a6416e5e2301f34ed8d4d03",
+  "sourceFiles": 198,
+  "sourceManifestSha256": "dcba4d6f91182ced6bda506816a2d82f0282aac1bb210668bda18900607e2f01",
+  "specificationSha256": "1df272ce12bc60f1018e03499d836e6b9061be4b3b727e191142c0a48252c50a",
+  "privateSourceImportsVerified": true,
+  "targetDatasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "capacityComputeChunkCandidates": [
+    64,
+    32
+  ],
+  "targetWorlds": 8,
+  "targetFullDepthFeatures": 438,
+  "oldScoresReused": false,
+  "requiresCompletedGeneration": 0,
+  "requiresAllSelectedParentCheckpoints": 8,
+  "preservesLearningRatesAndEntropy": true,
+  "largeGpuCapacityAlreadyVerified": false,
+  "newRunExists": false,
+  "fullHistoryReady": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "profitableRoiEstablished": false
+}

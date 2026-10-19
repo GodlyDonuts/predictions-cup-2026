@@ -130,5 +130,17 @@
     "full_history_qualification_allowed": false,
     "new_dataset_manifest_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
     "large_gpu_capacity_verified": false
+  },
+  "queued_population_handoff": {
+    "classification": "verified_live_controller_waiting_for_first_generation",
+    "source_commit": "afeaa2376b6b99133a6416e5e2301f34ed8d4d03",
+    "keeps_existing_training_until_complete_generation_verified": true,
+    "new_population_training": false,
+    "capacity_candidates": [
+      64,
+      32
+    ],
+    "training_worlds": 8,
+    "evidence": "population-handoff-installed-001.json"
   }
 }
