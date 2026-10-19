@@ -1,3 +1,5 @@
+October19 source expansion: the longer cohort failed its frozen60s SIG coverage check on an84.413s gap. Failed outputs/boundaries are retained; no data imputation or trainer switch.171 focused checks pass. [Exact source evidence](longer-cohort-20261019.md).
+
 October19 evaluation update: optional case-local-RNG batch evaluation passes167 focused checks and matches paired real-source GPU traces, but its measured4-6% collection saving is modest. Phase014 remains frozen/running; two completed members have negative worst development ROI. [Evidence and limits](batched-evaluation-20261019.md).
 
 October19 training efficiency: optional finished-world compaction removes completed worlds at compute-chunk boundaries. A real-data eight-world probe with seven finished collects4.00x faster (2.466s to0.616s), with identical financial states/clocks and matched continuing memory;163 checks pass. This is a tail-batch measurement, not whole-training speed or ROI. Frozen phase014 continues unchanged. [Evidence](finished-world-compaction-20261019.md).

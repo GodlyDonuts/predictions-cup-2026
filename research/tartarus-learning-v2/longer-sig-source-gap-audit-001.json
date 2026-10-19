@@ -1,0 +1,116 @@
+{
+  "fit": {
+    "bookRows": 150972,
+    "largestSourceGaps": [
+      {
+        "start_ms": 1792415156933,
+        "end_ms": 1792415241346,
+        "duration_ms": 84413,
+        "start_utc": "2026-10-19T13:05:56.933000+00:00",
+        "end_utc": "2026-10-19T13:07:21.346000+00:00"
+      },
+      {
+        "start_ms": 1792409969059,
+        "end_ms": 1792410003200,
+        "duration_ms": 34141
+      },
+      {
+        "start_ms": 1792410938195,
+        "end_ms": 1792410962341,
+        "duration_ms": 24146
+      },
+      {
+        "start_ms": 1792411211152,
+        "end_ms": 1792411228285,
+        "duration_ms": 17133
+      },
+      {
+        "start_ms": 1792415398756,
+        "end_ms": 1792415413257,
+        "duration_ms": 14501
+      },
+      {
+        "start_ms": 1792411566972,
+        "end_ms": 1792411580071,
+        "duration_ms": 13099
+      },
+      {
+        "start_ms": 1792409766122,
+        "end_ms": 1792409779032,
+        "duration_ms": 12910
+      },
+      {
+        "start_ms": 1792414654392,
+        "end_ms": 1792414666393,
+        "duration_ms": 12001
+      }
+    ]
+  },
+  "search": {
+    "bookRows": 79326,
+    "largestSourceGaps": [
+      {
+        "start_ms": 1792418497133,
+        "end_ms": 1792418526276,
+        "duration_ms": 29143
+      },
+      {
+        "start_ms": 1792418735682,
+        "end_ms": 1792418764676,
+        "duration_ms": 28994
+      },
+      {
+        "start_ms": 1792418413924,
+        "end_ms": 1792418430246,
+        "duration_ms": 16322
+      },
+      {
+        "start_ms": 1792417034399,
+        "end_ms": 1792417044962,
+        "duration_ms": 10563
+      },
+      {
+        "start_ms": 1792416897792,
+        "end_ms": 1792416907529,
+        "duration_ms": 9737
+      },
+      {
+        "start_ms": 1792416933478,
+        "end_ms": 1792416942747,
+        "duration_ms": 9269
+      },
+      {
+        "start_ms": 1792416923344,
+        "end_ms": 1792416930500,
+        "duration_ms": 7156
+      },
+      {
+        "start_ms": 1792417206336,
+        "end_ms": 1792417213410,
+        "duration_ms": 7074
+      }
+    ]
+  },
+  "remote_original_file_metadata_observation": {
+    "sourceFile": "breadth-886899-1792393523772-part-0014.jsonl",
+    "framesWithinLargestGap": [
+      {
+        "at": "2026-10-19T13:05:56.933Z",
+        "event": "markets_batch",
+        "books": 40
+      },
+      {
+        "at": "2026-10-19T13:07:20.036Z",
+        "event": "stream_reset",
+        "books": 0
+      },
+      {
+        "at": "2026-10-19T13:07:21.346Z",
+        "event": "markets_batch",
+        "books": 26
+      }
+    ],
+    "unknownSilenceCauseBeforeResetEstablished": false,
+    "doNotBackdateObservableDisconnect": true
+  }
+}

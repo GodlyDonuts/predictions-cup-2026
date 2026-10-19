@@ -1,0 +1,38 @@
+{
+  "classification": "verified_archive_transfer_and_failed_strict_coverage_cohort_not_completed_dataset",
+  "protocolSha256": "29304c3098c8db8ba0051dcde89455a04492309a6bab63048657a7711f7bebaa",
+  "rawArchiveSha256": "264e2bfdbaf28c10c1be1a5bbfad8e4e7860d526f4f114e6f2559212e0d96206",
+  "rawArchiveBytes": 210235975,
+  "rawSourceFiles": 7,
+  "selectedOriginalFrames": {
+    "fit": 5333,
+    "search": 2328
+  },
+  "sourceFilesRemoteWholeHashVerified": true,
+  "selectedSourceBytesLocallyShaVerified": true,
+  "fullSourceFilesIndependentlyVerifiedLocally": false,
+  "genesisIndependentlyAuthenticated": false,
+  "externalSourceFiles": 419,
+  "externalIndexedBytes": 2374683219,
+  "externalFilesVerificationAndTemporalCoverageComplete": false,
+  "compileAttempts": [
+    {
+      "run": "001",
+      "status": "failed",
+      "reason": "BREADTH_TRADE_SCOPE",
+      "cause": "Incorrect CLI tournament ID supplied; corrected from verified existing source."
+    },
+    {
+      "run": "002",
+      "status": "verified_terminal_failure",
+      "reason": "ARCHIVED_COHORT_COVERAGE_GAP:fit:SIG",
+      "financialOrProductionStateChanged": false
+    }
+  ],
+  "accountRequests": 0,
+  "productionMutations": 0,
+  "independentTestUsed": false,
+  "fullHistoryReady": false,
+  "externalFilesReadCompletedBeforeCoverageFailure": true,
+  "sigSourceGapAudit": "longer-sig-source-gap-audit-001.json"
+}

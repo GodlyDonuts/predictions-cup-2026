@@ -1,6 +1,6 @@
 {
   "classification": "observed_active_raw_breadth_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T16:06:47.916254+00:00",
+  "observed_utc": "2026-10-19T16:25:03.587917+00:00",
   "source_commit": "06d49d317576a1512d5b39845fccf1046f075e29",
   "run": "raw-api-growth-development-014",
   "process_ids": {
@@ -37,10 +37,10 @@
   ],
   "source_snapshot_files_verified": 83,
   "compute_chunk_decisions": 128,
-  "training_decisions": 292568,
-  "accepted_updates": 304,
-  "current_member_modeled_fills": 421,
-  "cuda_peak_allocated_bytes": 7253548544,
+  "training_decisions": 386722,
+  "accepted_updates": 395,
+  "current_member_modeled_fills": 462,
+  "cuda_peak_allocated_bytes": 7332549632,
   "role_prefix_initial_state": true,
   "observable_wakeup_index": true,
   "evaluation_wealth_schedule": "start_daily_boundaries_terminal",
@@ -114,9 +114,9 @@
     "delivered_book_levels": true,
     "local_planning_state": true,
     "active_run_uses_prototype": false,
-    "worktree_checks_passed": 167
+    "worktree_checks_passed": 171
   },
-  "next_or_active_member": 5,
+  "next_or_active_member": 6,
   "completed_members_in_this_run": [
     {
       "member": 3,
@@ -127,6 +127,11 @@
       "member": 4,
       "cycle": 0,
       "worst_marked_roi": -0.357214825
+    },
+    {
+      "member": 5,
+      "cycle": 0,
+      "worst_marked_roi": -0.160194175
     }
   ]
 }

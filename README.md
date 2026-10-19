@@ -1,4 +1,4 @@
-October19 ML update: frozen phase014 remains running (292,568 decisions /304 accepted updates observed). Two completed members have negative worst development ROI. Optional full-depth, finished-world compaction and case-local-RNG evaluation pass167 checks; their measured benefits and limits are documented. Full-history/API parity and independent profitable ROI remain incomplete. See research/tartarus-learning-v2/batched-evaluation-20261019.md.
+October19 ML source update: the longer retained three-venue cohort failed strict coverage on an84.413s SIG book gap; it was not adopted.171 focused checks pass. Frozen phase014 continues training, with negative completed development results. See research/tartarus-learning-v2/longer-cohort-20261019.md.
 
 Production observation14:37UTC: the VPS service is inactive, MainPID0, blocked by existing EXECUTION_STOP (mtime14:17UTC). The saved old PID/healthy progress is stale. This ML task has not cleared STOP or changed production state. [Read-only evidence](research/tartarus-learning-v2/production-observation-20261019-1437.json).
 
