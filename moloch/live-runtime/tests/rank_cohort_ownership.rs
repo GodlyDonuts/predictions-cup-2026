@@ -66,6 +66,18 @@ fn permit(q:&Value)->Permit{Permit{run_id:"passive-inherited-fixture".into(),int
  let mut changed=p.clone();changed.maximum_quantity=2;assert!(t.authorize(&f.scope,&spec,&changed,NOW+12002).is_err());assert!(t.authorize(&f.scope,&spec,&p,NOW+25000).is_err());
 }
 
+#[test]fn opaque_owner_matches_new_durable_intent_without_relaxing_expiry_or_request_binding(){
+ let(mut f,review,c)=setup();let q=reserve(&mut f,&c);let id=q["id"].as_u64().unwrap();let spec=f.spec(&q);let p=permit(&q);
+ let token=f.store.as_mut().unwrap().bind_rank_trade(&f.bank,&f.log,&f.scope,&review,id,&spec,&p,NOW+12000,NOW+25000).unwrap();
+ let tag=f.store.as_ref().unwrap().durable_tag(id).unwrap();f.attempt(&q,&spec,NOW+12100);
+ token.validate_intent_tag(Some(&tag),&f.log.intents[&id]["fundamental"]).unwrap();
+ f.store.as_ref().unwrap().check_rank_bound(&f.bank,&f.log,&f.scope,id,&spec).unwrap();
+ assert!(token.validate_intent_tag(None,&tag).is_err());let mut changed=tag.clone();changed["qid"]=json!(id+1);
+ assert!(token.validate_intent_tag(Some(&changed),&tag).is_err());assert!(token.validate_intent_tag(Some(&tag),&changed).is_err());
+ let mut bad=p.clone();bad.maximum_quantity+=1;assert!(token.authorize(&f.scope,&spec,&bad,NOW+12101).is_err());
+ assert!(token.authorize(&f.scope,&spec,&p,NOW+25000).is_err());
+}
+
 fn refreshed(f:&F,mut c:Value,at:u64,action:&str,side:&str,n:u64,price:&str)->(rank_campaign::Reviewed,Value){
  let state=f.store.as_ref().unwrap().rank_inventory_state(&f.bank,&f.log,"101").unwrap();let body=state["sourceBodyText"].as_str().unwrap().as_bytes().to_vec();let body_sha=sha(&body);let node=&f.originals[2];let node_sha=sha(node);
  c["managedInventory"]=["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256","positionsSha256","handoffEstablished","emptyOriginalInventory","sourceSha256"].into_iter().map(|k|(k.to_owned(),state[k].clone())).collect::<serde_json::Map<String,Value>>().into();

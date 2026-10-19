@@ -133,6 +133,14 @@ impl PhysicalDecision{
  pub fn native_head(&self)->&Value{&self.head}
  pub fn allows_managed_inventory(&self)->bool{self.ownership.is_some()&&self.review.managed_inventory().is_some()}
  pub fn cohort_ownership_tag(&self)->Option<&Value>{self.ownership.as_ref().map(|o|o.durable_tag())}
+ /// Full cohort/financial checks precede minting this opaque decision. Between
+ /// mint and dispatch the sole worker does not mutate that bank or sidecar.
+ /// Bind the new durable intent to the same owner; SDK guards still validate
+ /// the frozen quote/ledger, current clocks, source pins and owner lease.
+ pub fn validate_intent_ownership_tag(&self,sidecar:Option<&Value>,intent:&Value)->Result<()>{
+  need(self.allows_managed_inventory(),"RANK_MANAGED_INTENT_PROOF_REQUIRED")?;
+  self.ownership.as_ref().ok_or("RANK_MANAGED_INTENT_PROOF_REQUIRED")?.validate_intent_tag(sidecar,intent)
+ }
  pub fn expires_at_ms(&self)->u64{self.until}
  pub fn evaluation(&self)->&Value{&self.evaluation}
  pub fn validate_contract(&self,scope:&Scope,r:&Receipt)->Result<()>{validate_contract(&self.review,scope,r)}

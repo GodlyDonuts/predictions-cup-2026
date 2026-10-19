@@ -15,6 +15,9 @@ impl RankInventoryOwnership{
     pub fn native_head(&self)->&Value{&self.head}
     pub fn expires_at_ms(&self)->u64{self.until}
     pub fn durable_tag(&self)->&Value{&self.tag}
+    pub fn validate_intent_tag(&self,sidecar:Option<&Value>,intent:&Value)->Result<()>{
+        need(sidecar==Some(&self.tag)&&intent==&self.tag,"RANK_COHORT_INTENT_TAG_CHANGED")
+    }
     pub fn validate_frozen(&self,q:&Value,ledger:&Value,qid:u64,at:u64)->Result<()>{
         need(at>=self.minted&&at<self.until&&qid==self.qid&&q==&self.quote
             &&digest(ledger)?==self.ledger_sha,"RANK_COHORT_FROZEN_CHANGED")

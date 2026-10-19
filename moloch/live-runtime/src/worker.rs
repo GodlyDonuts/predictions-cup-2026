@@ -1393,7 +1393,7 @@ fn record_original_attempt(bank:&Session,log:&mut DispatchLog,qid:u64,config:Opt
  // through a JSON Value and assigning a different digest to the same policy.
  let config_sha=config.map(|value|serde_json::to_vec(value).map(|bytes|format!("{:x}",Sha256::digest(bytes)))).transpose()?;
  let event=json!({"kind":"attempt","qid":qid,"at":iso(at),"captureAtMs":at,"evidenceVersion":1,"nativeHead":bank.durable_head(),"sourceFrontier":frontier,"originalQuoteSha256":hash(&q),"dispatchBefore":log.proof(qid),"modelConfigSha256":config_sha,"modelAlgorithmSha256":format!("{:x}",Sha256::digest(include_bytes!("execution_edge.rs")))});
- log.append(event)?;moloch_live_runtime::execution_distribution::track_runtime_attempt(bank,log,qid,at);moloch_live_runtime::execution_distribution::track_acquisition_attempt(bank,log,qid,at);if config.is_some(){moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);}Ok(())
+ log.append(event)?;if q["action"]=="buy"&&!rank_quote(&q)&&q["executionStyle"]!="inventoryAON"{moloch_live_runtime::execution_distribution::track_runtime_attempt(bank,log,qid,at);moloch_live_runtime::execution_distribution::track_acquisition_attempt(bank,log,qid,at);}if config.is_some(){moloch_live_runtime::execution_edge::track_runtime_attempt(bank,log,qid,at);}Ok(())
 }
 /// Only an account-generation fence BEFORE the original operation attempt may
 /// defer. No SDK error, control/STOP error, or already issued operation is hidden.
@@ -1485,9 +1485,10 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
  log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"fundamentalOwnershipOnly":rank.as_ref().is_some_and(|r|r.decision.allows_managed_inventory()),"rankCampaign":rank.as_ref().map(|r|->Result<Value>{Ok(json!({"objective":"declared_first_place_rank_risk","rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluationEvidence":rank_evaluation_delta(&q["reviewedRankCampaign"]["evaluation"],r.decision.evaluation())?}))}).transpose()?}))?;
- record_original_attempt(bank,log,qid,if fundamental.is_some()||rank.is_some(){None}else{c.execution_model.as_ref()},now())?;
- if let Some(f)=fundamental.as_ref(){f.authority.validate()?;if rank.is_some(){f.cohorts.check_rank_bound(bank,log,&c.scope,qid,&request_spec)?;}else{f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}}
- let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
+ let original_attempt_start=now();record_original_attempt(bank,log,qid,if fundamental.is_some()||rank.is_some(){None}else{c.execution_model.as_ref()},original_attempt_start)?;
+ let ownership_start=now();let _=trace.record(Stage::OriginalAttemptRecord,original_attempt_start,ownership_start);
+ if let Some(f)=fundamental.as_ref(){f.authority.validate()?;if let Some(r)=&rank{r.decision.validate_intent_ownership_tag(f.cohorts.durable_tag(qid).as_ref(),&log.intents.get(&qid).ok_or("RANK_DURABLE_INTENT_REQUIRED")?["fundamental"])?;}else{f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}}
+ let transport_start=now();let _=trace.record(Stage::PostIntentOwnership,ownership_start,transport_start);let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
  let ack=match t.place(order,p){Ok(r)=>r,Err(e)=>{let end=now();let _=trace.record(Stage::TransportCall,transport_start,end);if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"transport_error","diagnosticOnly":true}));}log.append(json!({"kind":"error","qid":qid,"error":e,"at":iso(now())}))?;
   if let Ok((spec,permit,at,error))=log.local_final_guard_originals(qid){
    if let Ok(proof)=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,at,&error){

@@ -4,7 +4,7 @@ use crate::feedback::Result;
 use serde::{Deserialize,Serialize};
 #[derive(Clone,Copy,Debug,Serialize,Deserialize,PartialEq,Eq)]
 #[serde(rename_all="camelCase")]
-pub enum Stage{PreflightRead,PolicyAndRisk,IntentDurability,TransportCall,RecordedRequestService,NativeAckApply,OwnedFillFeedback}
+pub enum Stage{PreflightRead,PolicyAndRisk,IntentDurability,OriginalAttemptRecord,PostIntentOwnership,TransportCall,RecordedRequestService,NativeAckApply,OwnedFillFeedback}
 #[derive(Clone,Debug,Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 pub struct Span{pub stage:Stage,pub start_ms:u64,pub end_ms:u64}

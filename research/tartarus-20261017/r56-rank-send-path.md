@@ -1,0 +1,9 @@
+# R56: keep non-applicable diagnostics and duplicate history scans off send
+
+R55 is live but native19596retired without HTTP or fill after physical facts expired. Its intent was written04:15:10.677UTC; the original attempt timestamp is04:15:10.759, and transport entered04:15:12.300. The82ms intent write was not the remaining1.54second delay. All original rows and positive pre-admission proof are retained. No unknown acceptance or STOP was cleared.
+
+Ordinary/acquisition BUY observers ran before their own code rejected this rank sale. R56 excludes rank, SELL and inventoryAON from those non-applicable sampling calls, while retaining the immutable original attempt, exact quote hash, source frontier and dispatch journal. Relevant ordinary and fundamental BUY sampling remains.
+
+Managed rank ownership already runs complete cohort/history validation when the actual held Cohorts object binds the sale, then mints an opaque ownership token. Physical minting and all SDK guards still check the frozen quote/ledger, source pins, scope, permit, owner and clocks. No bank/sidecar mutation occurs between minting and send. After the new durable intent, R56 checks its exact tag against both the held sidecar tag and that opaque token, replacing the duplicate full-history scan. Changed/missing tags fail; ordinary fundamental orders retain their existing full checks. Six real Session/cohort/dispatch integration checks pass, including exact matching to the old complete check, altered tags, changed quantity and expired permits.
+
+New observational spans separate original-attempt recording and post-intent ownership validation. No diagnostic file is written on this path before transport. Physical freshness, account reconciliation, limits, pacing and unknown-acceptance behavior remain unchanged. R56 is building while R55 remains live; deployment, new fills and profitable execution are not yet verified.
