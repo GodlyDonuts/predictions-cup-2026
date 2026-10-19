@@ -1,0 +1,15 @@
+{
+  "observedAt": "2026-10-19T03:11:48.364607+00:00",
+  "progressAt": "2026-10-19T03:11:23.751Z",
+  "pid": 876081,
+  "startTicks": "34666512",
+  "binarySha256": "ed6c4555a92c2cc285399c6b779232658f34528a0910573ee868ed4d55e37354",
+  "controlSha256": "dea089c93728d2ee1013738134b8239995cd9928dd23bf0bd78ee231ff202e3c",
+  "phase": "trading",
+  "realtimeHealthy": true,
+  "originalFillCount": 395,
+  "cash": "158.360000",
+  "ownedFifoCost": "95579.055000",
+  "stopPresent": false,
+  "newTartarusFillVerified": false
+}
