@@ -100,11 +100,14 @@ def audit(financial, registry, books, model, fields, legs, *, assumptions):
         out = [cash] * len(worlds)
         for ex, sides in positions.items():
             for side, lots in sides.items():
+                # All worlds share these exact lots. Refund payout depends on
+                # their original basis; YES/NO resolution depends on quantity.
+                quantity = sum(l["quantity"] for l in lots)
+                basis = sum(l["quantity"] * amount(l["price"]) for l in lots)
                 for i, s in enumerate(worlds):
                     p = s["payouts"][byex[ex]]
-                    out[i] += sum(l["quantity"] * (amount(l["price"]) if p == "refund_principal"
-                        else UNIT if p == ("resolved_yes" if side == "YES" else "resolved_no") else 0)
-                        for l in lots)
+                    out[i] += basis if p == "refund_principal" else quantity * UNIT if p == (
+                        "resolved_yes" if side == "YES" else "resolved_no") else 0
         return out
 
     baseline = wealth()

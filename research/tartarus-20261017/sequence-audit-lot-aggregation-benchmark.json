@@ -1,0 +1,25 @@
+{
+  "classification": "local_exact_audit_benchmark_not_live_speed_or_profit",
+  "scenarios": 367,
+  "legs": 129,
+  "fullOutputIdenticalAcrossAllRuns": true,
+  "beforeSourceSha256": "1ec569d348e320c9ed368d1751be5f34a706b60c1c18036df19df13d5597c3d2",
+  "afterSourceSha256": "2cded6bca74a6f195800bc3d918ec276565e1406914564e9f8cecfaad1dd2ab2",
+  "worldRawSha256": "ffceb23abc998d12cb2b2db76431e9dac0a4fd926679d734fc2dffb2c0ddefbd",
+  "payloadRawSha256": "ed29ad83bbfaed6b714b4e5a67698fe0f4114e170f9fe5e993abe639134c8e30",
+  "wallSeconds": {
+    "old": [
+      1.2736226000124589,
+      1.2923775999806821,
+      1.2522703000577167
+    ],
+    "new": [
+      0.27797779999673367,
+      0.2890571999596432,
+      0.27866159996483475
+    ]
+  },
+  "medianSpeedup": 4.5704991293137684,
+  "accountRequests": 0,
+  "productionChanged": false
+}
