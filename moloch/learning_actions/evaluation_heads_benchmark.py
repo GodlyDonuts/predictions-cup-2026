@@ -1,5 +1,6 @@
 """Finite paired selection-compute comparison on already inspected history."""
 import argparse,copy,json,time
+from dataclasses import asdict
 from pathlib import Path
 import torch
 from .experiment import Experiment
@@ -12,11 +13,12 @@ from .population_handoff import sha_file
 from .selection import frozen
 
 
-def compare(config,checkpoint,output,*,steps=64,prime_books=0):
+def compare(config,checkpoint,output,*,steps=64,prime_books=0,allow_sized_request_differences=False):
     if config.get('mode')!='inspected_development'or config.get('test_finalist_once',False):
         raise ValueError('INSPECTED_DEVELOPMENT_ONLY_NO_INDEPENDENT_TEST')
     if type(steps)is not int or steps<1:raise ValueError('POSITIVE_FINITE_BENCHMARK_CHUNK')
     if type(prime_books)is not int or prime_books< -1:raise ValueError('EXPLICIT_PRIMING_READS_OR_MINUS_ONE_FOR_ALL')
+    if type(allow_sized_request_differences)is not bool:raise ValueError('EXPLICIT_NUMERICAL_COMPARISON_PROFILE')
     x=Experiment(config,output);device=config.get('device','cpu')
     try:
         # Avoid copying an unused historical optimizer onto the GPU.
@@ -57,6 +59,7 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
         def sync():
             if device.startswith('cuda'):torch.cuda.synchronize()
         modes=('serial','batch_encoding','batch_heads');measurements=[];reference=None;reference_hidden=None;reference_traces=None;max_fraction_error=0.
+        reference_full=None;reference_requests=None;request_differences=[]
         for order in(modes,tuple(reversed(modes))):
             for mode in order:
                 envs=worlds();ledgers=[GrowthLedger(e,development=True,historical_last_mark=True)for e in envs]
@@ -98,11 +101,33 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
                                 error=abs(value-right['action'][key]);max_fraction_error=max(error,max_fraction_error)
                                 if error>1e-5:raise ValueError('RAW_ACTION_LATENT_TOLERANCE_EXCEEDED')
                             elif value!=right['action'][key]:raise ValueError('EXACT_DISCRETE_ACTION_REQUIRED')
-                state={'finance':[financial_digest(e)for e in envs],'clocks':[e.now for e in envs],
+                full=[financial_digest(e)for e in envs];requests=[{q:o.spec.quantity for q,o in e.api_orders.items()}for e in envs]
+                def sized_finance(e):
+                    # Comparison view only. Actual orders/ACKs/local memory are
+                    # never rewritten or rounded. All other finance is exact.
+                    orders={q:asdict(o)for q,o in e.api_orders.items()}
+                    for o in orders.values():o['spec']['quantity']=o['remaining']
+                    return copy.deepcopy((e.now,e.cash,e.lots,e.realized,e.fees,orders,e.api_id,e.api_fills,e.finance_revision,
+                        [(k,b.book,b.invalidated,sorted(b.depleted.items()))for k,b in sorted(e.books.items())]))
+                state={'finance':[sized_finance(e)for e in envs],'clocks':[e.now for e in envs],
                        'budgets':[copy.deepcopy(vars(e.budget))for e in envs],
                        'counts':counts,'rng':[bytes(r.tolist()).hex()for r in rngs]}
                 if reference is None:reference=state
                 if state!=reference:raise ValueError('PAIRED_SELECTION_WALLET_LIQUIDITY_CLOCK_OR_RNG_CHANGED')
+                if reference_full is None:reference_full=full;reference_requests=requests
+                if full!=reference_full:
+                    if not allow_sized_request_differences:raise ValueError('EXACT_FULL_ORDER_RECORDS_DIFFER_NUMERICAL_MODE_NOT_AUTHORIZED')
+                    for case,(left,right)in enumerate(zip(reference_requests,requests)):
+                        changed=False
+                        for q in left:
+                            if left[q]!=right[q]:
+                                changed=True
+                                remaining=envs[case].api_orders[q].remaining
+                                if min(left[q],right[q])<=remaining:raise ValueError('ONLY_ALREADY_SIZED_REQUEST_DIFFERENCES_MAY_BE_REPORTED')
+                                request_differences.append({'mode':mode,'case':case,'order':q,'serialRequested':left[q],
+                                    'otherRequested':right[q],'sameExecutableRemaining':remaining})
+                        if full[case]!=reference_full[case]and not changed:
+                            raise ValueError('UNEXPLAINED_FULL_FINANCIAL_RECORD_DIFFERENCE')
                 measurements.append({'mode':mode,'seconds':seconds,'decisions':sum(counts),
                     'entityCounts':[len(e.observe()['entities'])for e in envs],
                     'simulatedPrimingReads':[e._benchmark_priming_read_count for e in envs],
@@ -120,7 +145,10 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
             'stepsPerCase':steps,'cases':len(descriptors),'measurements':measurements,'medianSeconds':medians,
             'speedupHeadsVersusSerial':medians['serial']/medians['batch_heads'],
             'speedupHeadsVersusBatchEncoding':medians['batch_encoding']/medians['batch_heads'],
-            'identicalFinanceLiquidityClocksAndCaseRng':True,'policyUnchanged':True,
+            'identicalFinanceLiquidityClocksAndCaseRng':not request_differences,'policyUnchanged':True,
+            'identicalCashLotsFillsLiquidityClocksBudgetsAndExecutableRemainders':True,
+            'fullOrderRecordsIdentical':not request_differences,'sizedRequestQuantityDifferences':request_differences,
+            'allowSizedRequestDifferences':allow_sized_request_differences,
             'recurrentStatesMatchTolerance':True,
             'exactDiscreteActionsStatusesAndBudgets':True,'maxActionFractionAbsoluteError':max_fraction_error,
             'computeCalibration':calibration,'cudaPeakAllocatedBytes':torch.cuda.max_memory_allocated()if device.startswith('cuda')else 0,
@@ -136,6 +164,8 @@ if __name__=='__main__':
     p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--checkpoint-sha256',required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--steps',type=int,default=64)
     p.add_argument('--prime-books',type=int,default=0)
+    p.add_argument('--allow-sized-request-differences',action='store_true')
     args=p.parse_args();r=compare(json.loads(args.config.read_text()),
-        {'path':str(args.checkpoint),'sha256':args.checkpoint_sha256},args.output,steps=args.steps,prime_books=args.prime_books)
+        {'path':str(args.checkpoint),'sha256':args.checkpoint_sha256},args.output,steps=args.steps,prime_books=args.prime_books,
+        allow_sized_request_differences=args.allow_sized_request_differences)
     print(json.dumps({k:r[k]for k in('device','medianSeconds','speedupHeadsVersusSerial','speedupHeadsVersusBatchEncoding')}),flush=True)
