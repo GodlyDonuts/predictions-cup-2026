@@ -1,0 +1,24 @@
+{
+  "classification": "inspected_selected_dataset_coverage_not_all_archive_inventory",
+  "dataset_manifest_sha256": "ff7c0816b934ecd35f9534f22e741b1138b3d7a416f98fca49775c336c12d9e0",
+  "venues": {
+    "SIG": {
+      "observations": 1953,
+      "first_utc": "2026-10-19T04:16:05.496000+00:00",
+      "last_utc": "2026-10-19T04:30:59.313000+00:00"
+    },
+    "Kalshi": {
+      "observations": 16316,
+      "first_utc": "2026-10-19T04:16:00.040000+00:00",
+      "last_utc": "2026-10-19T04:30:59.888000+00:00"
+    },
+    "Polymarket": {
+      "observations": 41021,
+      "first_utc": "2026-10-19T04:16:00.353000+00:00",
+      "last_utc": "2026-10-19T04:30:59.995000+00:00"
+    }
+  },
+  "full_competition_history_verified": false,
+  "independent_test_ready": false,
+  "missing_history_synthesized": false
+}

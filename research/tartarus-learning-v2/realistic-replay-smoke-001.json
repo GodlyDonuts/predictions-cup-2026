@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "classification": "inspected_real_data_neural_replay_smoke_only",
+  "dataset_manifest_sha256": "ff7c0816b934ecd35f9534f22e741b1138b3d7a416f98fca49775c336c12d9e0",
+  "synthetic_smoke_split": {
+    "competition_start_ms": 1792383360040,
+    "cutoff_ms": 1793161859995
+  },
+  "seconds": 60,
+  "decisions": 60,
+  "action_families": {
+    "0": 58,
+    "1": 2
+  },
+  "feed_requests": {
+    "Kalshi": 1221,
+    "Polymarket": 1783,
+    "SIG": 19
+  },
+  "feed_receipts": {
+    "Kalshi": 1218,
+    "Polymarket": 1778,
+    "SIG": 19
+  },
+  "sig_reads": 47,
+  "sig_writes": 0,
+  "simulated_fill_receipts": 0,
+  "only_execution_venue": "SIG",
+  "http_requests": 0,
+  "training_performed": false,
+  "independent_test_used": false,
+  "profitability_established": false,
+  "production_changed": false
+}
