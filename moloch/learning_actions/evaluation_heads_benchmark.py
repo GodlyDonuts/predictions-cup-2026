@@ -28,6 +28,15 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
         def worlds():
             envs=[x.world('evolution',lo,hi,stress=stress)for lo,hi,stress in descriptors]
             for e in envs:
+                opened=e.now
+                # The first selection case can open before its first SIG book
+                # source event. Benchmark setup must wait on the original tape,
+                # not invent a target, quote or earlier arrival timestamp.
+                while prime_books and not any(k[0]=='book'for k in e.keys['SIG']):
+                    if not e.clock._events or e.clock._events[0][0]>=e.end:
+                        raise ValueError('NO_SIG_BOOK_TARGET_BEFORE_ROLE_END')
+                    e.advance(e.clock._events[0][0])
+                e._benchmark_source_warmup_ms=e.now-opened
                 available=[k for k in e.keys['SIG']if k[0]=='book']
                 targets=available if prime_books==-1 else available[:prime_books]
                 if (prime_books==-1 and not targets)or(prime_books>=0 and len(targets)!=prime_books):
@@ -97,6 +106,7 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
                 measurements.append({'mode':mode,'seconds':seconds,'decisions':sum(counts),
                     'entityCounts':[len(e.observe()['entities'])for e in envs],
                     'simulatedPrimingReads':[e._benchmark_priming_read_count for e in envs],
+                    'sourceWarmupVirtualMs':[e._benchmark_source_warmup_ms for e in envs],
                     'deliveredBooks':[len(e.actor_books)for e in envs]})
                 release_worlds(envs);del envs,ledgers,streams,batch
         from statistics import median
