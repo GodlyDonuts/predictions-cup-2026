@@ -92,5 +92,13 @@ def next_configuration(template,plan,*,compute_steps):
         initial_learning_rates=[p['learning_rate']for p in parents],initial_entropy_coefficients=[p['entropy_coefficient']for p in parents],
         fresh_founders=0,first_cycle_member_order=list(range(config['members'])),compute_chunk_decisions=compute_steps,
         development_allow_cross_dataset_transfer=True,migrate_full_depth_encoder=True,
-        transferred_source_experiment_sha256=plan['sourceExperimentSha256'],transferred_completed_cycle=plan['cycle'])
+        transferred_source_experiment_sha256=plan['sourceExperimentSha256'])
+    if plan.get('completedGeneration')is False:
+        from .partial_population import CLASSIFICATION
+        if plan.get('classification')!=CLASSIFICATION:raise ValueError('EXPLICIT_PARTIAL_TRANSFER_IDENTITY_REQUIRED')
+        config.pop('transferred_completed_cycle',None)
+        config.update(transferred_partial_cycle=plan['cycle'],
+            transferred_partial_snapshot_updates=plan['activeSnapshotUpdates'],
+            corrective_transfer_reason=plan['reason'])
+    else:config['transferred_completed_cycle']=plan['cycle']
     return config

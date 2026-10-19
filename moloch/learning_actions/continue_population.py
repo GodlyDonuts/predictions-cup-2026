@@ -88,14 +88,22 @@ def run(spec_path):
         if Path(spec['newRun']).parent.resolve()!=Path(spec['oldRun']).parent.resolve()or Path(spec['newRun']).exists():
             raise ValueError('FRESH_RUN_IN_SAME_ML_DIRECTORY_REQUIRED')
         handle=TrainingProcess(spec['oldPid'],spec['oldRun'],spec['oldConfig'],expected_creation=spec['oldCreation'])
-        status('waiting_for_completed_generation',trainerPid=spec['oldPid'],cycle=spec['cycle'])
-        while True:
-            if cancel.exists():status('cancelled_before_handoff');return
-            if not handle.alive():raise ValueError('EXISTING_TRAINER_STOPPED_WITHOUT_VERIFIED_HANDOFF')
-            if boundary(spec['oldRun'],spec['cycle'])is not None:break
-            time.sleep(20)
-        status('verifying_completed_population')
-        plan=select_population(spec['oldRun'],cycle=spec['cycle'],members=spec['template']['members'],hidden_size=spec['template']['hidden_size'])
+        partial=spec.get('preservedPartialPopulation')
+        if partial is not None:
+            if sha_file(partial['path'])!=partial['sha256']:raise ValueError('PRESERVED_PARTIAL_PLAN_CHANGED')
+            from .partial_population import verify
+            status('verifying_preserved_unfinished_population',trainerPid=spec['oldPid'])
+            plan=verify(json.loads(Path(partial['path']).read_text()),spec['oldRun'],
+                members=spec['template']['members'],hidden_size=spec['template']['hidden_size'])
+        else:
+            status('waiting_for_completed_generation',trainerPid=spec['oldPid'],cycle=spec['cycle'])
+            while True:
+                if cancel.exists():status('cancelled_before_handoff');return
+                if not handle.alive():raise ValueError('EXISTING_TRAINER_STOPPED_WITHOUT_VERIFIED_HANDOFF')
+                if boundary(spec['oldRun'],spec['cycle'])is not None:break
+                time.sleep(20)
+            status('verifying_completed_population')
+            plan=select_population(spec['oldRun'],cycle=spec['cycle'],members=spec['template']['members'],hidden_size=spec['template']['hidden_size'])
         if plan is None:raise ValueError('GENERATION_BOUNDARY_DISAPPEARED')
         frozen(job/'population-plan.json',plan);check_sources();verify_dataset(spec['template']['dataset'],spec['datasetManifestSha256'])
         if cancel.exists():status('cancelled_before_handoff');return
@@ -105,7 +113,8 @@ def run(spec_path):
         deadline=time.monotonic()+30
         while handle.alive()and time.monotonic()<deadline:time.sleep(.2)
         if handle.alive():raise ValueError('EXACT_OLD_TRAINER_STILL_LIVE')
-        status('old_generation_preserved_capacity_probe_pending',parents=len(plan['parents']))
+        status('unfinished_population_weights_preserved_capacity_probe_pending'if partial is not None else
+               'old_generation_preserved_capacity_probe_pending',parents=len(plan['parents']))
         chosen=None;checks=[]
         for steps in spec['capacityChunks']:
             if cancel.exists():status('cancelled_after_saved_generation');return
