@@ -57,12 +57,23 @@ new trajectories must be collected.
 [Before](shared-clock-prior-diagnostic-001.json) /
 [checked migration](wait-only-prior-migration-001.json).
 
-## Next training profile
+## Active training profile
 
-Phase 012 is prepared with eight preserved lineages/four islands, eight worlds,
+Phase 012 is running with eight preserved lineages/four islands, eight worlds,
 128-decision chunks, encoder checkpointing, the process-local guard, wait-only
 alarm initialization and entropy settings 0/.001/.01/.03. It uses the verified
 observed-snapshot world and recorded information clocks on development data.
-Completed and partial parent states must retain their explicit classifications;
-this is not a new untouched test or evidence of profitable ROI. The complete
-focused set passes 120 checks. Active-run evidence is recorded separately.
+The transition preserves two completed/evaluated phase-011 candidates, the latest
+valid partial-training recovery for member2 at update2752, and five original
+founder states. All parent hashes were checked; all eight clock migrations were
+recorded. Optimizer moments reset for the new data/learning profile. The
+in-progress simulated financial world is not restored, and partial weights are
+not relabeled as completed/evaluated models. The prior control was intentionally
+retired after preservation, with its failures and negative results retained.
+[Transition proof](profile-012-transition-001.json).
+
+The new sole GPU trainer has passed 100,000 decisions/104 updates with approximately
+4.4GB peak allocated; its two recovery slots were hash-checked. It has no completed
+selection result at this observation. This is not a new untouched test or evidence
+of profitable ROI. The complete focused set passes 120 checks.
+[Observed active state](active-learning-20261019.json).

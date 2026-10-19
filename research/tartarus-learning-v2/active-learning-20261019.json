@@ -1,34 +1,39 @@
 {
   "classification": "observed_active_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T12:48:37.668443+00:00",
-  "source_commit": null,
-  "run": "raw-api-growth-development-011",
+  "observed_utc": "2026-10-19T13:48:06.009939+00:00",
+  "source_commit": "36ef508d939c1a134aed681959260b40bf7c61ad",
+  "run": "raw-api-growth-development-012",
   "parameters": 58106855,
-  "worlds_per_learner": 16,
+  "worlds_per_learner": 8,
   "population_members": 8,
   "planned_cycles": 16,
   "verified_parent_checkpoints": [
-    "508274e4f194aa830c54aa876c8cac77aed3d73453567aa83b3bcfc07892dce6",
-    "0741c68c3baa0a7aa2dc8b2eed13d55c7b2826326c04b396ed907127193a77ec",
-    "3ac3e1ad67225ae69ffd20a66797850c151a4aa7f62cca7f3736e81bfad880a1"
+    "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b",
+    "cd15b066e44b26ad195ad7829f9fb6fb6951ce43e6376d40bf41ac5a01da3436",
+    "5afabd2bb987797d734672c774c714e66d5c2cd031f66476a5df5aac7d0bffde",
+    "0c63cc38ff8944fa1879bd7e80952b5360b25e4c6443c133cf10c3cd83a46013",
+    "5fc76f04b78f2f45c00ec7e5d3b4f15fc8479a8744cc931dc6cc6a858921b971",
+    "101dec028861d59eb94c3dc1230a6b2e7cea7b3974968629b1393eec5cbb881e",
+    "0409a3ae53cc841adf52cb0f1c55acc2134c495178fc5ecff3ebcc6995b56362",
+    "ed05fbbf47ff4b502b933dedbd2150909e81e6a170334670bc356e05cbfea490"
   ],
-  "fresh_founders": 5,
+  "fresh_founders": 0,
   "dataset_role": "previously_inspected_development_only",
   "training_bounds_ms": [
-    1792399800035,
-    1792402499976
+    1792400401000,
+    1792403100000
   ],
   "selection_bounds_ms": [
-    1792402800000,
-    1792403999981
+    1792403400000,
+    1792403999000
   ],
   "sig_realtime_mode": "producer_validated_derived_books_not_raw_topic_replay",
   "passive_flow_mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
   "private_fill_notifications": "requires_active_sig_stream",
-  "config_sha256": "4cfcc7ef79311dd644f6ecea55a23bcbf2ccb76ba445ca0d7b6bd50dfd8e6680",
-  "training_decisions": 175757,
-  "accepted_updates": 1191,
-  "current_member_modeled_fills": 95,
+  "config_sha256": "6b72d7893686934ed2a39c1e76f96db234b7199a994cf7cfa938ae09856201e5",
+  "training_decisions": 101485,
+  "accepted_updates": 104,
+  "current_member_modeled_fills": 117,
   "modeled_fills_are_not_contest_transactions": true,
   "older_phase_transition": {
     "training_decisions_at_transition": 811051,
@@ -55,15 +60,7 @@
   "full_history_coverage_established": false,
   "execution_calibrated": false,
   "positive_independent_roi_established": false,
-  "completed_candidate_development_rewards": [
-    {
-      "member": 0,
-      "cycle": 0,
-      "reward": -0.1835355333654224,
-      "marked_roi_min": -0.16767770000000004,
-      "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b"
-    }
-  ],
+  "completed_candidate_development_rewards": [],
   "native_capture_continuation": {
     "producer_pid": 886899,
     "producer_start_ticks": "36095048",
@@ -91,8 +88,8 @@
     "next_training_phase": "phase011_running",
     "training_episode_ms": 900000
   },
-  "source_snapshot_identity": "raw-development-011_exact_python_bytes",
-  "experiment_source_sha256": "6a9aa05cdc43191b383cbfa685526db75c070036673d2d4976ae4287a5a3fdf4",
+  "source_snapshot_identity": "raw-development-012_exact_python_bytes",
+  "experiment_source_sha256": "4724577e4ecc63cb5848ca1ef45b07a269cd9d3f9a4fe96ef4510f6a1ede9142",
   "population_search": {
     "islands": 4,
     "probe_decisions": 16,
@@ -100,7 +97,7 @@
     "migration_every": 4,
     "development_selection_blocks": 2
   },
-  "compute_chunk_decisions": 16,
+  "compute_chunk_decisions": 128,
   "development_episode_ms": 900000,
   "training_recovery_slots": 2,
   "failed_phases": {
@@ -112,13 +109,23 @@
       "failure_preserved": true
     }
   },
-  "cuda_peak_allocated_bytes": 2846793728,
-  "completed_counterfactual_worlds_current_member": 3,
+  "cuda_peak_allocated_bytes": 4394021888,
+  "completed_counterfactual_worlds_current_member": 1,
   "training_recovery": {
     "retention_slots": 2,
     "verified_slot_manifests_present": 2,
     "financial_world_resume_supported": false,
-    "immutable_evaluated_candidates_are_separate": true
+    "immutable_evaluated_candidates_are_separate": true,
+    "slot_hash_checks": [
+      {
+        "updates": 64,
+        "sha256_verified": true
+      },
+      {
+        "updates": 96,
+        "sha256_verified": true
+      }
+    ]
   },
   "producer_clock_cohort": {
     "status": "compiled_and_flow_verified_not_active011_dataset",
@@ -135,6 +142,91 @@
     "worst_marked_roi": {
       "conflated": -0.0345483,
       "separate_observed_world": -0.0345434
+    },
+    "active012_profile_enabled": true
+  },
+  "previous_fresh_founder_lineages_preserved": 5,
+  "checkpoint_entity_encoder": true,
+  "on_policy_guard": "tensor_versions_v1",
+  "short_alarm_prior_scope": "wait_only",
+  "initial_entropy_coefficients": [
+    0.0,
+    0.001,
+    0.01,
+    0.03
+  ],
+  "cuda_memory_fraction": 0.9,
+  "parent_state_classifications": [
+    "completed_trained_and_evaluated_candidate",
+    "completed_trained_and_evaluated_candidate",
+    "preserved_partial_training_weights_not_completed_episode",
+    "preserved_original_founder",
+    "preserved_original_founder",
+    "preserved_original_founder",
+    "preserved_original_founder",
+    "preserved_original_founder"
+  ],
+  "transition_from_011": {
+    "classification": "intentional_research_profile_transition_not_completion_or_profit",
+    "prepared_utc": "2026-10-19T13:37:39.978327+00:00",
+    "reason": "verified_shared_alarm_expiration_prior_bug_and_short_credit_windows_with_measured_faster_backend",
+    "partial_member": 2,
+    "partial_cycle": 0,
+    "preserved_partial_updates": 2752,
+    "preserved_partial_checkpoint_sha256": "5afabd2bb987797d734672c774c714e66d5c2cd031f66476a5df5aac7d0bffde",
+    "parents": [
+      {
+        "origin": "completed_trained_and_evaluated_candidate",
+        "sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b"
+      },
+      {
+        "origin": "completed_trained_and_evaluated_candidate",
+        "sha256": "cd15b066e44b26ad195ad7829f9fb6fb6951ce43e6376d40bf41ac5a01da3436"
+      },
+      {
+        "origin": "preserved_partial_training_weights_not_completed_episode",
+        "sha256": "5afabd2bb987797d734672c774c714e66d5c2cd031f66476a5df5aac7d0bffde"
+      },
+      {
+        "origin": "preserved_original_founder",
+        "sha256": "0c63cc38ff8944fa1879bd7e80952b5360b25e4c6443c133cf10c3cd83a46013"
+      },
+      {
+        "origin": "preserved_original_founder",
+        "sha256": "5fc76f04b78f2f45c00ec7e5d3b4f15fc8479a8744cc931dc6cc6a858921b971"
+      },
+      {
+        "origin": "preserved_original_founder",
+        "sha256": "101dec028861d59eb94c3dc1230a6b2e7cea7b3974968629b1393eec5cbb881e"
+      },
+      {
+        "origin": "preserved_original_founder",
+        "sha256": "0409a3ae53cc841adf52cb0f1c55acc2134c495178fc5ecff3ebcc6995b56362"
+      },
+      {
+        "origin": "preserved_original_founder",
+        "sha256": "ed05fbbf47ff4b502b933dedbd2150909e81e6a170334670bc356e05cbfea490"
+      }
+    ],
+    "partial_neural_weights_are_not_evaluated_candidate": true,
+    "simulated_financial_world_not_resumed": true,
+    "all_eight_lineages_preserved": true,
+    "production_changed": false,
+    "old_training_processes_confirmed_stopped": true,
+    "retired_utc": "2026-10-19T13:38:08.825195+00:00"
+  },
+  "old_011_completed_candidates": [
+    {
+      "member": 0,
+      "reward": -0.1835355333654224,
+      "marked_roi_min": -0.16767770000000004,
+      "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b"
+    },
+    {
+      "member": 1,
+      "reward": -0.039866201436025726,
+      "marked_roi_min": -0.03908199999999995,
+      "checkpoint_sha256": "cd15b066e44b26ad195ad7829f9fb6fb6951ce43e6376d40bf41ac5a01da3436"
     }
-  }
+  ]
 }

@@ -31,7 +31,11 @@
     "explicit_retrospective_producer_clock_with_receiver_provenance_and_role_fencing",
     "opt_in_hidden_observed_snapshot_clock_separate_from_information_delivery",
     "stale_REST_stream_and_gap_ordering_without_free_budget_or_baseline",
-    "source_native_timestamp_extension_with_market_values_unchanged"
+    "source_native_timestamp_extension_with_market_values_unchanged",
+    "memory_checked_128_decision_recurrent_training_with_encoder_checkpointing",
+    "opt_in_supported_PyTorch_tensor_version_on_policy_guard_with_full_checkpoint_hashes",
+    "wait_only_alarm_prior_with_explicit_shared_prior_parameter_migration",
+    "learning_entropy_genome_and_loss_diagnostics"
   ],
   "not_established": [
     "full_raw_topic_revision_and_private_account_stream_replay",
@@ -45,7 +49,7 @@
   ],
   "live_run007_unchanged_prior_code_profile": false,
   "new_stream_mode_opt_in_future_phase_only": true,
-  "focused_checks_passed": 115,
+  "focused_checks_passed": 120,
   "production_changed": false,
   "phase007_status": "superseded_and_preserved"
 }
