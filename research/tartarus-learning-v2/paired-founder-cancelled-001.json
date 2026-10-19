@@ -1,0 +1,46 @@
+{
+  "activeGpuTrainerPid": 18300,
+  "stoppedChildPid": 10112,
+  "productionChanged": false,
+  "freePhysicalGiBObserved": 0.38,
+  "processStartedUtc": "2026-10-19T17:55:11.9689511Z",
+  "retainedHandleIdentityChecked": true,
+  "independentTestUsed": false,
+  "observedUtc": "2026-10-19T17:57:26.9749539Z",
+  "classification": "auxiliary_cpu_evaluation_cancelled_for_verified_memory_pressure_not_training_stop",
+  "completedComparisonScore": false,
+  "plan": {
+    "checkpointSha256": {
+      "founder": "c98667c02345c472b8e19f93a927683b0d124de9698c9ee763f2f5ecf28b9855",
+      "trained": "fe7781b578669231809d4482c7b13f8146855a32e39df3aa00018733f527d5ea"
+    },
+    "classification": "predeclared_cpu_paired_inspected_development_not_gpu_score_reproduction",
+    "configurationOverrides": {
+      "device": "cpu"
+    },
+    "cycle": 0,
+    "executionOrder": [
+      "founder",
+      "trained"
+    ],
+    "independentTestUsed": false,
+    "member": 0,
+    "optimizerUpdates": 0,
+    "originalExperimentSha256": "b97ba55e047521f7d39c9600d1778a014440627a1396ddc078d6e42f07ed48ed",
+    "originalGpuResultSha256": "6348010c1c9c8ef8d585114d1a6a7c63bd2aba17d867d4a28689d4a3e4edf10d",
+    "productionChanged": false,
+    "scriptSha256": "7e5c7a34675d8eeebe0b00cb7d54be4bf468387eb11e6fc24f7f1b452d115ee8",
+    "sourceCommit": "8e07f6452c446e345b5ca319342d5b91c5443230",
+    "sourceManifestSha256": "2d76415f64ff0e4950d6984951f0197f04457be4901b3b86c1d732dfc407b25b"
+  },
+  "lastProgress": {
+    "observedUtc": "2026-10-19T17:57:21.228920+00:00",
+    "phase": "case_progress",
+    "checkpoint": "founder",
+    "decisions": 5632,
+    "virtualMs": 1792416459907,
+    "endMs": 1792417500000
+  },
+  "completedFounderScore": false,
+  "completedTrainedScore": false
+}

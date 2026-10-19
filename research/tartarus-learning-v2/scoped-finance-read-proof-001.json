@@ -1,0 +1,70 @@
+{
+  "classification": "endpoint_projection_fixture_proof_not_official_projection_calibration",
+  "observedUtc": "2026-10-19T18:03:04.611476+00:00",
+  "originalOpenapiSha256": "fbdf23e54d317392f9fb4a659b9511a01fad065e7a384f28091ef04894a732c9",
+  "cases": [
+    {
+      "resource": "account",
+      "projectedFields": [
+        "cash",
+        "advance"
+      ],
+      "knownPositionKeys": 0,
+      "knownOrders": 0,
+      "cashDiscovered": true,
+      "chargedReads": 1,
+      "observableFinancePublications": 1,
+      "physicalFinanceUnchanged": true
+    },
+    {
+      "resource": "positions",
+      "projectedFields": [
+        "lots"
+      ],
+      "knownPositionKeys": 1,
+      "knownOrders": 0,
+      "cashDiscovered": false,
+      "chargedReads": 1,
+      "observableFinancePublications": 1,
+      "physicalFinanceUnchanged": true
+    },
+    {
+      "resource": "owned_orders",
+      "projectedFields": [
+        "orders"
+      ],
+      "knownPositionKeys": 0,
+      "knownOrders": 1,
+      "cashDiscovered": false,
+      "chargedReads": 1,
+      "observableFinancePublications": 1,
+      "physicalFinanceUnchanged": true
+    },
+    {
+      "resource": "collateral",
+      "projectedFields": [
+        "advance"
+      ],
+      "knownPositionKeys": 0,
+      "knownOrders": 0,
+      "cashDiscovered": false,
+      "chargedReads": 1,
+      "observableFinancePublications": 1,
+      "physicalFinanceUnchanged": true
+    }
+  ],
+  "newAccountRequests": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "active015Changed": false,
+  "limits": [
+    "write/private-stream full snapshot modeling unchanged",
+    "orders pagination incomplete",
+    "collateral components/debt incomplete",
+    "official position valuation incomplete"
+  ],
+  "sourceSha256": {
+    "moloch/learning_actions/account_reads.py": "a8bbb96650cfb672d25893eb7fda3ca8436ae9b66f30da83aa6ddcf70475a144",
+    "moloch/learning_actions/engine.py": "58a4661af502dd211311cb2e5e762dfaca71c833115435e0a5329a4dd562f4d1"
+  }
+}

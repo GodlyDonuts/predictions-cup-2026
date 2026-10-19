@@ -11,6 +11,7 @@ from moloch.learning_v2.policy import masked_categorical
 
 class ApiPolicy(FusedRecurrentPolicy):
     architecture='tartarus-raw-api-family-first-dynamic-gru-v2'
+    from .observation_protocol import CURRENT as observation_protocol
 
     def __init__(self,hidden_size=4096):
         super().__init__(40,16,hidden_size)

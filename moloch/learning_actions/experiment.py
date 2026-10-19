@@ -57,6 +57,9 @@ class Experiment:
         self.dataset_sha=self.original.manifest_sha256
         from .state_encoding import validate
         validate(config.get('global_state_encoding','raw'))
+        from .observation_protocol import validate as protocol,CURRENT
+        if protocol(config.get('observation_protocol',CURRENT))!=CURRENT:
+            raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .world_confidence import validate_lifetime
         lifetime=validate_lifetime(config.get('world_book_lifetime_ms'))
         required=self.original.manifest.get('requiredWorldBookLifetimeMs')
@@ -460,6 +463,10 @@ class Experiment:
             inherited=parents[member%len(parents)]if parents and member<members-fresh else None
             if inherited:
                 model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
+                from .observation_protocol import migrate_development
+                migration=migrate_development(model,self.config)
+                if migration is not None:
+                    frozen(self.output/('founder-%03d-observation-protocol-migration.json'%member),migration)
                 target_encoding=self.config.get('global_state_encoding','raw')
                 if model.global_state_encoding!=target_encoding:
                     if self.config.get('migrate_global_state_encoding')is not True:

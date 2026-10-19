@@ -164,7 +164,10 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
         raise ValueError('PINNED_DATA_AND_SPLIT_REQUIRED')
     from .state_encoding import validate
     encoding=validate(getattr(model,'global_state_encoding','raw'))
+    from .observation_protocol import validate as protocol,LEGACY
+    observation_protocol=protocol(getattr(model,'observation_protocol',LEGACY))
     bundle={'architecture':model.architecture,'hidden_size':model.hidden_size,'global_state_encoding':encoding,
+        'observation_protocol':observation_protocol,
         'model':model.state_dict(),'optimizer':optimizer.state_dict(),
         'parameter_sha256':fingerprint(model),'dataset_manifest_sha256':dataset_manifest_sha256,
         'split_specification_sha256':split_specification_sha256,'production_authority':False}
@@ -185,5 +188,7 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
     from .state_encoding import validate
     model.global_state_encoding=validate(bundle.get('global_state_encoding','raw'))
+    from .observation_protocol import validate as protocol,LEGACY
+    model.observation_protocol=protocol(bundle.get('observation_protocol',LEGACY))
     if fingerprint(model)!=bundle['parameter_sha256']:raise ValueError('RAW_API_PARAMETERS_CHANGED')
     return model,bundle

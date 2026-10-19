@@ -4,7 +4,9 @@ import numpy as np
 RAW='raw'
 SIGNED_LOG='signed_log_time_counts_v1'
 # Elapsed/remaining seconds, known order/builder counts, budget wait seconds,
-# string-valued batch-result count, and known finance revision. Prices, money,
+# string-valued batch-result count, and observable finance-publication count.
+# Legacy checkpoints used internal finance revision at15; protocol migration
+# is distinct from this numerical transform. Prices, money,
 # flags and rolling-budget fractions are not transformed.
 INDICES=(2,3,4,5,7,12,15)
 
@@ -26,3 +28,6 @@ def encode(state,mode):
 def matching(environment,model):
     if validate(getattr(environment,'global_state_encoding',RAW))!=validate(getattr(model,'global_state_encoding',RAW)):
         raise ValueError('MODEL_AND_OBSERVATION_STATE_ENCODING_MISMATCH')
+    from .observation_protocol import validate as protocol,CURRENT
+    if protocol(getattr(environment,'observation_protocol',CURRENT))!=protocol(getattr(model,'observation_protocol',CURRENT)):
+        raise ValueError('MODEL_AND_OBSERVATION_PROTOCOL_MISMATCH')

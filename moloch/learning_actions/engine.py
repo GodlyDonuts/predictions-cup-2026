@@ -25,6 +25,7 @@ class Resting:
 
 
 class ApiEpisode(PreparedEpisode):
+    from .observation_protocol import CURRENT as observation_protocol
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
         from .wake_clock import WakeClock
@@ -46,9 +47,12 @@ class ApiEpisode(PreparedEpisode):
         self.expiry_scheduled=set()
         self.external_ready={'Kalshi':0,'Polymarket':0}
         self.finance_revision=0;self.known_finance_revision=-1
+        from .account_reads import FIELDS
+        self.known_resource_revisions={k:-1 for k in FIELDS}
+        self.finance_observation_count=0
         from .trade_history import TradeHistory
         self.trade_history=TradeHistory();self.known_trade_pages={}
-        for key in (('account',),('collateral',),('owned_orders',)):
+        for key in (('account',),('collateral',),('owned_orders',),('positions',)):
             self.keys['SIG'].append(key)
         # Endpoint identity is public metadata, not a free signal that a hidden
         # print just occurred. Empty and active exchanges have the same targets.
@@ -251,11 +255,15 @@ class ApiEpisode(PreparedEpisode):
                 self.feed_request_counts[venue]+=1
                 self.clock.schedule(self.busy_until,30,'api_trade_receipt',(rid,key,payload))
                 return {'status':'IN_FLIGHT'}
-            if key[0]in('account','collateral','owned_orders'):
+            if key[0]in('account','collateral','owned_orders','positions'):
+                from .account_reads import capture
+                snapshot=capture(self,key[0])
                 self.feed_sequence+=1;rid=f'api-read:{self.feed_sequence}'
                 assert self.budget.admit(rid,self.now,False)
                 self.busy_until=self.now+self.mechanics.read_latency_ms
-                self.clock.schedule(self.busy_until,30,'api_read_receipt',(rid,self._capture_account()))
+                self.feed_requests.append({'venue':venue,'at_ms':self.now,'key':key,'request_id':rid})
+                self.feed_request_counts[venue]+=1
+                self.clock.schedule(self.busy_until,30,'api_read_receipt',(rid,key,snapshot))
                 return {'status':'IN_FLIGHT'}
         # Reuse one causal, charged parent request, without starting auto polling.
         self.cursor[venue]=self.keys[venue].index(key)
@@ -273,12 +281,9 @@ class ApiEpisode(PreparedEpisode):
         return deepcopy((self.finance_revision,self.cash,self.lots,self.api_orders,self.advance_capacity()))
 
     def _publish_account(self,snapshot):
-        revision,cash,lots,orders,advance=deepcopy(snapshot)
-        if revision<self.known_finance_revision:return
-        self.known_finance_revision=revision
-        self.known_cash,self.known_lots,self.known_advance=cash,lots,advance
-        self.known_orders={q:o for q,o in orders.items()if o.spec.expiration_ms is None or o.spec.expiration_ms>self.now}
-        self.observation_revision+=1
+        from .account_reads import publish
+        revision,cash,lots,orders,advance=snapshot
+        publish(self,{'revision':revision,'fields':{'cash':cash,'lots':lots,'orders':orders,'advance':advance}})
 
     def _event(self,at,kind,value):
         if kind=='trade_flow':
@@ -330,7 +335,10 @@ class ApiEpisode(PreparedEpisode):
             self.finance_revision+=1;self.observation_revision+=1;return
         if kind=='api_account_receipt':self._publish_account(value);return
         if kind=='api_read_receipt':
-            rid,snapshot=value;self.budget.complete(rid,at);self._publish_account(snapshot);return
+            from .account_reads import publish
+            rid,key,snapshot=value;self.budget.complete(rid,at);publish(self,snapshot)
+            self.feed_receipts.append({'venue':'SIG','at_ms':at,'key':key})
+            self.feed_receipt_counts['SIG']+=1;return
         if kind=='feed_receipt':
             venue,rid,key,payload=value
             if key[0]=='book':
@@ -487,10 +495,11 @@ class ApiEpisode(PreparedEpisode):
             result=record.get('result')
             if isinstance(result,list):state[12]=sum(isinstance(item,str)for item in result)
         state[13]=len(self.budget.reads)/100.;state[14]=len(self.budget.writes)/30.
-        state[15]=self.known_finance_revision
+        state[15]=self.finance_observation_count
         from .state_encoding import encode
         state=encode(state,self.global_state_encoding)
         return {'contracts':features,'global_state':state,'global_state_encoding':self.global_state_encoding,
+                'observation_protocol':self.observation_protocol,
                 'present':np.ones(n,bool),'masks':masks,
                 'entities':entities,'observation_revision':self.observation_revision}
 
