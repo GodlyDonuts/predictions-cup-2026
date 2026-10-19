@@ -1,0 +1,401 @@
+"""Raw order execution adapter, with explicit uncalibrated replay assumptions.
+
+Uses original world liquidity, FIFO, delayed receipts and one shared SIG budget.
+There are no target-fraction, per-market exposure, fresh-market or portfolio caps.
+Automatic ALL buying power requires a caller-supplied verified collateral oracle;
+no statistical forecast or externally marked portfolio can stand in for one.
+"""
+from copy import deepcopy
+from dataclasses import dataclass,replace
+from collections import deque
+import math
+import hashlib
+import numpy as np
+from moloch.learning_realism.fast_replay import PreparedEpisode,PreparedTape
+from moloch.learning_v2.clock import RateBudget
+from .contract import ApiBudget,OrderSpec,UNIT,TICK
+
+
+@dataclass
+class Resting:
+    id:int
+    spec:OrderSpec
+    remaining:int
+
+
+class ApiEpisode(PreparedEpisode):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        self.budget=RateBudget(ApiBudget())
+        self.api_orders={};self.api_id=0;self.api_fills=[];self.responses=[]
+        self.known_orders={};self.known_cash=self.cash;self.known_lots={}
+        self.known_advance=0;self.observation_revision=0;self.api_sequence=0
+        self.idempotency={};self.builder=[];self.collateral_oracle=None
+        self.constraint_validator=None;self.ledger_basis_known=True
+        self.relationships={}
+        self.scheduled_reads=set();self.pending_reads=deque()
+        self.expiry_scheduled=set()
+        self.external_ready={'Kalshi':0,'Polymarket':0}
+        self.finance_revision=0;self.known_finance_revision=-1
+        for key in (('account',),('collateral',),('owned_orders',)):
+            self.keys['SIG'].append(key)
+
+    def start_delivery(self):
+        # Fully policy-controlled reads, no compulsory round-robin collector.
+        if self._started:raise ValueError('DELIVERY_ALREADY_STARTED')
+        self._started=True
+
+    def advance_capacity(self):
+        if self.collateral_oracle is None:return 0
+        value=self.collateral_oracle(self.lots)
+        possible=sum(n for rows in self.lots.values()for n,p in rows)*UNIT
+        if type(value)is not int or not 0<=value<=possible:raise ValueError('VERIFIED_GUARANTEED_FLOOR_REQUIRED')
+        return value
+
+    def buying_power(self):return max(0,self.cash+self.advance_capacity())
+
+    def held(self,ex,side):return sum(n for n,p in self.lots.get((ex,side),[]))
+
+    def _canonical(self,spec):
+        if spec.action=='SELL' and self.held(spec.exchange,spec.side)<spec.quantity:
+            return replace(spec,side='NO' if spec.side=='YES' else 'YES',action='BUY',
+                           price=None if spec.market else UNIT-spec.price)
+        return spec
+
+    def _apply_fill(self,order,price,quantity):
+        s=order.spec;key=(s.exchange,s.side);fee=quantity*self.mechanics.limits.fee_per_share
+        if s.action=='BUY':
+            self.cash-=quantity*price+fee;self.realized-=fee
+            self.lots.setdefault(key,[]).append([quantity,price])
+            other=(s.exchange,'NO'if s.side=='YES'else'YES')
+            paired=min(self.held(*key),self.held(*other))
+            if paired:
+                basis=self._take(key,paired)+self._take(other,paired)
+                self.cash+=paired*UNIT;self.realized+=paired*UNIT-basis
+        else:
+            basis=self._take(key,quantity);self.cash+=quantity*price-fee
+            self.realized+=quantity*price-basis-fee
+        order.remaining-=quantity;self.fees+=fee
+        self.finance_revision+=1
+        self.api_fills.append({'order':order.id,'exchange':s.exchange,'side':s.side,'action':s.action,
+                               'quantity':quantity,'price':price,'filled_at_ms':self.now,'fee':fee})
+
+    def _match_api(self,order):
+        s=order.spec;world=self.books.get(s.exchange)
+        if world is None or world.invalidated:return
+        quantity=order.remaining
+        if s.action=='BUY':
+            # Real cash/verified floor only; other exchanges' quotes do not escrow it.
+            bound=(s.price if not s.market else
+                   (world.book.asks[0][0]if s.side=='YES'and world.book.asks else
+                    UNIT-world.book.bids[0][0]if s.side=='NO'and world.book.bids else UNIT))
+            quantity=min(quantity,self.buying_power()//max(1,bound+self.mechanics.limits.fee_per_share))
+        else:quantity=min(quantity,self.held(s.exchange,s.side))
+        limit=(UNIT-1 if s.action=='BUY'else 1)if s.market else s.price
+        # Historical gaps remain invalid. A recorded book is not renewed by a poll.
+        age=max(self.now-world.book.available_at_ms,self.now-(world.book.source_at_ms or world.book.available_at_ms))
+        preview=deepcopy(world)
+        fills=preview.cross(s.side,s.action,limit,quantity,self.now,max(0,age)+1,
+            depth_fraction_ppm=self.mechanics.depth_fraction_ppm,
+            adverse_execution_micros=self.mechanics.adverse_execution_micros)
+        resource='asks'if(s.side,s.action)in(('YES','BUY'),('NO','SELL'))else'bids'
+        for price,n in fills:
+            base=price-(self.mechanics.adverse_execution_micros if s.action=='BUY'else-self.mechanics.adverse_execution_micros)
+            yes_price=base if s.side=='YES'else UNIT-base
+            remaining=n
+            while remaining:
+                affordable=self.buying_power()//max(1,price+self.mechanics.limits.fee_per_share)if s.action=='BUY'else self.held(s.exchange,s.side)
+                take=min(remaining,affordable)
+                if not take:return
+                world.depleted[(resource,yes_price)]=world.depleted.get((resource,yes_price),0)+take
+                self._apply_fill(order,price,take);remaining-=take
+
+    def _place(self,spec):
+        spec.validate(self.now)
+        if spec.exchange not in self.exchanges:raise ValueError('INELIGIBLE_EXCHANGE')
+        spec=self._canonical(spec);remaining=spec.quantity
+        if spec.action=='BUY':
+            if self.buying_power()<=0:raise ValueError('INSUFFICIENT_BUYING_POWER')
+            cost=spec.price if not spec.market else UNIT
+            committed=sum(o.remaining*(o.spec.price or UNIT)for o in self.api_orders.values()
+                if o.spec.exchange==spec.exchange and o.spec.action=='BUY')
+            if committed>=self.buying_power():return None
+            # Initial partial-size admission follows actual buying power, without
+            # the old max-order/market/portfolio/target-fraction projection.
+            if not spec.market:
+                remaining=min(remaining,self.buying_power()//max(1,cost+self.mechanics.limits.fee_per_share))
+                if not remaining:raise ValueError('INSUFFICIENT_BUYING_POWER')
+        self.api_id+=1;order=Resting(self.api_id,spec,remaining)
+        self._match_api(order)
+        if order.remaining and not spec.market:
+            # Never execute against our own injected resting quotes. Other
+            # counterparties were matched first, then STP cancels crossing remainder.
+            yes_price=spec.price if spec.side=='YES'else UNIT-spec.price
+            direction=(spec.action=='BUY')==(spec.side=='YES')
+            crossed=any(o.spec.exchange==spec.exchange and
+                (((o.spec.action=='BUY')==(o.spec.side=='YES'))!=direction)and
+                ((yes_price>=(o.spec.price if o.spec.side=='YES'else UNIT-o.spec.price))if direction else
+                 (yes_price<=(o.spec.price if o.spec.side=='YES'else UNIT-o.spec.price)))for o in self.api_orders.values())
+            if not crossed:self.api_orders[order.id]=order
+        return order
+
+    def _snapshot_finance(self):
+        return deepcopy((self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision))
+
+    def _restore_finance(self,state):
+        self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision=state
+
+    def _execute(self,operation,payload,relationship_constraint=None):
+        if operation in ('ORDER','BATCH','MULTI','ALL_OR_NONE'):
+            specs=list(payload)
+            maximum=1 if operation=='ORDER'else 50 if operation=='BATCH'else 10
+            if not 1<=len(specs)<=maximum:raise ValueError('API_LEG_COUNT')
+            for spec in specs:spec.validate(self.now)
+            if relationship_constraint is not None:
+                if operation not in ('MULTI','ALL_OR_NONE')or len({s.exchange for s in specs})!=len(specs):
+                    raise ValueError('RELATIONSHIP_CONSTRAINT_LEGS')
+                if relationship_constraint not in self.relationships or self.constraint_validator is None:
+                    raise ValueError('RELATIONSHIP_DATA_UNAVAILABLE')
+                if self.constraint_validator(relationship_constraint,specs,self.books)is not True:
+                    raise ValueError('RELATIONSHIP_VIOLATION')
+            if operation=='BATCH':
+                results=[]
+                for spec in specs:
+                    try:results.append(self._place(spec))
+                    except ValueError as exc:results.append(str(exc))
+                return results
+            before=self._snapshot_finance()
+            try:
+                results=[self._place(spec)for spec in specs]
+                if operation=='ALL_OR_NONE'and any(o is None or o.remaining or
+                    sum(f['quantity']for f in self.api_fills if f['order']==o.id)!=s.quantity for o,s in zip(results,specs)):
+                    raise ValueError('ALL_OR_NONE_NOT_FILLED')
+                return results
+            except Exception:
+                self._restore_finance(before);raise
+        if operation=='CANCEL':return self.api_orders.pop(payload,None)
+        if operation=='CANCEL_ALL':
+            ids=[q for q,o in self.api_orders.items()if payload is None or
+                 (isinstance(payload,str)and o.spec.exchange==payload)or
+                 (isinstance(payload,dict)and self.mapping.get(o.spec.exchange)==payload.get('market'))]
+            for q in ids:self.api_orders.pop(q)
+            return ids
+        raise ValueError('UNSUPPORTED_API_OPERATION')
+
+    def dispatch(self,operation,payload,*,idempotency_key,relationship_constraint=None):
+        if operation not in ('ORDER','BATCH','MULTI','ALL_OR_NONE','CANCEL','CANCEL_ALL'):raise ValueError('API_OPERATION')
+        if not isinstance(idempotency_key,str)or not idempotency_key or len(idempotency_key)>255:raise ValueError('IDEMPOTENCY_KEY')
+        signature=repr((operation,payload,relationship_constraint))
+        if idempotency_key in self.idempotency:
+            old=self.idempotency[idempotency_key]
+            if old['signature']!=signature:raise ValueError('IDEMPOTENCY_CONFLICT')
+            return old
+        if self.budget.active is not None:return {'status':'BUSY','ready_ms':max(self.now+1,self.busy_until)}
+        try:ready=self.budget.ready_at(self.now,True)
+        except ValueError as exc:
+            if str(exc)=='UNKNOWN_ACCEPTANCE_RECONCILE_FIRST':return {'status':'UNRESOLVED_EXECUTION'}
+            raise
+        if ready>self.now:return {'status':'RATE_WAIT','ready_ms':ready}
+        rid='api:'+idempotency_key
+        assert self.budget.admit(rid,self.now,True)
+        self.busy_until=self.now+self.mechanics.arrival_latency_ms+self.mechanics.receipt_latency_ms
+        record={'signature':signature,'status':'IN_FLIGHT','request_id':rid}
+        self.idempotency[idempotency_key]=record
+        self.clock.schedule(self.now+self.mechanics.arrival_latency_ms,20,'api_arrival',(operation,payload,idempotency_key,relationship_constraint))
+        self.clock.schedule(self.busy_until,30,'api_receipt',idempotency_key)
+        return record
+
+    def request_observation(self,venue,key):
+        if venue not in ('SIG','Kalshi','Polymarket'):raise ValueError('READ_ONLY_REFERENCE_VENUE')
+        if key not in self.keys[venue]:return {'status':'SOURCE_NOT_AVAILABLE'}
+        if venue=='SIG'and self.budget.active is not None:return {'status':'BUSY','ready_ms':self.busy_until}
+        if venue!='SIG'and self.now<self.external_ready[venue]:return {'status':'RATE_WAIT','ready_ms':self.external_ready[venue]}
+        if venue=='SIG':
+            ready=self.budget.ready_at(self.now,False)
+            if ready>self.now:return {'status':'RATE_WAIT','ready_ms':ready}
+            if key[0]in('account','collateral','owned_orders'):
+                self.feed_sequence+=1;rid=f'api-read:{self.feed_sequence}'
+                assert self.budget.admit(rid,self.now,False)
+                self.busy_until=self.now+self.mechanics.read_latency_ms
+                self.clock.schedule(self.busy_until,30,'api_read_receipt',(rid,self._capture_account()))
+                return {'status':'IN_FLIGHT'}
+        # Reuse one causal, charged parent request, without starting auto polling.
+        self.cursor[venue]=self.keys[venue].index(key)
+        self._poll(self.now,venue)
+        if venue!='SIG':self.external_ready[venue]=self.external_next[venue]
+        return {'status':'IN_FLIGHT'}
+
+    def _poll(self,at,venue):
+        # Parent schedules follow-up polls; only explicitly requested ones run.
+        self._manual_poll=True
+        try:super()._poll(at,venue)
+        finally:self._manual_poll=False
+
+    def _capture_account(self):
+        return deepcopy((self.finance_revision,self.cash,self.lots,self.api_orders,self.advance_capacity()))
+
+    def _publish_account(self,snapshot):
+        revision,cash,lots,orders,advance=deepcopy(snapshot)
+        if revision<self.known_finance_revision:return
+        self.known_finance_revision=revision
+        self.known_cash,self.known_lots,self.known_advance=cash,lots,advance
+        self.known_orders={q:o for q,o in orders.items()if o.spec.expiration_ms is None or o.spec.expiration_ms>self.now}
+        self.observation_revision+=1
+
+    def _event(self,at,kind,value):
+        if kind=='feed_poll':return  # no compulsory observation schedule
+        if kind=='api_arrival':
+            operation,payload,key,constraint=value;record=self.idempotency[key]
+            try:
+                record['result']=deepcopy(self._execute(operation,payload,constraint));record['status']='EXECUTED'
+                self.finance_revision+=1
+            except ValueError as exc:record['error']=str(exc);record['status']='REJECTED'
+            record['receipt_snapshot']=self._capture_account()
+            for order in self.api_orders.values():
+                if order.spec.expiration_ms is not None and order.spec.expiration_ms>=at and order.id not in self.expiry_scheduled:
+                    self.expiry_scheduled.add(order.id)
+                    self.clock.schedule(order.spec.expiration_ms,20,'api_expiry',order.id)
+            return
+        if kind=='api_receipt':
+            record=self.idempotency[value];self.budget.complete(record['request_id'],at)
+            self.responses.append((at,value,record['status']));self._publish_account(record['receipt_snapshot']);return
+        if kind=='api_expiry':
+            self.api_orders.pop(value,None);self.known_orders.pop(value,None)
+            self.finance_revision+=1;self.observation_revision+=1;return
+        if kind=='api_account_receipt':self._publish_account(value);return
+        if kind=='api_read_receipt':
+            rid,snapshot=value;self.budget.complete(rid,at);self._publish_account(snapshot);return
+        before=len(self.api_fills)
+        super()._event(at,kind,value)
+        if kind=='tape'and value['kind']=='book':
+            for q,order in list(self.api_orders.items()):
+                if order.spec.exchange==value['exchange_id']:
+                    self._match_api(order)
+                    if not order.remaining:self.api_orders.pop(q,None)
+        if len(self.api_fills)>before:self.clock.schedule(at+self.mechanics.receipt_latency_ms,30,'api_account_receipt',self._capture_account())
+        if kind=='feed_receipt':self.observation_revision+=1
+
+    def decision_times(self,alarm_ms=None):
+        """No 1Hz grid. Wake on events, request capacity or a model-chosen alarm."""
+        candidates=[]
+        if alarm_ms is not None:
+            if type(alarm_ms)is not int or alarm_ms<self.now:raise ValueError('PAST_ALARM')
+            candidates.append(alarm_ms)
+        # Hidden source arrivals may update execution, but cannot wake a policy
+        # until its next observable receipt. Process them while advancing there.
+        candidates.extend(at for at,_,_,kind,_ in self.clock._events
+            if kind in ('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt'))
+        if self.budget.active is not None:candidates.append(self.busy_until)
+        else:candidates.append(self.budget.ready_at(self.now,False))
+        return min((v for v in candidates if v>self.now),default=self.end)
+
+    def observe(self):
+        """Dynamic entity tokens: all contracts, own order IDs and read targets.
+
+        Fields contain only delivered observations, known holdings and local
+        request-budget state. Raw API choices do not require external marks.
+        """
+        entities=[('global',None)]+[('contract',ex)for ex in self.exchanges[1:]]
+        entities += [('market',m)for m in sorted(self.scope)]
+        entities += [('relationship',r)for r in sorted(self.relationships)]
+        entities += [('order',q)for q in sorted(self.known_orders)]
+        entities += [('read',(v,key))for v in ('SIG','Kalshi','Polymarket')for key in self.keys[v]]
+        features=np.zeros((len(entities),40),np.float32)
+        masks={'market':np.ones(len(entities),bool),'family':np.zeros((len(entities),12),bool)}
+        for i,(kind,key)in enumerate(entities):
+            ident=hashlib.sha256(repr((kind,key)).encode()).digest()
+            features[i,33:40]=np.frombuffer(ident[:7],dtype=np.uint8)/255.
+            if kind=='global':masks['family'][i,[0,4,7,8,9,11]]=True
+            elif kind=='contract':
+                masks['family'][i,[1,2,4,5,6]]=True
+                q=self.actor_books.get(key)
+                if q is not None:
+                    b=q.book;bid=b.bids[0][0]if b.bids else 0;ask=b.asks[0][0]if b.asks else UNIT
+                    features[i,:8]=[bid/UNIT,ask/UNIT,(ask-bid)/UNIT,
+                        (self.now-b.available_at_ms)/1000,np.log1p(sum(n for p,n in b.bids)),
+                        np.log1p(sum(n for p,n in b.asks)),1.,float(not q.invalidated)]
+                for j,venue in enumerate(('Kalshi','Polymarket')):
+                    rows=[r for _,r in self.reference_cache.for_market(self.mapping.get(key))if r.get('venue')==venue]
+                    if rows:
+                        r=max(rows,key=lambda r:r['available_at_ms'])
+                        features[i,8+3*j:11+3*j]=[r.get('bid_yes_micros',0)/UNIT,r.get('ask_yes_micros',UNIT)/UNIT,
+                                                   (self.now-r['available_at_ms'])/1000]
+                features[i,14:16]=[np.log1p(sum(n for n,p in self.known_lots.get((key,s),[])))for s in ('YES','NO')]
+                features[i,16:24]=self.flow.observe(key,self.now)
+                features[i,24]=1.
+            elif kind=='market':
+                masks['family'][i,4]=True;features[i,24]=2.
+            elif kind=='relationship':
+                masks['family'][i,[8,9]]=True;features[i,24]=3.
+            elif kind=='order':
+                masks['family'][i,3]=True;o=self.known_orders[key]
+                features[i,25:30]=[1.,np.log1p(o.remaining),(o.spec.price or 0)/UNIT,
+                                   float(o.spec.side=='YES'),float(o.spec.action=='BUY')]
+            else:
+                masks['family'][i,10]=True;features[i,30+('SIG','Kalshi','Polymarket').index(key[0])]=1.
+                if key[0]!='SIG':
+                    target=key[1];r=self.reference_cache.get((target[2],target[3]))
+                    if r is not None:features[i,8:11]=[r.get('bid_yes_micros',0)/UNIT,r.get('ask_yes_micros',UNIT)/UNIT,
+                                                      (self.now-r['available_at_ms'])/1000]
+        # Shared policy heads accept the complete legal price lattice. Quantity
+        # and alarm/expiration are float64 latent samples converted to exact ints.
+        n=len(entities)
+        # Every side/tick/expiration choice is legal at the policy layer; avoid
+        # allocating/transferring millions of identical True mask entries.
+        state=np.zeros(16,np.float32)
+        state[:9]=[self.known_cash/max(1,self.initial_wealth),self.known_advance/max(1,self.initial_wealth),
+            (self.now-self.start)/1000,(self.end-self.now)/1000,len(self.known_orders),len(self.builder),
+            float(self.budget.active is not None),max(0,self.budget.next_at-self.now)/1000,
+            float(bool(self.budget.unknown))]
+        if self.responses:
+            _,key,status=self.responses[-1];record=self.idempotency[key]
+            state[9]=float(status=='EXECUTED');state[10]=float(status=='REJECTED')
+            state[11]=int.from_bytes(hashlib.sha256(record.get('error','').encode()).digest()[:2],'big')/65535.
+            result=record.get('result')
+            if isinstance(result,list):state[12]=sum(isinstance(item,str)for item in result)
+        state[13]=len(self.budget.reads)/100.;state[14]=len(self.budget.writes)/30.
+        state[15]=self.known_finance_revision
+        return {'contracts':features,'global_state':state,'present':np.ones(n,bool),'masks':masks,
+                'entities':entities,'observation_revision':self.observation_revision}
+
+    def act_raw(self,action,observation):
+        family=int(action['family']);kind,key=observation['entities'][int(action['market'])]
+        if not observation['masks']['family'][int(action['market']),family]:raise ValueError('ACTION_ENTITY_MISMATCH')
+        # No target or portfolio fraction. This latent variable addresses the
+        # full signed-32-bit positive quantity domain accepted by the API.
+        from .contract import MAX_QUANTITY
+        fraction=float(action['target_fraction']);clock_fraction=float(action['child_fraction'])
+        if not 0<=fraction<=1 or not 0<=clock_fraction<=1:raise ValueError('RAW_LATENT_RANGE')
+        quantity=min(MAX_QUANTITY,1+int(math.expm1(fraction*math.log(MAX_QUANTITY))))
+        # Full representable RFC3339 UTC future, bounded only by datetime format.
+        span=max(1,253402300799999-self.now-1)
+        timestamp=self.now+max(1,int(math.expm1(clock_fraction*math.log1p(span))))
+        if family==0:return {'status':'ALARM','ready_ms':timestamp}
+        if family in (1,2,5,6):
+            spec=OrderSpec(key,('YES','NO')[int(action['side'])],
+                'BUY'if family in (1,5)else'SELL',quantity,
+                None if int(action['price'])==0 else int(action['price'])*TICK,
+                timestamp if int(action['patience'])and int(action['price'])else None)
+            if family in (5,6):
+                if len(self.builder)>=50:return {'status':'API_BATCH_MAX_50'}
+                self.builder.append(spec);return {'status':'BUILDER_UPDATED'}
+            operation,payload='ORDER',[spec]
+        elif family==3:operation,payload='CANCEL',key
+        elif family==4:operation,payload='CANCEL_ALL',key if kind=='contract'else{'market':key}if kind=='market'else None
+        elif family in (7,8,9):
+            operation=('BATCH','MULTI','ALL_OR_NONE')[family-7];payload=list(self.builder)
+        elif family==10:return self.request_observation(*key)
+        else:self.builder.clear();return {'status':'BUILDER_CLEARED'}
+        self.api_sequence+=1
+        result=self.dispatch(operation,payload,idempotency_key=f'policy-{self.api_sequence}',
+                             relationship_constraint=key if kind=='relationship'else None)
+        if result['status']=='IN_FLIGHT'and family in (7,8,9):self.builder.clear()
+        return result
+
+
+class ApiTape(PreparedTape):
+    episode_type=ApiEpisode
+
+    def episode(self,*args,**kwargs):
+        env=super().episode(*args,**kwargs);env.role=self.role
+        return env

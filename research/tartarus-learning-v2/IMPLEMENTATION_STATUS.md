@@ -1,3 +1,5 @@
+**October19: current human-directed action profile is raw API/event-driven.** Use `moloch.learning_actions.entry.open_experiment` with [current-training-action-profile.json](current-training-action-profile.json). Legacy five-family/fixed-step checkpoints need retraining.75 checks and a58.1M GPU smoke pass; complete daily reward coordination, full-history coverage, API calibration and profitable independent results remain outstanding. [Scope and evidence](raw-api-action-space.md).
+
 ## October19,06:17UTC — population mutation and original-wallet replay
 
 Eight members/two islands/three cycles completed in224.817seconds. All24evaluations failed strict-positive matched-HOLD excess in all four development cases; realized search PnL was zero. Parent-child mutations and exact packed checkpoint/optimizer restore were exercised. [Result](interval-market-population-003-result.json).
