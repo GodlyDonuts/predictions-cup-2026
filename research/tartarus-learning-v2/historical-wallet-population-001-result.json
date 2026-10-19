@@ -1,0 +1,19 @@
+{
+  "classification": "inspected_original_wallet_development_not_locked_test",
+  "wallSeconds": 212.68325520004146,
+  "evaluations": 24,
+  "originalCashMicros": 158360000,
+  "originalOwnedCostMicros": 95579055000,
+  "originalWalletSourceObservedAt": "2026-10-19T04:12:46.066872Z",
+  "allCaseStrictPositiveIntervalExcess": 0,
+  "absoluteRoiAvailableEvaluations": 0,
+  "modeledFillReceiptsAcrossReusedSearchWorlds": 0,
+  "realizedPnlMicrosValues": [
+    0
+  ],
+  "bestWorstCaseIntervalExcess": 0.0,
+  "genealogyEvents": 2,
+  "productionChanged": false,
+  "profitabilityEstablished": false,
+  "lockedTestUsed": false
+}
