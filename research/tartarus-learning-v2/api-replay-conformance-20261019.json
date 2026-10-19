@@ -28,7 +28,10 @@
     "protected_development_archive_without_test_or_production_authority",
     "audited_development_only_cross_dataset_weight_transfer",
     "bounded_hashed_training_weight_recovery_slots",
-    "explicit_retrospective_producer_clock_with_receiver_provenance_and_role_fencing"
+    "explicit_retrospective_producer_clock_with_receiver_provenance_and_role_fencing",
+    "opt_in_hidden_observed_snapshot_clock_separate_from_information_delivery",
+    "stale_REST_stream_and_gap_ordering_without_free_budget_or_baseline",
+    "source_native_timestamp_extension_with_market_values_unchanged"
   ],
   "not_established": [
     "full_raw_topic_revision_and_private_account_stream_replay",
@@ -42,7 +45,7 @@
   ],
   "live_run007_unchanged_prior_code_profile": false,
   "new_stream_mode_opt_in_future_phase_only": true,
-  "focused_checks_passed": 106,
+  "focused_checks_passed": 115,
   "production_changed": false,
   "phase007_status": "superseded_and_preserved"
 }

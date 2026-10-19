@@ -79,6 +79,8 @@ class DerivedStream:
         if kind=='derived_book_receipt':
             connection,exchange,book=value
             if not self.enabled or connection!=self.connection:return True
+            from .snapshot_clock import older
+            if older(book,env.actor_books.get(exchange)):return True
             baseline=self.synced.get(exchange)
             if baseline is None or at-baseline>self.reconciliation_interval_ms:book.invalidate()
             env.actor_books[exchange]=book;env.observation_revision+=1;self.deliveries+=1
@@ -90,12 +92,12 @@ class DerivedStream:
             self.private_pending=True
             self.env.clock.schedule(self.env.now+1000,30,'derived_private_publish',self.connection)
 
-    def source_book(self,at,exchange):
+    def source_book(self,at,exchange,payload=None):
         if self.enabled:
             # The compiler already records first observation availability.
             # No earlier synthetic receipt or reset of original source age.
             self.env.clock.schedule(at,30,'derived_book_receipt',
-                (self.connection,exchange,deepcopy(self.env.books[exchange])))
+                (self.connection,exchange,deepcopy(self.env.books[exchange]if payload is None else payload)))
 
     def authoritative_book(self,key,payload):
         if self.enabled and key[0]=='book'and payload is not None and not payload.invalidated:
@@ -103,14 +105,18 @@ class DerivedStream:
             self.env.clock.schedule(self.env.now+self.reconciliation_interval_ms,30,'derived_baseline_expiry',
                                     (key[1],self.env.now,self.connection))
 
-    def source_gap(self,row):
+    def source_gap(self,row,source_state_at_ms=None):
         self.gaps+=1
         ex=row.get('exchange_id');market=row.get('market_id')
         affected=([ex]if ex is not None else
             [e for e in self.env.actor_books if market is None or self.env.mapping.get(e)==market])
         for exchange in affected:
+            actor=self.env.actor_books.get(exchange)
+            if source_state_at_ms is not None and getattr(actor,'source_state_at_ms',-1)>source_state_at_ms:continue
             self.synced.pop(exchange,None)
-            if exchange in self.env.actor_books:self.env.actor_books[exchange].invalidate()
+            if actor is not None:
+                actor.invalidate()
+                if source_state_at_ms is not None:actor.source_state_at_ms=source_state_at_ms
         self.env.observation_revision+=1
 
     def features(self):

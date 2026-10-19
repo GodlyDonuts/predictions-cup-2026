@@ -260,6 +260,12 @@ class ApiEpisode(PreparedEpisode):
         self.observation_revision+=1
 
     def _event(self,at,kind,value):
+        if kind=='api_snapshot_world':
+            from .snapshot_clock import world_event
+            world_event(self,at,value);return
+        if kind=='api_snapshot_information':
+            from .snapshot_clock import information_event
+            information_event(self,at,value);return
         if kind=='api_counterparty_trade':
             if self.passive is not None:
                 before=len(self.api_fills);self.passive.trade(at,value)
@@ -291,6 +297,14 @@ class ApiEpisode(PreparedEpisode):
         if kind=='api_account_receipt':self._publish_account(value);return
         if kind=='api_read_receipt':
             rid,snapshot=value;self.budget.complete(rid,at);self._publish_account(snapshot);return
+        if kind=='feed_receipt':
+            venue,rid,key,payload=value
+            if key[0]=='book':
+                from .snapshot_clock import older
+                if older(payload,self.actor_books.get(key[1])):
+                    # Complete the charged request, but never regress a newer
+                    # stream/read snapshot or use stale data as a new baseline.
+                    value=(venue,rid,key,None)
         before=len(self.api_fills)
         super()._event(at,kind,value)
         if kind=='tape'and value['kind']=='book':
@@ -480,15 +494,30 @@ class ApiTape(PreparedTape):
             raise ValueError('WHOLE_RAW_API_EPISODE_MUST_STAY_IN_ROLE')
         if self.role=='test'and not valid_sha(self.finalist):raise ValueError('FROZEN_FINALIST_REQUIRED')
         gap=getattr(self,'maximum_boundary_gap_ms',0)
-        if start_ms-burnin_ms<self.times[0] or end_ms>self.times[-1]+gap:
+        separate_world=getattr(self,'snapshot_world_mode',None)is not None
+        first=self.times[0]
+        if separate_world:
+            info_lo,info_hi=self.snapshot_world_information_bounds
+            if not info_lo<=start_ms-burnin_ms<end_ms<=info_hi:raise ValueError('WHOLE_SNAPSHOT_EPISODE_MUST_STAY_IN_INFORMATION_ROLE')
+            if self.snapshot_world_times:first=min(first,self.snapshot_world_times[0])
+        if start_ms-burnin_ms<first or end_ms>self.times[-1]+gap:
             raise ValueError('EPISODE_OUTSIDE_AVAILABLE_CHRONOLOGY')
         env=ApiEpisode(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,
                        target_wealth_micros,start_ms,end_ms)
         env.role=self.role;env.delivery=self.delivery;env.prepared_books=self.prepared_books
+        if separate_world:
+            from .snapshot_clock import source_clock
+            env.prepared_world_books=self.prepared_world_books;env.world_market_mapping={}
+            a=bisect.bisect_left(self.snapshot_world_times,start_ms-burnin_ms)
+            b=bisect.bisect_left(self.snapshot_world_times,end_ms)
+            for row in self.snapshot_world_rows[a:b]:
+                env.clock.schedule(source_clock(row),10,'api_snapshot_world',row)
         # Half-open source interval: an observation at next role's boundary
         # cannot change this role's terminal wealth. Receipt clocks remain real.
         a=bisect.bisect_left(self.times,start_ms-burnin_ms);b=bisect.bisect_left(self.times,end_ms)
-        for row in self.rows[a:b]:env.clock.schedule(row['available_at_ms'],10,'tape',row)
+        for row in self.rows[a:b]:
+            kind=('api_snapshot_information'if separate_world and row['venue']=='SIG'and row['kind']in('book','gap')else'tape')
+            env.clock.schedule(row['available_at_ms'],10,kind,row)
         a=bisect.bisect_left(self.flow_times,start_ms-burnin_ms);b=bisect.bisect_left(self.flow_times,end_ms)
         for row in self.flow_rows[a:b]:
             env.clock.schedule(row['available_at_ms'],10,'trade_flow',row)

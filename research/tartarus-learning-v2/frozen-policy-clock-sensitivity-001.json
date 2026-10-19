@@ -1,0 +1,285 @@
+{
+  "classification": "frozen_policy_clock_sensitivity_development_only",
+  "reports": [
+    {
+      "profile": "conflated_producer_clock",
+      "classification": "inspected_development_clock_sensitivity_not_independent_roi",
+      "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b",
+      "evaluation": {
+        "role": "development_selection",
+        "eligible": false,
+        "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b",
+        "reward": -0.03515920425822415,
+        "cases": [
+          {
+            "reward": -0.03515920425822415,
+            "D": null,
+            "N": null,
+            "eligible": false,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "terminal_reward_correction": 0.0,
+            "initial_wealth_twice_micros": 200000000000,
+            "terminal_wealth_twice_micros": 193090340000,
+            "marked_roi": -0.034548299999999976,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "fees_micros": 0,
+            "realized_fifo_micros": 0,
+            "fill_count": 7,
+            "stale_mark_observations": 0,
+            "stale_mark_exchanges": [],
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "stress": false,
+            "start_ms": 1792403400000,
+            "end_ms": 1792403999000,
+            "selection_seed": 281031,
+            "decisions": 12711,
+            "passive_execution": {
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 21228,
+              "intercepted_volume": 0,
+              "calibrated": false
+            },
+            "family_counts": {
+              "6": 2400,
+              "11": 2208,
+              "0": 3884,
+              "10": 3817,
+              "2": 159,
+              "5": 130,
+              "4": 8,
+              "3": 32,
+              "1": 70,
+              "9": 2,
+              "8": 1
+            },
+            "status_counts": {
+              "BUILDER_UPDATED": 2530,
+              "STREAM_DISCONNECTED": 894,
+              "BUILDER_CLEARED": 1314,
+              "ALARM": 3884,
+              "IN_FLIGHT": 4088,
+              "HORIZON_REACHED_NO_DISPATCH": 1
+            },
+            "entity_counts": {
+              "contract": 2762,
+              "stream_control": 894,
+              "global": 5201,
+              "read": 3817,
+              "order": 32,
+              "market": 5
+            }
+          },
+          {
+            "reward": -0.013816078988493298,
+            "D": null,
+            "N": null,
+            "eligible": false,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "terminal_reward_correction": 7.997075224253081e-16,
+            "initial_wealth_twice_micros": 200000000000,
+            "terminal_wealth_twice_micros": 197255785000,
+            "marked_roi": -0.013721074999999971,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "fees_micros": 0,
+            "realized_fifo_micros": 0,
+            "fill_count": 19,
+            "stale_mark_observations": 0,
+            "stale_mark_exchanges": [],
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "stress": true,
+            "start_ms": 1792403400000,
+            "end_ms": 1792403999000,
+            "selection_seed": 281032,
+            "decisions": 10972,
+            "passive_execution": {
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 21228,
+              "intercepted_volume": 0,
+              "calibrated": false
+            },
+            "family_counts": {
+              "11": 2127,
+              "10": 3002,
+              "0": 3543,
+              "6": 1911,
+              "2": 176,
+              "4": 16,
+              "3": 27,
+              "1": 61,
+              "5": 106,
+              "9": 2,
+              "8": 1
+            },
+            "status_counts": {
+              "STREAM_DISCONNECTED": 905,
+              "BUILDER_CLEARED": 1222,
+              "IN_FLIGHT": 3285,
+              "ALARM": 3543,
+              "BUILDER_UPDATED": 2017
+            },
+            "entity_counts": {
+              "stream_control": 905,
+              "global": 4769,
+              "read": 3002,
+              "contract": 2267,
+              "order": 27,
+              "market": 2
+            }
+          }
+        ],
+        "marked_roi_min": -0.034548299999999976,
+        "source_and_execution_calibration_complete": false,
+        "production_profitability_established": false
+      },
+      "production_changed": false,
+      "account_requests": 0
+    },
+    {
+      "profile": "separate_observed_snapshot_world",
+      "classification": "inspected_development_clock_sensitivity_not_independent_roi",
+      "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b",
+      "evaluation": {
+        "role": "development_selection",
+        "eligible": false,
+        "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b",
+        "reward": -0.03515412892657843,
+        "cases": [
+          {
+            "reward": -0.03515412892657843,
+            "D": null,
+            "N": null,
+            "eligible": false,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "terminal_reward_correction": 0.0,
+            "initial_wealth_twice_micros": 200000000000,
+            "terminal_wealth_twice_micros": 193091320000,
+            "marked_roi": -0.0345434,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "fees_micros": 0,
+            "realized_fifo_micros": 0,
+            "fill_count": 7,
+            "stale_mark_observations": 0,
+            "stale_mark_exchanges": [],
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "stress": false,
+            "start_ms": 1792403400000,
+            "end_ms": 1792403999000,
+            "selection_seed": 281031,
+            "decisions": 12841,
+            "passive_execution": {
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 21228,
+              "intercepted_volume": 0,
+              "calibrated": false
+            },
+            "family_counts": {
+              "6": 2282,
+              "11": 2204,
+              "0": 4055,
+              "10": 3897,
+              "2": 170,
+              "5": 132,
+              "4": 11,
+              "3": 24,
+              "1": 63,
+              "9": 2,
+              "8": 1
+            },
+            "status_counts": {
+              "BUILDER_UPDATED": 2413,
+              "STREAM_DISCONNECTED": 892,
+              "BUILDER_CLEARED": 1312,
+              "ALARM": 4055,
+              "IN_FLIGHT": 4168,
+              "HORIZON_REACHED_NO_DISPATCH": 1
+            },
+            "entity_counts": {
+              "contract": 2652,
+              "stream_control": 892,
+              "global": 5370,
+              "read": 3897,
+              "order": 24,
+              "market": 6
+            }
+          },
+          {
+            "reward": -0.013816078988493298,
+            "D": null,
+            "N": null,
+            "eligible": false,
+            "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+            "terminal_reward_correction": 1.0026701691145945e-15,
+            "initial_wealth_twice_micros": 200000000000,
+            "terminal_wealth_twice_micros": 197255785000,
+            "marked_roi": -0.013721074999999971,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "fees_micros": 0,
+            "realized_fifo_micros": 0,
+            "fill_count": 19,
+            "stale_mark_observations": 0,
+            "stale_mark_exchanges": [],
+            "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "stress": true,
+            "start_ms": 1792403400000,
+            "end_ms": 1792403999000,
+            "selection_seed": 281032,
+            "decisions": 11954,
+            "passive_execution": {
+              "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+              "source_volume": 21228,
+              "intercepted_volume": 0,
+              "calibrated": false
+            },
+            "family_counts": {
+              "11": 2137,
+              "10": 3375,
+              "0": 3867,
+              "6": 2187,
+              "2": 176,
+              "4": 17,
+              "3": 26,
+              "1": 59,
+              "5": 106,
+              "9": 2,
+              "8": 1,
+              "7": 1
+            },
+            "status_counts": {
+              "STREAM_DISCONNECTED": 909,
+              "BUILDER_CLEARED": 1228,
+              "IN_FLIGHT": 3657,
+              "ALARM": 3867,
+              "BUILDER_UPDATED": 2292,
+              "HORIZON_REACHED_NO_DISPATCH": 1
+            },
+            "entity_counts": {
+              "stream_control": 909,
+              "global": 5100,
+              "read": 3375,
+              "contract": 2542,
+              "order": 26,
+              "market": 2
+            }
+          }
+        ],
+        "marked_roi_min": -0.0345434,
+        "source_and_execution_calibration_complete": false,
+        "production_profitability_established": false
+      },
+      "production_changed": false,
+      "account_requests": 0
+    }
+  ],
+  "independent_test_used": false,
+  "same_policy_same_information_tape_same_GPU_compute_budget": true,
+  "physical_exchange_execution_calibrated": false,
+  "production_changed": false
+}

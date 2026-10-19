@@ -69,7 +69,8 @@ def native_rows(path,roles,emit,native_clock='receiver'):
             observation=extract(e,original['hash'],available)
             if observation is not None:
                 if observation.get('source_at_ms')is not None and observation['source_at_ms']>available:raise ValueError('NATIVE_FUTURE_SOURCE_CLOCK')
-                observation.update(calendar_role=role,receiver_observed_at_ms=at,receiver_row_hash=claimed)
+                observation.update(calendar_role=role,receiver_observed_at_ms=at,receiver_row_hash=claimed,
+                    native_event_received_at_ms=millis(e['receivedAt']),native_processed_at_ms=processed)
                 emit(observation)
     if verifier.anchor is None:raise ValueError('NATIVE_PRODUCER_ANCHOR_MISSING')
     result={'receiverRowsVerified':sequence,'nativeRowsVerified':verifier.rows,'anchor':verifier.anchor,

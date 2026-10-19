@@ -1,6 +1,6 @@
 {
   "classification": "observed_active_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T12:19:14.902554+00:00",
+  "observed_utc": "2026-10-19T12:48:37.668443+00:00",
   "source_commit": null,
   "run": "raw-api-growth-development-011",
   "parameters": 58106855,
@@ -26,9 +26,9 @@
   "passive_flow_mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
   "private_fill_notifications": "requires_active_sig_stream",
   "config_sha256": "4cfcc7ef79311dd644f6ecea55a23bcbf2ccb76ba445ca0d7b6bd50dfd8e6680",
-  "training_decisions": 74971,
-  "accepted_updates": 452,
-  "current_member_modeled_fills": 184,
+  "training_decisions": 175757,
+  "accepted_updates": 1191,
+  "current_member_modeled_fills": 95,
   "modeled_fills_are_not_contest_transactions": true,
   "older_phase_transition": {
     "training_decisions_at_transition": 811051,
@@ -55,7 +55,15 @@
   "full_history_coverage_established": false,
   "execution_calibrated": false,
   "positive_independent_roi_established": false,
-  "completed_candidate_development_rewards": [],
+  "completed_candidate_development_rewards": [
+    {
+      "member": 0,
+      "cycle": 0,
+      "reward": -0.1835355333654224,
+      "marked_roi_min": -0.16767770000000004,
+      "checkpoint_sha256": "48fd834954457b1d64f2e82d91494b16dc1cfb3c4297ec772b9d615f23b2e52b"
+    }
+  ],
   "native_capture_continuation": {
     "producer_pid": 886899,
     "producer_start_ticks": "36095048",
@@ -105,7 +113,7 @@
     }
   },
   "cuda_peak_allocated_bytes": 2846793728,
-  "completed_counterfactual_worlds_current_member": 9,
+  "completed_counterfactual_worlds_current_member": 3,
   "training_recovery": {
     "retention_slots": 2,
     "verified_slot_manifests_present": 2,
@@ -118,5 +126,15 @@
     "official_trade_rows": 73,
     "maximum_aggregate_venue_gap_ms": 59026,
     "physical_exchange_parity_established": false
+  },
+  "observed_snapshot_world_profile": {
+    "implemented_and_real_source_verified": true,
+    "active011_profile_changed": false,
+    "frozen_policy_CPU_sensitivity_comparison": "complete_both_profiles_negative_development_only",
+    "independent_test_used": false,
+    "worst_marked_roi": {
+      "conflated": -0.0345483,
+      "separate_observed_world": -0.0345434
+    }
   }
 }

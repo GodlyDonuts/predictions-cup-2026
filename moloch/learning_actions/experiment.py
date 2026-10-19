@@ -102,6 +102,10 @@ class Experiment:
         tape.counterparty_replay_enabled=self.config.get('passive_flow_mode')is not None
         tape.counterparty_information_bounds=(self.train_bounds if role=='train'else
             self.evolution_bounds if role=='evolution'else self.split.bounds('test'))
+        if self.config.get('snapshot_world_clock')is not None:
+            from .snapshot_clock import MODE,prepare
+            if self.config['snapshot_world_clock']!=MODE:raise ValueError('EXPLICIT_SNAPSHOT_WORLD_CLOCK_MODE')
+            prepare(tape,tape.counterparty_information_bounds)
         self.tape_cache[key]=tape
         return tape
 
@@ -110,6 +114,8 @@ class Experiment:
         if stress:mechanics=replace(mechanics,depth_fraction_ppm=500000,adverse_execution_micros=5000)
         tape=self.tape(role,finalist)
         earliest=max(tape.times[0],self.split.bounds(tape.role)[0])
+        if getattr(tape,'snapshot_world_mode',None)is not None:
+            earliest=max(earliest,tape.snapshot_world_information_bounds[0])
         burnin=min(self.config.get('initial_world_history_ms',120000),max(0,start-earliest))
         env=tape.episode(mechanics,start,end,
             initial_cash_micros=self.config.get('initial_cash_micros',100000000000),
