@@ -1,0 +1,512 @@
+{
+  "accountRequests": 0,
+  "activeCpu002Changed": false,
+  "activeGpu017Changed": false,
+  "allowSizedRequestDifferences": true,
+  "architecture": "tartarus-raw-api-full-depth-joint-memory-gru-v5",
+  "cases": 4,
+  "checkpointSha256": "1d030278e78a9d2ad2dadd798c01d2c166af440f5e8d8cb3e42065604ed2d6bb",
+  "classification": "finite_inspected_selection_compute_comparison_not_roi",
+  "computeCalibration": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 16,
+    "device": "cuda:0",
+    "measured_ms": [
+      11.746599921025336,
+      11.353699956089258,
+      11.614200077019632,
+      12.784500024281442,
+      15.519799897447228,
+      11.343599995598197,
+      11.188700096681714,
+      11.081499978899956,
+      10.726099950261414,
+      13.018399942666292,
+      14.706999994814396,
+      11.592600028961897
+    ]
+  },
+  "configSha256": "dadac6a5d6d907201ce1c8442100bc96f6065b3fee6d892c74b5dccb70a1cc2c",
+  "cudaPeakAllocatedBytes": 513905664,
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "device": "cuda",
+  "exactDiscreteActionsStatusesAndBudgets": true,
+  "fullEpisodeEvaluationCompleted": false,
+  "fullOrderRecordsIdentical": false,
+  "identicalCashLotsFillsLiquidityClocksBudgetsAndExecutableRemainders": true,
+  "identicalFinanceLiquidityClocksAndCaseRng": false,
+  "independentTestUsed": false,
+  "maxActionFractionAbsoluteError": 1.3834935719270192e-07,
+  "measurements": [
+    {
+      "decisions": 256,
+      "deliveredBooks": [
+        170,
+        105,
+        237,
+        237
+      ],
+      "entityCounts": [
+        1247,
+        1216,
+        1377,
+        1362
+      ],
+      "mode": "serial",
+      "seconds": 5.62260130001232,
+      "simulatedPrimingReads": [
+        14,
+        14,
+        237,
+        237
+      ],
+      "sourceWarmupVirtualMs": [
+        490,
+        490,
+        0,
+        0
+      ]
+    },
+    {
+      "decisions": 256,
+      "deliveredBooks": [
+        170,
+        105,
+        237,
+        237
+      ],
+      "entityCounts": [
+        1247,
+        1216,
+        1377,
+        1362
+      ],
+      "mode": "batch_encoding",
+      "seconds": 5.783482900005765,
+      "simulatedPrimingReads": [
+        14,
+        14,
+        237,
+        237
+      ],
+      "sourceWarmupVirtualMs": [
+        490,
+        490,
+        0,
+        0
+      ]
+    },
+    {
+      "decisions": 256,
+      "deliveredBooks": [
+        170,
+        105,
+        237,
+        237
+      ],
+      "entityCounts": [
+        1247,
+        1216,
+        1377,
+        1362
+      ],
+      "mode": "batch_heads",
+      "seconds": 3.5273809999926016,
+      "simulatedPrimingReads": [
+        14,
+        14,
+        237,
+        237
+      ],
+      "sourceWarmupVirtualMs": [
+        490,
+        490,
+        0,
+        0
+      ]
+    },
+    {
+      "decisions": 256,
+      "deliveredBooks": [
+        170,
+        105,
+        237,
+        237
+      ],
+      "entityCounts": [
+        1247,
+        1216,
+        1377,
+        1362
+      ],
+      "mode": "batch_heads",
+      "seconds": 3.3392466999357566,
+      "simulatedPrimingReads": [
+        14,
+        14,
+        237,
+        237
+      ],
+      "sourceWarmupVirtualMs": [
+        490,
+        490,
+        0,
+        0
+      ]
+    },
+    {
+      "decisions": 256,
+      "deliveredBooks": [
+        170,
+        105,
+        237,
+        237
+      ],
+      "entityCounts": [
+        1247,
+        1216,
+        1377,
+        1362
+      ],
+      "mode": "batch_encoding",
+      "seconds": 6.166092099971138,
+      "simulatedPrimingReads": [
+        14,
+        14,
+        237,
+        237
+      ],
+      "sourceWarmupVirtualMs": [
+        490,
+        490,
+        0,
+        0
+      ]
+    },
+    {
+      "decisions": 256,
+      "deliveredBooks": [
+        170,
+        105,
+        237,
+        237
+      ],
+      "entityCounts": [
+        1247,
+        1216,
+        1377,
+        1362
+      ],
+      "mode": "serial",
+      "seconds": 5.6790329000214115,
+      "simulatedPrimingReads": [
+        14,
+        14,
+        237,
+        237
+      ],
+      "sourceWarmupVirtualMs": [
+        490,
+        490,
+        0,
+        0
+      ]
+    }
+  ],
+  "medianSeconds": {
+    "batch_encoding": 5.974787499988452,
+    "batch_heads": 3.433313849964179,
+    "serial": 5.650817100016866
+  },
+  "parameterSha256": "c2e61a72014db99417fd355d2bc8e48f2621803df62cbc0dac4b57a74febec8f",
+  "parameters": 58183917,
+  "policyUnchanged": true,
+  "productionChanged": false,
+  "qualification": "bounded_compute_measurement_with_disclosed_requested_quantity_differences_not_full_behavioral_equivalence",
+  "realAccountRequests": 0,
+  "recurrentStatesMatchTolerance": true,
+  "resultSha256": "33fee43de4d909dacc9aa4bd81b071d9ff73773154cf10618a129871ce17ddc2",
+  "roiEstablished": false,
+  "runtimeSourceFilesVerified": 109,
+  "runtimeSourceSha256": {
+    "moloch\\learning_actions\\__init__.py": "4988e41410b6a1bd9cb989c44fffb7922e4fc8428373f855fe5c788205273c4a",
+    "moloch\\learning_actions\\account_reads.py": "15e97832065e5b5daff2b0b48490e35b527d62d48f9079aa49466f5607ef5ab0",
+    "moloch\\learning_actions\\archive.py": "e68e23e550d732cfc515cc867c9e149507e1f6b8343b88d94e041706057237c5",
+    "moloch\\learning_actions\\batch_benchmark.py": "c78ae18ba32daeb815775e7dacf04abe68b72fcc326a37ad26b616d8bf5d603b",
+    "moloch\\learning_actions\\batched.py": "3d213ebc5143f337eda69346e74d110e8cb28089d8b01c29173fdaa7d5f6c9a7",
+    "moloch\\learning_actions\\behavior_guard.py": "76ae757f270119f3ce3aa7d53ede5e73b873b37b7967d08c023995a52b45cf1c",
+    "moloch\\learning_actions\\breadth_source.py": "fce3a051cffd911a6da727e8ee0dd396e2cca71804fdaad7afe752eaf054f0da",
+    "moloch\\learning_actions\\clock_prior.py": "7f18c08184debf77eb55ee2ff5c3be4d294ea28dc43844666bc6cc861d3bbdf6",
+    "moloch\\learning_actions\\collateral_ledger.py": "33bb07173650b243eebcf318bf52eb3417662cea94d7df56e22dbb9931ce9765",
+    "moloch\\learning_actions\\compile_archived_cohort.py": "6242a2c8baed0d4eaec96d5736c40368c8fde94d35c49f156c02bd910fa5a16c",
+    "moloch\\learning_actions\\compile_breadth.py": "a353c022bdc48599a369d1181e300b037a8731638890ec61e88a9d527d0e0533",
+    "moloch\\learning_actions\\compile_snapshot_metadata.py": "e1065ee2dfd3c666e120a86228e9afc0223408ce05c6a2e78a82eca66f47c128",
+    "moloch\\learning_actions\\continue_population.py": "c91928208d818b63ff08bdecb101a076821339192d7abddb324bf45b5b65eacb",
+    "moloch\\learning_actions\\contract.py": "028c3e1f0f66ede7a411289965ac454e372cb485e391551083d7aaae56dae6ea",
+    "moloch\\learning_actions\\disk_replay.py": "aa9a473ea2d429dabe69950342087968553f77c3c8dd69bf8df79cf5ed6bc6f1",
+    "moloch\\learning_actions\\disk_tape.py": "347e06dd2a7e5005b2efe093824832fa78fbae514665af6200f213ece99b72e2",
+    "moloch\\learning_actions\\economics.py": "7d2a42b3911cb8092ef2be9595fde0341b442f828cc88eeb517a884520df0015",
+    "moloch\\learning_actions\\engine.py": "efd3362c7d4088294b526ea36841e2a21465a9f73e975c58bbe3a4d1f59fc2fa",
+    "moloch\\learning_actions\\entry.py": "f6ebe7c2ffb3da4f890c475d0d20e9163f87158e860c02fe0e40ea99b4ba0748",
+    "moloch\\learning_actions\\episode_tape.py": "c7c89705e2a1a9a2bae50c5cd53f51ae78493d93a7d7408e45074e7027a050f5",
+    "moloch\\learning_actions\\episode_training.py": "1638d4686f5f5b586b2ade5dd47145431204a83f87bf0618ddcd22be00e4889c",
+    "moloch\\learning_actions\\evaluation_batch.py": "863bcacd29f1d78930168e7481b7f16523fbee2c9ad4a5c5db41a808c0e91eed",
+    "moloch\\learning_actions\\evaluation_benchmark.py": "c9c3f586b764f5866710b3cb97a44493c0b96d2f7a8f3adcacb593bf87ade787",
+    "moloch\\learning_actions\\evaluation_heads_benchmark.py": "7f29134b388819bbeb9b3028ae2c28eb4b1b76cc7f7ce1dc99e7b359c8afd334",
+    "moloch\\learning_actions\\execution_receipts.py": "0b02399d0a95142b55a66da74f0b4341c75d0f3af0b4825cc741cbcc6f1e66f8",
+    "moloch\\learning_actions\\experiment.py": "d0093f54fa2dbb3b781b5252a3746e09ab132840106ceef98b09e9dfc12cc0b9",
+    "moloch\\learning_actions\\feature_cache.py": "bfe7d564f66dda5126fe85cade2f19089d690ba9339c431d1a77dc2a6127da5f",
+    "moloch\\learning_actions\\full_depth.py": "03c7e651609b11f3bb0da0bd4dad3204ab7c701ac809b1fccc7d64a2c696857f",
+    "moloch\\learning_actions\\independent_sampling.py": "49419d02243173ab00393605af473cdc8c64018e93caf6ca237a60a651859510",
+    "moloch\\learning_actions\\inventory.py": "3a7b9078b58f4a9a89f1454e331f746765a86bd1ee17d65b869fd61dd4decdd8",
+    "moloch\\learning_actions\\joint_memory_policy.py": "a9877015b66ad1c747cd7b8c13a00da1176f8af0affd7e7d44bca0f07564eae6",
+    "moloch\\learning_actions\\lineage.py": "023ffd692c1e559c53629bddfe181401aea6c7ea7b1e82f6e0bd80b0a1d08374",
+    "moloch\\learning_actions\\observation_protocol.py": "be71cd2cb2017427909ad256836161d23e03675bef2d3c78fae612790d2a8d03",
+    "moloch\\learning_actions\\official_marks.py": "a2f977a5a0dc1f5c3cc94e4f2a3fee8d4dbac21010d741590d3a373f4f0ad4a1",
+    "moloch\\learning_actions\\paired_training_comparison.py": "38ebcd9bfc2273e8c26bdc247567fb629a80951ab97b85db60c8e4ee1177fd2c",
+    "moloch\\learning_actions\\partial_population.py": "bfa79327a6e98d2fd1f62d8a788b179417aaa1e37f27eea1610bb574b9be291b",
+    "moloch\\learning_actions\\passive.py": "99a327a372d8603d7503c412fc412bad269c195ea4e12609ccca7bdeef5a7218",
+    "moloch\\learning_actions\\passive_study.py": "3a77aed796da615be7bfb5e4890cdb467e9a7a0da21fef8eced0858886370329",
+    "moloch\\learning_actions\\policy.py": "2b78e8250536368a48548a92bee9020fef756a592385022a1516a22c44f0b2c5",
+    "moloch\\learning_actions\\population.py": "ace5c2321553ec923b40d2e657764c7bae3b0c4ed6285f562d63d6c32a69d707",
+    "moloch\\learning_actions\\population_handoff.py": "38ab6ec23bc74ad2d865cd9399fce7e6d875e120ed7effae05900f44059f7978",
+    "moloch\\learning_actions\\query_policy.py": "de324256006b3ba4e88d4526612badf4222fbe47ff3a7441c28c15f00b2cb32d",
+    "moloch\\learning_actions\\query_window.py": "dfd3db0216feeaa99e44955c69a9b86d327a8d08fc45b2870c119c8d7999390f",
+    "moloch\\learning_actions\\realtime.py": "2e163da680210d21365baeaf92e642ba10f1dc81b65c5e0ec5009b45d4e7134f",
+    "moloch\\learning_actions\\selection.py": "48076f7414b8a8dcac5f09e661148ed3c2762479b34b47081d4cf1e1da8eb5e3",
+    "moloch\\learning_actions\\smoke.py": "309627c625fe2b0e4159ba1c3ed433303b4160ff79764a45c2f53faff43d8bf3",
+    "moloch\\learning_actions\\snapshot_clock.py": "966d1601abcfdc9788f7c8baa6c27b5a2b57778e80b57e07b6e39989d6a1924a",
+    "moloch\\learning_actions\\state_encoding.py": "33854fdf344ca606516e09945ee49f547e018a398c4c5c1ea653906e77f9f266",
+    "moloch\\learning_actions\\stream.py": "06c0de8cef2aa29ba024295be36936f7b670eb505aebc4d6eda157f9c1d73ecb",
+    "moloch\\learning_actions\\trade_history.py": "ccba9cf94916845e17112f005c00d9c486c9b205ccdcb7f6aba009769fb962cb",
+    "moloch\\learning_actions\\training.py": "d4280f80b389f503de27b8dbfbd788941a7f77b54f76bb2ebcfbd7057f1cade3",
+    "moloch\\learning_actions\\training_process.py": "a937c52dae6e8ca61ca0f71b2eecd84c331b7022482cf31edb11fbec2417513c",
+    "moloch\\learning_actions\\wake_clock.py": "424e01f7ae323808cfd94230f5d2ebad02c5ec8b95bcec33e5518569994c4511",
+    "moloch\\learning_actions\\world_confidence.py": "c682761cad44b98c519ad2745e33208a29e9d42834748933ad28ac6708ced621",
+    "moloch\\learning_flow\\__init__.py": "6ca22f80c55bed8f63c7cfcfad0e2c3623df1e97f7f0f6244c22a68acb5eceb7",
+    "moloch\\learning_flow\\batched_rollout.py": "a646a36f057c271e377e4f023f53d3d23c5f923d76bcf51c8b48daf6258a53c7",
+    "moloch\\learning_flow\\compile.py": "f31c4c8757a7be21a2779f8d570d4bbba527bbbf1b5b6954d6869dce9e28c7e4",
+    "moloch\\learning_flow\\episodes.py": "413bcae639a996b712fa385b932f0d65d2f30b70998d66caaa0c2de861563043",
+    "moloch\\learning_flow\\features.py": "c50ae86ba60a129dda70bcb654ab90cdc46303cb5bb5d1849b27e62c28512cf7",
+    "moloch\\learning_flow\\policy.py": "266a9361a97e7c4d955f32e992bd3df5f0861a4dc699c6c52360721d228e4545",
+    "moloch\\learning_flow\\rollout.py": "74a5f7d5fa9acae0f5af1bb63290a2e19f55224be9c6bef9ee63b99244441909",
+    "moloch\\learning_flow\\run_population.py": "94cd05b4cb887170abf99d16f72d6f517b85edf84eb2a216dc64746b15955541",
+    "moloch\\learning_realism\\__init__.py": "51b68106703c7da05a64164a83e3f43a3f0797af26930b30927f31d78b5d25ef",
+    "moloch\\learning_realism\\benchmark.py": "531af61335ba43f76c0b831b84d596a12cac4fda7ca8daf8b826f9ec5e61a956",
+    "moloch\\learning_realism\\fast_replay.py": "68794834c6df3c93b386bafad9b59fd757f51e96a0df03941a35f91e16ad8df1",
+    "moloch\\learning_realism\\prepare.py": "db79faa395b8a2d670f804e99020e9cabc4debd27cb39249dc541827ffca6b83",
+    "moloch\\learning_realism\\protocol.py": "43921d05cec94dce2cd7c6a829623b129c936707106e93dc5e12c9bfa949f235",
+    "moloch\\learning_realism\\replay.py": "05a7518b0c3414cc1b58ca77bffe591bf2e9a3e8b6addd0073a5f9149e0cfbd9",
+    "moloch\\learning_realism\\smoke.py": "d77cb338ff79f50dab48dcc985ab35e266dc8e1b7efc5bddacf0d7f3774783a0",
+    "moloch\\learning_realism\\vector_rollout.py": "2b079c7335b303035faf5c62539b205464ec3963608349170889dba56b386a1e",
+    "moloch\\learning_v2\\__init__.py": "359886ab5cbd691affe07efdb18f343c173b8bab03af0312b96ac5344ca0047d",
+    "moloch\\learning_v2\\account.py": "40a840bb8eef185e1496b631e940f1ae58cf6cd92e0337e5ea4d7b470a119452",
+    "moloch\\learning_v2\\batched_rollout.py": "bd27d7a275d27ea5d28ead3e9cf669f2308f6150d9136e521a5efad619ceb917",
+    "moloch\\learning_v2\\benchmark_sequence.py": "c6cf5160e2413af28eef0aa491437893055cbaa62e36a80b4e17d7c887373092",
+    "moloch\\learning_v2\\capture_native_stream.py": "b898d3454fdb252488c4980ddd75c9011cf5f163174ab43c8af86bf6ef9b2696",
+    "moloch\\learning_v2\\capture_receipt_stream.py": "e83af16da643d473ef5dcb430b7bf48eba5dfb20f583a6ee6a19756328fc1e4a",
+    "moloch\\learning_v2\\checkpoint_inference.py": "e7f04381e1e541f51ac635176f239b936125e6a2141ce01f439435cf963beb12",
+    "moloch\\learning_v2\\clock.py": "3d654a63e7509c97cf6f983c6234bc5eef0d5efa622902d969b8d5baed2003cf",
+    "moloch\\learning_v2\\compile_forward_development.py": "4f7a4b83bb4d00cac17468bb5d91f731013fa3a439402dd5ad8a497ed28795ce",
+    "moloch\\learning_v2\\compile_trace.py": "37c35d2c3e897e3e6dd79a895d1e74dc21125233022e054018954de591d73556",
+    "moloch\\learning_v2\\episodes.py": "787bc53a9fe91a2e8deacafd39546e2c968081173af99f8f6a606a53c02c3d12",
+    "moloch\\learning_v2\\excess_reward.py": "280c22a6520ca57d11a09e2568a48c67c5da7969a56a69bd1d1f14ba9427cd15",
+    "moloch\\learning_v2\\execution_profiles.py": "56c67a6c0fd5f982544d112f62525fd9fc73e9444e89d1852999b2c935f8595f",
+    "moloch\\learning_v2\\feature_migration.py": "392a3c677c6cfb3e84afc61a8b3c24efe7f603d9d5847151e81990d47ad31d58",
+    "moloch\\learning_v2\\freeze_finalists.py": "94ad723abfb10e3f08432e49f9e6765e88b50defd5e91da5e3a08c1f1cc91560",
+    "moloch\\learning_v2\\fused_policy.py": "97387abec3966fb12ef44d03437d829016e9abf528a8b813c23c90e4ca1b41d7",
+    "moloch\\learning_v2\\historical_wallet.py": "5bf140ebff29ef9f48d4811755b8da8da4def34b7423a0a1182bbc5b39f22d47",
+    "moloch\\learning_v2\\interval_episodes.py": "bef343f4f54dc38bc06e22fe87a7480ece2cf417ff5d7d6045beb61f19f506f6",
+    "moloch\\learning_v2\\interval_excess_reward.py": "63dc6722dbbfbee592584f12fdff0f457290016693777e889ac59dae169d8146",
+    "moloch\\learning_v2\\interval_market_policy.py": "fe0b93e155f1ccf0b7b32e188286ece7b86cfdfc262583a4f8a321cae2e98c13",
+    "moloch\\learning_v2\\inventory_curriculum.py": "630ddc4a0182aedc55fb8d3edb986bb00197fb72f6e1041f7e95a1765c6d99ea",
+    "moloch\\learning_v2\\liquidity.py": "c765ae793296640e00b6f100f83117926e3f489eb4e3b224791e0880773c100f",
+    "moloch\\learning_v2\\market_memory_policy.py": "4ccd05bc20a52abc6bacb429a40a3d0a1e999a122777f862bd2381cc5fc626ed",
+    "moloch\\learning_v2\\native_capture_tail.py": "7bad25b305a2d79ebb4736a1f9fc9439aff5facda5013dbf9a4545d510500669",
+    "moloch\\learning_v2\\packed_io.py": "53c64cd589fa9d3c4703375d4870f71e6061ce2b9e4d3c2a33556b3a9f301204",
+    "moloch\\learning_v2\\policy.py": "7a91b3f3a061902da67cc79373fb59c803cd27803e7ac6fd0a5d77b237a4d348",
+    "moloch\\learning_v2\\population.py": "a9bd68cbfc4a7e61118798adfa2d445e48b51641e157a10b0467f8a7db8b8d9e",
+    "moloch\\learning_v2\\process_rollout.py": "b397156e8a74fb283aed0368ab031fcff42c082ed6052c9765d28107e6ed171b",
+    "moloch\\learning_v2\\reference_adapters.py": "40c3f8fa3bdcc3009e63fefff618f642cb8093ce5f36caa7b458e37ebfeb3934",
+    "moloch\\learning_v2\\reference_cache.py": "1fdbd7f82dfbe7d13ca68039f0c9633e13e6654d60f238bef3d660394694b548",
+    "moloch\\learning_v2\\reference_env.py": "e5e67cddda4883e32af39a2e61d805d421a295085aa11258c1230bada540a1ed",
+    "moloch\\learning_v2\\run_batched_training.py": "1bf448b27aa0fbcd0496e65ffa1e676be5c25a89061bf677a14c654ead730aac",
+    "moloch\\learning_v2\\run_comparison.py": "cde9ea77c340b586c1bccf834da34ea8ee6dcd2b5d2efd969b40630fd6a40efe",
+    "moloch\\learning_v2\\run_experiment.py": "1fe75c89a3bafae2989ff8d99cf31b317c69139d63d8db5db90980124ca7eacb",
+    "moloch\\learning_v2\\run_market_training.py": "5b0eec1de2550cccc77c75f06b9067c744e7e9b91999e757f5b0c6f745fde3b4",
+    "moloch\\learning_v2\\run_population.py": "42e2c50279183afba1af8637ba9628e2a4539290ec53845d3ba70fd4514cd3e1",
+    "moloch\\learning_v2\\sig_capture_tail.py": "90c9a0be57a35fc53174a7d33a16827d4e50aa26857de3b975c4ddaf8dcad780",
+    "moloch\\learning_v2\\train_inner.py": "0aa6e310d766af6e90df4a4e48c880c5b5145c6ab3428dee9b7b0f38a8a9b8d8",
+    "moloch\\learning_v2\\wallet_differential.py": "c3feb9d2629095263e6928c218bfa6374bcfadd394dce552b5935ffd7a4f76dc"
+  },
+  "simulatedPrimingReadsPerCase": -1,
+  "sizedRequestQuantityDifferences": [
+    {
+      "case": 0,
+      "mode": "batch_encoding",
+      "order": 3,
+      "otherRequested": 1006334192,
+      "sameExecutableRemaining": 86089,
+      "serialRequested": 1006334251
+    },
+    {
+      "case": 0,
+      "mode": "batch_encoding",
+      "order": 4,
+      "otherRequested": 12740846,
+      "sameExecutableRemaining": 3357485,
+      "serialRequested": 12740841
+    },
+    {
+      "case": 2,
+      "mode": "batch_encoding",
+      "order": 5,
+      "otherRequested": 1279994,
+      "sameExecutableRemaining": 318682,
+      "serialRequested": 1279993
+    },
+    {
+      "case": 2,
+      "mode": "batch_encoding",
+      "order": 6,
+      "otherRequested": 1662426,
+      "sameExecutableRemaining": 163046,
+      "serialRequested": 1662425
+    },
+    {
+      "case": 2,
+      "mode": "batch_encoding",
+      "order": 9,
+      "otherRequested": 170376476,
+      "sameExecutableRemaining": 126324,
+      "serialRequested": 170376584
+    },
+    {
+      "case": 0,
+      "mode": "batch_heads",
+      "order": 3,
+      "otherRequested": 1006334192,
+      "sameExecutableRemaining": 86089,
+      "serialRequested": 1006334251
+    },
+    {
+      "case": 0,
+      "mode": "batch_heads",
+      "order": 4,
+      "otherRequested": 12740846,
+      "sameExecutableRemaining": 3357485,
+      "serialRequested": 12740841
+    },
+    {
+      "case": 2,
+      "mode": "batch_heads",
+      "order": 5,
+      "otherRequested": 1279994,
+      "sameExecutableRemaining": 318682,
+      "serialRequested": 1279993
+    },
+    {
+      "case": 2,
+      "mode": "batch_heads",
+      "order": 6,
+      "otherRequested": 1662426,
+      "sameExecutableRemaining": 163046,
+      "serialRequested": 1662425
+    },
+    {
+      "case": 2,
+      "mode": "batch_heads",
+      "order": 9,
+      "otherRequested": 170376476,
+      "sameExecutableRemaining": 126324,
+      "serialRequested": 170376584
+    },
+    {
+      "case": 0,
+      "mode": "batch_heads",
+      "order": 3,
+      "otherRequested": 1006334192,
+      "sameExecutableRemaining": 86089,
+      "serialRequested": 1006334251
+    },
+    {
+      "case": 0,
+      "mode": "batch_heads",
+      "order": 4,
+      "otherRequested": 12740846,
+      "sameExecutableRemaining": 3357485,
+      "serialRequested": 12740841
+    },
+    {
+      "case": 2,
+      "mode": "batch_heads",
+      "order": 5,
+      "otherRequested": 1279994,
+      "sameExecutableRemaining": 318682,
+      "serialRequested": 1279993
+    },
+    {
+      "case": 2,
+      "mode": "batch_heads",
+      "order": 6,
+      "otherRequested": 1662426,
+      "sameExecutableRemaining": 163046,
+      "serialRequested": 1662425
+    },
+    {
+      "case": 2,
+      "mode": "batch_heads",
+      "order": 9,
+      "otherRequested": 170376476,
+      "sameExecutableRemaining": 126324,
+      "serialRequested": 170376584
+    },
+    {
+      "case": 0,
+      "mode": "batch_encoding",
+      "order": 3,
+      "otherRequested": 1006334192,
+      "sameExecutableRemaining": 86089,
+      "serialRequested": 1006334251
+    },
+    {
+      "case": 0,
+      "mode": "batch_encoding",
+      "order": 4,
+      "otherRequested": 12740846,
+      "sameExecutableRemaining": 3357485,
+      "serialRequested": 12740841
+    },
+    {
+      "case": 2,
+      "mode": "batch_encoding",
+      "order": 5,
+      "otherRequested": 1279994,
+      "sameExecutableRemaining": 318682,
+      "serialRequested": 1279993
+    },
+    {
+      "case": 2,
+      "mode": "batch_encoding",
+      "order": 6,
+      "otherRequested": 1662426,
+      "sameExecutableRemaining": 163046,
+      "serialRequested": 1662425
+    },
+    {
+      "case": 2,
+      "mode": "batch_encoding",
+      "order": 9,
+      "otherRequested": 170376476,
+      "sameExecutableRemaining": 126324,
+      "serialRequested": 170376584
+    }
+  ],
+  "sourceCommit": "5d2756306a6226eaf8492bcbac1bb736c0b3d205",
+  "sourceFilesVerified": 231,
+  "sourceManifestSha256": "587fcbb7fa92e955d2c7caa3ae1a8bbdf0e2da23c6dd2069f5368d85875b9326",
+  "speedupHeadsVersusBatchEncoding": 1.7402392443821553,
+  "speedupHeadsVersusSerial": 1.6458783982349363,
+  "stepsPerCase": 64,
+  "torchVersion": "2.11.0+cu128"
+}

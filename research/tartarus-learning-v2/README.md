@@ -1,4 +1,4 @@
-[Current: corrected joint-memory profile017 is learning; study002 compares returns; no independent ROI](profile-017-learning-20261019.md). Older profile statements below are historical.
+[Current: GPU017 learning;1.646x finite selection-compute measurement;018 pending generation boundary; no independent ROI](evaluation-heads-gpu-20261019.md). Older profile statements below are historical.
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 

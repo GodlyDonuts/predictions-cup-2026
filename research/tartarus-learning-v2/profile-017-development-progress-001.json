@@ -1,0 +1,53 @@
+{
+  "classification": "current_corrected_joint_memory_training_and_development_losses_not_independent_roi",
+  "completedMembers": [
+    {
+      "checkpointSha256": "1d030278e78a9d2ad2dadd798c01d2c166af440f5e8d8cb3e42065604ed2d6bb",
+      "cycle": 0,
+      "eligible": false,
+      "member": 0,
+      "resultSha256": "d04d1d6b8e35a04f67ae308a60f142b189787865eae919d1059470722fdca7b0",
+      "selectionReward": -0.3160073041877046,
+      "worstMarkedRoi": -0.270945875
+    },
+    {
+      "checkpointSha256": "85e0d3b5f8b9b0155f00899be7e4fdfe94370a1e4bfa5b45449898a53380597d",
+      "cycle": 0,
+      "eligible": false,
+      "member": 1,
+      "resultSha256": "bf0604924ecf841537791f81f02d90afcceb7864b1fe3408939596f0aef5611f",
+      "selectionReward": -0.11479364583787928,
+      "worstMarkedRoi": -0.10844989999999999
+    },
+    {
+      "checkpointSha256": "ad315788322f6c22e138a475fe38564384dea3166cb75ce4c768bb7fb49e6ebd",
+      "cycle": 0,
+      "eligible": false,
+      "member": 2,
+      "resultSha256": "93c79954aea3ccef048f97af68f02ca6265525e0e55b6bc374c170e3f95f6953",
+      "selectionReward": -0.1673291565828871,
+      "worstMarkedRoi": -0.15407887499999995
+    },
+    {
+      "checkpointSha256": "6355195839b0fb7a692116c5b5a7b263f37758f3aeb6ded92b41c1ae51efd8f6",
+      "cycle": 0,
+      "eligible": false,
+      "member": 3,
+      "resultSha256": "05d4588e0c1f26a578462aadb1eb092523208fc10cc997e4dcfaa392e250e954",
+      "selectionReward": -0.2568117358255744,
+      "worstMarkedRoi": -0.226486175
+    }
+  ],
+  "experimentSha256": "1d270a083f90d8ddda1056e95f2c7892502274fba2384a12655695ed1aeb9260",
+  "generationComplete": false,
+  "independentProfitableRoiEstablished": false,
+  "independentTestUsed": false,
+  "lastProgressEvent": "parallel_train_chunk",
+  "observedUtc": "2026-10-19T21:39:03.003205+00:00",
+  "productionChanged": false,
+  "sourceCommit": "d8fbf96a8db3e91c2e938cbf36ff6df18f9c40a7",
+  "totalAcceptedUpdates": 272,
+  "totalDecisions": 104259,
+  "trainerCreation": 134369173614560850,
+  "trainerPid": 39824
+}
