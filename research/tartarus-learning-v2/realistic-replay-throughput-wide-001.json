@@ -1,0 +1,136 @@
+{
+  "classification": "inspected_history_software_throughput_not_trading_performance",
+  "dataset_manifest_sha256": "ff7c0816b934ecd35f9534f22e741b1138b3d7a416f98fca49775c336c12d9e0",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 5070 Ti Laptop GPU",
+  "parameter_count": 56538142,
+  "worlds": 32,
+  "steps": 40,
+  "repeats": 2,
+  "warmup_runs": 1,
+  "decode_seconds_once": 0.4349430000875145,
+  "prepare_seconds_once": 0.12149910000152886,
+  "results": {
+    "scalar": {
+      "runs": [
+        {
+          "mode": "scalar",
+          "device": "cuda:0",
+          "worlds": 32,
+          "steps_per_world": 40,
+          "wall_seconds": 15.293356199981645,
+          "simulated_decision_seconds": 1280.0,
+          "aggregate_replay_speed": 83.69647468235496,
+          "env_observe_seconds": 0.2297944992315024,
+          "pack_seconds": 0.0272442001150921,
+          "actor_seconds": 14.296786700026132,
+          "action_and_advance_seconds": 0.626467400463298,
+          "source_timing_or_budgets_changed": false,
+          "unresolved_worlds": 0,
+          "qualified_worlds": 32
+        },
+        {
+          "mode": "scalar",
+          "device": "cuda:0",
+          "worlds": 32,
+          "steps_per_world": 40,
+          "wall_seconds": 14.502878400031477,
+          "simulated_decision_seconds": 1280.0,
+          "aggregate_replay_speed": 88.25834187489443,
+          "env_observe_seconds": 0.22314800007734448,
+          "pack_seconds": 0.02550140011589974,
+          "actor_seconds": 13.535874700173736,
+          "action_and_advance_seconds": 0.6040357996243984,
+          "source_timing_or_budgets_changed": false,
+          "unresolved_worlds": 0,
+          "qualified_worlds": 32
+        }
+      ],
+      "median_seconds": 14.898117300006561
+    },
+    "batched": {
+      "runs": [
+        {
+          "mode": "batched",
+          "device": "cuda:0",
+          "worlds": 32,
+          "steps_per_world": 40,
+          "wall_seconds": 1.3737429999746382,
+          "simulated_decision_seconds": 1280.0,
+          "aggregate_replay_speed": 931.7608897906167,
+          "env_observe_seconds": 0.22402470035012811,
+          "pack_seconds": 0.027252399479039013,
+          "actor_seconds": 0.39228810009080917,
+          "action_and_advance_seconds": 0.6161030000075698,
+          "source_timing_or_budgets_changed": false,
+          "unresolved_worlds": 0,
+          "qualified_worlds": 32
+        },
+        {
+          "mode": "batched",
+          "device": "cuda:0",
+          "worlds": 32,
+          "steps_per_world": 40,
+          "wall_seconds": 1.7592673000181094,
+          "simulated_decision_seconds": 1280.0,
+          "aggregate_replay_speed": 727.5756219574047,
+          "env_observe_seconds": 0.28047629992943257,
+          "pack_seconds": 0.034978600102476776,
+          "actor_seconds": 0.47061009949538857,
+          "action_and_advance_seconds": 0.8517249003052711,
+          "source_timing_or_budgets_changed": false,
+          "unresolved_worlds": 0,
+          "qualified_worlds": 32
+        }
+      ],
+      "median_seconds": 1.5665051499963738
+    }
+  },
+  "speedup": 9.510417058023108,
+  "deterministic_discrete_actions_and_accounting_match": true,
+  "maximum_fraction_difference": 5.185604095458984e-06,
+  "ppo_probe": {
+    "rollout_seconds": 2.0461360999615863,
+    "optimizer_seconds": 1.074055000091903,
+    "accepted_optimizer_updates": 1,
+    "learning_decisions": 1120,
+    "updates": [
+      {
+        "epoch": 0,
+        "loss": 0.004100608639419079,
+        "policyLoss": 3.3208301886133995e-08,
+        "valueLoss": 0.002912828465923667,
+        "quantileLoss": 0.036829788237810135,
+        "successLabels": 0,
+        "gradientNormBeforeClip": 1.1361511945724487,
+        "sampledApproximateKl": -3.5124165798094964e-09,
+        "sampledNonnegativeKl": -5.321843313255137e-11,
+        "postStepNonnegativeKl": 0.019462428987026215,
+        "adamParameterStepScale": 0.5,
+        "stepBacktracks": 1
+      }
+    ],
+    "qualified_worlds": 32,
+    "peak_cuda_allocated_bytes": 1988884480,
+    "profitability_established": false,
+    "new_daily_reward_used": false
+  },
+  "new_information_created_by_repetition": false,
+  "production_changed": false,
+  "independent_test_used": false,
+  "background_cuda_pids_before_benchmark": [
+    15748,
+    43032
+  ],
+  "isolated_gpu_benchmark": false,
+  "source_sha256": {
+    "benchmark.py": "b57c72d61303eb097cd538801f3ca4b44efad5718c77370888495d6d797db046",
+    "fast_replay.py": "df9999aaaebcd44328be063d4b60ffb210745f49660eece27817457025b18a58",
+    "prepare.py": "4fdac3dcf7d3288efb63a01707421049e0a57c3bf3504e6924bd7abdae6054b2",
+    "protocol.py": "d98b0bd8d8f54b63dfa057d730a5d06611bd660334bfaaea908913825ef6849b",
+    "replay.py": "5826498233f58a5668f1f5e49fa7ba674dfe85143e06f671b7cd8b776e59b48c",
+    "smoke.py": "50b8e35c2f397ef195350d9968ffd5217fea611732ea4820b0c0347d977276ca",
+    "vector_rollout.py": "7b863a8c215464afa4f5fb520b15181c94ca8fb807ca4462ddf176a49e215d48",
+    "__init__.py": "b371cacb8e85b1370ef914cf4ca0a3a69fed35faaedf8f0de26dc8701d6393e6"
+  }
+}
