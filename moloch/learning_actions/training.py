@@ -200,12 +200,13 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     from .query_policy import QueryWindowPolicy
     from .joint_memory_policy import JointMemoryPolicy
     from .order_policy import OrderPagePolicy
+    from .component_execution import ComponentPolicy
     path=Path(path)
     if hashlib.sha256(path.read_bytes()).hexdigest()!=expected_sha256:raise ValueError('FROZEN_RAW_API_CHECKPOINT_CHANGED')
     bundle=torch.load(path,map_location=device,weights_only=True)
     architectures={ApiPolicy.architecture:ApiPolicy,FullDepthPolicy.architecture:FullDepthPolicy,
                    QueryWindowPolicy.architecture:QueryWindowPolicy,JointMemoryPolicy.architecture:JointMemoryPolicy,
-                   OrderPagePolicy.architecture:OrderPagePolicy}
+                   OrderPagePolicy.architecture:OrderPagePolicy,ComponentPolicy.architecture:ComponentPolicy}
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])

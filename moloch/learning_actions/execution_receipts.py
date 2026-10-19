@@ -5,11 +5,11 @@ available advance require their paid baselines; raw visible fills remain usable
 as information. This does not claim calibrated account-topic delivery.
 """
 from copy import deepcopy
-from .observation_protocol import SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES
+from .observation_protocol import SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT
 from .contract import UNIT
 
 
-def enabled(env):return env.observation_protocol in(SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES)
+def enabled(env):return env.observation_protocol in(SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT)
 
 
 def orders(env,values,revision,*,complete=False):
@@ -40,6 +40,9 @@ def ack(env,operation,payload,record,fill_start):
                     'quantity_traded':sum(f['quantity']for f in fills),
                     'total_cost_micros':sum(f['quantity']*f['price']for f in fills),
                     'last_price_micros':fills[-1]['price']if fills else None,'at_ms':env.now})
+                if fills and getattr(env,'component_ledger',None)is not None:
+                    from .component_execution import ack_economics
+                    rows[-1]['all']=ack_economics(env,fills)
         elif operation=='CANCEL':targets[payload]=None
         else:
             # Cancel-all does not reveal previously unknown order metadata.

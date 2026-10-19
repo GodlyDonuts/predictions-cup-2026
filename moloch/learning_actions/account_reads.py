@@ -15,6 +15,10 @@ RESOURCES = {'account':('cash','advance'), 'positions':('lots',),
 def capture(env, resource):
     if resource not in RESOURCES:
         raise ValueError('KNOWN_FINANCIAL_READ_RESOURCE_REQUIRED')
+    if resource=='collateral'and getattr(env,'component_ledger',None)is not None:
+        from .component_execution import collateral_rows
+        return {'revision':env.finance_revision,'fields':{'components':deepcopy(collateral_rows(env)),
+            'advance':env.advance_capacity()}}
     getters={'cash':lambda:env.cash, 'lots':lambda:env.lots,
              'orders':lambda:env.api_orders, 'advance':env.advance_capacity}
     return {'revision':env.finance_revision,
@@ -23,7 +27,8 @@ def capture(env, resource):
 
 def publish(env, snapshot):
     revision, fields = snapshot['revision'], snapshot['fields']
-    if type(revision)is not int or revision<0 or not fields or any(k not in FIELDS for k in fields):
+    allowed=(*FIELDS,'components')if getattr(env,'component_ledger',None)is not None else FIELDS
+    if type(revision)is not int or revision<0 or not fields or any(k not in allowed for k in fields):
         raise ValueError('INTERNAL_FINANCE_SNAPSHOT_REQUIRED')
     applied=False
     for field,value in deepcopy(fields).items():
@@ -32,6 +37,7 @@ def publish(env, snapshot):
         if field=='cash':env.known_cash=value
         elif field=='lots':env.known_lots=value
         elif field=='advance':env.known_advance=value
+        elif field=='components':env.known_components=value
         else:
             from .execution_receipts import enabled,orders
             if enabled(env):orders(env,value,revision,complete=True)

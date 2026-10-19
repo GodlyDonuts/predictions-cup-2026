@@ -29,7 +29,8 @@ def identity(model,mode='sha256'):
     from .query_policy import QueryWindowPolicy
     from .joint_memory_policy import JointMemoryPolicy
     from .order_policy import OrderPagePolicy
-    if type(model)not in(ApiPolicy,FullDepthPolicy,QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy)or list(model.named_buffers()):raise ValueError('FAST_GUARD_REQUIRES_FIXED_BUFFER_FREE_RAW_POLICY')
+    from .component_execution import ComponentPolicy
+    if type(model)not in(ApiPolicy,FullDepthPolicy,QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy,ComponentPolicy)or list(model.named_buffers()):raise ValueError('FAST_GUARD_REQUIRES_FIXED_BUFFER_FREE_RAW_POLICY')
     values=[id(model),model.training,contract(model)]
     for name,p in model.named_parameters():
         values.append((name,id(p),p.data_ptr(),tuple(p.shape),tuple(p.stride()),str(p.dtype),

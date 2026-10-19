@@ -40,6 +40,8 @@ def financial_digest(env):
     value=(env.now,env.cash,sorted(env.lots.items()),env.realized,env.fees,
            sorted(env.api_orders.items()),env.api_id,len(env.api_fills),history.hexdigest(),env.finance_revision,books)
     if env.order_history is not None:value=(*value,env.order_history.digest)
+    ledger=getattr(env,'component_ledger',None)
+    if ledger is not None:value=(*value,ledger.cash,sorted(ledger.positions.items()),sorted(ledger.debt.items()))
     return hashlib.sha256(repr(value).encode()).hexdigest()
 
 

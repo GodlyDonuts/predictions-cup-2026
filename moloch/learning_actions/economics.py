@@ -41,7 +41,9 @@ def snapshot(env,maximum_mark_age_ms=120000,*,historical_last_mark=False):
         values[exchange]=values.get(exchange,0)+quantity*price
     convention=('last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth'
                 if historical_last_mark else 'causal_SIG_midpoint_not_executable_liquidation')
-    return Wealth(env.now,2*env.cash+sum(values.values()),values,convention,tuple(sorted(stale)))
+    ledger=getattr(env,'component_ledger',None)
+    debt=0 if ledger is None else sum(ledger.debt.values())
+    return Wealth(env.now,2*(env.cash-debt)+sum(values.values()),values,convention,tuple(sorted(stale)))
 
 
 class GrowthLedger:
@@ -96,7 +98,7 @@ class GrowthLedger:
         for ex,value in terminal.position_values_twice.items():values[ex]=values.get(ex,0)+value
         for fill in self.env.api_fills[self.initial_fill_count:]:
             if 'cash_delta_micros'not in fill:raise ValueError('EXACT_FILL_CASH_DELTA_REQUIRED')
-            ex=fill['exchange'];values[ex]=values.get(ex,0)+2*fill['cash_delta_micros']
+            ex=fill['exchange'];values[ex]=values.get(ex,0)+2*(fill['cash_delta_micros']-fill.get('collateral_debt_delta_micros',0))
         grouped={}
         for ex,pnl in values.items():
             key='whole_competition_correlated_cluster'if self.clusters is None else self.clusters.get(ex)

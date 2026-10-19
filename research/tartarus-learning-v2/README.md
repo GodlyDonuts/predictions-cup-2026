@@ -1,4 +1,4 @@
-[Current: least-loss evolution with historical champions checked and queued; GPU017 continues; no independent ROI](negative-score-elitism-20261019.md). Older profile statements below are historical.
+[Current: optional v7 debt-aware execution checked; paired-return comparison negative; least-loss018 pending](component-execution-20261019.md). Independent ROI remains unproven; older profile statements below are historical.
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 

@@ -1,0 +1,132 @@
+{
+  "classification": "paired_inspected_history_training_method_comparison_not_roi_qualification",
+  "commonCalibration": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 4,
+    "device": "cpu",
+    "measured_ms": [
+      3.165600006468594,
+      3.14110005274415,
+      3.051399951800704,
+      3.0767000280320644,
+      2.9055000049993396,
+      2.8874999843537807,
+      2.89939995855093,
+      2.8930000262334943,
+      3.098099958151579,
+      3.285399987362325,
+      3.3463999861851335,
+      3.188899951055646
+    ]
+  },
+  "fullSizeGpuQualified": false,
+  "identicalFounderParameters": true,
+  "independentProfitableRoiEstablished": false,
+  "independentTestUsed": false,
+  "pairedWorstRoiDifferenceClosedMinusStreaming": [
+    0.015474924999999917,
+    -0.07417797500000001,
+    0.09806005000000007,
+    -0.009201824999999997
+  ],
+  "planSha256": "d81a26121936ca4df8e5fce8e04c34cb741b685d199df03dce6f2beedf988caa",
+  "productionChanged": false,
+  "results": [
+    {
+      "acceptedUpdates": 1467,
+      "arm": "streaming",
+      "candidates": [
+        {
+          "checkpointSha256": "d5084441648c5d798c92581e6ced1cd90ee6a218f55cf798d686b51ee4dacfa3",
+          "member": 0,
+          "selectionFills": 203,
+          "selectionReward": -0.16951682836486473,
+          "trainingFills": 142,
+          "worstMarkedRoi": -0.15592744999999997
+        },
+        {
+          "checkpointSha256": "481d4908b5d71db1c2b867e797ae5378a6476550766198af8c3c388bd2a7f902",
+          "member": 1,
+          "selectionFills": 130,
+          "selectionReward": -0.20758145876252243,
+          "trainingFills": 85,
+          "worstMarkedRoi": -0.18745294999999995
+        },
+        {
+          "checkpointSha256": "86f0d662598ee4014019b56391d1090ad833a55bb047bceb65c5a9ae545b138b",
+          "member": 2,
+          "selectionFills": 145,
+          "selectionReward": -0.22971298914498778,
+          "trainingFills": 103,
+          "worstMarkedRoi": -0.20523832500000005
+        },
+        {
+          "checkpointSha256": "7f9568ad987023cc4106250262a626b842473d93cd9b15d4b5a44badd2e5f305",
+          "member": 3,
+          "selectionFills": 160,
+          "selectionReward": -0.21718083245812173,
+          "trainingFills": 157,
+          "worstMarkedRoi": -0.19521557499999997
+        }
+      ],
+      "decisions": 62434,
+      "elapsedSeconds": 1842.022692700033,
+      "experimentSha256": "5cf710501c68f5583990b573e56ec4a2eb817da6429ed98b638c4e045a33f246",
+      "founderParameterSha256": [
+        "9c80c8e5feec7b476c140a4a2611b3f2aa7349d1e00e8f6dd4a4c82ca04d8193",
+        "baa39dfeee7db23f8219910bcde33c0a3c80f953010ad5f577a456e8b8cdb325",
+        "9f4f4df4ed2857fc3e88d948e05854a46b0eac0b46aadf8d6b7d4071ff3b25f7",
+        "468b432d5d1cac95da9308d9a25dbeb42901cf0307de2fad7ddc13848a1b6db1"
+      ],
+      "independentTestUsed": false
+    },
+    {
+      "acceptedUpdates": 1371,
+      "arm": "closed_episode",
+      "candidates": [
+        {
+          "checkpointSha256": "dbec9443c8dfc2acbfdb2c243a1f68cc82285bbb393e7554c42fdc1b294e4e36",
+          "member": 0,
+          "selectionFills": 195,
+          "selectionReward": -0.15134922008256863,
+          "trainingFills": 139,
+          "worstMarkedRoi": -0.14045252500000005
+        },
+        {
+          "checkpointSha256": "21de6d1358a6e7e7fa80a961dd8bfc84f9643e856fb2f243cf8210f69bbeb35d",
+          "member": 1,
+          "selectionFills": 160,
+          "selectionReward": -0.30331147776478995,
+          "trainingFills": 141,
+          "worstMarkedRoi": -0.26163092499999996
+        },
+        {
+          "checkpointSha256": "1dafef07542bced9b24a94eb26636f20abd99853027ffa1e37df341c274bd373",
+          "member": 2,
+          "selectionFills": 158,
+          "selectionReward": -0.11336835409379908,
+          "trainingFills": 134,
+          "worstMarkedRoi": -0.10717827499999999
+        },
+        {
+          "checkpointSha256": "2472d895d701ce2f8c7fda4d89cf9d4438cf139eb99946bc976acc0c7b1263b2",
+          "member": 3,
+          "selectionFills": 154,
+          "selectionReward": -0.22868060252805425,
+          "trainingFills": 151,
+          "worstMarkedRoi": -0.20441739999999997
+        }
+      ],
+      "decisions": 68884,
+      "elapsedSeconds": 2641.8866498999996,
+      "experimentSha256": "dd040c28ce8bbafbfbaab6c509b3136cfad0184f2f07e3d41708afa112aa5dc0",
+      "founderParameterSha256": [
+        "9c80c8e5feec7b476c140a4a2611b3f2aa7349d1e00e8f6dd4a4c82ca04d8193",
+        "baa39dfeee7db23f8219910bcde33c0a3c80f953010ad5f577a456e8b8cdb325",
+        "9f4f4df4ed2857fc3e88d948e05854a46b0eac0b46aadf8d6b7d4071ff3b25f7",
+        "468b432d5d1cac95da9308d9a25dbeb42901cf0307de2fad7ddc13848a1b6db1"
+      ],
+      "independentTestUsed": false
+    }
+  ]
+}
