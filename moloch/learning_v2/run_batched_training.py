@@ -18,12 +18,17 @@ from .train_inner import PPOTrainer,PPOConfig,fingerprint
 
 
 def telemetry(path,stop):
+    executable=shutil.which('nvidia-smi')
     with path.open('x',encoding='utf-8')as out:
         while not stop.is_set():
             try:
-                raw=subprocess.check_output(['nvidia-smi','--query-gpu=utilization.gpu,memory.used,power.draw','--format=csv,noheader,nounits'],text=True,timeout=5)
-                out.write(json.dumps({'at_ms':time.time_ns()//1000000,'gpu_csv':raw.strip()})+'\n');out.flush()
-            except (OSError,subprocess.SubprocessError):pass
+                if executable is None:raise FileNotFoundError('NVIDIA_QUERY_EXECUTABLE_UNAVAILABLE')
+                raw=subprocess.check_output([executable,'--query-gpu=utilization.gpu,memory.used,power.draw','--format=csv,noheader,nounits'],text=True,timeout=5,
+                                            creationflags=getattr(subprocess,'CREATE_NO_WINDOW',0))
+                sample={'at_ms':time.time_ns()//1000000,'gpu_csv':raw.strip()}
+            except (OSError,subprocess.SubprocessError)as error:
+                sample={'at_ms':time.time_ns()//1000000,'query_error':type(error).__name__}
+            out.write(json.dumps(sample)+'\n');out.flush()
             stop.wait(1)
 
 

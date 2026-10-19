@@ -20,15 +20,22 @@ impl Snapshot{
 }
 thread_local!{static CURRENT:RefCell<Option<Arc<Snapshot>>>=const{RefCell::new(None)};}
 #[cfg(test)]thread_local!{static RENDERS:std::cell::Cell<usize>=const{std::cell::Cell::new(0)};}
-// Conservative serialized JSON upper bound without serializing all order rows
-// again. String bytes may each need six escaped bytes. This bounds encoded
-// retention, not a claim that total allocator overhead equals JSON size.
+// Count serde_json string escaping without allocating another encoded copy.
+// Multiplying every ordinary UTF-8 byte by six disabled the cache for valid
+// large rank evaluations, rebuilding all orders for each ownership lookup.
+// This still bounds encoded retention, not total allocator overhead.
+fn string_bound(s:&str)->Option<usize>{
+ s.as_bytes().iter().try_fold(2usize,|n,b|n.checked_add(match b{
+  b'"'|b'\\'|b'\x08'|b'\x0c'|b'\n'|b'\r'|b'\t'=>2,
+  0..=0x1f=>6,_=>1,
+ }))
+}
 fn encoded_bound(v:&Value)->Option<usize>{
  match v{
   Value::Null=>Some(4),Value::Bool(_)=>Some(5),Value::Number(n)=>Some(n.to_string().len()),
-  Value::String(s)=>s.len().checked_mul(6)?.checked_add(2),
+  Value::String(s)=>string_bound(s),
   Value::Array(a)=>a.iter().try_fold(2usize,|n,v|n.checked_add(encoded_bound(v)?)?.checked_add(1)),
-  Value::Object(o)=>o.iter().try_fold(2usize,|n,(k,v)|n.checked_add(k.len().checked_mul(6)?)?.checked_add(4)?.checked_add(encoded_bound(v)?)),
+  Value::Object(o)=>o.iter().try_fold(2usize,|n,(k,v)|n.checked_add(string_bound(k)?)?.checked_add(2)?.checked_add(encoded_bound(v)?)),
  }
 }
 fn bounded(records:&[Value],max_records:usize,max_bytes:usize)->bool{
@@ -51,6 +58,18 @@ pub fn snapshot(bank:&Session)->Arc<Snapshot>{
 pub fn quote(bank:&Session,qid:u64)->Option<Value>{snapshot(bank).quote(qid).cloned()}
 #[cfg(test)]mod tests{
  use super::*;use serde_json::json;
+ #[test]fn string_bounds_match_original_json_escaping_in_keys_and_values(){
+  let mut s=(0u8..=31).map(char::from).collect::<String>();s.push_str("\"\\/é中😀\u{2028}\u{10ffff}");
+  assert_eq!(string_bound(&s),Some(serde_json::to_vec(&s).unwrap().len()));
+  let row=json!({(s.clone()):[s,null,true,false,17,-123,0.125]});
+  assert!(encoded_bound(&row).unwrap()>=serde_json::to_vec(&row).unwrap().len());
+ }
+ #[test]fn large_plain_rank_text_keeps_same_cache_limit_without_sixfold_inflation(){
+  let rows=vec![json!({"id":1,"rankText":"a".repeat(12*1024*1024)})];
+  let encoded=serde_json::to_vec(&rows).unwrap().len();assert!(encoded<MAXIMUM_ENCODED_BYTES);
+  assert!(bounded(&rows,MAXIMUM_RECORDS,MAXIMUM_ENCODED_BYTES));
+  assert!(!bounded(&rows,MAXIMUM_RECORDS,encoded-1));
+ }
  #[test]fn duplicate_and_malformed_ids_preserve_original_first_match(){
   let rows=vec![json!({"id":1,"retired":true}),json!({"id":1,"retired":false}),json!({"id":"1"}),json!({}),json!({"id":2})];
   let i=first_indices(&rows);assert_eq!(i.len(),2);assert_eq!(i[&1],0);assert_eq!(i[&2],4);

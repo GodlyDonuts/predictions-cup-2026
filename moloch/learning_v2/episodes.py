@@ -134,6 +134,11 @@ class Episode(ReferenceEnv):
             # for a newly acquired position. This is an observability mask,
             # not a signal or a synthetic zero-return valuation.
             mark_available = kv if self.mechanics.valuation_source=='Kalshi' else pv
+            # A known own resting order can be cancelled even when its public
+            # book/reference is stale. Match ReferenceEnv.cancel's state gate.
+            masks['family'][i,3] = self.budget.active is None and any(
+                o.request.exchange==ex and o.phase=='resting' and not o.cancel_requested
+                for o in self.orders.values())
             if busy or not valid_book or w is None or not mark_available: continue
             for side_id,side in enumerate(['YES','NO']):
                 buys = ask if side=='YES' else UNIT-bid
@@ -147,7 +152,11 @@ class Episode(ReferenceEnv):
                         masks['price'][i,family,side_id,offset] = 0<price+(offset-2)*5000<UNIT
                 # CANCEL targets any known own outstanding order, not anonymous quotes.
             for family in [1,2,4]: masks['family'][i,family] = masks['side'][i,family].any()
-            masks['family'][i,3] = any(o.request.exchange==ex and not o.cancel_requested for o in self.orders.values())
+        # Keep every observed contract in the information set, but give WAIT
+        # exactly one action identity. Hundreds of stale-market WAIT aliases
+        # otherwise dominate exploration and its entropy bonus.
+        masks['market'][1:] = masks['family'][1:,1:].any(-1)
+        masks['family'][1:,0] = False
         def fraction(amount): return amount/w if w is not None else 0.
         active = {ex for (ex,side),qty in account.quantities.items()if qty}
         active |= {ex for (ex,side),qty in account.pending_buys.items()if qty}
@@ -167,7 +176,7 @@ class Episode(ReferenceEnv):
         ex = self.exchanges[int(action['market'])]
         if family=='WAIT': return None
         if family=='CANCEL':
-            orders = [o.id for o in self.orders.values()if o.request.exchange==ex and not o.cancel_requested]
+            orders = [o.id for o in self.orders.values()if o.request.exchange==ex and o.phase=='resting' and not o.cancel_requested]
             return self.cancel(min(orders)) if orders else False
         side = ['YES','NO'][int(action['side'])]
         q = self.books.get(ex)

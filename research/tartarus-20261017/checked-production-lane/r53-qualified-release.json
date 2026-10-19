@@ -1,0 +1,56 @@
+{
+  "qualifiedAt": "2026-10-19T01:26:20.928460+00:00",
+  "steps": [
+    {
+      "step": "order-cache-tests",
+      "exitCode": 0,
+      "start": "2026-10-19T01:19:25.416433+00:00",
+      "end": "2026-10-19T01:19:25.626627+00:00"
+    },
+    {
+      "step": "library-all-tests",
+      "exitCode": 0,
+      "start": "2026-10-19T01:19:25.627184+00:00",
+      "end": "2026-10-19T01:19:42.155487+00:00"
+    },
+    {
+      "step": "release-sdk",
+      "exitCode": 0,
+      "start": "2026-10-19T01:20:50.832563+00:00",
+      "end": "2026-10-19T01:21:38.542021+00:00"
+    },
+    {
+      "step": "release-library",
+      "exitCode": 0,
+      "start": "2026-10-19T01:21:38.542798+00:00",
+      "end": "2026-10-19T01:24:05.493907+00:00"
+    },
+    {
+      "step": "release-worker",
+      "exitCode": 0,
+      "start": "2026-10-19T01:24:05.494643+00:00",
+      "end": "2026-10-19T01:26:20.857888+00:00"
+    }
+  ],
+  "onlyChangedPaths": [
+    "moloch/live-runtime/src/order_snapshot.rs"
+  ],
+  "binarySha256": "b5f907f674d20f05aba85bf9a016320ca0f4442253fef837cef297e005b624b9",
+  "nativeIdentityUnchanged": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "sdkSourceUnchangedRecompiled": true,
+  "sourceTtlsRiskLimiterChanged": false,
+  "cacheMaximumBytes": 67108864,
+  "cacheMaximumRecords": 100000,
+  "actualProductionSpeedOrProfitImprovementVerified": false,
+  "deployed": false,
+  "testResults": {
+    "order-cache-tests": [
+      "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 268 filtered out; finished in 0.21s"
+    ],
+    "library-all-tests": [
+      "test result: ok. 271 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 16.52s"
+    ]
+  },
+  "allCompiledRustInputsCheckedAgainstCurrentSource": 231,
+  "changedSourceSha256": "a4ac706eaa1670aeeee18a943f6ae4efa626b120b9c8733f3165e085c2ae1a8b"
+}

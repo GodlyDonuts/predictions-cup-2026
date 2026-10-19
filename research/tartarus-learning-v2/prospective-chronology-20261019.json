@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "frozenAt": "2026-10-19T01:14:20.455692+00:00",
+  "classification": "prospective_protocol_not_completed_experiment_or_performance_claim",
+  "wholeCalendarBlocksAcrossAllMarketsAndVenues": true,
+  "calendarsUtc": {
+    "fit": [
+      "2026-10-19T02:10:00Z",
+      "2026-10-19T02:50:00Z"
+    ],
+    "search": [
+      "2026-10-19T02:53:00Z",
+      "2026-10-19T03:13:00Z"
+    ],
+    "lockedTest": [
+      "2026-10-19T03:18:00Z",
+      "2026-10-19T03:48:00Z"
+    ]
+  },
+  "developmentMinutes": 60,
+  "lockedTestMinutes": 30,
+  "fitMinutes": 40,
+  "internalSearchMinutes": 20,
+  "minimumGapMs": 180000,
+  "burninMs": 60000,
+  "maximumReceiptDrainMs": 120000,
+  "allEpisodesMustFitInsideTheirOwnRoleIncludingWarmupAndDrain": true,
+  "previouslyInspectedHistoryRole": "optional_pretraining_development_only_not_locked_test",
+  "learnerCodeGenerationMayNotInspectLockedPriceOrReturnOutcomes": true,
+  "lockedAccessBeforeFinalistFreeze": "transport_hashes_clock_coverage_only",
+  "finalistFreezeDeadline": "2026-10-19T03:18:00Z",
+  "maximumFinalists": 2,
+  "qualification": "exact_terminal_accounting_and_positive_on_each_nominal_and_joint_adverse_search_calendar_vs_matched_hold_baseline",
+  "searchSeeds": [
+    16001,
+    26001
+  ],
+  "lockedTestIsSingleUseNoAdaptiveWinnerRepair": true,
+  "noFinalistBeforeDeadline": "record_zero_finalists_do_not_retime_or_retroactively_admit_checkpoints",
+  "dataInsufficient": "record_failed_coverage_do_not_synthesize_prices_or_fill_missing_windows",
+  "sourceAvailability": "first_laptop_observation_with_original_provider_and_receipt_clocks_separate",
+  "knownGaps": [
+    "Current capture is transport evidence; complete native semantic/source replay and new three-venue compilation remain necessary.",
+    "New worker restoration may interrupt SIG coverage; missing rows remain explicit gaps.",
+    "Polymarket references do not establish settlement equivalence or executable SIG prices."
+  ],
+  "productionAuthority": false,
+  "modelQualificationCompleted": false,
+  "tradeOrProfitClaimed": false
+}
