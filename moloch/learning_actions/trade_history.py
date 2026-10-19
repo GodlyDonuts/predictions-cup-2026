@@ -56,6 +56,15 @@ class TradeHistory:
         self.seen[identity] = facts
         self.rows.setdefault(row['exchange_id'], []).append(deepcopy(row))
 
+    def latest(self,exchange,at):
+        """Latest recorded visible print, not complete engine-price provenance."""
+        if self.backend is not None:
+            store,bounds=self.backend
+            rows=store.history_page(bounds,exchange,at,0,at+1,0,1,through=self.backend_row_through)
+            return deepcopy(rows[0])if rows else None
+        rows=[r for r in self.rows.get(exchange,())if r['available_at_ms']<=at and r['executed_at_ms']<=at]
+        return deepcopy(min(rows,key=lambda r:(-r['executed_at_ms'],r['match_id'])))if rows else None
+
     def page(self, exchange, at, *, limit=50, cursor=None, from_ms=0, to_ms=None):
         if type(limit) is not int or not 1 <= limit <= 200:
             raise ValueError('TRADE_PAGE_LIMIT_1_TO_200')

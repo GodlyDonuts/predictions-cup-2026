@@ -73,7 +73,7 @@ class Experiment:
         self.dataset_sha=self.original.manifest_sha256
         from .state_encoding import validate
         validate(config.get('global_state_encoding','raw'))
-        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT
+        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES
         windows=config.get('trade_query_windows',False)
         if type(windows)is not bool or(windows and config.get('full_depth_observations')is not True):
             raise ValueError('QUERY_WINDOWS_REQUIRE_EXPLICIT_FULL_DEPTH_PROFILE')
@@ -85,7 +85,9 @@ class Experiment:
         if type(pages)is not bool or(pages and not joint):raise ValueError('ORDER_PAGES_REQUIRE_JOINT_SCOPED_QUERY_PROFILE')
         debt=config.get('component_debt_accounting',False)
         if type(debt)is not bool or(debt and not pages):raise ValueError('COMPONENT_DEBT_REQUIRES_ORDER_PAGE_PROFILE')
-        expected_protocol=COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
+        quotes=config.get('bulk_quote_observations',False)
+        if type(quotes)is not bool or(quotes and not debt):raise ValueError('BULK_QUOTES_REQUIRE_COMPONENT_SCOPED_PROFILE')
+        expected_protocol=BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
         if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .world_confidence import validate_lifetime
@@ -142,7 +144,10 @@ class Experiment:
         key=(role,finalist)
         if key in self.tape_cache:return self.tape_cache[key]
         tape_type=ApiTape
-        if self.config.get('component_debt_accounting',False):
+        if self.config.get('bulk_quote_observations',False):
+            from .bulk_quotes import BulkQuoteTape
+            tape_type=BulkQuoteTape
+        elif self.config.get('component_debt_accounting',False):
             from .component_execution import ComponentTape
             tape_type=ComponentTape
         elif self.config.get('owned_order_pages',False):
@@ -505,6 +510,9 @@ class Experiment:
             del model,opt
 
     def policy_type(self):
+        if self.config.get('bulk_quote_observations',False):
+            from .bulk_quotes import BulkQuotePolicy
+            return BulkQuotePolicy
         if self.config.get('component_debt_accounting',False):
             from .component_execution import ComponentPolicy
             return ComponentPolicy
@@ -598,7 +606,8 @@ class Experiment:
                         from .joint_memory_policy import JointMemoryPolicy
                         from .order_policy import OrderPagePolicy
                         from .component_execution import ComponentPolicy
-                        if self.policy_type()not in(QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy,ComponentPolicy)or self.config.get('migrate_query_window_heads')is not True:
+                        from .bulk_quotes import BulkQuotePolicy
+                        if self.policy_type()not in(QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_query_window_heads')is not True:
                             raise ValueError('EXPLICIT_QUERY_WINDOW_ARCHITECTURE_MIGRATION_REQUIRED')
                         model,migration=migrate_full_depth(model)
                         frozen(self.output/('founder-%03d-query-window-migration.json'%member),migration)
@@ -607,24 +616,34 @@ class Experiment:
                         from .joint_memory_policy import JointMemoryPolicy,migrate_query_memory
                         from .order_policy import OrderPagePolicy
                         from .component_execution import ComponentPolicy
-                        if self.policy_type()not in(JointMemoryPolicy,OrderPagePolicy,ComponentPolicy)or self.config.get('migrate_joint_memory_density')is not True:
+                        from .bulk_quotes import BulkQuotePolicy
+                        if self.policy_type()not in(JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_joint_memory_density')is not True:
                             raise ValueError('EXPLICIT_JOINT_MEMORY_ARCHITECTURE_MIGRATION_REQUIRED')
                         model,migration=migrate_query_memory(model)
                         frozen(self.output/('founder-%03d-joint-memory-migration.json'%member),migration)
-                    from .order_policy import OrderPagePolicy
-                    if type(model)is not OrderPagePolicy and type(model)is not self.policy_type():
+                    from .joint_memory_policy import JointMemoryPolicy
+                    if type(model)is JointMemoryPolicy and type(model)is not self.policy_type():
                         from .order_policy import OrderPagePolicy,migrate_owned_orders
                         from .component_execution import ComponentPolicy
-                        if self.policy_type()not in(OrderPagePolicy,ComponentPolicy)or self.config.get('migrate_owned_order_pages')is not True:
+                        from .bulk_quotes import BulkQuotePolicy
+                        if self.policy_type()not in(OrderPagePolicy,ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_owned_order_pages')is not True:
                             raise ValueError('EXPLICIT_ORDER_PAGE_ARCHITECTURE_MIGRATION_REQUIRED')
                         model,migration=migrate_owned_orders(model)
                         frozen(self.output/('founder-%03d-order-page-migration.json'%member),migration)
-                    if type(model)is not self.policy_type():
+                    from .order_policy import OrderPagePolicy
+                    if type(model)is OrderPagePolicy and type(model)is not self.policy_type():
                         from .component_execution import ComponentPolicy,migrate_component_debt
-                        if self.policy_type()is not ComponentPolicy or self.config.get('migrate_component_debt')is not True:
+                        from .bulk_quotes import BulkQuotePolicy
+                        if self.policy_type()not in(ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_component_debt')is not True:
                             raise ValueError('EXPLICIT_COMPONENT_DEBT_MIGRATION_REQUIRED')
                         model,migration=migrate_component_debt(model)
                         frozen(self.output/('founder-%03d-component-debt-migration.json'%member),migration)
+                    if type(model)is not self.policy_type():
+                        from .bulk_quotes import BulkQuotePolicy,migrate_bulk_quotes
+                        if self.policy_type()is not BulkQuotePolicy or self.config.get('migrate_bulk_quotes')is not True:
+                            raise ValueError('EXPLICIT_BULK_QUOTE_MIGRATION_REQUIRED')
+                        model,migration=migrate_bulk_quotes(model)
+                        frozen(self.output/('founder-%03d-bulk-quote-migration.json'%member),migration)
                 del parent
                 if member>=len(parents):
                     with torch.no_grad():

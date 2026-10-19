@@ -1,4 +1,4 @@
-[Current: full requested chronology fails metadata/exposure audit;017 development continues; faster least-loss018 pending](history-readiness-20261019.md). Independent ROI remains unproven; older profile statements below are historical.
+[Current: full requested chronology fails metadata/exposure audit;017 development continues; faster least-loss018 pending](history-readiness-20261019.md). Independent ROI remains unproven; older profile statements below are historical. [Optional paid bulk-quote profile verified; inactive in main GPU learner](bulk-quotes-20261019.md).
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 

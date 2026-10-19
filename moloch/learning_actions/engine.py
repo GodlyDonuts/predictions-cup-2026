@@ -598,8 +598,8 @@ class ApiEpisode(PreparedEpisode):
                 return self.request_observation(*key,order_status=STATUSES[int(action['price'])%4],
                     order_limit=min(200,1+int(fraction*200)),continue_order_page=bool(int(action['side'])),**filters)
             if 'query_filter'in action:
-                from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT
-                if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
+                from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES
+                if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
                 if key[0]=='SIG'and key[1][0]=='trade_flow':
                     from .query_window import parameters
                     query=parameters(action)
