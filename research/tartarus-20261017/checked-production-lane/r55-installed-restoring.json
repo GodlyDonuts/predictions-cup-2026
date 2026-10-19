@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-19T03:34:10.270772+00:00",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r55-pre-admission-20261019T033403Z",
+  "priorPid": 876081,
+  "sourceCommit": "83936f60a8f3487f72941acae1d73ce5f8197a9c",
+  "binarySha256": "95e7d1ec570f8397b6d1d37cb2adb85b841d70f6491f3f6df6a739983329abed",
+  "controlSha256": "a2126407602619ed6997fe5c947e660904fe62b49cf77ad1cb06ddf3816f43c3",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "originals": {
+    "head": "4761d0506f7de48240e53a53e9122b4b994f1b9323ef022e108bfbfa44e482bb",
+    "report": "bf3478a8ac8c3d5614afcc5a8c47562b4c4d53af3d1683dd7d656f6552e4b6af",
+    "manifest": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "bridges": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c",
+    "fundamental": "6a8f77dd56f1e416a625ef35d7feba6cb70d0c14d928cead69df6efc48623b41",
+    "unit": "5354a49eec6362d4431f4397f619fc272fa416a3dd53f86c2377a39952113ad3",
+    "control": "dea089c93728d2ee1013738134b8239995cd9928dd23bf0bd78ee231ff202e3c",
+    "sdk-manifest": "d22f79d2bbb64366a3079812b5443dfdf58b85fc3fd1d7b68883ceaaf153106a",
+    "stop": "e20b9e8488dab84b61397cadcdfcbc36df24e02b6d182c4bdd8ffd265c9f030f"
+  },
+  "prefixes": {
+    "financial": {
+      "bytes": 2199849562,
+      "sha256": "6eef6e9d0f22af2dba9eec003b95ad393c522f2fe152734fe9718c16225fd0bf"
+    },
+    "dispatch": {
+      "bytes": 23084006,
+      "sha256": "00aea7e5ff17a6c4fb8ae9f69ec11ed1a0056fb603ec2980784052d1f75f5d33"
+    }
+  },
+  "originalFillCount": 395,
+  "originalFifoAndAllHistoryPreserved": true,
+  "engineUpgradeCount": 20,
+  "all14OriginalG12ReviewsPreserved": true,
+  "sdkUnknownCount": 0,
+  "sdkActive": null,
+  "sdkStateAndBindingsChanged": false,
+  "allActualAcknowledgmentsTerminal": true,
+  "rank19588OriginalPreAdmissionProofVerified": true,
+  "rank19588NativeRetirementRequiredDuringStartup": true,
+  "sameIntentRetryAuthorized": false,
+  "exactResolvedStopArchived": true,
+  "activationDailyWindowRiskLimiterOrSourceClocksChanged": false,
+  "ordersSubmittedByDeployment": 0,
+  "currentTradingVerified": false,
+  "pid": 877705,
+  "startTicks": "35050428",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}
