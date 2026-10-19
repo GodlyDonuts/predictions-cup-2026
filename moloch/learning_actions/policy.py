@@ -20,18 +20,20 @@ class ApiPolicy(FusedRecurrentPolicy):
         self.conditioners=nn.ModuleDict({k:nn.Embedding(n,hidden_size+256)for k,n in sizes.items()})
 
     def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None):
+        from .acting_validation import enabled,categorical,beta
+        fast=enabled(self,actions,sampler)
         # Choose an operation before its target. Otherwise hundreds of read
         # tokens implicitly crowd out trading simply by outnumbering contracts.
         # This changes the factorization, not the available action set.
         pooled=(encoded*present.unsqueeze(-1)).sum(1)/present.sum(1,keepdim=True)
         family_mask=(masks['family']&present.unsqueeze(-1)).any(1)
-        family_dist=masked_categorical(self.heads['family'](torch.cat((h,pooled),-1)),family_mask)
+        family_dist=categorical(self.heads['family'](torch.cat((h,pooled),-1)),family_mask,fast)
         family=(actions['family']if actions is not None else
                 family_dist.probs.argmax(-1)if deterministic else family_dist.sample()if sampler is None else sampler.categorical(family_dist))
         logits=(encoded*self.market_query(h).unsqueeze(1)).sum(-1)/16
         batch=torch.arange(h.shape[0],device=h.device)
         eligible=masks['family'].gather(2,family[:,None,None].expand(-1,present.shape[1],1)).squeeze(-1)
-        dist=masked_categorical(logits,masks['market']&present&eligible)
+        dist=categorical(logits,masks['market']&present&eligible,fast)
         market=actions['market']if actions is not None else dist.probs.argmax(-1)if deterministic else dist.sample()if sampler is None else sampler.categorical(dist,market=True)
         selected=torch.cat((h,encoded[batch,market]),-1)+self.conditioners['family'](family)
         out={'market':market,'family':family}
@@ -43,7 +45,7 @@ class ApiPolicy(FusedRecurrentPolicy):
             if name=='family':continue
             head_logits=head(selected)
             mask=masks[name][batch,market]if name=='family'else torch.ones_like(head_logits,dtype=torch.bool)
-            d=masked_categorical(head_logits,mask)
+            d=categorical(head_logits,mask,fast)
             value=actions[name]if actions is not None else d.probs.argmax(-1)if deterministic else d.sample()if sampler is None else sampler.categorical(d)
             out[name]=value
             meaningful=torch.ones_like(value,dtype=torch.bool)if name=='family'else ((out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6))
@@ -57,7 +59,7 @@ class ApiPolicy(FusedRecurrentPolicy):
             selected=selected+self.conditioners[name](value)*meaningful.unsqueeze(-1)
         parameters=(torch.nn.functional.softplus(self.fractions(selected))+1).double()
         for name,pair in [('target_fraction',(0,1)),('child_fraction',(2,3))]:
-            d=Beta(parameters[:,pair[0]],parameters[:,pair[1]])
+            d=beta(parameters[:,pair[0]],parameters[:,pair[1]],fast)
             value=actions[name]if actions is not None else d.mean if deterministic else d.sample()if sampler is None else sampler.beta(d)
             out[name]=value
             order=(out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6)
@@ -65,6 +67,9 @@ class ApiPolicy(FusedRecurrentPolicy):
             scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
             logprob+=torch.where(scored,d.log_prob(value),0.)
             entropy+=torch.where(scored,d.entropy(),0.)
+        if fast and not hasattr(self,'query_times'):
+            from .acting_validation import validate_samples
+            validate_samples(out)
         return {'actions':out,'logprob':logprob,'entropy':entropy,'hidden':h,
                 'value':self.value(h).squeeze(-1),'monetary_quantiles':self.monetary_quantiles(h),
                 'success_logit':self.target_success(h).squeeze(-1)}

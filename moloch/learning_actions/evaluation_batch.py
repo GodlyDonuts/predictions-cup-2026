@@ -54,8 +54,12 @@ class EvaluationBatch:
                         deterministic=deterministic,sampler=sampler)
                     # One transfer per action head rather than a synchronization
                     # for every scalar of every case.
-                    values={k:v.tolist()for k,v in out['actions'].items()}
-                    actions=[{k:v[j]for k,v in values.items()}for j in range(len(live))]
+                    if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+                        from .acting_validation import actions_to_python
+                        actions=actions_to_python(out['actions'])
+                    else:
+                        values={k:v.tolist()for k,v in out['actions'].items()}
+                        actions=[{k:v[j]for k,v in values.items()}for j in range(len(live))]
                     for i in live:self.rng[i]=self.generators[i].get_state()
                 for j,i in enumerate(live if not self.batch_action_heads else[]):
                     # Trim padding before sampling. Otherwise categorical RNG
@@ -64,7 +68,10 @@ class EvaluationBatch:
                     out=self.model._act_from_encoding(encoded[j:j+1,:n],h[j:j+1],prepared['present'][j:j+1,:n],
                         {k:v[j:j+1,:n]for k,v in prepared['masks'].items()},deterministic=deterministic)
                     self.rng[i]=self.get_rng()
-                    actions.append({k:v.item()for k,v in out['actions'].items()})
+                    if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+                        from .acting_validation import actions_to_python
+                        actions.append(actions_to_python(out['actions'])[0])
+                    else:actions.append({k:v.item()for k,v in out['actions'].items()})
                 self.hidden=self.hidden.index_copy(0,indices,h)
         finally:self.set_rng(global_rng)
         self.last_rows=[]

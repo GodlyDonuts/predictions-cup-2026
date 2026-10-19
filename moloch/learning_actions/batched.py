@@ -54,11 +54,15 @@ class BatchStream:
         initial=self.hidden
         with torch.no_grad():out=self.model.step(**prepared,hidden=self.hidden,reset=reset,deterministic=deterministic)
         self.hidden=out['hidden']
-        actions={k:v.detach().cpu().tolist()for k,v in out['actions'].items()}
+        packed=None
+        if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+            from .acting_validation import actions_to_python
+            packed=actions_to_python(out['actions'])
+        else:actions={k:v.detach().cpu().tolist()for k,v in out['actions'].items()}
         rewards=[];terminals=[];elapsed=[]
         for i,(env,live,observation)in enumerate(zip(self.envs,active,observations)):
             if not live:rewards.append(0.);terminals.append(True);elapsed.append(0);continue
-            before=env.now;action={k:v[i]for k,v in actions.items()}
+            before=env.now;action=packed[i]if packed is not None else{k:v[i]for k,v in actions.items()}
             env.advance(min(env.end,before+self.latency))
             if env.now<env.end:
                 result=env.act_raw(action,observation)

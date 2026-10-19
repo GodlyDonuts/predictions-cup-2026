@@ -184,8 +184,9 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     observation_protocol=protocol(getattr(model,'observation_protocol',LEGACY))
     from .observation_protocol import validate_architecture
     validate_architecture(model)
+    from .acting_validation import validate as acting_mode,STRICT
     bundle={'architecture':model.architecture,'hidden_size':model.hidden_size,'global_state_encoding':encoding,
-        'observation_protocol':observation_protocol,
+        'observation_protocol':observation_protocol,'acting_validation':acting_mode(getattr(model,'acting_validation',STRICT)),
         'model':model.state_dict(),'optimizer':optimizer.state_dict(),
         'parameter_sha256':fingerprint(model),'dataset_manifest_sha256':dataset_manifest_sha256,
         'split_specification_sha256':split_specification_sha256,'production_authority':False}
@@ -210,6 +211,8 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
+    from .acting_validation import validate as acting_mode,STRICT
+    model.acting_validation=acting_mode(bundle.get('acting_validation',STRICT))
     from .state_encoding import validate
     model.global_state_encoding=validate(bundle.get('global_state_encoding','raw'))
     from .observation_protocol import validate as protocol,LEGACY

@@ -17,11 +17,13 @@ class QueryWindowPolicy(FullDepthPolicy):
         self.query_times=nn.Linear(hidden_size+256,4)
 
     def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None):
+        from .acting_validation import enabled,categorical,beta
+        fast=enabled(self,actions,sampler)
         out=super()._act_from_encoding(encoded,h,present,masks,actions,deterministic,sampler=sampler)
         batch=torch.arange(h.shape[0],device=h.device);a=out['actions']
         selected=torch.cat((h,encoded[batch,a['market']]),-1)
         query=masks['trade_query'][batch,a['market'],0]&(a['family']==10)&(a['side']==0)
-        logits=self.query_filter(selected);d=masked_categorical(logits,torch.ones_like(logits,dtype=torch.bool))
+        logits=self.query_filter(selected);d=categorical(logits,torch.ones_like(logits,dtype=torch.bool),fast)
         value=actions['query_filter']if actions is not None else d.probs.argmax(-1)if deterministic else d.sample()if sampler is None else sampler.categorical(d)
         a['query_filter']=value
         scored=torch.ones_like(query)if getattr(self,'local_memory_joint_density',False)else query
@@ -30,12 +32,15 @@ class QueryWindowPolicy(FullDepthPolicy):
         active=query&(value==1)
         params=(torch.nn.functional.softplus(self.query_times(selected))+1).double()
         for name,pair in [('query_from_fraction',(0,1)),('query_to_fraction',(2,3))]:
-            dist=Beta(params[:,pair[0]],params[:,pair[1]])
+            dist=beta(params[:,pair[0]],params[:,pair[1]],fast)
             value=actions[name]if actions is not None else dist.mean if deterministic else dist.sample()if sampler is None else sampler.beta(dist)
             a[name]=value
             scored=torch.ones_like(active)if getattr(self,'local_memory_joint_density',False)else active
             out['logprob']=out['logprob']+torch.where(scored,dist.log_prob(value),0.)
             out['entropy']=out['entropy']+torch.where(scored,dist.entropy(),0.)
+        if fast:
+            from .acting_validation import validate_samples
+            validate_samples(a)
         return out
 
 

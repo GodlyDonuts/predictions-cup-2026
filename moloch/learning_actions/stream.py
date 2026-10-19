@@ -59,7 +59,11 @@ class Stream:
         initial_hidden=self.hidden
         with torch.no_grad():out=self.model.step(**inputs,hidden=self.hidden,reset=reset,deterministic=deterministic)
         self.hidden=out['hidden']
-        action={k:v.item()for k,v in out['actions'].items()}if forced_action is None else forced_action
+        if forced_action is not None:action=forced_action
+        elif getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+            from .acting_validation import actions_to_python
+            action=actions_to_python(out['actions'])[0]
+        else:action={k:v.item()for k,v in out['actions'].items()}
         self.env.advance(min(self.env.end,before+self.latency))
         result=({'status':'HORIZON_REACHED_NO_DISPATCH'}if self.env.now>=self.env.end
                 else self.env.act_raw(action,observed))

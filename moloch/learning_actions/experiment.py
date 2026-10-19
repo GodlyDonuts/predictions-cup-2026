@@ -36,6 +36,8 @@ class Experiment:
         if config['mode']not in('inspected_development','full_history'):
             raise ValueError('EXPLICIT_EXPERIMENT_MODE_REQUIRED')
         self.device=config.get('device','cuda');self.seed=config.get('seed',190019)
+        from .acting_validation import validate as acting_mode,STRICT
+        acting_mode(config.get('acting_validation',STRICT))
         if type(config.get('closed_episode_return_replay',False))is not bool:
             raise ValueError('EXPLICIT_CLOSED_EPISODE_TRAINING_PROFILE')
         if 'cuda_memory_fraction'in config:
@@ -524,6 +526,8 @@ class Experiment:
 
     def make_policy(self):
         model=self.policy_type()(self.model_size).to(self.device)
+        from .acting_validation import validate as acting_mode,STRICT
+        model.acting_validation=acting_mode(self.config.get('acting_validation',STRICT))
         model.global_state_encoding=self.config.get('global_state_encoding','raw')
         model.observation_protocol=self.config.get('observation_protocol',model.observation_protocol)
         return model
@@ -627,6 +631,13 @@ class Experiment:
                         for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
             else:model=self.make_policy()
             model.global_state_encoding=self.config.get('global_state_encoding','raw')
+            from .acting_validation import validate as acting_mode,STRICT
+            target_mode=acting_mode(self.config.get('acting_validation',STRICT))
+            if getattr(model,'acting_validation',STRICT)!=target_mode:
+                frozen(self.output/('founder-%03d-acting-validation-migration.json'%member),{
+                    'old':getattr(model,'acting_validation',STRICT),'new':target_mode,
+                    'weights_unchanged':True,'fresh_optimizer_and_trajectories':True})
+            model.acting_validation=target_mode
             # Initialization changes exploration probability, never legal action
             # support: favor initially short alarms without forbidding long ones.
             if not inherited and self.config.get('initial_short_alarm_prior',True):

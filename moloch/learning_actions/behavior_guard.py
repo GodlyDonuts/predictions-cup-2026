@@ -11,9 +11,10 @@ from moloch.learning_v2.train_inner import fingerprint
 
 
 def contract(model):
+    from .acting_validation import validate,STRICT
     return (model.architecture,model.observation_protocol,
             getattr(model,'global_state_encoding','raw'),
-            bool(getattr(model,'local_memory_joint_density',False)))
+            bool(getattr(model,'local_memory_joint_density',False)),validate(getattr(model,'acting_validation',STRICT)))
 
 
 def require_contract(model,value):
