@@ -1,0 +1,55 @@
+{
+  "batched_median_seconds": 3.253005900012795,
+  "benchmark_experiment_sha256": "800980cc3c8e647582cc75f205251ecce8125ab63218c99563d0f9640cffdc8d",
+  "cases": 4,
+  "classification": "frozen_development_model_evaluation_compute_probe_not_roi",
+  "collection_speedup": 1.061541004265918,
+  "compute_calibration": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 12,
+    "device": "cuda:0",
+    "measured_ms": [
+      7.649599923752248,
+      7.864399929530919,
+      7.866699947044253,
+      7.769500021822751,
+      7.717799977399409,
+      7.8298000153154135,
+      9.863300016149879,
+      11.672699940390885,
+      8.246099925599992,
+      8.075900026597083,
+      7.999800029210746,
+      7.356900023296475
+    ]
+  },
+  "contract_features": 438,
+  "cuda_peak_allocated_bytes": 1137738240,
+  "dataset_manifest_sha256": "7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69",
+  "full_horizon_roi_measured": false,
+  "http_requests": 0,
+  "identical_financial_states_orders_fills_clocks_and_discrete_actions": true,
+  "independent_test_used": false,
+  "max_action_fraction_absolute_error": 7.87910666155689e-08,
+  "max_hidden_absolute_error": 8.642673492431641e-07,
+  "parameters": 58157799,
+  "per_case_rng_states_match": true,
+  "process_memory_fraction_cap": 0.18,
+  "production_changed": false,
+  "serial_median_seconds": 3.453199149982538,
+  "source_checkpoint_sha256": "f7d488c0c7275605e3f0b530eaef09c673001be885653b6e787b2f39acbeca70",
+  "steps_per_case": 64,
+  "stochastic": false,
+  "timings": [
+    {
+      "batched": 3.093989900080487,
+      "serial": 3.5908393999561667
+    },
+    {
+      "batched": 3.4120218999451026,
+      "serial": 3.3155589000089094
+    }
+  ],
+  "valuation_not_replaced_or_imputed": true,
+  "active_run014_changed": false
+}

@@ -304,15 +304,34 @@ class Experiment:
         if type(blocks)is not int or blocks<1 or blocks>end-start:raise ValueError('VALID_DEVELOPMENT_SELECTION_BLOCKS')
         if not self.development and blocks!=1:raise ValueError('FULL_DAILY_GROWTH_EVALUATION_MUST_REMAIN_CONTINUOUS')
         calendars=[(start+(end-start)*i//blocks,start+(end-start)*(i+1)//blocks)for i in range(blocks)]
-        cases=[]
-        for seed_offset,(case_start,case_end,stress)in enumerate((a,b,s)for a,b in calendars for s in(False,True)):
-            torch.manual_seed(self.seed+90000+seed_offset)
-            env=self.world(role,case_start,case_end,finalist,stress);stream=self.stream(model,env)
-            ledger=GrowthLedger(env,development=self.development,
+        descriptors=list((a,b,s)for a,b in calendars for s in(False,True))
+        batch_mode=self.config.get('batched_evaluation',False)
+        if type(batch_mode)is not bool:raise ValueError('EXPLICIT_BATCHED_EVALUATION_PROFILE')
+        if batch_mode:
+            from .evaluation_batch import EvaluationBatch
+            envs=[self.world(role,a,b,finalist,s)for a,b,s in descriptors]
+            ledgers=[GrowthLedger(env,development=self.development,
                 historical_last_mark=self.config.get('development_last_observed_marks',False),
-                maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
-            while env.now<case_end:
-                stream.run_chunk(self.config.get('compute_chunk_decisions',32),deterministic=False)
+                maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for env in envs]
+            calibration=self.stream(model,envs[0]).calibration
+            batch=EvaluationBatch(envs,model,[self.seed+90000+i for i in range(len(envs))],calibration=calibration)
+            while any(env.now<env.end for env in envs):
+                batch.run_chunk(self.config.get('compute_chunk_decisions',32))
+        cases=[]
+        for seed_offset,(case_start,case_end,stress)in enumerate(descriptors):
+            if batch_mode:
+                from types import SimpleNamespace
+                env=envs[seed_offset];ledger=ledgers[seed_offset]
+                stream=SimpleNamespace(decisions=batch.decisions[seed_offset],action_counts=batch.action_counts[seed_offset],
+                    status_counts=batch.status_counts[seed_offset],entity_counts=batch.entity_counts[seed_offset])
+            else:
+                torch.manual_seed(self.seed+90000+seed_offset)
+                env=self.world(role,case_start,case_end,finalist,stress);stream=self.stream(model,env)
+                ledger=GrowthLedger(env,development=self.development,
+                    historical_last_mark=self.config.get('development_last_observed_marks',False),
+                    maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
+                while env.now<case_end:
+                    stream.run_chunk(self.config.get('compute_chunk_decisions',32),deterministic=False)
                 # Evaluation has no optimizer/dense reward labels. Require
                 # start, actual daily boundaries and terminal wealth only.
                 # A legitimate early passive fill may precede this role's
@@ -326,6 +345,7 @@ class Experiment:
                 'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
                 'entity_counts':dict(stream.entity_counts)})
             cases[-1]['valuation_observation_schedule']='start_daily_boundaries_and_terminal'
+            cases[-1]['evaluation_compute_mode']='batch_encoding_case_local_rng'if batch_mode else'serial'
         if role=='test'and self.data_use.overlaps(start,end,ignore_test=True):
             raise ValueError('TEST_CALENDAR_CONCURRENTLY_USED_FOR_OPTIMIZATION')
         return {'role':'development_selection'if self.development else role,

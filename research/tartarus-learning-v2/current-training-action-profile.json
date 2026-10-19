@@ -113,5 +113,12 @@
     "active_run014_uses_profile": false,
     "preserves_world_identity_and_economic_results": true,
     "removes_legal_actions": false
+  },
+  "optional_batched_evaluation": {
+    "flag": "batched_evaluation",
+    "case_local_rng": true,
+    "active_run014_uses_profile": false,
+    "real_source_collection_speedup_stochastic": 1.0445663505048834,
+    "default_enabled": false
   }
 }
