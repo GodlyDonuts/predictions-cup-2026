@@ -19,7 +19,7 @@ class ApiPolicy(FusedRecurrentPolicy):
         self.heads=nn.ModuleDict({k:nn.Linear(hidden_size+256,n)for k,n in sizes.items()})
         self.conditioners=nn.ModuleDict({k:nn.Embedding(n,hidden_size+256)for k,n in sizes.items()})
 
-    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False):
+    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None):
         # Choose an operation before its target. Otherwise hundreds of read
         # tokens implicitly crowd out trading simply by outnumbering contracts.
         # This changes the factorization, not the available action set.
@@ -27,12 +27,12 @@ class ApiPolicy(FusedRecurrentPolicy):
         family_mask=(masks['family']&present.unsqueeze(-1)).any(1)
         family_dist=masked_categorical(self.heads['family'](torch.cat((h,pooled),-1)),family_mask)
         family=(actions['family']if actions is not None else
-                family_dist.probs.argmax(-1)if deterministic else family_dist.sample())
+                family_dist.probs.argmax(-1)if deterministic else family_dist.sample()if sampler is None else sampler.categorical(family_dist))
         logits=(encoded*self.market_query(h).unsqueeze(1)).sum(-1)/16
         batch=torch.arange(h.shape[0],device=h.device)
         eligible=masks['family'].gather(2,family[:,None,None].expand(-1,present.shape[1],1)).squeeze(-1)
         dist=masked_categorical(logits,masks['market']&present&eligible)
-        market=actions['market']if actions is not None else dist.probs.argmax(-1)if deterministic else dist.sample()
+        market=actions['market']if actions is not None else dist.probs.argmax(-1)if deterministic else dist.sample()if sampler is None else sampler.categorical(dist,market=True)
         selected=torch.cat((h,encoded[batch,market]),-1)+self.conditioners['family'](family)
         out={'market':market,'family':family}
         query_mask=masks.get('trade_query')
@@ -44,7 +44,7 @@ class ApiPolicy(FusedRecurrentPolicy):
             head_logits=head(selected)
             mask=masks[name][batch,market]if name=='family'else torch.ones_like(head_logits,dtype=torch.bool)
             d=masked_categorical(head_logits,mask)
-            value=actions[name]if actions is not None else d.probs.argmax(-1)if deterministic else d.sample()
+            value=actions[name]if actions is not None else d.probs.argmax(-1)if deterministic else d.sample()if sampler is None else sampler.categorical(d)
             out[name]=value
             meaningful=torch.ones_like(value,dtype=torch.bool)if name=='family'else ((out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6))
             if name=='side':meaningful=meaningful|trade_query
@@ -58,7 +58,7 @@ class ApiPolicy(FusedRecurrentPolicy):
         parameters=(torch.nn.functional.softplus(self.fractions(selected))+1).double()
         for name,pair in [('target_fraction',(0,1)),('child_fraction',(2,3))]:
             d=Beta(parameters[:,pair[0]],parameters[:,pair[1]])
-            value=actions[name]if actions is not None else d.mean if deterministic else d.sample()
+            value=actions[name]if actions is not None else d.mean if deterministic else d.sample()if sampler is None else sampler.beta(d)
             out[name]=value
             order=(out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6)
             meaningful=(order|trade_query)if name=='target_fraction'else ((out['family']==0)|(order&(out['patience']==1)&(out['price']!=0)))

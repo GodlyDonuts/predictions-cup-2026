@@ -10,7 +10,8 @@ from .behavior_guard import identity
 
 
 class EvaluationBatch:
-    def __init__(self,envs,model,seeds,*,calibration):
+    def __init__(self,envs,model,seeds,*,calibration,batch_action_heads=False):
+        if type(batch_action_heads)is not bool:raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_PROFILE')
         if not envs or len(envs)!=len(seeds)or len({id(e)for e in envs})!=len(envs):
             raise ValueError('ONE_INDEPENDENT_WORLD_AND_SEED_PER_EVALUATION_CASE')
         if any(type(seed)is not int for seed in seeds):raise ValueError('INTEGER_EVALUATION_SEEDS')
@@ -24,7 +25,8 @@ class EvaluationBatch:
         self.decisions=[0]*len(envs)
         self.action_counts=[Counter()for _ in envs];self.status_counts=[Counter()for _ in envs]
         self.entity_counts=[Counter()for _ in envs];self.last_rows=[]
-        self.rng=[torch.Generator(device=self.device).manual_seed(seed).get_state()for seed in seeds]
+        self.generators=[torch.Generator(device=self.device).manual_seed(seed)for seed in seeds]
+        self.rng=[g.get_state()for g in self.generators];self.batch_action_heads=batch_action_heads
 
     def get_rng(self):
         return torch.cuda.get_rng_state(self.device)if self.device.type=='cuda'else torch.get_rng_state()
@@ -45,7 +47,17 @@ class EvaluationBatch:
             with torch.no_grad():
                 encoded,h=self.model.encode(prepared['contracts'],prepared['global_state'],prepared['present'],
                                             self.hidden.index_select(0,indices),reset)
-                for j,i in enumerate(live):
+                if self.batch_action_heads:
+                    from .independent_sampling import IndependentSampling
+                    sampler=IndependentSampling([self.generators[i]for i in live],[len(o['entities'])for o in observed])
+                    out=self.model._act_from_encoding(encoded,h,prepared['present'],prepared['masks'],
+                        deterministic=deterministic,sampler=sampler)
+                    # One transfer per action head rather than a synchronization
+                    # for every scalar of every case.
+                    values={k:v.tolist()for k,v in out['actions'].items()}
+                    actions=[{k:v[j]for k,v in values.items()}for j in range(len(live))]
+                    for i in live:self.rng[i]=self.generators[i].get_state()
+                for j,i in enumerate(live if not self.batch_action_heads else[]):
                     # Trim padding before sampling. Otherwise categorical RNG
                     # consumption could depend on another case's entity count.
                     n=len(observed[j]['entities']);self.set_rng(self.rng[i])
