@@ -1,3 +1,5 @@
+[October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
+
 # Tartarus Population Learning v2
 
 The human specification and proposed configuration are preserved byte-for-byte in `TARTARUS_POPULATION_LEARNING_V2.md` and `EXPERIMENT_CONFIGURATION.json`, with hashes in `source-manifest.json`. [Task178](https://github.com/GodlyDonuts/predictions-cup-2026/issues/178) tracks solo implementation. The requested32 population members are simulated policies, not Codex agents or account clients.
@@ -11,7 +13,7 @@ The human specification and proposed configuration are preserved byte-for-byte i
 - Fresh-policy fingerprint checks, whole-episode recurrent recomputation, elapsed-time PPO, separate monetary targets and immutable checkpoint bundles: [trainer](../../moloch/learning_v2/train_inner.py).
 - Full-observation causal source compilation, predecoding outside the inner loop, mechanics-only target actions and a finite GPU historical trainer: [compiler](../../moloch/learning_v2/compile_trace.py), [episodes](../../moloch/learning_v2/episodes.py), [runner](../../moloch/learning_v2/run_experiment.py).
 
-These components pass98 focused checks, plus a separate source-transport hash regression. Correct component behavior does not establish trading profitability.
+These components pass103 focused checks, plus a separate source-transport hash regression. Correct component behavior does not establish trading profitability.
 
 ## First actual historical PPO run
 

@@ -1,0 +1,68 @@
+{
+  "classification": "inspected_historical_development_not_locked_or_live",
+  "reportSha256": "289cce471521f46cdc4225d245a801da0d59caa1b2a891395a16597ce9cdb576",
+  "totalWallSeconds": 822.0968947999645,
+  "members": [
+    {
+      "id": "founder-12001",
+      "age": 4,
+      "grace": 2,
+      "checkpoint_sha256": "1c9a718905550847a5a80dc95f65e659049f41ce76d5346f78f0eb97a63c5bca",
+      "score": 0.0
+    },
+    {
+      "id": "child-c2-6439163",
+      "age": 2,
+      "grace": 1,
+      "checkpoint_sha256": "cc24a2884b88fb8ca5361f9231e3fccbbeb7d371a8d63344ea60a0413b4958a3",
+      "score": 0.0
+    },
+    {
+      "id": "founder-12003",
+      "age": 4,
+      "grace": 2,
+      "checkpoint_sha256": "e92e597d80b2588ad2519f6d16cae4e0f9349140e4c67b0fddf62b01c343f2cd",
+      "score": -0.0008855933087140279
+    },
+    {
+      "id": "child-c3-172968676",
+      "age": 1,
+      "grace": 1,
+      "checkpoint_sha256": "36674c5924c87c0d020ab70929b4eef9674e30902772a46931fb00104906c9d3",
+      "score": 0.0
+    },
+    {
+      "id": "founder-12005",
+      "age": 4,
+      "grace": 2,
+      "checkpoint_sha256": "64953bb1299e8e1280453ca0011a166ce580c1f370620bb459ae14143eec5b4c",
+      "score": 0.0
+    },
+    {
+      "id": "child-c3-326483938",
+      "age": 1,
+      "grace": 1,
+      "checkpoint_sha256": "2b54bd387c6ab9ceaef71872c3d5f8dbf3f5911ec63e54c840d93407c43672a7",
+      "score": 0.0
+    },
+    {
+      "id": "child-c2-561147530",
+      "age": 2,
+      "grace": 1,
+      "checkpoint_sha256": "07e342dc16ddf5d1eff37407e9271cff32570fd914c81617e245848d05759f2d",
+      "score": 0.0
+    },
+    {
+      "id": "founder-12008",
+      "age": 4,
+      "grace": 2,
+      "checkpoint_sha256": "d48edb12aab8975b51ad174c97935130321a50e62442d438465fccea3eaaa9e0",
+      "score": -0.0007033719816368626
+    }
+  ],
+  "archiveEntries": 4,
+  "allProfilePositiveFinalists": 0,
+  "lockedTestUsed": false,
+  "productionChanged": false,
+  "profitabilityEstablished": false
+}

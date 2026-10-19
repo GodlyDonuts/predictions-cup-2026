@@ -175,7 +175,7 @@ class PPOTrainer:
         if any(not provenance.get(k) for k in required):
             raise ValueError('CHECKPOINT_PROVENANCE_INCOMPLETE')
         if path.exists(): raise ValueError('IMMUTABLE_CHECKPOINT_EXISTS')
-        bundle = {'architecture':ARCHITECTURE,'contract_features':self.model.contract_features,
+        bundle = {'architecture':getattr(self.model,'architecture',ARCHITECTURE),'contract_features':self.model.contract_features,
                   'global_features':self.model.global_features,'hidden_size':self.model.hidden_size,
                   'model':self.model.state_dict(),'optimizer':self.optimizer.state_dict(),
                   'config':asdict(self.config),'policy_epoch':self.policy_epoch,'training_decisions':self.training_decisions,

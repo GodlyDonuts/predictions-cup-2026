@@ -1,0 +1,128 @@
+{
+  "observedAt": "2026-10-19T00:56:56.552205+00:00",
+  "classification": "development_compute_measurement_not_production_or_locked_test",
+  "focusedChecks": 103,
+  "hardware": "RTX 5070 Ti Laptop, 12227 MiB VRAM, approximately 31.4 GB host RAM",
+  "engineering": [
+    {
+      "run": "batched-engineering-001",
+      "reportSha256": "25a158e7142da43f6620022835bbdcef5035b1c9dfa6160df47452c5f35f55e8",
+      "completeMarkerVerified": true,
+      "wallSeconds": 89.95057710004039,
+      "trainingDecisions": 4800,
+      "acceptedUpdates": 8,
+      "blocks": [
+        {
+          "rollout": {
+            "batch_worlds": 8,
+            "wall_seconds": 31.522048100014217,
+            "coordinator_cuda_actor_ms": 4167.831359863281,
+            "cpu_actor_barrier_seconds": 24.078348600072786,
+            "actor_steps_per_world": 360
+          },
+          "updateWallSeconds": 1.6974764000624418,
+          "peakCudaReservedBytes": 5140119552
+        },
+        {
+          "rollout": {
+            "batch_worlds": 8,
+            "wall_seconds": 32.44248740002513,
+            "coordinator_cuda_actor_ms": 3368.1894426345825,
+            "cpu_actor_barrier_seconds": 25.849259998765774,
+            "actor_steps_per_world": 360
+          },
+          "updateWallSeconds": 1.2043657000176609,
+          "peakCudaReservedBytes": 5142216704
+        }
+      ]
+    },
+    {
+      "run": "batched-process-engineering-002",
+      "reportSha256": "d56ed895bbb593aaa3a5e7f9e6ac40c37a292e1869bffd0f4cd6e91aa61f5bcb",
+      "completeMarkerVerified": true,
+      "wallSeconds": 93.59891119995154,
+      "trainingDecisions": 7200,
+      "acceptedUpdates": 8,
+      "blocks": [
+        {
+          "rollout": {
+            "batch_worlds": 12,
+            "cpu_actor_processes": 4,
+            "wall_seconds": 26.929387900047004,
+            "coordinator_cuda_actor_ms": 4537.704243659973,
+            "cpu_actor_barrier_seconds": 9.27042109996546,
+            "actor_steps_per_world": 360
+          },
+          "updateWallSeconds": 2.003824400017038,
+          "peakCudaReservedBytes": 7702839296
+        },
+        {
+          "rollout": {
+            "batch_worlds": 12,
+            "cpu_actor_processes": 4,
+            "wall_seconds": 26.861998800071888,
+            "coordinator_cuda_actor_ms": 3456.899651527405,
+            "cpu_actor_barrier_seconds": 10.527271500672214,
+            "actor_steps_per_world": 360
+          },
+          "updateWallSeconds": 1.232986200018786,
+          "peakCudaReservedBytes": 7702839296
+        }
+      ]
+    },
+    {
+      "run": "batched-packed-engineering-001",
+      "reportSha256": "cfb9d08564bea1ea416797d5bd9c7d9492a2b8f2429b1d4666b5bf7757454427",
+      "completeMarkerVerified": true,
+      "wallSeconds": 93.98883869999554,
+      "trainingDecisions": 7200,
+      "acceptedUpdates": 8,
+      "blocks": [
+        {
+          "rollout": {
+            "batch_worlds": 12,
+            "cpu_actor_processes": 4,
+            "wall_seconds": 26.86434550001286,
+            "coordinator_cuda_actor_ms": 4443.800621986389,
+            "cpu_actor_barrier_seconds": 9.79850320040714,
+            "actor_steps_per_world": 360
+          },
+          "updateWallSeconds": 2.160186699940823,
+          "peakCudaReservedBytes": 7702839296
+        },
+        {
+          "rollout": {
+            "batch_worlds": 12,
+            "cpu_actor_processes": 4,
+            "wall_seconds": 27.29953720001504,
+            "coordinator_cuda_actor_ms": 3903.46053314209,
+            "cpu_actor_barrier_seconds": 10.546478000935167,
+            "actor_steps_per_world": 360
+          },
+          "updateWallSeconds": 1.2216890999116004,
+          "peakCudaReservedBytes": 7704936448
+        }
+      ]
+    }
+  ],
+  "activeRun": {
+    "classification": "batched_development_training_not_locked_generalization_or_live_approval",
+    "batch_worlds": 16,
+    "blocks": 32,
+    "epochs": 4,
+    "hidden_size": 1024,
+    "parameters": 4686878,
+    "architecture": "tartarus-set-fused-gru-v2",
+    "cpu_actor_processes": 4,
+    "locked_data_used": false,
+    "production_authority": false,
+    "planSha256": "12dc871f6c65dda29443774ca190e5deb0886e176ec24e2637653f605997cbc2"
+  },
+  "limitations": [
+    "Reserved GPU memory is not utilization or productive work. CPU replay and small recurrent inference launches remain limiting.",
+    "One-worker-per-world trial exhausted host RAM; stopped only its own children, preserving failure evidence. The replacement uses four persistent CPU replay processes.",
+    "Coalesced dtype-preserving transfer did not materially improve complete rollout wall time in the measured comparison.",
+    "Existing inspected one-hour historical data remains development only, not a new locked 2/3 versus 1/3 test.",
+    "No learned checkpoint deployed; no perfect-model or profitability claim."
+  ]
+}

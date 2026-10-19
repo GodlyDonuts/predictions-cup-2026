@@ -1,0 +1,13 @@
+# Fused recurrent GPU training, October 19
+
+The solo implementation uses one 4,686,878-parameter CUDA actor with a 1,024-unit fused GRU. Sixteen independent exact-accounting replay worlds share four persistent CPU simulation processes; the coordinator batches inference and trains complete on-policy recurrent sequences. Each world retains its own cash, FIFO, liquidity depletion, reservations, receipt delays and account limits. No learning process owns SIG execution.
+
+103 focused learning checks pass, including GRUCell/fused-GRU agreement, asynchronous recurrent resets, causal prefixes, gradient flow, exact integer transfers, isolated wallets, cancellation and Windows process replay. Checkpoints explicitly declare the new architecture. The older population loader does not yet resume this architecture; the finite new runner starts fresh and saves source-bound checkpoints.
+
+The completed twelve-world engineering runs made 7,200 training decisions in about94 seconds, including source decoding, two rollouts, PPO, search evaluation and checkpoint writing. Rollouts took about27 seconds and optimizer updates1.2–2.2 seconds. Four-process replay improved measured throughput over eight threaded worlds; coalesced transfers did not materially improve complete wall time. [Exact measurements](batched-gpu-engineering-20261019.json).
+
+The larger sixteen-world/32-block development run is underway. Peak reserved CUDA memory is about10.2GB on the12,227MiB laptop GPU; that is memory residency, not100% compute utilization. Recurrent inference, CPU simulation and IPC leave substantial idle GPU periods. Increasing model size or burning dummy compute would not establish better trading. A twelve-process trial exhausted host RAM and was stopped with its failure evidence preserved; the four-process configuration retains several GB host headroom. The runner's internal telemetry file was empty in this environment; an explicit-path external NVIDIA sampler now records actual utilization.
+
+The earlier eight-policy/two-island/four-cycle inventory run completed in822.10 seconds: zero of eight policies was positive across all four nominal/adverse cases. The larger run's initial training returns are also mixed and frequently negative. Neither is approved for production.
+
+All experiments here use previously inspected historical fit/search data. Repeated selection on that data cannot count as an untouched test. The requested chronological train/test demonstration still needs frozen finalists and genuinely unused later calendar blocks with boundary gaps; all market and venue observations must retain their original availability clocks. No perfect model, tournament win probability, production speedup or actual profit is claimed.
