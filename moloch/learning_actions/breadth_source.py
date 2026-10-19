@@ -76,6 +76,24 @@ def identifier(value):
 class Decoder:
     def __init__(self,tournament):
         self.tournament=tournament;self.revisions={};self.books={};self.mapping={};self.counts=Counter()
+        self.needs_baseline=set()
+
+    def settlement_hint(self,settled,market,common):
+        # Official marketSettled and standalone market_settled items have
+        # marketId/tournamentId/settledWith/at, not an exchangeId. This is a
+        # market-wide invalidation hint; its label is not a per-share payout.
+        if identifier(settled['marketId'])!=market or settled['tournamentId']!=self.tournament:
+            raise ValueError('BREADTH_SETTLEMENT_SCOPE')
+        source_at=millis(settled['at']);label=settled['settledWith']
+        if not 0<=source_at<=common['available_at_ms']:
+            raise ValueError('BREADTH_SETTLEMENT_SOURCE_CLOCK')
+        if type(label)is not str or not label or len(label)>4096:
+            raise ValueError('BREADTH_SETTLEMENT_STAMP_REQUIRED')
+        self.counts['settlement_invalidation_hints']+=1
+        return {**common,'kind':'gap','market_id':market,'exchange_id':None,
+                'gap_reason':'settlement_requires_lifecycle_replay','settled_with':label,
+                'settlement_event_at_ms':source_at,'authoritative_market_refetch_required':True,
+                'settlement_payout_inferred':False}
 
     def decode(self,event,original,at,role):
         if event.get('source')!='official_sig_realtime'or millis(event['receivedAt'])!=at:
@@ -83,8 +101,11 @@ class Decoder:
         common=dict(venue='SIG',available_at_ms=at,received_at_ms=at,
             original_realtime_received_at_ms=at,snapshot_origin=ORIGIN,original_sha256=original,calendar_role=role)
         if event['event']=='stream_reset':
-            self.revisions.clear();self.counts['stream_resets']+=1
+            self.revisions.clear();self.needs_baseline.update(self.mapping);self.counts['stream_resets']+=1
             return [{**common,'kind':'gap','market_id':None,'exchange_id':None,'gap_reason':'original_stream_reset'}],[]
+        if event['event']=='market_settled':
+            settled=event['payload']
+            return [self.settlement_hint(settled,identifier(settled['marketId']),common)],[]
         if event['event']!='markets_batch':raise ValueError('UNSUPPORTED_ORIGINAL_BREADTH_FRAME')
         rows=[];prints=[];seen=set()
         for market in event['payload']['markets']:
@@ -94,13 +115,14 @@ class Decoder:
             if delivery['model']!='best-effort-authoritative-resync'or any(type(x)is not int for x in(revision,previous))or not 0<=previous<revision:
                 raise ValueError('BREADTH_DELIVERY_REVISION')
             old=self.revisions.get(mid)
-            if old is not None and revision<=old:
-                self.counts['duplicate_delivery']+=1;continue
-            self.revisions[mid]=revision
+            duplicate=old is not None and revision<=old
+            if duplicate:self.counts['duplicate_delivery']+=1
+            else:self.revisions[mid]=revision
             compact=batch.get('resyncRequired',False)
             if type(compact)is not bool:raise ValueError('BREADTH_RESYNC_FLAG')
-            if compact or(old is not None and previous>old):
+            if not duplicate and(compact or(old is not None and previous>old)):
                 rows.append({**common,'kind':'gap','market_id':mid,'exchange_id':None,'gap_reason':'original_delivery_resync'})
+                self.needs_baseline.update(ex for ex,market in self.mapping.items()if market==mid)
             exchanges=set()
             for book in batch.get('books',[]):
                 ex=identifier(book['exchangeId']);source=millis(book['asOf']['at']);seq=identifier(book['asOf']['sequence'])
@@ -114,11 +136,18 @@ class Decoder:
                 if prior is not None:
                     if stamp<prior[0]:self.counts['older_book_ignored']+=1;continue
                     if stamp==prior[0]and fact!=prior[1]:raise ValueError('BREADTH_SAME_SOURCE_BOOK_CONFLICT')
+                    if stamp==prior[0]and ex not in self.needs_baseline:
+                        self.counts['same_version_book_ignored']+=1;continue
                 self.books[ex]=(stamp,fact)
+                self.needs_baseline.discard(ex)
                 rows.append({**common,'kind':'book','market_id':mid,'exchange_id':ex,'source_at_ms':source,
                     'source_clock_semantics':'original_realtime_asOf_at','sequence':seq,'bids':bids,'asks':asks})
                 self.counts['books']+=1
                 if not bids or not asks:self.counts['empty_sided_books']+=1
+            # A delivery duplicate can still carry a newer authoritative book.
+            # Trades/invalidation signals belong to the delivery and do not
+            # replay with it. Per-exchange asOf is a separate version domain.
+            if duplicate:continue
             for t in batch.get('trades',[]):
                 ex=identifier(t['exchangeId'])
                 if identifier(t['marketId'])!=mid or t['tournamentId']!=self.tournament or self.mapping.get(ex,mid)!=mid:
@@ -131,8 +160,5 @@ class Decoder:
                     quantity=t['quantity'],yesPrice=format(Decimal(price)/1000000,'f'))
                 prints.append(trade(e,original,at));self.counts['reported_engine_prints']+=1
             for settled in batch.get('marketSettled',[]):
-                if identifier(settled['marketId'])!=mid or settled['tournamentId']!=self.tournament:
-                    raise ValueError('BREADTH_SETTLEMENT_SCOPE')
-                rows.append({**common,'kind':'gap','market_id':mid,'exchange_id':identifier(settled['exchangeId']),
-                    'gap_reason':'settlement_requires_lifecycle_replay'})
+                rows.append(self.settlement_hint(settled,mid,common))
         return rows,prints

@@ -1,0 +1,67 @@
+{
+  "classification": "streaming_existing_inspected_fit_selection_decoder_comparison_not_new_history_or_roi",
+  "observedUtc": "2026-10-19T18:17:04.836502+00:00",
+  "originalArchiveSha256": "264e2bfdbaf28c10c1be1a5bbfad8e4e7860d526f4f114e6f2559212e0d96206",
+  "sourceManifestSha256": "590e4ef32c14962f76480e0d62daa60e2eb30571744bc4ea939a7e9cbb945965",
+  "oldSourceCommit": "8e07f6452c446e345b5ca319342d5b91c5443230",
+  "oldDecoderSha256": "852c3bd48d82c5a7c4f6a5cfa5afb1912f4f9696f805604a39334c2d9f76cec0",
+  "newDecoderSha256": "164b0d8d68a42fc8286fafbb8226cfc9dffc1c0f589df456ed1781f195605479",
+  "counts": {
+    "fit_frames": 5333,
+    "prints": 4202,
+    "old_fit_book": 150972,
+    "new_fit_book": 150972,
+    "old_fit_gap": 659,
+    "new_fit_gap": 659,
+    "search_frames": 2328,
+    "old_search_gap": 239,
+    "old_search_book": 79326,
+    "new_search_gap": 239,
+    "new_search_book": 79326
+  },
+  "oldDecoderCounters": {
+    "books": 230298,
+    "reported_engine_prints": 4202,
+    "stream_resets": 6
+  },
+  "newDecoderCounters": {
+    "books": 230298,
+    "reported_engine_prints": 4202,
+    "stream_resets": 6
+  },
+  "rowStreamSha256": {
+    "old": "3642159264243317bf0604384f836cf591c7a61d2f4bcf91341f05788acca53a",
+    "new": "3642159264243317bf0604384f836cf591c7a61d2f4bcf91341f05788acca53a"
+  },
+  "aggregateBookCoverage": {
+    "old_fit": {
+      "firstAtMs": 1792409402243,
+      "lastAtMs": 1792415698844,
+      "maximumBetweenObservedBookFramesGapMs": 84413
+    },
+    "new_fit": {
+      "firstAtMs": 1792409402243,
+      "lastAtMs": 1792415698844,
+      "maximumBetweenObservedBookFramesGapMs": 84413
+    },
+    "old_search": {
+      "firstAtMs": 1792416000323,
+      "lastAtMs": 1792418999745,
+      "maximumBetweenObservedBookFramesGapMs": 29143
+    },
+    "new_search": {
+      "firstAtMs": 1792416000323,
+      "lastAtMs": 1792418999745,
+      "maximumBetweenObservedBookFramesGapMs": 29143
+    }
+  },
+  "firstDifferenceExamples": [],
+  "originalTradeRowsIdentical": true,
+  "originalReceiptClocksUnchanged": true,
+  "newAccountRequests": 0,
+  "independentTestUsed": false,
+  "active015OrPending016Changed": false,
+  "productionChanged": false,
+  "fullCompetitionHistoryReady": false,
+  "independentProfitableRoiEstablished": false
+}

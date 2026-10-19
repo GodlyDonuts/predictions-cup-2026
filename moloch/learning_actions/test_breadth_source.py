@@ -76,3 +76,77 @@ class BreadthSourceTests(unittest.TestCase):
     def test_realtime_clock_cannot_be_moved_to_fake_laptop_receipt(self):
         rows,_=Decoder('cup').decode(frame(),'a'*64,AT,'fit');rows[0]['available_at_ms']+=1
         with self.assertRaisesRegex(ValueError,'REALTIME_SNAPSHOT_CLOCK'):source_clock(rows[0])
+
+    def settlement(self,**changes):
+        return {**dict(marketId=1,tournamentId='cup',settledWith='candidate outcome label',
+                    at='2026-10-19T09:00:01Z'),**changes}
+
+    def test_documented_market_settlement_without_exchange_id_is_market_scoped_hint(self):
+        event=frame();event['payload']['markets'][0]['batch']['marketSettled']=[self.settlement()]
+        rows,prints=Decoder('cup').decode(event,'a'*64,AT,'fit')
+        self.assertEqual(len(rows),2);self.assertFalse(prints)
+        hint=rows[-1];self.assertIsNone(hint['exchange_id']);self.assertEqual(hint['market_id'],'1')
+        self.assertEqual(hint['settled_with'],'candidate outcome label')
+        self.assertEqual(hint['settlement_event_at_ms'],AT-1000)
+        self.assertEqual(source_clock(hint),AT)
+        self.assertTrue(hint['authoritative_market_refetch_required'])
+        self.assertFalse(hint['settlement_payout_inferred'])
+
+    def test_standalone_refund_and_later_correction_keep_opaque_labels_without_money(self):
+        d=Decoder('cup');e=frame();e['event']='market_settled';e['payload']={**self.settlement(),'settledWith':'REFUND'}
+        rows,prints=d.decode(e,'a'*64,AT,'fit')
+        self.assertEqual(rows[0]['settled_with'],'REFUND');self.assertFalse(prints)
+        self.assertNotIn('payout',rows[0]);self.assertNotIn('settlement_price_micros',rows[0])
+        e['payload']['settledWith']='corrected label'
+        corrected,_=d.decode(e,'b'*64,AT,'fit')
+        self.assertEqual(corrected[0]['settled_with'],'corrected label')
+        self.assertEqual(d.counts['settlement_invalidation_hints'],2)
+
+    def test_settlement_scope_future_timestamp_and_missing_stamp_rejected(self):
+        for change in ({'tournamentId':'other'},{'marketId':2},{'at':'2026-10-19T09:00:03Z'},
+                       {'settledWith':None},{'settledWith':''}):
+            e=frame();e['payload']['markets'][0]['batch']['marketSettled']=[{**self.settlement(),**change}]
+            with self.subTest(change=change),self.assertRaisesRegex(ValueError,'SETTLEMENT'):
+                Decoder('cup').decode(e,'a'*64,AT,'fit')
+
+    def test_world_hint_invalidates_all_exchanges_of_that_market_without_financial_changes(self):
+        from types import SimpleNamespace
+        from moloch.learning_v2.liquidity import Book,SharedLiquidity
+        from .snapshot_clock import world_event
+        e=frame();e['payload']['markets'][0]['batch']['marketSettled']=[self.settlement()]
+        hint=Decoder('cup').decode(e,'a'*64,AT,'fit')[0][-1]
+        books={ex:SharedLiquidity(Book(ex,AT-1000,AT-1000,((400000,10),),((500000,10),),'b'*64))for ex in('x','y','z')}
+        env=SimpleNamespace(books=books,world_market_mapping={'x':'1','y':'1','z':'9'},api_fills=[],
+                            cash=100,lots={('x','YES'):[[1,400000]]})
+        world_event(env,AT,hint)
+        self.assertTrue(books['x'].invalidated);self.assertTrue(books['y'].invalidated)
+        self.assertFalse(books['z'].invalidated);self.assertEqual(env.cash,100)
+        self.assertEqual(env.lots,{('x','YES'):[[1,400000]]});self.assertFalse(env.api_fills)
+
+    def test_duplicate_delivery_still_applies_newer_book_without_replaying_prints(self):
+        d=Decoder('cup');d.decode(frame(),'a'*64,AT,'fit')
+        e=frame(at='2026-10-19T09:00:03Z')
+        batch=e['payload']['markets'][0]['batch'];batch['books'][0]['asOf']['sequence']=4
+        batch['books'][0]['bids'][0]['price']='.45'
+        batch['trades']=[{'invalid_duplicate_must_not_be_replayed':True}]
+        batch['marketSettled']=[{'invalid_duplicate_must_not_be_replayed':True}]
+        rows,prints=d.decode(e,'b'*64,AT+1000,'fit')
+        self.assertEqual(len(rows),1);self.assertEqual(rows[0]['bids'],[[450000,20]])
+        self.assertFalse(prints);self.assertEqual(d.revisions['1'],10)
+        self.assertEqual(d.counts['duplicate_delivery'],1)
+
+    def test_new_delivery_does_not_renew_same_version_book_or_hide_conflicts(self):
+        d=Decoder('cup');d.decode(frame(),'a'*64,AT,'fit')
+        e=frame(revision=11,previous=10)
+        self.assertEqual(d.decode(e,'b'*64,AT,'fit'),([],[]))
+        self.assertEqual(d.counts['same_version_book_ignored'],1)
+        e['payload']['markets'][0]['batch']['books'][0]['bids'][0]['quantity']=99
+        with self.assertRaisesRegex(ValueError,'SAME_SOURCE_BOOK_CONFLICT'):
+            d.decode(e,'c'*64,AT,'fit')
+
+    def test_reset_requires_and_accepts_recorded_same_version_full_baseline(self):
+        d=Decoder('cup');d.decode(frame(),'a'*64,AT,'fit')
+        reset={**frame(),'event':'stream_reset','payload':{'reason':'fixture'}}
+        d.decode(reset,'b'*64,AT,'fit');self.assertEqual(d.needs_baseline,{'2'})
+        rows,_=d.decode(frame(),'c'*64,AT,'fit')
+        self.assertEqual([r['kind']for r in rows],['book']);self.assertFalse(d.needs_baseline)

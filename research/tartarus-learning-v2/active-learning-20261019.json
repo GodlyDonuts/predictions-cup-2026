@@ -1,6 +1,6 @@
 {
   "classification": "verified_active_conditioned_full_depth_raw_api_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T18:03:07.299440+00:00",
+  "observed_utc": "2026-10-19T18:19:03.808306+00:00",
   "run": "raw-api-growth-development-015",
   "source_commit": "8e07f6452c446e345b5ca319342d5b91c5443230",
   "process_ids": {
@@ -32,8 +32,8 @@
   "experiment_sha256": "b97ba55e047521f7d39c9600d1778a014440627a1396ddc078d6e42f07ed48ed",
   "critical_source_files_verified": 92,
   "private_source_snapshot_matches_experiment": true,
-  "training_decisions": 136162,
-  "accepted_updates": 295,
+  "training_decisions": 195309,
+  "accepted_updates": 537,
   "cuda_peak_allocated_bytes": 6663915008,
   "selected_parent_checkpoints": [
     "33e1b385161ab3e492020d026c93803d903db49453b1c66b0f5164e2e8a5381a",
