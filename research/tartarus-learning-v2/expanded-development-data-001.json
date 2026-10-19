@@ -1,0 +1,41 @@
+{
+  "classification": "frozen_three_venue_development_prefix_not_locked_test",
+  "protocolSha256": "836c17e6cd75857a04c9e6a19b3a17d0e736aa1d1c8d6990fc9c8a75d974b235",
+  "fitSigExchanges": 32,
+  "fitReferenceMarkets": {
+    "Kalshi": 232,
+    "Polymarket": 156
+  },
+  "observationCounts": {
+    "fit/SIG/book": 4014,
+    "fit/SIG/gap": 640,
+    "search/SIG/book": 1966,
+    "fit/Kalshi/reference": 51842,
+    "fit/Kalshi/reference_gap": 448,
+    "search/Kalshi/reference": 23231,
+    "search/Kalshi/reference_gap": 200,
+    "fit/Polymarket/reference": 130589,
+    "fit/Polymarket/reference_gap": 2661,
+    "search/Polymarket/reference": 58191,
+    "search/Polymarket/reference_gap": 1297
+  },
+  "heldoutFeaturesIncluded": false,
+  "accountRequests": 0,
+  "executionCalibrated": false,
+  "base_manifest_sha256": "b07b8fd0b0be76d7527d62ceddb5ccd66b48fb9d4617f0d69251e437d9af9438",
+  "flow_manifest_sha256": "33f3ac8d6f694a93ccea00f48348e002ea3c6ee43e48ace18cb873f5b6aa381d",
+  "trade_rows": 107,
+  "reporting_tape_duplicates_excluded": true,
+  "original_source_files": 307,
+  "original_prefix_bytes": 1860282813,
+  "venue_role_gaps_ms": {
+    "fit/Kalshi": 985,
+    "fit/Polymarket": 2156,
+    "fit/SIG": 52491,
+    "search/Polymarket": 1942,
+    "search/Kalshi": 617,
+    "search/SIG": 36876
+  },
+  "independent_test": false,
+  "production_profitability_established": false
+}

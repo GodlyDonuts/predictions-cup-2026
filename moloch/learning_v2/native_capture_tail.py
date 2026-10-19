@@ -50,7 +50,7 @@ def anchor(bank):
 def main():
     p=argparse.ArgumentParser();p.add_argument('--pid',type=int,required=True);p.add_argument('--start-ticks',required=True)
     p.add_argument('--duration-seconds',type=int,default=7200);p.add_argument('--wait-seconds',type=int,default=3600);args=p.parse_args()
-    if args.pid<=0 or not 1<=args.duration_seconds<=14400 or not 0<=args.wait_seconds<=3600:raise ValueError('FINITE_EXACT_PRODUCER_REQUIRED')
+    if args.pid<=0 or not 1<=args.duration_seconds<=86400 or not 0<=args.wait_seconds<=3600:raise ValueError('FINITE_EXACT_PRODUCER_REQUIRED')
     process=Path('/proc')/str(args.pid)
     def alive():
         if not process.exists():return False

@@ -1,3 +1,5 @@
+Expanded replay update: a verified 45-minute fit / 20-minute selection cohort now includes 32 SIG exchanges and 107 official engine-match prints, with mapped Kalshi/Polymarket references. The next population phase is queued at the completed-cycle boundary. This remains development evidence, not the requested multi-day test or demonstrated profit. See [history expansion](history-expansion-20261019.md).
+
 # Raw-action population training — October 19, 2026
 
 The new 58.1M-parameter raw-action actor now has a runnable GPU population

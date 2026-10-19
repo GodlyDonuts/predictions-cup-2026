@@ -1,6 +1,6 @@
 {
   "classification": "observed_active_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T11:30:23.141460+00:00",
+  "observed_utc": "2026-10-19T11:44:51.540852+00:00",
   "source_commit": "29bdde28d1acce07103c371604e73ed11d1bb8a2",
   "run": "raw-api-growth-development-008",
   "parameters": 58106855,
@@ -26,8 +26,8 @@
   "passive_flow_mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
   "private_fill_notifications": "requires_active_sig_stream",
   "config_sha256": "b2b358fe3f6234a231ec95558019aab4eb83ed9cdd57ac95aaacfebd9de3619d",
-  "training_decisions": 49961,
-  "accepted_updates": 102,
+  "training_decisions": 120752,
+  "accepted_updates": 257,
   "current_member_modeled_fills": 304,
   "modeled_fills_are_not_contest_transactions": true,
   "older_phase_transition": {
@@ -54,5 +54,44 @@
   },
   "full_history_coverage_established": false,
   "execution_calibrated": false,
-  "positive_independent_roi_established": false
+  "positive_independent_roi_established": false,
+  "completed_candidate_development_rewards": [
+    {
+      "member": 0,
+      "cycle": 0,
+      "reward": -0.05380265071659585
+    },
+    {
+      "member": 1,
+      "cycle": 0,
+      "reward": -0.12183794256568127
+    }
+  ],
+  "native_capture_continuation": {
+    "producer_pid": 886899,
+    "producer_start_ticks": "36095048",
+    "reader_sha256": "14629a3cedf4f73217f02f47182b1cce80aa015a3ac70fb71b37f4e314499b3b",
+    "duration_seconds": 86400,
+    "account_requests": 0,
+    "old_finite_capture_last_utc": "2026-10-19T10:06:13.058Z",
+    "new_capture_first_observed_ms": 1792409811819,
+    "copy_gap_not_imputed": true
+  },
+  "expanded_development_compilation": {
+    "status": "completed_verified_base_and_official_trade_flow",
+    "fit_utc": [
+      "2026-10-19T08:50:00Z",
+      "2026-10-19T09:35:00Z"
+    ],
+    "search_utc": [
+      "2026-10-19T09:40:00Z",
+      "2026-10-19T10:00:00Z"
+    ],
+    "independent_test": false,
+    "fit_sig_exchanges": 32,
+    "official_engine_match_prints": 107,
+    "maximum_aggregate_venue_gap_ms": 52491,
+    "next_training_phase": "queued_after_all_four_cycle_zero_candidates",
+    "training_episode_ms": 900000
+  }
 }
