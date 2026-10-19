@@ -1,0 +1,272 @@
+{
+  "account_requests": 0,
+  "available_outer_clock_extents": {
+    "Kalshi": {
+      "all_market_coverage_established": false,
+      "continuous_coverage_established": false,
+      "extents": 6,
+      "first_ms": 1792172291119,
+      "first_utc": "2026-10-16T17:38:11.119000Z",
+      "last_ms": 1792418999965,
+      "last_utc": "2026-10-19T14:09:59.965000Z"
+    },
+    "Polymarket": {
+      "all_market_coverage_established": false,
+      "continuous_coverage_established": false,
+      "extents": 4,
+      "first_ms": 1792383360353,
+      "first_utc": "2026-10-19T04:16:00.353000Z",
+      "last_ms": 1792418999969,
+      "last_utc": "2026-10-19T14:09:59.969000Z"
+    },
+    "SIG": {
+      "all_market_coverage_established": false,
+      "continuous_coverage_established": false,
+      "extents": 7,
+      "first_ms": 1792051755854,
+      "first_utc": "2026-10-15T08:09:15.854000Z",
+      "last_ms": 1792418999745,
+      "last_utc": "2026-10-19T14:09:59.745000Z"
+    }
+  },
+  "classification": "metadata_feasibility_not_full_coverage_or_performance_qualification",
+  "competition_start_declared": false,
+  "competition_start_verified": false,
+  "data_use_registry": {
+    "present": true,
+    "records": 139,
+    "sha256": "62f45d973c8e45932397e8ce4e7122abe04ff264350f4999f925ed88df3a9a2b",
+    "unrecorded_manual_or_other_host_exposure_proven_absent": false
+  },
+  "disqualifying_metadata_findings": [
+    "NO_INSPECTED_SIG_EXTENT_REACHES_TRAIN_PARTITION",
+    "NO_INSPECTED_Kalshi_EXTENT_REACHES_TRAIN_PARTITION",
+    "NO_INSPECTED_Polymarket_EXTENT_REACHES_TRAIN_PARTITION",
+    "REQUESTED_TEST_CALENDAR_ALREADY_EXPOSED"
+  ],
+  "extent_sources": [
+    {
+      "first_ms": 1792051755854,
+      "label": "native-r54-development-002",
+      "last_ms": 1792267184826,
+      "source_sha256": "49c28d1c057e110e761e6fae2ef61706c5ab5a8e02acfb97b6266b90a303fccf",
+      "venue": "SIG"
+    },
+    {
+      "first_ms": 1792383360040,
+      "label": "three-venue-r55-inspected-subset-004",
+      "last_ms": 1792384259888,
+      "source_sha256": "a43636fb867f791bea4977776a7f81bad03af5578c66e372e4a563f5911dbf2a",
+      "venue": "Kalshi"
+    },
+    {
+      "first_ms": 1792383360353,
+      "label": "three-venue-r55-inspected-subset-004",
+      "last_ms": 1792384259995,
+      "source_sha256": "a43636fb867f791bea4977776a7f81bad03af5578c66e372e4a563f5911dbf2a",
+      "venue": "Polymarket"
+    },
+    {
+      "first_ms": 1792383365496,
+      "label": "three-venue-r55-inspected-subset-004",
+      "last_ms": 1792384259313,
+      "source_sha256": "a43636fb867f791bea4977776a7f81bad03af5578c66e372e4a563f5911dbf2a",
+      "venue": "SIG"
+    },
+    {
+      "first_ms": 1792395600019,
+      "label": "three-venue-r57b-development-001",
+      "last_ms": 1792397999991,
+      "source_sha256": "b2c56d5d3105ebb62871b761cb8bacc27b0e9c8f0868bcd92f2e7ac88448fc96",
+      "venue": "Polymarket"
+    },
+    {
+      "first_ms": 1792395600051,
+      "label": "three-venue-r57b-development-001",
+      "last_ms": 1792397999971,
+      "source_sha256": "b2c56d5d3105ebb62871b761cb8bacc27b0e9c8f0868bcd92f2e7ac88448fc96",
+      "venue": "Kalshi"
+    },
+    {
+      "first_ms": 1792395618091,
+      "label": "three-venue-r57b-development-001",
+      "last_ms": 1792397998151,
+      "source_sha256": "b2c56d5d3105ebb62871b761cb8bacc27b0e9c8f0868bcd92f2e7ac88448fc96",
+      "venue": "SIG"
+    },
+    {
+      "first_ms": 1792172291119,
+      "label": "v5-compiled-1",
+      "last_ms": 1792175891639,
+      "source_sha256": "29f59886eacb9cdfb615280541253e5c5201569565f2fe9355db46a8c5006bba",
+      "venue": "Kalshi"
+    },
+    {
+      "first_ms": 1792172292016,
+      "label": "v5-compiled-1",
+      "last_ms": 1792175475554,
+      "source_sha256": "29f59886eacb9cdfb615280541253e5c5201569565f2fe9355db46a8c5006bba",
+      "venue": "SIG"
+    },
+    {
+      "first_ms": 1792172291119,
+      "label": "v5-compiled-2",
+      "last_ms": 1792175891639,
+      "source_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+      "venue": "Kalshi"
+    },
+    {
+      "first_ms": 1792172292016,
+      "label": "v5-compiled-2",
+      "last_ms": 1792175475554,
+      "source_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e",
+      "venue": "SIG"
+    },
+    {
+      "first_ms": 1792409402243,
+      "label": "three-venue-longer-raw-flow-003/fit/SIG",
+      "last_ms": 1792415698844,
+      "source_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+      "venue": "SIG"
+    },
+    {
+      "first_ms": 1792409400088,
+      "label": "three-venue-longer-raw-flow-003/fit/Kalshi",
+      "last_ms": 1792415699978,
+      "source_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+      "venue": "Kalshi"
+    },
+    {
+      "first_ms": 1792409400017,
+      "label": "three-venue-longer-raw-flow-003/fit/Polymarket",
+      "last_ms": 1792415699994,
+      "source_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+      "venue": "Polymarket"
+    },
+    {
+      "first_ms": 1792416000323,
+      "label": "three-venue-longer-raw-flow-003/search/SIG",
+      "last_ms": 1792418999745,
+      "source_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+      "venue": "SIG"
+    },
+    {
+      "first_ms": 1792416000011,
+      "label": "three-venue-longer-raw-flow-003/search/Kalshi",
+      "last_ms": 1792418999965,
+      "source_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+      "venue": "Kalshi"
+    },
+    {
+      "first_ms": 1792416000923,
+      "label": "three-venue-longer-raw-flow-003/search/Polymarket",
+      "last_ms": 1792418999969,
+      "source_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+      "venue": "Polymarket"
+    }
+  ],
+  "full_history_ready_proven": false,
+  "independent_test_opened": false,
+  "inputs": [
+    {
+      "kind": "existing_clock_inventory",
+      "sha256": "7aa43d516a4e5f2e87911c3c0946b8f481d6989e33ccea80b1957baf443cece1"
+    },
+    {
+      "dataset": "three-venue-longer-raw-flow-003",
+      "kind": "sealed_manifest_metadata",
+      "sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c"
+    }
+  ],
+  "observed_utc": "2026-10-19T23:00:10.936870+00:00",
+  "prices_or_returns_exported": false,
+  "production_changed": false,
+  "raw_observation_rows_opened": false,
+  "requested_cutoff_ms": 1792450805000,
+  "requested_cutoff_utc": "2026-10-19T23:00:05Z",
+  "requested_roles_ms": {
+    "evolution": [
+      1791759605000,
+      1792105205000
+    ],
+    "independent_test": [
+      1792105205000,
+      1792450805000
+    ],
+    "train": [
+      null,
+      1791759605000
+    ]
+  },
+  "required_further_evidence": [
+    "official competition-start provenance",
+    "complete original per-venue/per-market chronology",
+    "coverage gaps and replay/execution calibration",
+    "frozen unseen four-day test provenance"
+  ],
+  "test_exposure": {
+    "absence_of_unrecorded_exposure_established": false,
+    "already_recorded_exposure": true,
+    "by_kind": {
+      "inspected_development": 5,
+      "selection": 67,
+      "train": 67
+    },
+    "local_registry_available": true,
+    "overlapping_records": 139,
+    "union_duration_ms": 178779702,
+    "union_intervals_ms": [
+      [
+        1792105205000,
+        1792267184827
+      ],
+      [
+        1792383360040,
+        1792384259996
+      ],
+      [
+        1792395600019,
+        1792397999992
+      ],
+      [
+        1792399800035,
+        1792403999981
+      ],
+      [
+        1792409400000,
+        1792415700000
+      ],
+      [
+        1792416000000,
+        1792419000000
+      ]
+    ],
+    "union_intervals_utc": [
+      [
+        "2026-10-15T23:00:05Z",
+        "2026-10-17T19:59:44.827000Z"
+      ],
+      [
+        "2026-10-19T04:16:00.040000Z",
+        "2026-10-19T04:30:59.996000Z"
+      ],
+      [
+        "2026-10-19T07:40:00.019000Z",
+        "2026-10-19T08:19:59.992000Z"
+      ],
+      [
+        "2026-10-19T08:50:00.035000Z",
+        "2026-10-19T09:59:59.981000Z"
+      ],
+      [
+        "2026-10-19T11:30:00Z",
+        "2026-10-19T13:15:00Z"
+      ],
+      [
+        "2026-10-19T13:20:00Z",
+        "2026-10-19T14:10:00Z"
+      ]
+    ]
+  },
+  "verdict": "ineligible_at_requested_cutoff"
+}

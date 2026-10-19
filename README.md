@@ -1,4 +1,4 @@
-[Current ML: exact serial inference measured1.27x faster and queued with least-loss elitism; GPU017 continues; ROI unproven](research/tartarus-learning-v2/acting-validation-20261019.md). Older runtime statements below are historical.
+[Current: full ML chronology unready; VPS SIG service stopped behind controls; GPU017 development continues and018 is queued](research/tartarus-learning-v2/history-readiness-20261019.md). Older runtime statements below are historical.
 
 October19 ML update: GPU016 continues; its first candidate loses worst development marked30.35% and is ineligible. Optional full-episode return PPO is implemented and passes213 action checks plus a real8world small-CPU integration (5,075decisions/60updates/2cycles); short-window returns0 are not ROI evidence. Full-size GPU/paired comparison for this option, full history/API/calibration and independent positive ROI remain incomplete. [Evidence](research/tartarus-learning-v2/closed-episode-returns-20261019.md).
 

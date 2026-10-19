@@ -1,0 +1,212 @@
+{
+  "classification": "undated_archives_header_and_compressed_prefix_inventory_not_price_or_semantic_replay",
+  "observedUtc": "2026-10-19T22:55:10.815197+00:00",
+  "archives": [
+    {
+      "directory": "crossvenue-observer-trade-trace-v2",
+      "traceStartedAtMs": 1792167869852,
+      "sealedAtMs": 1792168299520,
+      "headerKind": "run_start",
+      "sealComplete": true,
+      "wholeWitnessVerified": false,
+      "historyPrefixVerified": false,
+      "traceSequence": 3213,
+      "headerSha256": "afb15874f04c115e9c5a258b26cca51a435d07dd443e50a94285612d55df2391",
+      "sealSha256": "b0bfac45896be6f2ee43f512cbaae94bbcce530ca29df2cfcb0ef11c38ebfd3e",
+      "files": [
+        {
+          "name": "input-trace-v1.jsonl.gz",
+          "prefixBytes": 117051357,
+          "prefixSha256": "c87dca2a3c99d0ffb8ca70a8d63805658d8779570ad7bf1200612b7932c93283",
+          "matchesSeal": true,
+          "extraBytes": 0
+        },
+        {
+          "name": "trace-samples-v1.jsonl.gz",
+          "prefixBytes": 2378,
+          "prefixSha256": "56b9460323f72da05d6d13d1d5affe0ed13acd6bfe2c78d716e00b83e44d096a",
+          "matchesSeal": true,
+          "extraBytes": 0
+        }
+      ]
+    },
+    {
+      "directory": "crossvenue-observer-trade-trace-v3",
+      "traceStartedAtMs": 1792168300285,
+      "sealedAtMs": 1792170313914,
+      "headerKind": "run_start",
+      "sealComplete": true,
+      "wholeWitnessVerified": false,
+      "historyPrefixVerified": false,
+      "traceSequence": 15243,
+      "headerSha256": "fe99286b6015c7f4a4cc301299b38efe2a05c724c927e15f3ee3fef0635603b1",
+      "sealSha256": "2d24582b78d2183122e5542fdc86bd3a6ee0123ccf6f26cc7b65ed9116ce2946",
+      "files": [
+        {
+          "name": "input-trace-v1.jsonl.gz",
+          "prefixBytes": 567929376,
+          "prefixSha256": "2d257bc0ef816c2a9a1f18a2c796cc94ada8d87c0a2c8ae9f3f36ccd837add91",
+          "matchesSeal": true,
+          "extraBytes": 0
+        },
+        {
+          "name": "trace-samples-v1.jsonl.gz",
+          "prefixBytes": 9833,
+          "prefixSha256": "1df3455c06387661db074348e3742a7c43c1ba292a12c05fc3d09fdeb9e6e15c",
+          "matchesSeal": true,
+          "extraBytes": 0
+        }
+      ]
+    },
+    {
+      "directory": "crossvenue-observer-trade-trace-v4",
+      "traceStartedAtMs": 1792171552836,
+      "sealedAtMs": 1792172289748,
+      "headerKind": "run_start",
+      "sealComplete": true,
+      "wholeWitnessVerified": false,
+      "historyPrefixVerified": false,
+      "traceSequence": 5273,
+      "headerSha256": "5d14b0063c957d7b6f549365a39e81c5103ea3057f50be5a5c2fe66f1627da92",
+      "sealSha256": "6edfb205f249336321d631f440138340543069f777f5f9a679c15559c76fb116",
+      "files": [
+        {
+          "name": "input-trace-v1.jsonl.gz",
+          "prefixBytes": 191617748,
+          "prefixSha256": "8c4d26f33ee82c40c0dda8bffff7099467cc7758764c3382bc816be86aa2f7b1",
+          "matchesSeal": true,
+          "extraBytes": 0
+        },
+        {
+          "name": "trace-samples-v1.jsonl.gz",
+          "prefixBytes": 5972,
+          "prefixSha256": "9da86c75049ce508ec72dd27db909bfe41a655445eb449470276fbad1d328839",
+          "matchesSeal": true,
+          "extraBytes": 0
+        }
+      ]
+    },
+    {
+      "directory": "crossvenue-observer-trade-trace-v5",
+      "traceStartedAtMs": 1792172290442,
+      "sealedAtMs": 1792175894069,
+      "headerKind": "run_start",
+      "sealComplete": true,
+      "wholeWitnessVerified": false,
+      "historyPrefixVerified": false,
+      "traceSequence": 25160,
+      "headerSha256": "1312f52cd8b378861cd06dbf62c21c7da48f2b09c15c71aae82db90b75db93e6",
+      "sealSha256": "1dd753e08e90117602f3759e7dce08d4821530b19ed62936cfb74ff521e82a41",
+      "files": [
+        {
+          "name": "input-trace-v1.jsonl.gz",
+          "prefixBytes": 963090962,
+          "prefixSha256": "fdd0276a47b1e09e52ed17129d924f2e1b390fdaa4e76cdaefc8b99b80345ed9",
+          "matchesSeal": true,
+          "extraBytes": 0
+        },
+        {
+          "name": "trace-samples-v1.jsonl.gz",
+          "prefixBytes": 23349,
+          "prefixSha256": "8cdb73b19af15de2f790150e28b1093dd29fa721869ba718f55e7d6706a7ab2e",
+          "matchesSeal": true,
+          "extraBytes": 0
+        }
+      ]
+    },
+    {
+      "directory": "crossvenue-observer-trade-trace-v6",
+      "traceStartedAtMs": 1792180453815,
+      "sealedAtMs": 1792182660905,
+      "headerKind": "run_start",
+      "sealComplete": true,
+      "wholeWitnessVerified": false,
+      "historyPrefixVerified": false,
+      "traceSequence": 16553,
+      "headerSha256": "7b414e00828594a43c75b54cdb0a5c00046d462f8bf6a40c3b55fe348bec4f64",
+      "sealSha256": "569a8e0c1ca0b8e326797cb5e8d83de68f3b80be98f5964303cb161e1216dde9",
+      "files": [
+        {
+          "name": "input-trace-v1.jsonl.gz",
+          "prefixBytes": 608010534,
+          "prefixSha256": "f14b108d6eb2d796cb8ee79bfbd7b25eb300e03003b04aa4320ca53bafc90185",
+          "matchesSeal": true,
+          "extraBytes": 0
+        },
+        {
+          "name": "trace-samples-v1.jsonl.gz",
+          "prefixBytes": 8631,
+          "prefixSha256": "a7d0fbc817b100f5f1b79687d4964b17e6aa8deb05f73293ef8fb174bbb2c23d",
+          "matchesSeal": true,
+          "extraBytes": 0
+        }
+      ]
+    },
+    {
+      "directory": "crossvenue-observer-trade-trace-v7",
+      "traceStartedAtMs": 1792184723513,
+      "sealedAtMs": 1792186377273,
+      "headerKind": "run_start",
+      "sealComplete": false,
+      "wholeWitnessVerified": false,
+      "historyPrefixVerified": false,
+      "traceSequence": 11915,
+      "headerSha256": "854bd789cc91b3c830b4a39ae866b3b9690d26952612f2479181ea4a35ccb7d9",
+      "sealSha256": "e408be92c8e4192a4f9c5f6647a2db49aa1f4ca27c313452fbee88af3ba00234",
+      "files": [
+        {
+          "name": "input-trace-v1.jsonl.gz",
+          "prefixBytes": 441006001,
+          "prefixSha256": "302f0673cf75e969ac999c5863eca437d5d7b28f071fbffdd1806e34defb967d",
+          "matchesSeal": true,
+          "extraBytes": 0
+        },
+        {
+          "name": "trace-samples-v1.jsonl.gz",
+          "prefixBytes": 69437,
+          "prefixSha256": "4f97e92f8411f469c23dffd23fe18db39b075edc795670e85f3a80504e5a76d2",
+          "matchesSeal": true,
+          "extraBytes": 0
+        }
+      ]
+    },
+    {
+      "directory": "crossvenue-observer-trade-trace-v8",
+      "traceStartedAtMs": 1792191299721,
+      "sealedAtMs": 1792194903388,
+      "headerKind": "run_start",
+      "sealComplete": true,
+      "wholeWitnessVerified": false,
+      "historyPrefixVerified": false,
+      "traceSequence": 24884,
+      "headerSha256": "7c1ee315c3ef8120b7b9642c55dc4302994736514c141d8711b919d2807d906a",
+      "sealSha256": "677a9e8b9254d5fb610da8dcb6fa90d2dc55079686172e859f75326790ba8e71",
+      "files": [
+        {
+          "name": "input-trace-v1.jsonl.gz",
+          "prefixBytes": 1029436088,
+          "prefixSha256": "28b09393135bab42fd4cc982bedd902c14f009c044962f7c5fba209f9ead8c21",
+          "matchesSeal": true,
+          "extraBytes": 0
+        },
+        {
+          "name": "trace-samples-v1.jsonl.gz",
+          "prefixBytes": 64637,
+          "prefixSha256": "facf40eb0b7b036b035b19327f72e5d48675a033907d485aea7039aff1034a6b",
+          "matchesSeal": true,
+          "extraBytes": 0
+        }
+      ]
+    }
+  ],
+  "pricesOrReturnsExported": false,
+  "bodyEventsDecoded": false,
+  "accountRequests": 0,
+  "productionChanged": false,
+  "limitations": [
+    "Only seven explicitly selected undated observer trace directories were inspected",
+    "Compressed prefix hashes match the local seals; header and seal clocks are not verified event-by-event chronology",
+    "All seven source-declared wholeWitnessVerified flags are false",
+    "This is not evidence of complete three-venue history or an independent test"
+  ]
+}

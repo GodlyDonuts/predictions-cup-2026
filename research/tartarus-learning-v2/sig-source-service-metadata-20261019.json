@@ -1,0 +1,19 @@
+{
+  "MainPID": "0",
+  "Result": "exec-condition",
+  "ActiveState": "inactive",
+  "SubState": "dead",
+  "observedUtc": "2026-10-19T23:02:53.182267+00:00",
+  "liveExecutionStop": true,
+  "sharedNetworkDisabled": true,
+  "accountRequests": 0,
+  "productionChanged": false,
+  "retained_local_sig_capture": {
+    "result_sha256": "8a9a063f63d4db30d6c3a8d1461752fd5794f88d361906c00b7e5e6aab80ced1",
+    "capture_complete": false,
+    "provider_tape_complete": false,
+    "reason": "producer_stopped_or_changed",
+    "original_native_rows": 19475,
+    "terminal_native_sequence": 716944
+  }
+}
