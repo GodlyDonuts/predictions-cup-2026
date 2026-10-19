@@ -1,3 +1,5 @@
+October19 next-profile handoff:184checks pass for complete-generation selection, evolved hyperparameter transfer and exact local training-process targeting. Actual handoff remains pending;014continues. [Transition and evidence scope](population-boundary-handoff-20261019.md).
+
 October19 outage-aware development: the longer cohort is now separately compiled with causal book-confidence expiry, actual reset clocks and an explicit incomplete-source label. Original strict failure remains. Real-source/full-size CPU probes pass;179covered checks. [Evidence and limits](outage-aware-development-20261019.md).
 
 October19 source expansion: the longer cohort failed its frozen60s SIG coverage check on an84.413s gap. Failed outputs/boundaries are retained; no data imputation or trainer switch.171 focused checks pass. [Exact source evidence](longer-cohort-20261019.md).

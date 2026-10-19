@@ -425,6 +425,15 @@ class Experiment:
 
     def make_policy(self):return self.policy_type()(self.model_size).to(self.device)
 
+    def founder_hyperparameters(self,member):
+        entropies=self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)])
+        rates=self.config.get('initial_learning_rates',[self.config.get('learning_rate',1e-5)])
+        if not entropies or not rates:raise ValueError('NONEMPTY_FOUNDER_HYPERPARAMETERS')
+        rate=rates[member%len(rates)];entropy=entropies[member%len(entropies)]
+        if type(rate)not in(int,float)or not math.isfinite(rate)or rate<=0:raise ValueError('POSITIVE_FINITE_FOUNDER_LEARNING_RATE')
+        if type(entropy)not in(int,float)or not math.isfinite(entropy)or entropy<0:raise ValueError('NONNEGATIVE_FINITE_FOUNDER_ENTROPY')
+        return rate,entropy
+
     def member_order(self,cycle,members):
         order=self.config.get('first_cycle_member_order',list(range(members)))if cycle==0 else list(range(members))
         if not isinstance(order,list)or any(type(i)is not int for i in order)or sorted(order)!=list(range(members)):
@@ -473,9 +482,8 @@ class Experiment:
             # support: favor initially short alarms without forbidding long ones.
             if not inherited and self.config.get('initial_short_alarm_prior',True):
                 self.initialize_alarm_prior(model)
-            entropies=self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)])
-            if not entropies:raise ValueError('NONEMPTY_INITIAL_ENTROPY_COEFFICIENTS')
-            opt=self.make_optimizer(model,entropy=entropies[member%len(entropies)])
+            rate,entropy=self.founder_hyperparameters(member)
+            opt=self.make_optimizer(model,rate=rate,entropy=entropy)
             self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
             del model,opt
         best=None
