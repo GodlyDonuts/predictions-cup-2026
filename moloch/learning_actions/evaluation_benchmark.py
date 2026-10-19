@@ -24,6 +24,10 @@ def main():
         if config.get('migrate_full_depth_encoder')is not True:raise ValueError('EXPLICIT_BENCHMARK_DEPTH_MIGRATION')
         from .full_depth import migrate_legacy_policy
         model,migration=migrate_legacy_policy(model)
+    encoding=config.get('global_state_encoding','raw')
+    if model.global_state_encoding!=encoding:
+        if config.get('migrate_global_state_encoding')is not True:raise ValueError('EXPLICIT_BENCHMARK_STATE_ENCODING_MIGRATION')
+        model.global_state_encoding=encoding
     start,end=experiment.evolution_bounds;mid=(start+end)//2
     cases=[(a,b,s)for a,b in((start,mid),(mid,end))for s in(False,True)]
     seeds=[experiment.seed+90000+i for i in range(len(cases))]
@@ -74,6 +78,7 @@ def main():
     result={'classification':'frozen_development_model_evaluation_compute_probe_not_roi',
         'cases':len(cases),'steps_per_case':args.steps,'stochastic':args.stochastic,
         'parameters':sum(p.numel()for p in model.parameters()),'contract_features':model.contract_features,
+        'global_state_encoding':encoding,
         'source_checkpoint_sha256':args.checkpoint_sha256,'timings':timings,'serial_median_seconds':serial,
         'batched_median_seconds':batched,'collection_speedup':serial/batched,'per_case_rng_states_match':same_rng,
         'max_hidden_absolute_error':max_hidden_error,'max_action_fraction_absolute_error':max_action_fraction_error,

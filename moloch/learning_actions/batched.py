@@ -27,6 +27,8 @@ class BatchStream:
         if not envs or len(envs)!=len(ledgers)or any(e.role!='train'for e in envs):
             raise ValueError('ONE_TRAIN_ROLE_LEDGER_PER_INDEPENDENT_WORLD_REQUIRED')
         if len({id(e)for e in envs})!=len(envs):raise ValueError('WORLDS_MUST_NOT_SHARE_MUTABLE_ACCOUNTS')
+        from .state_encoding import matching
+        for env in envs:matching(env,model)
         self.envs=envs;self.model=model;self.ledgers=ledgers
         self.device=next(model.parameters()).device
         self.hidden=model.initial_state(len(envs));self.decisions=[0]*len(envs)

@@ -162,7 +162,9 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     from dataclasses import asdict
     if any(len(h)!=64 for h in (dataset_manifest_sha256,split_specification_sha256)):
         raise ValueError('PINNED_DATA_AND_SPLIT_REQUIRED')
-    bundle={'architecture':model.architecture,'hidden_size':model.hidden_size,
+    from .state_encoding import validate
+    encoding=validate(getattr(model,'global_state_encoding','raw'))
+    bundle={'architecture':model.architecture,'hidden_size':model.hidden_size,'global_state_encoding':encoding,
         'model':model.state_dict(),'optimizer':optimizer.state_dict(),
         'parameter_sha256':fingerprint(model),'dataset_manifest_sha256':dataset_manifest_sha256,
         'split_specification_sha256':split_specification_sha256,'production_authority':False}
@@ -181,5 +183,7 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
+    from .state_encoding import validate
+    model.global_state_encoding=validate(bundle.get('global_state_encoding','raw'))
     if fingerprint(model)!=bundle['parameter_sha256']:raise ValueError('RAW_API_PARAMETERS_CHANGED')
     return model,bundle

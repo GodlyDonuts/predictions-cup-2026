@@ -1,0 +1,581 @@
+{
+  "classification": "trained_policy_numerical_conditioning_diagnostic_not_retrained_or_roi",
+  "checkpoint_sha256": "68f56e5a3821cebb954e9b108730011fd6df3a89dfe4f437875a57436dba70b9",
+  "dataset_manifest_sha256": "7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69",
+  "samples": 24,
+  "median": {
+    "raw": {
+      "update_gate_saturated_fraction": 0.6221923828125,
+      "reset_gate_saturated_fraction": 0.612060546875,
+      "candidate_saturated_fraction": 0.77392578125,
+      "global_encoder_absolute_mean": 51.725067138671875,
+      "global_encoder_absolute_max": 223.53011322021484
+    },
+    "signed_log_time_and_counts_diagnostic_only": {
+      "update_gate_saturated_fraction": 0.0,
+      "reset_gate_saturated_fraction": 0.0,
+      "candidate_saturated_fraction": 0.0,
+      "global_encoder_absolute_mean": 0.4581491947174072,
+      "global_encoder_absolute_max": 1.9314925074577332
+    }
+  },
+  "raw_samples": [
+    {
+      "at_ms": 1792400461000,
+      "episode_start_ms": 1792400461000,
+      "step": 0,
+      "elapsed_seconds": 0.0,
+      "remaining_seconds": 900.0,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.6220703125,
+          "reset_gate_saturated_fraction": 0.61474609375,
+          "candidate_saturated_fraction": 0.770751953125,
+          "global_encoder_absolute_mean": 51.81885528564453,
+          "global_encoder_absolute_max": 223.70294189453125
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.45523494482040405,
+          "global_encoder_absolute_max": 1.9106886386871338
+        }
+      }
+    },
+    {
+      "at_ms": 1792400461247,
+      "episode_start_ms": 1792400461000,
+      "step": 8,
+      "elapsed_seconds": 0.24699999392032623,
+      "remaining_seconds": 899.7529907226562,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.62353515625,
+          "reset_gate_saturated_fraction": 0.612548828125,
+          "candidate_saturated_fraction": 0.773193359375,
+          "global_encoder_absolute_mean": 51.79827880859375,
+          "global_encoder_absolute_max": 223.69308471679688
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4619559049606323,
+          "global_encoder_absolute_max": 1.8619616031646729
+        }
+      }
+    },
+    {
+      "at_ms": 1792400461512,
+      "episode_start_ms": 1792400461000,
+      "step": 16,
+      "elapsed_seconds": 0.5120000243186951,
+      "remaining_seconds": 899.4879760742188,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.623291015625,
+          "reset_gate_saturated_fraction": 0.612060546875,
+          "candidate_saturated_fraction": 0.7734375,
+          "global_encoder_absolute_mean": 51.78623962402344,
+          "global_encoder_absolute_max": 223.5657501220703
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4580158293247223,
+          "global_encoder_absolute_max": 1.8954015970230103
+        }
+      }
+    },
+    {
+      "at_ms": 1792400461696,
+      "episode_start_ms": 1792400461000,
+      "step": 24,
+      "elapsed_seconds": 0.6959999799728394,
+      "remaining_seconds": 899.3040161132812,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.622314453125,
+          "reset_gate_saturated_fraction": 0.612060546875,
+          "candidate_saturated_fraction": 0.774658203125,
+          "global_encoder_absolute_mean": 51.7672233581543,
+          "global_encoder_absolute_max": 223.59124755859375
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.46805766224861145,
+          "global_encoder_absolute_max": 1.9455193281173706
+        }
+      }
+    },
+    {
+      "at_ms": 1792400462642,
+      "episode_start_ms": 1792400461000,
+      "step": 32,
+      "elapsed_seconds": 1.6419999599456787,
+      "remaining_seconds": 898.3579711914062,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.6220703125,
+          "reset_gate_saturated_fraction": 0.611083984375,
+          "candidate_saturated_fraction": 0.774169921875,
+          "global_encoder_absolute_mean": 51.702335357666016,
+          "global_encoder_absolute_max": 223.2059326171875
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.451913058757782,
+          "global_encoder_absolute_max": 1.8768569231033325
+        }
+      }
+    },
+    {
+      "at_ms": 1792400462830,
+      "episode_start_ms": 1792400461000,
+      "step": 40,
+      "elapsed_seconds": 1.8300000429153442,
+      "remaining_seconds": 898.1699829101562,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.621826171875,
+          "reset_gate_saturated_fraction": 0.61083984375,
+          "candidate_saturated_fraction": 0.774169921875,
+          "global_encoder_absolute_mean": 51.69296646118164,
+          "global_encoder_absolute_max": 223.1249542236328
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.44673219323158264,
+          "global_encoder_absolute_max": 1.877691388130188
+        }
+      }
+    },
+    {
+      "at_ms": 1792400464873,
+      "episode_start_ms": 1792400461000,
+      "step": 48,
+      "elapsed_seconds": 3.872999906539917,
+      "remaining_seconds": 896.1270141601562,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.62109375,
+          "reset_gate_saturated_fraction": 0.611328125,
+          "candidate_saturated_fraction": 0.77392578125,
+          "global_encoder_absolute_mean": 51.5489387512207,
+          "global_encoder_absolute_max": 222.442138671875
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.44335588812828064,
+          "global_encoder_absolute_max": 1.8918031454086304
+        }
+      }
+    },
+    {
+      "at_ms": 1792400465888,
+      "episode_start_ms": 1792400461000,
+      "step": 56,
+      "elapsed_seconds": 4.888000011444092,
+      "remaining_seconds": 895.1119995117188,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.620361328125,
+          "reset_gate_saturated_fraction": 0.611083984375,
+          "candidate_saturated_fraction": 0.773681640625,
+          "global_encoder_absolute_mean": 51.5049934387207,
+          "global_encoder_absolute_max": 222.90966796875
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4596553444862366,
+          "global_encoder_absolute_max": 2.1405396461486816
+        }
+      }
+    },
+    {
+      "at_ms": 1792401001000,
+      "episode_start_ms": 1792401001000,
+      "step": 0,
+      "elapsed_seconds": 0.0,
+      "remaining_seconds": 900.0,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.6220703125,
+          "reset_gate_saturated_fraction": 0.61474609375,
+          "candidate_saturated_fraction": 0.770751953125,
+          "global_encoder_absolute_mean": 51.81885528564453,
+          "global_encoder_absolute_max": 223.70294189453125
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.45523494482040405,
+          "global_encoder_absolute_max": 1.9106886386871338
+        }
+      }
+    },
+    {
+      "at_ms": 1792401001600,
+      "episode_start_ms": 1792401001000,
+      "step": 8,
+      "elapsed_seconds": 0.6000000238418579,
+      "remaining_seconds": 899.4000244140625,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.623291015625,
+          "reset_gate_saturated_fraction": 0.6123046875,
+          "candidate_saturated_fraction": 0.7734375,
+          "global_encoder_absolute_mean": 51.763221740722656,
+          "global_encoder_absolute_max": 223.44740295410156
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4411908686161041,
+          "global_encoder_absolute_max": 1.6720104217529297
+        }
+      }
+    },
+    {
+      "at_ms": 1792401001791,
+      "episode_start_ms": 1792401001000,
+      "step": 16,
+      "elapsed_seconds": 0.7910000085830688,
+      "remaining_seconds": 899.208984375,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.624267578125,
+          "reset_gate_saturated_fraction": 0.61181640625,
+          "candidate_saturated_fraction": 0.773681640625,
+          "global_encoder_absolute_mean": 51.76734161376953,
+          "global_encoder_absolute_max": 223.49447631835938
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.461127370595932,
+          "global_encoder_absolute_max": 1.9300698041915894
+        }
+      }
+    },
+    {
+      "at_ms": 1792401002034,
+      "episode_start_ms": 1792401001000,
+      "step": 24,
+      "elapsed_seconds": 1.034000039100647,
+      "remaining_seconds": 898.9660034179688,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.622802734375,
+          "reset_gate_saturated_fraction": 0.612060546875,
+          "candidate_saturated_fraction": 0.7744140625,
+          "global_encoder_absolute_mean": 51.74695587158203,
+          "global_encoder_absolute_max": 223.48590087890625
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4699392318725586,
+          "global_encoder_absolute_max": 1.982916235923767
+        }
+      }
+    },
+    {
+      "at_ms": 1792401002971,
+      "episode_start_ms": 1792401001000,
+      "step": 32,
+      "elapsed_seconds": 1.9709999561309814,
+      "remaining_seconds": 898.0289916992188,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.623291015625,
+          "reset_gate_saturated_fraction": 0.612060546875,
+          "candidate_saturated_fraction": 0.77490234375,
+          "global_encoder_absolute_mean": 51.677696228027344,
+          "global_encoder_absolute_max": 224.02244567871094
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.45249998569488525,
+          "global_encoder_absolute_max": 2.0400784015655518
+        }
+      }
+    },
+    {
+      "at_ms": 1792401003286,
+      "episode_start_ms": 1792401001000,
+      "step": 40,
+      "elapsed_seconds": 2.2860000133514404,
+      "remaining_seconds": 897.7139892578125,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.622314453125,
+          "reset_gate_saturated_fraction": 0.6123046875,
+          "candidate_saturated_fraction": 0.774658203125,
+          "global_encoder_absolute_mean": 51.658809661865234,
+          "global_encoder_absolute_max": 223.92428588867188
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.45340561866760254,
+          "global_encoder_absolute_max": 2.055757761001587
+        }
+      }
+    },
+    {
+      "at_ms": 1792401003477,
+      "episode_start_ms": 1792401001000,
+      "step": 48,
+      "elapsed_seconds": 2.4769999980926514,
+      "remaining_seconds": 897.5230102539062,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.6220703125,
+          "reset_gate_saturated_fraction": 0.6123046875,
+          "candidate_saturated_fraction": 0.775390625,
+          "global_encoder_absolute_mean": 51.63983154296875,
+          "global_encoder_absolute_max": 223.9542999267578
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.46130168437957764,
+          "global_encoder_absolute_max": 2.1026549339294434
+        }
+      }
+    },
+    {
+      "at_ms": 1792401003717,
+      "episode_start_ms": 1792401001000,
+      "step": 56,
+      "elapsed_seconds": 2.7170000076293945,
+      "remaining_seconds": 897.2830200195312,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.621337890625,
+          "reset_gate_saturated_fraction": 0.612548828125,
+          "candidate_saturated_fraction": 0.775146484375,
+          "global_encoder_absolute_mean": 51.623374938964844,
+          "global_encoder_absolute_max": 224.04156494140625
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4617058038711548,
+          "global_encoder_absolute_max": 2.112908363342285
+        }
+      }
+    },
+    {
+      "at_ms": 1792401601000,
+      "episode_start_ms": 1792401601000,
+      "step": 0,
+      "elapsed_seconds": 0.0,
+      "remaining_seconds": 900.0,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.6220703125,
+          "reset_gate_saturated_fraction": 0.61474609375,
+          "candidate_saturated_fraction": 0.770751953125,
+          "global_encoder_absolute_mean": 51.81885528564453,
+          "global_encoder_absolute_max": 223.70294189453125
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.45523494482040405,
+          "global_encoder_absolute_max": 1.9106886386871338
+        }
+      }
+    },
+    {
+      "at_ms": 1792401601281,
+      "episode_start_ms": 1792401601000,
+      "step": 8,
+      "elapsed_seconds": 0.2809999883174896,
+      "remaining_seconds": 899.718994140625,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.623291015625,
+          "reset_gate_saturated_fraction": 0.6123046875,
+          "candidate_saturated_fraction": 0.77392578125,
+          "global_encoder_absolute_mean": 51.802005767822266,
+          "global_encoder_absolute_max": 223.61537170410156
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4552468955516815,
+          "global_encoder_absolute_max": 1.8996891975402832
+        }
+      }
+    },
+    {
+      "at_ms": 1792401601545,
+      "episode_start_ms": 1792401601000,
+      "step": 16,
+      "elapsed_seconds": 0.5450000166893005,
+      "remaining_seconds": 899.4550170898438,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.623291015625,
+          "reset_gate_saturated_fraction": 0.6123046875,
+          "candidate_saturated_fraction": 0.77392578125,
+          "global_encoder_absolute_mean": 51.774559020996094,
+          "global_encoder_absolute_max": 223.66738891601562
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.46978724002838135,
+          "global_encoder_absolute_max": 1.9606696367263794
+        }
+      }
+    },
+    {
+      "at_ms": 1792401601819,
+      "episode_start_ms": 1792401601000,
+      "step": 24,
+      "elapsed_seconds": 0.8190000057220459,
+      "remaining_seconds": 899.1810302734375,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.62255859375,
+          "reset_gate_saturated_fraction": 0.61181640625,
+          "candidate_saturated_fraction": 0.773681640625,
+          "global_encoder_absolute_mean": 51.76758575439453,
+          "global_encoder_absolute_max": 223.46337890625
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.45828256011009216,
+          "global_encoder_absolute_max": 1.9303041696548462
+        }
+      }
+    },
+    {
+      "at_ms": 1792401602638,
+      "episode_start_ms": 1792401601000,
+      "step": 32,
+      "elapsed_seconds": 1.6380000114440918,
+      "remaining_seconds": 898.3619995117188,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.621826171875,
+          "reset_gate_saturated_fraction": 0.611328125,
+          "candidate_saturated_fraction": 0.77392578125,
+          "global_encoder_absolute_mean": 51.70317840576172,
+          "global_encoder_absolute_max": 223.16650390625
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.45704078674316406,
+          "global_encoder_absolute_max": 1.9326808452606201
+        }
+      }
+    },
+    {
+      "at_ms": 1792401602823,
+      "episode_start_ms": 1792401601000,
+      "step": 40,
+      "elapsed_seconds": 1.8229999542236328,
+      "remaining_seconds": 898.177001953125,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.622314453125,
+          "reset_gate_saturated_fraction": 0.61181640625,
+          "candidate_saturated_fraction": 0.7744140625,
+          "global_encoder_absolute_mean": 51.68244934082031,
+          "global_encoder_absolute_max": 223.2207794189453
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4666175842285156,
+          "global_encoder_absolute_max": 2.0805888175964355
+        }
+      }
+    },
+    {
+      "at_ms": 1792401603007,
+      "episode_start_ms": 1792401601000,
+      "step": 48,
+      "elapsed_seconds": 2.006999969482422,
+      "remaining_seconds": 897.9929809570312,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.621337890625,
+          "reset_gate_saturated_fraction": 0.611572265625,
+          "candidate_saturated_fraction": 0.7744140625,
+          "global_encoder_absolute_mean": 51.67913818359375,
+          "global_encoder_absolute_max": 223.0738983154297
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4602743983268738,
+          "global_encoder_absolute_max": 1.9988309144973755
+        }
+      }
+    },
+    {
+      "at_ms": 1792401603307,
+      "episode_start_ms": 1792401601000,
+      "step": 56,
+      "elapsed_seconds": 2.306999921798706,
+      "remaining_seconds": 897.6929931640625,
+      "modes": {
+        "raw": {
+          "update_gate_saturated_fraction": 0.621337890625,
+          "reset_gate_saturated_fraction": 0.61181640625,
+          "candidate_saturated_fraction": 0.77392578125,
+          "global_encoder_absolute_mean": 51.663063049316406,
+          "global_encoder_absolute_max": 222.95802307128906
+        },
+        "signed_log_time_and_counts_diagnostic_only": {
+          "update_gate_saturated_fraction": 0.0,
+          "reset_gate_saturated_fraction": 0.0,
+          "candidate_saturated_fraction": 0.0,
+          "global_encoder_absolute_mean": 0.4583972990512848,
+          "global_encoder_absolute_max": 1.9790635108947754
+        }
+      }
+    }
+  ],
+  "alternate_input_used_to_take_actions": false,
+  "training_or_checkpoint_changed": false,
+  "independent_test_used": false,
+  "production_changed": false,
+  "http_requests": 0
+}

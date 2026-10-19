@@ -55,6 +55,8 @@ class Experiment:
             self.gap=spec['maximum_venue_gap_ms']
             self.train_bounds=self.split.bounds('train');self.evolution_bounds=self.split.bounds('evolution')
         self.dataset_sha=self.original.manifest_sha256
+        from .state_encoding import validate
+        validate(config.get('global_state_encoding','raw'))
         from .world_confidence import validate_lifetime
         lifetime=validate_lifetime(config.get('world_book_lifetime_ms'))
         required=self.original.manifest.get('requiredWorldBookLifetimeMs')
@@ -114,6 +116,7 @@ class Experiment:
                                 frozen_finalist_sha256=finalist)
         tape.maximum_boundary_gap_ms=self.gap
         tape.world_book_lifetime_ms=self.config.get('world_book_lifetime_ms')
+        tape.global_state_encoding=self.config.get('global_state_encoding','raw')
         tape.counterparty_replay_enabled=self.config.get('passive_flow_mode')is not None
         tape.counterparty_information_bounds=(self.train_bounds if role=='train'else
             self.evolution_bounds if role=='evolution'else self.split.bounds('test'))
@@ -423,7 +426,10 @@ class Experiment:
             return FullDepthPolicy
         return ApiPolicy
 
-    def make_policy(self):return self.policy_type()(self.model_size).to(self.device)
+    def make_policy(self):
+        model=self.policy_type()(self.model_size).to(self.device)
+        model.global_state_encoding=self.config.get('global_state_encoding','raw')
+        return model
 
     def founder_hyperparameters(self,member):
         entropies=self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)])
@@ -454,6 +460,13 @@ class Experiment:
             inherited=parents[member%len(parents)]if parents and member<members-fresh else None
             if inherited:
                 model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
+                target_encoding=self.config.get('global_state_encoding','raw')
+                if model.global_state_encoding!=target_encoding:
+                    if self.config.get('migrate_global_state_encoding')is not True:
+                        raise ValueError('EXPLICIT_GLOBAL_STATE_ENCODING_MIGRATION_REQUIRED')
+                    frozen(self.output/('founder-%03d-state-encoding-migration.json'%member),{
+                        'old':model.global_state_encoding,'new':target_encoding,'all_weights_retained':True,
+                        'optimizer_moments_reset':True,'old_trajectories_discarded':True,'new_training_and_scores_required':True})
                 from .lineage import development_parent
                 lineage=development_parent(parent,inherited['path'],new_dataset_sha256=self.dataset_sha,
                     allow_cross_dataset=self.config.get('development_allow_cross_dataset_transfer',False))
@@ -478,6 +491,7 @@ class Experiment:
                     with torch.no_grad():
                         for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
             else:model=self.make_policy()
+            model.global_state_encoding=self.config.get('global_state_encoding','raw')
             # Initialization changes exploration probability, never legal action
             # support: favor initially short alarms without forbidding long ones.
             if not inherited and self.config.get('initial_short_alarm_prior',True):

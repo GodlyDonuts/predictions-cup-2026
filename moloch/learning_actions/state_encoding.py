@@ -1,0 +1,28 @@
+"""Explicit numerical conditioning, not market/risk/action restrictions."""
+import numpy as np
+
+RAW='raw'
+SIGNED_LOG='signed_log_time_counts_v1'
+# Elapsed/remaining seconds, known order/builder counts, budget wait seconds,
+# string-valued batch-result count, and known finance revision. Prices, money,
+# flags and rolling-budget fractions are not transformed.
+INDICES=(2,3,4,5,7,12,15)
+
+
+def validate(value):
+    if type(value)is not str or value not in(RAW,SIGNED_LOG):raise ValueError('EXPLICIT_GLOBAL_STATE_ENCODING')
+    return value
+
+
+def encode(state,mode):
+    validate(mode)
+    if mode==RAW:return state
+    out=state.copy();values=out[list(INDICES)]
+    out[list(INDICES)]=np.sign(values)*np.log1p(np.abs(values))
+    if not np.isfinite(out).all():raise ValueError('FINITE_ENCODED_GLOBAL_STATE_REQUIRED')
+    return out
+
+
+def matching(environment,model):
+    if validate(getattr(environment,'global_state_encoding',RAW))!=validate(getattr(model,'global_state_encoding',RAW)):
+        raise ValueError('MODEL_AND_OBSERVATION_STATE_ENCODING_MISMATCH')

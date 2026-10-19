@@ -14,6 +14,8 @@ class EvaluationBatch:
         if not envs or len(envs)!=len(seeds)or len({id(e)for e in envs})!=len(envs):
             raise ValueError('ONE_INDEPENDENT_WORLD_AND_SEED_PER_EVALUATION_CASE')
         if any(type(seed)is not int for seed in seeds):raise ValueError('INTEGER_EVALUATION_SEEDS')
+        from .state_encoding import matching
+        for env in envs:matching(env,model)
         self.envs=envs;self.model=model;self.device=next(model.parameters()).device
         if self.device.type not in('cpu','cuda'):raise ValueError('SUPPORTED_EVALUATION_RNG_DEVICE')
         self.latency=calibration['decision_latency_ms']

@@ -99,6 +99,7 @@ class FullDepthPolicy(ApiPolicy):
 def migrate_legacy_policy(parent):
     if type(parent)is not ApiPolicy:raise ValueError('EXACT_LEGACY_RAW_POLICY_REQUIRED_FOR_DEPTH_MIGRATION')
     child=FullDepthPolicy(parent.hidden_size).to(next(parent.parameters()).device)
+    child.global_state_encoding=getattr(parent,'global_state_encoding','raw')
     old=parent.state_dict();values=child.state_dict()
     for name,target in values.items():
         if name=='encoder.0.weight':

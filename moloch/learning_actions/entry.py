@@ -12,7 +12,10 @@ from .stream import Stream
 
 def open_experiment(specification,dataset,mechanics_path,role,*,start_ms,end_ms,
                     initial_cash_micros,target_wealth_micros,hidden_size=4096,device='cuda',
-                    frozen_finalist_sha256=None,policy_checkpoint=None,checkpoint_sha256=None,full_depth=False):
+                    frozen_finalist_sha256=None,policy_checkpoint=None,checkpoint_sha256=None,full_depth=False,
+                    global_state_encoding='raw'):
+    from .state_encoding import validate
+    validate(global_state_encoding)
     if role in('evolution','test')and(policy_checkpoint is None or checkpoint_sha256 is None):
         raise ValueError('EVALUATION_REQUIRES_ACTUAL_CANDIDATE_CHECKPOINT')
     if role=='test'and checkpoint_sha256!=frozen_finalist_sha256:
@@ -26,6 +29,7 @@ def open_experiment(specification,dataset,mechanics_path,role,*,start_ms,end_ms,
                             frozen_finalist_sha256=original.finalist)
     import json
     tape.maximum_boundary_gap_ms=json.loads(Path(specification).read_text())['maximum_venue_gap_ms']
+    tape.global_state_encoding=global_state_encoding
     env=tape.episode(mechanics,start_ms,end_ms,initial_cash_micros=initial_cash_micros,
                      target_wealth_micros=target_wealth_micros,burnin_ms=0)
     if policy_checkpoint is None:policy=(FullDepthPolicy if full_depth else ApiPolicy)(hidden_size=hidden_size).to(device)
@@ -33,6 +37,8 @@ def open_experiment(specification,dataset,mechanics_path,role,*,start_ms,end_ms,
         from .training import load_checkpoint
         policy,_=load_checkpoint(policy_checkpoint,checkpoint_sha256,device)
         if type(policy)is not(FullDepthPolicy if full_depth else ApiPolicy):raise ValueError('EXPLICIT_DEPTH_CHECKPOINT_PROFILE_MISMATCH')
+        if policy.global_state_encoding!=global_state_encoding:raise ValueError('EXACT_CHECKPOINT_GLOBAL_STATE_ENCODING_REQUIRED')
+    policy.global_state_encoding=global_state_encoding
     from .selection import DataUse
     DataUse().record({'train':'train','evolution':'selection','test':'test'}[role],start_ms,end_ms,
                      hashlib.sha256(Path(specification).read_bytes()).hexdigest())

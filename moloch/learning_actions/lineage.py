@@ -15,6 +15,8 @@ def development_parent(bundle,checkpoint_path,*,new_dataset_sha256,allow_cross_d
     if source.get('full_history_experiment')is not False or source.get('independent_test_used')is not False or source.get('production_authority')is not False:
         raise ValueError('ONLY_AUDITED_DEVELOPMENT_PARENTS_CAN_TRANSFER')
     if source.get('config',{}).get('mode')!='inspected_development':raise ValueError('PARENT_DEVELOPMENT_MODE_REQUIRED')
+    if source['config'].get('global_state_encoding','raw')!=bundle.get('global_state_encoding','raw'):
+        raise ValueError('PARENT_GLOBAL_STATE_ENCODING_CHANGED')
     bounds={role:source['actual_'+role+'_bounds_ms']for role in ('train','evolution')}
     for value in bounds.values():
         if len(value)!=2 or any(type(v)is not int or v<0 for v in value)or value[0]>=value[1]:

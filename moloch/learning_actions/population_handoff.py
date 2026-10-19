@@ -65,6 +65,8 @@ def select_population(run,*,cycle=0,members=8,hidden_size=4096):
         if bundle['split_specification_sha256']!=source_sha or bundle['dataset_manifest_sha256']!=source['dataset_manifest_sha256']:
             raise ValueError('CHECKPOINT_EXPERIMENT_OR_DATASET_CHANGED')
         if bundle['hidden_size']!=hidden_size:raise ValueError('EXPECTED_LEARNER_SIZE_REQUIRED')
+        if bundle.get('global_state_encoding','raw')!=config.get('global_state_encoding','raw'):
+            raise ValueError('PARENT_CHECKPOINT_FEATURE_ENCODING_CHANGED')
         group=bundle['optimizer']['param_groups'][0];rate=group['lr'];entropy=group['tartarus_entropy_coefficient']
         if not math.isfinite(rate)or rate<=0 or not math.isfinite(entropy)or entropy<0:raise ValueError('FINITE_PARENT_HYPERPARAMETERS')
         parents.append({'member':member,'path':str(p),'sha256':cp['sha256'],'learning_rate':rate,'entropy_coefficient':entropy,

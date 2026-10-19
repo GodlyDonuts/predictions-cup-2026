@@ -19,6 +19,8 @@ def tensors(observation,device):
 
 def calibrate(environment,model,rounds=12):
     """Freeze measured local actor compute cost; never sleep on virtual time."""
+    from .state_encoding import matching
+    matching(environment,model)
     device=next(model.parameters()).device;inputs=tensors(environment.observe(),device)
     hidden=model.initial_state(1);reset=torch.tensor([True],device=device);measurements=[]
     with torch.no_grad():
@@ -35,6 +37,8 @@ def calibrate(environment,model,rounds=12):
 
 class Stream:
     def __init__(self,environment,model,*,calibration=None,record_training=False,behavior_guard='sha256'):
+        from .state_encoding import matching
+        matching(environment,model)
         self.env=environment;self.model=model;self.device=next(model.parameters()).device
         self.hidden=model.initial_state(1);self.decisions=0;self.rows=deque(maxlen=4096)
         self.calibration=calibration or calibrate(environment,model)

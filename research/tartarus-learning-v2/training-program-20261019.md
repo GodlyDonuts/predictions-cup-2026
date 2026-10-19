@@ -1,3 +1,5 @@
+October19 numerical conditioning: trained-fit diagnostics show62%update-gate saturation; explicit time/count conditioning removes it in the diagnostic and passes188checks/full-size CPU PPO. This is not profitability evidence. Old014continues;pending handoffv1 was cancelled before transition. [Evidence](global-state-conditioning-20261019.md).
+
 October19 next-profile handoff:184checks pass for complete-generation selection, evolved hyperparameter transfer and exact local training-process targeting. Actual handoff remains pending;014continues. [Transition and evidence scope](population-boundary-handoff-20261019.md).
 
 October19 outage-aware development: the longer cohort is now separately compiled with causal book-confidence expiry, actual reset clocks and an explicit incomplete-source label. Original strict failure remains. Real-source/full-size CPU probes pass;179covered checks. [Evidence and limits](outage-aware-development-20261019.md).

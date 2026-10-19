@@ -41,6 +41,7 @@ class ApiEpisode(PreparedEpisode):
         self.passive=None
         self.private_fill_push=True  # Legacy profile; new stream profile opts out.
         self.world_book_lifetime_ms=None;self.world_confidence_expiries=0
+        self.global_state_encoding='raw'
         self.scheduled_reads=set();self.pending_reads=deque()
         self.expiry_scheduled=set()
         self.external_ready={'Kalshi':0,'Polymarket':0}
@@ -447,7 +448,10 @@ class ApiEpisode(PreparedEpisode):
             if isinstance(result,list):state[12]=sum(isinstance(item,str)for item in result)
         state[13]=len(self.budget.reads)/100.;state[14]=len(self.budget.writes)/30.
         state[15]=self.known_finance_revision
-        return {'contracts':features,'global_state':state,'present':np.ones(n,bool),'masks':masks,
+        from .state_encoding import encode
+        state=encode(state,self.global_state_encoding)
+        return {'contracts':features,'global_state':state,'global_state_encoding':self.global_state_encoding,
+                'present':np.ones(n,bool),'masks':masks,
                 'entities':entities,'observation_revision':self.observation_revision}
 
     def act_raw(self,action,observation):
@@ -512,6 +516,8 @@ class ApiTape(PreparedTape):
         env.role=self.role;env.delivery=self.delivery;env.prepared_books=self.prepared_books
         from .world_confidence import validate_lifetime
         env.world_book_lifetime_ms=validate_lifetime(getattr(self,'world_book_lifetime_ms',None))
+        from .state_encoding import validate
+        env.global_state_encoding=validate(getattr(self,'global_state_encoding','raw'))
         if env.world_book_lifetime_ms is not None and not separate_world:
             raise ValueError('WORLD_BOOK_LIFETIME_REQUIRES_SEPARATE_SNAPSHOT_WORLD')
         if separate_world:
