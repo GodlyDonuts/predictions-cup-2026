@@ -113,6 +113,7 @@ class ComponentEpisode(OrderPageEpisode):
         self.api_fills[-1].update(cash_delta_micros=self.cash-cash_before,
             collateral_debt_delta_micros=sum(ledger.debt.values())-debt_before,
             all_execution_economics={k:v for k,v in result.items()if k not in('canonical','componentDraws','cashDelta','totalDebtAfter')})
+        self._funding_changed()
 
     def _snapshot_finance(self):return super()._snapshot_finance(),deepcopy(self.component_ledger)
 

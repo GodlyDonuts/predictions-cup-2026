@@ -47,6 +47,13 @@ class OrderHistory:
         if not row.open:return  # A later scheduled expiry cannot relabel a cancellation/fill.
         self.event(at,('closed',order_id,reason));row.open=False;row.terminal_reason=reason;row.closed_at_ms=at
 
+    def resized(self,order,before,at):
+        row=self.records[order.id]
+        if not row.open or row.order.remaining!=before or not 0<=order.remaining<before:
+            raise ValueError('OPEN_DECREASING_ORDER_RESIZE_REQUIRED')
+        self.event(at,('resize',order.id,before,order.remaining));row.order=deepcopy(order)
+        if not order.remaining:self.closed(order.id,at)  # No invented engine reason code.
+
     def page(self,at,*,status='open',limit=50,exchange=None,market=None,mapping=None,cursor=None,revision=0):
         if type(at)is not int or at<self.last_at_ms:raise ValueError('ORDER_QUERY_CLOCK')
         if status not in STATUSES or type(limit)is not int or not 1<=limit<=200:raise ValueError('ORDER_PAGE_STATUS_OR_LIMIT')

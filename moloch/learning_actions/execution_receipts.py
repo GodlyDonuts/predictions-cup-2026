@@ -40,6 +40,9 @@ def ack(env,operation,payload,record,fill_start):
                     'quantity_traded':sum(f['quantity']for f in fills),
                     'total_cost_micros':sum(f['quantity']*f['price']for f in fills),
                     'last_price_micros':fills[-1]['price']if fills else None,'at_ms':env.now})
+                if getattr(env,'resting_buy_funding',None)is not None:
+                    from .resting_power import reported_quantity
+                    rows[-1]['quantity']=reported_quantity(env,value)
                 if fills and getattr(env,'component_ledger',None)is not None:
                     from .component_execution import ack_economics
                     rows[-1]['all']=ack_economics(env,fills)

@@ -90,6 +90,8 @@ class Experiment:
         expected_protocol=BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
         if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
+        from .resting_power import validate as funding_mode
+        funding_mode(config.get('resting_buy_funding'))
         from .world_confidence import validate_lifetime
         lifetime=validate_lifetime(config.get('world_book_lifetime_ms'))
         required=self.original.manifest.get('requiredWorldBookLifetimeMs')
@@ -211,6 +213,7 @@ class Experiment:
         if self.config.get('component_debt_accounting',False):
             from .component_execution import configure_from_evidence
             configure_from_evidence(env,self.config.get('component_evidence'))
+        env.resting_buy_funding=self.config.get('resting_buy_funding')
         return env
 
     def stream(self,model,env,training=False):

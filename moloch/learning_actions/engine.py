@@ -76,6 +76,23 @@ class ApiEpisode(PreparedEpisode):
 
     def held(self,ex,side):return sum(n for n,p in self.lots.get((ex,side),[]))
 
+    def _funding_changed(self):
+        if getattr(self,'resting_buy_funding',None)is not None:
+            from .resting_power import reconcile
+            reconcile(self)
+
+    def _buy_commitment(self,exchange):
+        if getattr(self,'resting_buy_funding',None)is not None:
+            from .resting_power import commitment
+            return commitment(self,exchange)
+        return sum(o.remaining*(o.spec.price or UNIT)for o in self.api_orders.values()
+            if o.spec.exchange==exchange and o.spec.action=='BUY')
+
+    def _prepare_resting(self,order):
+        if getattr(self,'resting_buy_funding',None)is not None:
+            from .resting_power import prepare
+            prepare(self,order)
+
     def _canonical(self,spec):
         if spec.action=='SELL' and self.held(spec.exchange,spec.side)<spec.quantity:
             return replace(spec,side='NO' if spec.side=='YES' else 'YES',action='BUY',
@@ -106,6 +123,8 @@ class ApiEpisode(PreparedEpisode):
         if self.passive is not None:
             self.passive.on_fill(s.exchange,quantity,origin)
             self.api_fills[-1]['execution_model']=origin
+        # A component-funded fill finalizes cash/debt in its overriding method.
+        if getattr(self,'component_ledger',None)is None:self._funding_changed()
 
     def _match_api(self,order):
         s=order.spec;world=self.books.get(s.exchange)
@@ -132,7 +151,9 @@ class ApiEpisode(PreparedEpisode):
             remaining=n
             while remaining:
                 affordable=self.buying_power()//max(1,price+self.mechanics.limits.fee_per_share)if s.action=='BUY'else self.held(s.exchange,s.side)
-                take=min(remaining,affordable)
+                # A fill can trigger a funding-driven shrink of this same
+                # resting order before the next previewed price level.
+                take=min(remaining,affordable,order.remaining)
                 if not take:return
                 world.depleted[(resource,yes_price)]=world.depleted.get((resource,yes_price),0)+take
                 self._apply_fill(order,price,take);remaining-=take
@@ -144,8 +165,7 @@ class ApiEpisode(PreparedEpisode):
         if spec.action=='BUY':
             if self.buying_power()<=0:raise ValueError('INSUFFICIENT_BUYING_POWER')
             cost=spec.price if not spec.market else UNIT
-            committed=sum(o.remaining*(o.spec.price or UNIT)for o in self.api_orders.values()
-                if o.spec.exchange==spec.exchange and o.spec.action=='BUY')
+            committed=self._buy_commitment(spec.exchange)
             if committed>=self.buying_power():return None
             # Initial partial-size admission follows actual buying power, without
             # the old max-order/market/portfolio/target-fraction projection.
@@ -165,8 +185,10 @@ class ApiEpisode(PreparedEpisode):
                 ((yes_price>=(o.spec.price if o.spec.side=='YES'else UNIT-o.spec.price))if direction else
                  (yes_price<=(o.spec.price if o.spec.side=='YES'else UNIT-o.spec.price)))for o in self.api_orders.values())
             if not crossed:
-                self.api_orders[order.id]=order
-                if self.passive is not None:self.passive.on_rest(order)
+                self._prepare_resting(order)
+                if order.remaining:
+                    self.api_orders[order.id]=order
+                    if self.passive is not None:self.passive.on_rest(order)
             elif self.order_history is not None:self.order_history.closed(order.id,self.now,'SelfTradePrevented')
         if self.order_history is not None and order.id not in self.api_orders:
             self.order_history.closed(order.id,self.now)
