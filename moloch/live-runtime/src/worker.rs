@@ -42,6 +42,14 @@ fn load_rank_campaign(c:&Control,settings:&RankCampaignSettings)->Result<(moloch
  let pins=moloch_live_runtime::authority::RankOwnerPins::capture(&[(settings.nomination_path.clone(),sha),(settings.owner_approval_path.clone(),approval_sha)],deadline)?;Ok((review,Arc::new(pins)))
 }
 fn rank_deferred(c:&Control,stage:&str,why:&str)->Result<()>{atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"stage":stage,"state":"deferred","reason":why,"physicalAttempted":false,"profitabilityEstablished":false}))}
+/// Exact top-level delta from the original evaluation already retained in quote.
+/// Reconstruct by removing named keys then replacing overrides; hash pins result.
+fn rank_evaluation_delta(base:&Value,current:&Value)->Result<Value>{
+ let b=base.as_object().ok_or("RANK_EVALUATION_BASE_OBJECT")?;let c=current.as_object().ok_or("RANK_EVALUATION_CURRENT_OBJECT")?;
+ let overrides:serde_json::Map<String,Value>=c.iter().filter(|(k,v)|b.get(*k)!=Some(*v)).map(|(k,v)|(k.clone(),v.clone())).collect();
+ let removed:Vec<_>=b.keys().filter(|k|!c.contains_key(*k)).cloned().collect();
+ Ok(json!({"schemaVersion":1,"base":"quote.reviewedRankCampaign.evaluation","overrides":overrides,"removedKeys":removed,"reconstructedSha256":hash(current)}))
+}
 fn rank_quote(q:&Value)->bool{q.get("reviewedRankCampaign").is_some_and(Value::is_object)}
 fn rank_can_resume(bank:&Session,log:&DispatchLog,q:&Value)->bool{
  q["id"].as_u64().is_some_and(|id|rank_quote(q)&&q["retired"]==false&&q["filled"]==0&&q.get("cancelEffectiveAt").is_none_or(Value::is_null)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))
@@ -1476,7 +1484,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
- log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"fundamentalOwnershipOnly":rank.as_ref().is_some_and(|r|r.decision.allows_managed_inventory()),"rankCampaign":rank.as_ref().map(|r|json!({"objective":"declared_first_place_rank_risk","rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluation":r.decision.evaluation()}))}))?;
+ log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"fundamentalOwnershipOnly":rank.as_ref().is_some_and(|r|r.decision.allows_managed_inventory()),"rankCampaign":rank.as_ref().map(|r|->Result<Value>{Ok(json!({"objective":"declared_first_place_rank_risk","rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluationEvidence":rank_evaluation_delta(&q["reviewedRankCampaign"]["evaluation"],r.decision.evaluation())?}))}).transpose()?}))?;
  record_original_attempt(bank,log,qid,if fundamental.is_some()||rank.is_some(){None}else{c.execution_model.as_ref()},now())?;
  if let Some(f)=fundamental.as_ref(){f.authority.validate()?;if rank.is_some(){f.cohorts.check_rank_bound(bank,log,&c.scope,qid,&request_spec)?;}else{f.cohorts.check_bound(bank,log,&c.scope,qid,&request_spec,f.authority.trusted(),now())?;}}
  let transport_start=now();let _=trace.record(Stage::IntentDurability,durability_start,transport_start);
@@ -4366,5 +4374,17 @@ mod local_final_guard_recovery_tests{
  #[test]fn write_errors_and_durability_failures_never_match_read_recovery_lane(){
   let raw:Box<dyn std::error::Error>=Box::new(error(503,false));assert!(raw.downcast_ref::<ExhaustedObservation>().is_none());
   for code in["DURABILITY_FAILURE","COMPLETION_DURABILITY_UNCERTAIN","STOPPED_OR_OWNER_LOST"]{let mut e=error(503,false);e.code=code.into();let boxed=exhausted_observation(Endpoint::Account,e);assert!(boxed.downcast_ref::<ExhaustedObservation>().is_none());assert_eq!(boxed.to_string(),code);}
+ }
+}
+
+#[cfg(test)]mod rank_evaluation_delta_tests{
+ use super::*;
+ #[test]fn exact_reconstruction_preserves_changed_added_removed_and_nested_values(){
+  let base=json!({"same":[1,2,3],"changed":{"a":1},"removed":42});let current=json!({"same":[1,2,3],"changed":{"a":2},"added":null});
+  let d=rank_evaluation_delta(&base,&current).unwrap();let mut reconstructed=base.as_object().unwrap().clone();
+  for k in d["removedKeys"].as_array().unwrap(){reconstructed.remove(k.as_str().unwrap());}
+  reconstructed.extend(d["overrides"].as_object().unwrap().clone());let reconstructed=Value::Object(reconstructed);
+  assert_eq!(reconstructed,current);assert_eq!(d["reconstructedSha256"],hash(&reconstructed));assert!(d["overrides"].get("same").is_none());
+  assert!(rank_evaluation_delta(&Value::Null,&current).is_err());
  }
 }

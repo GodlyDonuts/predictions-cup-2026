@@ -113,3 +113,19 @@ impl CredentialProvider for NoCredentialLoad{fn load(&self)->Result<zeroize::Zer
   assert!(verify_frozen_ordinary_pre_admission(&c,&spec(),&p,2000,&error).is_err(),"mode{mode}");fs::remove_dir_all(dir).unwrap();
  }
 }
+
+struct RankExpiredGuard;
+impl Authority for RankExpiredGuard{
+ fn can_read(&self,_:&Scope)->bool{true}
+ fn owns_order(&self,_:&str)->bool{false}
+ fn authorize(&self,_:&Scope,_:&RequestSpec,_:&Permit,_:bool,_:u64)->Result<()>{Err(fail("RANK_PHYSICAL_FACTS_EXPIRED"))}
+}
+#[test]fn genuine_rank_expiry_before_admission_retains_exact_no_http_proof(){
+ let dir=temp();let clock=Arc::new(AtomicU64::new(1000));let mut t=Transport::new_for_mock(config(&dir),Box::new(DisabledCredentials),Box::new(TestClock(clock.clone())),Box::new(RankExpiredGuard),"http://127.0.0.1:9/api/v1".into()).unwrap();t.admission_state().unwrap();clock.store(2001,Ordering::SeqCst);
+ let mut per=permit();per.expires_at_ms=9999;let b=spec().body.unwrap();let error=t.place(Order{idempotency_key:"fixture:3411".into(),exchange_id:"1009".into(),side:"no".into(),action:"buy".into(),quantity:5196,price:"0.620000".into(),expiration_date:b["expirationDate"].as_str().unwrap().into(),tournament_id:scope().tournament_id},per.clone()).err().unwrap();
+ assert_eq!(error.code,"RANK_PHYSICAL_FACTS_EXPIRED");assert!(!error.may_have_executed);assert_eq!(t.admission_summary().unwrap().state.last_clock,1000);assert!(t.admission_lookup_intent("fixture:3411").unwrap().binding.is_none());
+ let proof=t.verify_current_ordinary_pre_admission(&spec(),&per,2000,&error).unwrap();proof.validate_binding(&spec(),&per,2000,&error).unwrap();let retained=proof.evidence().clone();drop(t);
+ assert_eq!(verify_retained_ordinary_pre_admission(&config(&dir),&spec(),&per,2000,&error,&retained).unwrap().evidence(),&retained);
+ for i in 0..4{let mut changed=error.clone();match i{0=>changed.may_have_executed=true,1=>changed.status=Some(503),2=>changed.api_code=Some("INTERNAL_ERROR".into()),_=>changed.order_id=Some("1".into())};assert!(verify_frozen_ordinary_pre_admission(&config(&dir),&spec(),&per,2000,&changed).is_err());}
+ fs::remove_dir_all(dir).unwrap();
+}

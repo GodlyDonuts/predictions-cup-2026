@@ -1,0 +1,50 @@
+{
+  "classification": "exploratory_development_finalist_lock_not_original_gate_pass_or_live_approval",
+  "lockedAt": "2026-10-19T03:28:15.096478+00:00",
+  "run": "market-memory-excess-001",
+  "checkpoint": "checkpoint-0007.pt",
+  "checkpointSha256": "f2ef414407ac0c9a10f132742297635077112f1080bc8bb038fdb18bf9c8f975",
+  "parameterSha256": "945996bdb8138c4e818eece1adca471303e10d9d0b5b81c139dd34fecf1f504d",
+  "trainingPlanSha256": "ea48a21045bf982d64b4485596464b08d76301ecf632b701b9e923ad1213733f",
+  "evaluationSha256": "b8444cf57f3ee90cd41f4d9068582e9cb6ff1676a55d4215095057dcdfa2920c",
+  "architecture": "tartarus-market-and-global-gru-v3",
+  "rewardObjective": "matched_hold_excess",
+  "selectionRule": "post-specified exploratory Pareto: nonnegative excess in all four development cases and positive in at least one",
+  "originalAllFourStrictPositiveGatePassed": false,
+  "cases": [
+    {
+      "profile": "nominal",
+      "windowIndex": 0,
+      "excessWealthMicros": 243885000,
+      "absoluteReferenceReturn": 0.0024644331822880044,
+      "modeledFillReceipts": 2
+    },
+    {
+      "profile": "nominal",
+      "windowIndex": 1,
+      "excessWealthMicros": 90000,
+      "absoluteReferenceReturn": 5.455355841202775e-05,
+      "modeledFillReceipts": 1
+    },
+    {
+      "profile": "joint_adverse",
+      "windowIndex": 0,
+      "excessWealthMicros": 107845000,
+      "absoluteReferenceReturn": 0.001089762783868831,
+      "modeledFillReceipts": 2
+    },
+    {
+      "profile": "joint_adverse",
+      "windowIndex": 1,
+      "excessWealthMicros": 0,
+      "absoluteReferenceReturn": 5.3636349322343e-05,
+      "modeledFillReceipts": 0
+    }
+  ],
+  "developmentHistoryPreviouslyInspected": true,
+  "newForwardCohortStillRequired": true,
+  "executionCalibrated": false,
+  "heldoutPerformanceVerified": false,
+  "productionAuthority": false,
+  "profitabilityEstablished": false
+}
