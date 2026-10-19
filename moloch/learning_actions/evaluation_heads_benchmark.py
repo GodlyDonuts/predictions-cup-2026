@@ -16,7 +16,7 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
     if config.get('mode')!='inspected_development'or config.get('test_finalist_once',False):
         raise ValueError('INSPECTED_DEVELOPMENT_ONLY_NO_INDEPENDENT_TEST')
     if type(steps)is not int or steps<1:raise ValueError('POSITIVE_FINITE_BENCHMARK_CHUNK')
-    if type(prime_books)is not int or prime_books<0:raise ValueError('NONNEGATIVE_EXPLICIT_PRIMING_READS')
+    if type(prime_books)is not int or prime_books< -1:raise ValueError('EXPLICIT_PRIMING_READS_OR_MINUS_ONE_FOR_ALL')
     x=Experiment(config,output);device=config.get('device','cpu')
     try:
         # Avoid copying an unused historical optimizer onto the GPU.
@@ -28,8 +28,11 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
         def worlds():
             envs=[x.world('evolution',lo,hi,stress=stress)for lo,hi,stress in descriptors]
             for e in envs:
-                targets=[k for k in e.keys['SIG']if k[0]=='book'][:prime_books]
-                if len(targets)!=prime_books:raise ValueError('EXACT_PRIMING_SOURCE_TARGETS_REQUIRED')
+                available=[k for k in e.keys['SIG']if k[0]=='book']
+                targets=available if prime_books==-1 else available[:prime_books]
+                if (prime_books==-1 and not targets)or(prime_books>=0 and len(targets)!=prime_books):
+                    raise ValueError('EXACT_PRIMING_SOURCE_TARGETS_REQUIRED')
+                e._benchmark_priming_read_count=len(targets)
                 for key in targets:
                     while True:
                         r=e.request_observation('SIG',key)
@@ -93,6 +96,7 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0):
                 if state!=reference:raise ValueError('PAIRED_SELECTION_WALLET_LIQUIDITY_CLOCK_OR_RNG_CHANGED')
                 measurements.append({'mode':mode,'seconds':seconds,'decisions':sum(counts),
                     'entityCounts':[len(e.observe()['entities'])for e in envs],
+                    'simulatedPrimingReads':[e._benchmark_priming_read_count for e in envs],
                     'deliveredBooks':[len(e.actor_books)for e in envs]})
                 release_worlds(envs);del envs,ledgers,streams,batch
         from statistics import median
