@@ -53,6 +53,7 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0,allow_sized_reques
                         e.advance(r['ready_ms'])
             return envs
         first=worlds();calibration=calibrate(first[0],model)
+        frozen(Path(output)/'COMPUTE_CALIBRATION.json',calibration)
         from .episode_training import release_worlds
         release_worlds(first);del first
         seeds=[x.seed+90000+i for i in range(len(descriptors))]
@@ -113,7 +114,17 @@ def compare(config,checkpoint,output,*,steps=64,prime_books=0,allow_sized_reques
                        'budgets':[copy.deepcopy(vars(e.budget))for e in envs],
                        'counts':counts,'rng':[bytes(r.tolist()).hex()for r in rngs]}
                 if reference is None:reference=state
-                if state!=reference:raise ValueError('PAIRED_SELECTION_WALLET_LIQUIDITY_CLOCK_OR_RNG_CHANGED')
+                if state!=reference:
+                    names=('clock','cash','lots','realized','fees','orders','orderSequence','fills','financeRevision','books')
+                    diagnostic={'classification':'failed_paired_numerical_path_not_performance_qualification','mode':mode,
+                        'differentFields':[key for key in state if state[key]!=reference[key]],
+                        'financeFieldsByCase':[[name for name,left,right in zip(names,a,b)if left!=right]
+                            for a,b in zip(reference['finance'],state['finance'])],
+                        'caseRngEqual':[a==b for a,b in zip(reference['rng'],state['rng'])],
+                        'caseClocks':state['clocks'],'referenceCaseClocks':reference['clocks'],
+                        'accountRequests':0,'independentTestUsed':False}
+                    frozen(Path(output)/'FAILED_COMPARISON.json',diagnostic)
+                    raise ValueError('PAIRED_SELECTION_WALLET_LIQUIDITY_CLOCK_OR_RNG_CHANGED')
                 if reference_full is None:reference_full=full;reference_requests=requests
                 if full!=reference_full:
                     if not allow_sized_request_differences:raise ValueError('EXACT_FULL_ORDER_RECORDS_DIFFER_NUMERICAL_MODE_NOT_AUTHORIZED')
