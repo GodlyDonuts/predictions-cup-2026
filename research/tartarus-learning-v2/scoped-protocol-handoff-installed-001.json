@@ -1,0 +1,36 @@
+{
+  "classification": "verified_pending_simulated_training_handoff_not_new_learning_or_account_ownership",
+  "observedUtc": "2026-10-19T18:06:03.565360+00:00",
+  "phase": "waiting_for_completed_generation",
+  "controllerLauncherPid": 40600,
+  "controllerPid": 36548,
+  "existingTrainerPid": 18300,
+  "existingTrainerIdentityVerified": true,
+  "sourceCommit": "3cc5de93b2d5d574c956b3b15d074b726e1f72a5",
+  "sourceManifestSha256": "8c9124f4d7a6798c4f9c2c7af23f0ccd85542938926e344c6f9f9f2ee6611406",
+  "sourceFilesVerified": 206,
+  "specSha256": "4fec25e39eaa4a32b1649f1ae6c769f3195a57efc47e053586e967b047942789",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "oldRun": "raw-api-growth-development-015",
+  "newRun": "raw-api-growth-development-016",
+  "requiredCompletedCycle": 0,
+  "newObservationProtocol": "sig_scoped_finance_paged_tape_v1",
+  "explicitObservationMigration": true,
+  "gpuCapacityStepsToMeasure": [
+    64,
+    32
+  ],
+  "gpuCapacityAlreadyMeasured": false,
+  "nextTrainingStarted": false,
+  "oldGenerationOrCheckpointFilesRemoved": false,
+  "oldScoresReused": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "newAccountClient": false,
+  "guards": [
+    "all8completed members and actual island offspring verified before exact-handle stop",
+    "checked source and dataset reverified",
+    "real full-size GPU/PPO capacity;32 only after64 OOM",
+    "new accepted optimizer update and source/config/data identity checked before reporting learning"
+  ]
+}
