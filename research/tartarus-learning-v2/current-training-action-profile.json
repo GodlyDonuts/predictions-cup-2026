@@ -75,11 +75,24 @@
   "passive_models_calibrated": false,
   "event_wait_interrupts_on_newly_created_observable_receipts": true,
   "optional_private_fill_notifications": "requires_active_sig_stream_one_second_coalescing_plus_receipt_latency",
-  "active_development_run": "raw-api-growth-development-013",
+  "active_development_run": "raw-api-growth-development-014",
   "active_development_entrypoint": "python -m moloch.learning_actions.experiment",
   "original_sig_exchanges": 237,
   "unique_engine_prints": 1668,
   "role_prefix_initial_state": true,
   "observable_wakeup_index": true,
-  "historical_run007_realtime_mode": "disabled_prior_profile"
+  "historical_run007_realtime_mode": "disabled_prior_profile",
+  "first_cycle_member_order": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    0,
+    1,
+    2
+  ],
+  "evaluation_wealth_schedule": "start_daily_boundaries_terminal",
+  "optional_official_mark_ledger": "moloch.learning_actions.official_marks.OfficialGrowthLedger",
+  "official_mark_adapter_is_active_training_reward": false
 }

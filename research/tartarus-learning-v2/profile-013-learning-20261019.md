@@ -1,3 +1,5 @@
+Historical profile:013 ended with a verified intermediate-mark evaluation error;014 is the active preserved-lineage continuation. [Current profile](profile-014-learning-20261019.md).
+
 # Phase013 is training on the original raw feed
 
 Phase013 runs the58.1M-parameter recurrent policy on the laptop GPU, with eight independent simulated worlds, eight logical lineages/four islands,128-decision chunks and16 planned population cycles. All237 recorded SIG exchanges and1,668 unique official prints are available through the causal replay. Kalshi and Polymarket remain observations only; orders execute only against simulated SIG liquidity. No new real account client or production financial change is involved.

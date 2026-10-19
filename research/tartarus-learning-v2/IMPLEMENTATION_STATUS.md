@@ -1,4 +1,4 @@
-October19 ML update: phase013 is training eight preserved lineages/four islands on the original realtime feed:237 SIG exchanges and1,668 engine prints.146 focused checks pass; eight-world/128-decision GPU benchmark peaks at5.84GB and actual training near6.93GB. Earlier candidates remain negative; full history, full API parity and independently profitable ROI remain unproved. [Current profile and evidence](profile-013-learning-20261019.md).
+October19 ML update: phase014 is training the eight preserved lineages on237 SIG exchanges after a verified intermediate-valuation evaluation failure in013.149 focused checks pass; required daily/terminal marks remain strict. Official-mark calibration covers25 exchanges; no independent profitable ROI is established. [Active profile, failure and evidence](profile-014-learning-20261019.md).
 
 Official valuation adapter:600 original observations across25 exchanges are verified; complete237-exchange valuation coverage remains unavailable. Active013 retains its frozen midpoint reward, and its first completed member is negative. [Calibration and limits](official-valuation-20261019.md).
 

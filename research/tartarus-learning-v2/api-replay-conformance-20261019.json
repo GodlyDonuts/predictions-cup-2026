@@ -70,5 +70,5 @@
   },
   "evaluation_wealth_schedule": "start_daily_boundaries_terminal_no_compute_chunk_valuation_requirement",
   "phase013_status": "verified_terminal_missing_intermediate_mark_error_preserved",
-  "phase014_status": "prepared_not_yet_running"
+  "phase014_status": "verified_running_with_accepted_updates"
 }

@@ -1,0 +1,11 @@
+# Phase014: preserved population, corrected evaluation boundaries
+
+Phase014 is running on the laptop GPU from source commit `06d49d317576a1512d5b39845fccf1046f075e29`. All83 copied Python source files were checked against the experiment's frozen source hashes and current bytes. The dataset remains the corrected237-exchange raw-feed dataset003, manifest `7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69`. There is no new market-data client or independent test.
+
+All eight neural lineages survive. Phase013's failed marker remains authoritative; two negative evaluations, the third trained checkpoint and five original founder states are preserved. The interrupted third candidate's corrected evaluation completes with−10.1206225% worst marked ROI. This is a repaired experiment, not evidence of alpha. [Failure, reproduction and repair](evaluation-valuation-window-20261019.md).
+
+The first cycle visits members3,4,5,6,7,0,1,2 so the previously unfinished members receive work first. Every member still trains and evaluates once per cycle; later cycles use normal order and retain all original island identities. Eight worlds,128-decision chunks,58.1M parameters and16 planned cycles remain. Fresh simulated wallets and optimizer/rollout states are explicit; production wallets and FIFO are untouched. Initial accepted updates are observed, with peak GPU allocation near7GB. [Current observation](active-learning-20261019.json).
+
+Evaluation requires start, actual daily boundaries and terminal wealth. It no longer imposes an unrelated mark requirement at every compute chunk. Required daily/terminal absence still fails, and training's dense reward behavior is unchanged.149 focused checks pass.
+
+The [official valuation adapter](official-valuation-20261019.md) is separate:600 retained observations cover25 exchanges, which cannot value the full237-exchange universe. Active phase014 therefore retains its frozen, explicitly labeled development midpoint convention. Full multi-day data, official valuation coverage, lifecycle/relationship collateral parity, execution calibration and independently positive ROI remain incomplete. No learned model is promoted or production STOP modified.
