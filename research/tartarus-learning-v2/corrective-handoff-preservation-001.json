@@ -1,0 +1,110 @@
+{
+  "classification": "actual_eight_member_preservation_for_corrective_unfinished_generation_transition",
+  "observedUtc": "2026-10-19T19:57:34.524962+00:00",
+  "sourceCommit": "79f630caf6f60d8ce81e01718aa4c2bd0cbd05bd",
+  "sourceManifestSha256": "cfa9c75ce3b5d7dd5d7e851b78b84e6c7d68efa7ca6c5d8b1b6964ab043a9ac3",
+  "specSha256": "b0236b47b07b760ac6cb4c2770a88171d9ae9cc7752f7e1b9c521a5d01a197b4",
+  "partialPlanSha256": "079ee647fca024c1028799a87e1ccd0c9975b708e83f4595dec2e8548f99675f",
+  "controllerPid": 16876,
+  "controllerLauncherPid": 22360,
+  "oldTrainerPid": 18300,
+  "oldPendingControllerPid": 29172,
+  "oldPendingControllerPhase": "cancelled_before_handoff",
+  "currentTransitionPhase": "probing_gpu_capacity",
+  "completedOldGeneration": false,
+  "completedMembers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "unfinishedMember": 7,
+  "preservedSnapshotDecisions": 412397,
+  "preservedSnapshotUpdates": 960,
+  "parents": [
+    {
+      "member": 0,
+      "sha256": "fe7781b578669231809d4482c7b13f8146855a32e39df3aa00018733f527d5ea",
+      "origin": "checked_evaluated_partial_generation_member",
+      "learningRate": 1e-05,
+      "entropyCoefficient": 0.0,
+      "hiddenSize": 4096
+    },
+    {
+      "member": 1,
+      "sha256": "b3c0030b523a12de9916641ece46f6e73da482ec6868c3bf7df2a516f1c85665",
+      "origin": "checked_evaluated_partial_generation_member",
+      "learningRate": 1e-05,
+      "entropyCoefficient": 0.001,
+      "hiddenSize": 4096
+    },
+    {
+      "member": 2,
+      "sha256": "3caf88b9b4fcda7905f64a965418ddfd1b7f45e4232db602efa988ed697b653d",
+      "origin": "checked_evaluated_partial_generation_member",
+      "learningRate": 8.000000000000001e-06,
+      "entropyCoefficient": 0.012,
+      "hiddenSize": 4096
+    },
+    {
+      "member": 3,
+      "sha256": "b6976554c9fab937b3720a972509f4c519e952cf91fe8553d359f061f98a74f1",
+      "origin": "checked_evaluated_partial_generation_member",
+      "learningRate": 1e-05,
+      "entropyCoefficient": 0.03,
+      "hiddenSize": 4096
+    },
+    {
+      "member": 4,
+      "sha256": "f29d9d7c61381f87581b5ab019fc4a9604b4355845933d8b92c87dae6fb3b2a7",
+      "origin": "checked_evaluated_partial_generation_member",
+      "learningRate": 2e-05,
+      "entropyCoefficient": 0.0,
+      "hiddenSize": 4096
+    },
+    {
+      "member": 5,
+      "sha256": "5b5aa1000729960f365e52f60a46b4e32225e5e638bd0fd4d0a3993ac4c0721b",
+      "origin": "checked_evaluated_partial_generation_member",
+      "learningRate": 5e-06,
+      "entropyCoefficient": 0.002,
+      "hiddenSize": 4096
+    },
+    {
+      "member": 6,
+      "sha256": "d485af020a3cf599cd4d1d19f5212e12c61c33a89f49d48209e29b2166d552d9",
+      "origin": "checked_evaluated_partial_generation_member",
+      "learningRate": 1e-05,
+      "entropyCoefficient": 0.01,
+      "hiddenSize": 4096
+    },
+    {
+      "member": 7,
+      "sha256": "8b414820c2b5057b3f2e9ac777777f45ff0eebe47aa0d87a0198b407feece72a",
+      "origin": "checked_unfinished_member_accepted_weights",
+      "learningRate": 2.5e-06,
+      "entropyCoefficient": 0.0075,
+      "hiddenSize": 4096
+    }
+  ],
+  "originalExperimentSha256": "b97ba55e047521f7d39c9600d1778a014440627a1396ddc078d6e42f07ed48ed",
+  "originalProgressPrefixBytes": 1103275,
+  "originalProgressPrefixSha256": "4bb12061e569cc90d4ded7f816f5032e02cd219af52aaf24d28fad60ee3cb3c0",
+  "oldScoresReused": false,
+  "oldOptimizerReused": false,
+  "oldFinancialWorldsResumed": false,
+  "newTrainingVerified": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "fullSizeGpuCapacityVerified": false,
+  "independentProfitableRoiEstablished": false,
+  "reason": "Correct proven full-account ACK/private-snapshot information leak; preserve all members without waiting for or fabricating generation completion",
+  "limits": [
+    "snapshot preserves accepted updates at capture, not later unsaved work",
+    "old generation remains unfinished; no ranking or offspring fabricated",
+    "capacity and fresh learning require separate runtime evidence"
+  ]
+}

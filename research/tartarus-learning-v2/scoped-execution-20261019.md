@@ -1,5 +1,7 @@
 # Scoped order receipts and private fills — October19,2026
 
+Current status: this scoped protocol is now actually training in checked GPU profile016. See [runtime/source evidence](profile-016-learning-20261019.md). Earlier pending/old015 observations below are dated history.
+
 The previous replay protocol published a full cash/positions/open-orders/advance snapshot after every write, including rejected requests. Its derived private stream also published a full account snapshot after fills. The official API returns scoped placement results and private fill/order arrays instead. Those old observation assumptions let the actor obtain unrelated financial information without paying for its REST endpoint. They remain frozen historical experiment semantics, not current API parity.
 
 The opt-in `sig_scoped_execution_receipts_v3` protocol closes that leak:

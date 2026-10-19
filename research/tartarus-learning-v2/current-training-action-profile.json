@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "classification": "current_human_directed_training_action_profile_not_live_activation",
-  "actor": "moloch.learning_actions.full_depth.FullDepthPolicy",
-  "entrypoint": "moloch.learning_actions.entry.open_experiment",
+  "actor": "moloch.learning_actions.query_policy.QueryWindowPolicy",
+  "entrypoint": "moloch.learning_actions.experiment.main",
   "collector": "moloch.learning_actions.stream.Stream",
   "optimizer": "moloch.learning_actions.training.update",
   "legacy_target_fraction_actor_is_current_experiment": false,
@@ -49,7 +49,7 @@
   "full_history_coverage_established": false,
   "full_api_parity_established": false,
   "production_controls_changed": false,
-  "actor_architecture": "tartarus-raw-api-full-depth-family-first-gru-v3",
+  "actor_architecture": "tartarus-raw-api-full-depth-query-window-gru-v4",
   "population_runner": "moloch.learning_actions.experiment",
   "economic_reward_coordinator": "moloch.learning_actions.economics.GrowthLedger",
   "independent_test_registry": "moloch.learning_actions.selection.IndependentTest",
@@ -75,7 +75,7 @@
   "passive_models_calibrated": false,
   "event_wait_interrupts_on_newly_created_observable_receipts": true,
   "optional_private_fill_notifications": "requires_active_sig_stream_one_second_coalescing_plus_receipt_latency",
-  "active_development_run": "raw-api-growth-development-015",
+  "active_development_run": "raw-api-growth-development-016",
   "active_development_entrypoint": "python -m moloch.learning_actions.experiment",
   "original_sig_exchanges": 237,
   "unique_engine_prints": 4202,
@@ -106,7 +106,8 @@
     "explicit_migration_flag": "migrate_full_depth_encoder",
     "active_run014_uses_profile": false,
     "large_population_memory_capacity_verified": "finite_eight_world_64_step_probe_not_all_dynamic_states",
-    "active_run015_uses_profile": true
+    "historical_run015_used_profile": true,
+    "active_run016_uses_profile": true
   },
   "optional_finished_world_compute_compaction": {
     "flag": "compact_finished_worlds",
@@ -114,7 +115,8 @@
     "active_run014_uses_profile": false,
     "preserves_world_identity_and_economic_results": true,
     "removes_legal_actions": false,
-    "active_run015_uses_profile": true
+    "historical_run015_used_profile": true,
+    "active_run016_uses_profile": true
   },
   "optional_batched_evaluation": {
     "flag": "batched_evaluation",
@@ -132,9 +134,39 @@
     "full_history_qualification_allowed": false,
     "new_dataset_manifest_sha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
     "large_gpu_capacity_verified": "finite_eight_world_64_step_probe_not_all_future_dynamic_states",
-    "active_run015_uses_profile": true
+    "historical_run015_used_profile": true,
+    "active_run016_uses_profile": true
   },
-  "queued_population_handoff": {
+  "global_state_encoding": "signed_log_time_counts_v1",
+  "world_book_lifetime_ms": 60000,
+  "observation_protocol": "sig_scoped_execution_receipts_v3",
+  "source_commit": "79f630caf6f60d8ce81e01718aa4c2bd0cbd05bd",
+  "active_runtime_evidence": "profile-016-live-001.json",
+  "gpu_capacity_evidence": "scoped-profile-gpu-capacity-001.json",
+  "file_backed_replay": {
+    "active": true,
+    "cache_preserves_source_manifest_identity": true,
+    "source_cursors": 4,
+    "extra_market_data": false
+  },
+  "trade_query_windows": {
+    "active": true,
+    "unfiltered_and_cursor_queries_retained": true,
+    "from_inclusive_to_exclusive": true,
+    "new_query_density_meaningful_only": true,
+    "no_future_receipt_access": true,
+    "coverage_complete": false
+  },
+  "scoped_execution_receipts": {
+    "active": true,
+    "full_account_snapshot_after_write": false,
+    "full_account_snapshot_after_private_fill": false,
+    "targeted_acknowledgments": true,
+    "private_fill_tokens": true,
+    "paid_financial_resource_baselines": true,
+    "fully_calibrated": false
+  },
+  "historical_profile015_handoff": {
     "classification": "completed_verified_handoff_to_profile015",
     "source_commit": "8e07f6452c446e345b5ca319342d5b91c5443230",
     "new_population_training": true,
@@ -142,6 +174,15 @@
     "compute_chunk_decisions": 64,
     "evidence": "population-transition-completed-001.json"
   },
-  "global_state_encoding": "signed_log_time_counts_v1",
-  "world_book_lifetime_ms": 60000
+  "latest_completed_training_transition": {
+    "classification": "verified_corrective_unfinished_generation_weight_transfer_to_profile016",
+    "source_commit": "79f630caf6f60d8ce81e01718aa4c2bd0cbd05bd",
+    "new_population_training": true,
+    "old_generation_completed": false,
+    "all8_policy_weights_preserved": true,
+    "old_scores_and_optimizer_reused": false,
+    "worlds": 8,
+    "compute_chunk_decisions": 64,
+    "evidence": "profile-016-live-001.json"
+  }
 }
