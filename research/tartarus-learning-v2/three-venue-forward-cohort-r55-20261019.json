@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "classification": "frozen_future_chronology_not_result_or_execution_authority",
+  "frozenAt": "2026-10-19T03:47:00.821313+00:00",
+  "calendarRolesUtc": {
+    "fit": [
+      "2026-10-19T04:15:00Z",
+      "2026-10-19T05:00:00Z"
+    ],
+    "search": [
+      "2026-10-19T05:05:00Z",
+      "2026-10-19T05:20:00Z"
+    ],
+    "heldout": [
+      "2026-10-19T05:25:00Z",
+      "2026-10-19T05:55:00Z"
+    ]
+  },
+  "warmupAndReceiptDrainMustRemainInsideEachRole": true,
+  "developmentFractionExcludingEmbargo": 0.6666666666666666,
+  "nativeProducer": {
+    "pid": 877705,
+    "startTicks": "35050428",
+    "binarySha256": "95e7d1ec570f8397b6d1d37cb2adb85b841d70f6491f3f6df6a739983329abed"
+  },
+  "requiredVenues": [
+    "SIG",
+    "Kalshi",
+    "Polymarket"
+  ],
+  "minimumFitObservedSigExchanges": 30,
+  "minimumFitMappedReferenceMarketsPerExternalVenue": 20,
+  "requireReceiverAvailabilityClocks": true,
+  "referenceResolutionEquivalenceVerified": false,
+  "executionCalibrationAvailable": false,
+  "previousFailedCohortsRemainFailed": true,
+  "failurePolicy": "Missing producer or required source coverage makes this cohort fail; never retime it or admit heldout rows into fitting.",
+  "heldoutPolicy": "Quarantine heldout values until a finalist and evaluation protocol are locked from fit/search only. No locked-value inspection for compilation status.",
+  "polymarketUniverseSha256": "6fc2e7f4b53ebd300d97d3bd74faa505b246156b30b320c99ba8f201ad2889a5",
+  "competitionProfitabilityEstablished": false,
+  "productionAuthority": false
+}

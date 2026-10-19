@@ -1,0 +1,58 @@
+{
+  "classification": "development_finalist_accounting_audit_not_profitability",
+  "observedAt": "2026-10-19T03:43:17.034570+00:00",
+  "checkpointSha256": "f2ef414407ac0c9a10f132742297635077112f1080bc8bb038fdb18bf9c8f975",
+  "evaluationSha256": "b8444cf57f3ee90cd41f4d9068582e9cb6ff1676a55d4215095057dcdfa2920c",
+  "cases": [
+    {
+      "profile": "nominal",
+      "windowIndex": 0,
+      "referenceExcessWealthMicros": 243885000,
+      "modeledRealizedPnlMicros": -53235000,
+      "modeledFeesMicros": 0,
+      "fillReceipts": 2,
+      "filledShares": 7428,
+      "terminalCashMicros": 4814935000,
+      "qualifiedAccounting": true
+    },
+    {
+      "profile": "nominal",
+      "windowIndex": 1,
+      "referenceExcessWealthMicros": 90000,
+      "modeledRealizedPnlMicros": 0,
+      "modeledFeesMicros": 0,
+      "fillReceipts": 1,
+      "filledShares": 30,
+      "terminalCashMicros": 162265000,
+      "qualifiedAccounting": true
+    },
+    {
+      "profile": "joint_adverse",
+      "windowIndex": 0,
+      "referenceExcessWealthMicros": 107845000,
+      "modeledRealizedPnlMicros": -47875000,
+      "modeledFeesMicros": 0,
+      "fillReceipts": 2,
+      "filledShares": 3893,
+      "terminalCashMicros": 3353270000,
+      "qualifiedAccounting": true
+    },
+    {
+      "profile": "joint_adverse",
+      "windowIndex": 1,
+      "referenceExcessWealthMicros": 0,
+      "modeledRealizedPnlMicros": 0,
+      "modeledFeesMicros": 0,
+      "fillReceipts": 0,
+      "filledShares": 0,
+      "terminalCashMicros": 190015000,
+      "qualifiedAccounting": true
+    }
+  ],
+  "externalReferenceOutperformanceVerifiedInDevelopment": true,
+  "modeledRealizedResultsNonnegativeAcrossCases": false,
+  "profitReady": false,
+  "actualExchangeProfitabilityEstablished": false,
+  "frozenFinalistLockNotRewritten": true,
+  "interpretation": "External-reference outperformance does not mean positive FIFO realized PnL. Synthetic initial lots, finite sampled books and uncalibrated fills remain research assumptions; no trading approval."
+}

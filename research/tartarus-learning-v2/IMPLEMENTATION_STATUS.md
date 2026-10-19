@@ -1,3 +1,7 @@
+## October19 — finalist accounting limitation
+
+Checkpoint0007 improves externally marked HOLD in three development cases and ties one, but its first-window simulated realized FIFO P&L is **-53.235 nominal / -47.875 stressed**, with zero fees. It is not profit-ready. The frozen exploratory lock remains unchanged; this separate [accounting audit](market-memory-excess-finalist-0007-accounting-audit.json) prevents interpreting reference revaluation as realized or competition ROI. The new checkpoint inference loader verifies actual original bytes, source semantics, architecture and parameter fingerprints without restoring optimizer state or granting authority; three checks and a load of the actual0007checkpoint pass.
+
 ## October19,03:23UTC — market-memory and holding-relative objective
 
 The v2 cash/inventory run completed614390 decisions/512optimizer updates in2830.799seconds. None of16evaluated checkpoints beat identically funded HOLD across all four development cases. The v3 per-market/global-memory engineering run completed2400decisions/3updates in66.367seconds, reserving11274289152CUDA bytes; it also failed that criterion. These are development results, not held-out generalization or live profitability.
