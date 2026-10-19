@@ -1,6 +1,6 @@
 {
   "classification": "observed_active_raw_breadth_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T15:54:50.209124+00:00",
+  "observed_utc": "2026-10-19T16:00:05.673424+00:00",
   "source_commit": "06d49d317576a1512d5b39845fccf1046f075e29",
   "run": "raw-api-growth-development-014",
   "process_ids": {
@@ -37,8 +37,8 @@
   ],
   "source_snapshot_files_verified": 83,
   "compute_chunk_decisions": 128,
-  "training_decisions": 257585,
-  "accepted_updates": 259,
+  "training_decisions": 259800,
+  "accepted_updates": 272,
   "current_member_modeled_fills": 321,
   "cuda_peak_allocated_bytes": 7253548544,
   "role_prefix_initial_state": true,
@@ -99,6 +99,7 @@
   "frozen_source_snapshot_matches_experiment": true,
   "current_worktree_matches_frozen_source": false,
   "modified_worktree_files_for_future_profile": [
+    "moloch\\learning_actions\\batched.py",
     "moloch\\learning_actions\\batch_benchmark.py",
     "moloch\\learning_actions\\behavior_guard.py",
     "moloch\\learning_actions\\engine.py",
@@ -113,7 +114,7 @@
     "delivered_book_levels": true,
     "local_planning_state": true,
     "active_run_uses_prototype": false,
-    "worktree_checks_passed": 159
+    "worktree_checks_passed": 163
   },
   "next_or_active_member": 4,
   "completed_members_in_this_run": [

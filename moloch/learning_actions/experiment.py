@@ -265,7 +265,8 @@ class Experiment:
             self.calibration=calibrate(envs[0],model)
             frozen(self.output/'compute-calibration.json',self.calibration)
         stream=BatchStream(envs,model,ledgers,calibration=self.calibration,
-                           behavior_guard=self.config.get('on_policy_guard','sha256'))
+                           behavior_guard=self.config.get('on_policy_guard','sha256'),
+                           compact_finished=self.config.get('compact_finished_worlds',False))
         while any(e.now<e.end for e in envs):
             chunk=stream.collect(self.config.get('compute_chunk_decisions',32))
             rewards=[f['economic_reward']for f in chunk.frames]
@@ -274,6 +275,7 @@ class Experiment:
             decisions=sum(int(f['learn'].sum())for f in chunk.frames)
             self.total_decisions+=decisions
             self.log({'event':'parallel_train_chunk','worlds':count,'decisions':decisions,
+                'compute_batch_worlds':len(chunk.initial_hidden),
                 'virtual_ms':[e.now for e in envs],'episode_end_ms':[e.end for e in envs],
                 'completed_worlds':len(stream.completed),'updates':reports,
                 'fills':sum(len(e.api_fills)for e in envs),

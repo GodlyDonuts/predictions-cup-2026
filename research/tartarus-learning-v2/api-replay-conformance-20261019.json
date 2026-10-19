@@ -83,5 +83,11 @@
     "prototype_gpu_update_accepted": true,
     "large_population_capacity_established": false,
     "active_run014_changed": false
+  },
+  "finished_world_compaction": {
+    "classification": "opt_in_compute_only_not_active_run014",
+    "focused_worktree_checks": 163,
+    "real_source_probe": "finished-world-compaction-gpu-001.json",
+    "all_active_eight_world_memory_proved": false
   }
 }

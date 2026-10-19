@@ -23,7 +23,7 @@ def inputs(observations,device):
 
 
 class BatchStream:
-    def __init__(self,envs,model,ledgers,*,calibration=None,behavior_guard='sha256'):
+    def __init__(self,envs,model,ledgers,*,calibration=None,behavior_guard='sha256',compact_finished=False):
         if not envs or len(envs)!=len(ledgers)or any(e.role!='train'for e in envs):
             raise ValueError('ONE_TRAIN_ROLE_LEDGER_PER_INDEPENDENT_WORLD_REQUIRED')
         if len({id(e)for e in envs})!=len(envs):raise ValueError('WORLDS_MUST_NOT_SHARE_MUTABLE_ACCOUNTS')
@@ -32,6 +32,8 @@ class BatchStream:
         self.hidden=model.initial_state(len(envs));self.decisions=[0]*len(envs)
         self.calibration=calibration or calibrate(envs[0],model)
         self.behavior_guard=behavior_guard
+        if type(compact_finished)is not bool:raise ValueError('EXPLICIT_FINISHED_WORLD_COMPACTION')
+        self.compact_finished=compact_finished
         self.latency=self.calibration['decision_latency_ms']
         self.completed={};self.action_counts=[Counter()for e in envs]
 
@@ -70,6 +72,18 @@ class BatchStream:
 
     def collect(self,compute_steps=32,*,deterministic=False):
         if type(compute_steps)is not int or compute_steps<=0:raise ValueError('POSITIVE_COMPUTE_CHUNK')
+        live=[i for i,e in enumerate(self.envs)if e.now<e.end]
+        if self.compact_finished and 0<len(live)<len(self.envs):
+            # Freeze the batch membership for this entire PPO chunk. Worlds
+            # finishing inside it retain terminal padding until the next chunk.
+            # The view sends accepted optimizer hidden states back to the same
+            # original world IDs; no world/account or clock is restarted.
+            view=_ActiveWorldView(self,live)
+            chunk=view.collect(compute_steps,deterministic=deterministic)
+            for j,i in enumerate(live):
+                self.decisions[i]=view.decisions[j]
+                if j in view.completed:self.completed[i]=view.completed[j]
+            return chunk
         from .behavior_guard import identity
         before=identity(self.model,self.behavior_guard);frames=[]
         for _ in range(compute_steps):
@@ -83,3 +97,25 @@ class BatchStream:
                 reset=torch.zeros(len(self.envs),device=self.device,dtype=torch.bool),deterministic=True)['value']
             value=value*torch.tensor([e.now<e.end for e in self.envs],device=self.device)
         return Chunk(frames,before,'train',frames[0]['initial_hidden'],value.detach(),self,self.behavior_guard)
+
+
+class _ActiveWorldView(BatchStream):
+    """One chunk's gathered worlds with write-back for carried recurrent state."""
+    def __init__(self,parent,indices):
+        self.parent=parent;self.indices=torch.tensor(indices,device=parent.device,dtype=torch.long)
+        self.envs=[parent.envs[i]for i in indices];self.ledgers=[parent.ledgers[i]for i in indices]
+        self.model=parent.model;self.device=parent.device;self.calibration=parent.calibration
+        self.behavior_guard=parent.behavior_guard;self.compact_finished=False;self.latency=parent.latency
+        self.decisions=[parent.decisions[i]for i in indices]
+        self.action_counts=[parent.action_counts[i]for i in indices];self.completed={}
+        self._hidden=parent.hidden.index_select(0,self.indices)
+
+    @property
+    def hidden(self):return self._hidden
+
+    @hidden.setter
+    def hidden(self,value):
+        self._hidden=value
+        # Out-of-place write-back preserves hidden tensors already held by old
+        # frames. In particular, an accepted PPO update must reach the parent.
+        self.parent.hidden=self.parent.hidden.index_copy(0,self.indices,value)

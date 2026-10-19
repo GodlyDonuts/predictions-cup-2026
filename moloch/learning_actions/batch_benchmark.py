@@ -19,8 +19,10 @@ def main():
     p.add_argument('--checkpoint-encoder',action='store_true')
     p.add_argument('--start-offset-ms',type=int,default=120000)
     p.add_argument('--prime-books',type=int,default=0)
+    p.add_argument('--finished-worlds',type=int,default=0)
     p.add_argument('--memory-fraction',type=float,default=1.);args=p.parse_args()
     if args.prime_books<0:raise ValueError('NONNEGATIVE_BENCHMARK_PRIMING_READS')
+    if not 0<=args.finished_worlds<args.worlds:raise ValueError('BENCHMARK_REQUIRES_ONE_ACTIVE_WORLD')
     config=json.loads(args.config.read_text(encoding='utf-8-sig'))
     if not 0<args.memory_fraction<=1:raise ValueError('VALID_BENCHMARK_MEMORY_FRACTION')
     config['cuda_memory_fraction']=args.memory_fraction
@@ -43,6 +45,7 @@ def main():
                     at=result['ready_ms']
                     if not env.now<at<env.end:raise ValueError('BENCHMARK_PRIMING_EXCEEDS_HORIZON')
                     env.advance(at)
+        for env in envs[-args.finished_worlds:]if args.finished_worlds else[]:env.advance(env.end)
         return envs
     calibration=calibrate(worlds()[0],model)
     def sync():
@@ -52,7 +55,9 @@ def main():
         for _ in range(3):model.step(**prepared,hidden=model.initial_state(args.worlds),
             reset=torch.ones(args.worlds,device=next(model.parameters()).device,dtype=torch.bool),deterministic=True)
     timings=[];last_chunk=None
-    for order in (('serial','batched'),('batched','serial')):
+    orders=(('serial','batched','compacted'),('compacted','batched','serial'))if args.finished_worlds else(('serial','batched'),('batched','serial'))
+    compact_chunk=None
+    for order in orders:
         states={};durations={}
         for mode in order:
             envs=worlds();ledgers=[GrowthLedger(e,development=True,historical_last_mark=True)for e in envs]
@@ -61,17 +66,24 @@ def main():
                 streams=[Stream(e,model,calibration=calibration,record_training=True,behavior_guard=args.guard)for e in envs]
                 for stream,ledger in zip(streams,ledgers):
                     # Use the same deterministic neural actions as the batch.
-                    for _ in range(args.steps):stream.step(deterministic=True);ledger.transition()
+                    for _ in range(args.steps):
+                        if stream.env.now>=stream.env.end:break
+                        stream.step(deterministic=True);ledger.transition()
                 hidden=torch.cat([s.hidden for s in streams])
             else:
-                stream=BatchStream(envs,model,ledgers,calibration=calibration,behavior_guard=args.guard)
+                stream=BatchStream(envs,model,ledgers,calibration=calibration,behavior_guard=args.guard,
+                                   compact_finished=mode=='compacted')
                 last_chunk=stream.collect(args.steps,deterministic=True);hidden=stream.hidden
+                if mode=='compacted':compact_chunk=last_chunk
             sync();durations[mode]=time.perf_counter()-started
             states[mode]=([{'clock':e.now,'cash':e.cash,'lots':e.lots,'fills':e.api_fills,
                 'api_id':e.api_id,'orders':repr(e.api_orders)}for e in envs],hidden.detach().clone())
-        if states['serial'][0]!=states['batched'][0]:raise ValueError('BATCHED_FINANCIAL_OR_CLOCK_DIFFERENCE')
-        torch.testing.assert_close(states['serial'][1],states['batched'][1],atol=1e-5,rtol=1e-4)
+        for mode in order:
+            if states['serial'][0]!=states[mode][0]:raise ValueError('BATCHED_FINANCIAL_OR_CLOCK_DIFFERENCE')
+            live=args.worlds-args.finished_worlds
+            torch.testing.assert_close(states['serial'][1][:live],states[mode][1][:live],atol=1e-5,rtol=1e-4)
         timings.append(durations)
+    if compact_chunk is not None:last_chunk=compact_chunk
     optimizer=torch.optim.Adam(model.parameters(),lr=1e-6);sync();started=time.perf_counter()
     result=update(model,optimizer,last_chunk,[f['economic_reward']for f in last_chunk.frames],role='train',epochs=1,
                   checkpoint_encoder=args.checkpoint_encoder)
@@ -83,6 +95,7 @@ def main():
     serial=statistics.median(x['serial']for x in timings);batched=statistics.median(x['batched']for x in timings)
     out={'classification':'controlled_inspected_history_raw_api_gpu_batch_benchmark_not_roi',
         'worlds':args.worlds,'steps_per_world':args.steps,'parameters':sum(p.numel()for p in model.parameters()),
+        'finished_worlds_at_chunk_start':args.finished_worlds,'ppo_batch_worlds':len(last_chunk.initial_hidden),
         'contract_features':model.contract_features,'priming_book_reads_per_world':args.prime_books,
         'minimum_initial_delivered_books':min(len(e.actor_books)for e in warm),
         'timings':timings,'serial_median_seconds':serial,'batched_median_seconds':batched,
@@ -96,6 +109,10 @@ def main():
         'cuda_peak_allocated_bytes':torch.cuda.max_memory_allocated()if next(model.parameters()).is_cuda else 0,
         'http_requests':0,'independent_test_used':False,'production_changed':False,
         'dataset_manifest_sha256':experiment.dataset_sha,'compute_calibration':calibration}
+    if compact_chunk is not None:
+        compacted=statistics.median(x['compacted']for x in timings)
+        out.update(compacted_median_seconds=compacted,finished_world_collection_speedup=batched/compacted,
+                   compaction_changes_legal_actions_or_virtual_clocks=False)
     frozen(args.output/'RESULT.json',out);print(json.dumps(out),flush=True)
 
 

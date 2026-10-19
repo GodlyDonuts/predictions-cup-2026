@@ -106,5 +106,12 @@
     "explicit_migration_flag": "migrate_full_depth_encoder",
     "active_run014_uses_profile": false,
     "large_population_memory_capacity_verified": false
+  },
+  "optional_finished_world_compute_compaction": {
+    "flag": "compact_finished_worlds",
+    "boundary": "next_compute_chunk",
+    "active_run014_uses_profile": false,
+    "preserves_world_identity_and_economic_results": true,
+    "removes_legal_actions": false
   }
 }
