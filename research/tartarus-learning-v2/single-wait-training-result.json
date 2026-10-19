@@ -1,0 +1,15 @@
+{
+  "classification": "inspected_historical_development_not_locked_or_live",
+  "reportSha256": "b416b29073306a10db6713daa5c465cca3856ede7562babbda95428ef7b7f338",
+  "totalWallSeconds": 1519.9018902999815,
+  "trainingDecisions": 153600,
+  "acceptedOptimizerUpdates": 128,
+  "peakCudaReservedBytes": 10265559040,
+  "gpuSamples": 1286,
+  "sampleMeanGpuPercent": 5.370917573872473,
+  "samplePeakGpuPercent": 100.0,
+  "allMatchedCasesPositive": 0,
+  "matchedBaselineReview": "single-wait-matched-hold-review.json",
+  "productionChanged": false,
+  "lockedTestUsed": false
+}

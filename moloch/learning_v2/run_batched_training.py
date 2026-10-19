@@ -73,11 +73,14 @@ def main():
             if any(sha(Path(__file__).parent/name)!=h for name,h in source.items()):raise ValueError('TRAINING_SOURCE_CHANGED')
             torch.manual_seed(args.seed+block*10000)
             label,m=profiles[block%len(profiles)]
-            trajectory,results,perf=(pool.rollout(m,protocol,model,world_starts)if pool else rollout_batch(tape,m,protocol,model,world_starts))
+            allocations=base.get('training_inventory_allocation_ppm_cycle',[base.get('initial_inventory_allocation_ppm',0)])
+            if not allocations or any(type(v)is not int or not 0<=v<=1_000_000 for v in allocations):raise ValueError('EXPLICIT_TRAINING_INVENTORY_CYCLE')
+            fit_protocol={**protocol,'initial_inventory_allocation_ppm':allocations[block%len(allocations)]}
+            trajectory,results,perf=(pool.rollout(m,fit_protocol,model,world_starts)if pool else rollout_batch(tape,m,fit_protocol,model,world_starts))
             qualified=torch.tensor([e['qualified_accounting']for e in results],device='cuda')
             trajectory=replace(trajectory,learn=trajectory.learn&qualified.unsqueeze(0))
             at=time.perf_counter();updates=trainer.update(trajectory)if bool(trajectory.learn.any())else []
-            row={'block':block,'execution_profile':label,'rollout':perf,'update_wall_seconds':time.perf_counter()-at,
+            row={'block':block,'execution_profile':label,'training_inventory_allocation_ppm':fit_protocol['initial_inventory_allocation_ppm'],'rollout':perf,'update_wall_seconds':time.perf_counter()-at,
                  'fit_results':results,'updates':updates,'accepted_optimizer_updates':trainer.accepted_optimizer_updates,
                  'peak_cuda_allocated_bytes':torch.cuda.max_memory_allocated(),'peak_cuda_reserved_bytes':torch.cuda.max_memory_reserved()}
             write_json(args.output/f'block-{block:04d}.json',row);history.append(row);del trajectory
@@ -95,9 +98,16 @@ def main():
                 for name,mechanics in profiles:
                     torch.manual_seed(args.seed+900000)
                     t,r,profile=rollout_batch(tape,mechanics,ep,model,base['search_evaluation_starts_ms'],split_role='search_development');del t
-                    out.append({'profile':name,'results':r,'performance':profile})
+                    torch.manual_seed(args.seed+900000)
+                    ht,hold,hp=rollout_batch(tape,mechanics,ep,model,base['search_evaluation_starts_ms'],baseline=True,split_role='search_development');del ht
+                    excess=[]
+                    for actual,baseline in zip(r,hold):
+                        if actual['initial_reference_wealth_micros']!=baseline['initial_reference_wealth_micros']or actual['synthetic_initial_portfolio']!=baseline['synthetic_initial_portfolio']:raise ValueError('MATCHED_BASELINE_INITIAL_ACCOUNT_CHANGED')
+                        excess.append(actual['final_reference_wealth_micros']-baseline['final_reference_wealth_micros']if actual['qualified_accounting']and baseline['qualified_accounting']else None)
+                    out.append({'profile':name,'results':r,'performance':profile,'hold_results':hold,'hold_performance':hp,'excess_wealth_micros':excess})
                 if fingerprint(model)!=before:raise ValueError('EVALUATION_CHANGED_MODEL')
-                e={'block':block,'parameter_sha256':before,'checkpoint_sha256':checkpoint_sha,'evaluations':out,'selection_data_not_locked_test':True}
+                e={'block':block,'parameter_sha256':before,'checkpoint_sha256':checkpoint_sha,'evaluations':out,
+                   'all_matched_cases_positive':all(v is not None and v>0 for p in out for v in p['excess_wealth_micros']),'selection_data_not_locked_test':True}
                 write_json(args.output/f'evaluation-{block:04d}.json',e);evaluations.append(e)
         report={'plan_sha256':split,'history':history,'evaluations':evaluations,'total_wall_seconds':time.perf_counter()-begun,
                 'training_decisions':trainer.training_decisions,'accepted_optimizer_updates':trainer.accepted_optimizer_updates,

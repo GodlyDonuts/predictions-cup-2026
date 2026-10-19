@@ -50,7 +50,18 @@ class Episode(ReferenceEnv):
         self.exchanges = exchanges; self.target_wealth = target; self.initial_wealth = cash
         self.start = start; self.end = end
         self.scope = {}; self.reference_cache = {}; self.mapping = {}
-        self.action_projections = []
+        self.action_projections = []; self._depth_totals = {}
+
+    def _displayed_totals(self, ex, book):
+        cached=self._depth_totals.get(ex)
+        if cached is not None and cached[0] is book:return cached[1:]
+        totals=(sum(p*q for p,q in book.bids),sum(p*q for p,q in book.asks))
+        # The compiled Tape constructs frozen Books with tuple/int levels.
+        # Mutable caller-owned level lists retain their original recomputation.
+        if type(book.bids)is tuple and type(book.asks)is tuple and all(type(x)is tuple for x in (*book.bids,*book.asks)):
+            self._depth_totals[ex]=(book,*totals)
+        else:self._depth_totals.pop(ex,None)
+        return totals
 
     def _refresh_reference(self, market):
         points = [(k,r) for k,r in self.reference_cache.items() if k[0]==market and r['mapping_kind']=='direct_party_reference']
@@ -112,9 +123,10 @@ class Episode(ReferenceEnv):
             sell_pending = sum(v for (e,s),v in account.pending_sells.items()if e==ex)
             pending_yes=account.pending_buys.get((ex,'YES'),0)-account.pending_sells.get((ex,'YES'),0)
             pending_no=account.pending_buys.get((ex,'NO'),0)-account.pending_sells.get((ex,'NO'),0)
+            bid_total,ask_total=self._displayed_totals(ex,b)
             features[i] = [bid/UNIT,ask/UNIT,(ask-bid)/UNIT,
                            (self.now-(b.source_at_ms if b.source_at_ms is not None else b.available_at_ms))/10000,
-                           fraction(sum(price*qty for price,qty in b.bids)),fraction(sum(price*qty for price,qty in b.asks)),
+                           fraction(bid_total),fraction(ask_total),
                            k.price_yes/UNIT if k else 0.,float(kv),(self.now-k.received_at_ms)/20000 if k else 0.,
                            p.price_yes/UNIT if p else 0.,float(pv),(self.now-p.received_at_ms)/20000 if p else 0.,
                            fraction(account.quantities.get((ex,'YES'),0)*UNIT),fraction(account.quantities.get((ex,'NO'),0)*UNIT),
@@ -143,10 +155,13 @@ class Episode(ReferenceEnv):
             for side_id,side in enumerate(['YES','NO']):
                 buys = ask if side=='YES' else UNIT-bid
                 sells = bid if side=='YES' else UNIT-ask
+                projected={}
                 for family,action,price in [(1,'BUY',buys),(2,'SELL',sells),(4,'SELL',sells)]:
                     if not 0<price<UNIT: continue
-                    t = Target(ex,side,UNIT if action=='BUY' else 0,UNIT,price,action)
-                    allowed = project(account,marks,t,self.mechanics.limits).admitted_quantity>0
+                    if action not in projected:
+                        t = Target(ex,side,UNIT if action=='BUY' else 0,UNIT,price,action)
+                        projected[action] = project(account,marks,t,self.mechanics.limits).admitted_quantity>0
+                    allowed = projected[action]
                     masks['side'][i,family,side_id] = allowed
                     for offset in range(5):
                         masks['price'][i,family,side_id,offset] = 0<price+(offset-2)*5000<UNIT

@@ -30,6 +30,17 @@ class EconomicCapacityObservation(unittest.TestCase):
         self.assertFalse(a['masks']['family'][1,1]);self.assertFalse(a['masks']['family'][1,0])
         cash=e.cash;self.assertTrue(e.act({'family':3,'market':1}));self.assertEqual(e.cash,cash)
 
+    def test_depth_cache_revalues_with_actual_cash_and_replaces_on_new_book(self):
+        e=self.fixture();a=e.observe();self.assertAlmostEqual(float(a['contracts'][1,4]),.04)
+        e.cash=2000*UNIT;b=e.observe();self.assertAlmostEqual(float(b['contracts'][1,4]),.02)
+        e.add_book(Book('x',1,None,((400000,50),),((450000,100),),'b'*64));e.advance(1)
+        c=e.observe();self.assertAlmostEqual(float(c['contracts'][1,4]),.01)
+
+    def test_mutable_depth_input_does_not_use_immutable_book_cache(self):
+        e=self.fixture();book=Book('x',1,None,[(400000,100)],[(450000,100)],'b'*64)
+        e.add_book(book);e.advance(1);a=e.observe();book.bids[0]=(400000,50)
+        b=e.observe();self.assertAlmostEqual(float(a['contracts'][1,4]),.04);self.assertAlmostEqual(float(b['contracts'][1,4]),.02)
+
     def test_explicit_headroom_and_pending_side_exposure_change_with_real_encumbrance(self):
         m=Mechanics(BudgetConfig(100,600,24,2500,'a'*64),Limits(10000,2000*UNIT,100*UNIT),100,200,100,10000,20000,1,'Kalshi')
         e=Episode(m,0,1000*UNIT,('__GLOBAL_WAIT__','x'),11000*UNIT,0,10000)

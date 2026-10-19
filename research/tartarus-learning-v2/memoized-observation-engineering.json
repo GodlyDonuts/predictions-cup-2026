@@ -1,0 +1,13 @@
+{
+  "classification": "one_block_engineering_measurement_not_full_run_speed_or_profit",
+  "matchedReplayWorlds": 16,
+  "allReportedEconomicAndActionSummariesIdentical": true,
+  "postUpdateModelWeightsBitwiseIdentical": false,
+  "beforeRolloutWallSeconds": 39.28068179998081,
+  "afterRolloutWallSeconds": 37.26838050002698,
+  "cacheScope": "immutable original displayed depth totals; SELL/EXIT share identical projection within one same-account observation",
+  "limitsOrAccountingChanged": false,
+  "productionChanged": false,
+  "maximumPostUpdateParameterDifference": 5.960464477539063e-08,
+  "bitwiseGradientEquivalenceClaimed": false
+}

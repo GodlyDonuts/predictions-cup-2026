@@ -1,0 +1,586 @@
+{
+  "classification": "matched_inventory_hold_development_review_not_locked_or_live",
+  "report_sha256": "b416b29073306a10db6713daa5c465cca3856ede7562babbda95428ef7b7f338",
+  "plan_sha256": "f0aeb0c4bb1405bceb882c300472709f5725834a314ce8c2127e355b98bb117d",
+  "source_hashes_verified": true,
+  "checkpoint_used_for_no_action_baseline": "e9ce651a0b8862b7563ee6e01a3e12070a5c42d2579f5a301fde7e0b74ee67ee",
+  "unchanged_parameters_verified": true,
+  "wall_seconds": 14.111584800062701,
+  "comparisons": [
+    {
+      "block": 3,
+      "checkpoint_sha256": "f1376934d251202f4f65dd862439ad491a64104995abf18195456822f875eebf",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.0021062650532673666,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -208440000,
+          "policy_fills": 1,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 137,
+            "SELL": 6,
+            "EXIT": 5,
+            "CANCEL": 1,
+            "BUY": 1
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 12,
+            "WAIT": 136,
+            "EXIT": 1,
+            "CANCEL": 1
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": 0.0,
+          "hold_return": 0.0,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 141,
+            "SELL": 4,
+            "EXIT": 4,
+            "CANCEL": 1
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 10,
+            "WAIT": 138,
+            "SELL": 1,
+            "CANCEL": 1
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    },
+    {
+      "block": 7,
+      "checkpoint_sha256": "65843ba555590bf8358c767352bbeb92461ae02526139e9f3b632c4b836da649",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.000103019440693057,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -10195000,
+          "policy_fills": 4,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 137,
+            "SELL": 4,
+            "EXIT": 5,
+            "CANCEL": 2,
+            "BUY": 2
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 13,
+            "WAIT": 137
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.0005517274607004328,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -54600000,
+          "policy_fills": 2,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 139,
+            "SELL": 5,
+            "EXIT": 4,
+            "CANCEL": 1,
+            "BUY": 1
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 11,
+            "WAIT": 136,
+            "SELL": 1,
+            "CANCEL": 1,
+            "EXIT": 1
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    },
+    {
+      "block": 11,
+      "checkpoint_sha256": "9837156ab78b31ebda1c6001f4be826fc48f488e7dcc0ecee6e6afe1c93d99b5",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.010571239615599958,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -1046150000,
+          "policy_fills": 6,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 139,
+            "BUY": 1,
+            "EXIT": 5,
+            "SELL": 3,
+            "CANCEL": 2
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 13,
+            "WAIT": 137
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.0005517274607004328,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -54600000,
+          "policy_fills": 2,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 138,
+            "BUY": 2,
+            "EXIT": 4,
+            "SELL": 5,
+            "CANCEL": 1
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 11,
+            "WAIT": 136,
+            "SELL": 1,
+            "CANCEL": 1,
+            "EXIT": 1
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    },
+    {
+      "block": 15,
+      "checkpoint_sha256": "fea527ff71b8cfd4a7b0f418e51c5cad72f41227ce42e0d7a5cf609485e878ef",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.000103019440693057,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -10195000,
+          "policy_fills": 4,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 135,
+            "BUY": 2,
+            "EXIT": 5,
+            "SELL": 5,
+            "CANCEL": 3
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 15,
+            "WAIT": 135
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.0005517274607004328,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -54600000,
+          "policy_fills": 2,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 135,
+            "BUY": 3,
+            "EXIT": 4,
+            "SELL": 6,
+            "CANCEL": 2
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 15,
+            "WAIT": 135
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    },
+    {
+      "block": 19,
+      "checkpoint_sha256": "87cfb55818094930580ba6b03ec0d96bbaac7ad703e63248a45bc91ca355dca6",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.003962196402365096,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -392106500,
+          "policy_fills": 4,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 134,
+            "BUY": 3,
+            "EXIT": 7,
+            "SELL": 2,
+            "CANCEL": 4
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 12,
+            "WAIT": 138
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": 0.0,
+          "hold_return": 0.0,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 135,
+            "BUY": 2,
+            "EXIT": 6,
+            "SELL": 4,
+            "CANCEL": 3
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 9,
+            "WAIT": 136,
+            "EXIT": 2,
+            "CANCEL": 2,
+            "SELL": 1
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    },
+    {
+      "block": 23,
+      "checkpoint_sha256": "b5053a63805e247c4254a77f8618ad5e2bed66fe87ab32eedf544ddfaad6d178",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.0167555082610375,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -1658157000,
+          "policy_fills": 5,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 137,
+            "BUY": 2,
+            "EXIT": 7,
+            "SELL": 2,
+            "CANCEL": 2
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 15,
+            "WAIT": 135
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": 0.0003549547712824927,
+          "hold_return": 0.0,
+          "excess_wealth_micros": 35127000,
+          "policy_fills": 3,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 137,
+            "BUY": 3,
+            "EXIT": 5,
+            "SELL": 3,
+            "CANCEL": 2
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 13,
+            "WAIT": 137
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    },
+    {
+      "block": 27,
+      "checkpoint_sha256": "d1bc26978c5194c1d26aa14056b1f67bf8c10533064b57ba78826480f5142495",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.013875612174963812,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -1373157000,
+          "policy_fills": 4,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 137,
+            "BUY": 2,
+            "EXIT": 6,
+            "SELL": 3,
+            "CANCEL": 2
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": -0.0007616606192863288,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": -80000000,
+          "policy_fills": 1,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 10,
+            "WAIT": 135,
+            "EXIT": 2,
+            "CANCEL": 1,
+            "SELL": 2
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.000954589555997225,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -94468000,
+          "policy_fills": 1,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 140,
+            "BUY": 1,
+            "EXIT": 5,
+            "SELL": 3,
+            "CANCEL": 1
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 9,
+            "WAIT": 137,
+            "SELL": 3,
+            "CANCEL": 1
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    },
+    {
+      "block": 31,
+      "checkpoint_sha256": "e9ce651a0b8862b7563ee6e01a3e12070a5c42d2579f5a301fde7e0b74ee67ee",
+      "cases": [
+        {
+          "profile": "nominal",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.016700871074590482,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -1652750000,
+          "policy_fills": 5,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 136,
+            "BUY": 4,
+            "EXIT": 4,
+            "SELL": 6
+          }
+        },
+        {
+          "profile": "nominal",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 0.00010052611622944923,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 4601000,
+          "policy_fills": 1,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 11,
+            "WAIT": 136,
+            "SELL": 2,
+            "EXIT": 1
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174270442,
+          "initial_wealth_micros": 98961904000,
+          "policy_return": -0.001049939378692633,
+          "hold_return": 0.0,
+          "excess_wealth_micros": -103904000,
+          "policy_fills": 1,
+          "hold_fills": 0,
+          "policy_families": {
+            "WAIT": 136,
+            "BUY": 2,
+            "EXIT": 4,
+            "SELL": 6,
+            "CANCEL": 2
+          }
+        },
+        {
+          "profile": "joint_adverse",
+          "start_ms": 1792174870442,
+          "initial_wealth_micros": 98123755000,
+          "policy_return": 5.3636349322343e-05,
+          "hold_return": 5.3636349322343e-05,
+          "excess_wealth_micros": 0,
+          "policy_fills": 0,
+          "hold_fills": 0,
+          "policy_families": {
+            "BUY": 13,
+            "WAIT": 135,
+            "SELL": 1,
+            "CANCEL": 1
+          }
+        }
+      ],
+      "all_cases_positive_vs_hold": false
+    }
+  ],
+  "all_profile_positive_vs_hold": 0,
+  "production_changed": false,
+  "locked_test_used": false
+}
