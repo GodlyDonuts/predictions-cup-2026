@@ -29,6 +29,9 @@ def open_experiment(specification,dataset,mechanics_path,role,*,start_ms,end_ms,
     else:
         from .training import load_checkpoint
         policy,_=load_checkpoint(policy_checkpoint,checkpoint_sha256,device)
+    from .selection import DataUse
+    DataUse().record({'train':'train','evolution':'selection','test':'test'}[role],start_ms,end_ms,
+                     hashlib.sha256(Path(specification).read_bytes()).hexdigest())
     stream=Stream(env,policy)
     stream.source_sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest()
                           for p in Path(__file__).parent.glob('*.py')if not p.name.startswith('test_')}

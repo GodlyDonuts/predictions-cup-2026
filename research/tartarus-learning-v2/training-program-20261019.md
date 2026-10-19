@@ -92,7 +92,7 @@ resync, metadata/lifecycle endpoints, engine resizing and passive queue fills.
 The policy has not earned deployment from these development studies. No production
 worker, live financial ledger, risk/STOP control or account client was changed.
 
-47 focused action/economic/replay/archive checks pass. The first completed GPU
+55 focused action/economic/replay/archive checks pass. The first completed GPU
 population evaluated 16 candidates, with 1,822 training decisions and 21 accepted
 PPO updates. Best worst-case marked ROI was -3.7146%; none qualified. This short
 study is development evidence, not the requested multi-day test.
@@ -135,3 +135,51 @@ finds earliest preserved Kalshi segment receipts on Oct18 05:55UTC and Polymarke
 on Oct18 22:35UTC. This samples first rows, not full interval coverage. It still
 does not supply the requested competition-start/8-day/4-day history. Remote or
 other original archives have not been exhausted by this local inventory.
+
+## API realism and independent-data continuation
+
+[Current conformance scope](api-replay-conformance-20261019.json) is bound to the
+public SIG OpenAPI read through the CLI. Token minting consumes one write;
+connected book deliveries do not consume REST admissions; token lifetime is3h.
+The new optional derived stream replays original admitted book observations at
+their recorded availability clocks. It does not fabricate topic revisions from
+engine sequence numbers. Gaps, expiry, refresh/disconnect and a configured120s
+reconciliation cadence invalidate trust until a charged REST baseline arrives.
+Models can still choose their raw orders and disconnect/reconnect the stream.
+
+A recorded-data functional smoke received6original book snapshots, established
+an authoritative baseline and ran128neural decisions with zero HTTP calls. Its
+driver advanced to a recorded event for setup; this is no policy-performance or
+profit claim. [Smoke](derived-stream-smoke-002.json). Run007 remains on its original
+profile; the stream adapter is opt-in for a subsequent training phase.
+
+Mechanical masks now exclude SIG operations only while their queue/rate budget
+cannot admit them, and exclude malformed empty/oversized builders. External
+reads and local planning stay available. No alpha, price menu, exposure or
+lifetime-decision constraint is introduced.
+
+Clock coverage alone can no longer qualify an independent test: the frozen
+producer provenance must positively designate the exact unseen test calendar.
+A persistent local data-use audit rejects previously optimized or overlapping
+previous-test calendars across dataset versions. Current inspected datasets and
+run007's train/selection calendars are registered retrospectively; these cannot
+be relabeled independent later. The audit does not certify unknown manual or
+other-host use. Future full experiment identities pin the actual split and replay
+specification bytes, and future runs save their measured compute calibration.
+
+A matched CPU-FP32 development reevaluation uses the original70byte-pinned trainer
+source files and the same calendar, wealth convention, initial funds, seeds and
+nominal/adverse cases for parent and two trained checkpoints. A common8ms virtual
+compute cost is frozen from the controlled benchmark; the original run007 cost
+was not saved and is not claimed recovered. CPU evaluation reserves GPU memory
+for training; backend/RNG paths differ from the earlier GPU reports.
+The parent loses8.63% in its worse case; one trained checkpoint is flat with zero
+fills, while the other loses2.91%. None is strictly positive. This demonstrates
+loss avoidance rather than alpha. [Comparison](raw-matched-development-cpu-001.json).
+
+The next substantive missing model is passive execution: current replay matches
+crossing displayed depth, not ordinary spread-capture fills. Public engine prints
+lack an established aggressor label; any next flow/queue model must keep actual
+execution clocks, shared volume, queue uncertainty and original-owner exclusions
+explicit. Full historical data, full API parity and independent profitable ROI
+remain unproved. Primary production state is untouched.

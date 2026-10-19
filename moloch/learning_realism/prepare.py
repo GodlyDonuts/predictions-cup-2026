@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from moloch.learning_flow.episodes import FlowTape
 from moloch.learning_v2.run_experiment import load_mechanics
-from .protocol import Split, Delivery
+from .protocol import Split, Delivery,independent_test_claim
 
 
 def timestamp(value):
@@ -66,6 +66,7 @@ def main():
         'dataset_manifest_sha256': tape.manifest_sha256,
         'maximum_venue_gap_ms': args.maximum_gap_ms, 'roles': roles,
         'full_history_ready': all(r['coverage_pass'] for r in roles.values()),
+        'independent_test_eligible':independent_test_claim(tape.manifest,split),
         'coverage_is_not_contract_equivalence_or_execution_calibration': True,
         'latency_calibrated': False, 'only_execution_venue': 'SIG',
         'source_sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()

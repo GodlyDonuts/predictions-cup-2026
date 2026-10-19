@@ -182,6 +182,8 @@ def open_replay(specification, dataset, mechanics_path, role, *, frozen_finalist
     """
     from moloch.learning_v2.run_experiment import load_mechanics
     spec = json.loads(Path(specification).read_text(encoding='utf-8'))
+    if role=='test'and spec.get('independent_test_eligible')is not True:
+        raise ValueError('INDEPENDENT_TEST_SOURCE_PROVENANCE_NOT_ESTABLISHED')
     if spec['full_history_ready'] is not True or spec['only_execution_venue'] != 'SIG':
         raise ValueError('FULL_THREE_VENUE_HISTORY_NOT_READY')
     if hashlib.sha256(Path(mechanics_path).read_bytes()).hexdigest() != spec['mechanics_sha256']:
@@ -197,6 +199,10 @@ def open_replay(specification, dataset, mechanics_path, role, *, frozen_finalist
                       frozen_finalist_sha256=frozen_finalist_sha256)
     if tape.manifest_sha256 != spec['dataset_manifest_sha256']:
         raise ValueError('FROZEN_DATASET_CHANGED')
+    if role=='test':
+        from .protocol import independent_test_claim
+        if not independent_test_claim(tape.manifest,split):
+            raise ValueError('ACTUAL_TEST_PROVENANCE_MUST_MATCH_FROZEN_CALENDAR')
     from .prepare import coverage
     if not all(r['coverage_pass'] for r in coverage(tape, split, spec['maximum_venue_gap_ms']).values()):
         raise ValueError('ACTUAL_THREE_VENUE_COVERAGE_FAILED')

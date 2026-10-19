@@ -5,9 +5,48 @@ the reservation too: it cannot be repaired by inspecting its prices and retrying
 another candidate. This is not a production execution lock.
 """
 import hashlib,json
+import os
 from pathlib import Path
 from datetime import datetime,timezone
 from moloch.learning_realism.protocol import valid_sha,digest
+
+
+class DataUse:
+    """Conservative local record of calendars already exposed to optimization.
+
+    This is not proof about unrecorded/manual/other-host use. Records cross
+    dataset compilations and experiment directories; moving a test boundary
+    slightly cannot make already inspected outcomes independent again.
+    """
+    def __init__(self,directory=None):
+        self.root=(Path(directory)if directory is not None else
+            Path(os.environ.get('LOCALAPPDATA',Path.home()/'.local/share'))/
+                'Moloch/learning-v2/data-use-registry-v1')
+        self.root.mkdir(parents=True,exist_ok=True)
+
+    def overlaps(self,start,end,*,ignore_test=False):
+        found=[]
+        for p in self.root.glob('*.json'):
+            row=json.loads(p.read_text())
+            if ignore_test and row['kind']=='test':continue
+            if start<row['end_ms']and row['start_ms']<end:found.append(row)
+        return found
+
+    def require_unseen(self,start,end):
+        if self.overlaps(start,end):raise ValueError('TEST_CALENDAR_PREVIOUSLY_USED_NOT_INDEPENDENT')
+
+    def record(self,kind,start,end,source_sha256):
+        if kind not in('train','selection','inspected_development','test')or not valid_sha(source_sha256):
+            raise ValueError('EXPLICIT_DATA_USE_AND_SOURCE_REQUIRED')
+        if any(type(v)is not int or v<0 for v in(start,end))or end<=start:
+            raise ValueError('DATA_USE_CALENDAR_REQUIRED')
+        if kind=='test':self.require_unseen(start,end)
+        value={'kind':kind,'start_ms':start,'end_ms':end,'source_sha256':source_sha256}
+        path=self.root/(digest(value)+'.json')
+        if path.exists():
+            if json.loads(path.read_text())!=value:raise ValueError('DATA_USE_RECORD_CHANGED')
+        else:frozen(path,value)
+        return path
 
 
 def frozen(path,value):

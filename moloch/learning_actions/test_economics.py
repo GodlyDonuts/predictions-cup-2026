@@ -5,7 +5,7 @@ from dataclasses import replace
 from .test_actions import environment
 from .contract import UNIT,OrderSpec
 from .economics import snapshot,GrowthLedger
-from .selection import IndependentTest
+from .selection import IndependentTest,DataUse
 from moloch.learning_realism.protocol import DAY
 
 
@@ -16,15 +16,24 @@ class EconomicTests(unittest.TestCase):
         torch.set_num_threads(1);e=environment()
         e.dispatch('CANCEL_ALL',None,idempotency_key='inflight')
         stream=Stream(e,ApiPolicy(16),calibration={'decision_latency_ms':2})
-        action={'family':4,'market':0,'side':0,'price':0,'patience':0,
+        # The API still returns BUSY, but the policy's mechanical mask avoids
+        # selecting a known rejection. Other local thinking remains available.
+        self.assertEqual(e.dispatch('CANCEL_ALL',None,idempotency_key='busy')['status'],'BUSY')
+        observed=e.observe()
+        self.assertFalse(observed['masks']['family'][0,4])
+        self.assertTrue(any(observed['masks']['family'][i,10]for i,(kind,key)in enumerate(observed['entities'])
+                            if kind=='read'and key[0]!='SIG'))
+        action={'family':11,'market':0,'side':0,'price':0,'patience':0,
                 'target_fraction':0.,'child_fraction':0.}
         before=e.now;result=stream.step(action)
-        self.assertEqual(result['status'],'BUSY');self.assertEqual(e.now,before+2)
+        self.assertEqual(result['status'],'BUILDER_CLEARED');self.assertEqual(e.now,before+2)
         e.advance(301)
         for i in range(29):
             e.dispatch('CANCEL_ALL',None,idempotency_key='limit'+str(i));e.advance(e.now+300)
+        self.assertEqual(e.dispatch('CANCEL_ALL',None,idempotency_key='limited')['status'],'RATE_WAIT')
+        self.assertFalse(e.observe()['masks']['family'][0,4])
         before=e.now;result=stream.step(action)
-        self.assertEqual(result['status'],'RATE_WAIT');self.assertEqual(e.now,before+2)
+        self.assertEqual(result['status'],'BUILDER_CLEARED');self.assertEqual(e.now,before+2)
 
     def test_fused_ragged_sequence_matches_loop_values_probabilities_and_memory(self):
         from .policy import ApiPolicy
@@ -143,6 +152,27 @@ class EconomicTests(unittest.TestCase):
             registry.reserve(sha)
             with self.assertRaises(FileExistsError):registry.reserve(sha)
             registry.finish({'role':'test','checkpoint_sha256':sha,'reward':-.01})
+
+    def test_data_use_blocks_relabelled_or_partially_overlapping_holdouts(self):
+        with tempfile.TemporaryDirectory()as d:
+            use=DataUse(d);use.record('train',10,20,'a'*64)
+            use.record('selection',20,30,'b'*64)
+            with self.assertRaises(ValueError):use.record('test',15,25,'c'*64)
+            use.record('test',30,40,'c'*64)
+            # A different dataset hash or shifted test boundary cannot reuse it.
+            with self.assertRaises(ValueError):use.record('test',35,45,'d'*64)
+            use.record('test',40,50,'e'*64)
+            self.assertEqual(len(list(Path(d).glob('*.json'))),4)
+
+    def test_clock_coverage_alone_cannot_establish_independent_test_provenance(self):
+        from moloch.learning_realism.protocol import Split,independent_test_claim
+        split=Split(0,10*DAY)
+        self.assertFalse(independent_test_claim({'lockedTestEligible':True},split))
+        claim={'bounds_ms':list(split.bounds('test')),'prices_used_for_training_or_selection':False,
+            'uninspected_test_designation':True,'source_evidence_sha256':'f'*64}
+        self.assertTrue(independent_test_claim({'independent_test':claim},split))
+        claim['bounds_ms'][0]+=1
+        self.assertFalse(independent_test_claim({'independent_test':claim},split))
 
 
 if __name__=='__main__':unittest.main()

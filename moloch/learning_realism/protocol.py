@@ -33,6 +33,19 @@ def valid_sha(value):
     return isinstance(value, str) and len(value) == 64 and all(c in '0123456789abcdef' for c in value)
 
 
+def independent_test_claim(manifest,split):
+    """Positive source claim required; mere clock coverage is not independence.
+
+    The producer's immutable provenance must additionally be supported by the
+    local data-use audit. A Boolean flag alone cannot establish an unseen test.
+    """
+    claim=manifest.get('independent_test',{})
+    return (claim.get('bounds_ms')==list(split.bounds('test'))
+        and claim.get('prices_used_for_training_or_selection')is False
+        and claim.get('uninspected_test_designation')is True
+        and valid_sha(claim.get('source_evidence_sha256')))
+
+
 @dataclass(frozen=True)
 class Delivery:
     # Conservative configured request ceilings, not newly discovered API grants.

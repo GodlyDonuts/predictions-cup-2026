@@ -33,6 +33,7 @@ class ApiEpisode(PreparedEpisode):
         self.idempotency={};self.builder=[];self.collateral_oracle=None
         self.constraint_validator=None;self.ledger_basis_known=True
         self.relationships={}
+        self.realtime=None
         self.scheduled_reads=set();self.pending_reads=deque()
         self.expiry_scheduled=set()
         self.external_ready={'Kalshi':0,'Polymarket':0}
@@ -211,6 +212,7 @@ class ApiEpisode(PreparedEpisode):
     def request_observation(self,venue,key):
         if venue not in ('SIG','Kalshi','Polymarket'):raise ValueError('READ_ONLY_REFERENCE_VENUE')
         if key not in self.keys[venue]:return {'status':'SOURCE_NOT_AVAILABLE'}
+        if venue=='SIG'and key[0]=='realtime_token':return self.realtime.mint()
         if venue=='SIG'and self.budget.active is not None:return {'status':'BUSY','ready_ms':self.busy_until}
         if venue!='SIG'and self.now<self.external_ready[venue]:return {'status':'RATE_WAIT','ready_ms':self.external_ready[venue]}
         if venue=='SIG':
@@ -246,6 +248,7 @@ class ApiEpisode(PreparedEpisode):
         self.observation_revision+=1
 
     def _event(self,at,kind,value):
+        if self.realtime is not None and self.realtime.event(at,kind,value):return
         if kind=='economic_boundary':
             value.capture_boundary(self,at);return
         if kind=='feed_poll':return  # no compulsory observation schedule
@@ -277,6 +280,12 @@ class ApiEpisode(PreparedEpisode):
                 if order.spec.exchange==value['exchange_id']:
                     self._match_api(order)
                     if not order.remaining:self.api_orders.pop(q,None)
+            if self.realtime is not None:self.realtime.source_book(at,value['exchange_id'])
+        if self.realtime is not None:
+            if kind=='feed_receipt':
+                venue,rid,key,payload=value
+                if venue=='SIG':self.realtime.authoritative_book(key,payload)
+            elif kind=='tape'and value['kind']=='gap':self.realtime.source_gap(value)
         if len(self.api_fills)>before:self.clock.schedule(at+self.mechanics.receipt_latency_ms,30,'api_account_receipt',self._capture_account())
         if kind=='feed_receipt':self.observation_revision+=1
 
@@ -289,7 +298,8 @@ class ApiEpisode(PreparedEpisode):
         # Hidden source arrivals may update execution, but cannot wake a policy
         # until its next observable receipt. Process them while advancing there.
         candidates.extend(at for at,_,_,kind,_ in self.clock._events
-            if kind in ('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt'))
+            if kind in ('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt',
+                        'derived_book_receipt','derived_token_receipt','derived_token_expiry','derived_baseline_expiry'))
         if self.budget.active is not None:candidates.append(self.busy_until)
         else:
             candidates.append(self.budget.ready_at(self.now,False))
@@ -307,14 +317,27 @@ class ApiEpisode(PreparedEpisode):
         entities += [('relationship',r)for r in sorted(self.relationships)]
         entities += [('order',q)for q in sorted(self.known_orders)]
         entities += [('read',(v,key))for v in ('SIG','Kalshi','Polymarket')for key in self.keys[v]]
+        if self.realtime is not None:entities.append(('stream_control','disconnect'))
         features=np.zeros((len(entities),40),np.float32)
         masks={'market':np.ones(len(entities),bool),'family':np.zeros((len(entities),12),bool)}
+        def ready(write):
+            if self.budget.active is not None or self.budget.poisoned:return False
+            if write and self.budget.unknown:return False
+            return self.budget.ready_at(self.now,write)<=self.now
+        read_ready,write_ready=ready(False),ready(True)
+        builder_size=len(self.builder)
         for i,(kind,key)in enumerate(entities):
             ident=hashlib.sha256(repr((kind,key)).encode()).digest()
             features[i,33:40]=np.frombuffer(ident[:7],dtype=np.uint8)/255.
-            if kind=='global':masks['family'][i,[0,4,7,8,9,11]]=True
+            if kind=='global':
+                masks['family'][i,[0,11]]=True
+                if write_ready:
+                    masks['family'][i,4]=True
+                    if 1<=builder_size<=50:masks['family'][i,7]=True
+                    if 1<=builder_size<=10:masks['family'][i,[8,9]]=True
             elif kind=='contract':
-                masks['family'][i,[1,2,4,5,6]]=True
+                if write_ready:masks['family'][i,[1,2,4]]=True
+                if builder_size<50:masks['family'][i,[5,6]]=True
                 q=self.actor_books.get(key)
                 if q is not None:
                     b=q.book;bid=b.bids[0][0]if b.bids else 0;ask=b.asks[0][0]if b.asks else UNIT
@@ -331,19 +354,25 @@ class ApiEpisode(PreparedEpisode):
                 features[i,16:24]=self.flow.observe(key,self.now)
                 features[i,24]=1.
             elif kind=='market':
-                masks['family'][i,4]=True;features[i,24]=2.
+                masks['family'][i,4]=write_ready;features[i,24]=2.
             elif kind=='relationship':
-                masks['family'][i,[8,9]]=True;features[i,24]=3.
+                if write_ready and 1<=builder_size<=10:masks['family'][i,[8,9]]=True
+                features[i,24]=3.
             elif kind=='order':
-                masks['family'][i,3]=True;o=self.known_orders[key]
+                masks['family'][i,3]=write_ready;o=self.known_orders[key]
                 features[i,25:30]=[1.,np.log1p(o.remaining),(o.spec.price or 0)/UNIT,
                                    float(o.spec.side=='YES'),float(o.spec.action=='BUY')]
+            elif kind=='stream_control':
+                masks['family'][i,11]=True;features[i,:6]=self.realtime.features();features[i,24]=4.
             else:
-                masks['family'][i,10]=True;features[i,30+('SIG','Kalshi','Polymarket').index(key[0])]=1.
+                masks['family'][i,10]=((write_ready if key[1][0]=='realtime_token'else read_ready)
+                    if key[0]=='SIG'else self.now>=self.external_ready[key[0]])
+                features[i,30+('SIG','Kalshi','Polymarket').index(key[0])]=1.
                 if key[0]!='SIG':
                     target=key[1];r=self.reference_cache.get((target[2],target[3]))
                     if r is not None:features[i,8:11]=[r.get('bid_yes_micros',0)/UNIT,r.get('ask_yes_micros',UNIT)/UNIT,
                                                       (self.now-r['available_at_ms'])/1000]
+        masks['market']=masks['family'].any(-1)
         # Shared policy heads accept the complete legal price lattice. Quantity
         # and alarm/expiration are float64 latent samples converted to exact ints.
         n=len(entities)
@@ -392,7 +421,9 @@ class ApiEpisode(PreparedEpisode):
         elif family in (7,8,9):
             operation=('BATCH','MULTI','ALL_OR_NONE')[family-7];payload=list(self.builder)
         elif family==10:return self.request_observation(*key)
-        else:self.builder.clear();return {'status':'BUILDER_CLEARED'}
+        else:
+            if kind=='stream_control':return self.realtime.disconnect()
+            self.builder.clear();return {'status':'BUILDER_CLEARED'}
         self.api_sequence+=1
         result=self.dispatch(operation,payload,idempotency_key=f'policy-{self.api_sequence}',
                              relationship_constraint=key if kind=='relationship'else None)

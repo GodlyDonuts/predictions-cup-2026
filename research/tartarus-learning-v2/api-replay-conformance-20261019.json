@@ -1,0 +1,42 @@
+{
+  "classification": "official_api_replay_conformance_scope_not_full_parity_or_roi",
+  "source": {
+    "url": "https://sig.thesuper.market/api/v1/docs",
+    "canonical_json_sha256": "fbdf23e54d317392f9fb4a659b9511a01fad065e7a384f28091ef04894a732c9",
+    "normalization": "json.dumps(sort_keys=True,separators=(comma,colon),ensure_ascii=True)",
+    "downloaded_file_mtime_utc": "2026-10-19T10:24:02.654129+00:00"
+  },
+  "verified_public_contract": {
+    "standard_account_reads_per_minute": 100,
+    "standard_account_writes_per_minute": 30,
+    "post_realtime_token_uses_write_budget": true,
+    "token_lifetime_ms": 10800000,
+    "open_stream_messages_consume_no_rest_admissions": true,
+    "single_order_quantity_maximum": 2147483647,
+    "batch_maximum": 50,
+    "multi_leg_maximum": 10,
+    "all_or_none_supported": true
+  },
+  "implemented_now": [
+    "mechanical_queue_and_rate_eligibility_masks_preserve_external_reads_and_local_planning",
+    "opt_in_original_derived_book_stream_with_charged_token_mint_expiry_disconnect_and_rest_resync",
+    "persistent_local_calendar_data_use_audit_across_dataset_versions_and_shifted_holdouts",
+    "positive_heldout_provenance_required_in_addition_to_clock_coverage",
+    "full_replay_specification_bytes_and_actual_split_pinned_in_future_experiments",
+    "future_experiments_persist_actual_compute_calibration"
+  ],
+  "not_established": [
+    "full_raw_topic_revision_and_private_account_stream_replay",
+    "authoritative_relationship_graph_and_component_collateral_debt_parity",
+    "engine_resize_and_admission_calibration",
+    "passive_queue_fills_and_self_trade_exclusion",
+    "market_lifecycle_settlement_refund_event_replay",
+    "complete_all_participant_metadata_history_endpoints",
+    "full_competition_three_venue_history",
+    "independent_profitable_generalization"
+  ],
+  "live_run007_unchanged_prior_code_profile": true,
+  "new_stream_mode_opt_in_future_phase_only": true,
+  "focused_checks_passed": 55,
+  "production_changed": false
+}

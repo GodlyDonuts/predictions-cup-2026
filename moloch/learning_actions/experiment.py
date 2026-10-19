@@ -11,14 +11,14 @@ from pathlib import Path
 import torch
 from moloch.learning_flow.episodes import FlowTape
 from moloch.learning_realism.fast_replay import open_prepared_replay
-from moloch.learning_realism.protocol import Split,DAY,digest
+from moloch.learning_realism.protocol import Split,DAY,digest,independent_test_claim
 from moloch.learning_v2.run_experiment import load_mechanics
 from .engine import ApiTape
 from .policy import ApiPolicy
 from .stream import Stream,calibrate
 from .training import collect_chunk,update,save_checkpoint,load_checkpoint
 from .economics import GrowthLedger
-from .selection import frozen,IndependentTest
+from .selection import frozen,IndependentTest,DataUse
 
 
 class Experiment:
@@ -59,8 +59,18 @@ class Experiment:
         self.frozen={'config':config,'dataset_manifest_sha256':self.dataset_sha,
             'mechanics_sha256':hashlib.sha256(Path(config['mechanics']).read_bytes()).hexdigest(),
             'source_sha256':pins,'production_authority':False,
-            'full_history_experiment':not self.development,'independent_test_used':False}
+            'full_history_experiment':not self.development,'independent_test_used':False,
+            'actual_split':{'competition_start_ms':self.split.competition_start_ms,'cutoff_ms':self.split.cutoff_ms},
+            'actual_train_bounds_ms':list(self.train_bounds),'actual_evolution_bounds_ms':list(self.evolution_bounds),
+            'independent_test_source_claim':not self.development and independent_test_claim(self.original.manifest,self.split)}
+        if not self.development:
+            self.frozen['replay_specification_sha256']=hashlib.sha256(Path(config['specification']).read_bytes()).hexdigest()
         self.spec_sha=frozen(self.output/'experiment.json',self.frozen)
+        self.data_use=DataUse()
+        # Register before collection, conservatively covering every training
+        # and selection time the run may use, across all compiled versions.
+        self.data_use.record('train',*self.train_bounds,self.spec_sha)
+        self.data_use.record('selection',*self.evolution_bounds,self.spec_sha)
         self.population=[];self.calibration=None;self.total_decisions=0;self.total_updates=0
         self.tape_cache={}
 
@@ -89,12 +99,22 @@ class Experiment:
         tape=self.tape(role,finalist)
         earliest=max(tape.times[0],self.split.bounds(tape.role)[0])
         burnin=min(self.config.get('initial_world_history_ms',120000),max(0,start-earliest))
-        return tape.episode(mechanics,start,end,
+        env=tape.episode(mechanics,start,end,
             initial_cash_micros=self.config.get('initial_cash_micros',100000000000),
             target_wealth_micros=self.config.get('target_wealth_micros',1100000000000),burnin_ms=burnin)
+        if self.config.get('sig_realtime_mode')is not None:
+            from .realtime import DerivedStream
+            if self.config['sig_realtime_mode']!=DerivedStream.mode:raise ValueError('EXPLICIT_DERIVED_STREAM_ASSUMPTION_REQUIRED')
+            env.realtime=DerivedStream(env);env.keys['SIG'].append(('realtime_token',))
+            initial=self.config.get('initial_sig_realtime')
+            if initial not in(None,'request_token'):raise ValueError('EXPLICIT_INITIAL_STREAM_STATE')
+            if initial=='request_token':env.realtime.mint()
+        return env
 
     def stream(self,model,env,training=False):
-        if self.calibration is None:self.calibration=calibrate(env,model)
+        if self.calibration is None:
+            self.calibration=calibrate(env,model)
+            frozen(self.output/'compute-calibration.json',self.calibration)
         return Stream(env,model,calibration=self.calibration,record_training=training)
 
     def checkpoint(self,name,model,optimizer):
@@ -148,7 +168,9 @@ class Experiment:
         ledgers=[GrowthLedger(e,development=self.development,
             historical_last_mark=self.config.get('development_last_observed_marks',False),
             maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for e in envs]
-        if self.calibration is None:self.calibration=calibrate(envs[0],model)
+        if self.calibration is None:
+            self.calibration=calibrate(envs[0],model)
+            frozen(self.output/'compute-calibration.json',self.calibration)
         stream=BatchStream(envs,model,ledgers,calibration=self.calibration)
         while any(e.now<e.end for e in envs):
             chunk=stream.collect(self.config.get('compute_chunk_decisions',32))
@@ -171,7 +193,10 @@ class Experiment:
 
     def evaluate(self,model,checkpoint,role='evolution',finalist=None):
         if role=='test'and self.development:raise ValueError('INSPECTED_DEVELOPMENT_HAS_NO_INDEPENDENT_TEST')
+        if role=='test'and not independent_test_claim(self.original.manifest,self.split):
+            raise ValueError('INDEPENDENT_TEST_SOURCE_PROVENANCE_NOT_ESTABLISHED')
         start,end=self.evolution_bounds if role=='evolution'else self.split.bounds('test')
+        if role=='test':self.data_use.record('test',start,end,self.spec_sha)
         cases=[]
         for seed_offset,stress in enumerate((False,True)):
             torch.manual_seed(self.seed+90000+seed_offset)
@@ -185,6 +210,8 @@ class Experiment:
             result=ledger.finish();cases.append({**result,'stress':stress,'decisions':stream.decisions,
                 'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
                 'entity_counts':dict(stream.entity_counts)})
+        if role=='test'and self.data_use.overlaps(start,end,ignore_test=True):
+            raise ValueError('TEST_CALENDAR_CONCURRENTLY_USED_FOR_OPTIMIZATION')
         return {'role':'development_selection'if self.development else role,
             'eligible':not self.development and all(c['eligible']for c in cases),
             'checkpoint_sha256':checkpoint['sha256'],'reward':min(c['reward']for c in cases),

@@ -1,0 +1,58 @@
+{
+  "classification": "retrospective_local_data_use_registration_not_pristine_test_proof",
+  "recorded_utc": "2026-10-19T10:52:40.567594+00:00",
+  "existing_compiled_development_windows": [
+    {
+      "dataset": "native-r54-development-002",
+      "bounds_ms": [
+        1792051755854,
+        1792267184827
+      ],
+      "source_sha256": "49c28d1c057e110e761e6fae2ef61706c5ab5a8e02acfb97b6266b90a303fccf"
+    },
+    {
+      "dataset": "three-venue-r55-inspected-subset-004",
+      "bounds_ms": [
+        1792383360040,
+        1792384259996
+      ],
+      "source_sha256": "a43636fb867f791bea4977776a7f81bad03af5578c66e372e4a563f5911dbf2a"
+    },
+    {
+      "dataset": "three-venue-r57b-development-001",
+      "bounds_ms": [
+        1792395600019,
+        1792397999992
+      ],
+      "source_sha256": "b2c56d5d3105ebb62871b761cb8bacc27b0e9c8f0868bcd92f2e7ac88448fc96"
+    },
+    {
+      "dataset": "v5-compiled-1",
+      "bounds_ms": [
+        1792172291119,
+        1792175891640
+      ],
+      "source_sha256": "29f59886eacb9cdfb615280541253e5c5201569565f2fe9355db46a8c5006bba"
+    },
+    {
+      "dataset": "v5-compiled-2",
+      "bounds_ms": [
+        1792172291119,
+        1792175891640
+      ],
+      "source_sha256": "40cd6badf031b215f8cb2b25fe99cbfe9a772b2b8375d7ae0aed4c80cba9da7e"
+    }
+  ],
+  "run007_training_bounds_ms": [
+    1792383361040,
+    1792383960040
+  ],
+  "run007_selection_bounds_ms": [
+    1792384020040,
+    1792384258040
+  ],
+  "run007_experiment_sha256": "7f9cb7d09cccc85d4a92f4cb19491cd1cd71e22ad04a1841aa44987558583efa",
+  "technical_clock_audits_alone_are_not_price_optimization": true,
+  "unrecorded_manual_and_other_host_use_not_certified": true,
+  "production_changed": false
+}

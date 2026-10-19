@@ -1,0 +1,42 @@
+{
+  "classification": "real_inspected_history_derived_stream_neural_functional_smoke_not_roi",
+  "dataset_manifest_sha256": "ff7c0816b934ecd35f9534f22e741b1138b3d7a416f98fca49775c336c12d9e0",
+  "parameters": 58106855,
+  "derived_mode": "producer_validated_derived_books_not_raw_topic_replay",
+  "result": {
+    "chunk_decisions": 128,
+    "total_decisions": 128,
+    "virtual_ms": 1792383485149,
+    "wall_seconds": 7.610799899906851,
+    "terminal": false,
+    "state_preserved": true
+  },
+  "token_mints": 1,
+  "delivered_book_snapshots": 0,
+  "currently_synced_exchanges": 0,
+  "total_simulated_api_admissions": 6,
+  "modeled_fills": 0,
+  "full_raw_topic_revision_parity": false,
+  "original_source_ages_preserved": true,
+  "http_requests": 0,
+  "production_changed": false,
+  "profitability_established": false,
+  "source_sha256": {
+    "archive.py": "dbee768e2e5367c59ee4dd5c3dee5bec89ae23d42bd242a2fc9bf9665618583c",
+    "batched.py": "29403b38c96213cffdf71bcddee3f210acbd9964ed1fac287388b961ce89cb91",
+    "batch_benchmark.py": "ebea1c83a7680d5dec1096696ee2703f6ce6c1e2df4cde10ac7cd05e88480720",
+    "contract.py": "d8edbdba231e340fa15ac335c4e23c181e68fdb0aeae2a95d7dbc9804467e109",
+    "economics.py": "b2952943c1fded3ce7ce07f9837db199d679a682a5dd6481db2d24aa493f8691",
+    "engine.py": "13a2eb9216134538ad15bad8c50bec6cf9fc02d9cff8e766703d6a11d0b9c5af",
+    "entry.py": "a213ff97091202456f1fc8b243ac0eebc3d8b8201a7332ae16325c3a70b8af28",
+    "experiment.py": "8fa70e487b7cba52e6d51c59cc3709ce752c2cb13683280b3f6f503f5b6d7625",
+    "inventory.py": "6312a115d41541a66dd70c118e6b2b9627fd2d4a2350f865d9d4f71d4932e5aa",
+    "policy.py": "eaa86b7ea6b92fc87c9297853efccccbc52ea283a55cf6cdf6c0e170b87d5089",
+    "realtime.py": "fe53ab1c29fb61a200079358b3ccf664aa9eb04524556b4ca5613d623579e96c",
+    "selection.py": "72ccd8ad3de9e0a716b0e7fb4d02bce9369f3edbda63a9a296f265bdfffb62cf",
+    "smoke.py": "958d9ffc90ec7695d8ecfcd858283c5702056c8ed7148d06b3c3d5c60a6c1f28",
+    "stream.py": "eacc185a2e979e2ac828471b124ebdfb63e66628f0cf300b8b35108f757702cb",
+    "training.py": "c46305ff577b8a51ddba2c57ab49da90e45b3ba80694e29b9ed3b969b38d0ae8",
+    "__init__.py": "cd14ef4b4bff6c39d04a0f3b7caca94d6d37965728e169e886119e7aa9427a20"
+  }
+}
