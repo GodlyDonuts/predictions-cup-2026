@@ -307,7 +307,11 @@ class Experiment:
                 maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
             while env.now<case_end:
                 stream.run_chunk(self.config.get('compute_chunk_decisions',32),deterministic=False)
-                ledger.transition()
+                # Evaluation has no optimizer/dense reward labels. Require
+                # start, actual daily boundaries and terminal wealth only.
+                # A legitimate early passive fill may precede this role's
+                # first recorded book; a compute chunk is not an economic
+                # valuation boundary and must not reject that legal path.
             result=ledger.finish();cases.append({**result,'stress':stress,'start_ms':case_start,'end_ms':case_end,
                 'selection_seed':self.seed+90000+seed_offset,'decisions':stream.decisions,
                 'passive_execution':None if env.passive is None else {
@@ -315,6 +319,7 @@ class Experiment:
                     'intercepted_volume':env.passive.intercepted_volume,'calibrated':False},
                 'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
                 'entity_counts':dict(stream.entity_counts)})
+            cases[-1]['valuation_observation_schedule']='start_daily_boundaries_and_terminal'
         if role=='test'and self.data_use.overlaps(start,end,ignore_test=True):
             raise ValueError('TEST_CALENDAR_CONCURRENTLY_USED_FOR_OPTIMIZATION')
         return {'role':'development_selection'if self.development else role,
@@ -377,6 +382,12 @@ class Experiment:
                       'child_receives_full_training_block_before_selection':True})
             del model,opt
 
+    def member_order(self,cycle,members):
+        order=self.config.get('first_cycle_member_order',list(range(members)))if cycle==0 else list(range(members))
+        if not isinstance(order,list)or any(type(i)is not int for i in order)or sorted(order)!=list(range(members)):
+            raise ValueError('FIRST_CYCLE_ORDER_MUST_INCLUDE_EVERY_MEMBER_ONCE')
+        return order
+
     def run(self):
         members=self.config.get('members',4);cycles=self.config.get('cycles',8)
         if type(members)is not int or members<2 or type(cycles)is not int or cycles<1:
@@ -421,7 +432,8 @@ class Experiment:
         best=None
         for cycle in range(cycles):
             ranking=[]
-            for member,previous in enumerate(self.population):
+            for member in self.member_order(cycle,members):
+                previous=self.population[member]
                 torch.manual_seed(self.seed+cycle*1000+member)
                 model,bundle=load_checkpoint(previous['path'],previous['sha256'],self.device)
                 if bundle['split_specification_sha256']!=self.spec_sha:raise ValueError('FOREIGN_EXPERIMENT_CHECKPOINT')

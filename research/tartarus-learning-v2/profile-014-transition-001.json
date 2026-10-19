@@ -1,0 +1,74 @@
+{
+  "classification": "verified_failed_research_run_and_preserved_population_transition",
+  "observed_utc": "2026-10-19T15:01:00.965664+00:00",
+  "source_run": "raw-api-growth-development-013",
+  "target_run": "raw-api-growth-development-014",
+  "failure": {
+    "exception": "ValueError",
+    "production_changed": false,
+    "profitability_established": false,
+    "reason": "INCOMPLETE_SIG_WEALTH_MARK:860"
+  },
+  "last_training_decisions": 113239,
+  "last_accepted_updates": 129,
+  "reason": "selection_dense_intermediate_valuation_demands_rejected_legal_fill_before_first_role_book",
+  "parents": [
+    {
+      "sha256": "4d33779ab336cb74c604ed1322219a45415909ac8e5fa1928b0e85e21644dd3a",
+      "origin": "completed_trained_evaluated_candidate",
+      "source_member": 0
+    },
+    {
+      "sha256": "1017ddca1a1e113a929120365d2fb18e8717ee2733ebdd0a76de04c1900d1b8b",
+      "origin": "completed_trained_evaluated_candidate",
+      "source_member": 1
+    },
+    {
+      "sha256": "90f187cb4d25fdd8e8cdac2069b743485180216718fb54ff411ea19d16d2d6ec",
+      "origin": "completed_training_checkpoint_selection_interrupted",
+      "source_member": 2
+    },
+    {
+      "sha256": "c643e7c1965974c85be3dd3c8ed327dedeba8845cc619941375f1ca36abc0d49",
+      "origin": "preserved_founder_state",
+      "source_member": 3
+    },
+    {
+      "sha256": "3b6748c0ce3919ef175e3842b4aad880217d505effdc04513e2d758579eb0450",
+      "origin": "preserved_founder_state",
+      "source_member": 4
+    },
+    {
+      "sha256": "3be855ff7ade35280c2830d53494a52e372437fab69879a85022a664cdf30d21",
+      "origin": "preserved_founder_state",
+      "source_member": 5
+    },
+    {
+      "sha256": "b4b14db88c8fae9efc2e0a6d2d2f5cb84c978ff506561273e0aec6ddff492f83",
+      "origin": "preserved_founder_state",
+      "source_member": 6
+    },
+    {
+      "sha256": "8b618b90c157f3f21b452caf55581b3c65e5fd4308f1470ac4a55909d1445bdc",
+      "origin": "preserved_founder_state",
+      "source_member": 7
+    }
+  ],
+  "first_cycle_member_order": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    0,
+    1,
+    2
+  ],
+  "all_eight_lineages_preserved": true,
+  "old_failed_marker_preserved": true,
+  "old_process_confirmed_exited": true,
+  "simulated_financial_world_not_resumed": true,
+  "optimizer_and_rollout_reset": true,
+  "production_changed": false,
+  "independent_test_used": false
+}

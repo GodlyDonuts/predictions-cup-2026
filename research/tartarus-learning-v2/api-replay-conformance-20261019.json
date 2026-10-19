@@ -49,7 +49,7 @@
   ],
   "live_run007_unchanged_prior_code_profile": false,
   "new_stream_mode_opt_in_future_phase_only": true,
-  "focused_checks_passed": 146,
+  "focused_checks_passed": 149,
   "production_changed": false,
   "phase007_status": "superseded_and_preserved",
   "raw_breadth_source_recovery": {
@@ -67,5 +67,8 @@
     "complete_universe": 237,
     "full_coverage_established": false,
     "source_audit": "official-mark-calibration-001.json"
-  }
+  },
+  "evaluation_wealth_schedule": "start_daily_boundaries_terminal_no_compute_chunk_valuation_requirement",
+  "phase013_status": "verified_terminal_missing_intermediate_mark_error_preserved",
+  "phase014_status": "prepared_not_yet_running"
 }
