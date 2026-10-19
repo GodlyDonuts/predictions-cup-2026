@@ -85,11 +85,14 @@ class Experiment:
         # Inspected development selection stays development; it is not
         # retroactively renamed the human's four-day evolution partition.
         actual='train'if self.development else role
-        key=(actual,finalist)
+        key=(role,finalist)
         if key in self.tape_cache:return self.tape_cache[key]
         tape=ApiTape.from_loaded(self.original,split=self.split,role=actual,
                                 frozen_finalist_sha256=finalist)
         tape.maximum_boundary_gap_ms=self.gap
+        tape.counterparty_replay_enabled=self.config.get('passive_flow_mode')is not None
+        tape.counterparty_information_bounds=(self.train_bounds if role=='train'else
+            self.evolution_bounds if role=='evolution'else self.split.bounds('test'))
         self.tape_cache[key]=tape
         return tape
 
@@ -102,6 +105,20 @@ class Experiment:
         env=tape.episode(mechanics,start,end,
             initial_cash_micros=self.config.get('initial_cash_micros',100000000000),
             target_wealth_micros=self.config.get('target_wealth_micros',1100000000000),burnin_ms=burnin)
+        notifications=self.config.get('private_fill_notifications','legacy_implicit_broker')
+        if notifications not in('legacy_implicit_broker','requires_active_sig_stream'):
+            raise ValueError('EXPLICIT_PRIVATE_RECEIPT_MODEL_REQUIRED')
+        env.private_fill_push=notifications=='legacy_implicit_broker'
+        if self.config.get('passive_flow_mode')is not None:
+            from .passive import StrictPriorityFlow,DisplayedQueueFlow
+            implementations={c.mode:c for c in(StrictPriorityFlow,DisplayedQueueFlow)}
+            implementation=implementations.get(self.config['passive_flow_mode'])
+            if implementation is None:raise ValueError('EXPLICIT_PASSIVE_HYPOTHESIS_REQUIRED')
+            tournaments={r['tournament_id']for r in tape.flow_rows}
+            if len(tournaments)!=1:raise ValueError('ONE_SOURCE_BOUND_TOURNAMENT_FLOW_REQUIRED')
+            env.passive=implementation(env,next(iter(tournaments)),
+                excluded_match_ids=self.config.get('excluded_original_own_match_ids',()),
+                exclusion_source_sha256=self.config.get('own_match_exclusion_source_sha256'))
         if self.config.get('sig_realtime_mode')is not None:
             from .realtime import DerivedStream
             if self.config['sig_realtime_mode']!=DerivedStream.mode:raise ValueError('EXPLICIT_DERIVED_STREAM_ASSUMPTION_REQUIRED')
@@ -153,6 +170,9 @@ class Experiment:
         if final is None:raise ValueError('COMPLETE_ECONOMIC_EPISODE_RESULT_REQUIRED')
         return {**final,'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
             'entity_counts':dict(stream.entity_counts),
+            'passive_execution':None if env.passive is None else {
+                'mode':env.passive.mode,'source_volume':env.passive.source_volume,
+                'intercepted_volume':env.passive.intercepted_volume,'calibrated':False},
             'configured_initial_world_history_ms':self.config.get('initial_world_history_ms',120000)}
 
     def train_parallel(self,model,optimizer):
@@ -184,7 +204,13 @@ class Experiment:
                 'completed_worlds':len(stream.completed),'updates':reports,
                 'fills':sum(len(e.api_fills)for e in envs),
                 'cuda_peak_bytes':torch.cuda.max_memory_allocated()if self.device.startswith('cuda')else 0})
-        cases=[stream.completed[i]for i in range(count)]
+        cases=[{**stream.completed[i],'family_counts':dict(stream.action_counts[i]),
+            'passive_execution':None if envs[i].passive is None else {
+                'mode':envs[i].passive.mode,'source_volume':envs[i].passive.source_volume,
+                'intercepted_volume':envs[i].passive.intercepted_volume,'calibrated':False},
+            'derived_stream':None if envs[i].realtime is None else {
+                'mints':envs[i].realtime.mints,'book_deliveries':envs[i].realtime.deliveries}}
+            for i in range(count)]
         return {'classification':'independent_simulated_worlds_not_additional_historical_evidence',
             'worlds':count,'reward':sum(c['reward']for c in cases)/count,
             'marked_roi':sum(c['marked_roi']for c in cases)/count,
@@ -208,6 +234,9 @@ class Experiment:
                 stream.run_chunk(self.config.get('compute_chunk_decisions',32),deterministic=False)
                 ledger.transition()
             result=ledger.finish();cases.append({**result,'stress':stress,'decisions':stream.decisions,
+                'passive_execution':None if env.passive is None else {
+                    'mode':env.passive.mode,'source_volume':env.passive.source_volume,
+                    'intercepted_volume':env.passive.intercepted_volume,'calibrated':False},
                 'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
                 'entity_counts':dict(stream.entity_counts)})
         if role=='test'and self.data_use.overlaps(start,end,ignore_test=True):
@@ -223,14 +252,18 @@ class Experiment:
         if type(members)is not int or members<2 or type(cycles)is not int or cycles<1:
             raise ValueError('POSITIVE_POPULATION_AND_CYCLE_COUNTS_REQUIRED')
         inherited=self.config.get('development_initial_checkpoint')
-        if inherited and not self.development:raise ValueError('DEVELOPMENT_WEIGHT_TRANSFER_CANNOT_QUALIFY_FULL_HISTORY')
+        parents=self.config.get('development_initial_checkpoints')or([inherited]if inherited else[])
+        if parents and not self.development:raise ValueError('DEVELOPMENT_WEIGHT_TRANSFER_CANNOT_QUALIFY_FULL_HISTORY')
+        fresh=self.config.get('fresh_founders',0)
+        if type(fresh)is not int or not 0<=fresh<=members:raise ValueError('VALID_FRESH_LINEAGE_COUNT_REQUIRED')
         for member in range(members):
             torch.manual_seed(self.seed+member)
+            inherited=parents[member%len(parents)]if parents and member<members-fresh else None
             if inherited:
                 model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
                 if parent['dataset_manifest_sha256']!=self.dataset_sha:raise ValueError('DEVELOPMENT_PARENT_DATASET_CHANGED')
                 del parent
-                if member:
+                if member>=len(parents):
                     with torch.no_grad():
                         for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
             else:model=ApiPolicy(self.model_size).to(self.device)

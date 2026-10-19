@@ -18,6 +18,7 @@ class DerivedStream:
         self.env=env;self.enabled=False;self.expires_at=0
         self.control_revision=0;self.connection=0;self.synced={}
         self.deliveries=0;self.mints=0;self.gaps=0
+        self.private_pending=False
 
     def invalidate(self):
         self.synced.clear()
@@ -26,6 +27,7 @@ class DerivedStream:
 
     def disconnect(self):
         self.control_revision+=1;self.connection+=1;self.enabled=False
+        self.private_pending=False
         self.invalidate()
         return {'status':'STREAM_DISCONNECTED'}
 
@@ -50,11 +52,22 @@ class DerivedStream:
             rid,revision=value;env.budget.complete(rid,at)
             if revision!=self.control_revision:return True
             self.connection+=1;self.enabled=True;self.expires_at=at+self.token_lifetime_ms
+            self.private_pending=False
             self.invalidate()
             env.clock.schedule(self.expires_at,30,'derived_token_expiry',self.connection)
             return True
         if kind=='derived_token_expiry':
-            if value==self.connection:self.enabled=False;self.invalidate()
+            if value==self.connection:self.enabled=False;self.private_pending=False;self.invalidate()
+            return True
+        if kind=='derived_private_publish':
+            if self.enabled and value==self.connection:
+                self.private_pending=False
+                env.clock.schedule(at+env.mechanics.receipt_latency_ms,30,'derived_account_receipt',
+                                    (self.connection,env._capture_account()))
+            return True
+        if kind=='derived_account_receipt':
+            connection,snapshot=value
+            if self.enabled and connection==self.connection:env._publish_account(snapshot)
             return True
         if kind=='derived_baseline_expiry':
             exchange,baseline,connection=value
@@ -71,6 +84,11 @@ class DerivedStream:
             env.actor_books[exchange]=book;env.observation_revision+=1;self.deliveries+=1
             return True
         return False
+
+    def source_private_fill(self):
+        if self.enabled and not self.private_pending:
+            self.private_pending=True
+            self.env.clock.schedule(self.env.now+1000,30,'derived_private_publish',self.connection)
 
     def source_book(self,at,exchange):
         if self.enabled:

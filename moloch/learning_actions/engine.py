@@ -21,6 +21,7 @@ class Resting:
     id:int
     spec:OrderSpec
     remaining:int
+    placed_at_ms:int=0
 
 
 class ApiEpisode(PreparedEpisode):
@@ -34,6 +35,8 @@ class ApiEpisode(PreparedEpisode):
         self.constraint_validator=None;self.ledger_basis_known=True
         self.relationships={}
         self.realtime=None
+        self.passive=None
+        self.private_fill_push=True  # Legacy profile; new stream profile opts out.
         self.scheduled_reads=set();self.pending_reads=deque()
         self.expiry_scheduled=set()
         self.external_ready={'Kalshi':0,'Polymarket':0}
@@ -63,7 +66,7 @@ class ApiEpisode(PreparedEpisode):
                            price=None if spec.market else UNIT-spec.price)
         return spec
 
-    def _apply_fill(self,order,price,quantity):
+    def _apply_fill(self,order,price,quantity,*,origin='crossing_book'):
         cash_before=self.cash;realized_before=self.realized
         s=order.spec;key=(s.exchange,s.side);fee=quantity*self.mechanics.limits.fee_per_share
         if s.action=='BUY':
@@ -83,6 +86,9 @@ class ApiEpisode(PreparedEpisode):
                                'quantity':quantity,'price':price,'filled_at_ms':self.now,'fee':fee,
                                'cash_delta_micros':self.cash-cash_before,
                                'realized_delta_micros':self.realized-realized_before})
+        if self.passive is not None:
+            self.passive.on_fill(s.exchange,quantity,origin)
+            self.api_fills[-1]['execution_model']=origin
 
     def _match_api(self,order):
         s=order.spec;world=self.books.get(s.exchange)
@@ -127,9 +133,9 @@ class ApiEpisode(PreparedEpisode):
             # Initial partial-size admission follows actual buying power, without
             # the old max-order/market/portfolio/target-fraction projection.
             if not spec.market:
-                remaining=min(remaining,self.buying_power()//max(1,cost+self.mechanics.limits.fee_per_share))
+                remaining=min(remaining,(self.buying_power()-committed)//max(1,cost+self.mechanics.limits.fee_per_share))
                 if not remaining:raise ValueError('INSUFFICIENT_BUYING_POWER')
-        self.api_id+=1;order=Resting(self.api_id,spec,remaining)
+        self.api_id+=1;order=Resting(self.api_id,spec,remaining,self.now)
         self._match_api(order)
         if order.remaining and not spec.market:
             # Never execute against our own injected resting quotes. Other
@@ -140,14 +146,20 @@ class ApiEpisode(PreparedEpisode):
                 (((o.spec.action=='BUY')==(o.spec.side=='YES'))!=direction)and
                 ((yes_price>=(o.spec.price if o.spec.side=='YES'else UNIT-o.spec.price))if direction else
                  (yes_price<=(o.spec.price if o.spec.side=='YES'else UNIT-o.spec.price)))for o in self.api_orders.values())
-            if not crossed:self.api_orders[order.id]=order
+            if not crossed:
+                self.api_orders[order.id]=order
+                if self.passive is not None:self.passive.on_rest(order)
         return order
 
     def _snapshot_finance(self):
-        return deepcopy((self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision))
+        debt=None if self.passive is None else (self.passive.crossing_debt,getattr(self.passive,'queues',None))
+        return deepcopy((self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision,debt))
 
     def _restore_finance(self,state):
-        self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision=state
+        self.cash,self.lots,self.realized,self.fees,self.api_orders,self.api_id,self.api_fills,self.books,self.finance_revision,debt=state
+        if self.passive is not None:
+            self.passive.crossing_debt,queues=debt
+            if queues is not None:self.passive.queues=queues
 
     def _execute(self,operation,payload,relationship_constraint=None):
         if operation in ('ORDER','BATCH','MULTI','ALL_OR_NONE'):
@@ -248,6 +260,12 @@ class ApiEpisode(PreparedEpisode):
         self.observation_revision+=1
 
     def _event(self,at,kind,value):
+        if kind=='api_counterparty_trade':
+            if self.passive is not None:
+                before=len(self.api_fills);self.passive.trade(at,value)
+                if len(self.api_fills)>before:
+                    self.notify_fill()
+            return
         if self.realtime is not None and self.realtime.event(at,kind,value):return
         if kind=='economic_boundary':
             value.capture_boundary(self,at);return
@@ -276,6 +294,7 @@ class ApiEpisode(PreparedEpisode):
         before=len(self.api_fills)
         super()._event(at,kind,value)
         if kind=='tape'and value['kind']=='book':
+            if self.passive is not None:self.passive.on_book(value['exchange_id'])
             for q,order in list(self.api_orders.items()):
                 if order.spec.exchange==value['exchange_id']:
                     self._match_api(order)
@@ -286,8 +305,13 @@ class ApiEpisode(PreparedEpisode):
                 venue,rid,key,payload=value
                 if venue=='SIG':self.realtime.authoritative_book(key,payload)
             elif kind=='tape'and value['kind']=='gap':self.realtime.source_gap(value)
-        if len(self.api_fills)>before:self.clock.schedule(at+self.mechanics.receipt_latency_ms,30,'api_account_receipt',self._capture_account())
+        if len(self.api_fills)>before:self.notify_fill()
         if kind=='feed_receipt':self.observation_revision+=1
+
+    def notify_fill(self):
+        if self.private_fill_push:
+            self.clock.schedule(self.now+self.mechanics.receipt_latency_ms,30,'api_account_receipt',self._capture_account())
+        elif self.realtime is not None:self.realtime.source_private_fill()
 
     def decision_times(self,alarm_ms=None):
         """No 1Hz grid. Wake on events, request capacity or a model-chosen alarm."""
@@ -299,12 +323,25 @@ class ApiEpisode(PreparedEpisode):
         # until its next observable receipt. Process them while advancing there.
         candidates.extend(at for at,_,_,kind,_ in self.clock._events
             if kind in ('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt',
-                        'derived_book_receipt','derived_token_receipt','derived_token_expiry','derived_baseline_expiry'))
+                        'derived_book_receipt','derived_token_receipt','derived_token_expiry','derived_baseline_expiry',
+                        'derived_account_receipt'))
         if self.budget.active is not None:candidates.append(self.busy_until)
         else:
             candidates.append(self.budget.ready_at(self.now,False))
             if not self.budget.unknown:candidates.append(self.budget.ready_at(self.now,True))
         return min((v for v in candidates if v>self.now),default=self.end)
+
+    def advance_until_observable(self,target):
+        """A future hidden fill can create a receipt that interrupts WAIT.
+
+        Hidden events alone never wake the actor. Process all events tied at
+        a timestamp before exposing its resulting observation revision.
+        """
+        revision=self.observation_revision
+        while self.clock._events and self.clock._events[0][0]<=target:
+            self.advance(self.clock._events[0][0])
+            if self.observation_revision!=revision:return self.now
+        self.advance(target);return self.now
 
     def observe(self):
         """Dynamic entity tokens: all contracts, own order IDs and read targets.
@@ -453,7 +490,21 @@ class ApiTape(PreparedTape):
         a=bisect.bisect_left(self.times,start_ms-burnin_ms);b=bisect.bisect_left(self.times,end_ms)
         for row in self.rows[a:b]:env.clock.schedule(row['available_at_ms'],10,'tape',row)
         a=bisect.bisect_left(self.flow_times,start_ms-burnin_ms);b=bisect.bisect_left(self.flow_times,end_ms)
-        for row in self.flow_rows[a:b]:env.clock.schedule(row['available_at_ms'],10,'trade_flow',row)
+        for row in self.flow_rows[a:b]:
+            env.clock.schedule(row['available_at_ms'],10,'trade_flow',row)
+        if getattr(self,'counterparty_replay_enabled',False):
+            if not hasattr(self,'flow_execution_index'):
+                self.flow_execution_index=tuple(sorted(self.flow_rows,key=lambda r:(r['executed_at_ms'],r['available_at_ms'],r['match_id'])))
+                self.flow_execution_times=tuple(r['executed_at_ms']for r in self.flow_execution_index)
+            a=bisect.bisect_left(self.flow_execution_times,start_ms-burnin_ms)
+            b=bisect.bisect_left(self.flow_execution_times,end_ms)
+            info_lo,info_hi=getattr(self,'counterparty_information_bounds',self.split.bounds(self.role))
+            for row in self.flow_execution_index[a:b]:
+                # Late public reporting inside the same authorized role must
+                # not hide a real fill before the shorter episode horizon.
+                # A row reserved to another role remains excluded entirely.
+                if info_lo<=row['available_at_ms']<info_hi:
+                    env.clock.schedule(row['executed_at_ms'],10,'api_counterparty_trade',row)
         env.start_delivery()
         if advance_to_start:env.advance(start_ms)
         return env

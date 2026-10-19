@@ -92,7 +92,7 @@ resync, metadata/lifecycle endpoints, engine resizing and passive queue fills.
 The policy has not earned deployment from these development studies. No production
 worker, live financial ledger, risk/STOP control or account client was changed.
 
-55 focused action/economic/replay/archive checks pass. The first completed GPU
+70 focused action/economic/replay/archive checks pass. The first completed GPU
 population evaluated 16 candidates, with 1,822 training decisions and 21 accepted
 PPO updates. Best worst-case marked ROI was -3.7146%; none qualified. This short
 study is development evidence, not the requested multi-day test.
@@ -183,3 +183,51 @@ lack an established aggressor label; any next flow/queue model must keep actual
 execution clocks, shared volume, queue uncertainty and original-owner exclusions
 explicit. Full historical data, full API parity and independent profitable ROI
 remain unproved. Primary production state is untouched.
+
+## Passive execution continuation
+
+Two opt-in, explicitly uncalibrated flow models now complement crossing fills:
+strict price-priority interception, and displayed-queue-ahead matching. Both use
+original engine-print execution clocks, never the later public receipt as a new
+counterparty. They share each print's volume across own orders; prior crossing
+volume is debited first. Strict improvement fills use the quote's less favorable
+limit price. Equal-price queue fills require recorded volume to consume displayed
+queue ahead; quantity drops give no free cancellation credit, observed additions
+are conservatively ahead, and own orders remain FIFO. Unknown initial queues do
+not receive an invented zero ahead. Atomic rollback restores queue/depletion state.
+
+Original-owner match exclusions can be supplied with a source pin. Their
+completeness and actual queue/market reaction remain unverified; these models
+cannot certify execution parity or production profitability. Their assumptions
+are frozen independently of the policy; models cannot choose a more favorable
+fill rule. [Implementation](../../moloch/learning_actions/passive.py).
+
+A genuine event-loop gap is also fixed: a hidden future fill can create a receipt
+that interrupts an already waiting actor. Hidden execution alone does not wake it;
+all tied events finish before exposing the observation. Previously, a newly
+created receipt could be processed while the actor slept through to its original
+alarm. The new private-stream profile coalesces fills for one second, adds the
+modeled receipt latency, fences disconnected/expired sessions and requires REST
+when no stream is active. This replaces implicit private broker delivery only in
+explicitly configured new experiments. Historical run007 remains unchanged.
+
+The causal quoting reference reads delivered books and sizes against the available
+bank, never future print prices. The tight-spread improvement reference placed
+no quote packets. The joining reference attempted239packets on each arm, but
+neither crossing-only nor the queue-flow hypothesis filled during this selected
+8min interval;4,510shares of original prints did not yield intercepted volume.
+That is an honest absence of opportunity under this setup, not proof that the
+whole competition has no market-making opportunity. The tape covers only its
+observed contracts. [Current reference](passive-reference-study-003.json).
+
+70focused checks cover exact fill volume/FIFO, equal-price uncertainty, late
+reports, duplicate trades, crossing-volume reuse, atomic rollback, expiry,
+owner-exclusion hooks, dynamic receipt wake-up, stream coalescing and remaining
+same-exchange admission room. Training can preserve several distinct verified
+parents and a fresh founder rather than copying one winner into every lineage.
+
+Next: transition at a preserved checkpoint to the expanded streaming/flow profile,
+then assemble substantially longer three-venue development history from retained
+originals. Full eight-day chronology, calibrated complete API/ALL/lifecycle parity
+and independently positive ROI remain incomplete. None of this changes official
+production holdings, bank history or execution controls.
