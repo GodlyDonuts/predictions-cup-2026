@@ -1,0 +1,37 @@
+{
+  "nativeQid": 19616,
+  "actualFilledQuantity": 0,
+  "nativeRetired": true,
+  "originalDispatchKinds": [
+    "not_sent"
+  ],
+  "originalDispatchProof": {
+    "chain": "0485e09373c7250ce00ca39468642693f25ba91afb7454450f5582622861b020",
+    "networkAttempts": 0,
+    "qid": 19616,
+    "sequence": 26159
+  },
+  "nativeOriginalRetirement": {
+    "nativeSequence": 659906,
+    "nativeRecordHash": "00700e8f6fd8096dee5bb3464d09a0c4387752ad50640fd64d1f67ab04740c18",
+    "event": {
+      "confirmedNetworkAttempts": 0,
+      "orderId": 19616,
+      "processedAt": "2026-10-19T05:13:12.099Z",
+      "receiptHash": "b265efef4516a6789614cf3e340a21aeed2771531fe71b3e75a19a9750edffe1",
+      "receivedAt": "2026-10-19T05:13:12.099Z",
+      "source": "moloch_live_dispatcher",
+      "sourceRef": {
+        "hash": "dcfb695491ee6c76863c66b0a1db04f888a2daf47b2f88aa0a8a31755da0de57",
+        "id": "moloch-live",
+        "sequence": 659896
+      },
+      "type": "unsubmitted_intent_retired"
+    }
+  },
+  "nativeReceiptHashMatchesOriginalDispatchProof": true,
+  "durableIntentOrOriginalAttemptRecorded": false,
+  "sdkRequestOrFillClaimed": false,
+  "preintentLatencyDirectlyMeasured": false,
+  "originalEvidencePreserved": true
+}

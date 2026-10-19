@@ -1,0 +1,8 @@
+{
+  "checkedGitHubMainCommit": "d631142e7fd4621cd9e59b1a4dbeab0bbdfc1cbe",
+  "compiledRustSourceFilesVerified": 233,
+  "everyCompiledSourceMatchesCheckedMainAfterLineEndingNormalization": true,
+  "binarySha256": "120bdb492c5f87651a3333dbcb28c73fceb025c4ac034db44bb481e476333658",
+  "nativeIdentityUnchanged": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "sdkLibraryReusedUnchanged": true
+}

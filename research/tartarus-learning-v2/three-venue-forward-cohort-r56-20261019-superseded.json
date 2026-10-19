@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-19T05:39:47.178277+00:00",
+  "classification": "unavailable_exact_producer_before_frozen_fit",
+  "reason": "R56 replaced05:35UTC for checked same-head full-ledger execution fix. Original future chronology and heldout quarantine preserved; this cohort cannot supply its required producer.",
+  "producer": {
+    "pid": 879020,
+    "startTicks": "35401970",
+    "binarySha256": "9c0ec157d9e90f8e65c2f454ce401ab7bf1eaacf43f4950aace83f67be64bdce"
+  },
+  "actualSuccessorPid": 886375,
+  "sourceCoverageComplete": false,
+  "originalHeldoutRepurposedAsTraining": false,
+  "executionAuthority": false
+}

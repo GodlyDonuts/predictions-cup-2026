@@ -1,0 +1,9 @@
+{
+  "frozenAt": "2026-10-19T05:39:47.178277+00:00",
+  "protocolSha256": "6423e9164e38bcb09ec5543b23337884a27e97485d2a0e2ffcaacf3408dc8ee0",
+  "kalshiUniverseSha256": "3f8dd6fa3ef6e5e20a6f19030b347f47fa72e3103609c70f6c7e0ab3293b21b0",
+  "polymarketUniverseSha256": "6fc2e7f4b53ebd300d97d3bd74faa505b246156b30b320c99ba8f201ad2889a5",
+  "maximumBoundaryOrObservationGapMs": 60000,
+  "referenceContractEquivalenceVerified": false,
+  "executionAuthority": false
+}

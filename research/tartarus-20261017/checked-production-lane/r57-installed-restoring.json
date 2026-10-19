@@ -1,0 +1,46 @@
+{
+  "at": "2026-10-19T05:35:03.948745+00:00",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r57-ledger-snapshot-20261019T053453Z",
+  "priorPid": 879020,
+  "sourceCommit": "d631142e7fd4621cd9e59b1a4dbeab0bbdfc1cbe",
+  "binarySha256": "120bdb492c5f87651a3333dbcb28c73fceb025c4ac034db44bb481e476333658",
+  "controlSha256": "bed178634e699f969a344bb3c1aa3a595c37ef40db1198ee9935a87cce00467a",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "originals": {
+    "head": "a5261ecd593c48a2229b5e818afcde6b32f9126431ce8ec80c53f9a7d6321ae3",
+    "report": "010782666e823246d52027891b2f22b6001c65bb7ac0679fd07fd17cb5b3a886",
+    "manifest": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "bridges": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c",
+    "fundamental": "90292050767c69919c4a5a1236c3ef1f934d589a2c55451a82ed1d135c89c19f",
+    "unit": "cc550c9117a14c87e93df721d62a3b1493e41d1bf813334a42c903bde15c6a78",
+    "control": "3822388819f4ec75977d154daff3ce57fc20a1915472f1c56dad471d0bb91ed8",
+    "sdk-manifest": "c57441d0106f39a78db45d89f3793fc79677731369019fec5f47d318d70eb96d"
+  },
+  "prefixes": {
+    "financial": {
+      "bytes": 2230386293,
+      "sha256": "e6767d76cdb76c7450611d248db8592916839cfea6894609ab32d1a00952bce9"
+    },
+    "dispatch": {
+      "bytes": 25003760,
+      "sha256": "66b6ee823f927059fa64695a172ce221bc4596f36da0c58f79c250a61da23dc0"
+    }
+  },
+  "originalFillCount": 395,
+  "originalFifoAndAllHistoryPreserved": true,
+  "engineUpgradeCount": 20,
+  "all14OriginalG12ReviewsPreserved": true,
+  "sdkUnknownCount": 0,
+  "sdkActive": null,
+  "sdkStateAndBindingsChanged": false,
+  "allActualAcknowledgmentsTerminal": true,
+  "rank19616OriginalNeverAttemptedProofVerifiedAndNativeRetired": true,
+  "stopRemovedOrBypassed": false,
+  "activationDailyWindowRiskLimiterOrSourceClocksChanged": false,
+  "ordersSubmittedByDeployment": 0,
+  "currentTradingVerified": false,
+  "pid": 886375,
+  "startTicks": "35775796",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}
