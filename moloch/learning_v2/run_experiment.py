@@ -23,6 +23,7 @@ from .reference_env import Mechanics
 from .train_inner import PPOConfig, PPOTrainer, Trajectory, fingerprint
 from .inventory_curriculum import seed_inventory
 from .excess_reward import MatchedHoldReward
+from .interval_excess_reward import IntervalHoldReward
 
 
 def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -44,8 +45,8 @@ def load_mechanics(path):
 
 def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_role='fit_training'):
     objective=protocol.get('training_reward_objective','marked_wealth_return')
-    if objective not in ['marked_wealth_return','matched_hold_excess','realized_pnl']:raise ValueError('UNKNOWN_TRAINING_REWARD_OBJECTIVE')
-    hold_reward=None;excess_observation=None;previous_realized=0
+    if objective not in ['marked_wealth_return','matched_hold_excess','realized_pnl','interval_hold_lower_excess']:raise ValueError('UNKNOWN_TRAINING_REWARD_OBJECTIVE')
+    hold_reward=None;interval_reward=None;interval_observation=None;excess_observation=None;previous_realized=0
     device = next(model.parameters()).device
     length = protocol['episode_length_ms']; drain = protocol['maximum_receipt_drain_ms']
     initial = protocol['initial_cash_micros']; end = start+length; terminal = end+drain
@@ -65,9 +66,15 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
                                             selection=protocol.get('initial_inventory_selection','shuffle'))
             initial=initial_portfolio['initial_marked_wealth_micros'];previous=initial;env.initial_wealth=initial
         if at>=start and hold_reward is None:hold_reward=MatchedHoldReward(env.account(),initial)
+        if at>=start and objective=='interval_hold_lower_excess' and interval_reward is None:
+            from .interval_episodes import IntervalEpisode
+            if not isinstance(env,IntervalEpisode):raise ValueError('INTERVAL_EPISODE_REQUIRED')
+            interval_reward=IntervalHoldReward(env.account(),env.sizing_capital_micros)
         obs=env.observe()
-        if (model.contract_features,model.global_features)not in[(20,12),(CONTRACT_FEATURES,GLOBAL_FEATURES)]:
+        if (model.contract_features,model.global_features)not in[(20,12),(CONTRACT_FEATURES,GLOBAL_FEATURES),(32,16)]:
             raise ValueError('UNKNOWN_FEATURE_SEMANTICS')
+        if model.contract_features==32 and (obs['contracts'].shape[-1]!=32 or len(obs['global_state'])!=16):
+            raise ValueError('OBSERVED_INTERVAL_FEATURES_REQUIRED')
         # The named legacy prefix keeps its original feature meanings. All
         # source/adapter hashes remain in the new experiment provenance.
         view={**obs,'contracts':obs['contracts'][:,:model.contract_features],
@@ -99,6 +106,10 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
             valid=valid and excess_observation is not None and excess_observation.available
         elif objective=='realized_pnl':
             reward=(env.realized-previous_realized)/initial;previous_realized=env.realized
+        elif objective=='interval_hold_lower_excess':
+            interval_observation=interval_reward.observe(env.account(),env.yes_intervals())if interval_reward else None
+            reward=interval_observation.normalized_lower_increment if interval_observation else 0.
+            valid=interval_observation is not None and interval_observation.available
         # Missing intermediates are explicitly masked; any eventual mark
         # incorporates the whole unobserved interval, not an assumed flat P&L.
         rows.append({**tensors,'masks':masks,'reset':reset,'actions':row['actions'],
@@ -119,7 +130,10 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
     unresolved=bool(env.orders or env.budget.active or env.budget.unknown)
     qualified=final is not None and not unresolved
     terminal_excess=hold_reward.observe(final,env.marks())
-    if objective=='matched_hold_excess':
+    if objective=='interval_hold_lower_excess':
+        interval_observation=interval_reward.observe(env.account(),env.yes_intervals())
+        rows[-1]['reward']+=interval_observation.normalized_lower_increment
+    elif objective=='matched_hold_excess':
         qualified=qualified and terminal_excess.available
         rows[-1]['reward']+=terminal_excess.normalized_increment
     elif objective=='realized_pnl':rows[-1]['reward']+=(env.realized-previous_realized)/initial
@@ -137,6 +151,9 @@ def rollout(tape, mechanics, protocol, model, start, *, baseline=False, split_ro
         target_success_labels=torch.full((len(rows),1),float('nan'),device=device),
         behavior_sha256=behavior,split_manifest_sha256=protocol['_sha256'],split_role=split_role)
     stats={'training_reward_objective':objective,'terminal_hold_wealth_micros':terminal_excess.hold_wealth_micros,
+           'interval_lower_excess_micros':interval_observation.lower_excess_micros if interval_observation else None,
+           'interval_upper_excess_micros':interval_observation.upper_excess_micros if interval_observation else None,
+           'qualified_relative_interval_accounting':bool(interval_observation and interval_observation.available and not unresolved),
            'terminal_excess_wealth_micros':terminal_excess.excess_wealth_micros,
            'start_ms':start,'decision_end_ms':end,'terminal_ms':terminal,'decisions':length//protocol['decision_interval_ms'],
            'recurrent_burnin_frames':protocol['recurrent_burnin_ms']//protocol['decision_interval_ms'],'split_role':split_role,

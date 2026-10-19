@@ -53,5 +53,23 @@ class ReferenceOrientationTests(unittest.TestCase):
         self.assertEqual([x['market_id']for x in xs],['1','2'])
         self.assertTrue(all(x['kind']=='reference_gap'and 'price_yes_micros'not in x for x in xs))
 
+    def test_explicit_gap_policy_preserves_future_clock_without_inventing_price(self):
+        p=self.poly();body=copy.deepcopy(p['receipt']['body']);body['timestamp']=str(AT+2);p['receipt']=receipt(body)
+        rows=polymarket_references(raw(p),AT,invalid_market_data='gap')
+        self.assertEqual([r['market_id']for r in rows],['1','2'])
+        self.assertTrue(all(r['kind']=='reference_gap' and r['reason']=='REFERENCE_SOURCE_CLOCK_AFTER_RECEIPT'
+                            and r['rejected_original_source_at_ms']==AT+2 and 'price_yes_micros'not in r for r in rows))
+        p['receipt']['bodyText']+=' '
+        with self.assertRaisesRegex(ValueError,'REFERENCE_BODY_BYTES_CHANGED'):
+            polymarket_references(raw(p),AT,invalid_market_data='gap')
+
+    def test_crossed_book_gap_never_becomes_spread_or_relaxes_identity_check(self):
+        p=self.poly();body=copy.deepcopy(p['receipt']['body']);body['bids'][0]['price']='0.9';p['receipt']=receipt(body)
+        rows=polymarket_references(raw(p),AT,invalid_market_data='gap')
+        self.assertTrue(all(r['kind']=='reference_gap'and r['reason']=='REFERENCE_CROSSED_BOOK'for r in rows))
+        p['identity']['assetId']='other'
+        with self.assertRaisesRegex(ValueError,'REFERENCE_TOKEN_IDENTITY'):
+            polymarket_references(raw(p),AT,invalid_market_data='gap')
+
 
 if __name__=='__main__':unittest.main()

@@ -123,23 +123,31 @@ class Projection:
 
 
 def project(account: Account, marks: Mapping[tuple[str, str], int], request: Target,
-            limits: Limits, available_depth: int | None = None) -> Projection:
+            limits: Limits, available_depth: int | None = None, *,
+            sizing_capital_micros: int | None = None) -> Projection:
     """Physical projection only: no predictor, alpha threshold or strategy menu.
 
     Depth is optional for a resting limit request. A simulator must independently
     match against shared liquidity at arrival; this function does not fill it.
     """
+    # An explicit funded-capital denominator permits partial observability.
+    # It is a sizing convention, never a replacement mark or reported wealth.
     w = wealth(account, marks)
+    if sizing_capital_micros is not None:
+        natural(sizing_capital_micros, 'SIZING_CAPITAL')
+        if not sizing_capital_micros: raise ValueError('POSITIVE_SIZING_CAPITAL')
+        w = sizing_capital_micros
     key = (request.exchange, request.side)
     mark = marks.get(key)
-    if w is None or type(mark) is not int or mark <= 0:
+    exiting = sizing_capital_micros is not None and request.action == 'SELL' and request.target_fraction_ppm == 0
+    if w is None or (not exiting and (type(mark) is not int or not 0 < mark <= UNIT)):
         return Projection(0, 0, 0, ('WEALTH_OR_SIDE_MARK_UNAVAILABLE',))
     if available_depth is not None:
         natural(available_depth, 'DEPTH')
     current = account.quantities.get(key, 0)
     opposite_key = (request.exchange, 'NO' if request.side == 'YES' else 'YES')
     opposite_current = account.quantities.get(opposite_key,0)
-    desired = (request.target_fraction_ppm * w // UNIT) // mark
+    desired = 0 if exiting else (request.target_fraction_ppm * w // UNIT) // mark
     effective = (current-opposite_current+account.pending_buys.get(key,0)-account.pending_buys.get(opposite_key,0)
                  -account.pending_sells.get(key,0)+account.pending_sells.get(opposite_key,0))
     requested = max(0, desired - effective if request.action == 'BUY' else effective - desired)

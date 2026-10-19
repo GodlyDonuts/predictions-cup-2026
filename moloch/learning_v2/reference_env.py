@@ -147,7 +147,8 @@ class ReferenceEnv:
         book = self.books.get(request.exchange)
         if book is None or not book.visible(self.now, self.mechanics.maximum_book_age_ms):
             return Projection(0, 0, 0, ('BOOK_UNAVAILABLE',))
-        projection = project(self.account(), self.marks(), request, self.mechanics.limits)
+        projection = project(self.account(), self.marks(), request, self.mechanics.limits,
+                             sizing_capital_micros=getattr(self,'sizing_capital_micros',None))
         self.decisions.append((self.now, request, projection))
         if projection.admitted_quantity:
             self.next_order += 1

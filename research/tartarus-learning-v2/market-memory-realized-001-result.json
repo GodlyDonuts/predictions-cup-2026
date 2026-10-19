@@ -1,0 +1,213 @@
+{
+  "run": "market-memory-realized-001",
+  "reportSha256": "829e7478259b67f51840d099b13abe708ac07280abb507a1fcd4ae58da563df8",
+  "trainingDecisions": 153592,
+  "optimizerUpdates": 256,
+  "wallSeconds": 1236.9940654000966,
+  "evaluatedCheckpoints": 8,
+  "profitabilityEstablished": false,
+  "productionChanged": false,
+  "heldoutEvaluation": false,
+  "evaluations": [
+    {
+      "block": 7,
+      "parameterSha256": "e894099c1ec2aeeed6d1886bd3aea0e92e58c5859a2387ad15b5da6150ee64b4",
+      "checkpointSha256": "b80dc93a76358ab4352d10624b098eaeabece1b92678f7fdff247d479a7b895d",
+      "strictFourPositiveExcess": false,
+      "modeledHoldExcessMicros": [
+        -692415000,
+        4095000,
+        -161405000,
+        19580000
+      ],
+      "modeledNetRealizedFifoMicros": [
+        -47835000,
+        0,
+        -16990000,
+        0
+      ],
+      "fillReceipts": [
+        3,
+        1,
+        1,
+        1
+      ],
+      "allFourPositiveRealized": false
+    },
+    {
+      "block": 15,
+      "parameterSha256": "0107c81c9fb896cfd6e1ac78ec691d78ef3e2fa2c2212cd573fe96a0e8065238",
+      "checkpointSha256": "1552f04fbe79f49a6c7ff66a818c8197a1469812b9bc13f2021c48418329b30c",
+      "strictFourPositiveExcess": false,
+      "modeledHoldExcessMicros": [
+        -157510000,
+        4606000,
+        -280605000,
+        3626000
+      ],
+      "modeledNetRealizedFifoMicros": [
+        -29140000,
+        0,
+        -37440000,
+        0
+      ],
+      "fillReceipts": [
+        3,
+        1,
+        3,
+        1
+      ],
+      "allFourPositiveRealized": false
+    },
+    {
+      "block": 23,
+      "parameterSha256": "b90b421c51ddb28beae84645d60edaf0bbba9d874c872acd2a4fee924c81cef8",
+      "checkpointSha256": "7f55aa870bc622e82d152dd31b78320585670f6155f99cac8a587e1501e761d8",
+      "strictFourPositiveExcess": true,
+      "modeledHoldExcessMicros": [
+        88060000,
+        9282000,
+        57345000,
+        8262000
+      ],
+      "modeledNetRealizedFifoMicros": [
+        -12580000,
+        0,
+        -23515000,
+        0
+      ],
+      "fillReceipts": [
+        1,
+        1,
+        2,
+        1
+      ],
+      "allFourPositiveRealized": false
+    },
+    {
+      "block": 31,
+      "parameterSha256": "d8b4d77d4b03c5d386e1fb07b76c89b93b6650321adeb07183fca4ad3da9dd47",
+      "checkpointSha256": "549127831079a0f07408a5be4926de4cad1fd0498703133b48cbb54310d7390f",
+      "strictFourPositiveExcess": false,
+      "modeledHoldExcessMicros": [
+        0,
+        12693000,
+        0,
+        11742000
+      ],
+      "modeledNetRealizedFifoMicros": [
+        0,
+        -10000,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        2,
+        0,
+        1
+      ],
+      "allFourPositiveRealized": false
+    },
+    {
+      "block": 39,
+      "parameterSha256": "81539c958ca55cf65c0ff680d16b7ad772bb73b807df57647e107991b40abf49",
+      "checkpointSha256": "8353cbb0d9338489f565acd240092e25ca4d5d6f6991eed3393c0fe8853c982f",
+      "strictFourPositiveExcess": false,
+      "modeledHoldExcessMicros": [
+        0,
+        -9890000,
+        0,
+        0
+      ],
+      "modeledNetRealizedFifoMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        2,
+        0,
+        0
+      ],
+      "allFourPositiveRealized": false
+    },
+    {
+      "block": 47,
+      "parameterSha256": "9b01f4b867cbdf349e0075c46a4d1e29e410a73af625f0333f9a8e8476b2990d",
+      "checkpointSha256": "7b1bf03f2c20a624a768d71f0f6213b110b08b412b43436edcc463e70e00a9b6",
+      "strictFourPositiveExcess": false,
+      "modeledHoldExcessMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "modeledNetRealizedFifoMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "allFourPositiveRealized": false
+    },
+    {
+      "block": 55,
+      "parameterSha256": "0e1ba1c82cd54c64a114fd6a5a096276bf81009f9b61082c50fbedbc006bd2f9",
+      "checkpointSha256": "9dca8b3a79959a1381fd70d707bdc8316e6630d1310096bb33c194133b0a24ff",
+      "strictFourPositiveExcess": false,
+      "modeledHoldExcessMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "modeledNetRealizedFifoMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "allFourPositiveRealized": false
+    },
+    {
+      "block": 63,
+      "parameterSha256": "b2736ea9ab20c3e4feddf9f2f64566d48f1e599d8f7659c36a0f5f36ce25af55",
+      "checkpointSha256": "e9b3bcd8917956aa5bd7fdeb123a965370fd73ad2a76d3fbf765b48e35c0db6a",
+      "strictFourPositiveExcess": false,
+      "modeledHoldExcessMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "modeledNetRealizedFifoMicros": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fillReceipts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "allFourPositiveRealized": false
+    }
+  ]
+}

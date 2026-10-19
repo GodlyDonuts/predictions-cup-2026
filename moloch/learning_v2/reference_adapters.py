@@ -81,7 +81,8 @@ def kalshi_references(raw,mappings,available_at_ms,*,mapping_kind=None):
             for m in selected]
 
 
-def polymarket_references(raw,available_at_ms):
+def polymarket_references(raw,available_at_ms,*,invalid_market_data='raise'):
+    if invalid_market_data not in ('raise','gap'):raise ValueError('EXPLICIT_INVALID_MARKET_DATA_POLICY')
     row=json.loads(raw)
     if 'identity'not in row or 'receipt'not in row or row.get('invalid'):return []
     identity=row['identity'];checked=receipt(row,available_at_ms)
@@ -103,5 +104,12 @@ def polymarket_references(raw,available_at_ms):
     if not(type(stamp)is int or isinstance(stamp,str)and stamp.isdigit()):raise ValueError('EXACT_REFERENCE_SOURCE_CLOCK')
     source_at=int(stamp)
     if source_at<0:raise ValueError('REFERENCE_SOURCE_CLOCK')
+    if invalid_market_data=='gap' and (bid>ask or source_at>available_at_ms):
+        # A genuine but unusable quote invalidates this market observation.
+        # Original byte/hash/token checks above still fail on tampering. Never
+        # clamp the venue clock or smuggle a future price into model inputs.
+        return [{**gap(raw,'Polymarket',m['sigMarketId'],identity['conditionId'],available_at_ms),
+                 'reason':'REFERENCE_SOURCE_CLOCK_AFTER_RECEIPT'if source_at>available_at_ms else'REFERENCE_CROSSED_BOOK',
+                 'rejected_original_source_at_ms':source_at}for m in selected]
     return [feature(raw,'Polymarket',m['sigMarketId'],identity['conditionId'],bid,ask,m['sigSide'],available_at_ms,received,source_at)
             for m in selected]

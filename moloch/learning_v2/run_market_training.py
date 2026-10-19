@@ -42,8 +42,13 @@ def main():
     if min(args.batch_worlds,args.blocks,args.hidden_size,args.evaluate_every)<=0:raise ValueError('FINITE_POSITIVE_TRAINING_BOUNDS_REQUIRED')
     args.output.mkdir(parents=True,exist_ok=False);torch.set_num_threads(4);torch.manual_seed(args.seed)
     if not torch.cuda.is_available():raise ValueError('CUDA_REQUIRED')
-    torch.cuda.reset_peak_memory_stats();begun=time.perf_counter();tape=Tape(args.dataset)
+    torch.cuda.reset_peak_memory_stats();begun=time.perf_counter()
     base=json.loads(args.protocol.read_text());mechanics=load_mechanics(args.mechanics);profiles=load_profiles(args.execution_profiles,mechanics)
+    from .interval_episodes import IntervalTape,FEATURE_SCHEMA
+    from .interval_market_policy import IntervalMarketPolicy
+    interval=base.get('feature_schema')==FEATURE_SCHEMA
+    if base.get('feature_schema')not in [None,FEATURE_SCHEMA]:raise ValueError('UNKNOWN_MARKET_FEATURE_SCHEMA')
+    tape=(IntervalTape if interval else Tape)(args.dataset)
     if tape.manifest_sha256!=base['initial_dataset_manifest_sha256']or base['history_roles']!=['fit_training','search_development']:raise ValueError('FIXED_DEVELOPMENT_DATASET_ROLE_REQUIRED')
     minimum=max(tape.times[0],base['run_start_ms'])+base['recurrent_burnin_ms'];maximum=base['fit_end_ms']-base['episode_length_ms']-base['maximum_receipt_drain_ms']
     if maximum<minimum:raise ValueError('NO_COMPLETE_FIT_WINDOW')
@@ -51,7 +56,7 @@ def main():
     source={x.name:sha(x)for x in Path(__file__).parent.glob('*.py')if not x.name.startswith('test_')}
     frozen=args.output/'source/moloch/learning_v2';frozen.mkdir(parents=True)
     for name in source:shutil.copyfile(Path(__file__).parent/name,frozen/name)
-    model=MarketMemoryPolicy(len(tape.exchanges),hidden_size=args.hidden_size,market_hidden_size=args.market_hidden_size).cuda()
+    model=(IntervalMarketPolicy if interval else MarketMemoryPolicy)(len(tape.exchanges),hidden_size=args.hidden_size,market_hidden_size=args.market_hidden_size).cuda()
     plan={'classification':'batched_development_training_not_locked_generalization_or_live_approval',
           'batch_worlds':args.batch_worlds,'blocks':args.blocks,'epochs':args.epochs,'hidden_size':args.hidden_size,
           'parameters':sum(p.numel()for p in model.parameters()),'architecture':model.architecture,
@@ -78,7 +83,8 @@ def main():
             if not allocations or any(type(v)is not int or not 0<=v<=1_000_000 for v in allocations):raise ValueError('EXPLICIT_TRAINING_INVENTORY_CYCLE')
             fit_protocol={**protocol,'initial_inventory_allocation_ppm':allocations[block%len(allocations)]}
             trajectory,results,perf=(pool.rollout(m,fit_protocol,model,world_starts)if pool else rollout_batch(tape,m,fit_protocol,model,world_starts))
-            qualified=torch.tensor([e['qualified_accounting']for e in results],device='cuda')
+            qualification='qualified_relative_interval_accounting'if fit_protocol.get('training_reward_objective')=='interval_hold_lower_excess'else'qualified_accounting'
+            qualified=torch.tensor([e[qualification]for e in results],device='cuda')
             trajectory=replace(trajectory,learn=trajectory.learn&qualified.unsqueeze(0))
             at=time.perf_counter();updates=trainer.update(trajectory)if bool(trajectory.learn.any())else []
             row={'block':block,'execution_profile':label,'training_inventory_allocation_ppm':fit_protocol['initial_inventory_allocation_ppm'],'rollout':perf,'update_wall_seconds':time.perf_counter()-at,

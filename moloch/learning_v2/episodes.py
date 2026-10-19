@@ -36,7 +36,7 @@ class Tape:
     def episode(self, mechanics, start_ms, end_ms, *, initial_cash_micros, target_wealth_micros, burnin_ms=60_000, advance_to_start=True):
         if start_ms-burnin_ms < self.times[0] or end_ms > self.times[-1] or start_ms>=end_ms:
             raise ValueError('EPISODE_OUTSIDE_AVAILABLE_CHRONOLOGY')
-        env = Episode(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,target_wealth_micros,start_ms,end_ms)
+        env = getattr(self,'episode_type',Episode)(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,target_wealth_micros,start_ms,end_ms)
         lo = bisect.bisect_left(self.times,start_ms-burnin_ms)
         hi = bisect.bisect_right(self.times,end_ms)
         for row in self.rows[lo:hi]: env.clock.schedule(row['available_at_ms'],10,'tape',row)
@@ -101,6 +101,7 @@ class Episode(ReferenceEnv):
 
     def observe(self):
         account = self.account(); marks = self.marks(); w = wealth(account,marks)
+        scale = getattr(self,'sizing_capital_micros',None) or w
         n = len(self.exchanges); features = np.zeros((n,CONTRACT_FEATURES),np.float32)
         present = np.zeros(n,bool); present[0] = True
         masks = {'market':np.zeros(n,bool),'family':np.zeros((n,len(FAMILIES)),bool),
@@ -117,7 +118,7 @@ class Episode(ReferenceEnv):
             b = q.book; bid = b.bids[0][0] if b.bids else 0; ask = b.asks[0][0] if b.asks else UNIT
             valid_book = q.visible(self.now,self.mechanics.maximum_book_age_ms)
             k,kv = self._reference(ex,'Kalshi'); p,pv = self._reference(ex,'Polymarket')
-            def fraction(amount): return amount/w if w is not None else 0.
+            def fraction(amount): return amount/scale if scale is not None else 0.
             cost = account.market_cost.get(ex,0)
             buy_pending = account.pending_market_cost.get(ex,0)
             sell_pending = sum(v for (e,s),v in account.pending_sells.items()if e==ex)
@@ -141,7 +142,7 @@ class Episode(ReferenceEnv):
                      +account.pending_buys.get((ex,side),0)-account.pending_buys.get((ex,opposite),0)
                      -account.pending_sells.get((ex,side),0)+account.pending_sells.get((ex,opposite),0))
                 mark=marks.get((ex,side),0)
-                masks['target_scale'][i,2,side_id]=min(1.,max(1e-9,net*mark/w))if w else 1.
+                masks['target_scale'][i,2,side_id]=min(1.,max(1e-9,net*mark/scale))if scale else 1.
             # The initial marked-capital experiment requires a current mark
             # for a newly acquired position. This is an observability mask,
             # not a signal or a synthetic zero-return valuation.
@@ -151,16 +152,18 @@ class Episode(ReferenceEnv):
             masks['family'][i,3] = self.budget.active is None and any(
                 o.request.exchange==ex and o.phase=='resting' and not o.cancel_requested
                 for o in self.orders.values())
-            if busy or not valid_book or w is None or not mark_available: continue
+            if busy or not valid_book or scale is None: continue
             for side_id,side in enumerate(['YES','NO']):
                 buys = ask if side=='YES' else UNIT-bid
                 sells = bid if side=='YES' else UNIT-ask
                 projected={}
                 for family,action,price in [(1,'BUY',buys),(2,'SELL',sells),(4,'SELL',sells)]:
                     if not 0<price<UNIT: continue
+                    if not mark_available and (family!=4 or getattr(self,'sizing_capital_micros',None)is None): continue
                     if action not in projected:
                         t = Target(ex,side,UNIT if action=='BUY' else 0,UNIT,price,action)
-                        projected[action] = project(account,marks,t,self.mechanics.limits).admitted_quantity>0
+                        projected[action] = project(account,marks,t,self.mechanics.limits,
+                            sizing_capital_micros=getattr(self,'sizing_capital_micros',None)).admitted_quantity>0
                     allowed = projected[action]
                     masks['side'][i,family,side_id] = allowed
                     for offset in range(5):
@@ -172,7 +175,7 @@ class Episode(ReferenceEnv):
         # otherwise dominate exploration and its entropy bonus.
         masks['market'][1:] = masks['family'][1:,1:].any(-1)
         masks['family'][1:,0] = False
-        def fraction(amount): return amount/w if w is not None else 0.
+        def fraction(amount): return amount/scale if scale is not None else 0.
         active = {ex for (ex,side),qty in account.quantities.items()if qty}
         active |= {ex for (ex,side),qty in account.pending_buys.items()if qty}
         cap = self.mechanics.limits.maximum_fresh_markets

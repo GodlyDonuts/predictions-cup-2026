@@ -125,8 +125,11 @@ def compile_development(native,kalshi,polys,protocol_path,source_pin_path,output
                         identity=row.get('identity')
                         if not identity:continue
                         if pm.get(identity.get('assetId'))!=identity:raise ValueError('ORIGINAL_POLYMARKET_MAPPING_IDENTITY_CHANGED')
-                        rows=polymarket_references(raw,available)
+                        rows=polymarket_references(raw,available,invalid_market_data='gap')
                     for item in rows:item['calendar_role']=role;emit(item)
+        (output/'coverage-counts.json').write_text(json.dumps({'observationCounts':{'/'.join(k):v for k,v in counts.items()},
+            'fitSigExchanges':len(exchanges),'fitReferenceMarkets':{v:len(m)for v,m in markets.items()},
+            'allCoverageChecksPassed':False,'classification':'counts_before_temporal_coverage_validation_not_completed_dataset'},indent=2)+'\n')
         if len(exchanges)<protocol['minimumFitObservedSigExchanges']or any(len(markets[v])<protocol['minimumFitMappedReferenceMarketsPerExternalVenue']for v in ['Kalshi','Polymarket']):raise ValueError('REQUIRED_FORWARD_SOURCE_COVERAGE_FAILED')
         gap=source_pin['maximumBoundaryOrObservationGapMs']
         if type(gap)is not int or gap<=0:raise ValueError('EXPLICIT_POSITIVE_COVERAGE_GAP')

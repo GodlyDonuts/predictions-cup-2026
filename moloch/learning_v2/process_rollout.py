@@ -39,6 +39,11 @@ def worker(index,directory,expected_sha,jobs,requests,replies,stop):
             except queue.Empty:continue
             if job is None:return
             state,shape,mechanics,protocol,assignments,baseline,role=job
+            if shape[:2]==(32,16):
+                from .interval_episodes import IntervalTape,FEATURE_SCHEMA
+                if protocol.get('feature_schema')!=FEATURE_SCHEMA:raise ValueError('INTERVAL_ACTOR_FEATURE_SCHEMA')
+                if not isinstance(tape,IntervalTape):tape=IntervalTape(Path(directory))
+            elif type(tape)is not Tape:tape=Tape(Path(directory))
             def run_world(world,start):
                 try:
                     proxy=ProcessProxy(world,state,shape,requests,replies[world],stop)

@@ -46,4 +46,21 @@ class FrozenInferenceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):load_frozen_policy(p,hashlib.sha256(p.read_bytes()).hexdigest())
 
 
+    def test_interval_checkpoint_pins_distinct_features_and_interval_sources(self):
+        from .interval_market_policy import IntervalMarketPolicy
+        model=IntervalMarketPolicy(3,hidden_size=32,market_hidden_size=8)
+        _,bundle=self.bundle();bundle.update(architecture=model.architecture,contract_features=32,global_features=16,
+            hidden_size=model.hidden_size,model=model.state_dict(),parameter_sha256=fingerprint(model))
+        for name in ['interval_market_policy.py','interval_episodes.py','interval_excess_reward.py']:
+            bundle['provenance']['source_sha256'][name]=hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+        with tempfile.TemporaryDirectory()as d:
+            p=Path(d)/'interval.pt';torch.save(bundle,p)
+            loaded,_=load_frozen_policy(p,hashlib.sha256(p.read_bytes()).hexdigest())
+            self.assertEqual((loaded.contract_features,loaded.global_features),(32,16))
+            self.assertEqual(fingerprint(loaded),fingerprint(model))
+            bundle['provenance']['source_sha256']['interval_episodes.py']='0'*64;torch.save(bundle,p)
+            with self.assertRaisesRegex(ValueError,'CHECKPOINT_SEMANTIC_SOURCE_CHANGED:interval_episodes.py'):
+                load_frozen_policy(p,hashlib.sha256(p.read_bytes()).hexdigest())
+
+
 if __name__=='__main__':unittest.main()

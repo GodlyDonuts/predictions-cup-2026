@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-19T04:41:31.549293+00:00",
+  "classification": "failed_frozen_producer_cohort",
+  "reason": "Exact R55 producer stopped during fit for checked R56 send-path deployment. Original chronology preserved; not retimed.",
+  "producer": {
+    "pid": 877705,
+    "startTicks": "35050428",
+    "binarySha256": "95e7d1ec570f8397b6d1d37cb2adb85b841d70f6491f3f6df6a739983329abed"
+  },
+  "stoppedAt": "2026-10-19T04:32:45.686415+00:00",
+  "productionReplacementPid": 879020,
+  "coverageComplete": false,
+  "heldoutUsedForTraining": false,
+  "executionAuthority": false
+}
