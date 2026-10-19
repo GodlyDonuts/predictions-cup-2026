@@ -1,0 +1,240 @@
+{
+  "classification": "finite_profiled_serial_development_execution_not_roi",
+  "sourceCommit": "bb948445143d8fbaa889dd232c531aa5b35161af",
+  "steps": 128,
+  "seconds": 3.6984787000110373,
+  "stages": {
+    "virtual_world_advance": {
+      "calls": 288,
+      "seconds": 0.20536119968164712
+    },
+    "observations": {
+      "calls": 129,
+      "seconds": 0.7204052000306547
+    },
+    "input_preparation_and_transfer": {
+      "calls": 128,
+      "seconds": 0.11265499936416745
+    },
+    "model_step": {
+      "calls": 128,
+      "seconds": 2.585163699928671
+    },
+    "action_result_transfer": {
+      "calls": 128,
+      "seconds": 0.02814799954649061
+    },
+    "action_dispatch": {
+      "calls": 128,
+      "seconds": 0.01870789984241128
+    }
+  },
+  "topCumulative": [
+    {
+      "file": "stream.py",
+      "line": 54,
+      "function": "step",
+      "calls": 128,
+      "ownSeconds": 0.004477200000000001,
+      "cumulativeSeconds": 3.6849329
+    },
+    {
+      "file": "<stdin>",
+      "line": 27,
+      "function": "call",
+      "calls": 928,
+      "ownSeconds": 0.0042531,
+      "cumulativeSeconds": 3.6676721000000003
+    },
+    {
+      "file": "policy.py",
+      "line": 56,
+      "function": "step",
+      "calls": 128,
+      "ownSeconds": 0.0017946000000000001,
+      "cumulativeSeconds": 2.5840231
+    },
+    {
+      "file": "query_policy.py",
+      "line": 19,
+      "function": "_act_from_encoding",
+      "calls": 128,
+      "ownSeconds": 0.046674200000000006,
+      "cumulativeSeconds": 2.2926159
+    },
+    {
+      "file": "policy.py",
+      "line": 22,
+      "function": "_act_from_encoding",
+      "calls": 128,
+      "ownSeconds": 0.19913060000000002,
+      "cumulativeSeconds": 1.8754599
+    },
+    {
+      "file": "full_depth.py",
+      "line": 74,
+      "function": "observe",
+      "calls": 128,
+      "ownSeconds": 0.0006624000000000001,
+      "cumulativeSeconds": 0.7163777
+    },
+    {
+      "file": "engine.py",
+      "line": 440,
+      "function": "observe",
+      "calls": 128,
+      "ownSeconds": 0.37809800000000005,
+      "cumulativeSeconds": 0.5717435000000001
+    },
+    {
+      "file": "beta.py",
+      "line": 93,
+      "function": "entropy",
+      "calls": 512,
+      "ownSeconds": 0.0006379000000000001,
+      "cumulativeSeconds": 0.4551642
+    },
+    {
+      "file": "dirichlet.py",
+      "line": 122,
+      "function": "entropy",
+      "calls": 512,
+      "ownSeconds": 0.043318600000000006,
+      "cumulativeSeconds": 0.45452630000000005
+    },
+    {
+      "file": "acting_validation.py",
+      "line": 30,
+      "function": "categorical",
+      "calls": 768,
+      "ownSeconds": 0.0364101,
+      "cumulativeSeconds": 0.40943050000000003
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method torch.digamma>",
+      "calls": 1024,
+      "ownSeconds": 0.370149,
+      "cumulativeSeconds": 0.370149
+    },
+    {
+      "file": "beta.py",
+      "line": 87,
+      "function": "log_prob",
+      "calls": 512,
+      "ownSeconds": 0.0020416,
+      "cumulativeSeconds": 0.319367
+    },
+    {
+      "file": "dirichlet.py",
+      "line": 90,
+      "function": "log_prob",
+      "calls": 512,
+      "ownSeconds": 0.0257963,
+      "cumulativeSeconds": 0.29474880000000003
+    },
+    {
+      "file": "fused_policy.py",
+      "line": 14,
+      "function": "encode",
+      "calls": 128,
+      "ownSeconds": 0.0523691,
+      "cumulativeSeconds": 0.2896126
+    },
+    {
+      "file": "module.py",
+      "line": 1775,
+      "function": "_wrapped_call_impl",
+      "calls": 3072,
+      "ownSeconds": 0.0053395000000000005,
+      "cumulativeSeconds": 0.2857419
+    },
+    {
+      "file": "module.py",
+      "line": 1783,
+      "function": "_call_impl",
+      "calls": 3072,
+      "ownSeconds": 0.0095124,
+      "cumulativeSeconds": 0.28154650000000003
+    },
+    {
+      "file": "categorical.py",
+      "line": 144,
+      "function": "sample",
+      "calls": 768,
+      "ownSeconds": 0.00817,
+      "cumulativeSeconds": 0.24568240000000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method torch.lgamma>",
+      "calls": 2048,
+      "ownSeconds": 0.24185740000000003,
+      "cumulativeSeconds": 0.24185740000000003
+    },
+    {
+      "file": "reference_env.py",
+      "line": 138,
+      "function": "advance",
+      "calls": 288,
+      "ownSeconds": 0.0004218,
+      "cumulativeSeconds": 0.2046987
+    },
+    {
+      "file": "wake_clock.py",
+      "line": 27,
+      "function": "advance",
+      "calls": 288,
+      "ownSeconds": 0.0019977000000000003,
+      "cumulativeSeconds": 0.2042769
+    },
+    {
+      "file": "engine.py",
+      "line": 307,
+      "function": "_event",
+      "calls": 1555,
+      "ownSeconds": 0.0027895000000000003,
+      "cumulativeSeconds": 0.2009572
+    },
+    {
+      "file": "linear.py",
+      "line": 130,
+      "function": "forward",
+      "calls": 1792,
+      "ownSeconds": 0.0080759,
+      "cumulativeSeconds": 0.18808190000000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method torch.multinomial>",
+      "calls": 768,
+      "ownSeconds": 0.1793009,
+      "cumulativeSeconds": 0.1793009
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method torch._C._nn.linear>",
+      "calls": 1792,
+      "ownSeconds": 0.1784669,
+      "cumulativeSeconds": 0.1784669
+    },
+    {
+      "file": "categorical.py",
+      "line": 56,
+      "function": "__init__",
+      "calls": 768,
+      "ownSeconds": 0.0174389,
+      "cumulativeSeconds": 0.15135110000000002
+    }
+  ],
+  "parameters": 58183917,
+  "entities": 1200,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "fullEpisodeCompleted": false,
+  "concurrentMainLearner": true
+}

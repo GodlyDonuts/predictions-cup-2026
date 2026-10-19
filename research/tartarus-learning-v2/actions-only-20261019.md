@@ -1,0 +1,21 @@
+# Evaluation throughput: skip unused learner statistics
+
+The optional `evaluation_actions_only=true` profile samples every original action field and updates recurrent memory while omitting the evaluation-only computation of log probability, entropy, critic value, monetary quantiles and success logits. Evaluation consumes actions and hidden state; its wealth/reward ledger is external to those unused outputs. Nothing changes the API domain, quantity resolution, observations, rate limits, virtual decision calibration or financial execution. Training collection and teacher-forced PPO retain their original statistics and gradients.
+
+`Stream(actions_only=True)` is prohibited with `record_training=True`, and actions-only model calls are prohibited with gradients enabled or teacher actions supplied. Batched evaluation supports the same option and case-local RNGs. Unsupported sampler callbacks are rejected on the actions-only path; ordinary Torch draws and the existing checked independent-case sampler remain supported. Existing default/full-statistics paths are preserved.
+
+Distribution parameter and sample checks still finish before a clock advance or dispatch. The actions-only path explicitly rejects non-finite Beta concentrations and checks the entire sampled fraction range even with strict validation, since omitting `log_prob` also removes its sample support check. Exact-path comparisons refer to valid finite parameters; invalid forwards cannot publish a financial action. No new policy parameters, checkpoint architecture or action support are introduced.
+
+## Why this change
+
+A bounded128-decision profile of the frozen58.2M-parameter model found2.585seconds inside model forward,0.720seconds in observations and0.205seconds in virtual-world advance, over3.698seconds total. Profiling adds overhead and includes a final observation in its stage counters. Beta entropy/log-probability computation was a substantial part of model time. These stage measurements diagnose work; they are not independent speed/ROI evidence. [Raw profile](evaluation-wall-profile-001.json).
+
+The preceding deferred-validation prototype reduced39 synchronization calls to2 and matched valid paths, but its direct comparison against the already queued consolidated mode showed no benefit:4.844seconds versus4.753seconds, about1.9% slower in that bounded run. It was removed from runtime code. The [rejected patch](deferred-validation-rejected-20261019.patch) applies to parent `fdfdc74f5ead5a50990d8109e99cf9443970123d`; it is research evidence, not an enabled mode. [Direct comparison](deferred-validation-vs-consolidated-001.json) / [earlier strict comparison](deferred-validation-vs-strict-001.json). The first comparison predates a benchmark-only baseline-option addition in the retained patch; runtime candidate behavior was unchanged. The candidate is not being queued merely because it reduces a profiler counter.
+
+## Verification and current status
+
+All321 learning-actions tests passed in76.675seconds. Focused checks cover exact CPU/CUDA actions, recurrent state and RNG with strict/consolidated validation; full stream finance, knowledge, clocks and budgets; stochastic independent-case batch paths; preserved training/PPO statistics; and invalid-forward rejection before financial dispatch. A sentinel test confirms omitted entropy and critic heads are never executed.
+
+The recorded three-venue factory ran two H32 founders/two worlds/two short cycles with actions-only evaluation, completing925 training decisions and37 accepted updates. All runtime source pins were rechecked; four minimum development ROIs were0%, over seconds rather than full days. [Recorded integration](actions-only-recorded-001.json). These are mechanics/learning-integration results, not positive ROI.
+
+A working-tree full-model diagnostic suggested a modest speed improvement, but it preceded final invalid-parameter checks and overlapped other checks. Frozen-source performance verification remains pending; no adoption claim relies on that timing. The active GPU017 process and frozen018 controller have not changed. No account client, production control, risk cap, financial state or held-out data was changed. Full-history coverage and independent profitable ROI remain unfinished.

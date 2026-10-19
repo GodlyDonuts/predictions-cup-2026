@@ -39,7 +39,9 @@ def calibrate(environment,model,rounds=12):
 
 
 class Stream:
-    def __init__(self,environment,model,*,calibration=None,record_training=False,behavior_guard='sha256'):
+    def __init__(self,environment,model,*,calibration=None,record_training=False,behavior_guard='sha256',actions_only=False):
+        if type(actions_only)is not bool or(actions_only and record_training):raise ValueError('ACTIONS_ONLY_IS_EVALUATION_ONLY')
+        self.actions_only=actions_only
         from .state_encoding import matching
         matching(environment,model)
         self.env=environment;self.model=model;self.device=next(model.parameters()).device
@@ -57,7 +59,8 @@ class Stream:
         before=self.env.now;observed=self.env.observe();inputs=tensors(observed,self.device)
         reset=torch.tensor([self.decisions==0],device=self.device)
         initial_hidden=self.hidden
-        with torch.no_grad():out=self.model.step(**inputs,hidden=self.hidden,reset=reset,deterministic=deterministic)
+        method=self.model.step_actions_only if self.actions_only else self.model.step
+        with torch.no_grad():out=method(**inputs,hidden=self.hidden,reset=reset,deterministic=deterministic)
         self.hidden=out['hidden']
         if forced_action is not None:action=forced_action
         elif getattr(self.model,'acting_validation','strict')=='consolidated_v1':

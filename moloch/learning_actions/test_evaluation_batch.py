@@ -12,7 +12,7 @@ from .test_evaluation_valuation import world,print_before_book
 class EvaluationBatchTests(unittest.TestCase):
     def setUp(self):torch.set_num_threads(1);torch.manual_seed(28)
 
-    def compare(self,kind,deterministic,batch_heads=False):
+    def compare(self,kind,deterministic,batch_heads=False,actions_only=False):
         model=kind(32);seeds=[41,72,99];serial=[environment()for _ in seeds];parallel=[environment()for _ in seeds]
         if issubclass(kind,FullDepthPolicy):
             for e in serial+parallel:e.__class__=FullDepthEpisode;e.observation_protocol=model.observation_protocol
@@ -21,11 +21,11 @@ class EvaluationBatchTests(unittest.TestCase):
         for j,e in enumerate(serial+parallel):e.end=100+(j%3)*25
         traces=[];hidden=[];states=[]
         for seed,e in zip(seeds,serial):
-            torch.manual_seed(seed);stream=Stream(e,model,calibration={'decision_latency_ms':2})
+            torch.manual_seed(seed);stream=Stream(e,model,calibration={'decision_latency_ms':2},actions_only=actions_only)
             trace=[]
             while e.now<e.end:trace.append(stream.step(deterministic=deterministic))
             traces.append(trace);hidden.append(stream.hidden);states.append(torch.get_rng_state())
-        batch=EvaluationBatch(parallel,model,seeds,calibration={'decision_latency_ms':2},batch_action_heads=batch_heads)
+        batch=EvaluationBatch(parallel,model,seeds,calibration={'decision_latency_ms':2},batch_action_heads=batch_heads,actions_only=actions_only)
         global_rng=torch.get_rng_state().clone();actual=[[]for _ in seeds]
         while batch.step(deterministic=deterministic):
             for row in batch.last_rows:actual[row['case']].append(row)
@@ -44,6 +44,10 @@ class EvaluationBatchTests(unittest.TestCase):
     def test_cpu_case_rngs_match_serial_stochastic_and_deterministic_paths(self):
         for kind in (ApiPolicy,FullDepthPolicy):
             for deterministic in (False,True):self.compare(kind,deterministic)
+
+    def test_actions_only_keeps_case_rngs_and_both_batch_sampling_paths(self):
+        from .joint_memory_policy import JointMemoryPolicy
+        for heads in(False,True):self.compare(JointMemoryPolicy,False,batch_heads=heads,actions_only=True)
 
     def test_batched_action_heads_match_serial_paths_and_rng_with_full_joint_memory(self):
         from .joint_memory_policy import JointMemoryPolicy

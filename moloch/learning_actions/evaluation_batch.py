@@ -10,7 +10,9 @@ from .behavior_guard import identity
 
 
 class EvaluationBatch:
-    def __init__(self,envs,model,seeds,*,calibration,batch_action_heads=False):
+    def __init__(self,envs,model,seeds,*,calibration,batch_action_heads=False,actions_only=False):
+        if type(actions_only)is not bool:raise ValueError('EXPLICIT_EVALUATION_STATISTICS_PROFILE')
+        self.actions_only=actions_only
         if type(batch_action_heads)is not bool:raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_PROFILE')
         if not envs or len(envs)!=len(seeds)or len({id(e)for e in envs})!=len(envs):
             raise ValueError('ONE_INDEPENDENT_WORLD_AND_SEED_PER_EVALUATION_CASE')
@@ -51,7 +53,7 @@ class EvaluationBatch:
                     from .independent_sampling import IndependentSampling
                     sampler=IndependentSampling([self.generators[i]for i in live],[len(o['entities'])for o in observed])
                     out=self.model._act_from_encoding(encoded,h,prepared['present'],prepared['masks'],
-                        deterministic=deterministic,sampler=sampler)
+                        deterministic=deterministic,sampler=sampler,statistics=not self.actions_only)
                     # One transfer per action head rather than a synchronization
                     # for every scalar of every case.
                     if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
@@ -66,7 +68,7 @@ class EvaluationBatch:
                     # consumption could depend on another case's entity count.
                     n=len(observed[j]['entities']);self.set_rng(self.rng[i])
                     out=self.model._act_from_encoding(encoded[j:j+1,:n],h[j:j+1],prepared['present'][j:j+1,:n],
-                        {k:v[j:j+1,:n]for k,v in prepared['masks'].items()},deterministic=deterministic)
+                        {k:v[j:j+1,:n]for k,v in prepared['masks'].items()},deterministic=deterministic,statistics=not self.actions_only)
                     self.rng[i]=self.get_rng()
                     if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
                         from .acting_validation import actions_to_python

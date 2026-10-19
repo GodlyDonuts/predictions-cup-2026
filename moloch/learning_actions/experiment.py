@@ -31,6 +31,7 @@ class Experiment:
         if type(batch)is not bool or type(heads)is not bool or(heads and not batch):
             raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_REQUIRE_BATCH_EVALUATION')
         self.config=config;self.output=Path(output)
+        if type(config.get('evaluation_actions_only',False))is not bool:raise ValueError('EXPLICIT_EVALUATION_STATISTICS_PROFILE')
         self.output.mkdir(parents=True,exist_ok=False)
         self.development=config['mode']=='inspected_development'
         if config['mode']not in('inspected_development','full_history'):
@@ -221,7 +222,8 @@ class Experiment:
             self.calibration=calibrate(env,model)
             frozen(self.output/'compute-calibration.json',self.calibration)
         return Stream(env,model,calibration=self.calibration,record_training=training,
-                      behavior_guard=self.config.get('on_policy_guard','sha256'))
+                      behavior_guard=self.config.get('on_policy_guard','sha256'),
+                      actions_only=not training and self.config.get('evaluation_actions_only',False))
 
     def make_optimizer(self,model,rate=None,entropy=None):
         entropy=self.config.get('entropy_coefficient',.01)if entropy is None else entropy
@@ -417,7 +419,7 @@ class Experiment:
                 maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for env in envs]
             calibration=self.stream(model,envs[0]).calibration
             batch=EvaluationBatch(envs,model,[self.seed+90000+i for i in range(len(envs))],calibration=calibration,
-                                  batch_action_heads=batch_heads)
+                                  batch_action_heads=batch_heads,actions_only=self.config.get('evaluation_actions_only',False))
             while any(env.now<env.end for env in envs):
                 batch.run_chunk(self.config.get('compute_chunk_decisions',32))
         cases=[]

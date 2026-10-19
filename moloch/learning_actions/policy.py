@@ -19,7 +19,17 @@ class ApiPolicy(FusedRecurrentPolicy):
         self.heads=nn.ModuleDict({k:nn.Linear(hidden_size+256,n)for k,n in sizes.items()})
         self.conditioners=nn.ModuleDict({k:nn.Embedding(n,hidden_size+256)for k,n in sizes.items()})
 
-    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None):
+    def step_actions_only(self,contracts,global_state,present,masks,hidden,reset,deterministic=False):
+        if torch.is_grad_enabled():raise ValueError('ACTIONS_ONLY_IS_EVALUATION_ONLY')
+        encoded,h=self.encode(contracts,global_state,present,hidden,reset)
+        return self._act_from_encoding(encoded,h,present,masks,deterministic=deterministic,statistics=False)
+
+    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None,statistics=True):
+        if type(statistics)is not bool or(not statistics and(actions is not None or torch.is_grad_enabled())):
+            raise ValueError('ACTIONS_ONLY_IS_EVALUATION_ONLY')
+        if not statistics and sampler is not None:
+            from .independent_sampling import IndependentSampling
+            if type(sampler)is not IndependentSampling:raise ValueError('ACTIONS_ONLY_REQUIRES_TRUSTED_TORCH_SAMPLING')
         from .acting_validation import enabled,categorical,beta
         fast=enabled(self,actions,sampler)
         # Choose an operation before its target. Otherwise hundreds of read
@@ -39,8 +49,9 @@ class ApiPolicy(FusedRecurrentPolicy):
         out={'market':market,'family':family}
         query_mask=masks.get('trade_query')
         trade_query=(family==10)&(query_mask[batch,market,0]if query_mask is not None else torch.zeros_like(family,dtype=torch.bool))
-        logprob=dist.log_prob(market).double()+family_dist.log_prob(family).double()
-        entropy=dist.entropy().double()+family_dist.entropy().double()
+        if statistics:
+            logprob=dist.log_prob(market).double()+family_dist.log_prob(family).double()
+            entropy=dist.entropy().double()+family_dist.entropy().double()
         for name,head in self.heads.items():
             if name=='family':continue
             head_logits=head(selected)
@@ -53,23 +64,26 @@ class ApiPolicy(FusedRecurrentPolicy):
             if name=='patience':meaningful=meaningful&(out['price']!=0)
             # V5 exposes every sampled latent in next-step local memory. Keep
             # the original sampling/conditioning law, but score its full joint.
-            scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
-            logprob+=torch.where(scored,d.log_prob(value).double(),0.)
-            entropy+=torch.where(scored,d.entropy().double(),0.)
+            if statistics:
+                scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
+                logprob+=torch.where(scored,d.log_prob(value).double(),0.)
+                entropy+=torch.where(scored,d.entropy().double(),0.)
             selected=selected+self.conditioners[name](value)*meaningful.unsqueeze(-1)
         parameters=(torch.nn.functional.softplus(self.fractions(selected))+1).double()
         for name,pair in [('target_fraction',(0,1)),('child_fraction',(2,3))]:
-            d=beta(parameters[:,pair[0]],parameters[:,pair[1]],fast)
+            d=beta(parameters[:,pair[0]],parameters[:,pair[1]],fast,finite=not statistics)
             value=actions[name]if actions is not None else d.mean if deterministic else d.sample()if sampler is None else sampler.beta(d)
             out[name]=value
             order=(out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6)
             meaningful=(order|trade_query)if name=='target_fraction'else ((out['family']==0)|(order&(out['patience']==1)&(out['price']!=0)))
-            scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
-            logprob+=torch.where(scored,d.log_prob(value),0.)
-            entropy+=torch.where(scored,d.entropy(),0.)
-        if fast and not hasattr(self,'query_times'):
+            if statistics:
+                scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
+                logprob+=torch.where(scored,d.log_prob(value),0.)
+                entropy+=torch.where(scored,d.entropy(),0.)
+        if(fast or not statistics)and not hasattr(self,'query_times'):
             from .acting_validation import validate_samples
             validate_samples(out)
+        if not statistics:return {'actions':out,'hidden':h}
         return {'actions':out,'logprob':logprob,'entropy':entropy,'hidden':h,
                 'value':self.value(h).squeeze(-1),'monetary_quantiles':self.monetary_quantiles(h),
                 'success_logit':self.target_success(h).squeeze(-1)}

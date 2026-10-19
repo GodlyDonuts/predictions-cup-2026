@@ -39,9 +39,13 @@ def categorical(logits,mask,fast):
     return d
 
 
-def beta(a,b,fast):
-    if not fast:return Beta(a,b)
-    if not bool(((a>0)&(b>0)).all()):raise ValueError('INVALID_BETA_CONCENTRATIONS')
+def beta(a,b,fast,*,finite=False):
+    if not fast:
+        if finite and not bool((torch.isfinite(a)&torch.isfinite(b)).all()):raise ValueError('INVALID_BETA_CONCENTRATIONS')
+        return Beta(a,b)
+    valid=(a>0)&(b>0)
+    if finite:valid=valid&torch.isfinite(a)&torch.isfinite(b)
+    if not bool(valid.all()):raise ValueError('INVALID_BETA_CONCENTRATIONS')
     return Beta(a,b,validate_args=False)
 
 

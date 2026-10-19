@@ -12,7 +12,11 @@ from .selection import frozen
 from moloch.learning_v2.train_inner import fingerprint
 
 
-def compare(config,checkpoint,output,*,steps=64):
+def compare(config,checkpoint,output,*,steps=64,comparison='validation'):
+    if comparison not in('validation','evaluation_statistics'):raise ValueError('EXPLICIT_INFERENCE_COMPARISON')
+    modes=(STRICT,CONSOLIDATED)if comparison=='validation'else('full_statistics','actions_only')
+    def configure(model,mode):model.acting_validation=mode if comparison=='validation'else CONSOLIDATED
+    def actions_only(mode):return comparison=='evaluation_statistics'and mode=='actions_only'
     if config.get('mode')!='inspected_development'or config.get('test_finalist_once',False):
         raise ValueError('INSPECTED_DEVELOPMENT_ONLY_NO_INDEPENDENT_TEST')
     if type(steps)is not int or steps<1:raise ValueError('POSITIVE_FINITE_BENCHMARK_CHUNK')
@@ -41,11 +45,12 @@ def compare(config,checkpoint,output,*,steps=64):
         calibration=calibrate(initial,m);frozen(Path(output)/'COMMON_CALIBRATION.json',calibration)
         inputs=tensors(initial.observe(),device);hidden=m.initial_state(1);reset=torch.ones(1,device=device,dtype=torch.bool)
         profiles={}
-        for mode in(STRICT,CONSOLIDATED):
-            m.acting_validation=mode
+        for mode in modes:
+            configure(m,mode)
             with torch.no_grad():
                 with torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CPU])as p:
-                    m.step(**inputs,hidden=hidden,reset=reset)
+                    method=m.step_actions_only if actions_only(mode)else m.step
+                    method(**inputs,hidden=hidden,reset=reset)
             profiles[mode]={k.key:k.count for k in p.key_averages()if any(s in k.key for s in
                 ('is_nonzero','_local_scalar_dense','cudaStreamSynchronize','cudaDeviceSynchronize'))}
         from .episode_training import release_worlds
@@ -53,10 +58,10 @@ def compare(config,checkpoint,output,*,steps=64):
         measurements=[];reference=None
         cpu_rng=torch.get_rng_state().clone();gpu_rng=torch.cuda.get_rng_state()if device.startswith('cuda')else None
         try:
-            for modes in((STRICT,CONSOLIDATED),(CONSOLIDATED,STRICT)):
-                for mode in modes:
-                    envs=[world(d)for d in descriptors];m.acting_validation=mode
-                    streams=[Stream(e,m,calibration=calibration)for e in envs]
+            for order in(modes,tuple(reversed(modes))):
+                for mode in order:
+                    envs=[world(d)for d in descriptors];configure(m,mode)
+                    streams=[Stream(e,m,calibration=calibration,actions_only=actions_only(mode))for e in envs]
                     if device.startswith('cuda'):torch.cuda.synchronize()
                     begin=time.perf_counter();trace=[];rng=[]
                     for i,s in enumerate(streams):
@@ -86,11 +91,11 @@ def compare(config,checkpoint,output,*,steps=64):
             torch.set_rng_state(cpu_rng)
             if gpu_rng is not None:torch.cuda.set_rng_state(gpu_rng)
         if fingerprint(m)!=original:raise ValueError('BENCHMARK_CHANGED_POLICY_PARAMETERS')
-        medians={mode:median(r['seconds']for r in measurements if r['mode']==mode)for mode in(STRICT,CONSOLIDATED)}
+        medians={mode:median(r['seconds']for r in measurements if r['mode']==mode)for mode in modes}
         result={'classification':'finite_exact_serial_inference_comparison_not_roi','device':device,'torchVersion':torch.__version__,
             'parameters':sum(p.numel()for p in m.parameters()),'architecture':m.architecture,'checkpointSha256':checkpoint['sha256'],
             'datasetManifestSha256':x.dataset_sha,'runtimeSourceSha256':x.frozen['source_sha256'],
-            'measurements':measurements,'medianSeconds':medians,'speedup':medians[STRICT]/medians[CONSOLIDATED],
+            'comparison':comparison,'measurements':measurements,'medianSeconds':medians,'speedup':medians[modes[0]]/medians[modes[1]],
             'forwardSynchronizationCounts':profiles,'commonVirtualDecisionCalibration':calibration,
             'exactActionsRngFinanceKnowledgeHiddenClocksAndBudgets':True,'policyUnchanged':True,
             'accountRequests':0,'independentTestUsed':False,'productionChanged':False,'roiEstablished':False,
@@ -103,5 +108,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,required=True)
     p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--checkpoint-sha256',required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--steps',type=int,default=64)
-    a=p.parse_args();r=compare(json.loads(a.config.read_text()),{'path':str(a.checkpoint),'sha256':a.checkpoint_sha256},a.output,steps=a.steps)
+    p.add_argument('--comparison',choices=('validation','evaluation_statistics'),default='validation')
+    a=p.parse_args();r=compare(json.loads(a.config.read_text()),{'path':str(a.checkpoint),'sha256':a.checkpoint_sha256},a.output,steps=a.steps,comparison=a.comparison)
     print(json.dumps({k:r[k]for k in('device','medianSeconds','speedup','forwardSynchronizationCounts')}),flush=True)

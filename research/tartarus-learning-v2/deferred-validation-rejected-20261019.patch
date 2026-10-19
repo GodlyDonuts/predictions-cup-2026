@@ -1,0 +1,362 @@
+diff --git a/moloch/learning_actions/acting_validation.py b/moloch/learning_actions/acting_validation.py
+index 27739f4d..025f60b5 100644
+--- a/moloch/learning_actions/acting_validation.py
++++ b/moloch/learning_actions/acting_validation.py
+@@ -11,26 +11,55 @@ from moloch.learning_v2.policy import masked_categorical
+ 
+ STRICT='strict'
+ CONSOLIDATED='consolidated_v1'
++DEFERRED='deferred_v2'
++
++
++class DeferredChecks:
++    """Safe local draws may proceed; every check must pass before returning."""
++    def __init__(self):self.checks=[]
++
++    def add(self,name,valid):self.checks.append((name,valid.all()))
++
++    def finish(self):
++        values=torch.stack([value for _,value in self.checks]).tolist()
++        for(name,_),valid in zip(self.checks,values):
++            if not valid:raise ValueError(name)
+ 
+ 
+ def validate(mode):
+-    if type(mode)is not str or mode not in(STRICT,CONSOLIDATED):raise ValueError('EXPLICIT_ACTING_VALIDATION_MODE')
++    if type(mode)is not str or mode not in(STRICT,CONSOLIDATED,DEFERRED):raise ValueError('EXPLICIT_ACTING_VALIDATION_MODE')
+     return mode
+ 
+ 
+ def enabled(model,actions,sampler=None):
+-    fast=validate(getattr(model,'acting_validation',STRICT))==CONSOLIDATED and actions is None and not torch.is_grad_enabled()
++    mode=validate(getattr(model,'acting_validation',STRICT))
++    fast=mode in(CONSOLIDATED,DEFERRED)and actions is None and not torch.is_grad_enabled()
+     if fast and sampler is not None:
+         from .independent_sampling import IndependentSampling
+         # An arbitrary callback need not return valid Torch-distribution samples.
+         fast=type(sampler)is IndependentSampling
+-    return fast
++    return model._acting_checks if fast and mode==DEFERRED else fast
++
++
++def begin(model,actions,sampler=None):
++    # One serial or batched invocation owns one check collection. No parallel
++    # calls on the same policy instance; ordinary workers already serialize it.
++    model._acting_checks=DeferredChecks()
++    return enabled(model,actions,sampler)
+ 
+ 
+ def categorical(logits,mask,fast):
+     if not fast:return masked_categorical(logits,mask)
+     if mask.dtype!=torch.bool or mask.shape!=logits.shape:raise ValueError('MECHANICS_MASK_SHAPE')
+     d=Categorical(logits=logits.masked_fill(~mask,torch.finfo(logits.dtype).min),validate_args=False)
++    if isinstance(fast,DeferredChecks):
++        feasible=mask.any(-1);valid=(~torch.isnan(d.logits)).all(-1)
++        fast.add('MASK_HAS_NO_FEASIBLE_ACTION',feasible);fast.add('INVALID_CATEGORICAL_PARAMETERS',valid)
++        # Invalid rows cannot reach a CUDA multinomial assertion while checks
++        # are pending. Valid normalized logits pass through bit for bit.
++        d.logits=torch.where((feasible&valid).unsqueeze(-1),d.logits,torch.zeros_like(d.logits))
++        d._param=d.logits
++        return d
+     # Real-valued logits may contain -inf for zero probability, exactly as the
+     # original distribution permits; normalized NaNs remain invalid.
+     feasible,valid=torch.stack((mask.any(-1).all(),(~torch.isnan(d.logits)).all())).tolist()
+@@ -41,12 +70,18 @@ def categorical(logits,mask,fast):
+ 
+ def beta(a,b,fast):
+     if not fast:return Beta(a,b)
++    if isinstance(fast,DeferredChecks):
++        valid_a=(a>0)&torch.isfinite(a);valid_b=(b>0)&torch.isfinite(b)
++        fast.add('INVALID_BETA_CONCENTRATIONS',valid_a&valid_b)
++        return Beta(torch.where(valid_a,a,torch.ones_like(a)),torch.where(valid_b,b,torch.ones_like(b)),validate_args=False)
+     if not bool(((a>0)&(b>0)).all()):raise ValueError('INVALID_BETA_CONCENTRATIONS')
+     return Beta(a,b,validate_args=False)
+ 
+ 
+-def validate_samples(actions):
++def validate_samples(actions,fast=None):
+     values=torch.stack([v for k,v in actions.items()if k.endswith('fraction')],-1)
++    if isinstance(fast,DeferredChecks):
++        fast.add('INVALID_BETA_SAMPLES',(values>=0)&(values<=1));fast.finish();return
+     if not bool(((values>=0)&(values<=1)).all()):raise ValueError('INVALID_BETA_SAMPLES')
+ 
+ 
+diff --git a/moloch/learning_actions/acting_validation_benchmark.py b/moloch/learning_actions/acting_validation_benchmark.py
+index 8a7d7201..35a43ead 100644
+--- a/moloch/learning_actions/acting_validation_benchmark.py
++++ b/moloch/learning_actions/acting_validation_benchmark.py
+@@ -3,7 +3,7 @@ import argparse,json,time
+ from pathlib import Path
+ from statistics import median
+ import torch
+-from .acting_validation import STRICT,CONSOLIDATED
++from .acting_validation import STRICT,CONSOLIDATED,DEFERRED
+ from .experiment import Experiment
+ from .training import load_checkpoint
+ from .stream import Stream,tensors,calibrate
+@@ -12,7 +12,9 @@ from .selection import frozen
+ from moloch.learning_v2.train_inner import fingerprint
+ 
+ 
+-def compare(config,checkpoint,output,*,steps=64):
++def compare(config,checkpoint,output,*,steps=64,candidate_mode=CONSOLIDATED,baseline_mode=STRICT):
++    if candidate_mode not in(CONSOLIDATED,DEFERRED):raise ValueError('EXPLICIT_NONSTRICT_COMPARISON_MODE')
++    if baseline_mode not in(STRICT,CONSOLIDATED)or baseline_mode==candidate_mode:raise ValueError('DISTINCT_SUPPORTED_BASELINE_MODE')
+     if config.get('mode')!='inspected_development'or config.get('test_finalist_once',False):
+         raise ValueError('INSPECTED_DEVELOPMENT_ONLY_NO_INDEPENDENT_TEST')
+     if type(steps)is not int or steps<1:raise ValueError('POSITIVE_FINITE_BENCHMARK_CHUNK')
+@@ -41,7 +43,7 @@ def compare(config,checkpoint,output,*,steps=64):
+         calibration=calibrate(initial,m);frozen(Path(output)/'COMMON_CALIBRATION.json',calibration)
+         inputs=tensors(initial.observe(),device);hidden=m.initial_state(1);reset=torch.ones(1,device=device,dtype=torch.bool)
+         profiles={}
+-        for mode in(STRICT,CONSOLIDATED):
++        for mode in(baseline_mode,candidate_mode):
+             m.acting_validation=mode
+             with torch.no_grad():
+                 with torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CPU])as p:
+@@ -53,7 +55,7 @@ def compare(config,checkpoint,output,*,steps=64):
+         measurements=[];reference=None
+         cpu_rng=torch.get_rng_state().clone();gpu_rng=torch.cuda.get_rng_state()if device.startswith('cuda')else None
+         try:
+-            for modes in((STRICT,CONSOLIDATED),(CONSOLIDATED,STRICT)):
++            for modes in((baseline_mode,candidate_mode),(candidate_mode,baseline_mode)):
+                 for mode in modes:
+                     envs=[world(d)for d in descriptors];m.acting_validation=mode
+                     streams=[Stream(e,m,calibration=calibration)for e in envs]
+@@ -86,11 +88,11 @@ def compare(config,checkpoint,output,*,steps=64):
+             torch.set_rng_state(cpu_rng)
+             if gpu_rng is not None:torch.cuda.set_rng_state(gpu_rng)
+         if fingerprint(m)!=original:raise ValueError('BENCHMARK_CHANGED_POLICY_PARAMETERS')
+-        medians={mode:median(r['seconds']for r in measurements if r['mode']==mode)for mode in(STRICT,CONSOLIDATED)}
++        medians={mode:median(r['seconds']for r in measurements if r['mode']==mode)for mode in(baseline_mode,candidate_mode)}
+         result={'classification':'finite_exact_serial_inference_comparison_not_roi','device':device,'torchVersion':torch.__version__,
+             'parameters':sum(p.numel()for p in m.parameters()),'architecture':m.architecture,'checkpointSha256':checkpoint['sha256'],
+             'datasetManifestSha256':x.dataset_sha,'runtimeSourceSha256':x.frozen['source_sha256'],
+-            'measurements':measurements,'medianSeconds':medians,'speedup':medians[STRICT]/medians[CONSOLIDATED],
++            'measurements':measurements,'medianSeconds':medians,'speedup':medians[baseline_mode]/medians[candidate_mode],
+             'forwardSynchronizationCounts':profiles,'commonVirtualDecisionCalibration':calibration,
+             'exactActionsRngFinanceKnowledgeHiddenClocksAndBudgets':True,'policyUnchanged':True,
+             'accountRequests':0,'independentTestUsed':False,'productionChanged':False,'roiEstablished':False,
+@@ -103,5 +105,7 @@ if __name__=='__main__':
+     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,required=True)
+     p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--checkpoint-sha256',required=True)
+     p.add_argument('--output',type=Path,required=True);p.add_argument('--steps',type=int,default=64)
+-    a=p.parse_args();r=compare(json.loads(a.config.read_text()),{'path':str(a.checkpoint),'sha256':a.checkpoint_sha256},a.output,steps=a.steps)
++    p.add_argument('--candidate-mode',choices=(CONSOLIDATED,DEFERRED),default=CONSOLIDATED)
++    p.add_argument('--baseline-mode',choices=(STRICT,CONSOLIDATED),default=STRICT)
++    a=p.parse_args();r=compare(json.loads(a.config.read_text()),{'path':str(a.checkpoint),'sha256':a.checkpoint_sha256},a.output,steps=a.steps,candidate_mode=a.candidate_mode,baseline_mode=a.baseline_mode)
+     print(json.dumps({k:r[k]for k in('device','medianSeconds','speedup','forwardSynchronizationCounts')}),flush=True)
+diff --git a/moloch/learning_actions/batched.py b/moloch/learning_actions/batched.py
+index 6e4f08bf..261719d7 100644
+--- a/moloch/learning_actions/batched.py
++++ b/moloch/learning_actions/batched.py
+@@ -55,7 +55,7 @@ class BatchStream:
+         with torch.no_grad():out=self.model.step(**prepared,hidden=self.hidden,reset=reset,deterministic=deterministic)
+         self.hidden=out['hidden']
+         packed=None
+-        if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
++        if getattr(self.model,'acting_validation','strict')in('consolidated_v1','deferred_v2'):
+             from .acting_validation import actions_to_python
+             packed=actions_to_python(out['actions'])
+         else:actions={k:v.detach().cpu().tolist()for k,v in out['actions'].items()}
+diff --git a/moloch/learning_actions/evaluation_batch.py b/moloch/learning_actions/evaluation_batch.py
+index 64a1a73e..8b0ca2fc 100644
+--- a/moloch/learning_actions/evaluation_batch.py
++++ b/moloch/learning_actions/evaluation_batch.py
+@@ -54,7 +54,7 @@ class EvaluationBatch:
+                         deterministic=deterministic,sampler=sampler)
+                     # One transfer per action head rather than a synchronization
+                     # for every scalar of every case.
+-                    if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
++                    if getattr(self.model,'acting_validation','strict')in('consolidated_v1','deferred_v2'):
+                         from .acting_validation import actions_to_python
+                         actions=actions_to_python(out['actions'])
+                     else:
+@@ -68,7 +68,7 @@ class EvaluationBatch:
+                     out=self.model._act_from_encoding(encoded[j:j+1,:n],h[j:j+1],prepared['present'][j:j+1,:n],
+                         {k:v[j:j+1,:n]for k,v in prepared['masks'].items()},deterministic=deterministic)
+                     self.rng[i]=self.get_rng()
+-                    if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
++                    if getattr(self.model,'acting_validation','strict')in('consolidated_v1','deferred_v2'):
+                         from .acting_validation import actions_to_python
+                         actions.append(actions_to_python(out['actions'])[0])
+                     else:actions.append({k:v.item()for k,v in out['actions'].items()})
+diff --git a/moloch/learning_actions/policy.py b/moloch/learning_actions/policy.py
+index 9a5e3a8e..15bc6e7e 100644
+--- a/moloch/learning_actions/policy.py
++++ b/moloch/learning_actions/policy.py
+@@ -20,8 +20,8 @@ class ApiPolicy(FusedRecurrentPolicy):
+         self.conditioners=nn.ModuleDict({k:nn.Embedding(n,hidden_size+256)for k,n in sizes.items()})
+ 
+     def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None):
+-        from .acting_validation import enabled,categorical,beta
+-        fast=enabled(self,actions,sampler)
++        from .acting_validation import begin,categorical,beta
++        fast=begin(self,actions,sampler)
+         # Choose an operation before its target. Otherwise hundreds of read
+         # tokens implicitly crowd out trading simply by outnumbering contracts.
+         # This changes the factorization, not the available action set.
+@@ -69,7 +69,7 @@ class ApiPolicy(FusedRecurrentPolicy):
+             entropy+=torch.where(scored,d.entropy(),0.)
+         if fast and not hasattr(self,'query_times'):
+             from .acting_validation import validate_samples
+-            validate_samples(out)
++            validate_samples(out,fast)
+         return {'actions':out,'logprob':logprob,'entropy':entropy,'hidden':h,
+                 'value':self.value(h).squeeze(-1),'monetary_quantiles':self.monetary_quantiles(h),
+                 'success_logit':self.target_success(h).squeeze(-1)}
+diff --git a/moloch/learning_actions/query_policy.py b/moloch/learning_actions/query_policy.py
+index a77dbf36..79a4b99e 100644
+--- a/moloch/learning_actions/query_policy.py
++++ b/moloch/learning_actions/query_policy.py
+@@ -18,8 +18,8 @@ class QueryWindowPolicy(FullDepthPolicy):
+ 
+     def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None):
+         from .acting_validation import enabled,categorical,beta
+-        fast=enabled(self,actions,sampler)
+         out=super()._act_from_encoding(encoded,h,present,masks,actions,deterministic,sampler=sampler)
++        fast=enabled(self,actions,sampler)
+         batch=torch.arange(h.shape[0],device=h.device);a=out['actions']
+         selected=torch.cat((h,encoded[batch,a['market']]),-1)
+         query=masks['trade_query'][batch,a['market'],0]&(a['family']==10)&(a['side']==0)
+@@ -40,7 +40,7 @@ class QueryWindowPolicy(FullDepthPolicy):
+             out['entropy']=out['entropy']+torch.where(scored,dist.entropy(),0.)
+         if fast:
+             from .acting_validation import validate_samples
+-            validate_samples(a)
++            validate_samples(a,fast)
+         return out
+ 
+ 
+diff --git a/moloch/learning_actions/stream.py b/moloch/learning_actions/stream.py
+index 908be785..8c752239 100644
+--- a/moloch/learning_actions/stream.py
++++ b/moloch/learning_actions/stream.py
+@@ -60,7 +60,7 @@ class Stream:
+         with torch.no_grad():out=self.model.step(**inputs,hidden=self.hidden,reset=reset,deterministic=deterministic)
+         self.hidden=out['hidden']
+         if forced_action is not None:action=forced_action
+-        elif getattr(self.model,'acting_validation','strict')=='consolidated_v1':
++        elif getattr(self.model,'acting_validation','strict')in('consolidated_v1','deferred_v2'):
+             from .acting_validation import actions_to_python
+             action=actions_to_python(out['actions'])[0]
+         else:action={k:v.item()for k,v in out['actions'].items()}
+diff --git a/moloch/learning_actions/test_acting_validation.py b/moloch/learning_actions/test_acting_validation.py
+index a5ec5a27..4f893455 100644
+--- a/moloch/learning_actions/test_acting_validation.py
++++ b/moloch/learning_actions/test_acting_validation.py
+@@ -4,7 +4,7 @@ import tempfile,unittest
+ from pathlib import Path
+ from unittest.mock import patch
+ import torch
+-from .acting_validation import CONSOLIDATED,STRICT,categorical,beta,validate_samples,actions_to_python
++from .acting_validation import CONSOLIDATED,STRICT,DEFERRED,DeferredChecks,categorical,beta,validate_samples,actions_to_python
+ from .order_policy import OrderPagePolicy
+ from .joint_memory_policy import JointMemoryPolicy
+ from .component_execution import ComponentPolicy
+@@ -19,10 +19,10 @@ from .behavior_guard import identity,contract
+ class ActingValidationTests(unittest.TestCase):
+     def setUp(self):torch.set_num_threads(1);torch.manual_seed(902)
+ 
+-    def compare_sampling(self,device):
++    def compare_sampling(self,device,mode=CONSOLIDATED):
+         x=tensors(world().observe(),device)
+         for kind in(OrderPagePolicy,JointMemoryPolicy,ComponentPolicy):
+-            a=kind(16).to(device);b=deepcopy(a);b.acting_validation=CONSOLIDATED
++            a=kind(16).to(device);b=deepcopy(a);b.acting_validation=mode
+             h=a.initial_state(1);reset=torch.ones(1,dtype=torch.bool,device=device)
+             for deterministic in(False,True):
+                 for seed in range(6):
+@@ -46,6 +46,24 @@ class ActingValidationTests(unittest.TestCase):
+     @unittest.skipUnless(torch.cuda.is_available(),'CUDA hardware required')
+     def test_cuda_actions_density_hidden_and_rng_match_bitwise(self):self.compare_sampling('cuda')
+ 
++    def test_deferred_cpu_sampling_density_and_rng_are_exact(self):self.compare_sampling('cpu',DEFERRED)
++
++    @unittest.skipUnless(torch.cuda.is_available(),'CUDA hardware required')
++    def test_deferred_cuda_sampling_density_and_rng_are_exact(self):self.compare_sampling('cuda',DEFERRED)
++
++    def test_deferred_invalid_rows_draw_safely_but_cannot_pass_final_check(self):
++        for device in(['cpu','cuda']if torch.cuda.is_available()else['cpu']):
++            for bad in('mask','logit','beta','sample'):
++                checks=DeferredChecks();mask=torch.ones(1,3,dtype=torch.bool,device=device)
++                logits=torch.zeros(1,3,device=device)
++                if bad=='mask':mask.zero_()
++                if bad=='logit':logits.fill_(float('nan'))
++                d=categorical(logits,mask,checks);d.sample()  # No unsafe CUDA assertion.
++                a=torch.tensor([-1. if bad=='beta'else 2.],device=device)
++                beta(a,torch.ones_like(a),checks).sample()
++                samples={'target_fraction':torch.tensor([float('nan')if bad=='sample'else .5],device=device)}
++                with self.assertRaises(ValueError):validate_samples(samples,checks)
++
+     def test_invalid_masks_parameters_and_samples_still_fail(self):
+         for fast in(False,True):
+             with self.assertRaisesRegex(ValueError,'NO_FEASIBLE'):
+@@ -58,11 +76,12 @@ class ActingValidationTests(unittest.TestCase):
+         self.assertEqual(d.probs.tolist(),[[0.,1.]])
+ 
+     def test_bad_forward_cannot_advance_clock_or_dispatch_an_order(self):
+-        e=world();m=OrderPagePolicy(16);m.acting_validation=CONSOLIDATED
+-        with torch.no_grad():m.heads['family'].bias.fill_(float('nan'))
+-        s=Stream(e,m,calibration={'decision_latency_ms':2});before=financial_digest(e)
+-        with self.assertRaises(ValueError):s.step()
+-        self.assertEqual(financial_digest(e),before);self.assertFalse(e.api_orders);self.assertFalse(e.budget.writes)
++        for mode in(CONSOLIDATED,DEFERRED):
++            e=world();m=OrderPagePolicy(16);m.acting_validation=mode
++            with torch.no_grad():m.heads['family'].bias.fill_(float('nan'))
++            s=Stream(e,m,calibration={'decision_latency_ms':2});before=financial_digest(e)
++            with self.assertRaises(ValueError):s.step()
++            self.assertEqual(financial_digest(e),before);self.assertFalse(e.api_orders);self.assertFalse(e.budget.writes)
+ 
+     def test_teacher_forcing_keeps_original_checks_and_gradient_density(self):
+         e=world();a=OrderPagePolicy(16);b=deepcopy(a);b.acting_validation=CONSOLIDATED
+@@ -78,25 +97,43 @@ class ActingValidationTests(unittest.TestCase):
+         with self.assertRaises(ValueError):b.step(**x,hidden=h,reset=reset,actions=actions)
+ 
+     def test_complete_streams_have_exact_finance_reads_clocks_and_actions(self):
+-        a=OrderPagePolicy(16);b=deepcopy(a);b.acting_validation=CONSOLIDATED
++        a=OrderPagePolicy(16);b=deepcopy(a);b.acting_validation=CONSOLIDATED;c=deepcopy(a);c.acting_validation=DEFERRED
+         environments=[];traces=[]
+-        for m in(a,b):
++        for m in(a,b,c):
+             torch.manual_seed(77);e=world();e.end=2001;s=Stream(e,m,calibration={'decision_latency_ms':10})
+             trace=[]
+             while e.now<e.end:trace.append(s.step())
+             environments.append(e);traces.append(trace)
+         self.assertEqual(traces[0],traces[1]);self.assertEqual(financial_digest(environments[0]),financial_digest(environments[1]))
+         self.assertEqual(vars(environments[0].budget),vars(environments[1].budget))
++        self.assertEqual(traces[0],traces[2]);self.assertEqual(financial_digest(environments[0]),financial_digest(environments[2]))
++        self.assertEqual(vars(environments[0].budget),vars(environments[2].budget))
+ 
+-    def test_guard_checkpoint_and_real_ppo_retain_mode(self):
+-        m=OrderPagePolicy(16);before=identity(m,'tensor_versions_v1');m.acting_validation=CONSOLIDATED
+-        self.assertNotEqual(before,identity(m,'tensor_versions_v1'));self.assertEqual(contract(m)[-1],CONSOLIDATED)
++    def mode_ppo_checkpoint(self,mode):
++        m=OrderPagePolicy(16);before=identity(m,'tensor_versions_v1');m.acting_validation=mode
++        self.assertNotEqual(before,identity(m,'tensor_versions_v1'));self.assertEqual(contract(m)[-1],mode)
+         e=world();s=Stream(e,m,calibration={'decision_latency_ms':2},record_training=True,behavior_guard='tensor_versions_v1')
+         c=collect_chunk(s,8,reward_ledger=GrowthLedger(e,development=True));opt=torch.optim.Adam(m.parameters(),lr=1e-5)
+         self.assertTrue(update(m,opt,c,[f['economic_reward']for f in c.frames],role='train',epochs=1)[0]['accepted'])
+         with tempfile.TemporaryDirectory()as d:
+             p=Path(d)/'cp.pt';sha=save_checkpoint(p,m,opt,dataset_manifest_sha256='a'*64,split_specification_sha256='b'*64)
+-            restored,_=load_checkpoint(p,sha);self.assertEqual(restored.acting_validation,CONSOLIDATED)
++            restored,_=load_checkpoint(p,sha);self.assertEqual(restored.acting_validation,mode)
++
++    def test_guard_checkpoint_and_real_ppo_retain_mode(self):
++        self.mode_ppo_checkpoint(CONSOLIDATED);self.mode_ppo_checkpoint(DEFERRED)
++
++    def test_deferred_teacher_forcing_and_gradient_density_keep_strict_checks(self):
++        a=OrderPagePolicy(16);b=deepcopy(a);b.acting_validation=DEFERRED
++        x=tensors(world().observe(),'cpu');h=a.initial_state(1);reset=torch.ones(1,dtype=torch.bool)
++        with torch.no_grad():actions=a.step(**x,hidden=h,reset=reset)['actions']
++        outputs=[]
++        for m in(a,b):
++            out=m.step(**x,hidden=h,reset=reset,actions=actions);out['logprob'].sum().backward();outputs.append(out)
++        self.assertTrue(torch.equal(outputs[0]['logprob'],outputs[1]['logprob']))
++        for p,q in zip(a.parameters(),b.parameters()):
++            if p.grad is not None:self.assertTrue(torch.equal(p.grad,q.grad))
++        actions['query_from_fraction'].fill_(2.)
++        with self.assertRaises(ValueError):b.step(**x,hidden=h,reset=reset,actions=actions)
+ 
+     def test_finite_benchmark_requires_exact_finance_and_records_priming(self):
+         from .acting_validation_benchmark import compare
