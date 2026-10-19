@@ -421,9 +421,9 @@ class ApiEpisode(PreparedEpisode):
             return self.budget.ready_at(self.now,write)<=self.now
         read_ready,write_ready=ready(False),ready(True)
         builder_size=len(self.builder)
+        from .feature_cache import identity,log_quantity,book_statistics
         for i,(kind,key)in enumerate(entities):
-            ident=hashlib.sha256(repr((kind,key)).encode()).digest()
-            features[i,33:40]=np.frombuffer(ident[:7],dtype=np.uint8)/255.
+            features[i,33:40]=identity(kind,key)
             if kind=='global':
                 masks['family'][i,[0,11]]=True
                 if write_ready:
@@ -435,17 +435,16 @@ class ApiEpisode(PreparedEpisode):
                 if builder_size<50:masks['family'][i,[5,6]]=True
                 q=self.actor_books.get(key)
                 if q is not None:
-                    b=q.book;bid=b.bids[0][0]if b.bids else 0;ask=b.asks[0][0]if b.asks else UNIT
-                    features[i,:8]=[bid/UNIT,ask/UNIT,(ask-bid)/UNIT,
-                        (self.now-b.available_at_ms)/1000,np.log1p(sum(n for p,n in b.bids)),
-                        np.log1p(sum(n for p,n in b.asks)),1.,float(not q.invalidated)]
+                    b=q.book;features[i,:8]=book_statistics(self,key,b)
+                    features[i,3]=(self.now-b.available_at_ms)/1000
+                    features[i,7]=float(not q.invalidated)
                 for j,venue in enumerate(('Kalshi','Polymarket')):
                     rows=[r for _,r in self.reference_cache.for_market(self.mapping.get(key))if r.get('venue')==venue]
                     if rows:
                         r=max(rows,key=lambda r:r['available_at_ms'])
                         features[i,8+3*j:11+3*j]=[r.get('bid_yes_micros',0)/UNIT,r.get('ask_yes_micros',UNIT)/UNIT,
                                                    (self.now-r['available_at_ms'])/1000]
-                features[i,14:16]=[np.log1p(sum(n for n,p in self.known_lots.get((key,s),[])))for s in ('YES','NO')]
+                features[i,14:16]=[log_quantity(sum(n for n,p in self.known_lots.get((key,s),[])))for s in ('YES','NO')]
                 features[i,16:24]=self.flow.observe(key,self.now)
                 features[i,24]=1.
             elif kind=='market':
@@ -455,17 +454,17 @@ class ApiEpisode(PreparedEpisode):
                 features[i,24]=3.
             elif kind=='order':
                 masks['family'][i,3]=write_ready;o=self.known_orders[key]
-                features[i,25:30]=[1.,np.log1p(o.remaining),(o.spec.price or 0)/UNIT,
+                features[i,25:30]=[1.,log_quantity(o.remaining),(o.spec.price or 0)/UNIT,
                                    float(o.spec.side=='YES'),float(o.spec.action=='BUY')]
             elif kind=='stream_control':
                 masks['family'][i,11]=True;features[i,:6]=self.realtime.features();features[i,24]=4.
             elif kind=='trade_print':
                 ex,j=key;page=self.known_trade_pages[ex];row=page['data'][j]
-                features[i,:5]=[row['yes_price_micros']/UNIT,np.log1p(row['quantity'])/16.,
+                features[i,:5]=[row['yes_price_micros']/UNIT,log_quantity(row['quantity'])/16.,
                     np.log1p(self.now-row['executed_at_ms'])/32.,
                     np.log1p(self.now-row['received_at_ms'])/32.,np.log1p(self.now-page['opened_at_ms'])/32.]
                 features[i,24]=7.
-                features[i,33:40]=np.frombuffer(hashlib.sha256(repr(('contract',ex)).encode()).digest()[:7],dtype=np.uint8)/255.
+                features[i,33:40]=identity('contract',ex)
             else:
                 masks['family'][i,10]=((write_ready if key[1][0]=='realtime_token'else read_ready)
                     if key[0]=='SIG'else self.now>=self.external_ready[key[0]])

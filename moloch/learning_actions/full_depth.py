@@ -4,27 +4,24 @@ The 199 prices per side are the complete documented .005 lattice, not a
 top-k/quantity cap. Original integer depth still governs execution. Log depth
 is a floating-point model input, not an accounting or liquidity substitute.
 """
-import hashlib
 import numpy as np
 import torch
 from torch import nn
 from .contract import TICK,UNIT
 from .engine import ApiEpisode,ApiTape
 from .policy import ApiPolicy
+from .feature_cache import identity as _identity,log_quantity
 
 LEVELS=UNIT//TICK-1
 FEATURES=40+2*LEVELS
 SCHEMA='raw_api_full_delivered_depth_438_v3'
 
 
-def _identity(kind,key):return np.frombuffer(hashlib.sha256(repr((kind,key)).encode()).digest()[:7],dtype=np.uint8)/255.
-
-
 def planning_observation(env,base):
     """Own draft orders and issued action are local memory, not API evidence."""
     rows=[];entities=[]
     for index,spec in enumerate(env.builder):
-        row=np.zeros(40,np.float32);row[:9]=[(spec.price or 0)/UNIT,np.log1p(spec.quantity)/16.,
+        row=np.zeros(40,np.float32);row[:9]=[(spec.price or 0)/UNIT,log_quantity(spec.quantity)/16.,
             float(spec.side=='YES'),float(spec.action=='BUY'),float(spec.market),
             np.log1p(max(0,(spec.expiration_ms or env.now)-env.now))/32.,
             float(spec.expiration_ms is not None),float(spec.expiration_ms is not None and spec.expiration_ms<=env.now),index/50.]
@@ -65,7 +62,7 @@ def extend_observation(env,base):
                 if type(quantity)is not int or quantity<=0:raise ValueError('DELIVERED_DEPTH_POSITIVE_INTEGER_QUANTITY')
                 index=40+side*LEVELS+price//TICK-1
                 if features[i,index]!=0:raise ValueError('DUPLICATE_DELIVERED_PRICE_LEVEL')
-                features[i,index]=np.log1p(quantity)/16.
+                features[i,index]=log_quantity(quantity)/16.
         encoded=features[i,40:].copy();encoded.setflags(write=False);cache[key]=(observed.book,encoded)
     if not np.isfinite(features).all():raise ValueError('FINITE_FULL_DEPTH_OBSERVATION_REQUIRED')
     return {**base,'contracts':features,'observation_feature_schema':SCHEMA}

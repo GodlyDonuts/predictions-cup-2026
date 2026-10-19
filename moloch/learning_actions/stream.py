@@ -11,9 +11,12 @@ from collections import deque,Counter
 
 
 def tensors(observation,device):
-    out={k:torch.as_tensor(observation[k],device=device).unsqueeze(0)
+    out={k:torch.as_tensor(observation[k],device='cpu').unsqueeze(0)
          for k in ('contracts','global_state','present')}
-    out['masks']={k:torch.as_tensor(v,device=device).unsqueeze(0)for k,v in observation['masks'].items()}
+    out['masks']={k:torch.as_tensor(v,device='cpu').unsqueeze(0)for k,v in observation['masks'].items()}
+    if torch.device(device).type!='cpu':
+        from moloch.learning_v2.packed_io import transfer
+        return transfer(out,device)
     return out
 
 

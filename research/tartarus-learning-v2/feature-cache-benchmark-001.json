@@ -1,0 +1,38 @@
+{
+  "classification": "real_source_cpu_observation_benchmark_not_training_or_roi",
+  "baselineCommit": "893ece427f77435bcca052af87704af942c08791",
+  "sourceManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "actorBooks": 237,
+  "entities": 1345,
+  "virtualTimeFrozenDuringTiming": true,
+  "observationsPerSample": 100,
+  "secondsPerObservation": {
+    "baseline": [
+      0.007560816999757663,
+      0.007674961000448093,
+      0.007714413999347016,
+      0.007646443999838084,
+      0.0077525780000723896,
+      0.008132646000012756,
+      0.0077420200000051405,
+      0.00771097099990584
+    ],
+    "cached": [
+      0.0026118739997036755,
+      0.0026324640004895625,
+      0.0026464850001502783,
+      0.00262109600007534,
+      0.0026206119998823853,
+      0.0026091359998099504,
+      0.002617385999765247,
+      0.002620209000306204
+    ]
+  },
+  "medianSpeedRatio": 2.9433146063751803,
+  "exactObservationParity": true,
+  "eightWorldCpuPackingParity": true,
+  "newAccountRequests": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "activeTrainingChanged": false
+}

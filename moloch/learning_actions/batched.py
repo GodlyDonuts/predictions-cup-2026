@@ -13,13 +13,17 @@ from moloch.learning_v2.train_inner import fingerprint
 
 
 def inputs(observations,device):
-    values=[tensors(o,device)for o in observations]
+    values=[tensors(o,'cpu')for o in observations]
     n=max(v['contracts'].shape[1]for v in values)
-    return {'contracts':torch.cat([F.pad(v['contracts'],(0,0,0,n-v['contracts'].shape[1]))for v in values]),
+    out={'contracts':torch.cat([F.pad(v['contracts'],(0,0,0,n-v['contracts'].shape[1]))for v in values]),
         'global_state':torch.cat([v['global_state']for v in values]),
         'present':torch.cat([F.pad(v['present'],(0,n-v['contracts'].shape[1]))for v in values]),
         'masks':{k:torch.cat([F.pad(v['masks'][k],(0,n-v['contracts'].shape[1])if k=='market'
                     else(0,0,0,n-v['contracts'].shape[1]))for v in values])for k in values[0]['masks']}}
+    if torch.device(device).type!='cpu':
+        from moloch.learning_v2.packed_io import transfer
+        return transfer(out,device)
+    return out
 
 
 class BatchStream:
