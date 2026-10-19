@@ -1,0 +1,31 @@
+{
+  "classification": "real_source_delivered_ladder_information_and_memory_audit_not_ROI",
+  "dataset_manifest_sha256": "7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69",
+  "at_ms": 1792401606400,
+  "features": 438,
+  "entity_count": 1116,
+  "hidden_world_books": 237,
+  "before_paid_stream_or_read_nonzero_depth": 0,
+  "priming_read_admissions": 8,
+  "priming_write_admissions": 1,
+  "actor_delivered_books": 72,
+  "actor_reconciled_books": 8,
+  "original_delivered_price_levels": 6980,
+  "nonzero_lattice_entries": 6980,
+  "maximum_delivered_levels_per_book": 126,
+  "original_forty_feature_columns_unchanged": true,
+  "no_original_delivered_level_truncated": true,
+  "legacy_observation_bytes": 178560,
+  "full_observation_bytes": 1955232,
+  "median_cached_observation_seconds": 0.005409249977674335,
+  "cache_entries": 72,
+  "illustrative_same_top_and_totals_costs_for_150_shares_susqie": [
+    75,
+    90
+  ],
+  "illustration_is_synthetic_not_strategy_return": true,
+  "active_run014_replaced": false,
+  "account_requests": 0,
+  "production_changed": false,
+  "independent_test_used": false
+}

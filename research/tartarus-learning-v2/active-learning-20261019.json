@@ -1,6 +1,6 @@
 {
   "classification": "observed_active_raw_breadth_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T15:03:50.084192+00:00",
+  "observed_utc": "2026-10-19T15:54:50.209124+00:00",
   "source_commit": "06d49d317576a1512d5b39845fccf1046f075e29",
   "run": "raw-api-growth-development-014",
   "process_ids": {
@@ -22,7 +22,6 @@
     1,
     2
   ],
-  "current_member": 3,
   "dataset_manifest_sha256": "7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69",
   "original_sig_exchanges": 237,
   "unique_engine_prints": 1668,
@@ -37,12 +36,11 @@
     1792403999000
   ],
   "source_snapshot_files_verified": 83,
-  "frozen_source_bytes_match_active_experiment": true,
   "compute_chunk_decisions": 128,
-  "training_decisions": 9216,
-  "accepted_updates": 9,
-  "current_member_modeled_fills": 412,
-  "cuda_peak_allocated_bytes": 6965173248,
+  "training_decisions": 257585,
+  "accepted_updates": 259,
+  "current_member_modeled_fills": 321,
+  "cuda_peak_allocated_bytes": 7253548544,
   "role_prefix_initial_state": true,
   "observable_wakeup_index": true,
   "evaluation_wealth_schedule": "start_daily_boundaries_terminal",
@@ -97,5 +95,32 @@
     "complete API metadata/history interfaces",
     "execution and own-trade calibration",
     "independently positive ROI"
+  ],
+  "frozen_source_snapshot_matches_experiment": true,
+  "current_worktree_matches_frozen_source": false,
+  "modified_worktree_files_for_future_profile": [
+    "moloch\\learning_actions\\batch_benchmark.py",
+    "moloch\\learning_actions\\behavior_guard.py",
+    "moloch\\learning_actions\\engine.py",
+    "moloch\\learning_actions\\entry.py",
+    "moloch\\learning_actions\\experiment.py",
+    "moloch\\learning_actions\\population.py",
+    "moloch\\learning_actions\\training.py"
+  ],
+  "full_depth_prototype": {
+    "features": 438,
+    "parameters": 58157799,
+    "delivered_book_levels": true,
+    "local_planning_state": true,
+    "active_run_uses_prototype": false,
+    "worktree_checks_passed": 159
+  },
+  "next_or_active_member": 4,
+  "completed_members_in_this_run": [
+    {
+      "member": 3,
+      "cycle": 0,
+      "worst_marked_roi": -0.14543102500000005
+    }
   ]
 }

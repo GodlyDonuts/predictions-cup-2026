@@ -100,7 +100,11 @@ class Experiment:
         actual='train'if self.development else role
         key=(role,finalist)
         if key in self.tape_cache:return self.tape_cache[key]
-        tape=ApiTape.from_loaded(self.original,split=self.split,role=actual,
+        tape_type=ApiTape
+        if self.config.get('full_depth_observations',False):
+            from .full_depth import FullDepthTape
+            tape_type=FullDepthTape
+        tape=tape_type.from_loaded(self.original,split=self.split,role=actual,
                                 frozen_finalist_sha256=finalist)
         tape.maximum_boundary_gap_ms=self.gap
         tape.counterparty_replay_enabled=self.config.get('passive_flow_mode')is not None
@@ -382,6 +386,16 @@ class Experiment:
                       'child_receives_full_training_block_before_selection':True})
             del model,opt
 
+    def policy_type(self):
+        enabled=self.config.get('full_depth_observations',False)
+        if type(enabled)is not bool:raise ValueError('EXPLICIT_FULL_DEPTH_OBSERVATION_PROFILE')
+        if enabled:
+            from .full_depth import FullDepthPolicy
+            return FullDepthPolicy
+        return ApiPolicy
+
+    def make_policy(self):return self.policy_type()(self.model_size).to(self.device)
+
     def member_order(self,cycle,members):
         order=self.config.get('first_cycle_member_order',list(range(members)))if cycle==0 else list(range(members))
         if not isinstance(order,list)or any(type(i)is not int for i in order)or sorted(order)!=list(range(members)):
@@ -415,11 +429,17 @@ class Experiment:
                             raise ValueError('EXPLICIT_PRIOR_MIGRATION_REQUIRED')
                         from .clock_prior import migrate_shared_prior
                         frozen(self.output/('founder-%03d-clock-migration.json'%member),migrate_shared_prior(model))
+                if type(model)is not self.policy_type():
+                    if self.config.get('migrate_full_depth_encoder')is not True or self.policy_type()is ApiPolicy:
+                        raise ValueError('EXPLICIT_DEPTH_ARCHITECTURE_MIGRATION_REQUIRED')
+                    from .full_depth import migrate_legacy_policy
+                    model,migration=migrate_legacy_policy(model)
+                    frozen(self.output/('founder-%03d-depth-migration.json'%member),migration)
                 del parent
                 if member>=len(parents):
                     with torch.no_grad():
                         for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
-            else:model=ApiPolicy(self.model_size).to(self.device)
+            else:model=self.make_policy()
             # Initialization changes exploration probability, never legal action
             # support: favor initially short alarms without forbidding long ones.
             if not inherited and self.config.get('initial_short_alarm_prior',True):

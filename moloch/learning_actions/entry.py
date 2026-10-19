@@ -12,23 +12,27 @@ from .stream import Stream
 
 def open_experiment(specification,dataset,mechanics_path,role,*,start_ms,end_ms,
                     initial_cash_micros,target_wealth_micros,hidden_size=4096,device='cuda',
-                    frozen_finalist_sha256=None,policy_checkpoint=None,checkpoint_sha256=None):
+                    frozen_finalist_sha256=None,policy_checkpoint=None,checkpoint_sha256=None,full_depth=False):
     if role in('evolution','test')and(policy_checkpoint is None or checkpoint_sha256 is None):
         raise ValueError('EVALUATION_REQUIRES_ACTUAL_CANDIDATE_CHECKPOINT')
     if role=='test'and checkpoint_sha256!=frozen_finalist_sha256:
         raise ValueError('TEST_MODEL_MUST_BE_EXACT_FROZEN_FINALIST')
     original,mechanics=open_prepared_replay(specification,dataset,mechanics_path,role,
                                          frozen_finalist_sha256=frozen_finalist_sha256)
-    tape=ApiTape.from_loaded(original,split=original.split,role=role,delivery=original.delivery,
+    if type(full_depth)is not bool:raise ValueError('EXPLICIT_FULL_DEPTH_OBSERVATION_PROFILE')
+    from .full_depth import FullDepthTape,FullDepthPolicy
+    tape_type=FullDepthTape if full_depth else ApiTape
+    tape=tape_type.from_loaded(original,split=original.split,role=role,delivery=original.delivery,
                             frozen_finalist_sha256=original.finalist)
     import json
     tape.maximum_boundary_gap_ms=json.loads(Path(specification).read_text())['maximum_venue_gap_ms']
     env=tape.episode(mechanics,start_ms,end_ms,initial_cash_micros=initial_cash_micros,
                      target_wealth_micros=target_wealth_micros,burnin_ms=0)
-    if policy_checkpoint is None:policy=ApiPolicy(hidden_size=hidden_size).to(device)
+    if policy_checkpoint is None:policy=(FullDepthPolicy if full_depth else ApiPolicy)(hidden_size=hidden_size).to(device)
     else:
         from .training import load_checkpoint
         policy,_=load_checkpoint(policy_checkpoint,checkpoint_sha256,device)
+        if type(policy)is not(FullDepthPolicy if full_depth else ApiPolicy):raise ValueError('EXPLICIT_DEPTH_CHECKPOINT_PROFILE_MISMATCH')
     from .selection import DataUse
     DataUse().record({'train':'train','evolution':'selection','test':'test'}[role],start_ms,end_ms,
                      hashlib.sha256(Path(specification).read_bytes()).hexdigest())

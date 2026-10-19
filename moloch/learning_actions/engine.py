@@ -503,7 +503,7 @@ class ApiTape(PreparedTape):
             if self.snapshot_world_times:first=min(first,self.snapshot_world_times[0])
         if start_ms-burnin_ms<first or end_ms>self.times[-1]+gap:
             raise ValueError('EPISODE_OUTSIDE_AVAILABLE_CHRONOLOGY')
-        env=ApiEpisode(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,
+        env=self.episode_type(mechanics,start_ms-burnin_ms,initial_cash_micros,self.exchanges,
                        target_wealth_micros,start_ms,end_ms)
         env.role=self.role;env.delivery=self.delivery;env.prepared_books=self.prepared_books
         if separate_world:

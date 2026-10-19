@@ -110,7 +110,7 @@ def mutate(model,probe,operator,seed,*,maximum_trials=8,fresh_initializer=None):
         with torch.random.fork_rng(devices=[device]if device.type=='cuda'else[]):
             torch.manual_seed(seed)
             if operator=='fresh':
-                model.load_state_dict(ApiPolicy(model.hidden_size).to(device).state_dict())
+                model.load_state_dict(type(model)(model.hidden_size).to(device).state_dict())
                 if fresh_initializer is not None:report['fresh_initialization']=fresh_initializer(model)
             elif operator=='head_reset':
                 for module in (model.heads,model.conditioners,model.fractions,model.market_query,

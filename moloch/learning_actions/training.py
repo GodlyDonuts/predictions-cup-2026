@@ -173,11 +173,13 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
 
 def load_checkpoint(path,expected_sha256,device='cpu'):
     from .policy import ApiPolicy
+    from .full_depth import FullDepthPolicy
     path=Path(path)
     if hashlib.sha256(path.read_bytes()).hexdigest()!=expected_sha256:raise ValueError('FROZEN_RAW_API_CHECKPOINT_CHANGED')
     bundle=torch.load(path,map_location=device,weights_only=True)
-    if bundle['architecture']!=ApiPolicy.architecture or bundle['production_authority']is not False:
+    architectures={ApiPolicy.architecture:ApiPolicy,FullDepthPolicy.architecture:FullDepthPolicy}
+    if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
-    model=ApiPolicy(bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
+    model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
     if fingerprint(model)!=bundle['parameter_sha256']:raise ValueError('RAW_API_PARAMETERS_CHANGED')
     return model,bundle

@@ -18,18 +18,32 @@ def main():
     p.add_argument('--guard',choices=('sha256','tensor_versions_v1'),default='sha256')
     p.add_argument('--checkpoint-encoder',action='store_true')
     p.add_argument('--start-offset-ms',type=int,default=120000)
+    p.add_argument('--prime-books',type=int,default=0)
     p.add_argument('--memory-fraction',type=float,default=1.);args=p.parse_args()
+    if args.prime_books<0:raise ValueError('NONNEGATIVE_BENCHMARK_PRIMING_READS')
     config=json.loads(args.config.read_text(encoding='utf-8-sig'))
     if not 0<args.memory_fraction<=1:raise ValueError('VALID_BENCHMARK_MEMORY_FRACTION')
     config['cuda_memory_fraction']=args.memory_fraction
     # Compare mathematical batching without TF32's shape-dependent rounding.
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     experiment=Experiment(config,args.output);torch.manual_seed(191104)
-    model=ApiPolicy(config.get('hidden_size',4096)).to(config.get('device','cuda'))
+    model=experiment.make_policy()
     if config.get('initial_short_alarm_prior',True):experiment.initialize_alarm_prior(model)
     def worlds():
         a,b=experiment.train_bounds;start=a+args.start_offset_ms
-        return [experiment.world('train',start+i*500,start+i*500+60000)for i in range(args.worlds)]
+        envs=[experiment.world('train',start+i*500,start+i*500+60000)for i in range(args.worlds)]
+        for env in envs:
+            targets=[k for k in env.keys['SIG']if k[0]=='book'][:args.prime_books]
+            if len(targets)!=args.prime_books:raise ValueError('BENCHMARK_PRIMING_SOURCE_TARGETS_UNAVAILABLE')
+            for key in targets:
+                while True:
+                    result=env.request_observation('SIG',key)
+                    if result['status']=='IN_FLIGHT':env.advance(env.busy_until);break
+                    if result['status']not in('BUSY','RATE_WAIT'):raise ValueError('BENCHMARK_PRIMING_READ_FAILED')
+                    at=result['ready_ms']
+                    if not env.now<at<env.end:raise ValueError('BENCHMARK_PRIMING_EXCEEDS_HORIZON')
+                    env.advance(at)
+        return envs
     calibration=calibrate(worlds()[0],model)
     def sync():
         if next(model.parameters()).is_cuda:torch.cuda.synchronize()
@@ -69,6 +83,8 @@ def main():
     serial=statistics.median(x['serial']for x in timings);batched=statistics.median(x['batched']for x in timings)
     out={'classification':'controlled_inspected_history_raw_api_gpu_batch_benchmark_not_roi',
         'worlds':args.worlds,'steps_per_world':args.steps,'parameters':sum(p.numel()for p in model.parameters()),
+        'contract_features':model.contract_features,'priming_book_reads_per_world':args.prime_books,
+        'minimum_initial_delivered_books':min(len(e.actor_books)for e in warm),
         'timings':timings,'serial_median_seconds':serial,'batched_median_seconds':batched,
         'collection_speedup':serial/batched,'identical_wallets_orders_fills_and_clocks':True,
         'tf32_enabled':False,

@@ -1,6 +1,6 @@
 # Phase014: preserved population, corrected evaluation boundaries
 
-Phase014 is running on the laptop GPU from source commit `06d49d317576a1512d5b39845fccf1046f075e29`. All83 copied Python source files were checked against the experiment's frozen source hashes and current bytes. The dataset remains the corrected237-exchange raw-feed dataset003, manifest `7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69`. There is no new market-data client or independent test.
+Phase014 is running on the laptop GPU from source commit `06d49d317576a1512d5b39845fccf1046f075e29`. All83 copied Python source files remain checked against the frozen experiment. The worktree now contains separate opt-in full-depth/planning changes; active014 retains its originally loaded code and copied source. The dataset remains the corrected237-exchange raw-feed dataset003, manifest `7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69`. There is no new market-data client or independent test.
 
 All eight neural lineages survive. Phase013's failed marker remains authoritative; two negative evaluations, the third trained checkpoint and five original founder states are preserved. The interrupted third candidate's corrected evaluation completes with−10.1206225% worst marked ROI. This is a repaired experiment, not evidence of alpha. [Failure, reproduction and repair](evaluation-valuation-window-20261019.md).
 

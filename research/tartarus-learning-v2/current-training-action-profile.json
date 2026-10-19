@@ -94,5 +94,17 @@
   ],
   "evaluation_wealth_schedule": "start_daily_boundaries_terminal",
   "optional_official_mark_ledger": "moloch.learning_actions.official_marks.OfficialGrowthLedger",
-  "official_mark_adapter_is_active_training_reward": false
+  "official_mark_adapter_is_active_training_reward": false,
+  "active_observation_features": 40,
+  "available_opt_in_full_depth_profile": {
+    "flag": "full_depth_observations",
+    "features": 438,
+    "architecture": "tartarus-raw-api-full-depth-family-first-gru-v3",
+    "source_prices_per_side": 199,
+    "local_draft_orders_visible": true,
+    "last_local_action_visible": true,
+    "explicit_migration_flag": "migrate_full_depth_encoder",
+    "active_run014_uses_profile": false,
+    "large_population_memory_capacity_verified": false
+  }
 }

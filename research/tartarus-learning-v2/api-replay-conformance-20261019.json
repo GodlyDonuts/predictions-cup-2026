@@ -49,7 +49,7 @@
   ],
   "live_run007_unchanged_prior_code_profile": false,
   "new_stream_mode_opt_in_future_phase_only": true,
-  "focused_checks_passed": 149,
+  "focused_checks_passed": 159,
   "production_changed": false,
   "phase007_status": "superseded_and_preserved",
   "raw_breadth_source_recovery": {
@@ -70,5 +70,18 @@
   },
   "evaluation_wealth_schedule": "start_daily_boundaries_terminal_no_compute_chunk_valuation_requirement",
   "phase013_status": "verified_terminal_missing_intermediate_mark_error_preserved",
-  "phase014_status": "verified_running_with_accepted_updates"
+  "phase014_status": "verified_running_with_accepted_updates",
+  "optional_full_depth_and_local_memory": {
+    "features": 438,
+    "params": 58157799,
+    "recorded_lattice_levels_per_side": 199,
+    "actor_delivery_fenced": true,
+    "draft_orders_and_sampled_local_action_visible": true,
+    "mutable_server_status_not_exposed_before_ACK": true,
+    "real_delivered_levels_verified": 6980,
+    "real_max_levels_per_book": 126,
+    "prototype_gpu_update_accepted": true,
+    "large_population_capacity_established": false,
+    "active_run014_changed": false
+  }
 }

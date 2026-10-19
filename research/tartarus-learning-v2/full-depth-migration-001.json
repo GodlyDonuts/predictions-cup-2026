@@ -1,0 +1,20 @@
+{
+  "operator": "explicit_full_depth_input_extension",
+  "old_features": 40,
+  "new_features": 438,
+  "all_existing_weights_preserved_exactly": true,
+  "new_columns_initialized_zero": true,
+  "optimizer_reset_required": true,
+  "old_trajectories_must_not_be_reused": true,
+  "legal_action_support_changed": false,
+  "classification": "full_size_neural_input_migration_not_trading_ROI",
+  "source_checkpoint_sha256": "90f187cb4d25fdd8e8cdac2069b743485180216718fb54ff411ea19d16d2d6ec",
+  "original_parameters": 58106855,
+  "new_parameters": 58157799,
+  "all_previous_action_head_dimensions_preserved": true,
+  "source_device": "cpu",
+  "active_run014_replaced": false,
+  "account_requests": 0,
+  "production_changed": false,
+  "independent_test_used": false
+}

@@ -1,4 +1,4 @@
-October19 ML update: phase014 is training the eight preserved lineages on237 SIG exchanges after a verified intermediate-valuation evaluation failure in013.149 focused checks pass; required daily/terminal marks remain strict. Official-mark calibration covers25 exchanges; no independent profitable ROI is established. [Active profile, failure and evidence](profile-014-learning-20261019.md).
+October19 ML update: phase014 continues its frozen40-feature population training. A separate438-feature full-depth/local-planning profile passes159 focused checks and a two-world/64-step GPU update, but is not yet the active trainer. Completed development results remain negative; full history/API parity and independently profitable ROI remain unproved. [New input capability and limits](full-depth-and-planning-20261019.md).
 
 Official valuation adapter:600 original observations across25 exchanges are verified; complete237-exchange valuation coverage remains unavailable. Active013 retains its frozen midpoint reward, and its first completed member is negative. [Calibration and limits](official-valuation-20261019.md).
 
