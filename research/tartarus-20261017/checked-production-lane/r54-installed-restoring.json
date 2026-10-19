@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-19T02:30:11.105923+00:00",
+  "priorPid": 871596,
+  "sourceCommit": "e688811d9b00e334d36877a3326bb8eaa3853792",
+  "binarySha256": "ed6c4555a92c2cc285399c6b779232658f34528a0910573ee868ed4d55e37354",
+  "controlSha256": "dea089c93728d2ee1013738134b8239995cd9928dd23bf0bd78ee231ff202e3c",
+  "nativeIdentity": "aae3f663c888a591cc77b7e14d36048e2207e5d79cbdec69d10e935a9c461306",
+  "originals": {
+    "head": "14114b3077e615399ae3e424c4b2aec667e0455667e1e6f86f6f0568313d59e4",
+    "report": "023d9f099ae6981d6df2c346b51490babb273d3b0eda603c5b457e71f317f25d",
+    "manifest": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e",
+    "bridges": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c",
+    "fundamental": "4e74304516a63140bba5067f8b29c93c6ca67029cd6931f275593d91a3cc0a21",
+    "unit": "3e5738a8b1d829b020355625e631c36a6502e90dd28d67e9d4fa3917525da5a4",
+    "control": "4137de3e47bf128fec57688acc9eb25836d58ad661c289167ef20cf1511ec1cb",
+    "sdk-manifest": "9ab33cab1b747900a66c3b35157340825b1820972b40d420575f2fe1f1ff70c5",
+    "stop": "17bb4929322a9088bc18ab791a00bcf50cc99c6f50219475ae408400dbdc5af1"
+  },
+  "prefixes": {
+    "financial": {
+      "bytes": 2192954720,
+      "sha256": "c1e98765516fceb130475ecaea36918261555155d2cd093b2f618d75e71534d2"
+    },
+    "dispatch": {
+      "bytes": 19513075,
+      "sha256": "992377f779b4f819c6e7b369810d157d48050f66969d16e36951d82d6ddd957b"
+    }
+  },
+  "originalFillCount": 395,
+  "originalFifoAndAllHistoryPreserved": true,
+  "engineUpgradeCount": 20,
+  "all14OriginalG12ReviewsPreserved": true,
+  "sdkUnknownCount": 0,
+  "sdkActive": null,
+  "sdkStateAndBindingsChanged": false,
+  "allActualAcknowledgmentsTerminal": true,
+  "rank19571SdkNoHttpReverifiedAndNativeRetired": true,
+  "sameIntentRetryAuthorized": false,
+  "exactResolvedStopArchived": true,
+  "activationDailyWindowRiskLimiterOrSourceClocksChanged": false,
+  "ordersSubmittedByDeployment": 0,
+  "currentTradingVerified": false,
+  "pid": 876081,
+  "startTicks": "34666512",
+  "phase": "restoring_original_financial_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}
