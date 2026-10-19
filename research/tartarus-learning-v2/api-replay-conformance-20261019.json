@@ -49,7 +49,7 @@
   ],
   "live_run007_unchanged_prior_code_profile": false,
   "new_stream_mode_opt_in_future_phase_only": true,
-  "focused_checks_passed": 136,
+  "focused_checks_passed": 146,
   "production_changed": false,
   "phase007_status": "superseded_and_preserved",
   "raw_breadth_source_recovery": {
@@ -58,5 +58,14 @@
     "independent_test_used": false,
     "full_original_file_proof": "remote extractor only; selected raw row hash/chains locally verified",
     "details": "raw-breadth-recovery-20261019.md"
+  },
+  "optional_official_valuation_adapter": {
+    "module": "moloch.learning_actions.official_marks",
+    "active_training_reward_changed": false,
+    "original_receipts": 24,
+    "observed_exchange_marks": 25,
+    "complete_universe": 237,
+    "full_coverage_established": false,
+    "source_audit": "official-mark-calibration-001.json"
   }
 }

@@ -1,6 +1,6 @@
 {
   "classification": "observed_active_raw_breadth_development_training_not_independent_roi",
-  "observed_utc": "2026-10-19T14:38:32.279986+00:00",
+  "observed_utc": "2026-10-19T14:51:45.544702+00:00",
   "source_commit": "afda40135eea5837c0591be7c619e2a2e12937e8",
   "run": "raw-api-growth-development-013",
   "process_ids": {
@@ -29,10 +29,10 @@
   "frozen_source_bytes_match_active_experiment": true,
   "compute_chunk_decisions": 128,
   "decision_latency_ms": 23,
-  "training_decisions": 57344,
-  "accepted_updates": 56,
-  "current_member_modeled_fills": 489,
-  "cuda_peak_allocated_bytes": 7084452352,
+  "training_decisions": 112897,
+  "accepted_updates": 126,
+  "current_member_modeled_fills": 438,
+  "cuda_peak_allocated_bytes": 7315245568,
   "role_prefix_initial_state": true,
   "observable_wakeup_index": true,
   "verified_parent_checkpoints": [

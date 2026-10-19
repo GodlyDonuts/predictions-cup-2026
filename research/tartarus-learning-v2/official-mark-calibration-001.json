@@ -1,0 +1,228 @@
+{
+  "classification": "retained_official_tournament_mark_calibration_not_strategy_ROI",
+  "source_archive_sha256": "421ea5b294e0da324b510a49cb573fd1ed67ba994c71fbb0fe7ea7c0b271799c",
+  "source_bytes": 48304,
+  "original_receipts_verified": 24,
+  "original_Rust_semantic_filename_digests_verified": true,
+  "official_mark_rows": 600,
+  "observed_official_mark_exchanges": 25,
+  "raw_SIG_universe": 237,
+  "all_contract_official_mark_coverage_established": false,
+  "reported_marketValues_cent_rounded": true,
+  "normalized_price_precision_millionths": true,
+  "position_price_orientation": "YES_normalized_validated_against_signed_quantity_and_cent_rounded_marketValue",
+  "comparisons": [
+    {
+      "role": "fit",
+      "at_ms": 1792400408687,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.000776",
+      "full_fresh_midpoint_comparison_available": false
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792400564602,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "0.004351",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "114.471851"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792400681507,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.003302",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "105.756698"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792400961187,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.003326",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "106.739174"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401035223,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.005377",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "102.169623"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401135582,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.010169",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "112.844831"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401215909,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.010148",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "112.834852"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401310681,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.003003",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "112.856997"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401404142,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "0.003553",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "85.891053"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401636704,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.006484",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "86.941016"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401723863,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.000818",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "86.776682"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401867109,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.00326",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "86.67424"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792401949376,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.00326",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "86.66424"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792402406332,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.00797",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "60.78953"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792402508819,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.00527",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "76.89973"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792402765021,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.010398",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "25.297102"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792402854792,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.007423",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "34.732577"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792402934645,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.014584",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "-2.757084"
+    },
+    {
+      "role": "fit",
+      "at_ms": 1792403028865,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.014255",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "-2.601755"
+    },
+    {
+      "role": "search",
+      "at_ms": 1792403516631,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.012957",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "-188.780457"
+    },
+    {
+      "role": "search",
+      "at_ms": 1792403621459,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.007479",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "51.020021"
+    },
+    {
+      "role": "search",
+      "at_ms": 1792403729581,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.002765",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "76.362235"
+    },
+    {
+      "role": "search",
+      "at_ms": 1792403842433,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.022381",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "59.545119"
+    },
+    {
+      "role": "search",
+      "at_ms": 1792403950480,
+      "held_exchanges": 25,
+      "official_minus_cent_rounded_report_susqie": "-0.020662",
+      "full_fresh_midpoint_comparison_available": true,
+      "official_minus_midpoint_susqie": "-51.515662"
+    }
+  ],
+  "source_role_bounds_ms": {
+    "fit": [
+      1792400401000,
+      1792403100000
+    ],
+    "search": [
+      1792403400000,
+      1792403999000
+    ]
+  },
+  "account_requests": 0,
+  "production_changed": false,
+  "active_training_reward_changed": false,
+  "independent_test_used": false,
+  "portfolio_cash_or_lots_adopted": false,
+  "adapter_source_sha256": "135e38b8f2ad590369f9af1129ec80c1720357e1a09054091dea6969cbf0c2db",
+  "focused_checks_passed": 146,
+  "source_endpoint": "/tournaments/midterm-elections/portfolio/positions",
+  "tournament_scope": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "orientation_validation_maximum_error_per_position_susqie": ".005",
+  "reported_value_rounding_observed_not_universal_API_claim": true
+}
