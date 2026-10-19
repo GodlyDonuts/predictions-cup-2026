@@ -1,0 +1,90 @@
+{
+  "classification": "remote_verified_full_file_and_local_verifiable_authorized_calendar_slices",
+  "archive_bytes": 75652608,
+  "archive_sha256": "ff8ca3833455754e8a9ba5110b6ff30979b793b03c241fac3d2780a6b4ce90e7",
+  "source_manifest_sha256": "e404d93fde955eedcdf945abfa0a751c28f2e2fe46a9d754be2c9023543f788e",
+  "source_parts": [
+    {
+      "file": "breadth-886899-1792393523772-part-0003.jsonl",
+      "identity": [
+        66305,
+        12349837
+      ],
+      "bytes": 134155939,
+      "sha256": "dd54a8bed405965ee9447e48be298d95461432b10ebd8e08d4199e6256c9cd6c",
+      "first_sequence": 1,
+      "last_sequence": 1343,
+      "first_at_ms": 1792398265731,
+      "last_at_ms": 1792399864982,
+      "selected_rows": 0,
+      "original_hash_chain_verified": true
+    },
+    {
+      "file": "breadth-886899-1792393523772-part-0004.jsonl",
+      "identity": [
+        66305,
+        12350006
+      ],
+      "bytes": 134120333,
+      "sha256": "ebd620065a5dfbaec993c293ffeaee9971858933897adbee934e87e8c1eedb7d",
+      "first_sequence": 1,
+      "last_sequence": 1226,
+      "first_at_ms": 1792399867037,
+      "last_at_ms": 1792401268819,
+      "selected_rows": 750,
+      "original_hash_chain_verified": true
+    },
+    {
+      "file": "breadth-886899-1792393523772-part-0005.jsonl",
+      "identity": [
+        66305,
+        12350155
+      ],
+      "bytes": 134211323,
+      "sha256": "27dfe38546ce8147e3df46b9d107d38a624233234b544985e07d228a04ff8fac",
+      "first_sequence": 1,
+      "last_sequence": 1294,
+      "first_at_ms": 1792401270124,
+      "last_at_ms": 1792402838148,
+      "selected_rows": 1294,
+      "original_hash_chain_verified": true
+    },
+    {
+      "file": "breadth-886899-1792393523772-part-0006.jsonl",
+      "identity": [
+        66305,
+        12350342
+      ],
+      "bytes": 133637679,
+      "sha256": "4339197be81a5bed215d44aa6a21371595a7f54e791a93b0b981d9712769a684",
+      "first_sequence": 1,
+      "last_sequence": 1205,
+      "first_at_ms": 1792402838874,
+      "last_at_ms": 1792404243706,
+      "selected_rows": 769,
+      "original_hash_chain_verified": true
+    }
+  ],
+  "authorized_roles_ms": {
+    "fit": [
+      1792400401000,
+      1792403100000
+    ],
+    "search": [
+      1792403400000,
+      1792403999000
+    ]
+  },
+  "original_frame_counts": {
+    "fit": 2270,
+    "search": 543
+  },
+  "local_selected_byte_hashes_and_contiguous_role_chains_verified": true,
+  "full_original_file_hashes_verified_on_remote_extractor_only": true,
+  "whole_original_files_copied_locally": false,
+  "archive_source_clock": "original_public_realtime_receivedAt_not_retroactive_laptop_receipt",
+  "account_requests": 0,
+  "production_mutations": 0,
+  "temporary_file_copy_server_closed": true,
+  "heldout_prices_included": false
+}

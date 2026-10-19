@@ -27,6 +27,9 @@ class Resting:
 class ApiEpisode(PreparedEpisode):
     def __init__(self,*args,**kwargs):
         super().__init__(*args,**kwargs)
+        from .wake_clock import WakeClock
+        if self.clock._events:raise ValueError('RAW_API_INITIAL_CLOCK_MUST_BE_EMPTY')
+        self.clock=WakeClock(self.clock.now)
         self.budget=RateBudget(ApiBudget())
         self.api_orders={};self.api_id=0;self.api_fills=[];self.responses=[]
         self.known_orders={};self.known_cash=self.cash;self.known_lots={}
@@ -335,10 +338,8 @@ class ApiEpisode(PreparedEpisode):
             candidates.append(alarm_ms)
         # Hidden source arrivals may update execution, but cannot wake a policy
         # until its next observable receipt. Process them while advancing there.
-        candidates.extend(at for at,_,_,kind,_ in self.clock._events
-            if kind in ('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt',
-                        'derived_book_receipt','derived_token_receipt','derived_token_expiry','derived_baseline_expiry',
-                        'derived_account_receipt'))
+        wake=self.clock.next_observable()
+        if wake is not None:candidates.append(wake)
         if self.budget.active is not None:candidates.append(self.busy_until)
         else:
             candidates.append(self.budget.ready_at(self.now,False))

@@ -49,7 +49,14 @@
   ],
   "live_run007_unchanged_prior_code_profile": false,
   "new_stream_mode_opt_in_future_phase_only": true,
-  "focused_checks_passed": 120,
+  "focused_checks_passed": 136,
   "production_changed": false,
-  "phase007_status": "superseded_and_preserved"
+  "phase007_status": "superseded_and_preserved",
+  "raw_breadth_source_recovery": {
+    "original_exchanges": 237,
+    "unique_engine_prints": 1668,
+    "independent_test_used": false,
+    "full_original_file_proof": "remote extractor only; selected raw row hash/chains locally verified",
+    "details": "raw-breadth-recovery-20261019.md"
+  }
 }

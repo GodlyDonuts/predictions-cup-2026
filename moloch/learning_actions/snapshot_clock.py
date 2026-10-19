@@ -12,6 +12,12 @@ MODE='original_observed_snapshot_world_separate_information_v1'
 
 
 def source_clock(row):
+    if row.get('snapshot_origin')=='original_official_sig_realtime_frame':
+        at=row['original_realtime_received_at_ms']
+        if type(at)is not int or at<0 or row['available_at_ms']!=at or row['received_at_ms']!=at:
+            raise ValueError('ORIGINAL_REALTIME_SNAPSHOT_CLOCK')
+        if row['kind']=='book'and row['source_at_ms']>at:raise ValueError('SOURCE_CLOCK_AHEAD_OF_OBSERVED_SNAPSHOT')
+        return at
     at=row['received_at_ms']if row['kind']=='book'else row['native_event_received_at_ms']
     processed=row['native_processed_at_ms'];received=row['native_event_received_at_ms'];available=row['available_at_ms']
     if any(type(v)is not int or v<0 for v in (at,processed,received,available))or not at<=received<=processed<=available:

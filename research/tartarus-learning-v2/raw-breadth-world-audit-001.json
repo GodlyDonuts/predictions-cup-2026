@@ -1,0 +1,35 @@
+{
+  "classification": "authorized_development_raw_source_world_and_clock_audit_not_roi",
+  "dataset_manifest_sha256": "7267dda0a7e7b002c7241c083c2b49c59346566605c0f326d62ffd659ce74a69",
+  "original_sig_exchanges": 237,
+  "trade_rows": 1668,
+  "observation_counts": {
+    "fit/Polymarket/reference": 130530,
+    "fit/Kalshi/reference": 51865,
+    "fit/Polymarket/reference_gap": 2748,
+    "fit/SIG/book": 65305,
+    "fit/Kalshi/reference_gap": 447,
+    "fit/SIG/gap": 315,
+    "search/Kalshi/reference": 11638,
+    "search/Polymarket/reference": 29070,
+    "search/SIG/gap": 237,
+    "search/SIG/book": 16987,
+    "search/Polymarket/reference_gap": 696,
+    "search/Kalshi/reference_gap": 100
+  },
+  "same_role_initialization_seconds": 3.590748199960217,
+  "known_books": 237,
+  "valid_books": 237,
+  "actor_books": 0,
+  "future_events": 104368,
+  "wake_query_median_seconds": {
+    "linear": 0.01974540000082925,
+    "indexed": 1.00000761449337e-07
+  },
+  "wake_query_speedup": 197452.49650756695,
+  "same_next_wakeup": true,
+  "free_actor_prices": false,
+  "account_requests": 0,
+  "production_changed": false,
+  "independent_test_used": false
+}

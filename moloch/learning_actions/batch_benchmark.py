@@ -21,12 +21,12 @@ def main():
     p.add_argument('--memory-fraction',type=float,default=1.);args=p.parse_args()
     config=json.loads(args.config.read_text(encoding='utf-8-sig'))
     if not 0<args.memory_fraction<=1:raise ValueError('VALID_BENCHMARK_MEMORY_FRACTION')
-    if config.get('device','cuda').startswith('cuda'):torch.cuda.set_per_process_memory_fraction(args.memory_fraction)
+    config['cuda_memory_fraction']=args.memory_fraction
     # Compare mathematical batching without TF32's shape-dependent rounding.
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     experiment=Experiment(config,args.output);torch.manual_seed(191104)
     model=ApiPolicy(config.get('hidden_size',4096)).to(config.get('device','cuda'))
-    with torch.no_grad():model.fractions.bias[2]=-3.;model.fractions.bias[3]=9.
+    if config.get('initial_short_alarm_prior',True):experiment.initialize_alarm_prior(model)
     def worlds():
         a,b=experiment.train_bounds;start=a+args.start_offset_ms
         return [experiment.world('train',start+i*500,start+i*500+60000)for i in range(args.worlds)]

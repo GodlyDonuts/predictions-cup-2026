@@ -14,9 +14,15 @@
     "type"
   ],
   "native_adapter": "moloch/native/src/source.rs:115",
-  "native_adapter_behavior": "Either empty bid or empty ask array becomes scoped gap; native gap carries neither side of the underlying book. This proves adapter semantics, not that every original receipt was independently recovered.",
+  "native_adapter_behavior": "Native source emits the same scoped gap shape for empty book sides, subscription reset, book_dirty/settlement and delivery revision/resync/unsequenced-trade recovery. Cause cannot be inferred from normalized gap shape alone.",
   "source_sha256": "bdffcae1165db715e9e7fda8835aaa9dbf79a4541a63584717d0bb8a09c2e1dd",
   "cannot_infer_missing_one_sided_depth": true,
   "account_requests": 0,
-  "independent_test_used": false
+  "independent_test_used": false,
+  "correction_utc": "2026-10-19T14:24:50.354975+00:00",
+  "raw_authorized_fit_empty_sided_books_in_first_three_parts": 0,
+  "complete_raw_development_books": 82292,
+  "complete_raw_development_exchanges": 237,
+  "attribution_of_all_gaps_to_empty_books_established": false,
+  "raw_source_evidence": "raw-breadth-source-proof-001.json"
 }
