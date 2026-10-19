@@ -12,7 +12,8 @@ class PreparedEpisode(PollingEpisode):
         if kind == 'tape' and value['kind'] == 'book':
             market, ex = value['market_id'], value['exchange_id']
             self.scope.setdefault(market, set()).add(ex); self.mapping[ex] = market
-            ReferenceEnv._event(self, at, 'book', self.prepared_books[id(value)])
+            from moloch.learning_actions.disk_tape import record_key
+            ReferenceEnv._event(self, at, 'book', self.prepared_books[record_key(value)])
             self._refresh_reference(market)
             self._remember('SIG', ('book', ex), value)
             return
@@ -37,6 +38,10 @@ class PreparedTape(ReplayTape):
             setattr(tape, name, getattr(original, name))
         tape.split, tape.role = split, role
         tape.delivery = delivery or Delivery(); tape.finalist = frozen_finalist_sha256
+        if hasattr(original,'disk_store'):
+            from moloch.learning_actions.disk_tape import Books
+            tape.disk_store=original.disk_store;tape.prepared_books=Books(tape.disk_store)
+            return tape
         tape.prepared_books = MappingProxyType({id(row): Book(row['exchange_id'], row['available_at_ms'],
             row.get('source_at_ms'), tuple(map(tuple, row['bids'])), tuple(map(tuple, row['asks'])),
             row['original_sha256']) for row in original.rows if row['kind'] == 'book'})
@@ -49,9 +54,9 @@ class PreparedTape(ReplayTape):
         return env
 
 
-def open_prepared_replay(specification,dataset,mechanics_path,role,*,frozen_finalist_sha256=None):
+def open_prepared_replay(specification,dataset,mechanics_path,role,*,frozen_finalist_sha256=None,original=None):
     from .replay import open_replay
     tape,mechanics=open_replay(specification,dataset,mechanics_path,role,
-                              frozen_finalist_sha256=frozen_finalist_sha256)
+                              frozen_finalist_sha256=frozen_finalist_sha256,original=original)
     return PreparedTape.from_loaded(tape,split=tape.split,role=tape.role,delivery=tape.delivery,
                                    frozen_finalist_sha256=tape.finalist),mechanics

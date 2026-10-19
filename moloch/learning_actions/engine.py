@@ -286,6 +286,7 @@ class ApiEpisode(PreparedEpisode):
         publish(self,{'revision':revision,'fields':{'cash':cash,'lots':lots,'orders':orders,'advance':advance}})
 
     def _event(self,at,kind,value):
+        if kind=='api_source_cursor':value.consume(self,at);return
         if kind=='trade_flow':
             self.trade_history.accept(at,value);return
         if kind=='api_trade_receipt':
@@ -570,6 +571,18 @@ class ApiTape(PreparedTape):
         env.global_state_encoding=validate(getattr(self,'global_state_encoding','raw'))
         if env.world_book_lifetime_ms is not None and not separate_world:
             raise ValueError('WORLD_BOOK_LIFETIME_REQUIRES_SEPARATE_SNAPSHOT_WORLD')
+        if hasattr(self,'disk_store'):
+            if separate_world:
+                from .snapshot_clock import initialize_role_prefix
+                env.prepared_world_books=self.prepared_world_books;env.world_market_mapping={}
+                if getattr(self,'role_prefix_initial_state',False):initialize_role_prefix(self,env,start_ms-burnin_ms)
+            from .trade_history import seed_role_history
+            seed_role_history(self,env,start_ms-burnin_ms)
+            from .disk_replay import schedule
+            schedule(self,env,start_ms-burnin_ms,end_ms,separate_world)
+            env.start_delivery()
+            if advance_to_start:env.advance(start_ms)
+            return env
         if separate_world:
             from .snapshot_clock import source_clock
             env.prepared_world_books=self.prepared_world_books;env.world_market_mapping={}

@@ -116,6 +116,7 @@ def main():
         out.update(compacted_median_seconds=compacted,finished_world_collection_speedup=batched/compacted,
                    compaction_changes_legal_actions_or_virtual_clocks=False)
     frozen(args.output/'RESULT.json',out);print(json.dumps(out),flush=True)
+    experiment.close()
 
 
 if __name__=='__main__':main()

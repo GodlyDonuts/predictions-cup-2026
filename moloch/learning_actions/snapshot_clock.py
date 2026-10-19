@@ -31,6 +31,14 @@ def prepare(tape,information_bounds,*,role_prefix_initial_state=False):
     if type(role_prefix_initial_state)is not bool:raise ValueError('EXPLICIT_ROLE_PREFIX_INITIAL_STATE')
     lo,hi=information_bounds
     if lo>=hi:raise ValueError('AUTHORIZED_SNAPSHOT_INFORMATION_BOUNDS')
+    if hasattr(tape,'disk_store'):
+        from .disk_tape import Books
+        _,rows,times=tape.disk_store.world_view(tuple(information_bounds))
+        tape.snapshot_world_mode=MODE;tape.snapshot_world_information_bounds=tuple(information_bounds)
+        tape.snapshot_world_rows=rows;tape.snapshot_world_times=times
+        tape.prepared_world_books=Books(tape.disk_store,world=True)
+        tape.role_prefix_initial_state=role_prefix_initial_state
+        return
     rows=[];books={}
     for row in tape.rows:
         if row['venue']!='SIG'or row['kind']not in ('book','gap')or not lo<=row['available_at_ms']<hi:continue
@@ -57,6 +65,9 @@ def initialize_role_prefix(tape,env,before):
     import bisect
     lo,hi=tape.snapshot_world_information_bounds
     if not lo<=before<hi:raise ValueError('PREFIX_INITIAL_STATE_OUTSIDE_ROLE')
+    if hasattr(tape,'disk_store'):
+        from .disk_replay import initialize_prefix
+        initialize_prefix(tape,env,before);return
     count=0
     for row in tape.snapshot_world_rows[:bisect.bisect_left(tape.snapshot_world_times,before)]:
         world_event(env,source_clock(row),row);count+=1
@@ -80,7 +91,8 @@ def world_event(env,at,row):
     before=len(env.api_fills)
     if row['kind']=='book':
         ex=row['exchange_id'];env.world_market_mapping[ex]=row['market_id']
-        ReferenceEnv._event(env,at,'book',env.prepared_world_books[id(row)])
+        from .disk_tape import record_key
+        ReferenceEnv._event(env,at,'book',env.prepared_world_books[record_key(row)])
         env.books[ex].source_state_at_ms=at
         from .world_confidence import schedule
         schedule(env,ex,at)
@@ -103,7 +115,8 @@ def information_event(env,at,row):
         env.scope.setdefault(market,set()).add(ex);env.mapping[ex]=market;env._refresh_reference(market)
         env._remember('SIG',('book',ex),row)
         if env.realtime is not None:
-            payload=SharedLiquidity(env.prepared_books[id(row)]);payload.source_state_at_ms=source_clock(row)
+            from .disk_tape import record_key
+            payload=SharedLiquidity(env.prepared_books[record_key(row)]);payload.source_state_at_ms=source_clock(row)
             env.realtime.source_book(at,ex,payload)
     elif env.realtime is not None:
         env.realtime.source_gap(row,source_state_at_ms=source_clock(row))

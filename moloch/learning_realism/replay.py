@@ -174,7 +174,7 @@ class ReplayTape(FlowTape):
         return env
 
 
-def open_replay(specification, dataset, mechanics_path, role, *, frozen_finalist_sha256=None):
+def open_replay(specification, dataset, mechanics_path, role, *, frozen_finalist_sha256=None,original=None):
     """Verified entry point for training/evolution/final-test rollout callers.
 
     Returns (role-bound Tape, original Mechanics). It cannot silently substitute
@@ -195,10 +195,19 @@ def open_replay(specification, dataset, mechanics_path, role, *, frozen_finalist
     split = Split(**spec['split'])
     lo, hi = split.bounds(role)
     split.require(role, lo, hi-1, frozen_finalist_sha256=frozen_finalist_sha256)
-    tape = ReplayTape(dataset, split=split, role=role, delivery=Delivery(**spec['delivery']),
-                      frozen_finalist_sha256=frozen_finalist_sha256)
+    if original is None:
+        tape = ReplayTape(dataset, split=split, role=role, delivery=Delivery(**spec['delivery']),
+                          frozen_finalist_sha256=frozen_finalist_sha256)
+    else:
+        if not isinstance(original,FlowTape)or not hasattr(original,'disk_store'):
+            raise ValueError('VERIFIED_DISK_FLOW_TAPE_REQUIRED')
+        tape=ReplayTape.__new__(ReplayTape);tape.__dict__.update(original.__dict__)
+        tape.split,tape.role,tape.delivery,tape.finalist=split,role,Delivery(**spec['delivery']),frozen_finalist_sha256
     if tape.manifest_sha256 != spec['dataset_manifest_sha256']:
         raise ValueError('FROZEN_DATASET_CHANGED')
+    if spec.get('replay_cache_manifest_sha256')is not None:
+        if not hasattr(tape,'disk_store')or tape.disk_store.cache_manifest_sha256!=spec['replay_cache_manifest_sha256']:
+            raise ValueError('FROZEN_REPLAY_CACHE_CHANGED')
     if role=='test':
         from .protocol import independent_test_claim
         if not independent_test_claim(tape.manifest,split):

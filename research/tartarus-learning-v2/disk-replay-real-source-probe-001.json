@@ -1,0 +1,48 @@
+{
+  "classification": "file_backed_real_source_engineering_parity_and_memory_not_roi",
+  "cacheManifestSha256": "8f984b2bbddd53d867b5701483c48127fe262ace98153f25ea21faed32dea375",
+  "sourceManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "cacheCounts": {
+    "execution": 4202,
+    "flow": 4202,
+    "market": 875744,
+    "world": 231196
+  },
+  "cacheDatabaseBytes": 1153351680,
+  "openAndSourceHashVerificationSeconds": 0.9404578999383375,
+  "roleIndexSeconds": 1.0651288999943063,
+  "oneHourSameRolePrefixSeconds": 0.3413624999811873,
+  "oneHourPrefix": {
+    "initialState": {
+      "mode": "same_authorized_role_prefix_v1",
+      "before_ms": 1792413001000,
+      "world_rows": 86990,
+      "known_books": 237,
+      "actor_books": 0
+    },
+    "actorBooks": 0,
+    "actorReferences": 0,
+    "decodedSourceRows": 1918,
+    "sourceCursors": 4,
+    "queuedEvents": 236
+  },
+  "actualFirstMinuteParityCheckpoints": 13,
+  "actualFirstMinuteReplayAndChecksSeconds": 0.41324260004330426,
+  "rangeMaterializedRows": 5695,
+  "rangeMaterializedAllTradeRows": 4202,
+  "exactObservationsCashOrdersFillsAndClocks": true,
+  "peakProcessWorkingSetBytes": 633221120,
+  "processPrivateBytes": 1791664128,
+  "simulatedFills": 1,
+  "newAccountRequests": 0,
+  "independentTestUsed": false,
+  "activeTrainingChanged": false,
+  "productionChanged": false,
+  "independentProfitableRoiEstablished": false,
+  "limits": [
+    "single finite CPU engineering probe, not8world GPU capacity",
+    "first-minute eager range is not a second full corpus",
+    "cache built during source development; final checked-source integration still required",
+    "no additional historical coverage or execution calibration"
+  ]
+}

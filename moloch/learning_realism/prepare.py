@@ -22,6 +22,7 @@ def timestamp(value):
 
 
 def coverage(tape, split, maximum_gap_ms=120_000):
+    if hasattr(tape,'disk_store'):return tape.disk_store.coverage(split,maximum_gap_ms)
     result = {}
     for role in ('train', 'evolution', 'test'):
         lo, hi = split.bounds(role)
@@ -52,10 +53,18 @@ def main():
     p.add_argument('--competition-start', required=True); p.add_argument('--cutoff', required=True)
     p.add_argument('--maximum-gap-ms', type=int, default=120000)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--replay-cache',type=Path)
+    p.add_argument('--replay-cache-manifest-sha256')
     args = p.parse_args()
     if args.maximum_gap_ms <= 0: raise ValueError('POSITIVE_COVERAGE_GAP')
     split = Split(timestamp(args.competition_start), timestamp(args.cutoff))
-    tape = FlowTape(args.dataset); mechanics = load_mechanics(args.mechanics)
+    if (args.replay_cache is None)!=(args.replay_cache_manifest_sha256 is None):
+        p.error('replay cache path and manifest SHA256 must be supplied together')
+    if args.replay_cache is not None:
+        from moloch.learning_actions.disk_tape import DiskFlowTape
+        tape=DiskFlowTape(args.replay_cache,args.replay_cache_manifest_sha256,args.dataset)
+    else:tape=FlowTape(args.dataset)
+    mechanics = load_mechanics(args.mechanics)
     b = mechanics.budget
     if (b.reads_per_minute, b.read_completion_gap_ms, b.writes_per_minute, b.write_completion_gap_ms) != (100, 600, 24, 2500):
         raise ValueError('PRODUCTION_SIG_BUDGET_MISMATCH')
@@ -72,9 +81,11 @@ def main():
         'source_sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                           for p in Path(__file__).parent.glob('*.py') if not p.name.startswith('test_')},
         'production_changed': False}
+    if hasattr(tape,'disk_store'):out['replay_cache_manifest_sha256']=tape.disk_store.cache_manifest_sha256
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open('x', encoding='utf-8') as f: json.dump(out, f, indent=2, allow_nan=False)
     print(json.dumps({'specification_written': True, 'full_history_ready': out['full_history_ready']}))
+    if hasattr(tape,'disk_store'):tape.disk_store.close()
 
 
 if __name__ == '__main__': main()

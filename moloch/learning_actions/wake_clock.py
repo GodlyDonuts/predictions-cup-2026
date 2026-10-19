@@ -25,6 +25,15 @@ class WakeClock(EventClock):
         return self._observable[0][0]if self._observable else None
 
     def advance(self,until_ms,consume):
-        count=super().advance(until_ms,consume)
+        from moloch.learning_v2.account import natural
+        natural(until_ms,'ADVANCE_CLOCK')
+        if until_ms<self.now:raise ValueError('CLOCK_REGRESSION')
+        count=0
+        # Multi-day legitimate source streams can exceed a million records in
+        # one policy-selected WAIT. This is not a decision or event-count cap.
+        while self._events and self._events[0][0]<=until_ms:
+            at,priority,sequence,kind,payload=heapq.heappop(self._events)
+            self.now=at;consume(at,kind,payload);count+=1
+        self.now=until_ms
         self.next_observable()  # Bound stale index storage even without WAIT.
         return count

@@ -19,6 +19,10 @@ def seed_role_history(tape, env, episode_opened_at):
     lower, upper = getattr(tape, 'counterparty_information_bounds', tape.split.bounds(tape.role))
     if not lower <= episode_opened_at < upper:
         raise ValueError('TRADE_HISTORY_EPISODE_MUST_STAY_IN_ROLE')
+    if hasattr(tape,'disk_store'):
+        env.trade_history.backend=(tape.disk_store,(lower,upper))
+        env.trade_history.backend_row_through=bisect.bisect_left(tape.flow_times,episode_opened_at)-1
+        return 0
     a = bisect.bisect_left(tape.flow_times, lower)
     b = bisect.bisect_left(tape.flow_times, episode_opened_at)
     for row in tape.flow_rows[a:b]:
@@ -32,10 +36,17 @@ class TradeHistory:
         self.seen = {}
         self.cursors = {}
         self.sequence = 0
+        self.backend = None
+        self.backend_row_through = None
 
     def accept(self, at, row):
         if row['available_at_ms'] != at or not 0 <= row['executed_at_ms'] <= row['received_at_ms'] <= at:
             raise ValueError('TRADE_HISTORY_SOURCE_CLOCK')
+        if self.backend is not None:
+            table,index=row['_disk_record']
+            if table!='flow':raise ValueError('DISK_TRADE_RECORD_REQUIRED')
+            self.backend_row_through=index
+            return  # Original immutable facts were validated by the cache builder.
         identity = (row['tournament_id'], row['exchange_id'], row['match_id'])
         facts = (row['market_id'], row['executed_at_ms'], row['quantity'], row['yes_price_micros'])
         if identity in self.seen:
@@ -59,13 +70,18 @@ class TradeHistory:
             if type(lower) is not int or type(upper) is not int or not 0 <= lower <= upper:
                 raise ValueError('TRADE_QUERY_TIME_RANGE')
             opened = at
-            rows = tuple(sorted((r for r in self.rows.get(exchange, ())
+            rows = self.backend_row_through if self.backend is not None else tuple(sorted((r for r in self.rows.get(exchange, ())
                 if r['available_at_ms'] <= at and lower <= r['executed_at_ms'] < upper),
                 key=lambda r: (-r['executed_at_ms'], r['match_id'])))
             offset = 0
-        selected = rows[offset:offset + limit]
+        if rows is None or type(rows)is int:
+            store,bounds=self.backend
+            fetched=store.history_page(bounds,exchange,opened,lower,upper,offset,limit+1,through=rows)
+            selected=fetched[:limit];more=len(fetched)>limit
+        else:
+            selected = rows[offset:offset + limit]
+            more = offset+len(selected)<len(rows)
         next_offset = offset + len(selected)
-        more = next_offset < len(rows)
         token = None
         if more:
             # No hidden future fact or total tape length is encoded in a token.

@@ -22,6 +22,10 @@ from .selection import frozen,IndependentTest,DataUse
 
 
 class Experiment:
+    def close(self):
+        store=getattr(getattr(self,'original',None),'disk_store',None)
+        if store is not None:store.close()
+
     def __init__(self,config,output):
         self.config=config;self.output=Path(output)
         self.output.mkdir(parents=True,exist_ok=False)
@@ -39,8 +43,13 @@ class Experiment:
         self.rng=random.Random(self.seed)
         self.model_size=config.get('hidden_size',4096)
         self.mechanics=load_mechanics(Path(config['mechanics']))
+        disk_original=None
+        if config.get('replay_cache')is not None:
+            from .disk_tape import DiskFlowTape
+            cache=config['replay_cache']
+            disk_original=DiskFlowTape(cache['path'],cache['manifest_sha256'],config['dataset'])
         if self.development:
-            self.original=FlowTape(Path(config['dataset']))
+            self.original=disk_original if disk_original is not None else FlowTape(Path(config['dataset']))
             self.split=Split(self.original.times[0],self.original.times[-1]+9*DAY)
             self.gap=0
             a,b=config['development_train_ms'];c,d=config['development_selection_ms']
@@ -49,7 +58,7 @@ class Experiment:
             self.train_bounds=(a,b);self.evolution_bounds=(c,d)
         else:
             self.original,_=open_prepared_replay(config['specification'],config['dataset'],
-                                                config['mechanics'],'train')
+                                                config['mechanics'],'train',original=disk_original)
             self.split=self.original.split
             spec=json.loads(Path(config['specification']).read_text())
             self.gap=spec['maximum_venue_gap_ms']
@@ -567,6 +576,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     args=p.parse_args();config=json.loads(args.config.read_text(encoding='utf-8-sig'))
+    experiment=None
     try:
         experiment=Experiment(config,args.output);summary=experiment.run()
         print(json.dumps({'completed':True,'summary':str(args.output/'SUMMARY.json'),
@@ -576,6 +586,8 @@ def main():
             frozen(args.output/'FAILED.json',{'exception':type(exc).__name__,'reason':str(exc),
                 'production_changed':False,'profitability_established':False})
         raise
+    finally:
+        if experiment is not None:experiment.close()
 
 
 if __name__=='__main__':main()

@@ -31,3 +31,12 @@ class WakeClockTests(unittest.TestCase):
         clock=WakeClock(10)
         with self.assertRaises(ValueError):clock.schedule(9,1,'api_receipt',None)
         self.assertFalse(clock._observable);self.assertFalse(clock._events)
+
+    def test_long_wait_processes_more_than_one_million_finite_source_events(self):
+        clock=WakeClock(0);last=1_000_001;seen=[0]
+        def consume(at,kind,payload):
+            seen[0]+=1
+            if at<last:clock.schedule(at+1,10,'finite_source',None)
+        clock.schedule(0,10,'finite_source',None)
+        self.assertEqual(clock.advance(last,consume),last+1)
+        self.assertEqual(seen[0],last+1);self.assertEqual(clock.now,last)
