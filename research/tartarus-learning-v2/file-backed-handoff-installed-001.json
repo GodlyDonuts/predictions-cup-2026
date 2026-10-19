@@ -1,0 +1,40 @@
+{
+  "classification": "verified_pending_file_backed_ml_generation_handoff_not_active_new_training",
+  "observedUtc": "2026-10-19T19:05:11.534280+00:00",
+  "phase": "waiting_for_completed_generation",
+  "controllerPid": 36564,
+  "controllerLauncherPid": 23056,
+  "oldTrainerPid": 18300,
+  "oldTrainerExactIdentityVerified": true,
+  "oldPendingControllerPid": 36548,
+  "oldPendingControllerPhase": "cancelled_before_handoff",
+  "oldPendingControllerStoppedBeforeTrainerHandoff": true,
+  "sourceCommit": "893ece427f77435bcca052af87704af942c08791",
+  "sourceFilesVerified": 209,
+  "sourceManifestSha256": "a20e3c9586870cc2e0462e8ecfe3aa0afb147b821a7824a4f77e8bcf588d9130",
+  "specSha256": "0c045075829e6edeeccd1e5f6377542069c8588ed304e417c7e1bd3949184b05",
+  "replayCacheManifestSha256": "8f984b2bbddd53d867b5701483c48127fe262ace98153f25ea21faed32dea375",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "newRun": "raw-api-growth-development-016",
+  "completedCycleRequired": 0,
+  "hiddenSize": 4096,
+  "worlds": 8,
+  "capacityStepsToMeasure": [
+    64,
+    32
+  ],
+  "gpuCapacityPassedForThisProfile": false,
+  "explicitObservationProtocolMigration": true,
+  "newTrainingStarted": false,
+  "sourceScoresReused": false,
+  "checkpointsRemoved": false,
+  "independentTestUsed": false,
+  "newAccountClient": false,
+  "productionChanged": false,
+  "guards": [
+    "all8members and actual selected offspring verified",
+    "retained exact-process handle",
+    "real full-size GPU/PPO capacity",
+    "checked source/cache/dataset/config and accepted new optimizer update before reporting active learning"
+  ]
+}

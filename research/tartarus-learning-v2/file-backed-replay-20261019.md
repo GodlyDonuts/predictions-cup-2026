@@ -12,6 +12,8 @@ A separate eight-world/16-step CPU probe using a234,039-parameter engineering mo
 
 185 action-suite and12 realism checks pass. They include source/cache tampering, source-claim relabeling, double calendar fences, unprocessed same-clock prints, late reports, counterparty tie order, exact prefix discovery/expiry state, raw/full-depth stochastic decisions, fused log probabilities, actual full-history/independent-test rejection and a finite1,000,002-event WAIT. Full-size GPU capacity and live population integration are still required before reporting this path as active training. Frozen015 and the existing queued016 have not been hot-loaded.
 
+The pending016 transition now includes this source: controller36564/launcher23056 is verified live, waiting for the same015 generation0. The former36548 controller exited `cancelled_before_handoff` at19:00:42UTC; the exact original trainer18300 remains alive. The new private snapshot has209 checked files from main`893ece427f77435bcca052af87704af942c08791`, and pins cache`8f984b2bbddd53d867b5701483c48127fe262ace98153f25ea21faed32dea375`. It will preserve all eight completed member results/actual offspring, then measure the full58M GPU profile at64steps (32only after OOM) and verify a new accepted update. That GPU proof and new016 learning have not happened yet. [Installed waiting-controller evidence](file-backed-handoff-installed-001.json).
+
 Build a new private cache, preserving the source dataset:
 
 ```powershell
