@@ -1,0 +1,23 @@
+# GPU027 and faster local history normalization — October20,21:19UTC
+
+## Active learning run
+
+GPU027 started21:13:00UTC on source7c2e3bcbd255b62236eec5340685cac39bc9b7d5, config SHA d0e24b84cccc14cbf4810d6e5316afeba0b9f010e52e87132f7f0682afdcc23e. Actual learner14300, wrapper19784, supervisor15032. Four founders/eight worlds, full-episode returns and the same exposed development calendar remain. The first cohort closed4,495decisions across all eight ten-minute paths;40provisional full-return optimizer attempts were verified at21:19UTC. Cohort commit and evaluation are pending; no profitability claim follows from these counts.
+
+The paired CPU study showed that GPU025's before-training baseline had a better worst-case reward than its after-training checkpoint, although the ordinary case improved. GPU027 therefore preserves both evaluated checkpoints for research diversity, plus two fresh founders, and excludes the unevaluated old023 recovery parent that was spending most decisions on reads/disconnect-clear operations with very little virtual progress. CPU proof confirms exact baseline-parent preservation, only the declared family-bias change in the alternate parent, finite weights and fresh optimizers. Five focused exploration/population checks pass.
+
+The explicit founder family-logit shifts are trainable initial preferences. One parent is unchanged; the alternate gets WAIT+2; fresh founders get WAIT+3/READ+2 and WAIT+4/READ+4. Every legal action and deadline remains available. Conditional order parameters and masks are unchanged by this operator. The preferences are not reapplied each decision; subsequent learning can change them. New trajectories and scores are required.
+
+GPU025 was deliberately stopped21:12:48UTC after copying and verifying both selected parents. Its completed176-update checkpoint, first negative evaluation and unfinished inherited-cohort trace remain. Its unfinished world was not scored or resumed. Only one GPU learner is active. GPU026 remains a preserved prepared experiment that was never launched. See population-027-live-20261020.json.
+
+## Longer-history semantic pipeline
+
+Checked sourcec7a8eda3 streams original byte offsets through the existing Decoder, validates original row identity/clocks and price/depth semantics, preserves source-reset/resync gaps, and inserts a conservative gap fence at unlinked chain boundaries. Public print identities are checked/deduplicated on disk rather than keeping the whole corpus in an episode set.22focused compiler/decoder checks pass, including conflicting facts, role boundaries, original-byte changes and disk headroom. The fit/evolution cut is October17,00:00UTC. This stage remains SIG-only; external coverage, lifecycle/catalog availability, execution assumptions and broader chronological admission still need review.
+
+The original ARM server pass is live as954386 under `/home/archon/moloch-multiday-semantic-20261020-001`. It had validated240,245normalized book records from6,000frames at a sampled checkpoint but is too CPU-bound for the desired turnaround. Its partial output and originals remain as a backup.
+
+Archive helperc853c28b copied the174verified source members into a1,782,933,898-byte tar/zstd archive from18,408,765,787original bytes. Tar/zstd exit checks and compressed-stream validation passed; originals were retained. Archive SHA97b67c2016ba1cb27a2e97e94f2dc71d48ee468f452905240ce21591cfb02a80. See original-breadth-transfer-manifest-20261020.json. Full local member verification is still required; compressed archive validation alone does not prove every copied member.
+
+The archive is transferring to the laptop, with672MB copied at21:19UTC. Local controller13040 is waiting under `%LOCALAPPDATA%/Moloch/learning-v2/data-jobs/multiday-local-001`, frozen sourcef8066deb. It will check the archive checksum, extract only declared regular members while verifying each original SHA, wait for the51MBoffset database and its checksum, then run normalization locally. It does not initialize a model or request CUDA, renew market timestamps, contact SIG or change financial state. Extraction and local compilation have not started yet. No original source deletion is planned.
+
+The multi-day source corpus spans October15–19 and has known empty hours; it is not full competition history or continuous exchange truth. The normalized output is not yet admitted for training. All current learning remains development research. October21–25 testing is untouched, official capture retains the sole account queue, and execution STOP remains authoritative. No positive independent ROI is established.

@@ -1,0 +1,93 @@
+{
+  "classification": "live_development_experiment_not_independent_or_production_qualification",
+  "launch": {
+    "observedUtc": "2026-10-20T13:13:00.13955-08:00",
+    "supervisorPid": 15032,
+    "childPid": 19784,
+    "childCreationFiletime": "134370043801344461",
+    "configurationSha256": "d0e24b84cccc14cbf4810d6e5316afeba0b9f010e52e87132f7f0682afdcc23e",
+    "sourceCommit": "7c2e3bcbd255b62236eec5340685cac39bc9b7d5",
+    "productionChanged": false,
+    "automaticRestart": false
+  },
+  "actualLearnerPid": 14300,
+  "cpuFounderProof": {
+    "founders": 4,
+    "sourceCommit": "7c2e3bcbd255b62236eec5340685cac39bc9b7d5",
+    "finiteWeights": true,
+    "freshOptimizers": true,
+    "parentZeroExactlyPreserved": true,
+    "parentOneOnlyFamilyBiasChanged": true,
+    "noTrainingRun": true,
+    "noCudaContext": true,
+    "independentTestUsed": false
+  },
+  "parentCheckpointSha256": [
+    "7bbd5ae2edb1a96e06c57a9c8f47992ab9e8002968e8e05e02562ddcc68b5c42",
+    "9ae18cdc73e5b863d90ef968aacc51e01a5752b3b39f6dabc6a73c0c1750c90d"
+  ],
+  "parentSelectionBasis": "paired_CPU_before_has_better_worst_case_reward_than_after; preserve_both_for_research_diversity",
+  "initialFamilyPriors": [
+    [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      2.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      3.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      2.0,
+      0.0
+    ],
+    [
+      4.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      4.0,
+      0.0
+    ]
+  ],
+  "oldIncompleteInherited023ParentExcluded": true,
+  "old025StoppedUtc": "2026-10-20T21:12:48.528297Z",
+  "old025TraceAndCheckpointsRetained": true,
+  "independentTestUsed": false,
+  "productionChanged": false
+}
