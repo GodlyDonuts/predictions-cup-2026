@@ -1,0 +1,633 @@
+{
+  "classification": "five_completed_development_members_flat_reading_policy_best_so_far_not_profit",
+  "observedUtc": "2026-10-20T01:39:45.996300+00:00",
+  "activeSourceCommit": "741397cc2fb6d27c7beb9dc7625551a05c52c9dd",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "experimentSha256": "daa1d3f3b0db2b8a5c26b22e0094b60f29560a2ff74b83df59027d49c47a3955",
+  "learnerPid": 45560,
+  "learnerCreation": 134369318077378835,
+  "learnerVerifiedAlive": true,
+  "sameEvaluationContextVerified": true,
+  "caseContext": [
+    {
+      "start_ms": 1792416690500,
+      "end_ms": 1792416810500,
+      "stress": false,
+      "selection_seed": 281034,
+      "evaluation_compute_mode": "serial",
+      "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+      "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+    },
+    {
+      "start_ms": 1792416690500,
+      "end_ms": 1792416810500,
+      "stress": true,
+      "selection_seed": 281035,
+      "evaluation_compute_mode": "serial",
+      "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+      "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+    },
+    {
+      "start_ms": 1792418189500,
+      "end_ms": 1792418309500,
+      "stress": false,
+      "selection_seed": 281036,
+      "evaluation_compute_mode": "serial",
+      "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+      "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+    },
+    {
+      "start_ms": 1792418189500,
+      "end_ms": 1792418309500,
+      "stress": true,
+      "selection_seed": 281037,
+      "evaluation_compute_mode": "serial",
+      "classification": "partial_history_development_log_wealth_not_daily_growth_qualification",
+      "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth"
+    }
+  ],
+  "completedGeneration": false,
+  "completedMembers": 5,
+  "totalDecisions": 66663,
+  "totalAcceptedUpdates": 357,
+  "actualReplacementsSoFar": 0,
+  "memberResults": [
+    {
+      "member": 0,
+      "resultSha256": "287e5a4dfac1065fc27da599010446b98b2f56077728f1f09ed84abb81cabc6b",
+      "checkpointSha256": "64d52745f4fbe9008510dfb0a41fde5de7c50021920bf1b92153aaae014a35e6",
+      "trainingReward": -0.11609035414485,
+      "trainingFills": 199,
+      "selectionReward": -0.13299793493837903,
+      "minimumMarkedRoi": -0.12453309999999995,
+      "eligible": false,
+      "cases": [
+        {
+          "roi": -0.09306437499999998,
+          "fills": 35,
+          "decisions": 193,
+          "familyCounts": {
+            "0": 63,
+            "1": 1,
+            "2": 6,
+            "3": 2,
+            "4": 1,
+            "5": 35,
+            "6": 60,
+            "7": 1,
+            "9": 1,
+            "10": 16,
+            "11": 7
+          },
+          "statusCounts": {
+            "ALARM": 63,
+            "BUILDER_CLEARED": 3,
+            "BUILDER_UPDATED": 72,
+            "IN_FLIGHT": 28,
+            "QUOTE_SELECTION_CLEARED": 1,
+            "QUOTE_SELECTION_UPDATED": 22,
+            "STREAM_DISCONNECTED": 4
+          }
+        },
+        {
+          "roi": -0.029072974999999945,
+          "fills": 8,
+          "decisions": 54,
+          "familyCounts": {
+            "0": 21,
+            "1": 1,
+            "2": 1,
+            "4": 1,
+            "5": 9,
+            "6": 14,
+            "10": 4,
+            "11": 3
+          },
+          "statusCounts": {
+            "ALARM": 21,
+            "BUILDER_UPDATED": 19,
+            "IN_FLIGHT": 7,
+            "QUOTE_SELECTION_UPDATED": 4,
+            "STREAM_DISCONNECTED": 3
+          }
+        },
+        {
+          "roi": -0.12453309999999995,
+          "fills": 55,
+          "decisions": 1303,
+          "familyCounts": {
+            "0": 419,
+            "1": 11,
+            "2": 13,
+            "3": 10,
+            "4": 13,
+            "5": 245,
+            "6": 492,
+            "7": 5,
+            "8": 6,
+            "9": 1,
+            "10": 53,
+            "11": 35
+          },
+          "statusCounts": {
+            "ALARM": 419,
+            "BUILDER_CLEARED": 21,
+            "BUILDER_UPDATED": 447,
+            "IN_FLIGHT": 112,
+            "QUOTE_SELECTION_CLEARED": 86,
+            "QUOTE_SELECTION_UPDATED": 204,
+            "STREAM_DISCONNECTED": 14
+          }
+        },
+        {
+          "roi": -0.040501675000000015,
+          "fills": 36,
+          "decisions": 911,
+          "familyCounts": {
+            "0": 304,
+            "1": 5,
+            "2": 6,
+            "3": 14,
+            "4": 9,
+            "5": 175,
+            "6": 318,
+            "7": 6,
+            "8": 3,
+            "9": 2,
+            "10": 38,
+            "11": 31
+          },
+          "statusCounts": {
+            "ALARM": 304,
+            "BUILDER_CLEARED": 15,
+            "BUILDER_UPDATED": 382,
+            "IN_FLIGHT": 83,
+            "QUOTE_SELECTION_CLEARED": 6,
+            "QUOTE_SELECTION_UPDATED": 105,
+            "STREAM_DISCONNECTED": 16
+          }
+        }
+      ]
+    },
+    {
+      "member": 1,
+      "resultSha256": "87e3617c3b0015eb3ea543bbe5b0697b4bbe45a8d4b92ed0ed0727a6069d0d9a",
+      "checkpointSha256": "0c6935829b6e04b2fe4e55e981a4c58444024e38d067f0f9239e212e96699a55",
+      "trainingReward": -0.042202406692055126,
+      "trainingFills": 142,
+      "selectionReward": -0.14795186971075389,
+      "minimumMarkedRoi": -0.137527375,
+      "eligible": false,
+      "cases": [
+        {
+          "roi": -0.03483314999999998,
+          "fills": 36,
+          "decisions": 961,
+          "familyCounts": {
+            "0": 318,
+            "1": 11,
+            "2": 12,
+            "3": 14,
+            "4": 9,
+            "5": 341,
+            "6": 108,
+            "7": 7,
+            "8": 2,
+            "9": 3,
+            "10": 77,
+            "11": 59
+          },
+          "statusCounts": {
+            "ALARM": 318,
+            "BUILDER_CLEARED": 37,
+            "BUILDER_UPDATED": 273,
+            "IN_FLIGHT": 135,
+            "QUOTE_SELECTION_CLEARED": 1,
+            "QUOTE_SELECTION_UPDATED": 175,
+            "STREAM_DISCONNECTED": 22
+          }
+        },
+        {
+          "roi": -0.137527375,
+          "fills": 37,
+          "decisions": 54,
+          "familyCounts": {
+            "0": 20,
+            "1": 1,
+            "3": 1,
+            "4": 2,
+            "5": 13,
+            "6": 8,
+            "7": 1,
+            "10": 5,
+            "11": 3
+          },
+          "statusCounts": {
+            "ALARM": 20,
+            "BUILDER_CLEARED": 1,
+            "BUILDER_UPDATED": 17,
+            "IN_FLIGHT": 10,
+            "QUOTE_SELECTION_UPDATED": 4,
+            "STREAM_DISCONNECTED": 2
+          }
+        },
+        {
+          "roi": -0.036120975,
+          "fills": 25,
+          "decisions": 205,
+          "familyCounts": {
+            "0": 61,
+            "1": 2,
+            "2": 3,
+            "4": 1,
+            "5": 83,
+            "6": 23,
+            "7": 3,
+            "8": 1,
+            "9": 1,
+            "10": 16,
+            "11": 11
+          },
+          "statusCounts": {
+            "ALARM": 61,
+            "BUILDER_CLEARED": 4,
+            "BUILDER_UPDATED": 62,
+            "IN_FLIGHT": 27,
+            "QUOTE_SELECTION_UPDATED": 44,
+            "STREAM_DISCONNECTED": 7
+          }
+        },
+        {
+          "roi": 0.0,
+          "fills": 0,
+          "decisions": 215,
+          "familyCounts": {
+            "0": 64,
+            "2": 2,
+            "3": 3,
+            "4": 2,
+            "5": 78,
+            "6": 20,
+            "7": 1,
+            "8": 3,
+            "10": 28,
+            "11": 14
+          },
+          "statusCounts": {
+            "ALARM": 64,
+            "BUILDER_CLEARED": 5,
+            "BUILDER_UPDATED": 56,
+            "IN_FLIGHT": 39,
+            "QUOTE_SELECTION_UPDATED": 42,
+            "STREAM_DISCONNECTED": 9
+          }
+        }
+      ]
+    },
+    {
+      "member": 2,
+      "resultSha256": "402fd9bc97202a014d215a771cfe1db4be02040a8f331fd31117cd7daa41bff1",
+      "checkpointSha256": "8d0a84c060de0430066d14de8121d45b4da09b0794da7c31be354b11ffbceffb",
+      "trainingReward": -0.13665032694169507,
+      "trainingFills": 246,
+      "selectionReward": -0.27441250389276134,
+      "minimumMarkedRoi": -0.23998149999999996,
+      "eligible": false,
+      "cases": [
+        {
+          "roi": -0.18948695000000004,
+          "fills": 55,
+          "decisions": 811,
+          "familyCounts": {
+            "0": 266,
+            "1": 12,
+            "2": 11,
+            "3": 7,
+            "4": 5,
+            "5": 130,
+            "6": 108,
+            "7": 9,
+            "8": 4,
+            "9": 4,
+            "10": 65,
+            "11": 190
+          },
+          "statusCounts": {
+            "ALARM": 266,
+            "BUILDER_CLEARED": 96,
+            "BUILDER_UPDATED": 163,
+            "HORIZON_REACHED_NO_DISPATCH": 1,
+            "IN_FLIGHT": 116,
+            "QUOTE_SELECTION_UPDATED": 75,
+            "STREAM_DISCONNECTED": 94
+          }
+        },
+        {
+          "roi": -0.00026119999999996146,
+          "fills": 3,
+          "decisions": 54,
+          "familyCounts": {
+            "0": 15,
+            "4": 2,
+            "5": 6,
+            "6": 8,
+            "7": 1,
+            "10": 4,
+            "11": 18
+          },
+          "statusCounts": {
+            "ALARM": 15,
+            "BUILDER_CLEARED": 6,
+            "BUILDER_UPDATED": 11,
+            "IN_FLIGHT": 7,
+            "QUOTE_SELECTION_UPDATED": 3,
+            "STREAM_DISCONNECTED": 12
+          }
+        },
+        {
+          "roi": -0.04989127500000001,
+          "fills": 46,
+          "decisions": 766,
+          "familyCounts": {
+            "0": 248,
+            "1": 6,
+            "2": 8,
+            "3": 4,
+            "4": 11,
+            "5": 127,
+            "6": 109,
+            "7": 4,
+            "8": 7,
+            "9": 7,
+            "10": 54,
+            "11": 181
+          },
+          "statusCounts": {
+            "ALARM": 248,
+            "BUILDER_CLEARED": 98,
+            "BUILDER_UPDATED": 181,
+            "IN_FLIGHT": 101,
+            "QUOTE_SELECTION_UPDATED": 55,
+            "STREAM_DISCONNECTED": 83
+          }
+        },
+        {
+          "roi": -0.23998149999999996,
+          "fills": 62,
+          "decisions": 841,
+          "familyCounts": {
+            "0": 276,
+            "1": 7,
+            "2": 7,
+            "3": 10,
+            "4": 9,
+            "5": 127,
+            "6": 112,
+            "7": 7,
+            "8": 6,
+            "9": 3,
+            "10": 72,
+            "11": 205
+          },
+          "statusCounts": {
+            "ALARM": 276,
+            "BUILDER_CLEARED": 84,
+            "BUILDER_UPDATED": 176,
+            "IN_FLIGHT": 121,
+            "QUOTE_SELECTION_UPDATED": 63,
+            "STREAM_DISCONNECTED": 121
+          }
+        }
+      ]
+    },
+    {
+      "member": 3,
+      "resultSha256": "0e8f3d26720990ecd79fbee633ce73c6b63de9f56dbf944ea85ec216e463afea",
+      "checkpointSha256": "d66ccf5e317dd68ecc9ad0a40de92d2026f22204a83998678b6e6e9c661ca685",
+      "trainingReward": -0.08153373826859256,
+      "trainingFills": 243,
+      "selectionReward": -0.16953847958174031,
+      "minimumMarkedRoi": -0.15594572500000004,
+      "eligible": false,
+      "cases": [
+        {
+          "roi": -0.07965887500000002,
+          "fills": 38,
+          "decisions": 2324,
+          "familyCounts": {
+            "0": 476,
+            "1": 9,
+            "2": 9,
+            "3": 9,
+            "4": 13,
+            "5": 528,
+            "6": 354,
+            "7": 6,
+            "8": 10,
+            "9": 3,
+            "10": 765,
+            "11": 142
+          },
+          "statusCounts": {
+            "ALARM": 476,
+            "BUILDER_CLEARED": 66,
+            "BUILDER_UPDATED": 616,
+            "IN_FLIGHT": 824,
+            "QUOTE_SELECTION_UPDATED": 266,
+            "STREAM_DISCONNECTED": 76
+          }
+        },
+        {
+          "roi": -0.15594572500000004,
+          "fills": 54,
+          "decisions": 2267,
+          "familyCounts": {
+            "0": 480,
+            "1": 7,
+            "2": 11,
+            "3": 10,
+            "4": 11,
+            "5": 555,
+            "6": 316,
+            "7": 8,
+            "8": 5,
+            "9": 7,
+            "10": 719,
+            "11": 138
+          },
+          "statusCounts": {
+            "ALARM": 480,
+            "BUILDER_CLEARED": 68,
+            "BUILDER_UPDATED": 611,
+            "IN_FLIGHT": 778,
+            "QUOTE_SELECTION_CLEARED": 1,
+            "QUOTE_SELECTION_UPDATED": 259,
+            "STREAM_DISCONNECTED": 70
+          }
+        },
+        {
+          "roi": -0.030111675000000004,
+          "fills": 6,
+          "decisions": 2771,
+          "familyCounts": {
+            "0": 598,
+            "1": 7,
+            "2": 12,
+            "3": 3,
+            "4": 19,
+            "5": 620,
+            "6": 432,
+            "7": 9,
+            "8": 5,
+            "9": 4,
+            "10": 920,
+            "11": 142
+          },
+          "statusCounts": {
+            "ALARM": 597,
+            "BUILDER_CLEARED": 76,
+            "BUILDER_UPDATED": 701,
+            "HORIZON_REACHED_NO_DISPATCH": 1,
+            "IN_FLIGHT": 979,
+            "QUOTE_SELECTION_CLEARED": 1,
+            "QUOTE_SELECTION_UPDATED": 350,
+            "STREAM_DISCONNECTED": 66
+          }
+        },
+        {
+          "roi": -0.13889485000000001,
+          "fills": 56,
+          "decisions": 2349,
+          "familyCounts": {
+            "0": 487,
+            "1": 6,
+            "2": 11,
+            "3": 14,
+            "4": 10,
+            "5": 533,
+            "6": 337,
+            "7": 4,
+            "8": 10,
+            "9": 4,
+            "10": 804,
+            "11": 129
+          },
+          "statusCounts": {
+            "ALARM": 487,
+            "BUILDER_CLEARED": 62,
+            "BUILDER_UPDATED": 593,
+            "IN_FLIGHT": 863,
+            "QUOTE_SELECTION_CLEARED": 1,
+            "QUOTE_SELECTION_UPDATED": 276,
+            "STREAM_DISCONNECTED": 67
+          }
+        }
+      ]
+    },
+    {
+      "member": 4,
+      "resultSha256": "bbdb2d95dc27e18154fcb497d94c6cd30532d78150b35e5ae9ab591027d24a83",
+      "checkpointSha256": "7621f50e3a8b66054b2049cc088d72c8b96f797f42648c98a55c69af9976995f",
+      "trainingReward": 0.0,
+      "trainingFills": 0,
+      "selectionReward": 0.0,
+      "minimumMarkedRoi": 0.0,
+      "eligible": false,
+      "cases": [
+        {
+          "roi": 0.0,
+          "fills": 0,
+          "decisions": 4554,
+          "familyCounts": {
+            "0": 804,
+            "5": 406,
+            "6": 142,
+            "10": 3202
+          },
+          "statusCounts": {
+            "ALARM": 804,
+            "BUILDER_UPDATED": 50,
+            "HORIZON_REACHED_NO_DISPATCH": 1,
+            "IN_FLIGHT": 3201,
+            "QUOTE_SELECTION_CLEARED": 5,
+            "QUOTE_SELECTION_UPDATED": 493
+          }
+        },
+        {
+          "roi": 0.0,
+          "fills": 0,
+          "decisions": 4574,
+          "familyCounts": {
+            "0": 705,
+            "5": 531,
+            "6": 143,
+            "10": 3194,
+            "11": 1
+          },
+          "statusCounts": {
+            "ALARM": 705,
+            "BUILDER_UPDATED": 50,
+            "HORIZON_REACHED_NO_DISPATCH": 1,
+            "IN_FLIGHT": 3193,
+            "QUOTE_SELECTION_CLEARED": 5,
+            "QUOTE_SELECTION_UPDATED": 619,
+            "STREAM_DISCONNECTED": 1
+          }
+        },
+        {
+          "roi": 0.0,
+          "fills": 0,
+          "decisions": 4586,
+          "familyCounts": {
+            "0": 645,
+            "5": 583,
+            "6": 134,
+            "10": 3223,
+            "11": 1
+          },
+          "statusCounts": {
+            "ALARM": 644,
+            "BUILDER_UPDATED": 50,
+            "HORIZON_REACHED_NO_DISPATCH": 1,
+            "IN_FLIGHT": 3223,
+            "QUOTE_SELECTION_CLEARED": 5,
+            "QUOTE_SELECTION_UPDATED": 662,
+            "STREAM_DISCONNECTED": 1
+          }
+        },
+        {
+          "roi": 0.0,
+          "fills": 0,
+          "decisions": 4545,
+          "familyCounts": {
+            "0": 734,
+            "5": 472,
+            "6": 143,
+            "10": 3195,
+            "11": 1
+          },
+          "statusCounts": {
+            "ALARM": 734,
+            "BUILDER_UPDATED": 50,
+            "HORIZON_REACHED_NO_DISPATCH": 1,
+            "IN_FLIGHT": 3194,
+            "QUOTE_SELECTION_CLEARED": 2,
+            "QUOTE_SELECTION_UPDATED": 563,
+            "STREAM_DISCONNECTED": 1
+          }
+        }
+      ]
+    }
+  ],
+  "handoffStatus": {
+    "phase": "waiting_for_completed_generation",
+    "observedUtc": "2026-10-20T01:24:22.983228+00:00",
+    "productionChanged": false,
+    "independentTestUsed": false,
+    "trainerPid": 45560,
+    "cycle": 0
+  },
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "positiveRoiEstablished": false
+}
