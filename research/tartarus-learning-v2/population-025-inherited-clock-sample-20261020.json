@@ -1,0 +1,61 @@
+{
+  "classification": "read_only_incomplete_training_clock_sample_not_fitness",
+  "observedUtc": "2026-10-20T20:56:22.538270+00:00",
+  "cohort": "GPU025/cohort-000001",
+  "frames": 64,
+  "firstBatch": 233,
+  "lastBatch": 236,
+  "families": {
+    "6": {
+      "decisions": 4,
+      "medianElapsedMs": 17.0,
+      "meanElapsedMs": 17,
+      "maximumElapsedMs": 17
+    },
+    "10": {
+      "decisions": 227,
+      "medianElapsedMs": 17,
+      "meanElapsedMs": 17,
+      "maximumElapsedMs": 17
+    },
+    "11": {
+      "decisions": 232,
+      "medianElapsedMs": 17.0,
+      "meanElapsedMs": 17,
+      "maximumElapsedMs": 17
+    },
+    "0": {
+      "decisions": 37,
+      "medianElapsedMs": 48,
+      "meanElapsedMs": 52.027027027027025,
+      "maximumElapsedMs": 116
+    },
+    "5": {
+      "decisions": 8,
+      "medianElapsedMs": 17.0,
+      "meanElapsedMs": 17,
+      "maximumElapsedMs": 17
+    },
+    "4": {
+      "decisions": 1,
+      "medianElapsedMs": 17,
+      "meanElapsedMs": 17,
+      "maximumElapsedMs": 17
+    },
+    "2": {
+      "decisions": 2,
+      "medianElapsedMs": 17.0,
+      "meanElapsedMs": 17,
+      "maximumElapsedMs": 17
+    },
+    "1": {
+      "decisions": 1,
+      "medianElapsedMs": 17,
+      "meanElapsedMs": 17,
+      "maximumElapsedMs": 17
+    }
+  },
+  "sourceWeightsFrozenDuringCollection": true,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

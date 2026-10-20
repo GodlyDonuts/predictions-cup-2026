@@ -12,6 +12,6 @@ A new read-only auditor verifies each whole original file's byte hash, row hashe
 
 The first audit001 incorrectly required a64-character previous hash on initial rows. The native producer starts sequence1 with an empty previous string. Corrected checked sourcef3de91bd matches that convention; five CPU tests pass, including a specific empty-root regression. Audit001 is preserved as superseded diagnostic output, not evidence that the sources are corrupt.
 
-Corrected audit002 runs as VPS PID952701 in `/home/archon/moloch-breadth-inventory-20261020-002`; status and per-file results are under `inventory/`. At the first check,19whole files (1.49GB) had passed with no quarantines. Completion and semantic replay admission remain pending. The auditor source SHA256 is `da1dde923e85583bb14a23ee0da65acf47cd7ebd220df355176d9efcd5930e84b`.
+Corrected audit002 runs as VPS PID952701 in `/home/archon/moloch-breadth-inventory-20261020-002`; status and per-file results are under `inventory/`. At the first check,19whole files (1.49GB) had passed with no quarantines. Completion and semantic replay admission remain pending. The auditor source SHA256 is `da1dde923e8583bb14a23ee0da65acf47cd7ebd220df355176d9efcd5930e84b`.
 
 The important next step is to establish exact dates, gaps, source-version consistency and contract lifecycle coverage from this larger corpus, then compile causal replay without loading the whole corpus into memory. Public historical candles/trades still remain information-only. No independent-test prices were used.

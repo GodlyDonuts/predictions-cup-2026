@@ -1,0 +1,32 @@
+{
+  "inventorySha256": "231af048a17095cec74e0494602c4eea7a0de99198d130a37f6695a81cd5b766",
+  "frameIndexManifestSha256": "69ba8109aac8f3e0eb344ffa21208dc12f4d3b9306bcdb865e02bf0c039c3067",
+  "wholeFiles": 174,
+  "quarantinedFiles": 1,
+  "uniqueFrames": 148181,
+  "rawBookOccurrences": 5102592,
+  "hourBinsInObservedSpan": 104,
+  "hoursWithAnyRawBooks": 92,
+  "hoursWithoutRawBooksUtc": [
+    "2026-10-15T14:00:00+00:00",
+    "2026-10-15T15:00:00+00:00",
+    "2026-10-15T16:00:00+00:00",
+    "2026-10-15T17:00:00+00:00",
+    "2026-10-16T10:00:00+00:00",
+    "2026-10-17T23:00:00+00:00",
+    "2026-10-18T00:00:00+00:00",
+    "2026-10-18T06:00:00+00:00",
+    "2026-10-18T07:00:00+00:00",
+    "2026-10-18T08:00:00+00:00",
+    "2026-10-18T20:00:00+00:00",
+    "2026-10-18T22:00:00+00:00"
+  ],
+  "firstReceivedUtc": "2026-10-15T07:25:04.423000+00:00",
+  "lastReceivedUtc": "2026-10-19T14:13:49.249000+00:00",
+  "exchanges": 237,
+  "bookSemanticsValidated": false,
+  "trainingAdmitted": false,
+  "duplicatesRemovedFromHeaderOccurrences": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

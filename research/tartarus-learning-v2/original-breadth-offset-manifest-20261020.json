@@ -1,0 +1,22 @@
+{
+  "format": "evidenced_sig_frame_offsets_v1",
+  "sourceAuditSha256": "231af048a17095cec74e0494602c4eea7a0de99198d130a37f6695a81cd5b766",
+  "databaseSha256": "86f4eaccf5e0ff36ff4ed6c805e2fbf214e268da5d74c27091ff2aafa0ed172e",
+  "databaseBytes": 51007488,
+  "originalFiles": 174,
+  "sourceBytes": 18408765787,
+  "sourceRows": 149179,
+  "uniqueFrames": 148181,
+  "identicalEnvelopeCopiesRemoved": 998,
+  "firstReceivedMs": 1792049104423,
+  "lastReceivedMs": 1792419229249,
+  "cutoffExclusiveMs": 1792540800000,
+  "originalBytesRetained": true,
+  "rawPayloadsDecoded": false,
+  "bookSemanticsValidated": false,
+  "globalHistoryCompletenessEstablished": false,
+  "trainingAdmitted": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "accountRequests": 0
+}
