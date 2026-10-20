@@ -13,10 +13,16 @@ from moloch.learning_v2.liquidity import Book
 
 
 class ProspectiveDecoder:
-    def __init__(self,tournament,bounds,role):
+    def __init__(self,tournament,bounds,role,*,subscription_binding=None):
         if (role not in('fit','search')or len(bounds)!=2
                 or any(type(v)is not int or v<0 for v in bounds)or bounds[0]>=bounds[1]):
             raise ValueError('AUTHORIZED_DEVELOPMENT_CAPTURE_CALENDAR_REQUIRED')
+        if subscription_binding is not None:
+            if (set(subscription_binding)!={'tournamentId','manifestSha256'}
+                    or subscription_binding['tournamentId']!=tournament
+                    or re.fullmatch('[0-9a-f]{64}',subscription_binding['manifestSha256'])is None):
+                raise ValueError('VERIFIED_CAPTURE_SESSION_SUBSCRIPTION_BINDING')
+        self.subscription_binding=subscription_binding
         self.decoder=Decoder(tournament);self.bounds=tuple(bounds);self.role=role;self.last=-1
 
     def common(self,event,original,origin):
@@ -25,7 +31,10 @@ class ProspectiveDecoder:
         at=millis(event['receivedAt'])
         if not self.bounds[0]<=at<self.bounds[1]or at<self.last:
             raise ValueError('ORIGINAL_CAPTURE_RECEIPT_CALENDAR_OR_ORDER')
-        if event['tournamentId']!=self.decoder.tournament:raise ValueError('CAPTURE_TOURNAMENT_SCOPE')
+        tournament=event.get('tournamentId')
+        if tournament is None and event.get('kind')=='subscribed'and self.subscription_binding is not None:
+            tournament=self.subscription_binding['tournamentId']
+        if tournament!=self.decoder.tournament:raise ValueError('CAPTURE_TOURNAMENT_SCOPE')
         self.last=at
         return dict(venue='SIG',available_at_ms=at,received_at_ms=at,
             snapshot_origin=origin,original_sha256=original,calendar_role=self.role)
@@ -40,6 +49,7 @@ class ProspectiveDecoder:
             d.counts['original_topic_subscriptions']+=1
             return [{**common,'kind':'gap','market_id':mid,'exchange_id':None,
                 'gap_reason':'original_topic_subscription_requires_baseline',
+                'subscription_session_manifest_sha256':None if self.subscription_binding is None else self.subscription_binding['manifestSha256'],
                 'authoritative_market_refetch_required':True}],[]
         if event['kind']!='broadcast'or event['event']!='market_batch':
             raise ValueError('SUPPORTED_ORIGINAL_PUBLIC_BROADCAST_REQUIRED')

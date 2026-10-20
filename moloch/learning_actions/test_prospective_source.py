@@ -28,7 +28,8 @@ def ws(at=1100,value=None):
 
 
 class ProspectiveSourceTests(unittest.TestCase):
-    def decoder(self):return ProspectiveDecoder('cup',(0,10000),'fit')
+    def decoder(self):return ProspectiveDecoder('cup',(0,10000),'fit',
+        subscription_binding={'tournamentId':'cup','manifestSha256':'f'*64})
 
     def test_integer_epoch_conversion_keeps_exact_millisecond_and_offset(self):
         from moloch.learning_v2.reference_adapters import millis
@@ -56,8 +57,11 @@ class ProspectiveSourceTests(unittest.TestCase):
 
     def test_subscription_and_transport_gaps_survive_full_snapshot_delivery(self):
         d=self.decoder();d.rest_book(rest(),'a'*64)
-        subscribe=dict(source='official_sig_realtime',kind='subscribed',marketId='1',tournamentId='cup',receivedAt=iso(1050))
+        subscribe=dict(source='official_sig_realtime',kind='subscribed',marketId='1',receivedAt=iso(1050))
+        with self.assertRaisesRegex(ValueError,'CAPTURE_TOURNAMENT_SCOPE'):
+            ProspectiveDecoder('cup',(0,10000),'fit').websocket(subscribe,'b'*64)
         rows,_=d.websocket(subscribe,'b'*64);self.assertEqual(rows[0]['kind'],'gap');self.assertIn('17',d.decoder.needs_baseline)
+        self.assertEqual(rows[0]['subscription_session_manifest_sha256'],'f'*64)
         event=ws();event['gap']=True;event['requiresRestResync']=True
         rows,_=d.websocket(event,'c'*64);self.assertEqual([r['kind']for r in rows],['gap','book'])
         self.assertTrue(rows[1]['original_requires_rest_resync']);self.assertEqual(d.decoder.needs_baseline,set())
