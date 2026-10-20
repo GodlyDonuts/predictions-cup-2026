@@ -3,15 +3,20 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { historyUrl,validate,recover } from './backfill_polymarket_history.mjs';
+import { historyUrl,validate,recover,scopedPoints } from './backfill_polymarket_history.mjs';
 import { sha256 } from '../external-data/polymarket-client.mjs';
 const start=1790812800,end=start+120;
 async function cleanup(root){const resolved=path.resolve(root);assert.equal(path.dirname(resolved),path.resolve(os.tmpdir()));assert.ok(path.basename(resolved).startsWith('moloch-public-history-'));await fs.rm(resolved,{recursive:true,force:true});}
 const response=(u,status=200)=>({status,headers:new Headers(),text:async()=>JSON.stringify({history:[{t:start,p:.56},{t:end,p:.57}]})});
 function receipt(){const bodyText=JSON.stringify({history:[{t:start,p:.56},{t:end,p:.57}]});return {url:String(historyUrl('123',start,end)),status:200,requestStartedAt:'2026-10-20T00:00:00Z',receivedAt:'2026-10-20T00:00:01Z',bodyText,bodySha256:sha256(bodyText)};}
 test('original samples and retrieval clocks stay distinct, upper boundary excluded',()=>{
-  assert.deepEqual(validate(receipt(),'123',start,end),{records:2,insideHalfOpenRange:1});
+  assert.deepEqual(validate(receipt(),'123',start,end),{records:2,insideHalfOpenRange:1,excludedOutOfRange:1});
   assert.throws(()=>historyUrl('../orders',start,end));assert.throws(()=>historyUrl('123',start,start+8*86400));
+});
+test('provider appended present point is excluded before its price is used',()=>{
+  const r=receipt();const body=JSON.parse(r.bodyText);body.history.push({t:1792454400,p:'OUT_OF_RANGE_PRICE_MUST_NOT_BE_USED'});r.bodyText=JSON.stringify(body);r.bodySha256=sha256(r.bodyText);
+  assert.deepEqual(scopedPoints(r,'123',start,end),[{t:start,p:.56}]);assert.equal(validate(r,'123',start,end).excludedOutOfRange,2);
+  body.history[0].p='BAD_IN_RANGE_PRICE';r.bodyText=JSON.stringify(body);r.bodySha256=sha256(r.bodyText);assert.throws(()=>scopedPoints(r,'123',start,end),/PRICE_SCHEMA/);
 });
 test('changed source body or scope cannot be silently replayed',()=>{
   assert.throws(()=>validate({...receipt(),bodySha256:'0'.repeat(64)},'123',start,end));

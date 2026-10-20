@@ -16,17 +16,22 @@ export function validate(receipt,asset,start,end){
   const a=Date.parse(receipt.requestStartedAt),b=Date.parse(receipt.receivedAt);
   if(!Number.isFinite(a)||!Number.isFinite(b)||a>b)throw Error('HISTORY_RECEIPT_CLOCK');
   const rows=JSON.parse(receipt.bodyText).history;if(!Array.isArray(rows))throw Error('HISTORY_POINTS_SCHEMA');
-  for(const r of rows)if(!Number.isSafeInteger(r.t)||r.t<start||r.t>end||r.t*1000>b||typeof r.p!=='number'||!Number.isFinite(r.p)||r.p<0||r.p>1)throw Error('HISTORY_POINT_OUTSIDE_SCOPE');
-  return {records:rows.length,insideHalfOpenRange:rows.filter(r=>r.t<end).length};
+  for(const r of rows)if(!Number.isSafeInteger(r.t)||r.t*1000>b)throw Error('HISTORY_POINT_CLOCK');
+  const scoped=rows.filter(r=>r.t>=start&&r.t<end);
+  // The observed provider appends a present-time sample even to old ranges.
+  // Quarantine by timestamp before inspecting any out-of-range price value.
+  for(const r of scoped)if(typeof r.p!=='number'||!Number.isFinite(r.p)||r.p<0||r.p>1)throw Error('HISTORY_PRICE_SCHEMA');
+  return {records:rows.length,insideHalfOpenRange:scoped.length,excludedOutOfRange:rows.length-scoped.length};
 }
+export function scopedPoints(receipt,asset,start,end){validate(receipt,asset,start,end);return JSON.parse(receipt.bodyText).history.filter(r=>r.t>=start&&r.t<end);}
 async function atomic(file,value){const tmp=file+'.pending';await fs.writeFile(tmp,json(value));await fs.rename(tmp,file);}
 export async function recover(root,plan,{fetcher=fetch,maximumRequests=0,admission=new Admission({rps:5})}={}){
   await fs.mkdir(root,{recursive:true});let old;
   try{old=await fs.readFile(path.join(root,'plan.json'),'utf8');}catch(e){if(e.code!=='ENOENT')throw e;}
   if(old!==undefined&&old!==json(plan))throw Error('IMMUTABLE_HISTORY_PLAN_CHANGED');
   if(old===undefined)await fs.writeFile(path.join(root,'plan.json'),json(plan),{flag:'wx'});
-  const pages=path.join(root,'pages');await fs.mkdir(pages,{recursive:true});let completed=0,records=0,requests=0;
-  async function status(state,extra={}){await atomic(path.join(root,'status.json'),{state,at:new Date().toISOString(),completedAssets:completed,totalAssets:plan.assets.length,records,requestsThisInvocation:requests,planSha256:sha256(json(plan)),trainingAdmitted:false,orderBooksReconstructed:false,originalHistoricalDeliveryVerified:false,productionChanged:false,...extra});}
+  const pages=path.join(root,'pages');await fs.mkdir(pages,{recursive:true});let completed=0,records=0,requests=0,excluded=0;
+  async function status(state,extra={}){await atomic(path.join(root,'status.json'),{state,at:new Date().toISOString(),completedAssets:completed,totalAssets:plan.assets.length,records,excludedOutOfRange:excluded,requestsThisInvocation:requests,planSha256:sha256(json(plan)),trainingAdmitted:false,orderBooksReconstructed:false,originalHistoricalDeliveryVerified:false,productionChanged:false,...extra});}
   await status('recovering');
   for(let i=0;i<plan.assets.length;i++){
     const asset=plan.assets[i];let chunk=0;
@@ -54,7 +59,7 @@ export async function recover(root,plan,{fetcher=fetch,maximumRequests=0,admissi
         }
         validate(receipt,asset,start,end);await fs.writeFile(file+'.pending',json(receipt),{flag:'wx'});await fs.rename(file+'.pending',file);
       }
-      records+=validate(receipt,asset,start,end).insideHalfOpenRange;await status('recovering',{assetIndex:i,chunk});
+      const counts=validate(receipt,asset,start,end);records+=counts.insideHalfOpenRange;excluded+=counts.excludedOutOfRange;await status('recovering',{assetIndex:i,chunk});
     }
     completed++;await status('recovering');
   }
