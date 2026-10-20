@@ -1,5 +1,7 @@
 [Current ML: GPU021 first cohort committed](population-021-learning-001.json). At2026-10-20T05:00:09Z actual36576/source157c873a has37,317decisions and2committed updates from147attempts. CPU audit verifies32changed parameter tensors, finite saved weights, exact process and source/config/data pins. Evaluation pending; no profitable checkpoint or independent ROI established. Full daily-reward chronology/calibration remain incomplete. Earlier observations below are historical.
 
+[October20 historical recovery](history-recovery-20261020.md):244,200unique Kalshi training trades across234mapped tickers recovered/verified; separate evolution recovery and378-asset Polymarket minute-history recovery are running. Provider-appended current quotes are quarantined before historical extraction. Missing earlier SIG depth and an exposed requested test calendar still prevent the ideal daily-reward run; recovered data is not yet admitted.
+
 October19 numerical conditioning: trained-fit diagnostics show62%update-gate saturation; explicit time/count conditioning removes it in the diagnostic and passes188checks/full-size CPU PPO. This is not profitability evidence. Old014continues;pending handoffv1 was cancelled before transition. [Evidence](global-state-conditioning-20261019.md).
 
 October19 next-profile handoff:184checks pass for complete-generation selection, evolved hyperparameter transfer and exact local training-process targeting. Actual handoff remains pending;014continues. [Transition and evidence scope](population-boundary-handoff-20261019.md).

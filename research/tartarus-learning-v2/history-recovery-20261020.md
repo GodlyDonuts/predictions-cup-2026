@@ -1,0 +1,31 @@
+# Historical data recovery for the requested experiment
+
+The human directed historical recovery and the full training experiment on October20. Acquisition is now materially expanded; the ideal experiment is **not yet ready or started**. The existing GPU021 development learner is unchanged. No production financial state, STOP/network control, official SIG account client or held-out evaluation was changed.
+
+## Recovered and running
+
+- **Kalshi training history complete:**244,200 unique public trades,234of234mapped tickers,419original receipt pages/151,835,235bytes. Requested range September1 through October12,05:00UTC exclusive. First actual event September1,00:01:42.398; last October12,04:59:58.146. Every payload hash, original ticker/range, exact decimal trade fields and pagination chain verified; all cursors terminal. Duplicate identities are checked against complete original facts. [Receipt audit](kalshi-historical-recovery-001.json).
+- **Kalshi evolution history running:** October12,05:00 through October16,05:00UTC, separately labeled and stored. Both recoveries use the existing9956collector discovery endpoint and its original authenticated shared limiter/backoff. No second Kalshi account client or collector restart.
+- **Polymarket training price recovery running:**378mapped asset IDs, September1 through October12,05:00UTC, minute samples in seven-day requests. Actual Node19440 runs frozen8bacac9d; original receipts and hashes are immutable. Five history requests/sec remain below the documented public-history and aggregate CLOB buckets; the existing book reader is unchanged. [Provider price-history semantics](https://docs.polymarket.com/api-reference/markets/get-prices-history), [published endpoint limits](https://docs.polymarket.com/api-reference/rate-limits).
+
+Exact acquisition counts/observations are in [the snapshot](history-recovery-20261020.json); running counts advance after publication. These counts are records, not independent profitable opportunities or simulated days. Data remains outside every learner until admitted by a separate checked source compiler.
+
+## Provider look-ahead caught before admission
+
+The Python HTTP probe received403/1010. An ordinary request through the existing Node HTTP stack, with no identity/IP/credential changes, returned200and1441points for an older day. The first bulk run then failed strict time-range validation: an old seven-day query contained10,029points ending with a present-time quote at1792473079, beyond its requested end1788825600. The failed001source/run and a diagnostic raw receipt are preserved privately and uncredited.
+
+Corrected002preserves original payload bytes but filters using event timestamps **before inspecting out-of-range price fields**. Half-open range boundaries and appended present samples are excluded. `scopedPoints` is the required extraction path; raw receipts cannot be passed directly to a training reader. Both original event times and actual present retrieval times remain separate. This does not establish original historical publication/receipt latency. Six Node checks cover present-quote quarantine, incorrect in-range prices, receipt tampering, resume, scope changes, terminal denial and bounded429backoff. Six Python checks cover historical scope, payload identity, exact cursor resume and wrapped authorization failure. The active Kalshi training acquisition used the earlier frozenaefd885source; newer validation/reporting changes did not mutate it.
+
+## SIG and test gaps remain material
+
+Metadata-only VPS recovery inspected2236raw files over100kB beneath the known shared root and18outside it in the application/opt/Documents/Downloads scopes. The oldest application/source artifacts found still date to October15. This is a search result, not proof that no organizer export exists. Original trace/body histories and earlier audits remain preserved. No market/API/account service was enabled and no controls were cleared.
+
+The new Kalshi trades and Polymarket samples do **not** reconstruct pre-October15SIG bids/asks/depth, passive queue state, full contract lifecycle or official valuation. Historical public trade availability is supported by [Kalshi's paginated API](https://docs.kalshi.com/api-reference/market/get-trades); that API does not make these trades SIG executions. The saved SIG schema describes trade-derived sparse candles, not original historical depth. Earlier [history feasibility findings](history-readiness-20261019.md) remain applicable.
+
+The fixed requested cutoff here is October20,05:00UTC: train ends October12, evolution ends October16, test ends October20. September1 is an acquisition floor, **not a verified competition start**. The requested test calendar includes October19data already used for optimization/selection. It cannot be retrospectively declared untouched. No cutoff or protected test was silently moved. A genuinely untouched four-day calendar must be reserved before future exposure.
+
+Any eventual ideal historical run must use fresh founders or pretraining restricted to its actual training partition. GPU021and its parents have already learned from later October19development data and cannot seed a purported pre-October12-only model. Today's contract mappings also do not establish historical catalog availability or eliminate survivorship bias; source-time identity/eligibility still needs verification.
+
+## Conditions for the ideal launch
+
+Original SIG history must extend through the requested partitions with verified executable book/lifecycle/valuation coverage; external observations need causal normalization and explicit delivery assumptions; original competition start and role boundaries must be pinned; an unexposed four-day test must exist; fresh models must optimize the complete daily-growth/consistency/evidence reward across actual complete days. Current public recovery helps supply historical signals but does not prove these conditions. No shorter reward or synthetic book history has been substituted for the requested experiment.

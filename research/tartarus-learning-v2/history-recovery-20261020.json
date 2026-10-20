@@ -1,0 +1,82 @@
+{
+  "observedUtc": "2026-10-20T05:16:18.041044+00:00",
+  "classification": "historical_data_recovery_in_progress_not_ideal_training_readiness",
+  "requestedCutoffUtc": "2026-10-20T05:00:00Z",
+  "recoveryFloorUtc": "2026-09-01T00:00:00Z",
+  "competitionStartVerified": false,
+  "trainEndExclusiveUtc": "2026-10-12T05:00:00Z",
+  "evolutionEndExclusiveUtc": "2026-10-16T05:00:00Z",
+  "requestedTestEndExclusiveUtc": "2026-10-20T05:00:00Z",
+  "requestedTestAlreadyExposed": true,
+  "idealRunRequiresFreshFoundersWithoutLaterDataTransfer": true,
+  "statuses": {
+    "kalshi-train-trades": {
+      "completedTickers": 234,
+      "observedUtc": "2026-10-20T05:13:05.121319+00:00",
+      "orderBooksReconstructed": false,
+      "originalHistoricalDeliveryVerified": false,
+      "pagesRetrievedThisInvocation": 419,
+      "planSha256": "3c73f74b800968b466e3b1627eb4d39ced614e0e6e9934325bddf0c0763560e1",
+      "productionChanged": false,
+      "records": 244200,
+      "state": "complete_receipt_recovery_not_replay_qualification",
+      "totalTickers": 234,
+      "trainingAdmitted": false
+    },
+    "kalshi-evolution-trades": {
+      "completedTickers": 101,
+      "observedUtc": "2026-10-20T05:16:17.742112+00:00",
+      "orderBooksReconstructed": false,
+      "originalHistoricalDeliveryVerified": false,
+      "pagesRetrievedThisInvocation": 113,
+      "planSha256": "985209c58c0adc2423c892086a9da43dd2c4b58c08200eec20ae2d4142f8206f",
+      "productionChanged": false,
+      "records": 23640,
+      "state": "recovering",
+      "totalTickers": 234,
+      "trainingAdmitted": false
+    },
+    "polymarket-train-prices-002": {
+      "state": "recovering",
+      "at": "2026-10-20T05:16:17.897Z",
+      "completedAssets": 168,
+      "totalAssets": 378,
+      "records": 9994131,
+      "excludedOutOfRange": 984,
+      "requestsThisInvocation": 1012,
+      "planSha256": "1c7480a6eaa256871fa3b79ce61e2f35a72e10e86a52b9b13832fbffc5d66e9c",
+      "trainingAdmitted": false,
+      "orderBooksReconstructed": false,
+      "originalHistoricalDeliveryVerified": false,
+      "productionChanged": false,
+      "assetIndex": 168,
+      "chunk": 3
+    }
+  },
+  "existingGpuLearnerUnchanged": true,
+  "idealTrainingStarted": false,
+  "newDataAdmittedToTraining": false,
+  "productionChanged": false,
+  "officialSigAccountRequests": 0,
+  "historicalSigDepthRecovered": false,
+  "polymarketOutOfRangeSamplesQuarantinedBeforePriceUse": true,
+  "actualRecoveryProcessesObserved": [
+    {
+      "pid": 19440,
+      "role": "polymarket_training_history",
+      "sourceCommit": "8bacac9d8f3f9bfa1546302d7bf56a24c9740419"
+    },
+    {
+      "pid": 25020,
+      "role": "kalshi_evolution_history",
+      "sourceCommit": "75853cfc3617a1f91262c35dc594cc8c89b0c54a"
+    }
+  ],
+  "vpsSearch": {
+    "scope": "known_moloch_shared_and_application_paths_and_archon_opt_Downloads_Documents_metadata_only",
+    "sharedRawFilesOver100k": 2236,
+    "outsideSharedRawFilesOver100k": 18,
+    "earlierThanOctober15OriginalHistoryFound": false,
+    "historicalSourceCompletenessProven": false
+  }
+}
