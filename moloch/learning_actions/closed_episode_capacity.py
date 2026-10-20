@@ -9,7 +9,7 @@ from pathlib import Path
 
 def run(config,output,*,episode_ms=2000):
     from .gpu_diagnostic_guard import require_idle_gpu
-    require_idle_gpu(config.get('device','cuda'))
+    require_idle_gpu(config.get('device','cuda'),allow_verified_desktop=True)
     import torch
     from .experiment import Experiment
     from .episode_tape import EpisodeReader

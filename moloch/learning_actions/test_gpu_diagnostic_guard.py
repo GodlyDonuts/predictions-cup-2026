@@ -18,3 +18,21 @@ class DiagnosticGpuGuardTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'OTHER_COMPUTE'):require_idle_gpu('cuda')
         with patch('moloch.learning_actions.gpu_diagnostic_guard.training_pids',return_value=[]),\
              patch('moloch.learning_actions.gpu_diagnostic_guard.subprocess.run',return_value=Mock(stdout='')):require_idle_gpu('cuda')
+
+    def test_capacity_exception_is_exact_verified_host_and_keeps_strict_default(self):
+        with patch('moloch.learning_actions.gpu_diagnostic_guard.training_pids',return_value=[]),\
+             patch('moloch.learning_actions.gpu_diagnostic_guard.verified_desktop_pids',return_value=[101]),\
+             patch('moloch.learning_actions.gpu_diagnostic_guard.subprocess.run',return_value=Mock(stdout='101\n')):
+            with self.assertRaisesRegex(ValueError,'OTHER_COMPUTE'):require_idle_gpu('cuda')
+            require_idle_gpu('cuda',allow_verified_desktop=True)
+        with patch('moloch.learning_actions.gpu_diagnostic_guard.training_pids',return_value=[]),\
+             patch('moloch.learning_actions.gpu_diagnostic_guard.verified_desktop_pids',return_value=[101]),\
+             patch('moloch.learning_actions.gpu_diagnostic_guard.subprocess.run',return_value=Mock(stdout='101\n202\n')):
+            with self.assertRaisesRegex(ValueError,'OTHER_COMPUTE_PROCESSES:202'):
+                require_idle_gpu('cuda',allow_verified_desktop=True)
+
+    def test_desktop_opt_in_never_bypasses_active_learning_worker(self):
+        with patch('moloch.learning_actions.gpu_diagnostic_guard.training_pids',return_value=[42]),\
+             patch('moloch.learning_actions.gpu_diagnostic_guard.verified_desktop_pids',side_effect=AssertionError):
+            with self.assertRaisesRegex(ValueError,'ACTIVE_ML_WORKERS'):
+                require_idle_gpu('cuda',allow_verified_desktop=True)
