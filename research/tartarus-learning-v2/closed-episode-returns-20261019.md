@@ -1,5 +1,7 @@
 # Optional full-episode return training — October19,2026
 
+Current status: this method is now active in [GPU020](population-020-full-returns-20261019.md), with actual full-size capacity and a committed37,403-decision cohort. Only three minibatch updates committed before a KL stop; all cohort outcomes were flat. Earlier phase016 observations below are historical. Independently profitable ROI remains unproved.
+
 The active016 streaming PPO trainer uses bootstrapped compute chunks. Those chunks do not limit legal decisions or rewards, and bootstrapping can propagate longer-horizon value. They can nevertheless make delayed economic outcomes difficult to credit when the critic is inaccurate. Full-episode Monte Carlo targets are an optional comparison, not a proven cure or new reward. The [original PPO paper](https://arxiv.org/abs/1707.06347) separates rollout collection from minibatch optimization; the method below implements that separation with this simulator's existing reward and causal source controls.
 
 Enable `closed_episode_return_replay:true` in the experiment configuration. The default remainsfalse and actual GPU016 remains on its frozen streaming source. The optional path:

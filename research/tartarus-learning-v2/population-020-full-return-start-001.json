@@ -1,0 +1,171 @@
+{
+  "classification": "verified_full_return_training_start_and_complete_population_transfer_not_positive_roi",
+  "observedUtc": "2026-10-20T02:43:11.859091+00:00",
+  "sourceCommit": "544a398627099070d8c4c9e5469091aaa7e118e4",
+  "sourcePinsVerified": true,
+  "workerPid": 11404,
+  "workerCreation": 134369365072535753,
+  "workerAlive": true,
+  "previousRunCycleComplete": 0,
+  "oldGenerationTotalDecisions": 139686,
+  "oldGenerationAcceptedUpdates": 647,
+  "previousScores": {
+    "0": -0.13299793493837903,
+    "1": -0.14795186971075389,
+    "2": -0.27441250389276134,
+    "3": -0.16953847958174031,
+    "4": 0.0,
+    "5": -0.16899488270296395,
+    "6": -0.1661229455804731,
+    "7": -0.21538082191326105
+  },
+  "reproduction": [
+    {
+      "donor": 4,
+      "loser": 0,
+      "donorScore": 0.0,
+      "loserScore": -0.13299793493837903
+    },
+    {
+      "donor": 1,
+      "loser": 5,
+      "donorScore": -0.14795186971075389,
+      "loserScore": -0.16899488270296395
+    },
+    {
+      "donor": 6,
+      "loser": 2,
+      "donorScore": -0.1661229455804731,
+      "loserScore": -0.27441250389276134
+    },
+    {
+      "donor": 3,
+      "loser": 7,
+      "donorScore": -0.16953847958174031,
+      "loserScore": -0.21538082191326105
+    }
+  ],
+  "allReproductionChoosesHigherScore": true,
+  "founders": [
+    {
+      "member": 0,
+      "origin": "checked_evolved_child",
+      "parentSha256": "18079e572bba66bee3884c6919eca2094d780dda20e5a8ee42545c0aa9003549",
+      "founderSha256": "fcf3924472258029842d9a909682f1afacf6b5d6eeedc5e253c346d2b6589d75",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    },
+    {
+      "member": 1,
+      "origin": "checked_retained_generation_member",
+      "parentSha256": "0c6935829b6e04b2fe4e55e981a4c58444024e38d067f0f9239e212e96699a55",
+      "founderSha256": "b7e2cd50bdfb8ae06bff07adf9bf8ba9be74ae5fa518731c8a34d776199bc368",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    },
+    {
+      "member": 2,
+      "origin": "checked_evolved_child",
+      "parentSha256": "580bfbf702ef7d9e76c33ed0efda5a03428c999fc1cf64f71bb190008ce938f7",
+      "founderSha256": "b879b182fc961441aedadc1380267373700bbd17d2e424b6fcf81476c2b38811",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    },
+    {
+      "member": 3,
+      "origin": "checked_retained_generation_member",
+      "parentSha256": "d66ccf5e317dd68ecc9ad0a40de92d2026f22204a83998678b6e6e9c661ca685",
+      "founderSha256": "0fedcab52aa136ba78dbb2515588a63873decec89b6569669f57a005a1fe28a9",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    },
+    {
+      "member": 4,
+      "origin": "checked_retained_generation_member",
+      "parentSha256": "7621f50e3a8b66054b2049cc088d72c8b96f797f42648c98a55c69af9976995f",
+      "founderSha256": "58fa2763bba4b22401ab076147ba9751ee44b3da366337b2da2edd2c5c7c44e4",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    },
+    {
+      "member": 5,
+      "origin": "checked_evolved_child",
+      "parentSha256": "1f475e05e21a19ef82a7a35565e4bbd9094af3c900d481c5dc25bd3d10cc0f9e",
+      "founderSha256": "294c794f2bcf2dbfd01b1b0fb623dac1b261db5424a63b726b7ece0f0a7a8d76",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    },
+    {
+      "member": 6,
+      "origin": "checked_retained_generation_member",
+      "parentSha256": "48260c68ddcb47432abb76f5683589884bc375ac0d20d05626054c98a521ea3e",
+      "founderSha256": "9d4c3ed1d2f9372c1d4df4ce48e2c07d3ca0bb2e8a5ae34a438197b94901d734",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    },
+    {
+      "member": 7,
+      "origin": "checked_evolved_child",
+      "parentSha256": "d01c9a7802f1bb44dbda8a56c1fd1a9bd9a2d194000a021c8ec5ee64793ca3b8",
+      "founderSha256": "99044e8b9170583fa80c6b98896a344ee8015a0cbc48155d2281404f6030d107",
+      "allParametersExact": true,
+      "newOptimizerInitiallyEmpty": true
+    }
+  ],
+  "fullEpisodeGpuCapacity": {
+    "device": "cuda:0",
+    "parameters": 58187885,
+    "worlds": 8,
+    "episodeMs": 2000,
+    "decisions": 230,
+    "acceptedUpdates": 2,
+    "optimizerChangedWeights": true,
+    "fullReturnTargets": true,
+    "peakCudaAllocatedBytes": 5609060864
+  },
+  "fullEpisodeGpuCapacitySha256": "a0ef3dfa4ec167753dd274a8cf5d5c03e7cf123ef4f93ede17df924e4bfcba83",
+  "initialPreflightFailure": "strict guard rejected verified Store-installed Codex ChatGPT.exe GPU context",
+  "capacityOnlyVerifiedDesktopException": true,
+  "otherTrainingComputeStillBlocked": true,
+  "closedEpisodeReturnReplay": true,
+  "lastEvent": "parallel_train_chunk",
+  "totalDecisions": 37403,
+  "totalAcceptedUpdates": 3,
+  "committedNewTrainingCohortVerified": true,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "positiveRoiEstablished": false,
+  "firstCohort": {
+    "manifestSha256": "1e506bddb58eb1c9f467ee16af105f7860d10e43ea5423b368a614a16f473884",
+    "decisions": 37403,
+    "batches": 149,
+    "acceptedUpdates": 3,
+    "rejectedUpdates": 1,
+    "returnSource": "sealed_full_training_episode",
+    "markedRois": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "fills": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "studentCheckpointSha256": "567da103e3db39da43f20d79fae8dc62420b01e9b3da8919961e785ae77ed573",
+    "actualParameterChangesVerified": true,
+    "changedParameterTensorCount": 32,
+    "remainingUnoptimizedMinibatches": 145,
+    "entireDiaryReconstructionClaimed": false
+  }
+}

@@ -1,5 +1,7 @@
 # Faster development evolution and explicit API metadata
 
+Current status: [GPU020 is verified running full-return training](population-020-full-returns-20261019.md) after GPU019 completed actual negative/flat-ranked reproduction. Its first cohort committed three updates and remained flat; positive ROI and the full requested history/test remain unproved. GPU019 runtime observations below are historical.
+
 The current weakness is not a positive-only reproduction gate. Negative models already reproduce, and historical island champions now survive worse generations. GPU018 enables that rule. Its first three completed development rewards remain negative. No independently profitable checkpoint exists.
 
 ## Reduce time between generations

@@ -1,0 +1,64 @@
+import os,json,collections,hashlib
+from pathlib import Path
+from moloch.learning_actions.experiment import Experiment
+from moloch.learning_actions.contract import OrderSpec,TICK,UNIT
+from moloch.learning_actions.economics import GrowthLedger
+root=Path(os.environ['LOCALAPPDATA'])/'Moloch/learning-v2';r=root/'runs/raw-api-growth-development-019';job=root/'studies/delivered-paired-maker-train-probe-004';job.mkdir(exist_ok=False)
+c=json.loads((r/'experiment.json').read_bytes())['config'];c.update(device='cpu',cpu_threads=1);x=Experiment(c,job/'runtime-pin');reports=[];latency=json.loads((r/'compute-calibration.json').read_bytes())['decision_latency_ms']
+try:
+ for offset in(1200000,3000000):
+  for stress in(False,True):
+   start=x.train_bounds[0]+offset;end=start+120000;e=x.world('train',start,end,stress=stress);ledger=GrowthLedger(e,development=True,historical_last_mark=True);counts=collections.Counter();seq=0;cursor=book_cursor=0;maximum_valid=0
+   def move(target):e.advance(min(end,max(e.now,int(target))))
+   def think(n=1):move(e.now+latency*n)
+   def read(key):
+    think()
+    if e.now>=end:return
+    res=e.request_observation('SIG',key);counts['read_'+res['status']]+=1
+    if res['status']=='IN_FLIGHT':move(e.busy_until)
+   def dispatch(operation,specs=None):
+    global seq
+    think()
+    if e.now>=end:return
+    seq+=1;res=e.dispatch(operation,specs,idempotency_key=f'baseline:{seq}');counts[operation+'_'+res['status']]+=1
+    if res['status']=='IN_FLIGHT':move(e.busy_until);counts[operation+'_receipt_'+res['status']]+=1
+   while e.now<end-5000:
+    target=e.now+5000
+    if e.budget.active is not None:move(min(end-5000,e.busy_until));continue
+    ready=e.budget.ready_at(e.now,True)
+    if ready>e.now:move(min(end-5000,ready));continue
+    dispatch('CANCEL_ALL');read(('positions',));read(('account',));keys=[k for k in e.keys['SIG']if k[0]=='book']
+    if keys:
+     for j in range(6):read(keys[(book_cursor+j)%len(keys)])
+     book_cursor=(book_cursor+6)%len(keys)
+    orders=[];available=[]
+    for ex in e.exchanges[1:]:
+     q=e.actor_books.get(ex)
+     if q is None or not q.visible(e.now,60000)or not q.book.bids or not q.book.asks:continue
+     bid,ask=q.book.bids[0][0],q.book.asks[0][0];price=bid+TICK if ask-bid>=3*TICK else bid
+     no_price=UNIT-(ask-TICK if ask-bid>=3*TICK else ask)
+     if TICK<=price<=UNIT-TICK and price<ask and TICK<=no_price<=UNIT-TICK:available.append((ex,price,no_price))
+    maximum_valid=max(maximum_valid,len(available))
+    if available:
+     remaining=max(0,50-len(orders));ordered=available[cursor:]+available[:cursor]
+     for ex,price,no_price in ordered[:remaining//2]:
+      orders.extend((OrderSpec(ex,'YES','BUY',100,price,e.now+5000),OrderSpec(ex,'NO','BUY',100,no_price,e.now+5000)))
+     cursor=(cursor+remaining//2)%len(available)
+    if orders:
+     think(len(orders))
+     if e.now<end-5000:dispatch('BATCH',orders[:50])
+    move(min(end-5000,target))
+   if e.now<end:
+    if e.budget.active is not None:move(e.busy_until)
+    if e.budget.ready_at(e.now,True)<=e.now:dispatch('CANCEL_ALL')
+    read(('positions',));liquidation=[OrderSpec(ex,side,'SELL',sum(q for q,_ in lots))for(ex,side),lots in sorted(e.known_lots.items())if sum(q for q,_ in lots)]
+    for i in range(0,len(liquidation),50):
+     batch=liquidation[i:i+50];think(len(batch))
+     if e.now+e.mechanics.arrival_latency_ms+e.mechanics.receipt_latency_ms<end:dispatch('BATCH',batch)
+   move(end);result=ledger.finish();remaining=sum(sum(q for q,p in lots)for lots in e.lots.values())
+   report={'start_ms':start,'end_ms':end,'stress':stress,'marked_roi':result['marked_roi'],'reward':result['reward'],'fill_count':len(e.api_fills),'realized_fifo_micros':e.realized,'cash_change_micros':e.cash-e.initial_wealth,'remaining_shares':remaining,'maximum_valid_delivered_quote_markets':maximum_valid,'fill_origins':dict(collections.Counter(f['origin']for f in e.api_fills)),'operations':dict(counts)};reports.append(report);print(json.dumps(report),flush=True)
+   for pending in e.clock._events:
+    if pending[3]=='api_source_cursor':pending[-1].rows.close()
+ proof={'classification':'delivered_information_paired_maker_training_only_baseline_not_independent_profit_or_neural_policy','datasetManifestSha256':x.dataset_sha,'cases':reports,'decisionCostMs':latency,'quoteQuantity':100,'refreshMs':5000,'paidBookBaselinesPerRefresh':6,'noOptimizerStep':True,'noGpuDiagnostic':True,'httpRequests':0,'independentTestUsed':False,'productionChanged':False,'actorStateSources':['delivered actor_books after paid baselines','paid positions/account receipts','public catalog/local state'],'earlierFailures':['001 omitted required paid book baselines and never submitted batches','002 regressed the local loop clock at closing cutoff; no score credited'],'runnerSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'runtimeSourceSha256':x.frozen['source_sha256']}
+ (job/'RESULT.json').write_text(json.dumps(proof,indent=2)+'\n')
+finally:x.close()

@@ -1,6 +1,6 @@
 # Ground learning targets in completed training outcomes
 
-GPU019 is still the active learner. This work does not hot-patch or interrupt it. Its first four completed short development screens are negative. Least-loss evolution is enabled, but no reproduction or independently profitable checkpoint is established by these probes.
+GPU020 is now verified running full-return training after GPU019's completed generation and checked offspring transfer. Its first cohort committed three updates but remained flat. [Current run and limitations](population-020-full-returns-20261019.md). The investigations below were performed while GPU019 was active; their original scope remains unchanged.
 
 ## Measured weakness
 
@@ -25,6 +25,6 @@ This removes an estimated bootstrap from those training targets. It does **not**
 
 The CPU suite passes360checks in70.540seconds with four CUDA checks skipped. A separate recorded-data run from frozen source `77c532ef114354a3084b050492fe2423eb058a97` completes two short CPU worlds,76decisions and four accepted full-return updates. All runtime pins match the snapshot; collection, sealed diary, reconstruction, original full-return targets and actual parameter changes are exercised. This small-model check is not full-size GPU capacity or profitability. [Recorded capacity integration](closed-capacity-recorded-001.json).
 
-The exact-cycle controller is now queued and verified waiting for GPU019's cycle0 completion. It preserves the checked eight-member population after replacements, ends only that exact old training process, checks ordinary capacity and then complete-episode GPU learning, and launches GPU020 only after those checks pass. The old learner is verified alive; no hot patch or early interruption occurred. The snapshot also includes the exact public-metadata cache. This is a **queued comparison**, not active full-return training or a proven improvement. [Queue/source/worker evidence](full-return-queued-001.json).
+The original exact-cycle controller waited for GPU019's cycle0 completion, then preserved its checked eight-member population after replacements and stopped only that exact old trainer. Its complete-episode preflight subsequently rejected a verified desktop-host GPU context. The narrow repair, repeated full-size capacity check and successful GPU020 launch are documented in the [current run](population-020-full-returns-20261019.md). [Original queue evidence](full-return-queued-001.json) remains historical, not the current runtime state. No hot patch or early interruption occurred.
 
 Current data still does not provide the requested competition-start/train/evolution/untouched-four-day coverage. No daily-growth qualification or independently positive ROI is established. Production account clients, STOP, activation, risk and financial state remain unchanged.
