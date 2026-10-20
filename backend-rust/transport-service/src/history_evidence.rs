@@ -3,6 +3,24 @@
 use super::*;
 use std::{fs::OpenOptions, io::Write, path::Path};
 
+/// A weighted average is an observation, not exact cash or an order price.
+/// Compare its original decimal lexeme to [0,1] without f64 or rounding.
+pub(crate) fn validate_vwap(value:&Value)->Result<()> {
+    need(value.is_number(),"HISTORY_VWAP_NUMBER")?;
+    let text=value.to_string();need(text.len()<=128,"HISTORY_VWAP_BOUND")?;
+    let negative=text.starts_with('-');let unsigned=text.strip_prefix('-').unwrap_or(&text);
+    let mut exponent_parts=unsigned.split(['e','E']);let mantissa=exponent_parts.next().unwrap();
+    let exponent=exponent_parts.next().map_or(Ok(0i64),|v|v.parse::<i64>().map_err(|_|fail("HISTORY_VWAP_BOUND")))?;
+    need(exponent_parts.next().is_none(),"HISTORY_VWAP_BOUND")?;
+    let mut parts=mantissa.split('.');let whole=parts.next().unwrap();let fraction=parts.next().unwrap_or("");
+    need(parts.next().is_none()&&!whole.is_empty()&&whole.bytes().chain(fraction.bytes()).all(|b|b.is_ascii_digit()),"HISTORY_VWAP_BOUND")?;
+    let joined=format!("{whole}{fraction}");let significant=joined.trim_start_matches('0');
+    if significant.is_empty(){return Ok(())}
+    need(!negative,"HISTORY_VWAP_BOUND")?;
+    let order=exponent.checked_sub(fraction.len() as i64).and_then(|x|x.checked_add(significant.len() as i64)).ok_or_else(||fail("HISTORY_VWAP_BOUND"))?;
+    need(order<=0||(order==1&&significant.starts_with('1')&&significant[1..].bytes().all(|b|b==b'0')),"HISTORY_VWAP_BOUND")
+}
+
 impl Transport {
     pub fn request_history_with_evidence(&mut self, exchange_id:String, to:String, output:&Path)->Result<Receipt>{
         need(output.is_absolute()&&!output.exists(),"NEW_ABSOLUTE_HISTORY_EVIDENCE_REQUIRED")?;
@@ -27,6 +45,15 @@ fn retain(path:&Path,endpoint:&str,received_ms:u64,data:&Value)->Result<()> {
 
 #[cfg(test)] mod tests {
     use super::*;
+    #[test] fn weighted_averages_keep_precision_without_relaxing_cash(){
+        for raw in ["0.8500000000000001","0.8630991379310345","0","1.0000000","1e-20","-0.0"]{
+            validate_vwap(&serde_json::from_str(raw).unwrap()).unwrap();
+        }
+        for raw in ["1.00000000000000001","-0.0000000000001","1e100","null","\"0.5\""]{
+            assert!(validate_vwap(&serde_json::from_str(raw).unwrap()).is_err(),"{raw}");
+        }
+        assert!(decimal_units("0.8630991379310345").is_err());
+    }
     #[test] fn evidence_preserves_arbitrary_decimal_and_refuses_overwrite(){
         let root=std::env::temp_dir().join(format!("sig-history-evidence-{}",std::process::id()));
         std::fs::create_dir(&root).unwrap();let path=root.join("receipt.json");
