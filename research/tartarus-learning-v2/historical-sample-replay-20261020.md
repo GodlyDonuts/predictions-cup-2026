@@ -1,0 +1,11 @@
+# Historical sample delivery reader
+
+The recovered Polymarket binary indexes now have a Python mmap reader usable by the future historical dataset compiler and simulator. It checks the pinned manifest, every asset hash, receipt inventory, and lazily validates each opened series' ordering, values, receipt references and source-time scope. It does not allocate all 24.6 million samples as Python objects.
+
+Every query uses an explicit delay, polling cadence/phase and maximum source age. A source sample first becomes visible at the first scheduled poll after its source timestamp plus the declared delay. Scoring-role bounds are fixed; earlier public information may be queried through an explicit information lower bound, while future samples remain invisible. Actual present-day retrieval timestamps and receipt/body hashes remain separate. The delivery profile is an assumption, not recovered original historical latency. Per-series polling does not replace the environment's shared venue rate limiter.
+
+The output is a `historical_price_sample` with no bid/ask/depth or fill authority. A sample is not a two-sided quote; feeding it through the old midpoint/book adapter would misrepresent its meaning. Source-time party mapping, sample-specific model features, venue-wide observation admission and the historical execution model remain to be connected before full training admission. GPU021 and its frozen dataset were not modified.
+
+Four focused CPU tests cover causal boundary arithmetic, delayed visibility, role fences, staleness, retained actual retrieval, closed handles, receipt scope, tampering, ordering and invalid values. An actual-index run verified all 378 asset hashes covering 22,396,189 samples in 2.88 seconds; opening/validating the first series took 0.019 seconds. It performed 100,000 warmed causal queries in 0.286 seconds with 99,761 available results and checked source <= simulated availability <= query time. These are lookup measurements, not end-to-end training throughput or profit evidence. [Measured evidence](historical-sample-replay-20261020.json).
+
+The full historical daily-reward experiment is still incomplete. A flat first-cycle champion and seven losing candidates on two-minute development screens do not demonstrate a profitable trading policy.

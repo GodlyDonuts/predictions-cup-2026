@@ -1,0 +1,32 @@
+{
+  "observedUtc": "2026-10-20T07:16:50.491285+00:00",
+  "manifestSha256": "89ab9b727e36a861606d9c4d23c26e21041813859f0b5427bb2ea33f9e6ccb14",
+  "assetsHashesVerified": 378,
+  "recordsInPinnedIndex": 22396189,
+  "allAssetHashVerificationWallSeconds": 2.880063400021754,
+  "firstAssetValidationSeconds": 0.018937399960123003,
+  "queries": 100000,
+  "warmQueryWallSeconds": 0.28649870003573596,
+  "availableResults": 99761,
+  "deliveryProfile": {
+    "delay_ms": 1000,
+    "poll_ms": 10000,
+    "phase_ms": 0,
+    "maximum_age_ms": 120000
+  },
+  "lastSampleExample": {
+    "kind": "historical_price_sample",
+    "asset_id": "100483443247041044563874634953278400972311005965822139457018312114391318359850",
+    "source_at_ms": 1791781157000,
+    "price": 0.395,
+    "simulated_available_at_ms": 1791781160000,
+    "actual_retrieved_at": "2026-10-20T05:12:48.091Z",
+    "original_receipt_sha256": "8074a7df072ae04720df016a6f3654959d4d4eb79994d98e5909c19e41c2eba7",
+    "original_body_sha256": "8ad8493c5f353012d447c3d8df32cde37cfac2fd33fa5bd4d1e691eb3c10bfd0",
+    "original_historical_delivery_verified": false,
+    "executable_quote": false
+  },
+  "trainingAdmitted": false,
+  "productionChanged": false,
+  "gpuUsed": false
+}
