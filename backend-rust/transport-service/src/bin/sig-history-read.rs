@@ -23,7 +23,12 @@ struct Plan {
     response_evidence: Option<PathBuf>,
     #[serde(default)]
     backfill: Option<Backfill>,
+    #[serde(default)]
+    forward: Option<Forward>,
 }
+#[derive(Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+struct Forward {output:PathBuf,until:String,maximum_requests:usize,node:PathBuf,stream_entry:PathBuf,stream_sha256:String}
 #[derive(Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
 struct Backfill { output:PathBuf, from:String, maximum_requests:usize, #[serde(default)] kind:HistoryKind,
@@ -75,6 +80,12 @@ fn prepare(plan: &Plan) -> Result<(Config, Guard, PathBuf, Value)> {
     require(binding.scope.exchanges.contains_key(&plan.exchange_id),"ORIGINAL_EXCHANGE_SCOPE_REQUIRED")?;
     let end=chrono::DateTime::parse_from_rfc3339(&plan.through)?.timestamp_millis();
     require(end>=0&&end%60000==0&&(end as u64)<=api::Clock::now_ms(&api::SystemClock),"PAST_MINUTE_ALIGNED_HISTORY_END")?;
+    if let Some(forward)=&plan.forward {
+        require(plan.backfill.is_none()&&plan.response_evidence.is_none(),"ONE_DATA_ONLY_CAPTURE_MODE")?;
+        forward_bound(forward,api::Clock::now_ms(&api::SystemClock))?;
+        require(forward.node.is_absolute()&&forward.stream_entry.is_absolute()
+            &&hash(&fs::read(&forward.stream_entry)?)==forward.stream_sha256,"PINNED_STREAM_ENTRY")?;
+    }
     if let Some(job)=&plan.backfill {
         let start=chrono::DateTime::parse_from_rfc3339(&job.from)?.timestamp_millis();
         require(start>=0&&start%60000==0&&start<end,"HISTORY_BACKFILL_RANGE")?;
@@ -86,9 +97,9 @@ fn prepare(plan: &Plan) -> Result<(Config, Guard, PathBuf, Value)> {
     let guard=Guard { control:plan.control_file.clone(),control_hash:plan.control_sha256.clone(),
         scope_hash:hash(&serde_json::to_vec(&binding.scope)?),network_stop:shared.join("NETWORK_DISABLED"),
         global_stop:shared.join("EXECUTION_STOP"),execution_stop:binding.root.join("EXECUTION_STOP"),job_stop:plan.job_stop.clone() };
-    let report=json!({"classification":"single_GET_history_preflight_not_recovery_or_training",
-        "readBoundaryCurrentlyOpen":guard.can_read(&binding.scope),"writesEnabled":false,"maximumHttpRequests":plan.backfill.as_ref().map_or(1,|j|j.maximum_requests),"backfillAllOriginalExchanges":plan.backfill.is_some(),
-        "readAdmissionsPerMinute":100,"readCompletionPacingMs":600,"endpointKind":"history",
+    let report=json!({"classification":"data_only_preflight_not_recovery_or_training",
+        "readBoundaryCurrentlyOpen":guard.can_read(&binding.scope),"writesEnabled":false,"maximumHttpRequests":plan.forward.as_ref().map_or_else(||plan.backfill.as_ref().map_or(1,|j|j.maximum_requests),|j|j.maximum_requests),"backfillAllOriginalExchanges":plan.backfill.is_some(),
+        "readAdmissionsPerMinute":100,"readCompletionPacingMs":600,"endpointKind":if plan.forward.is_some(){"public_forward_capture_and_stream_auth"}else{"history"},
         "exchangeId":plan.exchange_id,"throughExclusive":plan.through,"maximumCandles":500,
         "controlSha256":plan.control_sha256,"scopeSha256":guard.scope_hash,"scopeExchanges":binding.scope.exchanges.len(),
         "networkDisabledPresent":guard.network_stop.try_exists().ok(),
@@ -106,7 +117,9 @@ fn execute(plan:&Plan,config:Config,guard:Guard,credential:PathBuf)->Result<Valu
     require(hash(&fs::read(std::env::current_exe()?)?)==plan.binary_sha256,"CHECKED_HISTORY_BINARY_REQUIRED")?;
     let credentials=api::credentials::UnixFileCredentials::approved_file(credential)?;
     let exchanges:Vec<String>=config.scope.exchanges.keys().cloned().collect();
+    let scope=config.scope.clone();
     let mut sdk=api::Transport::new_with_read_budget(config,Box::new(credentials),Box::new(api::SystemClock),Box::new(guard),100,600)?;
+    if let Some(forward)=&plan.forward{return forward_capture(forward,&scope,&mut sdk)}
     if let Some(job)=&plan.backfill {
         return if job.kind==HistoryKind::Trades{trade_backfill(plan,job,exchanges,&mut sdk)}else{backfill(plan,job,exchanges,&mut sdk)}
     }
@@ -115,6 +128,63 @@ fn execute(plan:&Plan,config:Config,guard:Guard,credential:PathBuf)->Result<Valu
         sdk.request_history_with_evidence(plan.exchange_id.clone(),plan.through.clone(),path)?
     } else { sdk.request(Endpoint::History { exchange_id:plan.exchange_id.clone(),to:plan.through.clone() })? };
     Ok(json!({"receipt":receipt,"historicalBooksReconstructed":false,"trainingAdmitted":false,"productionFinancialStateChanged":false}))
+}
+
+fn forward_bound(forward:&Forward,now:u64)->Result<u64>{
+    let end=chrono::DateTime::parse_from_rfc3339(&forward.until)?.timestamp_millis();
+    require(forward.output.is_absolute()&&end>0&&(end as u64)>now
+        &&(end as u64)-now<=15*60*1000&&forward.maximum_requests>0&&forward.maximum_requests<=1500,
+        "BOUNDED_FUTURE_PUBLIC_CAPTURE")?;Ok(end as u64)
+}
+
+#[cfg(unix)]
+struct StreamChild(std::process::Child);
+#[cfg(unix)]
+impl Drop for StreamChild {
+    fn drop(&mut self){
+        use std::io::Write;
+        if let Some(mut stdin)=self.0.stdin.take(){let _=stdin.write_all(b"{\"stop\":true}\n");let _=stdin.flush();}
+        for _ in 0..50 {if matches!(self.0.try_wait(),Ok(Some(_))){return}std::thread::sleep(std::time::Duration::from_millis(100));}
+        let _=self.0.kill();let _=self.0.wait();
+    }
+}
+
+#[cfg(unix)]
+fn forward_capture(job:&Forward,scope:&Scope,sdk:&mut api::Transport)->Result<Value>{
+    use std::{io::Write,process::{Command,Stdio},collections::BTreeSet};
+    let end=forward_bound(job,api::Clock::now_ms(&api::SystemClock))?;
+    fs::create_dir(&job.output)?;disk_headroom(&job.output)?;
+    require(hash(&fs::read(&job.stream_entry)?)==job.stream_sha256,"PINNED_STREAM_ENTRY")?;
+    let auth=sdk.realtime_token()?;
+    let mut child=StreamChild(Command::new(&job.node).arg(&job.stream_entry).stdin(Stdio::piped())
+        .stdout(Stdio::null()).stderr(Stdio::from(fs::OpenOptions::new().create_new(true).write(true).open(job.output.join("stream-error.log"))?)).spawn()?);
+    let pairs:Vec<Value>=scope.exchanges.iter().map(|(ex,m)|json!({"exchangeId":ex,"marketId":m})).collect();
+    // Session auth goes only through the child pipe, never a plan, receipt or log.
+    let init=json!({"auth":auth,"pairs":pairs,"tournamentId":scope.tournament_id,"aggregate":true,"outputDirectory":job.output.join("stream")});
+    serde_json::to_writer(child.0.stdin.as_mut().ok_or("STREAM_STDIN")?,&init)?;
+    child.0.stdin.as_mut().unwrap().write_all(b"\n")?;child.0.stdin.as_mut().unwrap().flush()?;drop(init);
+    let mut receipts=fs::OpenOptions::new().create_new(true).write(true).open(job.output.join("receipts.jsonl"))?;
+    let markets:Vec<String>=scope.exchanges.values().cloned().collect::<BTreeSet<_>>().into_iter().collect();
+    let mut requests=1usize;let mut books=0usize;let mut metadata=0usize;let mut cycle=0usize;
+    'capture:loop {
+        for market in &markets {
+            if api::Clock::now_ms(&api::SystemClock)>=end||requests>=job.maximum_requests{break 'capture}
+            require(child.0.try_wait()?.is_none(),"FORWARD_STREAM_ENDED")?;disk_headroom(&job.output)?;
+            let endpoint=if cycle==0{Endpoint::Market{market_id:market.clone()}}else{Endpoint::OrderBook{market_id:market.clone(),depth:200}};
+            let receipt=sdk.request(endpoint)?;requests+=1;
+            let kind=if cycle==0{"market"}else{"book"};
+            writeln!(receipts,"{}",serde_json::to_string(&json!({"kind":kind,"source":"official_sig_api_v1","marketId":market,
+                "tournamentId":scope.tournament_id,"endpoint":receipt.endpoint,"requestStartedAt":receipt.request_started_at,
+                "receivedAt":receipt.received_at,"status":receipt.status,"data":receipt.data}))?)?;
+            receipts.sync_all()?;if cycle==0{metadata+=1}else{books+=1}
+        }
+        cycle+=1;
+    }
+    drop(child);
+    let result=json!({"classification":"prospective_public_SIG_capture_not_financial_execution","requests":requests,"marketReceipts":metadata,
+        "bookReceipts":books,"until":job.until,"trainingAdmitted":false,"financialExecution":false,"streamGapsMustBeAudited":true});
+    let mut out=fs::OpenOptions::new().create_new(true).write(true).open(job.output.join("complete.json"))?;
+    out.write_all(&serde_json::to_vec(&result)?)?;out.sync_all()?;Ok(result)
 }
 
 fn page_cursor(receipt:&Value,requested:&str,floor:i64)->Result<Option<String>> {
@@ -275,6 +345,12 @@ mod tests {
     use super::*;
     use std::sync::atomic::{AtomicU64,Ordering};
     static NEXT:AtomicU64=AtomicU64::new(0);
+    #[test]fn forward_capture_is_short_bounded_and_public_only(){
+        let(p,_)=fixture();let mut job=Forward{output:p.join("forward"),until:"1970-01-01T00:10:00Z".into(),maximum_requests:1000,node:p.join("node"),stream_entry:p.join("entry.mjs"),stream_sha256:"0".repeat(64)};
+        assert_eq!(forward_bound(&job,1).unwrap(),600000);
+        assert!(forward_bound(&job,600000).is_err());job.until="1970-01-01T01:00:00Z".into();assert!(forward_bound(&job,1).is_err());
+        job.until="1970-01-01T00:10:00Z".into();job.maximum_requests=1501;assert!(forward_bound(&job,1).is_err());cleanup(p);
+    }
     #[test]fn resume_imports_only_complete_scopes_and_rejects_tampered_receipts(){
         let(p,plan)=fixture();let source=p.join("old");fs::create_dir(&source).unwrap();
         let exchanges=vec!["2".to_string(),"3".to_string()];let mut lines=String::new();
@@ -304,7 +380,7 @@ mod tests {
         fs::create_dir(&p).unwrap();let p=p.canonicalize().unwrap();let live=p.join("live-production-v1");fs::create_dir(&live).unwrap();
         fs::write(live.join("EXECUTION_STOP"),b"preserve").unwrap();
         let control=p.join("control.json");let raw=serde_json::to_vec(&json!({"root":live,"credentials":p.join("missing-key"),"accountScope":"original-scope","scope":{"tournamentId":"00000000-0000-0000-0000-000000000001","tournamentSlug":"cup","exchanges":{"2":"1"}}})).unwrap();fs::write(&control,&raw).unwrap();
-        let plan=Plan {control_file:control,control_sha256:hash(&raw),binary_sha256:"0".repeat(64),job_stop:p.join("STOP"),exchange_id:"2".into(),through:"2026-10-12T05:00:00Z".into(),response_evidence:None,backfill:None};(p,plan)
+        let plan=Plan {control_file:control,control_sha256:hash(&raw),binary_sha256:"0".repeat(64),job_stop:p.join("STOP"),exchange_id:"2".into(),through:"2026-10-12T05:00:00Z".into(),response_evidence:None,backfill:None,forward:None};(p,plan)
     }
     fn cleanup(p:PathBuf){let resolved=p.canonicalize().unwrap();assert_eq!(resolved.parent().unwrap(),std::env::temp_dir().canonicalize().unwrap());assert!(resolved.file_name().unwrap().to_string_lossy().starts_with("sig-history-read-"));fs::remove_dir_all(resolved).unwrap();}
     #[test]fn preflight_opens_no_queue_or_credential(){let(p,plan)=fixture();let(c,g,_,v)=prepare(&plan).unwrap();assert!(g.can_read(&c.scope));assert!(!c.writes_enabled&&!c.queue_dir.exists());assert_eq!(v["networkRequests"],0);assert_eq!(v["credentialsLoaded"],false);cleanup(p);}
