@@ -140,6 +140,22 @@ def run(spec_path):
             if not proof['on_policy_guard_changed_after_optimizer_step']:raise ValueError('OPTIMIZER_GUARD_PROOF_REQUIRED')
             chosen=config;checks.append({'computeSteps':steps,'accepted':True,'resultSha256':sha_file(output/'RESULT.json')});break
         if chosen is None:raise ValueError('NO_MEASURED_GPU_CAPACITY_PROFILE')
+        if chosen.get('closed_episode_return_replay',False):
+            # Chunk capacity alone does not exercise frozen collection,
+            # sealing, source reconstruction or full-return optimization.
+            path=job/'closed-capacity-config.json';frozen(path,chosen)
+            output=job/'closed-capacity';log=job/'closed-capacity.log'
+            status('probing_complete_episode_gpu_capacity',worlds=chosen['training_worlds'])
+            with log.open('x')as stream:
+                result=subprocess.run([spec['python'],'-m','moloch.learning_actions.closed_episode_capacity',
+                    '--config',str(path),'--output',str(output)],cwd=source,stdout=stream,stderr=subprocess.STDOUT,
+                    timeout=900,creationflags=subprocess.CREATE_NO_WINDOW)
+            if result.returncode:raise ValueError('COMPLETE_EPISODE_GPU_CAPACITY_FAILED')
+            proof=json.loads((output/'RESULT.json').read_text())
+            if (proof['device']!='cuda:0'or not proof['fullReturnTargets']or not proof['optimizerChangedWeights']
+                    or proof['acceptedUpdates']<=0 or proof['worlds']!=chosen['training_worlds']):
+                raise ValueError('COMPLETE_EPISODE_GPU_CAPACITY_PROOF_REQUIRED')
+            checks.append({'closedEpisodeCapacityAccepted':True,'resultSha256':sha_file(output/'RESULT.json')})
         frozen(job/'capacity-checks.json',checks)
         if cancel.exists():status('cancelled_after_capacity_probe');return
         check_sources();verify_dataset(spec['template']['dataset'],spec['datasetManifestSha256'])

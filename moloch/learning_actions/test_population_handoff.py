@@ -136,6 +136,43 @@ class PopulationHandoffTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'FROZEN_SOURCE_CHANGED'):run_handoff(path)
                 process.assert_not_called()
 
+    def test_closed_return_handoff_requires_extra_complete_episode_probe_before_launch(self):
+        for accepted in(False,True):
+            with tempfile.TemporaryDirectory()as directory:
+                root=Path(directory);path,spec,plan=self.driver_fixture(root)
+                spec['capacityChunks']=[32];spec['template']['closed_episode_return_replay']=True
+                path.write_text(json.dumps(spec));state={'stopped':False,'closed_probe':False}
+                class Handle:
+                    def __init__(self,*args,**kwargs):pass
+                    def alive(self):return not state['stopped']
+                    def terminate_for_handoff(self):state['stopped']=True
+                    def close(self):pass
+                def probe(argv,**kwargs):
+                    self.assertTrue(state['stopped']);output=Path(argv[argv.index('--output')+1]);output.mkdir()
+                    if 'moloch.learning_actions.closed_episode_capacity'in argv:
+                        state['closed_probe']=True
+                        proof={'device':'cuda:0','fullReturnTargets':accepted,'optimizerChangedWeights':True,
+                               'acceptedUpdates':1,'worlds':8}
+                    else:proof={'device':'cuda:0','identical_wallets_orders_fills_and_clocks':True,
+                        'ppo':[{'accepted':True}],'on_policy_guard_changed_after_optimizer_step':True}
+                    (output/'RESULT.json').write_text(json.dumps(proof));return SimpleNamespace(returncode=0)
+                def launch(*args,**kwargs):
+                    self.assertTrue(state['closed_probe']);self.assertTrue(accepted)
+                    output=Path(spec['newRun']);output.mkdir()
+                    (output/'progress.jsonl').write_text('{"event":"parallel_train_chunk","total_decisions":128,"updates":[{"accepted":true}]}\n')
+                    (output/'experiment.json').write_text(json.dumps({'config':json.loads((root/'next-config.json').read_text()),
+                        'dataset_manifest_sha256':spec['datasetManifestSha256'],'production_authority':False,'source_sha256':{}}))
+                    return SimpleNamespace(pid=-123456,poll=lambda:None)
+                with patch('moloch.learning_actions.continue_population.TrainingProcess',Handle),\
+                     patch('moloch.learning_actions.continue_population.boundary',return_value={'cycle':0}),\
+                     patch('moloch.learning_actions.continue_population.select_population',return_value=plan),\
+                     patch('moloch.learning_actions.continue_population.subprocess.run',side_effect=probe),\
+                     patch('moloch.learning_actions.continue_population.subprocess.Popen',side_effect=launch)as launched:
+                    if accepted:run_handoff(path);self.assertTrue(launched.called)
+                    else:
+                        with self.assertRaisesRegex(ValueError,'COMPLETE_EPISODE_GPU_CAPACITY_PROOF_REQUIRED'):run_handoff(path)
+                        launched.assert_not_called()
+
     @unittest.skipUnless(os.name=='nt','Exact retained Windows process handle')
     def test_handle_targets_only_own_fixture_and_rejects_wrong_output_and_creation(self):
         with tempfile.TemporaryDirectory()as directory:

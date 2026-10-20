@@ -37,3 +37,5 @@ GPU018 was stopped through its exact retained training-process handle before the
 No production worker, account client, STOP, activation, risk limit or financial ledger was changed by this work.
 
 Subsequent checked source adds an [exact public-metadata cache](api-metadata-cache-20261019.md). Its paired CPU observation measurement is 1.3043 times faster, with all 80 input/mask pairs exact; this is not a whole-run speed claim. It is not patched into frozen GPU019 and does not cause a new restart.
+
+Next learning work investigates [credit assignment against complete training outcomes](credit-assignment-20261019.md). GPU019 remains active; a full-return comparison must wait for a completed-generation handoff and its own full-size collection/replay/update capacity proof. No positive ROI is implied by preparing that comparison.
