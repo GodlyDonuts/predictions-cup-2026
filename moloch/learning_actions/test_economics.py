@@ -10,6 +10,29 @@ from moloch.learning_realism.protocol import DAY
 
 
 class EconomicTests(unittest.TestCase):
+    def test_attribution_separates_crossing_cost_from_cash_and_marks(self):
+        e=environment();e.end=e.now+1;ledger=GrowthLedger(e,development=True)
+        e._execute('ORDER',[OrderSpec('x','YES','BUY',3,450000)])
+        e.advance(e.end);result=ledger.finish();a=result['wealth_attribution']
+        self.assertTrue(a['exact_reconciliation'])
+        self.assertEqual(a['cash_change_twice_micros'],-2700000)
+        self.assertEqual(a['inventory_mark_change_twice_micros'],2550000)
+        self.assertEqual(a['wealth_change_twice_micros'],-150000)
+        self.assertEqual(a['terminal_holdings'][0]['mark_minus_lot_cost_twice_micros'],-150000)
+        self.assertEqual(a['fill_flows']['BUY_YES']['quantity'],3)
+        self.assertAlmostEqual(result['reward'],math.log(result['terminal_wealth_twice_micros']/result['initial_wealth_twice_micros']))
+
+    def test_attribution_does_not_mistake_collateral_debt_for_profit(self):
+        from types import SimpleNamespace
+        e=environment();e.end=e.now+1;e.component_ledger=SimpleNamespace(debt={})
+        ledger=GrowthLedger(e,development=True)
+        e.cash+=5*UNIT;e.component_ledger.debt['c']=5*UNIT;e.advance(e.end)
+        result=ledger.finish();a=result['wealth_attribution']
+        self.assertEqual(a['cash_change_twice_micros'],10*UNIT)
+        self.assertEqual(a['liability_change_twice_micros'],-10*UNIT)
+        self.assertEqual(a['wealth_change_twice_micros'],0)
+        self.assertEqual(result['reward'],0)
+
     def test_busy_or_rate_limited_sig_does_not_suspend_other_policy_decisions(self):
         from .policy import ApiPolicy
         from .stream import Stream

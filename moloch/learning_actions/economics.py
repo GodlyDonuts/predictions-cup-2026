@@ -64,6 +64,8 @@ class GrowthLedger:
         self.development=development;self.historical_last_mark=historical_last_mark
         self.stale_exchanges=set();self.stale_observations=0
         self.start=self._value(env)
+        self.start_cash=env.cash
+        self.start_debt=sum(getattr(getattr(env,'component_ledger',None),'debt',{}).values())
         self.previous=self.start;self.boundaries=[self.start];self.reward_sum=0.
         self.closed=False
         self.days=(env.end-env.now)//DAY
@@ -124,7 +126,40 @@ class GrowthLedger:
             if result['reward']is None:raise ValueError('INELIGIBLE_GROWTH_SCORE')
         correction=result['reward']-self.reward_sum
         self.closed=True
+        debt=sum(getattr(getattr(self.env,'component_ledger',None),'debt',{}).values())
+        cash_change=2*(self.env.cash-self.start_cash)
+        liability_change=-2*(debt-self.start_debt)
+        inventory_change=sum(terminal.position_values_twice.values())-sum(self.start.position_values_twice.values())
+        if cash_change+liability_change+inventory_change!=terminal.twice_micros-self.start.twice_micros:
+            raise ValueError('EXACT_WEALTH_ATTRIBUTION_RECONCILIATION')
+        holdings=[]
+        for (exchange,side),lots in sorted(self.env.lots.items()):
+            quantity=sum(q for q,_ in lots)
+            if not quantity:continue
+            book=self.env.books[exchange].book
+            midpoint_twice=book.bids[0][0]+book.asks[0][0]
+            if side=='NO':midpoint_twice=2*UNIT-midpoint_twice
+            basis=sum(q*p for q,p in lots)
+            holdings.append({'exchange':exchange,'side':side,'quantity':quantity,
+                'remaining_lot_cost_micros':basis,'marked_value_twice_micros':quantity*midpoint_twice,
+                'mark_minus_lot_cost_twice_micros':quantity*midpoint_twice-2*basis,
+                'stale_mark':exchange in terminal.stale_exchanges})
+        fills={}
+        for fill in self.env.api_fills[self.initial_fill_count:]:
+            key=fill['action']+'_'+fill['side']
+            group=fills.setdefault(key,{'fills':0,'quantity':0,'cash_delta_micros':0,'realized_delta_micros':0})
+            group['fills']+=1;group['quantity']+=fill['quantity']
+            group['cash_delta_micros']+=fill['cash_delta_micros']
+            group['realized_delta_micros']+=fill.get('realized_delta_micros',0)
+        attribution={'initial_cash_micros':self.start_cash,'terminal_cash_micros':self.env.cash,
+            'initial_collateral_debt_micros':self.start_debt,'terminal_collateral_debt_micros':debt,
+            'cash_change_twice_micros':cash_change,'liability_change_twice_micros':liability_change,
+            'inventory_mark_change_twice_micros':inventory_change,
+            'wealth_change_twice_micros':terminal.twice_micros-self.start.twice_micros,
+            'exact_reconciliation':True,'terminal_holdings':holdings,'fill_flows':fills,
+            'valuation_convention':terminal.convention,'executable_liquidation_established':False}
         return {**result,'terminal_reward_correction':correction,
+            'wealth_attribution':attribution,
             'initial_wealth_twice_micros':self.start.twice_micros,
             'terminal_wealth_twice_micros':terminal.twice_micros,
             'marked_roi':terminal.twice_micros/self.start.twice_micros-1,
