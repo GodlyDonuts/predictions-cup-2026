@@ -12,6 +12,17 @@ from .behavior_guard import identity
 
 
 class ObservationProtocolTests(unittest.TestCase):
+    def test_historical_transfer_requires_exact_architecture_and_retains_weights(self):
+        from .historical_neural import HistoricalNeuralPolicy
+        from .observation_protocol import HISTORICAL_INFORMATION
+        model=HistoricalNeuralPolicy(16)
+        config={'mode':'inspected_development','observation_protocol':HISTORICAL_INFORMATION}
+        before={k:v.clone() for k,v in model.state_dict().items()}
+        self.assertIsNone(migrate_development(model,config))
+        self.assertTrue(all(torch.equal(v,before[k]) for k,v in model.state_dict().items()))
+        with self.assertRaisesRegex(ValueError,'EXACT_HISTORICAL_ARCHITECTURE'):
+            migrate_development(ApiPolicy(16),config)
+
     def test_checkpoint_roundtrip_and_legacy_identity_cannot_silently_enter_new_replay(self):
         with tempfile.TemporaryDirectory()as folder:
             model=ApiPolicy(16);p=Path(folder)/'new.pt'

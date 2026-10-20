@@ -30,3 +30,13 @@ class ClockPriorTests(unittest.TestCase):
         torch.testing.assert_close(order[:,:2],self.raw(model,x,1)[:,:2],atol=0,rtol=0)
         torch.testing.assert_close(self.raw(model,x,1)[:,2:]-order[:,2:],torch.tensor([3.,-9.]).expand(7,2),atol=1e-5,rtol=1e-5)
         self.assertTrue(report['optimizer_moments_must_be_reset'])
+
+    def test_configurable_wait_prior_retains_order_heads_and_domain(self):
+        model=ApiPolicy(16);x=torch.randn(7,272)
+        old=[self.raw(model,x,f).detach().clone() for f in range(12)]
+        report=initialize_wait_only(model,1.4,9.)
+        for family in range(1,12):
+            torch.testing.assert_close(old[family],self.raw(model,x,family),atol=0,rtol=0)
+        self.assertFalse(report['legal_deadline_domain_changed'])
+        for invalid in (float('nan'),float('inf'),True):
+            with self.assertRaises(ValueError):initialize_wait_only(model,invalid,9.)

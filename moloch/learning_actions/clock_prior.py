@@ -24,10 +24,15 @@ def _shift_wait(model,alpha,beta):
             'legal_deadline_domain_changed':False,'quantity_head_shift_target':0.}
 
 
-def initialize_wait_only(model):
+def initialize_wait_only(model, alpha_logit=-3., beta_logit=9.):
+    import math
+    if any(type(v) not in (int, float) or not math.isfinite(v)
+           for v in (alpha_logit, beta_logit)):
+        raise ValueError('FINITE_WAIT_PRIOR_LOGITS_REQUIRED')
     bias=model.fractions.bias.detach().cpu().double()
     return {'operator':'initialize_wait_only_short_alarm_prior',
-            **_shift_wait(model,-3.-float(bias[2]),9.-float(bias[3]))}
+            'alpha_logit':alpha_logit,'beta_logit':beta_logit,
+            **_shift_wait(model,alpha_logit-float(bias[2]),beta_logit-float(bias[3]))}
 
 
 def migrate_shared_prior(model):

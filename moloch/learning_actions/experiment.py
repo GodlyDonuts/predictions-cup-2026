@@ -112,8 +112,9 @@ class Experiment:
         self.history_bindings=None
         if history is not None:
             if not named:raise ValueError('HISTORICAL_INFORMATION_REQUIRES_NAMED_API_PROFILE')
-            if config.get('development_initial_checkpoint')or config.get('development_initial_checkpoints'):
-                raise ValueError('HISTORICAL_ARCHITECTURE_REQUIRES_FRESH_FOUNDERS')
+            if (config.get('development_initial_checkpoint')or config.get('development_initial_checkpoints')) and (
+                    not self.development or config.get('historical_development_weight_transfer') is not True):
+                raise ValueError('EXPLICIT_HISTORICAL_DEVELOPMENT_WEIGHT_TRANSFER_REQUIRED')
             from .historical_binding import HistoryBindings
             self.history_bindings=HistoryBindings(history)
         expected_protocol=HISTORICAL_INFORMATION if history is not None else API_TARGETS if named else BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
@@ -295,7 +296,10 @@ class Experiment:
         scope=self.config.get('short_alarm_prior_scope','legacy_global')
         if scope=='wait_only':
             from .clock_prior import initialize_wait_only
-            return initialize_wait_only(model)
+            logits=self.config.get('wait_prior_logits',[-3.,9.])
+            if not isinstance(logits,list) or len(logits)!=2:
+                raise ValueError('EXACT_WAIT_PRIOR_LOGIT_PAIR_REQUIRED')
+            return initialize_wait_only(model,*logits)
         if scope!='legacy_global':raise ValueError('EXPLICIT_SHORT_ALARM_PRIOR_SCOPE')
         with torch.no_grad():model.fractions.bias[2]=-3.;model.fractions.bias[3]=9.
         return {'operator':'legacy_global_fraction_clock_bias'}
@@ -656,6 +660,8 @@ class Experiment:
                 model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
                 from .observation_protocol import migrate_development
                 migration=migrate_development(model,self.config)
+                if self.history_bindings is not None and type(model)is not self.policy_type():
+                    raise ValueError('EXACT_HISTORICAL_ARCHITECTURE_TRANSFER_REQUIRED')
                 if migration is not None:
                     frozen(self.output/('founder-%03d-observation-protocol-migration.json'%member),migration)
                 target_encoding=self.config.get('global_state_encoding','raw')

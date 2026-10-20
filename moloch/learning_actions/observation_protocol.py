@@ -20,6 +20,11 @@ def validate(value):
 def migrate_development(model,config):
     old=validate(getattr(model,'observation_protocol',LEGACY))
     target=validate(config.get('observation_protocol',CURRENT))
+    if target==HISTORICAL_INFORMATION:
+        from .historical_neural import HistoricalNeuralPolicy
+        if old!=target or type(model)is not HistoricalNeuralPolicy:
+            raise ValueError('EXACT_HISTORICAL_ARCHITECTURE_TRANSFER_REQUIRED')
+        return None
     if target not in(CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS):raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
     if old==target:return None
     if config.get('mode')!='inspected_development'or config.get('migrate_observation_protocol')is not True:
