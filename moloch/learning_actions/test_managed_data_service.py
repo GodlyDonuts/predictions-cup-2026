@@ -96,6 +96,15 @@ class ManagedDataTests(unittest.TestCase):
         e.advance(1000);self.assertEqual(s.target_requests['SIG/account'],1)
         self.assertGreater(s.target_requests['SIG/book'],0);self.assertFalse(e.budget.writes)
 
+    def test_uninterrupted_wait_still_captures_each_daily_reward_boundary(self):
+        from .economics import GrowthLedger
+        from moloch.learning_realism.protocol import DAY
+        e=environment();e.end=e.now+2*DAY;install(e,False);ledger=GrowthLedger(e)
+        advance_alarm(e,e.now,{'status':'ALARM','ready_ms':e.end,'wake_on_observation':False})
+        ledger.transition();result=ledger.finish()
+        self.assertEqual(result['D'],2);self.assertEqual(result['N'],0);self.assertEqual(result['reward'],0.)
+        self.assertEqual([b.at_ms for b in ledger.boundaries],[1,1+DAY,1+2*DAY])
+
     def test_profile_contract_checkpoint_and_wait_density_are_explicit(self):
         e=environment();install(e,False);m=ApiPolicy(16);legacy=contract(m)
         m.managed_data_profile=PROFILE;matching(e,m)
