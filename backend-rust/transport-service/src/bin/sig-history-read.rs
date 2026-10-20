@@ -217,7 +217,7 @@ fn trade_backfill(plan:&Plan,job:&Backfill,exchanges:Vec<String>,sdk:&mut api::T
             match next{Some(c)=>cursor=Some(c),None=>{complete+=1;break}}
         }
     }
-    let result=json!({"classification":"historical_public_trade_tape_not_owned_fills_or_books","requests":requests,"trades":trades,
+    let result=json!({"classification":"historical_public_trade_tape_not_owned_fills_or_books","requests":inherited.len()+requests,"newRequests":requests,"trades":trades,
         "exchangesComplete":complete,"fromInclusive":job.from,"throughExclusive":plan.through,"trainingAdmitted":false,
         "financialExecution":false,"receiptBytes":bytes,"inheritedPages":inherited.len(),"inheritedCompleteExchanges":inherited_complete});
     let mut out=fs::OpenOptions::new().write(true).create_new(true).open(job.output.join("complete.json"))?;
