@@ -1,0 +1,120 @@
+{
+  "classification": "verified_active_faster_development_learning_not_positive_roi",
+  "observedUtc": "2026-10-20T01:04:49.433491+00:00",
+  "sourceCommit": "741397cc2fb6d27c7beb9dc7625551a05c52c9dd",
+  "sourcePinsVerified": true,
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "workerPid": 45560,
+  "workerCreation": 134369318077378835,
+  "learnerAlive": true,
+  "totalDecisions": 2206,
+  "totalAcceptedUpdates": 14,
+  "members": 8,
+  "trainingWorlds": 8,
+  "hiddenSize": 4096,
+  "parameters": 58187885,
+  "contractFeatures": 469,
+  "trainingEpisodeMs": 120000,
+  "selectionEpisodeMs": 120000,
+  "fullWindowConfirmationOfNewPositiveWinners": true,
+  "retainIslandChampions": true,
+  "compactRolloutStatistics": true,
+  "computeChunkDecisions": 32,
+  "allFounderParametersVerified": [
+    {
+      "member": 0,
+      "origin": "checked_evaluated_partial_generation_member",
+      "parentSha256": "409994cfdb57bad37c4123be2f191a589efb622ebf75c8a344edfd88f685c21a",
+      "founderSha256": "10e3d22579a916a32b691e3fa377e97ddfab38c358bcfb7e31ee6a21af75ebf2",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    },
+    {
+      "member": 1,
+      "origin": "checked_evaluated_partial_generation_member",
+      "parentSha256": "17c06c82a156630fb9a4e70b0aa56b91e573fea705e85a010aad81573c77b4e8",
+      "founderSha256": "91b44613b0b4c25cee232254c950f423daf1302c8537ae927b488b80a3409e3b",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    },
+    {
+      "member": 2,
+      "origin": "checked_evaluated_partial_generation_member",
+      "parentSha256": "67b3632754dc9bd5d779a9f0f51d67df7f7c93fd03ca0a8cb852fe1d7e6a8786",
+      "founderSha256": "3b90d7eddb0d42e95faafaa05df31d55a7c3a9ab4dce34d5e472834645b81269",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    },
+    {
+      "member": 3,
+      "origin": "checked_unfinished_member_accepted_weights",
+      "parentSha256": "1d2c1f770980750be23242a19dacca99ff50ba453fa49a81dbe0681aee3a4a64",
+      "founderSha256": "a8c797d9034a3f8bf412f55abba5ea79faf721372746af088751233cc140b1d7",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    },
+    {
+      "member": 4,
+      "origin": "checked_queued_first_cycle_founder",
+      "parentSha256": "05cc000dd3fefbaaafe9d03b7ce776c69b5f7fe26f287ee057dbdc146f30994f",
+      "founderSha256": "2d5e984d6d0c8b9ea90f171a87db0b2f614c088e928f313f5f70278370ec28af",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    },
+    {
+      "member": 5,
+      "origin": "checked_queued_first_cycle_founder",
+      "parentSha256": "eee06030f1601dcf8682d8319d120eaf04803be576d41924c39a8eccb5c81c4d",
+      "founderSha256": "0ea5efa6bbe44073c21075d080cde2daa327b1e537a5109aa378c20aa2b655c2",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    },
+    {
+      "member": 6,
+      "origin": "checked_queued_first_cycle_founder",
+      "parentSha256": "aac515b8bd7f48f479393e901cad6d3e91c86b7160f2c0f50af397c571a50f7f",
+      "founderSha256": "efe92ab68f7168bb8bc4c7c4ae04787a343514c8811923cd36e629a4b2471645",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    },
+    {
+      "member": 7,
+      "origin": "checked_queued_first_cycle_founder",
+      "parentSha256": "1b634dd665814b786e121c220b9b3b1a10ad9af80c75f5dc75068be83bf77b9f",
+      "founderSha256": "7e49463bf3b1a5c0fc9b912bc29cb6c77fffb030aadd4c5319c8657863464876",
+      "allOldParametersPreserved": true,
+      "newColumnsZero": true,
+      "optimizerInitiallyEmpty": true
+    }
+  ],
+  "capacity": {
+    "resultSha256": "54935ea9e94bf0a945d303d021fef55cc0eb81d5a73246a0eb17f9ba3db3ee2b",
+    "worlds": 8,
+    "stepsPerWorld": 32,
+    "acceptedPpo": true,
+    "exactFinanceClocksOrdersFills": true,
+    "optimizerGuardChanged": true
+  },
+  "source018PreservedCompletedMembers": [
+    0,
+    1,
+    2
+  ],
+  "source018UnfinishedMember": 3,
+  "source018SnapshotUpdates": 576,
+  "source018FinalUpdates": 603,
+  "source018AcceptedUpdatesAfterSavedSnapshotNotCarried": 27,
+  "oldScoresReused": false,
+  "oldFinancialWorldsResumed": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "positiveRoiEstablished": false,
+  "measuredWholeGenerationWallSpeedupEstablished": false
+}

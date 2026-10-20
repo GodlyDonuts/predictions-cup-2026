@@ -1,4 +1,4 @@
-Current: GPU018 is active from checked4ae15439 after017 CUDA OOM. All8 saved members verified; smaller32-step chunks and no concurrent GPU diagnostics. [Loss attribution, recovery and limits](loss-diagnosis-and-recovery-20261019.md). Independent profitable ROI remains unproven; older status rows are historical.
+[Current ML: GPU019 is active with shorter development training/screens and explicit API identifiers](fast-evolution-20261019.md). Real eight-world GPU PPO and all eight founder transfers verified; full-history, calibrated API parity and independent positive ROI are still incomplete. Earlier observations below are historical.
 
 October19 numerical conditioning: trained-fit diagnostics show62%update-gate saturation; explicit time/count conditioning removes it in the diagnostic and passes188checks/full-size CPU PPO. This is not profitability evidence. Old014continues;pending handoffv1 was cancelled before transition. [Evidence](global-state-conditioning-20261019.md).
 

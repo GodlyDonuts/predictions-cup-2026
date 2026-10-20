@@ -1,4 +1,4 @@
-[Current: GPU018 recovered and learning; loss diagnosis finds costly crossing fills with limited delivered quote context](loss-diagnosis-and-recovery-20261019.md). Full history and independent positive ROI remain unproven. Earlier runtime statements below are historical.
+[Current ML: GPU019 is verified learning with faster development screening and named API metadata](fast-evolution-20261019.md). Eight saved founders preserved; full-history qualification and independent positive ROI remain unproven. See [active evidence](population-019-fast-evolution-001.json). Older entries below are historical.
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 
