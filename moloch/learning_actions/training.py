@@ -148,6 +148,11 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     for epoch in range(epochs):
         out,hidden=sequence_forward(model,chunk.frames,chunk.initial_hidden,prepared,checkpoint_encoder=checkpoint_encoder)
         delta=out['logprob']-old_logprob;ratio=delta.exp()
+        # Distinguish drift already accumulated across the sealed cohort from
+        # the change introduced by this attempt. This reuses the loss forward;
+        # neither the acceptance threshold nor the rollout policy is changed.
+        with torch.no_grad():
+            pre_update_kl=float(((ratio-1-delta)*learn).sum()/count)
         policy=-(torch.minimum(ratio*advantage,ratio.clamp(1-clip,1+clip)*advantage)*learn).sum()/count
         value_loss=((out['value'].double()-returns).square()*learn).sum()/count
         entropy=(out['entropy']*learn).sum()/count
@@ -165,7 +170,7 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
         accepted=math.isfinite(kl)and kl<=.03
         if not accepted:model.load_state_dict(before);optimizer.load_state_dict(optimizer_before)
         elif chunk.stream is not None:chunk.stream.hidden=hidden.detach()
-        reports.append({'epoch':epoch,'loss':float(loss.detach()),'post_update_kl':kl,
+        reports.append({'epoch':epoch,'loss':float(loss.detach()),'pre_update_kl':pre_update_kl,'post_update_kl':kl,
                         'policy_loss':float(policy.detach()),'value_loss':float(value_loss.detach()),
                         'mean_entropy':float(entropy.detach()),'entropy_coefficient':entropy_coefficient,
                         'encoder_activation_checkpointing':bool(checkpoint_encoder),'behavior_guard':chunk.behavior_guard,

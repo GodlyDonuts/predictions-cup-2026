@@ -118,6 +118,9 @@ class EpisodeTapeTests(unittest.TestCase):
                     def progress(rows,n):
                         if n==1:
                             self.assertFalse(rows[0]['accepted']);self.assertGreater(rows[0]['post_update_kl'],.03)
+                            # This rejection was caused by the attempted step,
+                            # not an already stale student at this minibatch.
+                            self.assertAlmostEqual(rows[0]['pre_update_kl'],0.,places=5)
                             self.assertEqual(opt.state_dict()['state'],{})
                             for name,value in model.state_dict().items():self.assertTrue(torch.equal(value,before[name]))
                         observations.extend(rows)
