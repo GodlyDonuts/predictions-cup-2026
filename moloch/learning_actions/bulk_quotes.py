@@ -22,7 +22,7 @@ def initialize(env):
 
 def add_targets(env):
     keys=[('bulk_prices',)]+[('quote',ex)for ex in env.exchanges[1:]]
-    known=[k[1]for k in env.keys['SIG']if k[0]=='book']
+    known=env.exchanges[1:]if getattr(env,'named_api_targets',False)else[k[1]for k in env.keys['SIG']if k[0]=='book']
     keys.extend(('bulk_prices','group',tuple(known[i:i+100]))for i in range(0,len(known),100))
     for key in keys:
         if key not in env.quote_keys:env.keys['SIG'].append(key);env.quote_keys.add(key)

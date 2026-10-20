@@ -73,9 +73,12 @@ class Experiment:
             self.gap=spec['maximum_venue_gap_ms']
             self.train_bounds=self.split.bounds('train');self.evolution_bounds=self.split.bounds('evolution')
         self.dataset_sha=self.original.manifest_sha256
+        from .development_calendars import calendars
+        calendars(*self.evolution_bounds,(config.get('population_search')or{}).get('development_selection_blocks',1),
+            development=self.development,episode_ms=config.get('development_selection_episode_ms'))
         from .state_encoding import validate
         validate(config.get('global_state_encoding','raw'))
-        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES
+        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS
         windows=config.get('trade_query_windows',False)
         if type(windows)is not bool or(windows and config.get('full_depth_observations')is not True):
             raise ValueError('QUERY_WINDOWS_REQUIRE_EXPLICIT_FULL_DEPTH_PROFILE')
@@ -89,7 +92,9 @@ class Experiment:
         if type(debt)is not bool or(debt and not pages):raise ValueError('COMPONENT_DEBT_REQUIRES_ORDER_PAGE_PROFILE')
         quotes=config.get('bulk_quote_observations',False)
         if type(quotes)is not bool or(quotes and not debt):raise ValueError('BULK_QUOTES_REQUIRE_COMPONENT_SCOPED_PROFILE')
-        expected_protocol=BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
+        named=config.get('api_target_affordances',False)
+        if type(named)is not bool or(named and not quotes):raise ValueError('API_LABELS_REQUIRE_EXPLICIT_BULK_PROFILE')
+        expected_protocol=API_TARGETS if named else BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
         if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .resting_power import validate as funding_mode
@@ -148,7 +153,10 @@ class Experiment:
         key=(role,finalist)
         if key in self.tape_cache:return self.tape_cache[key]
         tape_type=ApiTape
-        if self.config.get('bulk_quote_observations',False):
+        if self.config.get('api_target_affordances',False):
+            from .api_affordances import ApiAffordanceTape
+            tape_type=ApiAffordanceTape
+        elif self.config.get('bulk_quote_observations',False):
             from .bulk_quotes import BulkQuoteTape
             tape_type=BulkQuoteTape
         elif self.config.get('component_debt_accounting',False):
@@ -399,17 +407,17 @@ class Experiment:
             self.training_snapshot(model,optimizer)
         finally:reader.close()
 
-    def evaluate(self,model,checkpoint,role='evolution',finalist=None):
+    def evaluate(self,model,checkpoint,role='evolution',finalist=None,*,confirmation=False):
         if role=='test'and self.development:raise ValueError('INSPECTED_DEVELOPMENT_HAS_NO_INDEPENDENT_TEST')
         if role=='test'and not independent_test_claim(self.original.manifest,self.split):
             raise ValueError('INDEPENDENT_TEST_SOURCE_PROVENANCE_NOT_ESTABLISHED')
         start,end=self.evolution_bounds if role=='evolution'else self.split.bounds('test')
         if role=='test':self.data_use.record('test',start,end,self.spec_sha)
         blocks=(self.search_config or{}).get('development_selection_blocks',1)
-        if type(blocks)is not int or blocks<1 or blocks>end-start:raise ValueError('VALID_DEVELOPMENT_SELECTION_BLOCKS')
-        if not self.development and blocks!=1:raise ValueError('FULL_DAILY_GROWTH_EVALUATION_MUST_REMAIN_CONTINUOUS')
-        calendars=[(start+(end-start)*i//blocks,start+(end-start)*(i+1)//blocks)for i in range(blocks)]
-        descriptors=list((a,b,s)for a,b in calendars for s in(False,True))
+        from .development_calendars import calendars
+        windows=calendars(start,end,blocks,development=self.development,
+            episode_ms=self.config.get('development_selection_episode_ms'),confirmation=confirmation)
+        descriptors=list((a,b,s)for a,b in windows for s in(False,True))
         batch_mode=self.config.get('batched_evaluation',False)
         if type(batch_mode)is not bool:raise ValueError('EXPLICIT_BATCHED_EVALUATION_PROFILE')
         batch_heads=self.config.get('batched_evaluation_action_heads',False)
@@ -458,6 +466,8 @@ class Experiment:
         if role=='test'and self.data_use.overlaps(start,end,ignore_test=True):
             raise ValueError('TEST_CALENDAR_CONCURRENTLY_USED_FOR_OPTIMIZATION')
         return {'role':'development_selection'if self.development else role,
+            'development_screen':self.development and self.config.get('development_selection_episode_ms')is not None and not confirmation,
+            'full_window_development_confirmation':self.development and confirmation,
             'eligible':not self.development and all(c['eligible']for c in cases),
             'checkpoint_sha256':checkpoint['sha256'],'reward':min(c['reward']for c in cases),
             'cases':cases,'marked_roi_min':min(c['marked_roi']for c in cases),
@@ -518,6 +528,9 @@ class Experiment:
             del model,opt
 
     def policy_type(self):
+        if self.config.get('api_target_affordances',False):
+            from .api_affordances import ApiAffordancePolicy
+            return ApiAffordancePolicy
         if self.config.get('bulk_quote_observations',False):
             from .bulk_quotes import BulkQuotePolicy
             return BulkQuotePolicy
@@ -602,6 +615,7 @@ class Experiment:
                         from .clock_prior import migrate_shared_prior
                         frozen(self.output/('founder-%03d-clock-migration.json'%member),migrate_shared_prior(model))
                 if type(model)is not self.policy_type():
+                    from .api_affordances import ApiAffordancePolicy,migrate_api_affordances
                     if type(model)is ApiPolicy:
                         if self.config.get('migrate_full_depth_encoder')is not True or self.policy_type()is ApiPolicy:
                             raise ValueError('EXPLICIT_DEPTH_ARCHITECTURE_MIGRATION_REQUIRED')
@@ -615,7 +629,7 @@ class Experiment:
                         from .order_policy import OrderPagePolicy
                         from .component_execution import ComponentPolicy
                         from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_query_window_heads')is not True:
+                        if self.policy_type()not in(QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_query_window_heads')is not True:
                             raise ValueError('EXPLICIT_QUERY_WINDOW_ARCHITECTURE_MIGRATION_REQUIRED')
                         model,migration=migrate_full_depth(model)
                         frozen(self.output/('founder-%03d-query-window-migration.json'%member),migration)
@@ -625,7 +639,7 @@ class Experiment:
                         from .order_policy import OrderPagePolicy
                         from .component_execution import ComponentPolicy
                         from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_joint_memory_density')is not True:
+                        if self.policy_type()not in(JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_joint_memory_density')is not True:
                             raise ValueError('EXPLICIT_JOINT_MEMORY_ARCHITECTURE_MIGRATION_REQUIRED')
                         model,migration=migrate_query_memory(model)
                         frozen(self.output/('founder-%03d-joint-memory-migration.json'%member),migration)
@@ -634,7 +648,7 @@ class Experiment:
                         from .order_policy import OrderPagePolicy,migrate_owned_orders
                         from .component_execution import ComponentPolicy
                         from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(OrderPagePolicy,ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_owned_order_pages')is not True:
+                        if self.policy_type()not in(OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_owned_order_pages')is not True:
                             raise ValueError('EXPLICIT_ORDER_PAGE_ARCHITECTURE_MIGRATION_REQUIRED')
                         model,migration=migrate_owned_orders(model)
                         frozen(self.output/('founder-%03d-order-page-migration.json'%member),migration)
@@ -642,16 +656,22 @@ class Experiment:
                     if type(model)is OrderPagePolicy and type(model)is not self.policy_type():
                         from .component_execution import ComponentPolicy,migrate_component_debt
                         from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(ComponentPolicy,BulkQuotePolicy)or self.config.get('migrate_component_debt')is not True:
+                        if self.policy_type()not in(ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_component_debt')is not True:
                             raise ValueError('EXPLICIT_COMPONENT_DEBT_MIGRATION_REQUIRED')
                         model,migration=migrate_component_debt(model)
                         frozen(self.output/('founder-%03d-component-debt-migration.json'%member),migration)
-                    if type(model)is not self.policy_type():
+                    from .component_execution import ComponentPolicy
+                    if type(model)is ComponentPolicy and type(model)is not self.policy_type():
                         from .bulk_quotes import BulkQuotePolicy,migrate_bulk_quotes
-                        if self.policy_type()is not BulkQuotePolicy or self.config.get('migrate_bulk_quotes')is not True:
+                        if self.policy_type()not in(BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_bulk_quotes')is not True:
                             raise ValueError('EXPLICIT_BULK_QUOTE_MIGRATION_REQUIRED')
                         model,migration=migrate_bulk_quotes(model)
                         frozen(self.output/('founder-%03d-bulk-quote-migration.json'%member),migration)
+                    if type(model)is not self.policy_type():
+                        if self.policy_type()is not ApiAffordancePolicy or self.config.get('migrate_api_target_affordances')is not True:
+                            raise ValueError('EXPLICIT_API_AFFORDANCE_MIGRATION_REQUIRED')
+                        model,migration=migrate_api_affordances(model)
+                        frozen(self.output/('founder-%03d-api-affordance-migration.json'%member),migration)
                 del parent
                 if member>=len(parents):
                     with torch.no_grad():
@@ -704,7 +724,20 @@ class Experiment:
                     'dataset_sha256':self.dataset_sha,'experiment_sha256':self.spec_sha,
                     'champions':{str(k):v for k,v in island_champions.items()},
                     'independent_test_used':False,'production_authority':False})
-            if best is None or ranking[0]['selection']['reward']>best['selection']['reward']:best=ranking[0]
+            improved=best is None or ranking[0]['selection']['reward']>best['selection']['reward']
+            if improved:best=ranking[0]
+            # A short screen buys faster reproduction, never profitability
+            # qualification. Recheck new positive screen winners on the full
+            # development calendar; no holdout or gradient is used here.
+            if (self.development and self.config.get('development_selection_episode_ms')is not None
+                    and improved and best['selection']['reward']>0):
+                cp=best['checkpoint'];model,bundle=load_checkpoint(cp['path'],cp['sha256'],self.device)
+                del bundle
+                confirmation=self.evaluate(model,cp,confirmation=True)
+                frozen(self.output/('development-confirmation-%03d.json'%cycle),confirmation)
+                self.log({'event':'development_full_window_confirmation','cycle':cycle,'checkpoint':cp,
+                    'confirmation':confirmation,'screen_reward':best['selection']['reward']})
+                del model
             if self.archive is not None:
                 for row in ranking:self.archive.consider(row)
                 frozen(self.output/('research-archive-%03d.json'%cycle),self.archive.json())
