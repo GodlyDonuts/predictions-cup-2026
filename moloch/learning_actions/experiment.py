@@ -658,6 +658,9 @@ class Experiment:
             if (not self.development or not parents or not isinstance(clock_shifts,list)
                     or len(clock_shifts)!=members or any(x is not None for x in clock_shifts[members-fresh:])):
                 raise ValueError('EXPLICIT_DEVELOPMENT_INHERITED_CLOCK_MUTATIONS_REQUIRED')
+        family_shifts=self.config.get('founder_family_logit_shifts')
+        if family_shifts is not None and(not isinstance(family_shifts,list)or len(family_shifts)!=members):
+            raise ValueError('ONE_EXPLICIT_FAMILY_PRIOR_PER_FOUNDER_REQUIRED')
         for member in range(members):
             torch.manual_seed(self.seed+member)
             inherited=parents[member%len(parents)]if parents and member<members-fresh else None
@@ -768,6 +771,10 @@ class Experiment:
                 from .clock_prior import mutate_inherited_wait
                 frozen(self.output/('founder-%03d-inherited-clock-mutation.json'%member),
                        mutate_inherited_wait(model,clock_shifts[member]))
+            if family_shifts is not None and family_shifts[member] is not None:
+                from .exploration_prior import mutate_family_logits
+                frozen(self.output/('founder-%03d-family-prior-mutation.json'%member),
+                       mutate_family_logits(model,family_shifts[member]))
             rate,entropy=self.founder_hyperparameters(member)
             opt=self.make_optimizer(model,rate=rate,entropy=entropy)
             self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
