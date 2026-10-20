@@ -577,6 +577,11 @@ class ApiEpisode(PreparedEpisode):
         state[15]=self.finance_observation_count
         from .state_encoding import encode
         state=encode(state,self.global_state_encoding)
+        from .read_target_sampling import validate as sampling_mode,groups,FLAT
+        if sampling_mode(getattr(self,'read_target_sampling',FLAT))!=FLAT:
+            key=tuple(entities);cached=getattr(self,'_read_groups_cache',None)
+            if cached is None or cached[0]!=key:self._read_groups_cache=(key,groups(entities))
+            masks['read_groups']=self._read_groups_cache[1]
         return {'contracts':features,'global_state':state,'global_state_encoding':self.global_state_encoding,
                 'observation_protocol':self.observation_protocol,
                 'present':np.ones(n,bool),'masks':masks,

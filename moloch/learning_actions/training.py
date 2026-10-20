@@ -198,6 +198,8 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
         'model':model.state_dict(),'optimizer':optimizer.state_dict(),
         'parameter_sha256':fingerprint(model),'dataset_manifest_sha256':dataset_manifest_sha256,
         'split_specification_sha256':split_specification_sha256,'production_authority':False}
+    from .read_target_sampling import validate as sampling_mode,FLAT
+    bundle['read_target_sampling']=sampling_mode(getattr(model,'read_target_sampling',FLAT))
     path=Path(path)
     with path.open('xb')as f:torch.save(bundle,f)
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -224,6 +226,8 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
+    from .read_target_sampling import validate as sampling_mode,FLAT
+    model.read_target_sampling=sampling_mode(bundle.get('read_target_sampling',FLAT))
     from .acting_validation import validate as acting_mode,STRICT
     model.acting_validation=acting_mode(bundle.get('acting_validation',STRICT))
     from .state_encoding import validate

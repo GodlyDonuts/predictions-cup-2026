@@ -31,3 +31,6 @@ def matching(environment,model):
     from .observation_protocol import validate as protocol,CURRENT
     if protocol(getattr(environment,'observation_protocol',CURRENT))!=protocol(getattr(model,'observation_protocol',CURRENT)):
         raise ValueError('MODEL_AND_OBSERVATION_PROTOCOL_MISMATCH')
+    from .read_target_sampling import validate as sampling_mode,FLAT
+    if sampling_mode(getattr(environment,'read_target_sampling',FLAT))!=sampling_mode(getattr(model,'read_target_sampling',FLAT)):
+        raise ValueError('MODEL_AND_ENVIRONMENT_READ_SAMPLING_MISMATCH')

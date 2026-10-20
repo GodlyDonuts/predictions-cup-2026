@@ -55,6 +55,8 @@ class ApiPolicy(FusedRecurrentPolicy):
         logits=(encoded*self.market_query(h).unsqueeze(1)).sum(-1)/16
         batch=torch.arange(h.shape[0],device=h.device)
         eligible=masks['family'].gather(2,family[:,None,None].expand(-1,present.shape[1],1)).squeeze(-1)
+        from .read_target_sampling import logits as target_logits
+        logits=target_logits(self,logits,family,eligible&present&masks['market'],masks)
         dist=categorical(logits,masks['market']&present&eligible,fast)
         market=actions['market']if actions is not None else dist.probs.argmax(-1)if deterministic else dist.sample()if sampler is None else sampler.categorical(dist,market=True)
         selected=torch.cat((h,encoded[batch,market]),-1)+self.conditioners['family'](family)

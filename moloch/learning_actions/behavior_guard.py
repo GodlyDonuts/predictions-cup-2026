@@ -12,14 +12,20 @@ from moloch.learning_v2.train_inner import fingerprint
 
 def contract(model):
     from .acting_validation import validate,STRICT
-    return (model.architecture,model.observation_protocol,
+    value=(model.architecture,model.observation_protocol,
             getattr(model,'global_state_encoding','raw'),
             bool(getattr(model,'local_memory_joint_density',False)),validate(getattr(model,'acting_validation',STRICT)))
+    from .read_target_sampling import validate as sampling_mode,FLAT
+    mode=sampling_mode(getattr(model,'read_target_sampling',FLAT))
+    return value if mode==FLAT else value+(mode,)
 
 
 def require_contract(model,value):
     if value is None:
-        if getattr(model,'local_memory_joint_density',False):raise ValueError('EXPLICIT_BEHAVIOR_CONTRACT_REQUIRED')
+        from .read_target_sampling import validate as sampling_mode,FLAT
+        if (getattr(model,'local_memory_joint_density',False)or
+                sampling_mode(getattr(model,'read_target_sampling',FLAT))!=FLAT):
+            raise ValueError('EXPLICIT_BEHAVIOR_CONTRACT_REQUIRED')
     elif tuple(value)!=contract(model):raise ValueError('BEHAVIOR_ARCHITECTURE_OR_PROTOCOL_CHANGED')
 
 

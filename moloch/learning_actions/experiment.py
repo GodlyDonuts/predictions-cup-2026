@@ -274,6 +274,8 @@ class Experiment:
             from .component_execution import configure_from_evidence
             configure_from_evidence(env,self.config.get('component_evidence'))
         env.resting_buy_funding=self.config.get('resting_buy_funding')
+        from .read_target_sampling import validate as sampling_mode,FLAT
+        env.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
         return env
 
     def stream(self,model,env,training=False):
@@ -627,6 +629,8 @@ class Experiment:
         model.acting_validation=acting_mode(self.config.get('acting_validation',STRICT))
         model.global_state_encoding=self.config.get('global_state_encoding','raw')
         model.observation_protocol=self.config.get('observation_protocol',model.observation_protocol)
+        from .read_target_sampling import validate as sampling_mode,FLAT
+        model.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
         return model
 
     def founder_hyperparameters(self,member):
@@ -763,6 +767,16 @@ class Experiment:
                     'old':getattr(model,'acting_validation',STRICT),'new':target_mode,
                     'weights_unchanged':True,'fresh_optimizer_and_trajectories':True})
             model.acting_validation=target_mode
+            from .read_target_sampling import validate as sampling_mode,FLAT
+            old_sampling=sampling_mode(getattr(model,'read_target_sampling',FLAT))
+            new_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
+            if old_sampling!=new_sampling:
+                if self.config.get('migrate_read_target_sampling')is not True:
+                    raise ValueError('EXPLICIT_READ_SAMPLING_MIGRATION_REQUIRED')
+                model.read_target_sampling=new_sampling
+                frozen(self.output/('founder-%03d-read-sampling-migration.json'%member),{
+                    'old':old_sampling,'new':new_sampling,'weightsPreserved':True,
+                    'optimizerMomentsReset':True,'freshTrajectoriesAndScoresRequired':True})
             # Initialization changes exploration probability, never legal action
             # support: favor initially short alarms without forbidding long ones.
             if not inherited and self.config.get('initial_short_alarm_prior',True):
