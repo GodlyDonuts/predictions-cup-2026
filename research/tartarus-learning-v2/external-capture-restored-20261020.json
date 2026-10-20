@@ -1,0 +1,63 @@
+{
+  "observedUtc": "2026-10-20T19:47:22.303894+00:00",
+  "classification": "restarted_external_read_only_capture_not_SIG_execution",
+  "kalshi": {
+    "at": "2026-10-20T19:47:21.385Z",
+    "pid": 16232,
+    "state": "collecting",
+    "targetRequestsPerSecond": 20,
+    "observedStartsLastSecond": 20,
+    "observedStartsLastMinute": 1194,
+    "successfullyCachedTickers": 237,
+    "throttles": 0
+  },
+  "polymarket": {
+    "at": "2026-10-20T19:47:21.985Z",
+    "pid": 3732,
+    "state": "running",
+    "configuredMaximumRps": 30,
+    "cachedBooks": 378,
+    "admissions": 2166,
+    "completions": 2161
+  },
+  "polymarketWs": {
+    "at": "2026-10-20T19:47:21.985Z",
+    "wsOutcomes": 378,
+    "rawFrames": 11605,
+    "failed": false,
+    "stream": {
+      "connections": 2,
+      "reconnects": 1,
+      "frames": 11605,
+      "invalidFrames": 1,
+      "droppedFrames": 38,
+      "lastReason": "INVALID_FRAME",
+      "streamEpoch": 2,
+      "books": 378,
+      "pendingBytes": 0,
+      "pendingFrames": 0,
+      "stopped": false,
+      "pricingAuthority": false
+    }
+  },
+  "archive": {
+    "copied_files": 0,
+    "copied_bytes": 0,
+    "deferred_active_files": 3,
+    "preserved_source_files": 3656,
+    "http_requests": 0,
+    "original_files_changed": false,
+    "at_unix": 1792525620.4454327
+  },
+  "kalshiStableSourceSha256": {
+    "kalshi-client.mjs": "341ea6c093f9b66a68975182a87850cb72cad199e318adf343543406014bbc2b",
+    "kalshi-collector.mjs": "ad03700ceecfae42365f646111b88caa099f35b07442872f16b6d19e61cf4ef0",
+    "kalshi-supervisor.mjs": "7e814e1a781deed93caa4d051930a3be1c71b61e2e9cf80a7761e284c381c3bf",
+    "kalshi-universe.mjs": "443c8f34275e19ef3af1fa0b45e219b1b50bb13973bd61a3224a5aa403ea8884",
+    "kalshi-websocket.mjs": "aa63601c46a75a905dbe0ee2babbd91335f10b4a24b9d5484f4911e7213226ac"
+  },
+  "polymarketUniverseSha256": "6fc2e7f4b53ebd300d97d3bd74faa505b246156b30b320c99ba8f201ad2889a5",
+  "sigClientStarted": false,
+  "independentTestConsumed": false,
+  "pricingAuthorityEstablished": false
+}
