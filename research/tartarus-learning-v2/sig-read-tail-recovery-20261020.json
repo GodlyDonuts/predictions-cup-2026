@@ -1,0 +1,23 @@
+{
+  "completeRecordsVerified": 54,
+  "lastCompleteSequence": 345526,
+  "lastCompletePrevious": "dbc568ef7b58df5a9f85aeb93bc4561f882626c6f9c35d37066ac26ba616327c",
+  "retainedPrefixBytes": 53591041,
+  "retainedPrefixSha256": "443d47f6a03dc027e3cba8555361f36cf05980446354f33afca0613272a6ad8d",
+  "originalJournalBytes": 53989376,
+  "originalJournalSha256": "ee497e2029bb2e011e9d85096688a59bb98403c9e1b7a88299994abf817644bf",
+  "uncommittedTailBytes": 398335,
+  "uncommittedTailSha256": "8a9c563e4d434cd3f903376bce7c9507ed936eedebc5b6d0f80141fd78b23f31",
+  "unstartedReadRequest": "request-1792483689270-4815",
+  "unknownCount": 0,
+  "originalIntentCount": 2452,
+  "originalKeyCount": 2452,
+  "financialStateChanged": false,
+  "completeRecordsRemoved": false,
+  "archive": "/home/archon/apps/moloch/shared/incidents/history-read-tail-20261020T082609059119Z/original-journal.jsonl.gz",
+  "archiveSha256": "43507b18a76ce0aa75845b19bfe4c58526b6162ed4cbad2e89f388aaf8e9c50a",
+  "archiveVerifiedBeforeTruncate": true,
+  "repairComplete": true,
+  "controlsUnchanged": true,
+  "observedUtc": "2026-10-20T08:26:10.186773+00:00"
+}
