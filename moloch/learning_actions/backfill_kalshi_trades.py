@@ -132,13 +132,14 @@ def recover(root,plan,*,fetcher=fetch,maximum_pages=0):
 def main():
     a=argparse.ArgumentParser();a.add_argument('--universe',required=True);a.add_argument('--output',required=True)
     a.add_argument('--start',required=True);a.add_argument('--end',required=True);a.add_argument('--maximum-pages',type=int,default=0)
+    a.add_argument('--role',choices=['training_history_recovery_only','evolution_history_recovery_only'],default='training_history_recovery_only')
     args=a.parse_args();source=Path(args.universe).read_bytes();tickers=sorted({x['ticker']for x in json.loads(source)['markets']})
     lo=instant(args.start);hi=instant(args.end)
     if lo%1000 or hi%1000 or not lo<hi or args.maximum_pages<0:raise ValueError('EXACT_SECOND_RANGE_REQUIRED')
     plan={'classification':'historical_public_trade_recovery_not_original_book_or_delivery_replay',
           'startTs':lo//1000,'endTs':hi//1000,'tickers':tickers,'universeSha256':digest(source),
           'runnerSha256':digest(Path(__file__).read_bytes()),'transport':'existing_collector_discovery_shared_account_limiter',
-          'role':'training_history_recovery_only','competitionStartVerified':False,'independentTestUsed':False}
+          'role':args.role,'competitionStartVerified':False,'independentTestUsed':False}
     recover(args.output,plan,maximum_pages=args.maximum_pages)
 
 

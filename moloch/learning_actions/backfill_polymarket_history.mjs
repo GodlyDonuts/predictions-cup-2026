@@ -66,12 +66,13 @@ export async function recover(root,plan,{fetcher=fetch,maximumRequests=0,admissi
   await status('complete_receipt_recovery_not_replay_qualification');
 }
 async function main(){
-  const args={};for(let i=2;i<process.argv.length;i+=2){if(!['--universe','--output','--start','--end','--maximum-requests'].includes(process.argv[i])||!process.argv[i+1])throw Error('HISTORY_ARGUMENT');args[process.argv[i].slice(2)]=process.argv[i+1];}
+  const args={};for(let i=2;i<process.argv.length;i+=2){if(!['--universe','--output','--start','--end','--maximum-requests','--role'].includes(process.argv[i])||!process.argv[i+1])throw Error('HISTORY_ARGUMENT');args[process.argv[i].slice(2)]=process.argv[i+1];}
   const raw=await fs.readFile(args.universe);const assets=[...new Set(JSON.parse(raw).outcomes.map(x=>assetId(x.assetId)))].sort();
   const startTs=Date.parse(args.start)/1000,endTs=Date.parse(args.end)/1000;
   if(!Number.isSafeInteger(startTs)||!Number.isSafeInteger(endTs)||endTs<=startTs||endTs*1000>Date.now())throw Error('EXPLICIT_PAST_HISTORY_RANGE');
   const maximumRequests=Number(args['maximum-requests']??0);if(!Number.isSafeInteger(maximumRequests)||maximumRequests<0)throw Error('HISTORY_REQUEST_BOUND');
-  const plan={classification:'historical_price_samples_not_executable_depth',assets,startTs,endTs,fidelityMinutes:1,universeSha256:sha256(raw),runnerSha256:sha256(await fs.readFile(fileURLToPath(import.meta.url))),role:'training_history_recovery_only',competitionStartVerified:false,independentTestUsed:false,requestsPerSecond:5};
+  const role=args.role??'training_history_recovery_only';if(!['training_history_recovery_only','evolution_history_recovery_only'].includes(role))throw Error('EXPLICIT_HISTORY_ROLE');
+  const plan={classification:'historical_price_samples_not_executable_depth',assets,startTs,endTs,fidelityMinutes:1,universeSha256:sha256(raw),runnerSha256:sha256(await fs.readFile(fileURLToPath(import.meta.url))),role,competitionStartVerified:false,independentTestUsed:false,requestsPerSecond:5};
   await recover(args.output,plan,{maximumRequests});
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))main().catch(e=>{console.error(e.message);process.exitCode=1;});
