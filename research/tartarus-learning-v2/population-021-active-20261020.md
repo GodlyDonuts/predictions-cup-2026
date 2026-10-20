@@ -1,4 +1,6 @@
-# GPU021 is running the public-flow profile and collecting its first cohort
+# GPU021 first cohort has committed neural updates
+
+At2026-10-20T05:00:09Z the exact original36576 process remains live. First closed cohort committed2accepted updates from147attempts after37,317decisions. A CPU-only child/founder comparison verifies32changed parameter tensors, finite child weights and populated optimizer state; source/config/data identity passes the existing started_learning verifier. Parent/child checkpoint hashes and episode manifest are recorded in [committed-learning proof](population-021-learning-001.json). No GPU probe, independent-test access, production change or profitability claim. Evaluation remains pending. Earlier launch and capacity observations below are historical.
 
 The queued transition has actually occurred. GPU020 completed cycle0 with181,459decisions and241accepted updates. All eight development evaluations were flat or negative. Its saved population reproduced from0to4,1to5,2to6and3to7, retaining/evolving the better candidates even when their scores were negative. The controller saved and verified all selected checkpoints before stopping the exact old trainer11404.
 
