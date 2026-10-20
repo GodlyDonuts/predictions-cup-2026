@@ -38,6 +38,10 @@ class Experiment:
         if config['mode']not in('inspected_development','full_history'):
             raise ValueError('EXPLICIT_EXPERIMENT_MODE_REQUIRED')
         self.device=config.get('device','cuda');self.seed=config.get('seed',190019)
+        if type(config.get('derived_public_trade_stream',False))is not bool:
+            raise ValueError('EXPLICIT_DERIVED_PUBLIC_TRADE_PROFILE')
+        if config.get('derived_public_trade_stream',False)and config.get('sig_realtime_mode')is None:
+            raise ValueError('PUBLIC_TRADES_REQUIRE_DERIVED_STREAM')
         from .acting_validation import validate as acting_mode,STRICT
         acting_mode(config.get('acting_validation',STRICT))
         if type(config.get('closed_episode_return_replay',False))is not bool:
@@ -223,7 +227,8 @@ class Experiment:
         if self.config.get('sig_realtime_mode')is not None:
             from .realtime import DerivedStream
             if self.config['sig_realtime_mode']!=DerivedStream.mode:raise ValueError('EXPLICIT_DERIVED_STREAM_ASSUMPTION_REQUIRED')
-            env.realtime=DerivedStream(env);env.keys['SIG'].append(('realtime_token',))
+            env.realtime=DerivedStream(env,public_trades=self.config.get('derived_public_trade_stream',False))
+            env.keys['SIG'].append(('realtime_token',))
             initial=self.config.get('initial_sig_realtime')
             if initial not in(None,'request_token'):raise ValueError('EXPLICIT_INITIAL_STREAM_STATE')
             if initial=='request_token':env.realtime.mint()

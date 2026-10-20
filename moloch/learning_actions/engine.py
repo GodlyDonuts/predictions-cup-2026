@@ -329,7 +329,9 @@ class ApiEpisode(PreparedEpisode):
     def _event(self,at,kind,value):
         if kind=='api_source_cursor':value.consume(self,at);return
         if kind=='trade_flow':
-            self.trade_history.accept(at,value);return
+            self.trade_history.accept(at,value)
+            if self.realtime is not None:self.realtime.source_trade(at,value)
+            return
         if kind=='api_trade_receipt':
             rid,key,page=value;self.budget.complete(rid,at)
             self.known_trade_pages[key[1]]=page
