@@ -1,0 +1,69 @@
+{
+  "classification": "verified_waiting_identity_cache_public_trade_profile_not_next_active_training_or_roi",
+  "completedSelections": [
+    {
+      "file": "result-000-000.json",
+      "reward": 0.0
+    },
+    {
+      "file": "result-000-001.json",
+      "reward": -0.21889879181634642
+    },
+    {
+      "file": "result-000-002.json",
+      "reward": -0.15751318505027387
+    },
+    {
+      "file": "result-000-003.json",
+      "reward": -0.34421947915658196
+    },
+    {
+      "file": "result-000-004.json",
+      "reward": 0.0
+    },
+    {
+      "file": "result-000-005.json",
+      "reward": -0.3163950048754238
+    },
+    {
+      "file": "result-000-006.json",
+      "reward": -0.48144195821920516
+    }
+  ],
+  "controllerCommandVerified": true,
+  "controllerLauncherPid": 27064,
+  "controllerStatus": {
+    "cycle": 0,
+    "independentTestUsed": false,
+    "observedUtc": "2026-10-20T04:21:49.065469+00:00",
+    "phase": "waiting_for_completed_generation",
+    "productionChanged": false,
+    "trainerPid": 11404
+  },
+  "controllerWorkerPid": 17540,
+  "cpuChecks": {
+    "seconds": 70.416,
+    "skipped": 5,
+    "success": true,
+    "tests": 386
+  },
+  "derivedPublicTradeStream": true,
+  "episodeObservationDigest": "legacy",
+  "fullSizeNextCapacityPending": true,
+  "independentTestUsed": false,
+  "nextLearnerStarted": false,
+  "observationConformance": "entity-identities-real-source-001.json",
+  "observedUtc": "2026-10-20T04:22:25.598389+00:00",
+  "oldControllerCancelledAndExitVerified": true,
+  "oldTrainerAcceptedUpdates": 196,
+  "oldTrainerCreation": 134369365072535753,
+  "oldTrainerLastEvent": "closed_episode_rollout_chunk",
+  "oldTrainerPid": 11404,
+  "oldTrainerTotalDecisions": 179381,
+  "oldTrainerVerifiedAlive": true,
+  "packedDigestEnabled": false,
+  "productionChanged": false,
+  "sourceCommit": "157c873a3ac6970a9fc975acff21d774bee66b5f",
+  "sourcePinsVerified": true,
+  "specSha256": "46bff86c7a44ac86ad2a1380aa7c606091fef77c2da41bc2d6af649135507699"
+}

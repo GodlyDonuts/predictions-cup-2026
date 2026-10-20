@@ -1,3 +1,5 @@
+[Latest checked identity cache and queue004](entity-identity-cache-20261020.md). Earlier source/queue observations below are historical.
+
 # Recorded public trades reach actor flow through the derived stream
 
 The current API adapter records public prints in server-side trade history, but previously exposed them to actor flow only after paid REST requests. The cached official October19OpenAPI `/realtime/token` description includes public trades in authorized market batches (canonical SHA256fbdf23e54d317392f9fb4a659b9511a01fad065e7a384f28091ef04894a732c9). This missing information path is now an explicit `derived_public_trade_stream=true` profile. It requires the existing derived-stream mode; the default remains false.
