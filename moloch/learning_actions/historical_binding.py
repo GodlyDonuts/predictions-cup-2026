@@ -2,7 +2,8 @@
 from .historical_samples import Samples, Delivery
 from .historical_candles import CandleHistory
 from .historical_kalshi import KalshiHistory
-from .historical_delivery import register_candles, register_kalshi, register_polymarket
+from .historical_sig_trades import SigTradeHistory
+from .historical_delivery import register_candles, register_kalshi, register_polymarket, register_sig_trades
 from moloch.learning_realism.protocol import valid_sha
 
 
@@ -23,6 +24,14 @@ def validate(config):
             if type(spec.get('information_start_ms')) is not int or spec['information_start_ms'] < 0:
                 raise ValueError('EXPLICIT_PUBLIC_HISTORY_LOWER_BOUND')
             Delivery(**spec['delivery'])
+            if venue == 'SIG' and 'trade_information' in spec:
+                extra=spec['trade_information']
+                if (not isinstance(extra,dict) or not isinstance(extra.get('path'),str)
+                        or not valid_sha(extra.get('manifest_sha256'))
+                        or type(extra.get('information_start_ms')) is not int
+                        or extra['information_start_ms']<0):
+                    raise ValueError('PINNED_SIG_TRADE_INFORMATION_SOURCE')
+                Delivery(**extra['delivery'])
             if venue != 'SIG':
                 mapping = spec.get('mapping')
                 if not isinstance(mapping, dict) or not mapping:
@@ -54,6 +63,13 @@ class HistoryBindings:
                     opened[venue] = cls(spec['path'], spec['manifest_sha256'],
                         scoring_bounds=bounds, information_start_ms=spec['information_start_ms'],
                         delivery=Delivery(**spec['delivery']))
+                extra=self.config['roles'][role]['SIG'].get('trade_information')
+                if extra is not None:
+                    opened['SIGTrades']=SigTradeHistory(extra['path'],extra['manifest_sha256'],
+                        scoring_bounds=bounds,information_start_ms=extra['information_start_ms'],
+                        delivery=Delivery(**extra['delivery']))
+                    if opened['SIGTrades'].exchanges != opened['SIG'].exchanges:
+                        raise ValueError('MATCHED_SIG_HISTORY_CONTRACT_SCOPES')
             except BaseException:
                 for reader in opened.values():
                     reader.close()
@@ -62,6 +78,7 @@ class HistoryBindings:
         readers = self.readers[key]
         sources = self.config['roles'][role]
         register_candles(env, readers['SIG'])
+        if 'SIGTrades' in readers:register_sig_trades(env,readers['SIGTrades'])
         register_kalshi(env, readers['Kalshi'], sources['Kalshi']['mapping'])
         register_polymarket(env, readers['Polymarket'], sources['Polymarket']['mapping'])
 

@@ -37,6 +37,22 @@ def wait():
 
 
 class HistoricalNeuralTests(unittest.TestCase):
+    def test_sig_public_prints_use_paid_budget_and_keep_null_price_unknown(self):
+        e=environment();key=('historical_trades','840','m','YES')
+        row={'source_at_ms':0,'simulated_available_at_ms':1,'fact_sha256':'a'*64,
+             'trade':{'id':'4','price':None,'volume':'12.345','size':10,'side':'NO'}}
+        e.register_history('SIG',key,lambda now:[row])
+        self.assertEqual(e.request_observation('SIG',key)['status'],'IN_FLIGHT')
+        self.assertEqual(e.request_observation('SIG',key)['status'],'BUSY')
+        e.advance(1000);view=e.observe()
+        ids=[i for i,(kind,_) in enumerate(view['entities']) if kind=='historical_record']
+        self.assertEqual(len(ids),1)
+        h=view['contracts'][ids[0],OLD:]
+        self.assertFalse(h[21:28].any())
+        self.assertEqual(h[44],1)
+        self.assertFalse(h[39:43].any())
+        self.assertFalse(e.api_fills)
+
     def setUp(self):
         torch.set_num_threads(1)
         torch.manual_seed(902)

@@ -17,6 +17,13 @@ def config():
 
 
 class HistoricalBindingTests(unittest.TestCase):
+    def test_sig_trade_source_requires_explicit_pins(self):
+        spec=config();spec['roles']['train']['SIG']['trade_information']={}
+        with self.assertRaisesRegex(ValueError,'PINNED_SIG_TRADE'):validate(spec)
+        extra={k:v for k,v in spec['roles']['train']['SIG'].items() if k!='trade_information'}
+        spec['roles']['train']['SIG']['trade_information']=extra
+        validate(spec)
+
     def test_missing_venue_and_unpinned_sources_fail(self):
         for change in ('venue', 'sha', 'mapping', 'provenance'):
             spec = config()

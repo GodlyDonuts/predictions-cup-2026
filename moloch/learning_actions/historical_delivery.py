@@ -17,10 +17,10 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
         self.known_historical_information = {}
 
     def register_history(self, venue, key, provider):
-        expected = {'SIG': 'historical_candles', 'Kalshi': 'historical_trades',
-                    'Polymarket': 'historical_sample'}
+        expected = {'SIG': ('historical_candles','historical_trades'), 'Kalshi': ('historical_trades',),
+                    'Polymarket': ('historical_sample',)}
         if (venue not in expected or not isinstance(key, tuple) or len(key) != 4
-                or key[0] != expected[venue] or not all(isinstance(x, str) and x for x in key)):
+                or key[0] not in expected[venue] or not all(isinstance(x, str) and x for x in key)):
             raise ValueError('EXPLICIT_HISTORICAL_INFORMATION_TARGET')
         if self.feed_sequence or self.known_historical_information:
             raise ValueError('HISTORY_CATALOG_MUST_PRECEDE_FIRST_REQUEST')
@@ -99,6 +99,12 @@ class HistoricalInformationTape(ApiAffordanceTape):
 def register_candles(env, reader):
     for exchange, market in reader.exchanges.items():
         env.register_history('SIG', ('historical_candles', exchange, market, 'YES'),
+                             lambda now, ex=exchange: reader.page(ex, now))
+
+
+def register_sig_trades(env, reader):
+    for exchange, market in reader.exchanges.items():
+        env.register_history('SIG', ('historical_trades', exchange, market, 'YES'),
                              lambda now, ex=exchange: reader.page(ex, now))
 
 

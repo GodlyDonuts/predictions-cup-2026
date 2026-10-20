@@ -72,6 +72,14 @@ def encode(venue, key, receipt, row, ordinal, now):
             raise ValueError('CANDLE_CLOSE_MUST_PRECEDE_PUBLICATION')
         prices[:5] = [row.get(k) for k in ('open', 'high', 'low', 'close', 'vwap')]
         volume, count = row['volume'], row['tradeCount']
+    elif key[0] == 'historical_trades' and venue == 'SIG':
+        trade = row['trade']
+        # A public print's outcome price is not a bid/ask or executable quote.
+        # Null stays unknown; side is an outcome, not inferred aggressor side.
+        prices[3] = trade['price']
+        volume, count = trade['volume'], trade['size']
+        event = row['fact_sha256']
+        h[43:45] = [trade['side'] == 'YES', trade['side'] == 'NO']
     elif key[0] == 'historical_trades':
         trade = row['trade']
         prices[5:] = [trade.get('yes_price_dollars'), trade.get('no_price_dollars')]
