@@ -26,7 +26,11 @@ struct Plan {
 }
 #[derive(Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Backfill { output:PathBuf, from:String, maximum_requests:usize, #[serde(default)] kind:HistoryKind }
+struct Backfill { output:PathBuf, from:String, maximum_requests:usize, #[serde(default)] kind:HistoryKind,
+    #[serde(default)] resume_completed:Option<ResumeCompleted> }
+#[derive(Deserialize)]
+#[serde(rename_all="camelCase",deny_unknown_fields)]
+struct ResumeCompleted { directory:PathBuf, index_sha256:String }
 #[derive(Deserialize,Default,PartialEq)]
 #[serde(rename_all="snake_case")]
 enum HistoryKind { #[default] Candles, Trades }
@@ -76,6 +80,7 @@ fn prepare(plan: &Plan) -> Result<(Config, Guard, PathBuf, Value)> {
         require(start>=0&&start%60000==0&&start<end,"HISTORY_BACKFILL_RANGE")?;
         require(job.output.is_absolute()&&job.maximum_requests>0&&job.maximum_requests<=50000,"HISTORY_BACKFILL_BOUND")?;
         require(plan.response_evidence.is_none(),"BACKFILL_HAS_PER_PAGE_EVIDENCE")?;
+        require(job.resume_completed.is_none()||job.kind==HistoryKind::Trades,"TRADE_RESUME_ONLY")?;
     }
     let shared=binding.root.parent().ok_or("ORIGINAL_SHARED_ROOT")?;
     let guard=Guard { control:plan.control_file.clone(),control_hash:plan.control_sha256.clone(),
@@ -128,16 +133,75 @@ fn page_cursor(receipt:&Value,requested:&str,floor:i64)->Result<Option<String>> 
 }
 
 #[cfg(unix)]
+fn disk_headroom(path:&Path)->Result<()> {
+    let output=std::process::Command::new("df").args(["--output=avail","-B1","--"]).arg(path).output()?;
+    require(output.status.success(),"HISTORY_DISK_QUERY_FAILED")?;
+    let text=std::str::from_utf8(&output.stdout)?;
+    let free:u64=text.lines().last().ok_or("HISTORY_DISK_VALUE")?.trim().parse()?;
+    require(free>4*1024*1024*1024,"HISTORY_MINIMUM_FOUR_GIB_HEADROOM")
+}
+
+// Copy only fully completed scopes from a hash-pinned previous index. The
+// incomplete scope is reread from its beginning; its original evidence remains.
+fn completed_prefix(plan:&Plan,job:&Backfill,exchanges:&[String])->Result<Vec<Value>> {
+    let Some(source)=&job.resume_completed else{return Ok(Vec::new())};
+    require(source.directory.is_absolute()&&source.directory.canonicalize()?==source.directory,"CANONICAL_RESUME_DIRECTORY")?;
+    let raw=fs::read(source.directory.join("index.jsonl"))?;
+    require(hash(&raw)==source.index_sha256&&raw.ends_with(b"\n"),"PINNED_COMPLETE_RESUME_INDEX")?;
+    let mut result=Vec::new();let mut pending=Vec::new();let mut scope=0usize;
+    let mut cursor:Option<String>=None;let mut seen=std::collections::BTreeSet::new();
+    for (n,line) in std::str::from_utf8(&raw)?.lines().enumerate() {
+        let row:Value=serde_json::from_str(line)?;
+        require(scope<exchanges.len()&&row["page"]==n&&row["exchangeId"]==exchanges[scope]
+            &&row["fromInclusive"]==job.from&&row["throughExclusive"]==plan.through
+            &&row["requestCursor"]==json!(cursor),"RESUME_EXACT_SCOPE_AND_CURSOR_CHAIN")?;
+        let name=format!("page-{n:06}-validated.json");
+        require(row["file"]==name,"RESUME_EXACT_RECEIPT_NAME")?;
+        let path=source.directory.join(&name);
+        require(!fs::symlink_metadata(&path)?.file_type().is_symlink(),"REGULAR_RESUME_RECEIPT")?;
+        let bytes=fs::read(path)?;require(row["sha256"]==hash(&bytes),"RESUME_RECEIPT_HASH")?;
+        let receipt:Value=serde_json::from_slice(&bytes)?;
+        let trades=receipt["data"]["data"].as_array().ok_or("RESUME_TRADE_ARRAY")?;
+        require(row["trades"]==trades.len()&&row["nextCursor"]==receipt["data"]["pagination"]["nextCursor"],"RESUME_RECEIPT_COUNTS_AND_CURSOR")?;
+        let next=row["nextCursor"].as_str().map(str::to_string);
+        require(if let Some(c)=&next {receipt["data"]["pagination"]["hasMore"]==true&&seen.insert(c.clone())}
+                else {row["nextCursor"].is_null()&&receipt["data"]["pagination"]["hasMore"]==false},"RESUME_CURSOR_PROGRESS")?;
+        pending.push(row);cursor=next;
+        if cursor.is_none(){result.append(&mut pending);scope+=1;seen.clear();}
+    }
+    Ok(result)
+}
+
+#[cfg(unix)]
 fn trade_backfill(plan:&Plan,job:&Backfill,exchanges:Vec<String>,sdk:&mut api::Transport)->Result<Value>{
     use std::{io::Write,collections::BTreeSet};
+    let inherited=completed_prefix(plan,job,&exchanges)?;
     fs::create_dir(&job.output)?;
+    disk_headroom(&job.output)?;
     let mut index=fs::OpenOptions::new().write(true).create_new(true).open(job.output.join("index.jsonl"))?;
     let(mut requests,mut trades,mut complete,mut bytes)=(0usize,0usize,0usize,0u64);
-    for exchange in exchanges {
+    if let Some(source)=&job.resume_completed {
+        for row in &inherited {
+            let n=row["page"].as_u64().ok_or("RESUME_PAGE")?;
+            for suffix in ["parsed","validated"] {
+                let name=format!("page-{n:06}-{suffix}.json");let old=source.directory.join(&name);
+                require(!fs::symlink_metadata(&old)?.file_type().is_symlink(),"REGULAR_RESUME_SOURCE")?;
+                // Same-filesystem immutable receipt links avoid needless copies.
+                fs::hard_link(&old,job.output.join(&name))?;bytes+=fs::metadata(&old)?.len();
+            }
+            trades+=row["trades"].as_u64().ok_or("RESUME_TRADES")? as usize;
+            if row["nextCursor"].is_null(){complete+=1;}
+            writeln!(index,"{}",serde_json::to_string(row)?)?;
+        }
+        index.sync_all()?;
+    }
+    let inherited_complete=complete;
+    for exchange in exchanges.into_iter().skip(inherited_complete) {
         let mut cursor:Option<String>=None;let mut cursors=BTreeSet::new();let mut identities=BTreeSet::new();
         loop {
             require(requests<job.maximum_requests&&bytes<8*1024*1024*1024,"HISTORY_TRADE_ACQUISITION_BUDGET_REACHED")?;
-            let n=requests;requests+=1;let evidence=job.output.join(format!("page-{n:06}-parsed.json"));
+            disk_headroom(&job.output)?;
+            let n=inherited.len()+requests;requests+=1;let evidence=job.output.join(format!("page-{n:06}-parsed.json"));
             let receipt=sdk.request_historical_trade_page(exchange.clone(),job.from.clone(),plan.through.clone(),cursor.as_deref(),&evidence)?;
             let rows=receipt.data["data"].as_array().ok_or("HISTORY_TRADE_ARRAY")?;
             for row in rows {require(identities.insert(hash(&serde_json::to_vec(row)?)),"HISTORY_TRADE_CURSOR_OVERLAP")?;}
@@ -155,7 +219,7 @@ fn trade_backfill(plan:&Plan,job:&Backfill,exchanges:Vec<String>,sdk:&mut api::T
     }
     let result=json!({"classification":"historical_public_trade_tape_not_owned_fills_or_books","requests":requests,"trades":trades,
         "exchangesComplete":complete,"fromInclusive":job.from,"throughExclusive":plan.through,"trainingAdmitted":false,
-        "financialExecution":false,"receiptBytes":bytes});
+        "financialExecution":false,"receiptBytes":bytes,"inheritedPages":inherited.len(),"inheritedCompleteExchanges":inherited_complete});
     let mut out=fs::OpenOptions::new().write(true).create_new(true).open(job.output.join("complete.json"))?;
     out.write_all(&serde_json::to_vec(&result)?)?;out.sync_all()?;Ok(result)
 }
@@ -211,6 +275,30 @@ mod tests {
     use super::*;
     use std::sync::atomic::{AtomicU64,Ordering};
     static NEXT:AtomicU64=AtomicU64::new(0);
+    #[test]fn resume_imports_only_complete_scopes_and_rejects_tampered_receipts(){
+        let(p,plan)=fixture();let source=p.join("old");fs::create_dir(&source).unwrap();
+        let exchanges=vec!["2".to_string(),"3".to_string()];let mut lines=String::new();
+        for (n,next) in [Value::Null,json!("next")].into_iter().enumerate(){
+            let receipt=serde_json::to_vec(&json!({"data":{"data":[],"pagination":{"nextCursor":next,"hasMore":!next.is_null()}}})).unwrap();
+            let name=format!("page-{n:06}-validated.json");fs::write(source.join(&name),&receipt).unwrap();
+            lines.push_str(&format!("{}\n",json!({"page":n,"exchangeId":exchanges[n],"fromInclusive":"2026-09-01T00:00:00Z","throughExclusive":plan.through,"requestCursor":null,"nextCursor":next,"file":name,"sha256":hash(&receipt),"trades":0})));
+        }
+        fs::write(source.join("index.jsonl"),&lines).unwrap();
+        let job=Backfill{output:p.join("new"),from:"2026-09-01T00:00:00Z".into(),maximum_requests:10,kind:HistoryKind::Trades,
+            resume_completed:Some(ResumeCompleted{directory:source.clone(),index_sha256:hash(lines.as_bytes())})};
+        let rows=completed_prefix(&plan,&job,&exchanges).unwrap();assert_eq!(rows.len(),1);assert_eq!(rows[0]["exchangeId"],"2");
+        fs::write(source.join("page-000000-validated.json"),b"tampered").unwrap();
+        assert!(completed_prefix(&plan,&job,&exchanges).unwrap_err().to_string().contains("RECEIPT_HASH"));cleanup(p);
+    }
+    #[test]fn resume_index_hash_and_scope_must_match(){
+        let(p,plan)=fixture();let source=p.join("old");fs::create_dir(&source).unwrap();
+        let raw=b"{}\n";fs::write(source.join("index.jsonl"),raw).unwrap();
+        let mut job=Backfill{output:p.join("new"),from:"2026-09-01T00:00:00Z".into(),maximum_requests:10,kind:HistoryKind::Trades,
+            resume_completed:Some(ResumeCompleted{directory:source,index_sha256:"0".repeat(64)})};
+        assert!(completed_prefix(&plan,&job,&["2".into()]).unwrap_err().to_string().contains("PINNED_COMPLETE"));
+        job.resume_completed.as_mut().unwrap().index_sha256=hash(raw);
+        assert!(completed_prefix(&plan,&job,&["2".into()]).unwrap_err().to_string().contains("SCOPE_AND_CURSOR"));cleanup(p);
+    }
     fn fixture()->(PathBuf,Plan){
         let p=std::env::temp_dir().join(format!("sig-history-read-{}-{}",std::process::id(),NEXT.fetch_add(1,Ordering::Relaxed)));
         fs::create_dir(&p).unwrap();let p=p.canonicalize().unwrap();let live=p.join("live-production-v1");fs::create_dir(&live).unwrap();
