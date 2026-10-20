@@ -1,0 +1,122 @@
+{
+  "classification": "recorded_book_lookup_microbenchmark_not_end_to_end_training_or_ROI",
+  "recordedRows": 5000,
+  "sourceRowBodiesSha256": "6bb33a707e127ace9744b8ec4956781a688b43365a4830c4ba943c094675aa0a",
+  "cacheManifestSha256": "f066e68bbf40fa5c70386054e517eabe29ad9b2b3ad24aaae258fc8f97387957",
+  "allBookValuesIdentical": true,
+  "results": [
+    {
+      "worldClock": false,
+      "repeat": 0,
+      "mode": "legacy",
+      "seconds": 0.6617702000003192,
+      "extraRowDecodes": 5000,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": false,
+      "repeat": 0,
+      "mode": "reuse",
+      "seconds": 0.2149522999970941,
+      "extraRowDecodes": 0,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": false,
+      "repeat": 1,
+      "mode": "reuse",
+      "seconds": 0.10893119999673218,
+      "extraRowDecodes": 0,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": false,
+      "repeat": 1,
+      "mode": "legacy",
+      "seconds": 0.6835547000009683,
+      "extraRowDecodes": 5000,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": false,
+      "repeat": 2,
+      "mode": "legacy",
+      "seconds": 0.6707666000002064,
+      "extraRowDecodes": 5000,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": false,
+      "repeat": 2,
+      "mode": "reuse",
+      "seconds": 0.11287109999830136,
+      "extraRowDecodes": 0,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": true,
+      "repeat": 0,
+      "mode": "legacy",
+      "seconds": 0.6711146000016015,
+      "extraRowDecodes": 5000,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": true,
+      "repeat": 0,
+      "mode": "reuse",
+      "seconds": 0.11875989999680314,
+      "extraRowDecodes": 0,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": true,
+      "repeat": 1,
+      "mode": "reuse",
+      "seconds": 0.11178220000147121,
+      "extraRowDecodes": 0,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": true,
+      "repeat": 1,
+      "mode": "legacy",
+      "seconds": 0.6478434000018751,
+      "extraRowDecodes": 5000,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": true,
+      "repeat": 2,
+      "mode": "legacy",
+      "seconds": 0.6710087999963434,
+      "extraRowDecodes": 5000,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    },
+    {
+      "worldClock": true,
+      "repeat": 2,
+      "mode": "reuse",
+      "seconds": 0.11711680000007618,
+      "extraRowDecodes": 0,
+      "bookValuesSha256": "46281b68982127a9313cc233bd6194d9d62f93e413b8b610f818860692290701",
+      "cacheCapacity": 512
+    }
+  ],
+  "independentTestUsed": false,
+  "accountRequests": 0,
+  "productionChanged": false,
+  "sourceCommit": "b9e2fda46d4c50daa8de736f57bc72bff683879b",
+  "cpuChecksPassed": 37
+}

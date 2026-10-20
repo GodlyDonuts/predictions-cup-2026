@@ -1,0 +1,22 @@
+{
+  "classification": "candidate_source_replay_of_original_sealed_actions_not_policy_ROI",
+  "candidateCommit": "b9e2fda46d4c50daa8de736f57bc72bff683879b",
+  "changedSourceFiles": [
+    "moloch/learning_actions/disk_tape.py",
+    "moloch/learning_actions/snapshot_clock.py"
+  ],
+  "originalExperimentSha256": "50f8504ea78e30e9b3a3756bf04a1167271c9107c22ea6dedc2326bd15a4dc38",
+  "episodeManifestSha256": "ac2efe07810d20660591f470657a7d98473ae630f1e93f668307a9c87582ef1d",
+  "configurationSha256": "aece0a99e5d8a74b501fdd5ce0e22f912b920eaa0d196e9620691d6bdb2b26af",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "worlds": 8,
+  "decisions": 3880,
+  "batches": 49,
+  "preparationSeconds": 39.06282680000004,
+  "replaySeconds": 216.30102730000362,
+  "allOriginalObservationClockRewardFinancialHashesPassed": true,
+  "newPolicyInference": false,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

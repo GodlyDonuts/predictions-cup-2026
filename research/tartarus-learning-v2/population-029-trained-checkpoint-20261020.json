@@ -1,0 +1,19 @@
+{
+  "observedUtc": "2026-10-20T23:29:38.746843+00:00",
+  "classification": "loadable_post_training_checkpoint_not_selection_or_profitability_proof",
+  "run": "raw-api-growth-development-029",
+  "checkpointName": "cycle-000-member-000.pt",
+  "checkpointSha256": "df99e3bec706d7902eaee0d7038bc2574f4b0d801791b9de0da6550cbf03a660",
+  "checkpointBytes": 63229309,
+  "modelParameters": 5272685,
+  "optimizerMaximumStep": 33,
+  "allModelParametersFinite": true,
+  "originalDatasetAndExperimentPinsMatch": true,
+  "completedRolloutDecisions": 3880,
+  "committedOptimizerUpdates": 33,
+  "deviceLoadedForVerification": "cpu",
+  "noNewCudaContext": true,
+  "selectionCompleted": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

@@ -60,3 +60,17 @@ At **23:20:44 UTC**, sole GPU process **10104** had collected **1,142 decisions*
 A live Python stack identified the role metadata check in `Store.world_view` as a startup delay. SQLite chose the contract-first index, causing scattered full-row reads. Checked source `85ef1450` forces the existing chronological index for the identical missing-metadata predicate. On the complete fit window, the forced query returned the same expected zero count in **2.75 seconds**. No matched before/after timing ratio is claimed. Thirteen disk replay checks passed, including rejection of a missing original clock inside its exact role and exclusion of the same row outside that role.
 
 This fix is **not hot-patched into frozen population 029**. That run continues with its original source and trajectories. A 15-second profile of collection also found substantial JSON decoding and disk-book reconstruction overhead; optimizing it requires separate parity evidence. It is not evidence that extra GPU utilization would improve the model's return.
+
+## Decoded-book reuse, checked separately
+
+Source `b9e2fda46d4c50daa8de736f57bc72bff683879b` constructs bounded cached books directly from the exact original row already decoded by a disk source cursor. Eager tapes retain their identity-keyed mapping. Both information and hidden-world clocks, validation, provenance, price levels and the 512-book cache bound remain unchanged.
+
+On 5,000 recorded SIG rows, three alternating trials per mode gave median book-lookup times of **0.671→0.113 seconds** for information clocks and **0.671→0.117 seconds** for world clocks: approximately **5.9× / 5.7× for this lookup only**. Every Book-value digest matched; redundant row decodes fell from 5,000 to zero per trial. This is not an end-to-end training speed claim. See `book-row-reuse-result-20261020.json` and `population-029-python-profile-20261020.json`.
+
+Thirty-seven CPU replay, clock and managed-service checks passed. A separate CPU job **completed** replay of population 029's actual first sealed cohort with the candidate source: **all 3,880 decisions / 49 batches / eight worlds** passed the original observation tensors, action clocks, rewards and financial hashes. Preparation took 39.06 seconds and replay 216.30 seconds; there is no matched end-to-end speed ratio. The only permitted source differences were `disk_tape.py` and `snapshot_clock.py`; the original-source diagnostic's guard was not weakened. See `book-row-reuse-cohort-parity-20261020.json`. Population 029 continues unchanged on the GPU.
+
+## First trained checkpoint, 23:29 UTC
+
+The complete first cohort passed frozen-source replay and committed **33 optimizer updates**. The resulting `cycle-000-member-000.pt` is 63,229,309 bytes, SHA-256 `df99e3bec706d7902eaee0d7038bc2574f4b0d801791b9de0da6550cbf03a660`. A separate CPU reload verified all **5,272,685 parameters** are finite, the original dataset/experiment pins match and the maximum recorded optimizer step is 33. See `population-029-trained-checkpoint-20261020.json`.
+
+This proves a loadable trained checkpoint, **not selection success or profit**. The two-day nominal/stressed development comparison remains pending. Source coverage limits, development-only qualification and the untouched independent reservation remain unchanged. At 23:30 UTC the sole prospective SIG collector was capturing segment 18, with 18 completed segments; server free space was 12.74 GB, so storage preservation needs continued observation before the four-day capture completes.

@@ -1,0 +1,62 @@
+{
+  "classification": "Python_stack_samples_not_GPU_compute_time_or_ROI",
+  "sourceCommit": "f4df828db9fe70240e887905450400da60bea4f7",
+  "actualGpuOwnerPid": 10104,
+  "durationSeconds": 15,
+  "samplingHz": 50,
+  "samples": 749,
+  "samplingErrors": 0,
+  "rawProfileSha256": "35f8fe83cbdd3360f772692bce4e0fa936cf6f3499d5871f7a0b051bbabc0515",
+  "topLeafFrames": [
+    {
+      "frame": "raw_decode (json\\decoder.py:354)",
+      "samples": 126
+    },
+    {
+      "frame": "__getitem__ (learning_actions\\disk_tape.py:168)",
+      "samples": 68
+    },
+    {
+      "frame": "__getitem__ (learning_actions\\disk_tape.py:169)",
+      "samples": 58
+    },
+    {
+      "frame": "_deepcopy_tuple (copy.py:208)",
+      "samples": 38
+    },
+    {
+      "frame": "query (learning_actions\\disk_tape.py:217)",
+      "samples": 36
+    },
+    {
+      "frame": "_remember (learning_realism\\replay.py:41)",
+      "samples": 30
+    },
+    {
+      "frame": "_deepcopy_tuple (copy.py:201)",
+      "samples": 26
+    },
+    {
+      "frame": "__post_init__ (learning_v2\\liquidity.py:30)",
+      "samples": 20
+    },
+    {
+      "frame": "query (learning_actions\\disk_tape.py:222)",
+      "samples": 15
+    },
+    {
+      "frame": "__post_init__ (learning_v2\\liquidity.py:33)",
+      "samples": 14
+    },
+    {
+      "frame": "query (learning_actions\\disk_tape.py:219)",
+      "samples": 13
+    },
+    {
+      "frame": "deepcopy (copy.py:136)",
+      "samples": 12
+    }
+  ],
+  "productionChanged": false,
+  "independentTestUsed": false
+}
