@@ -1,3 +1,5 @@
+[Current queued source5115a4fa includes redundant-bootstrap removal](closed-bootstrap-elision-20261019.md). The v1queue records below are historical and were superseded without stopping GPU020. New queue evidence is [002](population-021-queued-002.json).
+
 # Use later sealed minibatches after a rejected optimizer step
 
 GPU020's first cohort collected149 minibatches but optimized only the first four: three accepted updates and one rejected update. The previous early-return path then abandoned the remaining145. Its second cohort accepted22of22, so this is a conditional utilization problem, not a claim that all training was blocked.

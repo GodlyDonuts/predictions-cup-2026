@@ -1,4 +1,4 @@
-[Current ML: GPU020 active; GPU021 queued to use later sealed minibatches after rejected steps](episode-rejection-continuation-20261019.md). Verified74,466decisions/37updates, three flat/negative selections;367CPU checks pass. Queued sourceccccdf18 is not yet active. Full history/API calibration, longer-horizon selection and independent positive ROI remain unproved. Older observations below are historical.
+[Current ML: GPU020 active; GPU021 source5115a4fa queued](closed-bootstrap-elision-20261019.md). Verified89,646decisions/131accepted updates and four flat/negative development selections. Controller18544 waits for the completed generation; next GPU capacity/startup pending. Full history/API calibration/independent positive ROI remain incomplete. Earlier observations below are historical.
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 

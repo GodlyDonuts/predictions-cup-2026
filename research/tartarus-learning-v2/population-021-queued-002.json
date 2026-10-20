@@ -1,0 +1,83 @@
+{
+  "classification": "verified_waiting_bootstrap_free_next_population_not_active_profile_or_roi",
+  "committedCohorts": [
+    {
+      "accepted": 3,
+      "attempted": 4
+    },
+    {
+      "accepted": 22,
+      "attempted": 22
+    },
+    {
+      "accepted": 12,
+      "attempted": 13
+    },
+    {
+      "accepted": 94,
+      "attempted": 94
+    }
+  ],
+  "completedSelections": [
+    {
+      "file": "result-000-000.json",
+      "reward": 0.0
+    },
+    {
+      "file": "result-000-001.json",
+      "reward": -0.21889879181634642
+    },
+    {
+      "file": "result-000-002.json",
+      "reward": -0.15751318505027387
+    },
+    {
+      "file": "result-000-003.json",
+      "reward": -0.34421947915658196
+    }
+  ],
+  "controllerCommandVerified": true,
+  "controllerLauncherPid": 35128,
+  "controllerStatus": {
+    "cycle": 0,
+    "independentTestUsed": false,
+    "observedUtc": "2026-10-20T03:23:53.910825+00:00",
+    "phase": "waiting_for_completed_generation",
+    "productionChanged": false,
+    "trainerPid": 11404
+  },
+  "controllerWorkerPid": 18544,
+  "cpuTestResult": {
+    "seconds": 70.735,
+    "skipped": 4,
+    "success": true,
+    "tests": 369
+  },
+  "fullSizeNextProfileCapacityPending": true,
+  "independentTestUsed": false,
+  "nextLearnerStarted": false,
+  "nextProfile": {
+    "closed_episode_continue_after_kl_rejection": true,
+    "entropy_coefficients": [
+      0.0,
+      0.001,
+      0.003,
+      0.01,
+      0.03
+    ],
+    "entropy_resample_probability": 0.25,
+    "omit_unused_closed_collection_bootstraps": true
+  },
+  "observedUtc": "2026-10-20T03:24:20.450187+00:00",
+  "oldControllerCancelledAndExitVerified": true,
+  "oldTrainerAcceptedUpdates": 131,
+  "oldTrainerCreation": 134369365072535753,
+  "oldTrainerLastEvent": "closed_episode_rollout_chunk",
+  "oldTrainerPid": 11404,
+  "oldTrainerTotalDecisions": 89646,
+  "oldTrainerVerifiedAlive": true,
+  "productionChanged": false,
+  "sourceCommit": "5115a4fa7413f1df22b97d69799a5a2a521584d4",
+  "sourcePinsVerified": true,
+  "specSha256": "960b8122ece56a7221630d328c2e785a6b9d1c003ab94d70e7af4489798bf2d8"
+}

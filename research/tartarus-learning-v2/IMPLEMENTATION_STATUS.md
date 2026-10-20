@@ -1,4 +1,4 @@
-[Current ML: GPU020 active; GPU021 replay/exploration profile queued](episode-rejection-continuation-20261019.md). Sourceccccdf18 passed367CPU checks; actual controller19184 waits for the completed generation. Full-size next-profile capacity/startup remains pending. Full chronology, calibrated API parity and independent positive ROI remain incomplete. Earlier observations below are historical.
+[Current ML: GPU020 active; GPU021 source5115a4fa queued](closed-bootstrap-elision-20261019.md). Verified89,646decisions/131accepted updates and four flat/negative development selections. Controller18544 waits for the completed generation; next GPU capacity/startup pending. Full history/API calibration/independent positive ROI remain incomplete. Earlier observations below are historical.
 
 October19 numerical conditioning: trained-fit diagnostics show62%update-gate saturation; explicit time/count conditioning removes it in the diagnostic and passes188checks/full-size CPU PPO. This is not profitability evidence. Old014continues;pending handoffv1 was cancelled before transition. [Evidence](global-state-conditioning-20261019.md).
 
