@@ -47,6 +47,8 @@ def validate(receipt,path,ticker,start,end):
             raise ValueError('HISTORY_IDENTITY_OR_CLOCK_OUTSIDE_REQUEST')
         if not isinstance(r.get('trade_id'),str) or not r['trade_id']:
             raise ValueError('ORIGINAL_TRADE_ID_REQUIRED')
+        if any(not isinstance(r.get(k),str) for k in ('count_fp','yes_price_dollars','no_price_dollars')):
+            raise ValueError('EXACT_DECIMAL_STRINGS_REQUIRED')
         try:
             n=Decimal(r['count_fp']);yes=Decimal(r['yes_price_dollars']);no=Decimal(r['no_price_dollars'])
             if not(n.is_finite() and n>0 and yes.is_finite() and no.is_finite() and 0<=yes<=1 and 0<=no<=1):
@@ -64,7 +66,16 @@ def fetch(path):
     # No redirect can turn this local request into an independent API client.
     class NoRedirect(urllib.request.HTTPRedirectHandler):
         def redirect_request(self,*args,**kwargs):return None
-    with urllib.request.build_opener(NoRedirect).open(url,timeout=45)as response:
+    try:response=urllib.request.build_opener(NoRedirect).open(url,timeout=45)
+    except urllib.error.HTTPError as e:
+        # Discovery wraps upstream errors in503. Authentication failure is
+        # terminal even though transport/queue congestion can be retried.
+        if e.code==503:
+            try:code=json.loads(e.read(4096)).get('code')
+            except (ValueError,UnicodeError):code=None
+            if code in(401,403):raise PermissionError('EXISTING_COLLECTOR_AUTHORIZATION_FAILED')from None
+        raise
+    with response:
         raw=response.read(12*1024*1024+1)
         if len(raw)>12*1024*1024:raise ValueError('LOCAL_RECEIPT_SIZE_LIMIT')
         return json.loads(raw)

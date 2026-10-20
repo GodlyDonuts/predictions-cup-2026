@@ -1,6 +1,6 @@
-import json,tempfile,unittest
+import io,json,tempfile,unittest,urllib.error
 from pathlib import Path
-from .backfill_kalshi_trades import suffix,validate,recover,digest
+from .backfill_kalshi_trades import suffix,validate,recover,digest,fetch
 
 
 def receipt(path,cursor='',*,clock='2026-10-01T00:00:01Z'):
@@ -54,6 +54,13 @@ class BackfillTests(unittest.TestCase):
             with self.assertRaises(ValueError):recover(root,plan,fetcher=lambda p:receipt(p,'repeat'))
             p=next((Path(root)/'pages').glob('*.json'));r=json.loads(p.read_text());r['bodySha256']='0'*64;p.write_text(json.dumps(r))
             with self.assertRaises(ValueError):recover(root,plan,fetcher=lambda p:self.fail('must verify saved receipt first'))
+
+    def test_wrapped_authorization_failure_is_terminal(self):
+        from unittest.mock import patch,Mock
+        opener=Mock();opener.open.side_effect=urllib.error.HTTPError('http://127.0.0.1',503,'wrapped',{},io.BytesIO(b'{"code":401}'))
+        with patch('urllib.request.build_opener',return_value=opener):
+            with self.assertRaises(PermissionError):fetch(suffix(self.ticker,self.lo,self.hi))
+        self.assertEqual(opener.open.call_count,1)
 
 
 if __name__=='__main__':unittest.main()
