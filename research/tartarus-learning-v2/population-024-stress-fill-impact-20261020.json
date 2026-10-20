@@ -1,0 +1,193 @@
+{
+  "attribution": {
+    "byExchange": {
+      "1002": {
+        "fillMarkImpactTwiceMicros": -181900000,
+        "fills": 2,
+        "markedPnlTwiceMicros": -274520000,
+        "nonFillMarkResidualTwiceMicros": -92620000
+      },
+      "1016": {
+        "fillMarkImpactTwiceMicros": -60000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -60000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "1024": {
+        "fillMarkImpactTwiceMicros": -42320000,
+        "fills": 2,
+        "markedPnlTwiceMicros": -42320000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "1030": {
+        "fillMarkImpactTwiceMicros": -30000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -30000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "1031": {
+        "fillMarkImpactTwiceMicros": -18705000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -18705000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "1059": {
+        "fillMarkImpactTwiceMicros": -30000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -20000,
+        "nonFillMarkResidualTwiceMicros": 10000
+      },
+      "1060": {
+        "fillMarkImpactTwiceMicros": -15000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -15000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "1070": {
+        "fillMarkImpactTwiceMicros": -6006690000,
+        "fills": 8,
+        "markedPnlTwiceMicros": -5125360000,
+        "nonFillMarkResidualTwiceMicros": 881330000
+      },
+      "842": {
+        "fillMarkImpactTwiceMicros": -508940000,
+        "fills": 4,
+        "markedPnlTwiceMicros": -508940000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "873": {
+        "fillMarkImpactTwiceMicros": -176410000,
+        "fills": 2,
+        "markedPnlTwiceMicros": -176410000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "926": {
+        "fillMarkImpactTwiceMicros": -105000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -35000,
+        "nonFillMarkResidualTwiceMicros": 70000
+      },
+      "938": {
+        "fillMarkImpactTwiceMicros": -60000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -60000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "951": {
+        "fillMarkImpactTwiceMicros": -211735000,
+        "fills": 3,
+        "markedPnlTwiceMicros": -211735000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "952": {
+        "fillMarkImpactTwiceMicros": -720000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -720000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "961": {
+        "fillMarkImpactTwiceMicros": -40274400000,
+        "fills": 17,
+        "markedPnlTwiceMicros": -40274400000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "962": {
+        "fillMarkImpactTwiceMicros": -1761205000,
+        "fills": 6,
+        "markedPnlTwiceMicros": -1761205000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "973": {
+        "fillMarkImpactTwiceMicros": -2656325000,
+        "fills": 7,
+        "markedPnlTwiceMicros": -2656325000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "975": {
+        "fillMarkImpactTwiceMicros": -268540000,
+        "fills": 3,
+        "markedPnlTwiceMicros": -268540000,
+        "nonFillMarkResidualTwiceMicros": 0
+      },
+      "997": {
+        "fillMarkImpactTwiceMicros": -19320000,
+        "fills": 1,
+        "markedPnlTwiceMicros": -19320000,
+        "nonFillMarkResidualTwiceMicros": 0
+      }
+    },
+    "classification": "posthoc_inspected_paper_midpoint_attribution_not_executable_roi_or_alpha",
+    "completeAttribution": true,
+    "deliveredBookStateAtFill": {
+      "absent": {
+        "attributedImpactTwiceMicros": -52127510000,
+        "fills": 63,
+        "turnoverMicros": 99999900000,
+        "unattributedFills": 0
+      }
+    },
+    "endMs": 1792418999000,
+    "feesTwiceMicros": 0,
+    "fillCount": 63,
+    "fillMarkImpactTwiceMicros": -52127510000,
+    "grossFillMarkImpactBeforeFeesAndAdverseTwiceMicros": -46335140000,
+    "independentTestUsed": false,
+    "informationTiming": "fill_time_cached_observations_not_proof_of_decision_time_information_or_use",
+    "knownReferenceVenuesAtFill": {
+      "Kalshi": 1,
+      "none": 62
+    },
+    "markedPnlTwiceMicros": -51338720000,
+    "modeledAdverseCostTwiceMicros": 5792370000,
+    "nonFillNetCashChangeTwiceMicros": 0,
+    "nonFillWealthResidualTwiceMicros": 788790000,
+    "origins": {
+      "crossing_book": 63
+    },
+    "productionChanged": false,
+    "roiEstablished": false,
+    "staleMarkExchanges": [
+      "1024",
+      "1030",
+      "997"
+    ],
+    "startMs": 1792416001000,
+    "turnoverMicros": 99999900000,
+    "unavailableBoundaryMarks": [],
+    "wholeEpisodeCompleted": true
+  },
+  "case": 1,
+  "caseEndMs": 1792418999000,
+  "caseStartMs": 1792416001000,
+  "checkpointSha256": "b558c33b0c59dd91f2724faed1d73c1a9a12045ac5e6d14dad12747250006157",
+  "decisions": 2872,
+  "exactInstrumentedControl": true,
+  "familyCounts": {
+    "0": 681,
+    "1": 47,
+    "2": 37,
+    "3": 30,
+    "4": 64,
+    "5": 383,
+    "6": 324,
+    "7": 15,
+    "8": 16,
+    "9": 20,
+    "10": 271,
+    "11": 984
+  },
+  "member": 4,
+  "selectionSeed": 281140,
+  "sourceResultSha256": "b5a55ddd0b2e0375e6394f5cd2f94df02794da2a6f9d7cf9a0623bef5e98db8b",
+  "statusCounts": {
+    "ALARM": 681,
+    "BUILDER_CLEARED": 504,
+    "BUILDER_UPDATED": 476,
+    "IN_FLIGHT": 500,
+    "QUOTE_SELECTION_CLEARED": 2,
+    "QUOTE_SELECTION_UPDATED": 229,
+    "STREAM_DISCONNECTED": 480
+  },
+  "stoppedAtMs": 1792418999000,
+  "stress": true
+}
