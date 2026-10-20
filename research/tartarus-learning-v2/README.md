@@ -1,4 +1,4 @@
-[Current: GPU017 development runs; checked faster actions-only/least-loss018 is queued](actions-only-20261019.md). Full-history coverage and independent ROI remain unproven; [data/exposure audit](history-readiness-20261019.md). Older status statements below are historical. [Optional compact rollout study: exact PPO fields, modest3.7% frozen collection gain; not queued](rollout-statistics-20261019.md).
+[Current: GPU018 recovered and learning; loss diagnosis finds costly crossing fills with limited delivered quote context](loss-diagnosis-and-recovery-20261019.md). Full history and independent positive ROI remain unproven. Earlier runtime statements below are historical.
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 

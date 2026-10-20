@@ -1,0 +1,124 @@
+{
+  "accountRequests": 0,
+  "cases": [
+    {
+      "attribution": {
+        "byExchange": {
+          "915": {
+            "fillMarkImpactTwiceMicros": -9499920000,
+            "fills": 8,
+            "markedPnlTwiceMicros": -9499920000,
+            "nonFillMarkResidualTwiceMicros": 0
+          },
+          "941": {
+            "fillMarkImpactTwiceMicros": -111415000,
+            "fills": 3,
+            "markedPnlTwiceMicros": -111415000,
+            "nonFillMarkResidualTwiceMicros": 0
+          }
+        },
+        "classification": "posthoc_inspected_paper_midpoint_attribution_not_executable_roi_or_alpha",
+        "completeAttribution": true,
+        "deliveredBookStateAtFill": {
+          "invalid": {
+            "attributedImpactTwiceMicros": -111415000,
+            "fills": 3,
+            "turnoverMicros": 292640000,
+            "unattributedFills": 0
+          },
+          "valid": {
+            "attributedImpactTwiceMicros": -9499920000,
+            "fills": 8,
+            "turnoverMicros": 18144860000,
+            "unattributedFills": 0
+          }
+        },
+        "endMs": 1792417617298,
+        "feesTwiceMicros": 0,
+        "fillCount": 11,
+        "fillMarkImpactTwiceMicros": -9611335000,
+        "grossFillMarkImpactBeforeFeesAndAdverseTwiceMicros": -8226715000,
+        "independentTestUsed": false,
+        "informationTiming": "fill_time_cached_observations_not_proof_of_decision_time_information_or_use",
+        "knownReferenceVenuesAtFill": {
+          "none": 11
+        },
+        "markedPnlTwiceMicros": -9611335000,
+        "modeledAdverseCostTwiceMicros": 1384620000,
+        "nonFillNetCashChangeTwiceMicros": 0,
+        "nonFillWealthResidualTwiceMicros": 0,
+        "origins": {
+          "crossing_book": 11
+        },
+        "productionChanged": false,
+        "roiEstablished": false,
+        "staleMarkExchanges": [],
+        "startMs": 1792417500000,
+        "turnoverMicros": 18437500000,
+        "unavailableBoundaryMarks": [],
+        "wholeEpisodeCompleted": false
+      },
+      "case": 3,
+      "caseEndMs": 1792418999000,
+      "caseStartMs": 1792417500000,
+      "checkpointSha256": "646cb6554ac3d09c50bd603ddce25620e9b46dfa44f98ec253cedf5919e239e8",
+      "decisions": 4096,
+      "exactInstrumentedControl": true,
+      "familyCounts": {
+        "0": 1161,
+        "2": 3,
+        "5": 33,
+        "6": 17,
+        "10": 2881,
+        "11": 1
+      },
+      "member": 4,
+      "selectionSeed": 281037,
+      "sourceResultSha256": "da102ab06202347768c4e6674db5bf30bef2c82e8c3aa143ea83c66e4bf8d04a",
+      "statusCounts": {
+        "ALARM": 1161,
+        "BUILDER_UPDATED": 50,
+        "IN_FLIGHT": 2884,
+        "STREAM_DISCONNECTED": 1
+      },
+      "stoppedAtMs": 1792417617298,
+      "stress": true
+    }
+  ],
+  "classification": "bounded_original_source_development_loss_diagnostic_not_independent_roi",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "exactOriginalSourceAndInstrumentedControls": true,
+  "fullCaseResultsNotReplaced": true,
+  "independentTestUsed": false,
+  "optimizerRun": false,
+  "originalCalibration": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 27,
+    "device": "cuda:0",
+    "measured_ms": [
+      26.398699963465333,
+      26.255200034938753,
+      25.72830009739846,
+      25.69979999680072,
+      26.756600011140108,
+      25.803999975323677,
+      25.87299991864711,
+      25.430900044739246,
+      26.610100059770048,
+      11.167700053192675,
+      11.001999955624342,
+      10.999000049196184
+    ]
+  },
+  "originalCalibrationSha256": "419f3bd86440e0eef6eeaf5b32ab81535bb877d0e7dfe3a95caadf7e1736aea4",
+  "productionChanged": false,
+  "recorderSha256": "b360dd34069786e9ca6842b52fdba64b18497e6b5b3a587bd9eab062f6eb5208",
+  "requestedCaseIndices": [
+    3
+  ],
+  "roiEstablished": false,
+  "scriptSha256": "54eb210776f563bd793e00b3b1b891e495822c8798e360bbbce1385d53ee7839",
+  "sourceCommit": "d8fbf96a8db3e91c2e938cbf36ff6df18f9c40a7",
+  "sourceExperimentSha256": "1d270a083f90d8ddda1056e95f2c7892502274fba2384a12655695ed1aeb9260",
+  "stepsPerCaseMaximum": 4096
+}

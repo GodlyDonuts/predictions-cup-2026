@@ -1,4 +1,4 @@
-October19 current: GPU017 remains active; source4ae15439 actions-only/least-loss018 is queued, not started. [Checked performance and pending state](actions-only-20261019.md). Full chronology, calibrated lifecycle and independent positive ROI remain unfinished. Earlier rows below are historical.
+Current: GPU018 is active from checked4ae15439 after017 CUDA OOM. All8 saved members verified; smaller32-step chunks and no concurrent GPU diagnostics. [Loss attribution, recovery and limits](loss-diagnosis-and-recovery-20261019.md). Independent profitable ROI remains unproven; older status rows are historical.
 
 October19 numerical conditioning: trained-fit diagnostics show62%update-gate saturation; explicit time/count conditioning removes it in the diagnostic and passes188checks/full-size CPU PPO. This is not profitability evidence. Old014continues;pending handoffv1 was cancelled before transition. [Evidence](global-state-conditioning-20261019.md).
 

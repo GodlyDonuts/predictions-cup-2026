@@ -1,0 +1,103 @@
+"""Run directly in a fresh process against an original frozen development source.
+
+Only the diagnostic recorder is injected. Original policy, simulator, source
+calendars, case seeds and compute calibration remain bound to the source run.
+"""
+import argparse,copy,hashlib,importlib.util,json,sys
+from pathlib import Path
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--source-root',type=Path,required=True);p.add_argument('--source-run',type=Path,required=True)
+    p.add_argument('--output',type=Path,required=True);p.add_argument('--members',nargs='+',type=int,required=True)
+    p.add_argument('--cases',nargs='+',type=int)
+    p.add_argument('--steps',type=int,default=256);p.add_argument('--device',default='cuda:0')
+    p.add_argument('--memory-fraction',type=float,default=.2);a=p.parse_args()
+    if a.steps<1 or not 0<a.memory_fraction<=1 or len(set(a.members))!=len(a.members):raise ValueError('FINITE_DIAGNOSTIC_SHAPE_REQUIRED')
+    if any(k=='moloch'or k.startswith('moloch.')for k in sys.modules):raise ValueError('RUN_DIAGNOSTIC_DIRECTLY_IN_FRESH_PROCESS')
+    root=a.source_root.resolve();run=a.source_run.resolve();sys.path.insert(0,str(root))
+    import torch
+    from moloch.learning_actions.continue_population import verify_source
+    from moloch.learning_actions.experiment import Experiment
+    from moloch.learning_actions.training import load_checkpoint
+    from moloch.learning_actions.stream import Stream,tensors
+    from moloch.learning_actions.episode_tape import financial_digest,tensor_digest
+    from moloch.learning_actions.episode_training import release_worlds
+    from moloch.learning_actions.selection import frozen
+    source=verify_source(root);raw=(run/'experiment.json').read_bytes();parent=json.loads(raw)
+    if any(parent[k]is not False for k in('full_history_experiment','independent_test_used','production_authority')):
+        raise ValueError('INSPECTED_DEVELOPMENT_SOURCE_ONLY')
+    for file,sha in parent['source_sha256'].items():
+        if hashlib.sha256((root/file).read_bytes()).hexdigest()!=sha:raise ValueError('EXACT_ORIGINAL_RUNTIME_SOURCE_REQUIRED')
+    config=copy.deepcopy(parent['config'])
+    if config['mode']!='inspected_development'or config.get('test_finalist_once',False):raise ValueError('NO_INDEPENDENT_TEST_DIAGNOSTIC')
+    config['device']=a.device;config['cuda_memory_fraction']=a.memory_fraction
+    calibration_raw=(run/'compute-calibration.json').read_bytes();calibration=json.loads(calibration_raw)
+    helper=Path(__file__).with_name('pnl_attribution.py')
+    spec=importlib.util.spec_from_file_location('moloch.learning_actions.pnl_attribution',helper)
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    x=Experiment(config,a.output)
+    try:
+        expected_bounds=parent['actual_evolution_bounds_ms'];records=[]
+        for member in a.members:
+            result_path=run/('result-000-%03d.json'%member);result_raw=result_path.read_bytes();result=json.loads(result_raw)
+            if result['member']!=member or result['selection']['role']!='development_selection':raise ValueError('EXACT_COMPLETED_DEVELOPMENT_RESULT_REQUIRED')
+            model,bundle=load_checkpoint(result['checkpoint']['path'],result['checkpoint']['sha256'],'cpu')
+            if bundle['dataset_manifest_sha256']!=parent['dataset_manifest_sha256']or x.dataset_sha!=parent['dataset_manifest_sha256']:
+                raise ValueError('EXACT_ORIGINAL_DATASET_REQUIRED')
+            del bundle;model=model.to(a.device)
+            indices=list(range(len(result['selection']['cases'])))if a.cases is None else a.cases
+            if len(set(indices))!=len(indices)or any(i<0 or i>=len(result['selection']['cases'])for i in indices):raise ValueError('VALID_ORIGINAL_CASE_INDICES_REQUIRED')
+            for case_index in indices:
+                case=result['selection']['cases'][case_index]
+                lo,hi=case['start_ms'],case['end_ms']
+                if not expected_bounds[0]<=lo<hi<=expected_bounds[1]:raise ValueError('CASE_OUTSIDE_INSPECTED_EVOLUTION')
+                reference=None
+                for instrument in(False,True):
+                    env=x.world('evolution',lo,hi,stress=case['stress'])
+                    torch.manual_seed(case['selection_seed']);stream=Stream(env,model,calibration=calibration)
+                    recorder=module.Attribution(env,historical_last_mark=config.get('development_last_observed_marks',False),
+                        maximum_mark_age_ms=config.get('maximum_mark_age_ms',120000))if instrument else None
+                    try:
+                        trace=[]
+                        for _ in range(a.steps):
+                            if env.now>=env.end:break
+                            trace.append(stream.step())
+                        state={'trace':trace,'finance':financial_digest(env),'knowledge':tensor_digest(tensors(env.observe(),'cpu')),
+                            'rng':bytes((torch.cuda.get_rng_state()if a.device.startswith('cuda')else torch.get_rng_state()).tolist()).hex(),
+                            'hidden':tensor_digest({'hidden':stream.hidden}),'budget':repr(vars(env.budget))}
+                        if not instrument:reference=state
+                        elif state!=reference:
+                            frozen(a.output/'FAILED_CONTROL.json',{'member':member,'case':case_index,
+                                'differentFields':[k for k in state if state[k]!=reference[k]],'productionChanged':False})
+                            raise ValueError('DIAGNOSTIC_CHANGED_ORIGINAL_BEHAVIOR')
+                        else:
+                            record={'member':member,'case':case_index,'stress':case['stress'],'caseStartMs':lo,'caseEndMs':hi,
+                                'selectionSeed':case['selection_seed'],'decisions':stream.decisions,'stoppedAtMs':env.now,
+                                'checkpointSha256':result['checkpoint']['sha256'],
+                                'sourceResultSha256':hashlib.sha256(result_raw).hexdigest(),
+                                'familyCounts':dict(stream.action_counts),'statusCounts':dict(stream.status_counts),
+                                'exactInstrumentedControl':True,'attribution':recorder.summary()}
+                            frozen(a.output/('member-%03d-case-%02d.json'%(member,case_index)),record)
+                            records.append(record)
+                            print(json.dumps({'member':member,'case':case_index,'decisions':stream.decisions,
+                                'fills':record['attribution']['fillCount'],'complete':record['attribution']['completeAttribution']}),flush=True)
+                    finally:
+                        if recorder is not None:recorder.close()
+                        release_worlds([env])
+            del model
+        report={'classification':'bounded_original_source_development_loss_diagnostic_not_independent_roi',
+            'sourceCommit':source['commit'],'sourceExperimentSha256':hashlib.sha256(raw).hexdigest(),
+            'originalCalibration':calibration,'originalCalibrationSha256':hashlib.sha256(calibration_raw).hexdigest(),
+            'scriptSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            'recorderSha256':hashlib.sha256(helper.read_bytes()).hexdigest(),
+            'datasetManifestSha256':parent['dataset_manifest_sha256'],'cases':records,
+            'stepsPerCaseMaximum':a.steps,'requestedCaseIndices':a.cases,'exactOriginalSourceAndInstrumentedControls':True,
+            'fullCaseResultsNotReplaced':True,'optimizerRun':False,'accountRequests':0,
+            'independentTestUsed':False,'productionChanged':False,'roiEstablished':False}
+        frozen(a.output/'RESULT.json',report)
+    finally:x.close()
+
+
+if __name__=='__main__':main()
