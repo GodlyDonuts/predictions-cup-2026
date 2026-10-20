@@ -1,0 +1,49 @@
+{
+  "observedUtc": "2026-10-20T21:48:29.036596+00:00",
+  "classification": "verified_local_originals_and_partial_normalization_not_training_admission",
+  "extraction": {
+    "format": "verified_local_original_sig_inputs_v1",
+    "archiveSha256": "97b67c2016ba1cb27a2e97e94f2dc71d48ee468f452905240ce21591cfb02a80",
+    "archiveManifestSha256": "7ae67e9fe29d9cf2c5da80706f3a21a64d84c7efd519e009e7bf62164fd419da",
+    "offsetManifestSha256": "69ba8109aac8f3e0eb344ffa21208dc12f4d3b9306bcdb865e02bf0c039c3067",
+    "members": 174,
+    "bytesVerified": 18408765787,
+    "allOriginalMemberHashesVerified": true,
+    "marketClocksRenewed": false,
+    "trainingAdmitted": false,
+    "independentTestUsed": false,
+    "productionChanged": false
+  },
+  "localPrefix": {
+    "observations.jsonl.gz": {
+      "rows": 100000,
+      "sha256": "b254afcbceefed0ce9e3f46d7b576af2727195c5ebb5ef4e9dce392d699f403b"
+    },
+    "trade-flow.jsonl.gz": {
+      "rows": 1000,
+      "sha256": "216099d4f5e1485167e650808eacf6623cb22c5cd3991ddc0a7c531f26830034"
+    }
+  },
+  "serverPrefixMatchedBeforeDeliberateServerStop": true,
+  "serverStoppedUtc": "2026-10-20T21:38:15.984741Z",
+  "localSemanticProgress": {
+    "phase": "normalizing_original_frames",
+    "framesCompleted": 80000,
+    "framesTotal": 148181,
+    "counts": {
+      "fit/gap": 17607,
+      "fit/book": 1993932,
+      "fit/trade": 35289,
+      "derived_chain_boundaries": 39,
+      "search/gap": 2233,
+      "search/book": 944712,
+      "search/trade": 9380
+    },
+    "latestReceivedMs": 1792246397608,
+    "accountRequests": 0
+  },
+  "originalsRetained": true,
+  "heldoutOpened": false,
+  "accountRequests": 0,
+  "productionChanged": false
+}

@@ -117,7 +117,7 @@ def register_sig_trades(env, reader):
 
 def register_kalshi(env, reader, mapping):
     """Mapping supplies exact ticker -> (SIG market, side), without equivalence."""
-    for ticker, (market, side) in mapping.items():
+    for ticker, (market, side) in sorted(mapping.items()):
         if ticker not in reader.tickers or side not in ('YES', 'NO'):
             raise ValueError('PINNED_KALSHI_INFORMATION_MAPPING')
         env.register_history('Kalshi', ('historical_trades', ticker, market, side),
@@ -125,7 +125,7 @@ def register_kalshi(env, reader, mapping):
 
 
 def register_polymarket(env, reader, mapping):
-    for asset, (market, side) in mapping.items():
+    for asset, (market, side) in sorted(mapping.items()):
         if side not in ('YES', 'NO'):
             raise ValueError('PINNED_POLYMARKET_INFORMATION_MAPPING')
         env.register_history('Polymarket', ('historical_sample', asset, market, side),

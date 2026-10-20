@@ -17,6 +17,21 @@ def config():
 
 
 class HistoricalBindingTests(unittest.TestCase):
+    def test_historical_target_order_is_independent_of_json_object_key_order(self):
+        from .historical_delivery import register_kalshi,register_polymarket
+        class Env:
+            def __init__(self):self.targets=[]
+            def register_history(self,venue,key,provider):self.targets.append((venue,key))
+        class Reader:
+            tickers={'a','z'}
+            def page(self,*_):return []
+            def at(self,*_):return None
+        a={'z':['m2','NO'],'a':['m1','YES']};b=dict(reversed(list(a.items())))
+        for register in(register_kalshi,register_polymarket):
+            left=Env();right=Env();register(left,Reader(),a);register(right,Reader(),b)
+            self.assertEqual(left.targets,right.targets)
+            self.assertEqual([x[1][1]for x in left.targets],['a','z'])
+
     def test_sig_trade_source_requires_explicit_pins(self):
         spec=config();spec['roles']['train']['SIG']['trade_information']={}
         with self.assertRaisesRegex(ValueError,'PINNED_SIG_TRADE'):validate(spec)
