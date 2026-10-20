@@ -13,3 +13,11 @@ This can improve use of already-collected data. It does not make model forward/b
 The accompanying exploration change separates `population_search.entropy_coefficients` from transferred founder settings. A handoff preserves each parent's actual initial coefficient, while subsequent mutation can sample a persistent configured grid. Without this separation, a population that inherited only zeros could lose access to positive entropy settings again. Omission preserves the previous initial-grid behavior.
 
 GPU020 is frozen and remains unchanged while this source is checked. A subsequent generation should adopt both profiles only after all members and replacements are saved, with selected weights preserved, new experiment/source identity, fresh worlds/optimizer state and measured capacity. This is simulated learning only; production STOP, activation, risk limits and financial state are outside the change.
+
+## Checked adoption queued
+
+Source `ccccdf1874a6271e7788308d75edcaab49265ee3` passed367CPU tests in69.747seconds (four CUDA-only tests skipped) and was pushed/read back on main. The existing generation-boundary controller is now actually running: worker19184, launcher43720, waiting for GPU020cycle0 and all replacements. Its exact command was checked, and the current trainer11404 was independently verified alive by retained process handle and creation identity. [Queue evidence](population-021-queued-001.json) pins source and configuration.
+
+The queued GPU021 keeps the current architecture, eight-world capacity, episode/screen durations and frozen data. It enables rejection continuation, 25% offspring coefficient resampling, and persistent coefficient choices `[0,0.001,0.003,0.01,0.03]`. All eight selected/evolved parent weights and individual founder coefficients will be preserved. Old scores are not reused in the new experiment. New serial capacity checks and verified learner startup remain pending; queued adoption is not an active profile or a completed training run.
+
+At03:09:45UTC the existing GPU020 had74,466decisions and37accepted updates. Three development selections were complete with rewards0,-0.21889879181634642 and-0.15751318505027387. No independent positive ROI was established. The next learner had not started, and no competing GPU training or diagnostic was launched.

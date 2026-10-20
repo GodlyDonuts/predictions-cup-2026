@@ -1,0 +1,59 @@
+{
+  "classification": "verified_live_generation_boundary_wait_not_active_next_profile_or_roi",
+  "completedSelections": [
+    {
+      "file": "result-000-000.json",
+      "reward": 0.0
+    },
+    {
+      "file": "result-000-001.json",
+      "reward": -0.21889879181634642
+    },
+    {
+      "file": "result-000-002.json",
+      "reward": -0.15751318505027387
+    }
+  ],
+  "controllerCommandVerified": true,
+  "controllerLauncherPid": 43720,
+  "controllerStatus": {
+    "cycle": 0,
+    "independentTestUsed": false,
+    "observedUtc": "2026-10-20T03:09:16.875540+00:00",
+    "phase": "waiting_for_completed_generation",
+    "productionChanged": false,
+    "trainerPid": 11404
+  },
+  "controllerWorkerPid": 19184,
+  "cpuTestResult": {
+    "seconds": 69.747,
+    "skipped": 4,
+    "success": true,
+    "tests": 367
+  },
+  "fullSizeNextProfileCapacityPending": true,
+  "independentTestUsed": false,
+  "nextLearnerStarted": false,
+  "nextProfile": {
+    "closed_episode_continue_after_kl_rejection": true,
+    "entropy_coefficients": [
+      0.0,
+      0.001,
+      0.003,
+      0.01,
+      0.03
+    ],
+    "entropy_resample_probability": 0.25
+  },
+  "observedUtc": "2026-10-20T03:09:45.820077+00:00",
+  "oldTrainerAcceptedUpdates": 37,
+  "oldTrainerCreation": 134369365072535753,
+  "oldTrainerLastEvent": "closed_episode_rollout_chunk",
+  "oldTrainerPid": 11404,
+  "oldTrainerTotalDecisions": 74466,
+  "oldTrainerVerifiedAlive": true,
+  "productionChanged": false,
+  "sourceCommit": "ccccdf1874a6271e7788308d75edcaab49265ee3",
+  "sourcePinsVerified": true,
+  "specSha256": "9b5e3a445c32c45b533b1e184a1afc6995e6337a0f0c0d9f038e7e2a914bab66"
+}

@@ -1,4 +1,4 @@
-[Current ML: GPU020 full-return training is verified active](population-020-full-returns-20261019.md). Completed negative/flat-ranked reproduction and all eight founder transfers verify; first actual cohort commits3updates and remains flat. Full history/API calibration, longer-horizon selection and independent positive ROI remain unproved. Older observations below are historical.
+[Current ML: GPU020 active; GPU021 queued to use later sealed minibatches after rejected steps](episode-rejection-continuation-20261019.md). Verified74,466decisions/37updates, three flat/negative selections;367CPU checks pass. Queued sourceccccdf18 is not yet active. Full history/API calibration, longer-horizon selection and independent positive ROI remain unproved. Older observations below are historical.
 
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 
