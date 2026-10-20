@@ -28,6 +28,38 @@ def tensor_digest(tree):
     walk(tree);return digest.hexdigest()
 
 
+def packed_tensor_digest(tree):
+    """Same actual tensor bytes/header order, one bounded device-to-host copy.
+
+    This hashes post-forward tensors, not cached source features. The legacy
+    reader independently verifies the stored digest during reconstruction.
+    """
+    tokens=[];leaves=[];device=None;offset=0
+    def walk(node):
+        nonlocal device,offset
+        if isinstance(node,dict):
+            for key in sorted(node):tokens.append(key.encode());walk(node[key])
+        else:
+            value=node.detach().contiguous()
+            if device is None:device=value.device
+            elif device!=value.device:raise ValueError('ONE_OBSERVATION_DEVICE_REQUIRED')
+            tokens.append((str(value.dtype)+repr(tuple(value.shape))).encode())
+            raw=value.reshape(-1).view(torch.uint8);length=raw.numel()
+            leaves.append(raw);tokens.append((offset,offset+length));offset+=length
+    walk(tree);digest=hashlib.sha256()
+    raw=torch.cat(leaves).cpu().numpy()if leaves else np.empty(0,dtype=np.uint8)
+    data=memoryview(raw)
+    for token in tokens:
+        digest.update(data[token[0]:token[1]]if isinstance(token,tuple)else token)
+    return digest.hexdigest()
+
+
+def observation_digest(mode):
+    if mode=='legacy':return tensor_digest
+    if mode=='packed_bytes_v1':return packed_tensor_digest
+    raise ValueError('EXPLICIT_EPISODE_OBSERVATION_DIGEST_PROFILE')
+
+
 def observation_fields(frame):return {k:frame[k]for k in('contracts','global_state','present','masks')}
 
 
@@ -50,7 +82,8 @@ def array_bytes(tensor):
 
 
 class EpisodeWriter:
-    def __init__(self,path,stream,*,dataset_sha256,specification_sha256):
+    def __init__(self,path,stream,*,dataset_sha256,specification_sha256,observation_digest_mode='legacy'):
+        self.digest=observation_digest(observation_digest_mode)
         if not isinstance(stream,BatchStream)or any(e.role!='train'for e in stream.envs):
             raise ValueError('ONLY_TRAIN_BATCH_EPISODES_MAY_BE_RECORDED')
         if not valid_sha(dataset_sha256)or not valid_sha(specification_sha256):raise ValueError('PINNED_EPISODE_SOURCE_REQUIRED')
@@ -63,6 +96,7 @@ class EpisodeWriter:
             'behavior_contract':contract(stream.model),
             'observation_protocol':stream.model.observation_protocol,'calibration':stream.calibration,
             'world_bounds':[[e.now,e.end]for e in stream.envs],
+            'observation_digest_mode':observation_digest_mode,
             'production_authority':False,'independent_test_used':False}
         self.db=sqlite3.connect(self.path/'episode.sqlite');self.sealed=False;self.batches=0
         self.db.executescript('''
@@ -97,7 +131,7 @@ CREATE INDEX target_world ON targets(world,batch,step);
                     (batch,step,i,int(data['learn'][j]),data['reward'][j],data['old_value'][j]))
             data['after']=[self.clocks[i]for i in worlds]
             self.db.execute('INSERT INTO frames VALUES(?,?,?,?)',(batch,step,json.dumps(data,allow_nan=False),
-                tensor_digest(observation_fields(frame))))
+                self.digest(observation_fields(frame))))
         if any(self.clocks[i]!=e.now for i,e in zip(worlds,envs)):raise ValueError('RECORDED_CHUNK_CLOCK_MISMATCH')
         self.db.commit();self.batches+=1
 

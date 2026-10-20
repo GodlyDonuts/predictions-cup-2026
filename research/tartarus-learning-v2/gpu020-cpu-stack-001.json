@@ -1,0 +1,606 @@
+{
+  "classification": "nonblocking_live_main_thread_stack_sample_not_cpu_utilization_gpu_kernel_profile_or_speedup",
+  "sourceCommit": "544a398627099070d8c4c9e5469091aaa7e118e4",
+  "profiler": "py-spy0.4.2",
+  "requestedSeconds": 15,
+  "requestedSamplesPerSecond": 20,
+  "reportedFailedStackReads": 3,
+  "rawProfileSha256": "ecd7273a2d4bba170b53b09792595ff98c25e92f7b54c93b607657aafeb0425a",
+  "metadata": {
+    "atUtc": "2026-10-20T04:06:31.565643+00:00",
+    "pid": 11404,
+    "creation": 134369365072535753,
+    "run": "C:\\Users\\csram\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\Moloch\\learning-v2\\runs\\raw-api-growth-development-020",
+    "progressBytesBefore": 586879,
+    "progressBytesAfter": 587653,
+    "learnerAliveAfter": true,
+    "profilerReturnCode": 0,
+    "nonblocking": true,
+    "nativeOrGpuProfiling": false,
+    "localsCaptured": false,
+    "productionChanged": false
+  },
+  "beforeSample": {
+    "event": "closed_episode_rollout_chunk",
+    "total_decisions": 158107,
+    "total_updates": 185
+  },
+  "afterSample": {
+    "event": "closed_episode_rollout_chunk",
+    "total_decisions": 158619,
+    "total_updates": 185
+  },
+  "profiles": [
+    {
+      "name": "Thread 42108 \"MainThread\"",
+      "samples": 296,
+      "unit": "seconds",
+      "totalWeight": 14.8,
+      "self": [
+        {
+          "function": "walk",
+          "file": "episode_tape.py",
+          "sampleWeightSeconds": 2.5999999999999988,
+          "fraction": 0.17567567567567557
+        },
+        {
+          "function": "observe",
+          "file": "engine.py",
+          "sampleWeightSeconds": 2.3999999999999995,
+          "fraction": 0.16216216216216212
+        },
+        {
+          "function": "categorical",
+          "file": "acting_validation.py",
+          "sampleWeightSeconds": 1.900000000000001,
+          "fraction": 0.12837837837837845
+        },
+        {
+          "function": "transfer",
+          "file": "packed_io.py",
+          "sampleWeightSeconds": 1.5500000000000007,
+          "fraction": 0.10472972972972977
+        },
+        {
+          "function": "observe",
+          "file": "api_affordances.py",
+          "sampleWeightSeconds": 1.2500000000000004,
+          "fraction": 0.08445945945945948
+        },
+        {
+          "function": "append_rows",
+          "file": "component_execution.py",
+          "sampleWeightSeconds": 0.8000000000000002,
+          "fraction": 0.054054054054054064
+        },
+        {
+          "function": "extend_observation",
+          "file": "full_depth.py",
+          "sampleWeightSeconds": 0.65,
+          "fraction": 0.04391891891891892
+        },
+        {
+          "function": "pad",
+          "file": "functional.py",
+          "sampleWeightSeconds": 0.6,
+          "fraction": 0.040540540540540536
+        },
+        {
+          "function": "collect",
+          "file": "batched.py",
+          "sampleWeightSeconds": 0.49999999999999994,
+          "fraction": 0.03378378378378378
+        },
+        {
+          "function": "extend",
+          "file": "order_pages.py",
+          "sampleWeightSeconds": 0.49999999999999994,
+          "fraction": 0.03378378378378378
+        },
+        {
+          "function": "observe",
+          "file": "bulk_quotes.py",
+          "sampleWeightSeconds": 0.39999999999999997,
+          "fraction": 0.027027027027027025
+        },
+        {
+          "function": "step",
+          "file": "batched.py",
+          "sampleWeightSeconds": 0.25,
+          "fraction": 0.01689189189189189
+        },
+        {
+          "function": "__repr__",
+          "file": "<string>",
+          "sampleWeightSeconds": 0.25,
+          "fraction": 0.01689189189189189
+        },
+        {
+          "function": "_act_from_encoding",
+          "file": "policy.py",
+          "sampleWeightSeconds": 0.15000000000000002,
+          "fraction": 0.010135135135135136
+        },
+        {
+          "function": "record",
+          "file": "episode_tape.py",
+          "sampleWeightSeconds": 0.15000000000000002,
+          "fraction": 0.010135135135135136
+        },
+        {
+          "function": "_act_from_encoding",
+          "file": "query_policy.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "beta",
+          "file": "acting_validation.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "scope",
+          "file": "api_affordances.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "encode",
+          "file": "state_encoding.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "__getitem__",
+          "file": "reference_cache.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "inputs",
+          "file": "batched.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "_deepcopy_tuple",
+          "file": "copy.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "add_targets",
+          "file": "bulk_quotes.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "<genexpr>",
+          "file": "engine.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "add_targets",
+          "file": "order_pages.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "sample",
+          "file": "categorical.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "observe",
+          "file": "order_pages.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "raw_decode",
+          "file": "decoder.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "log_prob",
+          "file": "categorical.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "observe",
+          "file": "features.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "now",
+          "file": "reference_env.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "stack",
+          "file": "shape_base.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        }
+      ],
+      "inclusive": [
+        {
+          "function": "thread (42108): MainThread",
+          "file": "",
+          "sampleWeightSeconds": 14.800000000000075,
+          "fraction": 1.000000000000005
+        },
+        {
+          "function": "run",
+          "file": "experiment.py",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "train_episode",
+          "file": "experiment.py",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "main",
+          "file": "experiment.py",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "train_closed_episode",
+          "file": "experiment.py",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "<module>",
+          "file": "experiment.py",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "_run_code",
+          "file": "<frozen runpy>",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "_run_module_as_main",
+          "file": "<frozen runpy>",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "train_parallel",
+          "file": "experiment.py",
+          "sampleWeightSeconds": 14.750000000000075,
+          "fraction": 0.9966216216216266
+        },
+        {
+          "function": "collect",
+          "file": "batched.py",
+          "sampleWeightSeconds": 11.750000000000032,
+          "fraction": 0.7939189189189211
+        },
+        {
+          "function": "step",
+          "file": "batched.py",
+          "sampleWeightSeconds": 11.000000000000021,
+          "fraction": 0.7432432432432446
+        },
+        {
+          "function": "observe",
+          "file": "api_affordances.py",
+          "sampleWeightSeconds": 6.449999999999985,
+          "fraction": 0.4358108108108098
+        },
+        {
+          "function": "observe",
+          "file": "bulk_quotes.py",
+          "sampleWeightSeconds": 5.14999999999999,
+          "fraction": 0.34797297297297225
+        },
+        {
+          "function": "observe",
+          "file": "component_execution.py",
+          "sampleWeightSeconds": 3.899999999999994,
+          "fraction": 0.2635135135135131
+        },
+        {
+          "function": "observe",
+          "file": "order_pages.py",
+          "sampleWeightSeconds": 3.8499999999999943,
+          "fraction": 0.26013513513513475
+        },
+        {
+          "function": "observe",
+          "file": "full_depth.py",
+          "sampleWeightSeconds": 3.2499999999999964,
+          "fraction": 0.21959459459459435
+        },
+        {
+          "function": "record",
+          "file": "episode_tape.py",
+          "sampleWeightSeconds": 2.9999999999999973,
+          "fraction": 0.20270270270270252
+        },
+        {
+          "function": "walk",
+          "file": "episode_tape.py",
+          "sampleWeightSeconds": 2.5999999999999988,
+          "fraction": 0.17567567567567557
+        },
+        {
+          "function": "tensor_digest",
+          "file": "episode_tape.py",
+          "sampleWeightSeconds": 2.5999999999999988,
+          "fraction": 0.17567567567567557
+        },
+        {
+          "function": "observe",
+          "file": "engine.py",
+          "sampleWeightSeconds": 2.549999999999999,
+          "fraction": 0.17229729729729723
+        },
+        {
+          "function": "step_rollout",
+          "file": "policy.py",
+          "sampleWeightSeconds": 2.25,
+          "fraction": 0.15202702702702703
+        },
+        {
+          "function": "_act_from_encoding",
+          "file": "query_policy.py",
+          "sampleWeightSeconds": 2.25,
+          "fraction": 0.15202702702702703
+        },
+        {
+          "function": "inputs",
+          "file": "batched.py",
+          "sampleWeightSeconds": 2.2,
+          "fraction": 0.14864864864864866
+        },
+        {
+          "function": "_act_from_encoding",
+          "file": "policy.py",
+          "sampleWeightSeconds": 2.1500000000000004,
+          "fraction": 0.14527027027027029
+        },
+        {
+          "function": "categorical",
+          "file": "acting_validation.py",
+          "sampleWeightSeconds": 1.900000000000001,
+          "fraction": 0.12837837837837845
+        },
+        {
+          "function": "transfer",
+          "file": "packed_io.py",
+          "sampleWeightSeconds": 1.5500000000000007,
+          "fraction": 0.10472972972972977
+        },
+        {
+          "function": "append_rows",
+          "file": "component_execution.py",
+          "sampleWeightSeconds": 0.8500000000000002,
+          "fraction": 0.05743243243243244
+        },
+        {
+          "function": "extend_observation",
+          "file": "full_depth.py",
+          "sampleWeightSeconds": 0.7000000000000001,
+          "fraction": 0.0472972972972973
+        },
+        {
+          "function": "pad",
+          "file": "functional.py",
+          "sampleWeightSeconds": 0.6,
+          "fraction": 0.040540540540540536
+        },
+        {
+          "function": "extend",
+          "file": "order_pages.py",
+          "sampleWeightSeconds": 0.49999999999999994,
+          "fraction": 0.03378378378378378
+        },
+        {
+          "function": "financial_digest",
+          "file": "episode_tape.py",
+          "sampleWeightSeconds": 0.25,
+          "fraction": 0.01689189189189189
+        },
+        {
+          "function": "__repr__",
+          "file": "<string>",
+          "sampleWeightSeconds": 0.25,
+          "fraction": 0.01689189189189189
+        },
+        {
+          "function": "wrapper",
+          "file": "dataclasses.py",
+          "sampleWeightSeconds": 0.25,
+          "fraction": 0.01689189189189189
+        },
+        {
+          "function": "now",
+          "file": "reference_env.py",
+          "sampleWeightSeconds": 0.1,
+          "fraction": 0.006756756756756757
+        },
+        {
+          "function": "advance",
+          "file": "wake_clock.py",
+          "sampleWeightSeconds": 0.1,
+          "fraction": 0.006756756756756757
+        },
+        {
+          "function": "_event",
+          "file": "bulk_quotes.py",
+          "sampleWeightSeconds": 0.1,
+          "fraction": 0.006756756756756757
+        },
+        {
+          "function": "advance",
+          "file": "reference_env.py",
+          "sampleWeightSeconds": 0.1,
+          "fraction": 0.006756756756756757
+        },
+        {
+          "function": "_event",
+          "file": "engine.py",
+          "sampleWeightSeconds": 0.1,
+          "fraction": 0.006756756756756757
+        },
+        {
+          "function": "beta",
+          "file": "acting_validation.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "scope",
+          "file": "api_affordances.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "encode",
+          "file": "state_encoding.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "__getitem__",
+          "file": "reference_cache.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "_deepcopy_tuple",
+          "file": "copy.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "_snapshot_finance",
+          "file": "engine.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "_reconstruct",
+          "file": "copy.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "_execute",
+          "file": "engine.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "_deepcopy_dict",
+          "file": "copy.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "deepcopy",
+          "file": "copy.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "_snapshot_finance",
+          "file": "component_execution.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "add_targets",
+          "file": "bulk_quotes.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "<genexpr>",
+          "file": "engine.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "add_targets",
+          "file": "order_pages.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "sample",
+          "file": "categorical.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "consume",
+          "file": "disk_replay.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "schedule",
+          "file": "wake_clock.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "raw_decode",
+          "file": "decoder.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "decode",
+          "file": "decoder.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "advance_until_observable",
+          "file": "engine.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "log_prob",
+          "file": "categorical.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "observe",
+          "file": "features.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        },
+        {
+          "function": "stack",
+          "file": "shape_base.py",
+          "sampleWeightSeconds": 0.05,
+          "fraction": 0.0033783783783783786
+        }
+      ]
+    }
+  ],
+  "rawLocalsIncluded": false,
+  "productionChanged": false,
+  "nativeOrGpuProfiling": false
+}

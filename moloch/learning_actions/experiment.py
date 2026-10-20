@@ -50,6 +50,10 @@ class Experiment:
             raise ValueError('EXPLICIT_CLOSED_EPISODE_REJECTION_PROFILE')
         if config.get('closed_episode_continue_after_kl_rejection',False)and not config.get('closed_episode_return_replay',False):
             raise ValueError('REJECTION_CONTINUATION_REQUIRES_CLOSED_EPISODES')
+        from .episode_tape import observation_digest
+        observation_digest(config.get('episode_observation_digest','legacy'))
+        if config.get('episode_observation_digest','legacy')!='legacy'and not config.get('closed_episode_return_replay',False):
+            raise ValueError('PACKED_EPISODE_DIGEST_REQUIRES_CLOSED_EPISODES')
         if 'cuda_memory_fraction'in config:
             fraction=config['cuda_memory_fraction']
             if type(fraction)not in(int,float)or not 0<fraction<=1:raise ValueError('VALID_CUDA_ALLOCATION_FRACTION')
@@ -394,7 +398,8 @@ class Experiment:
         from .episode_training import optimize
         index=getattr(self,'closed_episode_counter',0);self.closed_episode_counter=index+1
         path=self.output/'closed-episodes'/('cohort-%06d'%index)
-        writer=EpisodeWriter(path,stream,dataset_sha256=self.dataset_sha,specification_sha256=self.spec_sha)
+        writer=EpisodeWriter(path,stream,dataset_sha256=self.dataset_sha,specification_sha256=self.spec_sha,
+            observation_digest_mode=self.config.get('episode_observation_digest','legacy'))
         try:
             while any(e.now<e.end for e in stream.envs):
                 chunk=stream.collect(self.config.get('compute_chunk_decisions',32),bootstrap=False);writer.record(chunk)
