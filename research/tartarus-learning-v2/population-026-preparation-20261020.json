@@ -1,0 +1,9 @@
+{
+  "classification": "prepared_explicit_experiment_not_launched",
+  "sourceCommit": "11e8edff6aa754a647cb67499ae11bc0f5f31cc8",
+  "configurationSha256": "21fa4e4ebb3842045ffa14a1937f0125a81a223dc3596dfd69c9ee5a50ece122",
+  "historyManifestSha256": "a693e8560ce83c513e9d1c58c921de8079977f803aaa0574134f70b0f126608d",
+  "currentGpu025Changed": false,
+  "independentTestUsed": false,
+  "note": "Revisit parent selection after completed GPU025 evaluation; no automatic GPU restart"
+}
