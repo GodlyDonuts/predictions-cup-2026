@@ -8,13 +8,17 @@ def probability(value):
     return value
 
 
+def coefficients(values):
+    if not isinstance(values,(list,tuple))or not values or any(
+        type(v)not in(int,float)or not math.isfinite(v)or v<0 for v in values):
+        raise ValueError('FINITE_CONFIGURED_ENTROPY_CHOICES_REQUIRED')
+    return values
+
+
 def offspring(parent,operator,scales,rng,choices,*,resample_probability=0):
-    p=probability(resample_probability)
+    p=probability(resample_probability);coefficients(choices)
     if type(parent)not in(int,float)or not math.isfinite(parent)or parent<0:
         raise ValueError('FINITE_PARENT_ENTROPY_REQUIRED')
-    if not isinstance(choices,(list,tuple))or not choices or any(
-        type(v)not in(int,float)or not math.isfinite(v)or v<0 for v in choices):
-        raise ValueError('FINITE_CONFIGURED_ENTROPY_CHOICES_REQUIRED')
     if operator=='fresh':return rng.choice(choices),'fresh_configuration_choice'
     if operator not in scales:raise ValueError('KNOWN_ENTROPY_MUTATION_OPERATOR_REQUIRED')
     # Do not consume another random number in the legacy profile.

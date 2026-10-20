@@ -1,0 +1,15 @@
+# Use later sealed minibatches after a rejected optimizer step
+
+GPU020's first cohort collected149 minibatches but optimized only the first four: three accepted updates and one rejected update. The previous early-return path then abandoned the remaining145. Its second cohort accepted22of22, so this is a conditional utilization problem, not a claim that all training was blocked.
+
+An explicit `closed_episode_continue_after_kl_rejection=true` profile now continues replay after an individual optimizer step exceeds the existing0.03 KL threshold. The rejected model and optimizer state are restored exactly. The next minibatch still uses its original recorded behavior probabilities, stored recurrent boundary state, verified observation reconstruction and complete episode returns. It undergoes the same post-update check; acceptance is not forced. No model can train on evolution or independent-test rows through this path.
+
+The default retains the old early-stop behavior. The option requires closed-episode training and does not lower the KL threshold, disable rollback, change reward, or change the action space. An integrity failure anywhere still rolls back the entire cohort, including earlier accepted updates. An optimizer report records the epoch, original episode minibatch index and continuation profile, so attempted and accepted updates can be distinguished.
+
+The synthetic test makes the first actual optimizer step change the family logits enough to exceed the KL limit. It checks rejection and exact parameter/optimizer restoration. With the default profile only that minibatch is attempted; with continuation every sealed minibatch is visited and later valid steps are accepted. A two-cycle integration fixture also verifies wiring through training, selection and reproduction. These fixtures establish behavior, not trading profitability.
+
+This can improve use of already-collected data. It does not make model forward/backward passes free: if more batches are attempted, an optimization phase may take longer. The measured question for the next checked population is accepted learning per collected episode and elapsed time, alongside fixed development returns. More optimizer steps alone are not success.
+
+The accompanying exploration change separates `population_search.entropy_coefficients` from transferred founder settings. A handoff preserves each parent's actual initial coefficient, while subsequent mutation can sample a persistent configured grid. Without this separation, a population that inherited only zeros could lose access to positive entropy settings again. Omission preserves the previous initial-grid behavior.
+
+GPU020 is frozen and remains unchanged while this source is checked. A subsequent generation should adopt both profiles only after all members and replacements are saved, with selected weights preserved, new experiment/source identity, fresh worlds/optimizer state and measured capacity. This is simulated learning only; production STOP, activation, risk limits and financial state are outside the change.

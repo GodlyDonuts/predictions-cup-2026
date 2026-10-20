@@ -2,7 +2,7 @@
 
 The population already reproduces from the highest-scoring candidates even when all scores are negative or flat. GPU019 completed this transition; [GPU020 evidence](population-020-full-returns-20261019.md) records the actual donors. There is no positive-fitness prerequisite for evolution.
 
-One search weakness remained: multiplying an entropy coefficient of zero by any perturbation leaves it zero. Ordinary stochastic action sampling and weight mutation still explore; zero entropy regularization does not mean deterministic actions. A fresh model could receive another configured coefficient, but this also discards its learned actor.
+One search weakness remained: multiplying an entropy coefficient of zero by any perturbation leaves it zero. Ordinary stochastic action sampling and weight mutation still explore; zero entropy regularization does not mean deterministic actions. A fresh model could receive another configured coefficient, but this also discards its learned actor. The subsequent [replay-continuation update](episode-rejection-continuation-20261019.md) adds a persistent `population_search.entropy_coefficients` grid separate from inherited founder coefficients, so handoffs cannot accidentally collapse the configured exploration search to zero.
 
 `population_search.entropy_resample_probability` now permits an offspring to draw its entropy coefficient from `initial_entropy_coefficients` independently of its weight mutation. For example, `0.25` gives each non-fresh child a 25% chance of drawing from that grid. It can move from zero to positive or positive to zero while preserving the donor lineage. The existing `fresh` operator retains its original behavior. The default is zero and preserves the legacy random-number sequence exactly.
 

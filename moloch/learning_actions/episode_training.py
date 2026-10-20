@@ -57,14 +57,18 @@ class EpisodeSession:
         self.expected=identity(model,'tensor_versions_v1');self.next_batch+=1
 
 
-def optimize(reader,model,optimizer,world_factory,ledger_factory,*,epochs=1,checkpoint_encoder=False,entropy_coefficient=.01,progress=None):
+def optimize(reader,model,optimizer,world_factory,ledger_factory,*,epochs=1,checkpoint_encoder=False,entropy_coefficient=.01,progress=None,
+             continue_after_kl_rejection=False):
     """Bounded replay chunks, original behavior probabilities and global advantages.
 
     Restore the whole learner on any replay/integrity error; never publish a
-    partly invalid update sequence. KL rejection ends this cohort's optimization.
+    partly invalid update sequence. By default KL rejection ends optimization.
+    The explicit continuation profile rolls back the rejected step as before,
+    then tries later, independently checked minibatches from the same rollout.
     """
     from .training import update
     if type(epochs)is not int or epochs<1:raise ValueError('POSITIVE_CLOSED_EPISODE_EPOCHS_REQUIRED')
+    if type(continue_after_kl_rejection)is not bool:raise ValueError('EXPLICIT_CLOSED_EPISODE_REJECTION_PROFILE')
     # CPU backup bounds extra GPU allocation independently of rollout length.
     backup={k:v.detach().cpu().clone()for k,v in model.state_dict().items()}
     optimizer_backup=cpu_copy(optimizer.state_dict())
@@ -81,9 +85,10 @@ def optimize(reader,model,optimizer,world_factory,ledger_factory,*,epochs=1,chec
                     row=update(model,optimizer,chunk,[f['economic_reward']for f in chunk.frames],role='train',
                         epochs=1,checkpoint_encoder=checkpoint_encoder,entropy_coefficient=entropy_coefficient,
                         episode_session=session)
-                    reports.extend({**r,'episode_epoch':epoch}for r in row)
+                    reports.extend({**r,'episode_epoch':epoch,'episode_batch':chunk.episode_batch,
+                                    'continue_after_kl_rejection':continue_after_kl_rejection}for r in row)
                     if progress is not None:progress(row,len(reports))
-                    if any(not r['accepted']for r in row):return reports
+                    if not continue_after_kl_rejection and any(not r['accepted']for r in row):return reports
             finally:release_worlds(envs)
         return reports
     except BaseException:

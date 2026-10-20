@@ -97,6 +97,41 @@ class EpisodeTapeTests(unittest.TestCase):
                 self.assertFalse(reader.metadata['independent_test_used'])
             finally:reader.close()
 
+    def test_rejected_step_rolls_back_then_later_minibatches_can_train(self):
+        from unittest.mock import patch
+        from .episode_training import cpu_copy
+        for continuation in(False,True):
+            with self.subTest(continuation=continuation),tempfile.TemporaryDirectory()as folder:
+                path=Path(folder)/'episode';writer,sha=self.collect(path);reader=EpisodeReader(path,sha)
+                try:
+                    model=writer.stream.model;before=cpu_copy(model.state_dict())
+                    opt=torch.optim.Adam(model.parameters(),lr=1e-5);original_step=opt.step;calls=[]
+                    def bad_first_step(*args,**kwargs):
+                        result=original_step(*args,**kwargs);calls.append(True)
+                        if len(calls)==1:
+                            with torch.no_grad():
+                                model.heads['family'].bias[11]=-100
+                                model.heads['family'].bias[0]=100
+                        return result
+                    observations=[]
+                    def progress(rows,n):
+                        if n==1:
+                            self.assertFalse(rows[0]['accepted']);self.assertGreater(rows[0]['post_update_kl'],.03)
+                            self.assertEqual(opt.state_dict()['state'],{})
+                            for name,value in model.state_dict().items():self.assertTrue(torch.equal(value,before[name]))
+                        observations.extend(rows)
+                    with patch.object(opt,'step',side_effect=bad_first_step):
+                        reports=optimize(reader,model,opt,lambda a,b:worlds()[[1101,1201,1301].index(b)],
+                            lambda e:GrowthLedger(e,development=True),continue_after_kl_rejection=continuation,progress=progress)
+                    self.assertFalse(reports[0]['accepted'])
+                    if continuation:
+                        self.assertEqual(len(reports),reader.metadata['batches'])
+                        self.assertTrue(any(r['accepted']for r in reports[1:]))
+                        self.assertEqual([r['episode_batch']for r in reports],list(range(reader.metadata['batches'])))
+                    else:self.assertEqual(len(reports),1)
+                    self.assertEqual(len(observations),len(reports))
+                finally:reader.close()
+
     def test_replay_failure_rolls_back_whole_learner_and_external_mutation_is_refused(self):
         from moloch.learning_v2.train_inner import fingerprint
         from .episode_training import cpu_copy
@@ -133,10 +168,12 @@ class EpisodeTapeTests(unittest.TestCase):
     def test_experiment_connects_closed_rollouts_optimization_selection_and_evolution(self):
         from .test_population_experiment import FixtureExperiment
         with tempfile.TemporaryDirectory()as folder:
-            exp=FixtureExperiment(Path(folder));exp.config.update(closed_episode_return_replay=True,members=2,fresh_founders=2)
+            exp=FixtureExperiment(Path(folder));exp.config.update(closed_episode_return_replay=True,
+                closed_episode_continue_after_kl_rejection=True,members=2,fresh_founders=2)
             exp.search_config['islands']=1;result=exp.run()
             self.assertGreater(result['total_accepted_updates'],0)
             closed=[r for r in exp.events if r.get('phase')=='closed_episode_optimization_committed']
             self.assertEqual(len(closed),4);self.assertTrue(all(r['full_episode_targets']for r in closed))
+            self.assertTrue(all(u['continue_after_kl_rejection']for r in closed for u in r['updates']))
             self.assertEqual(len([r for r in exp.events if r['event']=='population_replacement']),1)
             self.assertFalse(result['independent_test_used']);self.assertFalse(result['production_changed'])

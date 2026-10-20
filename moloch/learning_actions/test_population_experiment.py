@@ -45,7 +45,8 @@ class PopulationExperimentTests(unittest.TestCase):
         torch.set_num_threads(1);torch.manual_seed(81)
         with tempfile.TemporaryDirectory()as d:
             experiment=FixtureExperiment(Path(d))
-            experiment.config['initial_entropy_coefficients']=[.002]
+            experiment.config['initial_entropy_coefficients']=[0.]
+            experiment.search_config['entropy_coefficients']=[.002]
             experiment.search_config['entropy_resample_probability']=1
             with patch.object(experiment,'founder_hyperparameters',return_value=(1e-4,0.)):
                 result=experiment.run()

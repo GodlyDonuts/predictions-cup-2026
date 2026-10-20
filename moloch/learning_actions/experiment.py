@@ -42,6 +42,10 @@ class Experiment:
         acting_mode(config.get('acting_validation',STRICT))
         if type(config.get('closed_episode_return_replay',False))is not bool:
             raise ValueError('EXPLICIT_CLOSED_EPISODE_TRAINING_PROFILE')
+        if type(config.get('closed_episode_continue_after_kl_rejection',False))is not bool:
+            raise ValueError('EXPLICIT_CLOSED_EPISODE_REJECTION_PROFILE')
+        if config.get('closed_episode_continue_after_kl_rejection',False)and not config.get('closed_episode_return_replay',False):
+            raise ValueError('REJECTION_CONTINUATION_REQUIRES_CLOSED_EPISODES')
         if 'cuda_memory_fraction'in config:
             fraction=config['cuda_memory_fraction']
             if type(fraction)not in(int,float)or not 0<fraction<=1:raise ValueError('VALID_CUDA_ALLOCATION_FRACTION')
@@ -131,8 +135,9 @@ class Experiment:
         self.search_config=config.get('population_search')
         self.archive=None
         if self.search_config is not None:
-            from .entropy_search import probability
+            from .entropy_search import probability,coefficients
             probability(self.search_config.get('entropy_resample_probability',0))
+            if 'entropy_coefficients'in self.search_config:coefficients(self.search_config['entropy_coefficients'])
             if type(self.search_config.get('retain_island_champions',True))is not bool:
                 raise ValueError('EXPLICIT_RESEARCH_ELITISM_PROFILE')
             from .population import ResearchArchive,island_replacements
@@ -399,7 +404,9 @@ class Experiment:
                 'provisional_updates':rows,'cohort_commit_pending':True})
         try:
             reports=optimize(reader,model,optimizer,lambda a,b:self.world('train',a,b),ledger_factory,
-                epochs=self.config.get('ppo_epochs',1),progress=progress,**self.training_arguments(optimizer))
+                epochs=self.config.get('ppo_epochs',1),progress=progress,
+                continue_after_kl_rejection=self.config.get('closed_episode_continue_after_kl_rejection',False),
+                **self.training_arguments(optimizer))
             self.total_updates+=sum(r['accepted']for r in reports)
             self.log({'event':'parallel_train_chunk','phase':'closed_episode_optimization_committed',
                 'decisions':0,'worlds':len(stream.envs),'updates':reports,'closed_episode_complete':True,
@@ -519,7 +526,8 @@ class Experiment:
                   min(.001,max(.000001,donor_rate*self.rng.choice(scales[r['operator']]))))
             from .entropy_search import offspring
             entropy,entropy_operator=offspring(donor_entropy,r['operator'],scales,self.rng,
-                self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)]),
+                self.search_config.get('entropy_coefficients',
+                    self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)])),
                 resample_probability=self.search_config.get('entropy_resample_probability',0))
             opt=self.make_optimizer(model,rate,entropy)
             child=self.checkpoint('offspring-%03d-%03d'%(cycle,slot),model,opt)
