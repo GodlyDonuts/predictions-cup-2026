@@ -1,0 +1,37 @@
+{
+  "observedUtc": "2026-10-20T08:14:31.514832+00:00",
+  "classification": "partial_acquisition_storage_failure_not_complete_history",
+  "originalJob": "moloch-history-read-probe-20261020-007",
+  "readerPid": 924491,
+  "readerAlive": false,
+  "validatedIndexedTrades": 947549,
+  "completedExchangeScopes": 158,
+  "expectedExchangeScopes": 237,
+  "error": "SIG_HISTORY_READ_FAILED: DURABILITY_FAILURE",
+  "filesystemAvailableBytesBeforeRecovery": 0,
+  "removedReproducibleBuildCache": "/home/archon/apps/moloch/unified-target-20261016-3d054df0/debug",
+  "cargoCacheSignatureVerified": true,
+  "resolvedTargetVerified": true,
+  "executableUsers": [],
+  "recoveredBytes": 5871611904,
+  "originalNetworkMarker": {
+    "inode": 12327260,
+    "bytes": 0,
+    "mtimeNs": 1792031688076105542,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalExecutionStop": {
+    "inode": 12349125,
+    "bytes": 137,
+    "mtimeNs": 1792419420807249988,
+    "sha256": "1b1b24f1379d9e3a11c13991afd588d085dc16d99c392eda2a3920769c0b2043"
+  },
+  "originalReceiptsPreserved": true,
+  "financialJournalChanged": false,
+  "originalStatusFileStillSaysAcquiring": true,
+  "statusFileIsNotLiveProcessEvidence": true,
+  "queueDurabilityReconciliationComplete": false,
+  "acquisitionRestarted": false,
+  "fullHistoryTrainingAdmitted": false,
+  "productionTradingEnabled": false
+}
