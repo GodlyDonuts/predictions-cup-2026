@@ -26,7 +26,10 @@ struct Plan {
 }
 #[derive(Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
-struct Backfill { output:PathBuf, from:String, maximum_requests:usize }
+struct Backfill { output:PathBuf, from:String, maximum_requests:usize, #[serde(default)] kind:HistoryKind }
+#[derive(Deserialize,Default,PartialEq)]
+#[serde(rename_all="snake_case")]
+enum HistoryKind { #[default] Candles, Trades }
 #[derive(Deserialize)]
 #[serde(rename_all="camelCase")]
 struct Binding { root: PathBuf, credentials: PathBuf, account_scope: String, scope: Scope }
@@ -99,7 +102,9 @@ fn execute(plan:&Plan,config:Config,guard:Guard,credential:PathBuf)->Result<Valu
     let credentials=api::credentials::UnixFileCredentials::approved_file(credential)?;
     let exchanges:Vec<String>=config.scope.exchanges.keys().cloned().collect();
     let mut sdk=api::Transport::new_with_read_budget(config,Box::new(credentials),Box::new(api::SystemClock),Box::new(guard),100,600)?;
-    if let Some(job)=&plan.backfill {return backfill(plan,job,exchanges,&mut sdk)}
+    if let Some(job)=&plan.backfill {
+        return if job.kind==HistoryKind::Trades{trade_backfill(plan,job,exchanges,&mut sdk)}else{backfill(plan,job,exchanges,&mut sdk)}
+    }
     // A fixed History endpoint has no pagination; maximum_pages is also1.
     let receipt=if let Some(path)=&plan.response_evidence {
         sdk.request_history_with_evidence(plan.exchange_id.clone(),plan.through.clone(),path)?
@@ -120,6 +125,39 @@ fn page_cursor(receipt:&Value,requested:&str,floor:i64)->Result<Option<String>> 
         Some(t)if t>floor=>Some(chrono::DateTime::from_timestamp_millis(t).ok_or("CANDLE_CLOCK")?.to_rfc3339_opts(chrono::SecondsFormat::Millis,true)),
         _=>None,
     })
+}
+
+#[cfg(unix)]
+fn trade_backfill(plan:&Plan,job:&Backfill,exchanges:Vec<String>,sdk:&mut api::Transport)->Result<Value>{
+    use std::{io::Write,collections::BTreeSet};
+    fs::create_dir(&job.output)?;
+    let mut index=fs::OpenOptions::new().write(true).create_new(true).open(job.output.join("index.jsonl"))?;
+    let(mut requests,mut trades,mut complete,mut bytes)=(0usize,0usize,0usize,0u64);
+    for exchange in exchanges {
+        let mut cursor:Option<String>=None;let mut cursors=BTreeSet::new();let mut identities=BTreeSet::new();
+        loop {
+            require(requests<job.maximum_requests&&bytes<8*1024*1024*1024,"HISTORY_TRADE_ACQUISITION_BUDGET_REACHED")?;
+            let n=requests;requests+=1;let evidence=job.output.join(format!("page-{n:06}-parsed.json"));
+            let receipt=sdk.request_historical_trade_page(exchange.clone(),job.from.clone(),plan.through.clone(),cursor.as_deref(),&evidence)?;
+            let rows=receipt.data["data"].as_array().ok_or("HISTORY_TRADE_ARRAY")?;
+            for row in rows {require(identities.insert(hash(&serde_json::to_vec(row)?)),"HISTORY_TRADE_CURSOR_OVERLAP")?;}
+            trades+=rows.len();let pg=&receipt.data["pagination"];
+            let next=pg["nextCursor"].as_str().map(str::to_string);
+            require(if pg["hasMore"]==true{next.as_ref().is_some_and(|s|cursors.insert(s.clone()))}else{next.is_none()},"HISTORY_TRADE_CURSOR_REPEATED")?;
+            let raw=serde_json::to_vec(&receipt)?;let name=format!("page-{n:06}-validated.json");
+            let mut out=fs::OpenOptions::new().write(true).create_new(true).open(job.output.join(&name))?;out.write_all(&raw)?;out.sync_all()?;
+            bytes+=raw.len() as u64+fs::metadata(&evidence)?.len();
+            writeln!(index,"{}",serde_json::to_string(&json!({"page":n,"exchangeId":exchange,"fromInclusive":job.from,
+                "throughExclusive":plan.through,"requestCursor":cursor,"nextCursor":next,"file":name,"sha256":hash(&raw),
+                "trades":rows.len(),"retrievedAt":receipt.received_at,"trainingAdmitted":false,"bookDepthReconstructed":false}))?)?;index.sync_all()?;
+            match next{Some(c)=>cursor=Some(c),None=>{complete+=1;break}}
+        }
+    }
+    let result=json!({"classification":"historical_public_trade_tape_not_owned_fills_or_books","requests":requests,"trades":trades,
+        "exchangesComplete":complete,"fromInclusive":job.from,"throughExclusive":plan.through,"trainingAdmitted":false,
+        "financialExecution":false,"receiptBytes":bytes});
+    let mut out=fs::OpenOptions::new().write(true).create_new(true).open(job.output.join("complete.json"))?;
+    out.write_all(&serde_json::to_vec(&result)?)?;out.sync_all()?;Ok(result)
 }
 
 #[cfg(unix)]

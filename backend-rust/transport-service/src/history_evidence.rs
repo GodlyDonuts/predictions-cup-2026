@@ -29,6 +29,18 @@ fn validate_observation(value:&Value,unit_interval:bool)->Result<()> {
 }
 
 impl Transport {
+    /// One documented public trade-tape page, retaining original observational
+    /// decimals; no conversion into order ticks, financial fills or money.
+    pub fn request_historical_trade_page(&mut self,exchange_id:String,from:String,to:String,cursor:Option<&str>,output:&Path)->Result<Receipt>{
+        need(output.is_absolute()&&!output.exists(),"NEW_ABSOLUTE_HISTORY_EVIDENCE_REQUIRED")?;
+        let endpoint=Endpoint::Trades{exchange_id:exchange_id.clone(),from:from.clone(),to:to.clone()};
+        let path=self.path(&endpoint,cursor)?;let observed_endpoint=path.clone();
+        self.perform(RequestSpec{method:"GET".into(),endpoint:path,body:None,body_json:None},None,|s,v|{
+            retain(output,&observed_endpoint,s.clock.now_ms(),v)?;
+            validate_trade_page(&s.config.scope,&exchange_id,&from,&to,v)?;
+            s.coverage(&v["coverage"],true)
+        })
+    }
     pub fn request_history_with_evidence(&mut self, exchange_id:String, to:String, output:&Path)->Result<Receipt>{
         need(output.is_absolute()&&!output.exists(),"NEW_ABSOLUTE_HISTORY_EVIDENCE_REQUIRED")?;
         let endpoint=Endpoint::History{exchange_id,to};
@@ -39,6 +51,28 @@ impl Transport {
             s.validate(&endpoint,v)
         })
     }
+}
+
+fn validate_trade_page(scope:&Scope,exchange:&str,from:&str,to:&str,v:&Value)->Result<()> {
+    let start=parse_clock(&json!(from)).ok_or_else(||fail("HISTORY_TRADE_CLOCK"))?;
+    let end=parse_clock(&json!(to)).ok_or_else(||fail("HISTORY_TRADE_CLOCK"))?;
+    need(start<end&&v["exchangeId"]==exchange&&scope.exchanges.get(exchange).is_some_and(|m|v["marketId"]==*m)
+        &&parse_clock(&v["from"])==Some(start)&&parse_clock(&v["to"])==Some(end),"HISTORY_TRADE_SCOPE")?;
+    pagination(v)?;let rows=v["data"].as_array().ok_or_else(||fail("HISTORY_TRADE_ARRAY"))?;
+    need(rows.len()<=200,"HISTORY_TRADE_PAGE_BOUND")?;
+    let p=&v["pagination"];
+    need(if p["hasMore"]==true{!rows.is_empty()&&p["nextCursor"].as_str().is_some_and(|s|!s.is_empty()&&s.len()<=4096)}else{p["nextCursor"].is_null()},"HISTORY_TRADE_CURSOR")?;
+    let mut seen=BTreeSet::new();
+    for row in rows {
+        need(row["id"].as_str().is_some_and(numeric)&&parse_clock(&row["createdAt"]).is_some_and(|t|start<=t&&t<end)
+            &&row["size"].as_u64().is_some_and(|n|n>0)&&row["side"].as_str().is_some_and(|s|s=="YES"||s=="NO"),"HISTORY_TRADE_ROW")?;
+        need(row.get("price").is_some(),"HISTORY_TRADE_PRICE_FIELD")?;
+        if !row["price"].is_null(){validate_price(&row["price"])?;}
+        validate_volume(&row["volume"])?;
+        // Legacy and engine IDs occupy separate spaces. Preserve full facts;
+        // do not conflate different rows solely because their ID matches.
+        need(seen.insert(serde_json::to_string(row).map_err(|_|fail("HISTORY_TRADE_ROW"))?),"HISTORY_TRADE_DUPLICATE_ROW")?;
+    }Ok(())
 }
 
 fn retain(path:&Path,endpoint:&str,received_ms:u64,data:&Value)->Result<()> {
@@ -52,6 +86,15 @@ fn retain(path:&Path,endpoint:&str,received_ms:u64,data:&Value)->Result<()> {
 
 #[cfg(test)] mod tests {
     use super::*;
+    #[test]fn historical_trade_pages_preserve_observations_and_scope(){
+        let scope=Scope{tournament_id:"cup".into(),tournament_slug:"cup".into(),exchanges:BTreeMap::from([("2".into(),"1".into())])};
+        let from="2026-10-01T00:00:00Z";let to="2026-10-02T00:00:00Z";
+        let mut v=json!({"exchangeId":"2","marketId":"1","from":from,"to":to,"data":[{"id":"4","createdAt":from,"price":0.0600000000000001,"volume":0.6000000000000001,"size":10,"side":"NO"}],"pagination":{"limit":200,"hasMore":false,"nextCursor":null}});
+        validate_trade_page(&scope,"2",from,to,&v).unwrap();
+        v["data"][0]["createdAt"]=json!(to);assert!(validate_trade_page(&scope,"2",from,to,&v).is_err());
+        v["data"][0]["createdAt"]=json!(from);v["marketId"]=json!("3");assert!(validate_trade_page(&scope,"2",from,to,&v).is_err());
+        v["marketId"]=json!("1");v["pagination"]["hasMore"]=json!(true);assert!(validate_trade_page(&scope,"2",from,to,&v).is_err());
+    }
     #[test] fn only_complete_empty_pages_allow_equal_bounds(){
         let empty=json!({"candles":[],"coverage":{"complete":true}});
         assert!(valid_window(&empty,60000,60000,60000,60000));
