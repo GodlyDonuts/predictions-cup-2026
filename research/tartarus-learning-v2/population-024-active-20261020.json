@@ -1,0 +1,14 @@
+{
+  "total_decisions": 13485,
+  "total_updates": 133,
+  "completed_worlds": 4,
+  "fills": 482,
+  "cuda_peak_bytes": 5227329024,
+  "wall_time_unix": 1792525149.6547377,
+  "sourceCommit": "16d578b3c48ead5268a240027abb5664118bb4f3",
+  "configSha256": "0c4069f1870e351dfb37c95a01f73c64c0e011e834b6b9f334342e7159757931",
+  "actualLearnerPid": 8848,
+  "productionTrades": false,
+  "independentTestUsed": false,
+  "profitabilityEstablished": false
+}

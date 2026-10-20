@@ -1,5 +1,7 @@
 # Historical acquisition and neural recovery — October 20, 19:35 UTC
 
+**19:39 UTC update:** the checked historical reader is now acquiring fresh pages under the original queue, controller948107/reader948111, with original execution STOP preserved. Nine Linux tests and 29 exact source-file hashes passed; binary `945ce611` matches source `fe0e9983`. A separate file-only auditor948141 will audit the complete result after the controller restores NETWORK_DISABLED. [Fresh receipt evidence](sig-history-resumed-20261020.json). GPU024 remains live and reached 13,485 decisions / 133 updates with four of eight first-member paths complete; [snapshot](population-024-active-20261020.json). Neither acquisition completion nor profitability is yet established.
+
 Two concrete bottlenecks were addressed. Neither establishes a profitable model.
 
 ## Historical storage
