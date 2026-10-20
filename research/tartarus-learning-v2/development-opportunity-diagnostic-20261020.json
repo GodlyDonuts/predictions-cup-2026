@@ -1,0 +1,167 @@
+{
+  "classification": "optimistic_hindsight_development_diagnostic_not_strategy_or_fill_replay",
+  "observedUtc": "2026-10-20T07:19:55.851452+00:00",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "observationsSha256": "c0bbcce6e788a153c35f6c2cc910b7f7c33b0ff319f3af5b775290023b78d594",
+  "short_screen_windows": [
+    {
+      "bounds_ms": [
+        1792416690500,
+        1792416810500
+      ],
+      "book_observations": 3493,
+      "exchange_sides_with_two_eligible_observations": 474,
+      "exchange_sides_with_positive_hindsight_one_share_roundtrip": 2,
+      "median_observed_spread_micros": 5000,
+      "largest_hindsight_opportunities": [
+        {
+          "exchange": "983",
+          "side": "NO",
+          "buy_at_ms": 1792416693849,
+          "sell_at_ms": 1792416785132,
+          "buy_price_micros": 545000,
+          "sell_price_micros": 555000,
+          "gross_micros_per_share": 10000
+        },
+        {
+          "exchange": "983",
+          "side": "YES",
+          "buy_at_ms": 1792416785132,
+          "sell_at_ms": 1792416788015,
+          "buy_price_micros": 445000,
+          "sell_price_micros": 450000,
+          "gross_micros_per_share": 5000
+        }
+      ]
+    },
+    {
+      "bounds_ms": [
+        1792418189500,
+        1792418309500
+      ],
+      "book_observations": 3805,
+      "exchange_sides_with_two_eligible_observations": 472,
+      "exchange_sides_with_positive_hindsight_one_share_roundtrip": 1,
+      "median_observed_spread_micros": 5000,
+      "largest_hindsight_opportunities": [
+        {
+          "exchange": "896",
+          "side": "YES",
+          "buy_at_ms": 1792418192400,
+          "sell_at_ms": 1792418198998,
+          "buy_price_micros": 330000,
+          "sell_price_micros": 340000,
+          "gross_micros_per_share": 10000
+        }
+      ]
+    }
+  ],
+  "full_exposed_evolution_window": {
+    "bounds_ms": [
+      1792416000000,
+      1792419000000
+    ],
+    "book_observations": 79326,
+    "exchange_sides_with_two_eligible_observations": 474,
+    "exchange_sides_with_positive_hindsight_one_share_roundtrip": 30,
+    "median_observed_spread_micros": 5000.0,
+    "largest_hindsight_opportunities": [
+      {
+        "exchange": "896",
+        "side": "YES",
+        "buy_at_ms": 1792417711115,
+        "sell_at_ms": 1792418170222,
+        "buy_price_micros": 290000,
+        "sell_price_micros": 340000,
+        "gross_micros_per_share": 50000
+      },
+      {
+        "exchange": "896",
+        "side": "NO",
+        "buy_at_ms": 1792418170222,
+        "sell_at_ms": 1792418188675,
+        "buy_price_micros": 660000,
+        "sell_price_micros": 695000,
+        "gross_micros_per_share": 35000
+      },
+      {
+        "exchange": "1043",
+        "side": "YES",
+        "buy_at_ms": 1792416001490,
+        "sell_at_ms": 1792417673819,
+        "buy_price_micros": 180000,
+        "sell_price_micros": 195000,
+        "gross_micros_per_share": 15000
+      },
+      {
+        "exchange": "897",
+        "side": "NO",
+        "buy_at_ms": 1792416012354,
+        "sell_at_ms": 1792418635876,
+        "buy_price_micros": 295000,
+        "sell_price_micros": 310000,
+        "gross_micros_per_share": 15000
+      },
+      {
+        "exchange": "884",
+        "side": "YES",
+        "buy_at_ms": 1792416026717,
+        "sell_at_ms": 1792417722693,
+        "buy_price_micros": 285000,
+        "sell_price_micros": 295000,
+        "gross_micros_per_share": 10000
+      },
+      {
+        "exchange": "983",
+        "side": "YES",
+        "buy_at_ms": 1792416785132,
+        "sell_at_ms": 1792417297307,
+        "buy_price_micros": 445000,
+        "sell_price_micros": 455000,
+        "gross_micros_per_share": 10000
+      },
+      {
+        "exchange": "983",
+        "side": "NO",
+        "buy_at_ms": 1792416002449,
+        "sell_at_ms": 1792416785132,
+        "buy_price_micros": 545000,
+        "sell_price_micros": 555000,
+        "gross_micros_per_share": 10000
+      },
+      {
+        "exchange": "1067",
+        "side": "YES",
+        "buy_at_ms": 1792417959542,
+        "sell_at_ms": 1792418433498,
+        "buy_price_micros": 340000,
+        "sell_price_micros": 350000,
+        "gross_micros_per_share": 10000
+      },
+      {
+        "exchange": "894",
+        "side": "YES",
+        "buy_at_ms": 1792416005082,
+        "sell_at_ms": 1792417700580,
+        "buy_price_micros": 360000,
+        "sell_price_micros": 370000,
+        "gross_micros_per_share": 10000
+      },
+      {
+        "exchange": "910",
+        "side": "YES",
+        "buy_at_ms": 1792416005082,
+        "sell_at_ms": 1792417300673,
+        "buy_price_micros": 415000,
+        "sell_price_micros": 425000,
+        "gross_micros_per_share": 10000
+      }
+    ]
+  },
+  "minimum_buy_sell_separation_ms": 2500,
+  "wallSeconds": 7.4071934999665245,
+  "ignores_queue_impact_gaps_and_observation_admission": true,
+  "independentTestUsed": false,
+  "gpuUsed": false,
+  "productionChanged": false
+}
