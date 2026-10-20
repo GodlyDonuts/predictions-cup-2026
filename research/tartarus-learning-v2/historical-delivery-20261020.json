@@ -1,0 +1,26 @@
+{
+  "classification": "real_archived_payloads_through_actual_simulator_requests_not_neural_training",
+  "sourceManifestSha256": [
+    "11360f469bc3954365866ce133e5f00c76ceac92c010eea83cb0c06011effe24",
+    "138404d296c28fc95c73ca604720f13958715b12f1d04f2a07e87e703aa9af5b",
+    "89ab9b727e36a861606d9c4d23c26e21041813859f0b5427bb2ea33f9e6ccb14"
+  ],
+  "sigCandlesDelivered": 500,
+  "kalshiTradesDelivered": 1000,
+  "polymarketSamplesDelivered": 1,
+  "chargedRequests": {
+    "SIG": 1,
+    "Kalshi": 1,
+    "Polymarket": 1
+  },
+  "deliveredRequests": {
+    "Kalshi": 1,
+    "Polymarket": 1,
+    "SIG": 1
+  },
+  "newFills": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "gpuUsed": false,
+  "historyNotTreatedAsFreshQuotes": true
+}

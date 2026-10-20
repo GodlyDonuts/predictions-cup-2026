@@ -1,0 +1,11 @@
+# Historical data delivered through simulated API requests
+
+`HistoricalInformationEpisode` connects the audited SIG candle, Kalshi trade and Polymarket sample readers to the actual raw-action simulator. Historical targets use the existing READ action. SIG reads share the account queue and budget with ordinary reads and writes. External targets share the existing venue admissions and cadence; there is no independent per-market allowance.
+
+The provider is sampled at request time. Its immutable snapshot is delivered after modeled latency, wakes the policy, and retains both original source/retrieval fields and simulated request/receipt clocks. A repeated read cannot create a book, refresh executable liquidity or generate fills. Provider validation failures abort before queue admission. Public catalog targets are registered before the first request.
+
+Eight focused CPU tests passed: four delivery tests plus four existing wake-clock tests. A separate real-data integration used the existing October 19 development world and all three recovered indexes. Three charged requests delivered 500 SIG candles, 1,000 exact Kalshi trades and one Polymarket historical sample. The explicit archive lookup allowed old samples; it did not call them fresh quotes. There were no writes, fills, GPU operations, independent-test accesses or production changes. [Actual source hashes and counts](historical-delivery-20261020.json).
+
+This is a working simulator delivery connection, **not completed neural integration**. Raw delivered payloads are exposed separately as `historical_information`; the existing actor tensor encoder does not consume them yet. Historical endpoint query controls and a declared new neural observation protocol remain to be wired. Full historical execution calibration, complete daily reward training and untouched-test profitability remain unestablished.
+
+At 07:57 UTC, the existing VPS reader was live and had recovered more than 825,000 SIG trades, with 121 exchange scopes complete, no error log and unchanged execution STOP hash. These are acquisition progress counts, not a completed source audit. The local development learner remains stopped after its last 49,152-decision log; no optimizer update or captured exit cause exists for that run. Its original incomplete artifacts are preserved.
