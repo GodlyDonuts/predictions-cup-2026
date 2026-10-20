@@ -1,0 +1,75 @@
+{
+  "classification": "fixed_zero_context_distribution_probe_not_rollout_or_performance",
+  "checkpointSha256": "2ef23a6e6763ce31c2659809573af06b0d8353e273400eaa9bfd1d7238c6193e",
+  "rows": [
+    {
+      "operator": "explicit_inherited_wait_logit_mutation",
+      "logit_shift": [
+        0.0,
+        0.0
+      ],
+      "optimizer_moments_must_be_reset": true,
+      "fresh_trajectories_and_scores_required": true,
+      "maximum_linear_residual": 0.0,
+      "embedding_shift_norm": 0.0,
+      "legal_deadline_domain_changed": false,
+      "quantity_head_shift_target": 0.0,
+      "zero_context_alarm_ms_quantiles": [
+        1.0,
+        12.673333868167227,
+        1802.2296106944334
+      ],
+      "zero_context_alpha_beta": [
+        1.0487786062677027,
+        9.30574143307706
+      ]
+    },
+    {
+      "operator": "explicit_inherited_wait_logit_mutation",
+      "logit_shift": [
+        2.2,
+        0.0
+      ],
+      "optimizer_moments_must_be_reset": true,
+      "fresh_trajectories_and_scores_required": true,
+      "maximum_linear_residual": 3.513541414930377e-08,
+      "embedding_shift_norm": 3.7729539418071774,
+      "legal_deadline_domain_changed": false,
+      "quantity_head_shift_target": 0.0,
+      "zero_context_alarm_ms_quantiles": [
+        1.2711498015470342,
+        32.1072351608985,
+        6988.02271641366
+      ],
+      "zero_context_alpha_beta": [
+        1.3723501504662783,
+        9.305743339954399
+      ]
+    },
+    {
+      "operator": "explicit_inherited_wait_logit_mutation",
+      "logit_shift": [
+        4.4,
+        0.0
+      ],
+      "optimizer_moments_must_be_reset": true,
+      "fresh_trajectories_and_scores_required": true,
+      "maximum_linear_residual": 1.9241266080438635e-08,
+      "embedding_shift_norm": 7.545907909294067,
+      "legal_deadline_domain_changed": false,
+      "quantity_head_shift_target": 0.0,
+      "zero_context_alarm_ms_quantiles": [
+        15.278298787377018,
+        920.7995676900398,
+        271394.89599869325
+      ],
+      "zero_context_alpha_beta": [
+        2.623647451196599,
+        9.305742386515728
+      ]
+    }
+  ],
+  "nonWaitWeightsBitwiseUnchanged": true,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

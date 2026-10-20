@@ -653,6 +653,11 @@ class Experiment:
         if parents and not self.development:raise ValueError('DEVELOPMENT_WEIGHT_TRANSFER_CANNOT_QUALIFY_FULL_HISTORY')
         fresh=self.config.get('fresh_founders',0)
         if type(fresh)is not int or not 0<=fresh<=members:raise ValueError('VALID_FRESH_LINEAGE_COUNT_REQUIRED')
+        clock_shifts=self.config.get('inherited_wait_logit_shifts')
+        if clock_shifts is not None:
+            if (not self.development or not parents or not isinstance(clock_shifts,list)
+                    or len(clock_shifts)!=members or any(x is not None for x in clock_shifts[members-fresh:])):
+                raise ValueError('EXPLICIT_DEVELOPMENT_INHERITED_CLOCK_MUTATIONS_REQUIRED')
         for member in range(members):
             torch.manual_seed(self.seed+member)
             inherited=parents[member%len(parents)]if parents and member<members-fresh else None
@@ -759,6 +764,10 @@ class Experiment:
             # support: favor initially short alarms without forbidding long ones.
             if not inherited and self.config.get('initial_short_alarm_prior',True):
                 self.initialize_alarm_prior(model)
+            if inherited and clock_shifts is not None and clock_shifts[member] is not None:
+                from .clock_prior import mutate_inherited_wait
+                frozen(self.output/('founder-%03d-inherited-clock-mutation.json'%member),
+                       mutate_inherited_wait(model,clock_shifts[member]))
             rate,entropy=self.founder_hyperparameters(member)
             opt=self.make_optimizer(model,rate=rate,entropy=entropy)
             self.population.append(self.checkpoint('founder-%03d'%member,model,opt))

@@ -35,6 +35,25 @@ def initialize_wait_only(model, alpha_logit=-3., beta_logit=9.):
             **_shift_wait(model,alpha_logit-float(bias[2]),beta_logit-float(bias[3]))}
 
 
+def mutate_inherited_wait(model, shift):
+    """Explicit exploration mutation, never an implicit reset of learned timing.
+
+    Add to the inherited WAIT fraction logits at every fixed context. All
+    non-WAIT embeddings, shared heads, quantity logits and legal domains stay
+    unchanged. New trajectories, optimizer moments and scores are required.
+    """
+    import math
+    if (not isinstance(shift,list) or len(shift)!=2 or
+            any(type(x)not in(int,float)or not math.isfinite(x)for x in shift)):
+        raise ValueError('FINITE_INHERITED_WAIT_LOGIT_SHIFT_PAIR_REQUIRED')
+    report=(_shift_wait(model,*shift)if any(shift)else
+            {'maximum_linear_residual':0.,'embedding_shift_norm':0.,
+             'legal_deadline_domain_changed':False,'quantity_head_shift_target':0.})
+    return {'operator':'explicit_inherited_wait_logit_mutation',
+            'logit_shift':shift,'optimizer_moments_must_be_reset':True,
+            'fresh_trajectories_and_scores_required':True,**report}
+
+
 def migrate_shared_prior(model):
     before=model.fractions.bias.detach().clone()
     try:
