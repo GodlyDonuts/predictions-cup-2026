@@ -276,6 +276,9 @@ class Experiment:
         env.resting_buy_funding=self.config.get('resting_buy_funding')
         from .read_target_sampling import validate as sampling_mode,FLAT
         env.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
+        from .managed_data_service import specification,ManagedDataService
+        service=specification(self.config.get('managed_data_service'))
+        if service is not None:ManagedDataService(env,service)
         return env
 
     def stream(self,model,env,training=False):
@@ -631,6 +634,9 @@ class Experiment:
         model.observation_protocol=self.config.get('observation_protocol',model.observation_protocol)
         from .read_target_sampling import validate as sampling_mode,FLAT
         model.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
+        from .managed_data_service import specification
+        service=specification(self.config.get('managed_data_service'))
+        model.managed_data_profile=None if service is None else service['profile']
         return model
 
     def founder_hyperparameters(self,member):
@@ -767,6 +773,17 @@ class Experiment:
                     'old':getattr(model,'acting_validation',STRICT),'new':target_mode,
                     'weights_unchanged':True,'fresh_optimizer_and_trajectories':True})
             model.acting_validation=target_mode
+            from .managed_data_service import profile,specification
+            service=specification(self.config.get('managed_data_service'))
+            old_profile=profile(getattr(model,'managed_data_profile',None))
+            new_profile=None if service is None else service['profile']
+            if old_profile!=new_profile:
+                if self.config.get('migrate_managed_data_profile')is not True:
+                    raise ValueError('EXPLICIT_MANAGED_DATA_PROFILE_MIGRATION_REQUIRED')
+                model.managed_data_profile=new_profile
+                frozen(self.output/('founder-%03d-managed-data-migration.json'%member),{
+                    'old':old_profile,'new':new_profile,'weightsPreserved':True,
+                    'optimizerMomentsReset':True,'freshTrajectoriesAndScoresRequired':True})
             from .read_target_sampling import validate as sampling_mode,FLAT
             old_sampling=sampling_mode(getattr(model,'read_target_sampling',FLAT))
             new_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))

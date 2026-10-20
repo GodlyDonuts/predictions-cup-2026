@@ -203,7 +203,8 @@ class EpisodeReader:
                     if e.now<e.end:
                         result=e.act_raw({k:v[j]for k,v in row['actions'].items()},observed[j])
                         if result['status']=='ALARM':
-                            target=e.decision_times(result.get('ready_ms'));e.advance_until_observable(min(e.end,max(before+1,target)))
+                            from .managed_data_service import advance_alarm
+                            advance_alarm(e,before,result)
                     reward=ledgers[i].transition()
                     if e.now>=e.end:reward+=ledgers[i].finish()['terminal_reward_correction']
                     if e.now!=row['after'][j]or reward!=row['reward'][j]:raise ValueError('EXACT_ACTION_REPLAY_CLOCK_AND_REWARD_REQUIRED')

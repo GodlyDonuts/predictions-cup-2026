@@ -75,7 +75,9 @@ class ApiPolicy(FusedRecurrentPolicy):
             out[name]=value
             meaningful=torch.ones_like(value,dtype=torch.bool)if name=='family'else ((out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6))
             if name=='side':meaningful=meaningful|trade_query
-            if name=='patience':meaningful=meaningful&(out['price']!=0)
+            if name=='patience':
+                meaningful=meaningful&(out['price']!=0)
+                if getattr(self,'managed_data_profile',None)is not None:meaningful=meaningful|(family==0)
             # V5 exposes every sampled latent in next-step local memory. Keep
             # the original sampling/conditioning law, but score its full joint.
             if statistics:

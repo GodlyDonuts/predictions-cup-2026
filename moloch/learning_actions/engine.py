@@ -327,6 +327,10 @@ class ApiEpisode(PreparedEpisode):
         publish(self,{'revision':revision,'fields':{'cash':cash,'lots':lots,'orders':orders,'advance':advance}})
 
     def _event(self,at,kind,value):
+        if kind=='managed_market_data_poll':
+            service=getattr(self,'managed_data_service',None)
+            if service is not None:service.event(at,value)
+            return
         if kind=='api_source_cursor':value.consume(self,at);return
         if kind=='trade_flow':
             self.trade_history.accept(at,value)
@@ -472,6 +476,7 @@ class ApiEpisode(PreparedEpisode):
         entities += [('relationship',r)for r in sorted(self.relationships)]
         entities += [('order',q)for q in sorted(self.known_orders)]
         entities += [('read',(v,key))for v in ('SIG','Kalshi','Polymarket')for key in self.keys[v]]
+        if getattr(self,'managed_data_service',None)is not None:entities.append(('data_service_control',None))
         entities += [('trade_print',(ex,j))for ex,page in self.known_trade_pages.items()
                      for j in range(len(page['data']))]
         entities += [('execution_ack',j)for j in range(len(self.known_acknowledgments))]
@@ -523,6 +528,8 @@ class ApiEpisode(PreparedEpisode):
                                    float(o.spec.side=='YES'),float(o.spec.action=='BUY')]
             elif kind=='stream_control':
                 masks['family'][i,11]=True;features[i,:6]=self.realtime.features();features[i,24]=4.
+            elif kind=='data_service_control':
+                masks['family'][i,11]=True;features[i,:5]=self.managed_data_service.features();features[i,24]=9.
             elif kind=='execution_ack':
                 row=self.known_acknowledgments[key]
                 features[i,:8]=[log_quantity(row['quantity'])/16.,log_quantity(row['remaining'])/16.,
@@ -599,7 +606,10 @@ class ApiEpisode(PreparedEpisode):
         # Full representable RFC3339 UTC future, bounded only by datetime format.
         span=max(1,253402300799999-self.now-1)
         timestamp=self.now+max(1,int(math.expm1(clock_fraction*math.log1p(span))))
-        if family==0:return {'status':'ALARM','ready_ms':timestamp}
+        if family==0:
+            result={'status':'ALARM','ready_ms':timestamp}
+            if getattr(self,'managed_data_profile',None)is not None:result['wake_on_observation']=not bool(int(action['patience']))
+            return result
         if family in (1,2,5,6):
             spec=OrderSpec(key,('YES','NO')[int(action['side'])],
                 'BUY'if family in (1,5)else'SELL',quantity,
@@ -635,6 +645,7 @@ class ApiEpisode(PreparedEpisode):
             return self.request_observation(*key,trade_limit=min(200,1+int(fraction*200)),
                 continue_trade_page=bool(int(action['side'])),**query)
         else:
+            if kind=='data_service_control':return self.managed_data_service.toggle()
             if kind=='stream_control':return self.realtime.disconnect()
             self.builder.clear();return {'status':'BUILDER_CLEARED'}
         self.api_sequence+=1

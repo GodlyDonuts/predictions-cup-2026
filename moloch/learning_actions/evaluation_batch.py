@@ -82,8 +82,8 @@ class EvaluationBatch:
             env.advance(min(env.end,before+self.latency))
             result=({'status':'HORIZON_REACHED_NO_DISPATCH'}if env.now>=env.end else env.act_raw(action,obs))
             if result['status']=='ALARM':
-                target=env.decision_times(result.get('ready_ms'))
-                env.advance_until_observable(min(env.end,max(before+1,target)))
+                from .managed_data_service import advance_alarm
+                advance_alarm(env,before,result)
             self.decisions[i]+=1;self.action_counts[i][int(action['family'])]+=1
             self.status_counts[i][result['status']]+=1;self.entity_counts[i][obs['entities'][int(action['market'])][0]]+=1
             self.last_rows.append({'case':i,'at_ms':before,'next_ms':env.now,'action':action,

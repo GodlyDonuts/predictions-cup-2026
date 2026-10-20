@@ -17,14 +17,19 @@ def contract(model):
             bool(getattr(model,'local_memory_joint_density',False)),validate(getattr(model,'acting_validation',STRICT)))
     from .read_target_sampling import validate as sampling_mode,FLAT
     mode=sampling_mode(getattr(model,'read_target_sampling',FLAT))
-    return value if mode==FLAT else value+(mode,)
+    if mode!=FLAT:value=value+(mode,)
+    from .managed_data_service import profile
+    extension=profile(getattr(model,'managed_data_profile',None))
+    return value if extension is None else value+(extension,)
 
 
 def require_contract(model,value):
     if value is None:
         from .read_target_sampling import validate as sampling_mode,FLAT
+        from .managed_data_service import profile
         if (getattr(model,'local_memory_joint_density',False)or
-                sampling_mode(getattr(model,'read_target_sampling',FLAT))!=FLAT):
+                sampling_mode(getattr(model,'read_target_sampling',FLAT))!=FLAT or
+                profile(getattr(model,'managed_data_profile',None))is not None):
             raise ValueError('EXPLICIT_BEHAVIOR_CONTRACT_REQUIRED')
     elif tuple(value)!=contract(model):raise ValueError('BEHAVIOR_ARCHITECTURE_OR_PROTOCOL_CHANGED')
 

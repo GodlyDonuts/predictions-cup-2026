@@ -34,3 +34,6 @@ def matching(environment,model):
     from .read_target_sampling import validate as sampling_mode,FLAT
     if sampling_mode(getattr(environment,'read_target_sampling',FLAT))!=sampling_mode(getattr(model,'read_target_sampling',FLAT)):
         raise ValueError('MODEL_AND_ENVIRONMENT_READ_SAMPLING_MISMATCH')
+    from .managed_data_service import profile
+    if profile(getattr(environment,'managed_data_profile',None))!=profile(getattr(model,'managed_data_profile',None)):
+        raise ValueError('MODEL_AND_ENVIRONMENT_MANAGED_DATA_MISMATCH')

@@ -78,8 +78,8 @@ class Stream:
         # or exhausted write budget cannot prevent independent external reads
         # or planning at the next measured inference tick.
         if result['status']=='ALARM':
-            target=self.env.decision_times(result.get('ready_ms'))
-            self.env.advance_until_observable(min(self.env.end,max(before+1,target)))
+            from .managed_data_service import advance_alarm
+            advance_alarm(self.env,before,result)
         self.decisions+=1
         self.action_counts[int(action['family'])]+=1
         self.status_counts[result['status']]+=1

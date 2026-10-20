@@ -70,8 +70,8 @@ class BatchStream:
             if env.now<env.end:
                 result=env.act_raw(action,observation)
                 if result['status']=='ALARM':
-                    target=env.decision_times(result.get('ready_ms'))
-                    env.advance_until_observable(min(env.end,max(before+1,target)))
+                    from .managed_data_service import advance_alarm
+                    advance_alarm(env,before,result)
             reward=self.ledgers[i].transition()
             if env.now>=env.end:
                 final=self.ledgers[i].finish();reward+=final['terminal_reward_correction']

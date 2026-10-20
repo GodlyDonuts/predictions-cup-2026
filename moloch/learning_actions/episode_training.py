@@ -23,6 +23,8 @@ def release_worlds(envs):
     # Closing an abandoned generator releases its own read-only SQL cursor; it
     # neither consumes future rows nor closes the shared source database.
     for env in envs:
+        service=getattr(env,'managed_data_service',None)
+        if service is not None:service.close()
         for event in env.clock._events:
             if event[3]=='api_source_cursor':
                 close=getattr(event[-1].rows,'close',None)
