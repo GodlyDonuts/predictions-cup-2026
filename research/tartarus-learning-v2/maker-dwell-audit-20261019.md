@@ -1,3 +1,5 @@
+[Later checked public-trade path and queue](public-trade-stream-20261019.md). Earlier queue/source observations below are historical.
+
 # Correct the handcrafted maker probe before interpreting its economics
 
 The previous handcrafted baseline anchored its refresh timer before reads, planning and write receipts. It could consume that entire interval before submitting quotes, then immediately start cancellation. Its zero fills therefore did not establish a passive-execution failure or absence of maker opportunities. This flaw is in the separate diagnostic harness; the neural collector and simulator clock were not changed.

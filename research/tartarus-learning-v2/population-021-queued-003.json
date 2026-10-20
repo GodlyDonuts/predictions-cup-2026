@@ -1,0 +1,76 @@
+{
+  "classification": "verified_waiting_public_trade_observation_profile_not_active_next_learner_or_roi",
+  "completedSelections": [
+    {
+      "file": "result-000-000.json",
+      "reward": 0.0
+    },
+    {
+      "file": "result-000-001.json",
+      "reward": -0.21889879181634642
+    },
+    {
+      "file": "result-000-002.json",
+      "reward": -0.15751318505027387
+    },
+    {
+      "file": "result-000-003.json",
+      "reward": -0.34421947915658196
+    },
+    {
+      "file": "result-000-004.json",
+      "reward": 0.0
+    }
+  ],
+  "controllerCommandVerified": true,
+  "controllerLauncherPid": 6928,
+  "controllerStatus": {
+    "cycle": 0,
+    "independentTestUsed": false,
+    "observedUtc": "2026-10-20T03:50:04.071469+00:00",
+    "phase": "waiting_for_completed_generation",
+    "productionChanged": false,
+    "trainerPid": 11404
+  },
+  "controllerWorkerPid": 26996,
+  "diagnosticFollowupChecks": {
+    "seconds": 17.031,
+    "success": true,
+    "tests": 12
+  },
+  "fullSizeNextProfileCapacityPending": true,
+  "independentTestUsed": false,
+  "nextLearnerStarted": false,
+  "nextProfile": {
+    "closed_episode_continue_after_kl_rejection": true,
+    "derived_public_trade_stream": true,
+    "entropy_coefficients": [
+      0.0,
+      0.001,
+      0.003,
+      0.01,
+      0.03
+    ],
+    "entropy_resample_probability": 0.25,
+    "omit_unused_closed_collection_bootstraps": true
+  },
+  "observedUtc": "2026-10-20T03:50:28.296150+00:00",
+  "oldControllerCancelledAndExitVerified": true,
+  "oldTrainerAcceptedUpdates": 135,
+  "oldTrainerCreation": 134369365072535753,
+  "oldTrainerLastEvent": "closed_episode_rollout_chunk",
+  "oldTrainerPid": 11404,
+  "oldTrainerTotalDecisions": 130748,
+  "oldTrainerVerifiedAlive": true,
+  "productionChanged": false,
+  "publicPathChecks": {
+    "seconds": 70.533,
+    "skipped": 4,
+    "success": true,
+    "tests": 378
+  },
+  "recordedReceiptConformance": "public-trade-stream-real-source-002.json",
+  "sourceCommit": "9383f27ce4f5868c94a39328a2e38db878c81d72",
+  "sourcePinsVerified": true,
+  "specSha256": "fcf160678fefa814e1e9a7cb89dd605eabca96767cf4d03b2f4aaf15183095d7"
+}

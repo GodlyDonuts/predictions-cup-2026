@@ -1,3 +1,5 @@
+[Later checked public-trade path and queue](public-trade-stream-20261019.md). Earlier queue/source observations below are historical.
+
 # Remove critic bootstraps unused by sealed full-return training
 
 Closed-episode collection previously performed another observation preparation and model inference after every compute chunk to produce a critic bootstrap. Sealed episode optimization replaces these targets with the complete realized return, including later rewards and the terminal correction. The chunk bootstrap is therefore unused on this path.

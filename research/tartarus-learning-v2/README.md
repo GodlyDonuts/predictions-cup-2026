@@ -1,4 +1,4 @@
-[Current ML: GPU020 active; GPU021 source5115a4fa queued](closed-bootstrap-elision-20261019.md). Verified89,646decisions/131accepted updates and four flat/negative development selections. Controller18544 waits for the completed generation; next GPU capacity/startup pending. Full history/API calibration/independent positive ROI remain incomplete. Earlier observations below are historical.
+[Current ML: GPU020 active; GPU021 public-trade profile queued](public-trade-stream-20261019.md). Verified130,748decisions/135updates; five flat/negative development selections. Checked9383f27c restores recorded connected public prints;109/109real-source receipt facts match. Controller26996 waits for completion; next GPU capacity/startup pending. Full history/API calibration/independent ROI remain incomplete. Earlier observations below are historical.
 
 [Maker baseline timing correction and next information gap](maker-dwell-audit-20261019.md): accepted legs did not ensure quote dwell. Corrected CPU-only TRAIN probes remain flat; the derived stream still lacks public-trade delivery. No active model or physics change.
 
