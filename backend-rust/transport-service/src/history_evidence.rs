@@ -3,6 +3,11 @@
 use super::*;
 use std::{fs::OpenOptions, io::Write, path::Path};
 
+pub(crate) fn valid_window(v:&Value,start:u64,end:u64,requested:u64,now:u64)->bool {
+    let terminal_empty=start==end&&v["coverage"]["complete"]==true&&v["candles"].as_array().is_some_and(|r|r.is_empty());
+    (start<end||terminal_empty)&&end<=requested&&end<=now&&end%60000==0
+}
+
 /// A weighted average is an observation, not exact cash or an order price.
 /// Compare its original decimal lexeme to [0,1] without f64 or rounding.
 pub(crate) fn validate_vwap(value:&Value)->Result<()> {
@@ -45,6 +50,14 @@ fn retain(path:&Path,endpoint:&str,received_ms:u64,data:&Value)->Result<()> {
 
 #[cfg(test)] mod tests {
     use super::*;
+    #[test] fn only_complete_empty_pages_allow_equal_bounds(){
+        let empty=json!({"candles":[],"coverage":{"complete":true}});
+        assert!(valid_window(&empty,60000,60000,60000,60000));
+        assert!(!valid_window(&empty,60000,60000,0,60000));
+        assert!(!valid_window(&empty,60000,60000,60000,0));
+        assert!(!valid_window(&json!({"candles":[{}],"coverage":{"complete":true}}),60000,60000,60000,60000));
+        assert!(!valid_window(&json!({"candles":[],"coverage":{"complete":false}}),60000,60000,60000,60000));
+    }
     #[test] fn weighted_averages_keep_precision_without_relaxing_cash(){
         for raw in ["0.8500000000000001","0.8630991379310345","0","1.0000000","1e-20","-0.0"]{
             validate_vwap(&serde_json::from_str(raw).unwrap()).unwrap();
