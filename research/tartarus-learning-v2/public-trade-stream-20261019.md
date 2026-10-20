@@ -1,3 +1,5 @@
+[GPU021 has launched and is collecting its first cohort](population-021-active-20261020.md). Earlier waiting-queue observations below are historical; committed candidate updates and profitability remain unproved.
+
 [Latest checked identity cache and queue004](entity-identity-cache-20261020.md). Earlier source/queue observations below are historical.
 
 # Recorded public trades reach actor flow through the derived stream

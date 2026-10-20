@@ -1,0 +1,208 @@
+{
+  "actualLearnerProfitabilityEstablished": false,
+  "allFounders": [
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.0,
+      "learningRate": 2.4e-05,
+      "member": 0,
+      "newFounderSha256": "7f045d064435af706c2067df8c8f9c511c13756cddb0322d0820549f398238e0",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_retained_generation_member",
+      "sourceCheckpointSha256": "567da103e3db39da43f20d79fae8dc62420b01e9b3da8919961e785ae77ed573"
+    },
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.001,
+      "learningRate": 1e-05,
+      "member": 1,
+      "newFounderSha256": "6f4aae34a8f28fd0e41e0ff0572d7d51f92fe46779ca35ef0ae73a116ff38e8f",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_retained_generation_member",
+      "sourceCheckpointSha256": "a4883145f55f8c9f95b27e0cfde49606970ea1fc596dc3cc7f897d22be41de49"
+    },
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.005,
+      "learningRate": 5e-06,
+      "member": 2,
+      "newFounderSha256": "4293db76601a76c52e973ae9876a6e71ae5597c38569d01c4d197be5f0070241",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_retained_generation_member",
+      "sourceCheckpointSha256": "3c07d4a6ae9c59be93fed56fd93fc0f2fdcae1ea2aa56ca7dc4e455fabfdacc6"
+    },
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.03,
+      "learningRate": 1e-05,
+      "member": 3,
+      "newFounderSha256": "88f06ceb4079676023b9db3ecec32f02e0475b0a45327852d35bd6d1c5c3e4a1",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_retained_generation_member",
+      "sourceCheckpointSha256": "1a629dbac1cbd71d9445a9c5ed2e0dd52d3097ce2d7ec09712510d73be5f8478"
+    },
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.0,
+      "learningRate": 2.88e-05,
+      "member": 4,
+      "newFounderSha256": "05025a6b0014abcaa5f1d98adb9fec4423353af63d7a72d8dc9b32037b94506c",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_evolved_child",
+      "sourceCheckpointSha256": "53bb0ac67bcb38270bb94a3204fde30032e2127a825a0f6abd48211ca61a52db"
+    },
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.0005,
+      "learningRate": 5e-06,
+      "member": 5,
+      "newFounderSha256": "1cab5ffafd50d3df2616f19f64476b194113291fa8f64a578096aac65b97efff",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_evolved_child",
+      "sourceCheckpointSha256": "8c563629aa7c46b1096f9a04318849f752b02e8eb1fda810cb7dde01e4d3873f"
+    },
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.0025,
+      "learningRate": 2.5e-06,
+      "member": 6,
+      "newFounderSha256": "371af8f86217c9c64b32c4e176af26bf6450e191110df272a5a8e14cc17a79db",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_evolved_child",
+      "sourceCheckpointSha256": "46264feecf3d7ceab01a5e6000d5bdd155c7a0a11de9ede56400aa3714254983"
+    },
+    {
+      "allParameterTensorsExactlyEqual": true,
+      "entropyCoefficient": 0.036,
+      "learningRate": 8.000000000000001e-06,
+      "member": 7,
+      "newFounderSha256": "1d8d056f167aaf995afb4676542ffe007d29aa1e021cb892ac1c07015f5cab4e",
+      "optimizerMomentsEmpty": true,
+      "origin": "checked_evolved_child",
+      "sourceCheckpointSha256": "b6e7b783777bea6e73e95573bdbaa561c473196df4518aaad36dc32f369d251b"
+    }
+  ],
+  "classification": "verified_new_gpu_source_parent_transfer_and_collection_not_committed_candidate_learning_or_roi",
+  "committedLearnerUpdatesVerified": false,
+  "cpuIdentityCacheSourceVerified": true,
+  "currentProgress": {
+    "event": "closed_episode_rollout_chunk",
+    "total_decisions": 7936,
+    "total_updates": 0
+  },
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "enabledProfiles": {
+    "closedEpisodeReplay": true,
+    "continueAfterKlRejection": true,
+    "derivedPublicTrades": true,
+    "entropyChoices": [
+      0.0,
+      0.001,
+      0.003,
+      0.01,
+      0.03
+    ],
+    "entropyResampleProbability": 0.25,
+    "episodeObservationDigest": "legacy"
+  },
+  "fullReturnCapacity": {
+    "acceptedUpdates": 3,
+    "decisions": 359,
+    "device": "cuda:0",
+    "fullReturnTargets": true,
+    "optimizerChangedWeights": true,
+    "peakCudaAllocatedBytes": 5604380160,
+    "worlds": 8
+  },
+  "fullReturnCapacityResultSha256": "2dbd6c60b87fb4670136aea901c07898f8f746ac6c3266433ab82197ee6da61e",
+  "independentTestUsed": false,
+  "newExperimentSha256": "a1fcce341b6c7a863cf43f901dc853a401a5a8252ec4a26fa55bb3a2064c7e89",
+  "observedUtc": "2026-10-20T04:34:45.855657+00:00",
+  "oldGeneration": {
+    "acceptedUpdates": 241,
+    "cycle": 0,
+    "decisions": 181459,
+    "reproduction": [
+      {
+        "donor": 0,
+        "loser": 4,
+        "operator": "local"
+      },
+      {
+        "donor": 1,
+        "loser": 5,
+        "operator": "medium"
+      },
+      {
+        "donor": 2,
+        "loser": 6,
+        "operator": "medium"
+      },
+      {
+        "donor": 3,
+        "loser": 7,
+        "operator": "local"
+      }
+    ],
+    "scores": [
+      {
+        "member": 0,
+        "resultSha256": "7971f134a240e34b271d00b242edf95542589342622946ae89d5637074fc3a6c",
+        "selectionReward": 0.0
+      },
+      {
+        "member": 1,
+        "resultSha256": "e0d266149bcd65e11d63dc37fe8d48207bc15cc58764693ed5901ef6ab8651d9",
+        "selectionReward": -0.21889879181634642
+      },
+      {
+        "member": 2,
+        "resultSha256": "0551de000fd8e5081c8972a5a66c60f06d1c2c65fbc0c4d108992125c578e815",
+        "selectionReward": -0.15751318505027387
+      },
+      {
+        "member": 3,
+        "resultSha256": "1316f0392817df2053ba36de0485b1e66a8fe715966cc535e1b41e84a7ba333e",
+        "selectionReward": -0.34421947915658196
+      },
+      {
+        "member": 4,
+        "resultSha256": "7d6c98d2b5565b44c4041b71000bcfac875db1e4f92f5bc73a9d78f1f3179a64",
+        "selectionReward": 0.0
+      },
+      {
+        "member": 5,
+        "resultSha256": "fd1c908130421d2fae60b0d76c6da370de10cde07e3a0bcdec67b49069ff3f94",
+        "selectionReward": -0.3163950048754238
+      },
+      {
+        "member": 6,
+        "resultSha256": "0e3b262408b7184881fe8f9c2774487714484046f534feef30624a4e5f45c7d3",
+        "selectionReward": -0.48144195821920516
+      },
+      {
+        "member": 7,
+        "resultSha256": "3daee16bddeb209039d0e17078faf760e028d494c9f6eda678c246c9190bfcc6",
+        "selectionReward": -0.4104743459170664
+      }
+    ]
+  },
+  "oldWorkerConfirmedAbsent": true,
+  "ordinaryCapacity": {
+    "contract_features": 469,
+    "cuda_peak_allocated_bytes": 5440292864,
+    "device": "cuda:0",
+    "identical_wallets_orders_fills_and_clocks": true,
+    "parameters": 58187885,
+    "steps_per_world": 32,
+    "worlds": 8
+  },
+  "ordinaryCapacityResultSha256": "2c86d9621452fe57dcc7ab1296520ffe52f7955db07955d4e556443dc56c3713",
+  "packedDigestEnabled": false,
+  "productionChanged": false,
+  "sourceCommit": "157c873a3ac6970a9fc975acff21d774bee66b5f",
+  "sourcePinsVerified": true,
+  "workerAlive": true,
+  "workerCreation": 134369442673710311,
+  "workerPid": 36576
+}

@@ -1,3 +1,5 @@
+[GPU021 has launched and is collecting its first cohort](population-021-active-20261020.md). Earlier waiting-queue observations below are historical; committed candidate updates and profitability remain unproved.
+
 # Exact entity-layout cache reduces observation-building time
 
 The live collection profile found observation construction in 43.58% of sampled main-thread stacks. `ApiEpisode.observe` rebuilt the same seven identity columns row by row, even when the ordered entity layout was unchanged. The checked change caches only those default identity columns as an immutable float32 matrix keyed by the exact ordered entities, then copies them into each new observation.
