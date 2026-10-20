@@ -1,0 +1,50 @@
+{
+  "observedUtc": "2026-10-20T06:24:08.883Z",
+  "classification": "independently_decoded_historical_price_indexes_not_training_admission",
+  "sourceCommit": "c2567e89534bf89cac7d1cab9f6f35ce5af1ee19",
+  "indexerSha256": "fc1b601acc27d07dd23d6a1832605f28e425b0ec6ae12ac20b71608c6b9081eb",
+  "verifierSha256": "a4d1680522843d6719f413729fdf29484560515bbf80b413b845b3b682c64dc8",
+  "reports": [
+    {
+      "role": "training_history_recovery_only",
+      "manifestSha256": "89ab9b727e36a861606d9c4d23c26e21041813859f0b5427bb2ea33f9e6ccb14",
+      "normalizedDecodedSha256": "47ea52e1a433e535512a9b569fde73e165d6c26582f5cdbdd68e112db5167028",
+      "assets": 378,
+      "records": 22396189,
+      "packedDataBytes": 537508536,
+      "buildWallMs": 20032.4692,
+      "independentDecodeAuditWallMs": 12964.6424,
+      "lookupBenchmark": {
+        "queries": 1000000,
+        "wallMs": 672.8274,
+        "receiptChecksum": 2229189,
+        "classification": "warm_single_asset_source_time_lookup_not_full_training_benchmark"
+      },
+      "allPackedBytesAndReceiptReferencesVerified": true,
+      "trainingAdmitted": false,
+      "originalHistoricalDeliveryVerified": false
+    },
+    {
+      "role": "evolution_history_recovery_only",
+      "manifestSha256": "d738f8b6b6e51b3c1a718423387826ea776c6ec208f7b50d83721125248f0409",
+      "normalizedDecodedSha256": "eebcc5fea76aff5ca9738fab0d001f9239c0d50a59e1d5d5c07d98947a843868",
+      "assets": 378,
+      "records": 2161404,
+      "packedDataBytes": 51873696,
+      "buildWallMs": 2359.5395,
+      "independentDecodeAuditWallMs": 1921.3397999999997,
+      "lookupBenchmark": {
+        "queries": 1000000,
+        "wallMs": 540.3122000000003,
+        "receiptChecksum": 0,
+        "classification": "warm_single_asset_source_time_lookup_not_full_training_benchmark"
+      },
+      "allPackedBytesAndReceiptReferencesVerified": true,
+      "trainingAdmitted": false,
+      "originalHistoricalDeliveryVerified": false
+    }
+  ],
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "gpuDiagnostic": false
+}
