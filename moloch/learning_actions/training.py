@@ -90,8 +90,9 @@ def collect_chunk(stream,decisions=128,*,reward_ledger=None):
         if frames[-1]['terminal']:value=torch.zeros_like(frames[-1]['old_value'])
         else:
             view=tensors(stream.env.observe(),stream.device)
-            value=stream.model.step(**view,hidden=stream.hidden,
-                reset=torch.tensor([False],device=stream.device),deterministic=True)['value']
+            kwargs={**view,'hidden':stream.hidden,'reset':torch.tensor([False],device=stream.device)}
+            value=(stream.model.bootstrap_value(**kwargs)if getattr(stream,'rollout_only',False)
+                   else stream.model.step(**kwargs,deterministic=True)['value'])
     return Chunk(frames,before,stream.env.role if hasattr(stream.env,'role')else'train',
                  frames[0]['initial_hidden'],value.detach(),stream,guard,contract(stream.model))
 

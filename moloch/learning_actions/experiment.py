@@ -32,6 +32,7 @@ class Experiment:
             raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_REQUIRE_BATCH_EVALUATION')
         self.config=config;self.output=Path(output)
         if type(config.get('evaluation_actions_only',False))is not bool:raise ValueError('EXPLICIT_EVALUATION_STATISTICS_PROFILE')
+        if type(config.get('compact_rollout_statistics',False))is not bool:raise ValueError('EXPLICIT_ROLLOUT_STATISTICS_PROFILE')
         self.output.mkdir(parents=True,exist_ok=False)
         self.development=config['mode']=='inspected_development'
         if config['mode']not in('inspected_development','full_history'):
@@ -223,7 +224,8 @@ class Experiment:
             frozen(self.output/'compute-calibration.json',self.calibration)
         return Stream(env,model,calibration=self.calibration,record_training=training,
                       behavior_guard=self.config.get('on_policy_guard','sha256'),
-                      actions_only=not training and self.config.get('evaluation_actions_only',False))
+                      actions_only=not training and self.config.get('evaluation_actions_only',False),
+                      rollout_only=training and self.config.get('compact_rollout_statistics',False))
 
     def make_optimizer(self,model,rate=None,entropy=None):
         entropy=self.config.get('entropy_coefficient',.01)if entropy is None else entropy
@@ -331,7 +333,8 @@ class Experiment:
             frozen(self.output/'compute-calibration.json',self.calibration)
         stream=BatchStream(envs,model,ledgers,calibration=self.calibration,
                            behavior_guard=self.config.get('on_policy_guard','sha256'),
-                           compact_finished=self.config.get('compact_finished_worlds',False))
+                           compact_finished=self.config.get('compact_finished_worlds',False),
+                           rollout_only=self.config.get('compact_rollout_statistics',False))
         closed=self.config.get('closed_episode_return_replay',False)
         if closed:self.train_closed_episode(stream,model,optimizer)
         while not closed and any(e.now<e.end for e in envs):

@@ -27,7 +27,9 @@ def inputs(observations,device):
 
 
 class BatchStream:
-    def __init__(self,envs,model,ledgers,*,calibration=None,behavior_guard='sha256',compact_finished=False):
+    def __init__(self,envs,model,ledgers,*,calibration=None,behavior_guard='sha256',compact_finished=False,rollout_only=False):
+        if type(rollout_only)is not bool:raise ValueError('EXPLICIT_ROLLOUT_STATISTICS_PROFILE')
+        self.rollout_only=rollout_only
         if not envs or len(envs)!=len(ledgers)or any(e.role!='train'for e in envs):
             raise ValueError('ONE_TRAIN_ROLE_LEDGER_PER_INDEPENDENT_WORLD_REQUIRED')
         if len({id(e)for e in envs})!=len(envs):raise ValueError('WORLDS_MUST_NOT_SHARE_MUTABLE_ACCOUNTS')
@@ -52,7 +54,8 @@ class BatchStream:
         prepared=inputs(observations,self.device)
         reset=torch.tensor([n==0 or not live for n,live in zip(self.decisions,active)],device=self.device)
         initial=self.hidden
-        with torch.no_grad():out=self.model.step(**prepared,hidden=self.hidden,reset=reset,deterministic=deterministic)
+        method=self.model.step_rollout if self.rollout_only else self.model.step
+        with torch.no_grad():out=method(**prepared,hidden=self.hidden,reset=reset,deterministic=deterministic)
         self.hidden=out['hidden']
         packed=None
         if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
@@ -103,8 +106,8 @@ class BatchStream:
         if not frames:raise ValueError('NO_ACTIVE_WORLD_FRAMES')
         with torch.no_grad():
             prepared=inputs([e.observe()for e in self.envs],self.device)
-            value=self.model.step(**prepared,hidden=self.hidden,
-                reset=torch.zeros(len(self.envs),device=self.device,dtype=torch.bool),deterministic=True)['value']
+            kwargs={**prepared,'hidden':self.hidden,'reset':torch.zeros(len(self.envs),device=self.device,dtype=torch.bool)}
+            value=(self.model.bootstrap_value(**kwargs)if self.rollout_only else self.model.step(**kwargs,deterministic=True)['value'])
             value=value*torch.tensor([e.now<e.end for e in self.envs],device=self.device)
         return Chunk(frames,before,'train',frames[0]['initial_hidden'],value.detach(),self,self.behavior_guard,contract(self.model))
 
@@ -116,6 +119,7 @@ class _ActiveWorldView(BatchStream):
         self.envs=[parent.envs[i]for i in indices];self.ledgers=[parent.ledgers[i]for i in indices]
         self.model=parent.model;self.device=parent.device;self.calibration=parent.calibration
         self.behavior_guard=parent.behavior_guard;self.compact_finished=False;self.latency=parent.latency
+        self.rollout_only=parent.rollout_only
         self.decisions=[parent.decisions[i]for i in indices]
         self.action_counts=[parent.action_counts[i]for i in indices];self.completed={}
         self._hidden=parent.hidden.index_select(0,self.indices)

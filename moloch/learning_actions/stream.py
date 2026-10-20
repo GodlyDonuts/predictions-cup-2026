@@ -39,8 +39,11 @@ def calibrate(environment,model,rounds=12):
 
 
 class Stream:
-    def __init__(self,environment,model,*,calibration=None,record_training=False,behavior_guard='sha256',actions_only=False):
+    def __init__(self,environment,model,*,calibration=None,record_training=False,behavior_guard='sha256',actions_only=False,rollout_only=False):
         if type(actions_only)is not bool or(actions_only and record_training):raise ValueError('ACTIONS_ONLY_IS_EVALUATION_ONLY')
+        if type(rollout_only)is not bool or(rollout_only and(not record_training or actions_only)):
+            raise ValueError('COMPACT_ROLLOUT_REQUIRES_TRAINING_CAPTURE')
+        self.rollout_only=rollout_only
         self.actions_only=actions_only
         from .state_encoding import matching
         matching(environment,model)
@@ -59,7 +62,7 @@ class Stream:
         before=self.env.now;observed=self.env.observe();inputs=tensors(observed,self.device)
         reset=torch.tensor([self.decisions==0],device=self.device)
         initial_hidden=self.hidden
-        method=self.model.step_actions_only if self.actions_only else self.model.step
+        method=self.model.step_rollout if self.rollout_only else self.model.step_actions_only if self.actions_only else self.model.step
         with torch.no_grad():out=method(**inputs,hidden=self.hidden,reset=reset,deterministic=deterministic)
         self.hidden=out['hidden']
         if forced_action is not None:action=forced_action

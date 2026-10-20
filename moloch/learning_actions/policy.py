@@ -24,7 +24,19 @@ class ApiPolicy(FusedRecurrentPolicy):
         encoded,h=self.encode(contracts,global_state,present,hidden,reset)
         return self._act_from_encoding(encoded,h,present,masks,deterministic=deterministic,statistics=False)
 
-    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None,statistics=True):
+    def step_rollout(self,contracts,global_state,present,masks,hidden,reset,deterministic=False):
+        if torch.is_grad_enabled():raise ValueError('ROLLOUT_STATISTICS_IS_NO_GRAD_ONLY')
+        encoded,h=self.encode(contracts,global_state,present,hidden,reset)
+        return self._act_from_encoding(encoded,h,present,masks,deterministic=deterministic,rollout_only=True)
+
+    def bootstrap_value(self,contracts,global_state,present,masks,hidden,reset):
+        if torch.is_grad_enabled():raise ValueError('BOOTSTRAP_VALUE_IS_NO_GRAD_ONLY')
+        _,h=self.encode(contracts,global_state,present,hidden,reset)
+        return self.value(h).squeeze(-1)
+
+    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None,statistics=True,rollout_only=False):
+        if type(rollout_only)is not bool or(rollout_only and(not statistics or actions is not None or torch.is_grad_enabled())):
+            raise ValueError('ROLLOUT_STATISTICS_IS_NO_GRAD_ONLY')
         if type(statistics)is not bool or(not statistics and(actions is not None or torch.is_grad_enabled())):
             raise ValueError('ACTIONS_ONLY_IS_EVALUATION_ONLY')
         if not statistics and sampler is not None:
@@ -51,7 +63,7 @@ class ApiPolicy(FusedRecurrentPolicy):
         trade_query=(family==10)&(query_mask[batch,market,0]if query_mask is not None else torch.zeros_like(family,dtype=torch.bool))
         if statistics:
             logprob=dist.log_prob(market).double()+family_dist.log_prob(family).double()
-            entropy=dist.entropy().double()+family_dist.entropy().double()
+            if not rollout_only:entropy=dist.entropy().double()+family_dist.entropy().double()
         for name,head in self.heads.items():
             if name=='family':continue
             head_logits=head(selected)
@@ -67,11 +79,11 @@ class ApiPolicy(FusedRecurrentPolicy):
             if statistics:
                 scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
                 logprob+=torch.where(scored,d.log_prob(value).double(),0.)
-                entropy+=torch.where(scored,d.entropy().double(),0.)
+                if not rollout_only:entropy+=torch.where(scored,d.entropy().double(),0.)
             selected=selected+self.conditioners[name](value)*meaningful.unsqueeze(-1)
         parameters=(torch.nn.functional.softplus(self.fractions(selected))+1).double()
         for name,pair in [('target_fraction',(0,1)),('child_fraction',(2,3))]:
-            d=beta(parameters[:,pair[0]],parameters[:,pair[1]],fast,finite=not statistics)
+            d=beta(parameters[:,pair[0]],parameters[:,pair[1]],fast,finite=not statistics or rollout_only)
             value=actions[name]if actions is not None else d.mean if deterministic else d.sample()if sampler is None else sampler.beta(d)
             out[name]=value
             order=(out['family']==1)|(out['family']==2)|(out['family']==5)|(out['family']==6)
@@ -79,11 +91,12 @@ class ApiPolicy(FusedRecurrentPolicy):
             if statistics:
                 scored=torch.ones_like(meaningful)if getattr(self,'local_memory_joint_density',False)else meaningful
                 logprob+=torch.where(scored,d.log_prob(value),0.)
-                entropy+=torch.where(scored,d.entropy(),0.)
+                if not rollout_only:entropy+=torch.where(scored,d.entropy(),0.)
         if(fast or not statistics)and not hasattr(self,'query_times'):
             from .acting_validation import validate_samples
             validate_samples(out)
         if not statistics:return {'actions':out,'hidden':h}
+        if rollout_only:return {'actions':out,'logprob':logprob,'hidden':h,'value':self.value(h).squeeze(-1)}
         return {'actions':out,'logprob':logprob,'entropy':entropy,'hidden':h,
                 'value':self.value(h).squeeze(-1),'monetary_quantiles':self.monetary_quantiles(h),
                 'success_logit':self.target_success(h).squeeze(-1)}

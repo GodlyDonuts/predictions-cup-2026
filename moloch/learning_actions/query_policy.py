@@ -16,10 +16,10 @@ class QueryWindowPolicy(FullDepthPolicy):
         self.query_filter=nn.Linear(hidden_size+256,2)
         self.query_times=nn.Linear(hidden_size+256,4)
 
-    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None,statistics=True):
+    def _act_from_encoding(self,encoded,h,present,masks,actions=None,deterministic=False,*,sampler=None,statistics=True,rollout_only=False):
         from .acting_validation import enabled,categorical,beta
         fast=enabled(self,actions,sampler)
-        out=super()._act_from_encoding(encoded,h,present,masks,actions,deterministic,sampler=sampler,statistics=statistics)
+        out=super()._act_from_encoding(encoded,h,present,masks,actions,deterministic,sampler=sampler,statistics=statistics,rollout_only=rollout_only)
         batch=torch.arange(h.shape[0],device=h.device);a=out['actions']
         selected=torch.cat((h,encoded[batch,a['market']]),-1)
         query=masks['trade_query'][batch,a['market'],0]&(a['family']==10)&(a['side']==0)
@@ -29,17 +29,17 @@ class QueryWindowPolicy(FullDepthPolicy):
         if statistics:
             scored=torch.ones_like(query)if getattr(self,'local_memory_joint_density',False)else query
             out['logprob']=out['logprob']+torch.where(scored,d.log_prob(value).double(),0.)
-            out['entropy']=out['entropy']+torch.where(scored,d.entropy().double(),0.)
+            if not rollout_only:out['entropy']=out['entropy']+torch.where(scored,d.entropy().double(),0.)
         active=query&(value==1)
         params=(torch.nn.functional.softplus(self.query_times(selected))+1).double()
         for name,pair in [('query_from_fraction',(0,1)),('query_to_fraction',(2,3))]:
-            dist=beta(params[:,pair[0]],params[:,pair[1]],fast,finite=not statistics)
+            dist=beta(params[:,pair[0]],params[:,pair[1]],fast,finite=not statistics or rollout_only)
             value=actions[name]if actions is not None else dist.mean if deterministic else dist.sample()if sampler is None else sampler.beta(dist)
             a[name]=value
             if statistics:
                 scored=torch.ones_like(active)if getattr(self,'local_memory_joint_density',False)else active
                 out['logprob']=out['logprob']+torch.where(scored,dist.log_prob(value),0.)
-                out['entropy']=out['entropy']+torch.where(scored,dist.entropy(),0.)
+                if not rollout_only:out['entropy']=out['entropy']+torch.where(scored,dist.entropy(),0.)
         if fast or not statistics:
             from .acting_validation import validate_samples
             validate_samples(a)
