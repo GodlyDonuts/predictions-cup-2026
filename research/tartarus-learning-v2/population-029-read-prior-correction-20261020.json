@@ -1,0 +1,42 @@
+{
+  "observedUtc": "2026-10-20T23:15:42.653658+00:00",
+  "oldExactPid": 25992,
+  "oldCreationFiletime": "134370116683768996",
+  "oldRunPreserved": true,
+  "oldWeightsImported": false,
+  "configurationSha256": "aece0a99e5d8a74b501fdd5ce0e22f912b920eaa0d196e9620691d6bdb2b26af",
+  "sourceCommit": "f4df828db9fe70240e887905450400da60bea4f7",
+  "correction": "READ is family 10; family 3 is CANCEL",
+  "founderBiasChecks": [
+    {
+      "member": 0,
+      "cancellationDelta": 0.0,
+      "readDelta": 1.0,
+      "allLegalFamiliesRetained": true
+    },
+    {
+      "member": 1,
+      "cancellationDelta": 0.0,
+      "readDelta": 1.0,
+      "allLegalFamiliesRetained": true
+    },
+    {
+      "member": 2,
+      "cancellationDelta": 0.0,
+      "readDelta": 1.0,
+      "allLegalFamiliesRetained": true
+    },
+    {
+      "member": 3,
+      "cancellationDelta": 0.0,
+      "readDelta": 1.0,
+      "allLegalFamiliesRetained": true
+    }
+  ],
+  "replayAndScoringUnchanged": true,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "cpuMechanicsProofSha256": "8a15f4b2ceceb06c3efd8fea8a70d84b74a334db85763c0ad6a5cacd58596997",
+  "progressFileExisted": false,
+  "sourceEvidenceSha256": "e267b0730b2a98222132e30e706af8be3bf5c0c461159d969842173cf890889f"
+}

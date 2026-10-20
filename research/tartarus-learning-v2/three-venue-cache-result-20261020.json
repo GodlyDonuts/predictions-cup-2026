@@ -1,0 +1,60 @@
+{
+  "classification": "partial_original_three_venue_cache_not_independent_qualification",
+  "sigManifestSha256": "3cdd6416916f9f44f5cc1c5d1ab873e0c910c9dce93cb5eacd83738a89caf8a3",
+  "externalManifestSha256": "8dc97035921dc5defabeac3a2b57d66e4077182f33af622d6d4c64f0c7592f5e",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "cacheManifestSha256": "f066e68bbf40fa5c70386054e517eabe29ad9b2b3ad24aaae258fc8f97387957",
+  "calendarRolesMs": {
+    "fit": [
+      1792049104423,
+      1792195200000
+    ],
+    "search": [
+      1792195200000,
+      1792533419095
+    ]
+  },
+  "sourceCoverage": {
+    "fit/SIG": {
+      "rows": 1993932,
+      "firstAvailableMs": 1792049116175,
+      "lastAvailableMs": 1792193246370,
+      "completeSourceCoverage": false
+    },
+    "search/SIG": {
+      "rows": 3068958,
+      "firstAvailableMs": 1792196235173,
+      "lastAvailableMs": 1792419229249,
+      "completeSourceCoverage": false
+    },
+    "search/Kalshi": {
+      "rows": 3577294,
+      "firstAvailableMs": 1792302906304,
+      "lastAvailableMs": 1792533259071,
+      "completeSourceCoverage": false
+    },
+    "search/Polymarket": {
+      "rows": 5947570,
+      "firstAvailableMs": 1792362930904,
+      "lastAvailableMs": 1792533419094,
+      "completeSourceCoverage": false
+    },
+    "fit/Kalshi": {
+      "rows": 0,
+      "firstAvailableMs": null,
+      "lastAvailableMs": null,
+      "completeSourceCoverage": false
+    },
+    "fit/Polymarket": {
+      "rows": 0,
+      "firstAvailableMs": null,
+      "lastAvailableMs": null,
+      "completeSourceCoverage": false
+    }
+  },
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0,
+  "sourceEvidenceSha256": "8995de459184db81634ccae9ba273977c6f99a93d32f283301b98554667d73b8"
+}

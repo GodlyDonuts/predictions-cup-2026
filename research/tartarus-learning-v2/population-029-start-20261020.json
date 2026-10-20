@@ -1,0 +1,78 @@
+{
+  "classification": "fresh_supervised_process_start_not_optimizer_or_ROI_proof",
+  "launch": {
+    "observedUtc": "2026-10-20T23:15:46.850880+00:00",
+    "supervisorPid": 19020,
+    "childPid": 19064,
+    "childCreationFiletime": "134370117468456441",
+    "configurationSha256": "aece0a99e5d8a74b501fdd5ce0e22f912b920eaa0d196e9620691d6bdb2b26af",
+    "sourceCommit": "f4df828db9fe70240e887905450400da60bea4f7",
+    "productionChanged": false,
+    "automaticRestart": false
+  },
+  "priorCpuMechanicsProof": {
+    "sourceCommit": "f4df828db9fe70240e887905450400da60bea4f7",
+    "configurationSha256": "4b93a48a2e87818b8a46658d9e81a5170957e8ef98ccafd47cb36187c147073a",
+    "datasetResultSha256": "8995de459184db81634ccae9ba273977c6f99a93d32f283301b98554667d73b8",
+    "freshFounders": [
+      {
+        "member": 0,
+        "decisions": 32,
+        "simulationMs": 5596,
+        "paidRequests": {
+          "SIG": 9,
+          "Kalshi": 0,
+          "Polymarket": 0
+        },
+        "checkpointSha256": "218506558b9f398c2f25247a7f579cf6f72d142898d6a4a24a77cd852222d872",
+        "financialProductionChanged": false
+      },
+      {
+        "member": 1,
+        "decisions": 20,
+        "simulationMs": 300000,
+        "paidRequests": {
+          "SIG": 0,
+          "Kalshi": 0,
+          "Polymarket": 0
+        },
+        "checkpointSha256": "66f656c5bed873767af4f534c67da265b5a52b1b49bc0782e4f82a4ca90a6db8",
+        "financialProductionChanged": false
+      },
+      {
+        "member": 2,
+        "decisions": 32,
+        "simulationMs": 24927,
+        "paidRequests": {
+          "SIG": 41,
+          "Kalshi": 0,
+          "Polymarket": 0
+        },
+        "checkpointSha256": "378d4f8f38df3a8e72908efe2a030c5c7fb7b573ccf46bcdfe6a2f6301ee5674",
+        "financialProductionChanged": false
+      },
+      {
+        "member": 3,
+        "decisions": 32,
+        "simulationMs": 41468,
+        "paidRequests": {
+          "SIG": 68,
+          "Kalshi": 0,
+          "Polymarket": 0
+        },
+        "checkpointSha256": "d412414d214899a234a21922d7cf8da00f1ca89d5acb340a9921b35593565a51",
+        "financialProductionChanged": false
+      }
+    ],
+    "oldWeightsImported": false,
+    "cpuRehearsalOnly": true,
+    "trainingAdmitted": false,
+    "independentTestUsed": false,
+    "productionChanged": false
+  },
+  "correctedFamilyRead": 10,
+  "priorCpuActorWeightsReused": false,
+  "oldPopulationWeightsImported": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}
