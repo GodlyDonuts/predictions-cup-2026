@@ -5,6 +5,7 @@ from .compile_prospective_source import compile_capture,sha
 from .prospective_source import ProspectiveDecoder
 from .test_prospective_source import rest,ws,book,iso
 from .test_compile_breadth_index import encoded
+from .selection import DataUse
 
 
 def write(path,value):path.write_text(json.dumps(value,sort_keys=True));return sha(path)
@@ -35,7 +36,8 @@ class CompileCaptureTests(unittest.TestCase):
     def compile(self,parent,args,**kwargs):
         root,canonical,audit,session=args
         return compile_capture(root,sha(root/'complete.json'),canonical,audit,sha(audit),session,parent/'output',
-            bounds=kwargs.get('bounds',(900,1600)),role=kwargs.get('role','search'),heldout_start=kwargs.get('cut',2000))
+            bounds=kwargs.get('bounds',(900,1600)),role=kwargs.get('role','search'),heldout_start=kwargs.get('cut',2000),
+            data_use=DataUse(parent/'registry'))
 
     def test_streamed_metadata_regression_original_scope_and_both_clock_channels(self):
         with tempfile.TemporaryDirectory()as td:
@@ -63,6 +65,15 @@ class CompileCaptureTests(unittest.TestCase):
             v=json.loads(audit.read_bytes());v['canonicalTransportSha256']=sha(canonical);write(audit,v)
             with self.assertRaisesRegex(ValueError,'PRODUCER_HASH_MISMATCH'):self.compile(p,args)
             self.assertFalse((p/'output/complete.json').exists())
+
+    def test_later_declared_cutoff_cannot_bypass_actual_protected_calendar(self):
+        with tempfile.TemporaryDirectory()as td:
+            p=Path(td);args=self.fixture(p);registry=DataUse(p/'registry')
+            with patch('moloch.learning_actions.selection.now_ms',return_value=0):
+                registry.reserve_calendar(1000,2000,'a'*64)
+            with self.assertRaisesRegex(ValueError,'PROTECTED_HOLDOUT_CANNOT_TRAIN_OR_SELECT'):
+                self.compile(p,args,cut=3000)
+            self.assertFalse((p/'output').exists())
 
     def test_changed_original_and_out_of_calendar_record_do_not_complete(self):
         for changed in(False,True):

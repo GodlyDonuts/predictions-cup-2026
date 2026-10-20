@@ -7,6 +7,7 @@ import argparse,gzip,hashlib,heapq,json
 from collections import Counter
 from pathlib import Path
 from .prospective_source import ProspectiveDecoder,identifier
+from .selection import DataUse
 from moloch.learning_flow.features import Flow
 from moloch.learning_v2.reference_adapters import millis
 from moloch.research.verify_learning_transport import source_hash
@@ -33,11 +34,16 @@ def lines(path):
             yield raw
 
 
-def compile_capture(root,manifest_pin,canonical,audit_path,audit_pin,session_path,output,*,bounds,role,heldout_start):
+def compile_capture(root,manifest_pin,canonical,audit_path,audit_pin,session_path,output,*,bounds,role,heldout_start,data_use=None):
     root=Path(root).resolve();canonical=Path(canonical);audit_path=Path(audit_path);session_path=Path(session_path)
     if (role not in('fit','search')or len(bounds)!=2 or any(type(v)is not int or v<0 for v in bounds)
             or type(heldout_start)is not int or not bounds[0]<bounds[1]<=heldout_start):
         raise ValueError('EXPLICIT_PRE_TEST_DEVELOPMENT_BOUNDS_REQUIRED')
+    # Register exposure before reading any price-bearing source. The shared
+    # OS-locked calendar registry also rejects a caller-supplied later cutoff
+    # that would otherwise overlap an already protected independent interval.
+    registry=DataUse()if data_use is None else data_use
+    registry.record('inspected_development',*bounds,manifest_pin)
     manifest_path=root/'complete.json';m=pinned_json(manifest_path,manifest_pin);audit=pinned_json(audit_path,audit_pin)
     if (m.get('format')!='original_completed_sig_forward_fixture_v1'or m.get('trainingAdmitted')is not False
             or m.get('independentTestUsed')is not False or m.get('productionChanged')is not False):
