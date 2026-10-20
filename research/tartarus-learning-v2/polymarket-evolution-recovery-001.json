@@ -1,0 +1,2684 @@
+{
+  "observedUtc": "2026-10-20T05:22:57.522Z",
+  "classification": "verified_public_price_samples_not_executable_depth_or_original_delivery",
+  "sourceCommit": "75853cfc3617a1f91262c35dc594cc8c89b0c54a",
+  "planSha256": "29c38af31d9745d1e8943e544a67d70715530fd6ef8c3f5721a462315ca31a30",
+  "runnerSha256": "2647b9a4a2319bb3c3bae9be85c85891a22e67458ae4bfe8a2b1130d5df70ff4",
+  "role": "evolution_history_recovery_only",
+  "startTs": 1791781200,
+  "endExclusiveTs": 1792126800,
+  "assets": 378,
+  "assetsWithHistoricalSamples": 378,
+  "receiptPages": 378,
+  "receiptBytes": 67575932,
+  "uniqueInRangeSamples": 2161404,
+  "duplicatesVerified": 0,
+  "excludedOutOfRange": 373,
+  "sortedReceiptInventorySha256": "0ea7537d28243aa5d159c2d0a0a821e72549de31ad56bdcfd2ae05a0adcc2f18",
+  "normalizedScopedSampleSha256": "eebcc5fea76aff5ca9738fab0d001f9239c0d50a59e1d5d5c07d98947a843868",
+  "firstEventUtc": "2026-10-12T05:00:20.000Z",
+  "lastEventUtc": "2026-10-16T04:59:25.000Z",
+  "dailySampleCounts": {
+    "2026-10-12": 430920,
+    "2026-10-13": 544320,
+    "2026-10-14": 543564,
+    "2026-10-15": 533736,
+    "2026-10-16": 108864
+  },
+  "perAsset": [
+    {
+      "assetId": "100483443247041044563874634953278400972311005965822139457018312114391318359850",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "100828434651155155710172841941100159662807201107427176770262475413650206834153",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "100828696543935567055426435169492108205416727222428840833576998724854096459903",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "101761583924149127934699530188897560119595562747749947811419542814081248785009",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "102134576754598286649546885868416989707545637875943269439533353198498871476278",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "102325039069045369431277041414667266705633344716966967751024692805337688459829",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "102666395439580330924073747429473863278152650873679948523699145260749098440681",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "102710958896541853009226651136193733163206380234516394117132219353801605357276",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "103563721501446582736235672026641229118201717908465299005521462931975944512517",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "103572160941197360900419917573086716527751112441366358755475598989264153655130",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "103672405579571940023321290271521195736672061427193452636021280058761450574865",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "104309452422982046070067427008177275696484241243440409773417263901405335891407",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "1046980875306043125128331871114794349002409233139736033870402475326170083426",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "104819787650357695281169823647378465024078714619256040408074745774984489506029",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "104855517422265025076370671183295591131138907769453226583035147182707514195839",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "105412116375859456386463067772529895223931027977055063584054608854983174999392",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "105724155866026243386456609196248574198788679514540436663740641053049222730942",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "105896210412150332172576802914745590235885229895617849790568484198648827088432",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "106183024660666533834062502031813793169247762855988914383541855843680035368680",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "106192530786960539135535008575818346767459617102414049409342524139150698862791",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "106363031797138111754039591152977193305538801813676060053033754519035914760518",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "106735117676771824247027811445178447955204027242855029915419117736623883137120",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "106941193163110167696426338043140728938381127310653153528096347878604033727123",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "106958534192257552731131706251545716690561203965658398267038573027472601603038",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "107151098936186723859677628536733880558851060002514795735761427447010628440047",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "107660395767216529314208472319656520318890894389780384645697742878670378593126",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "107844449523890311740907586041395758413047559802389895859202256336422357556837",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "10797071126504743123515085716419360987107478266428470507477377131012323100968",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "108230243496498344855407302843123554399616537057761543327780472018667198839068",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "109032271391509221339029333717041891043884227340434642559043149086824287566768",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "109090022960169506693280284802447236443468818742086703354686360167548384699439",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "109221185828609696152295126285793980024516683390733668492309397849318398468765",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "109329484956764506378760583725617100193692863947320202695087573398990069238209",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "109467029375682717672947466588331781838347232688418556926634334189471462678711",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "109770398277480657132311708823042764648778271467537669934185093015733099277755",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "109815773012907461372639157658293071578555374097742562684476865021743386609433",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "10986108013063722112541718847525294234187960385441756998469502203421948473299",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "109865291951183941149765892685776097643915392898762342965012269207177841238467",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "110210117869221972962310848272994384668558691417609052791067099235013051529979",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "110498646838643141699770234895735915394620065036723874056548571888067488950164",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "1106923368851551027030312032236306759850849240017243702457900548841578674982",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "110692470670299760609405767524469998656804613573367102042492015567399413436772",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "111132744939015293345579629653521058184443656082780857026315550111238286737914",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "111369203211028727321456260421528238448769346191696860171769554446474401287060",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "111394826590193310622075208085123253955586587501538476190057516703346418362600",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "111410260998316519094031668071734601628657437474531224521985946937751497012846",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "11150104041135923402729603235169264788695551846877266424704836556138704136153",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "111540362553565728751187438925859908575427409891112173540802616759607897153785",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "111826527981770711646207152944245816318333631371057419351067163207926937998489",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "112101678667388918252758604047145833695065509511438805706635695881082938013669",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "112281295057865404870041957222562306206517476142557838682690649172966968734671",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "113473521542910478197158103741391826457123704776487916253298517201682293793688",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "113775721914358731979638137579752258137123447875996657512004068518320376669224",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "11450408400059654095752682163375174616927289912740528299907491682505834882757",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "114589907655331753023967672301985882107756018586381657604703637143282786220279",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "11471799481163674496775067856640475180065538077790138430250870270740237488281",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "114804538887054214616070716252680354290437298087382870692052448508961099438281",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "115303242217186990312218497459537227886423425931711349439197270624601721951066",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "115316081925755141262134681282752103796078250770988305202716210672556966594698",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "115344862533823877787593931582052527994258645729917868626175818881592688447868",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "115425469352125405408452417281297924379268274749766556673380359025991529324753",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "12372043962778394976024486768688292040496139295686161489871763438144310710290",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "12503562961051694670561093522011301968376611490945772097489304120208051360657",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "12567907108472709587108529204902868853816143411690726275739815904850602686650",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "12748549410366691485814745487527011946617511780417271837791094564317034321850",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "12923354183562595822134003465069735214484232866602492426996044053528437947487",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "13189761649035136014216228195645475511361901020555722779072382901094466765019",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "13231388127543519616516159916643367248093095039397650799836461362573356049800",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "13262930035751293044299030051076946493579310948743085503128810162298115061024",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "13361710535557089617208062932593011837316081914436155241873375541608580739238",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "13432621903631649165156306037190483686486704889711495381938238490251535633776",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "14535768089815400273847771354088826502078939671987391994275253603566532191654",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "14582545730228428482912971347572544281875999426839094041667501419038246618585",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "14642682607039369244277817434878478902698251399122597545654338578883729895178",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "14880392203916951367210594044346675783187280368615720213876603794661640957466",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "15056064872112675856476546973246733011825608647719006314444015066456521530341",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "15290572385458522370285732869432740297199321382471116558439914335588167718663",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "15815791635590728391037346651659758002684206094067758659888527434057277967338",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "15841973896294397863780283211777886833063131427675236235397936182214462263761",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "15859382751346746343939036525053853077867668968518299817855187651744506002496",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "16661917299889844562247566603559122251937209362630950418259738730496536105112",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "1797580469213095171880719393862360781916964211483452267877668487044757332006",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "18128207363125529330540526475108389147728645885887417700651189282375630645842",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "18131974965869813060047290511060211742274666573066200470724290584768041211203",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "18191937221950855174874615552966468589916921067489840061928310422033701707088",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "18233464031090360283708994861699406607711262348891447650163383539679597583806",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "18791277393217683755628516529477058015186638022373024614300661393042993809537",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "19478516824999166368089016534393288198149272568651281887970566028826732946055",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "19527325130044660074684336011478717458899906478875219180396447156299505391740",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "19804193668977645221157325203169258737141521426258720263542223721543867583028",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "20244362049417025533374049121400436676833898969884666612361039499958684857530",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "20310786951537091150920478212676759242565921145568245906943451694162568762258",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "20545755397554366279105844241414821565747450256261992143596340747510834590543",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "20781040640207419108275494852260640607740976077797936236220411009198028862221",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "20904118177412102896316191568338021059060941327365407257046608077345075967207",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "2092757373218904768373533040846280132805161861393140519418262456097465213332",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "20990029832453924053500813948402010905503514636044959176717493338333769631267",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "21024219148268989748704207701411444044468128261642675917026452687231462203167",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "21093900327085732156538279868500731871043932639237011371281062480462349465304",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "21114904170244249083059864962815455303156569744726868991298626905734505722454",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "21265207456609426291246075480390336499088453711419597084147957999650569091884",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "2142948285506077695096498341598672159464223074468931276310105532825810210121",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "21708830464136004242050467178622400680068868627075028819168121519801996195940",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "22529706558204688498320021777045565403912945442011622921877074565980935596194",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "23047817297095829703205789623007814925017477005361786493221231421140774736099",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "23058982105185072439937901255471378687472898901676971905029748168863369164815",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "23395400070140850878802468480151807289611968843746307012852845052388143063303",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "23592390664389357136057319701944019583334842768379473307009312158587206667011",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "23845554936319009715186484560018543108651594834702697530673475407137141197932",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "23961860519982475034051880266064562162897218555151540222239835200934168383354",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "23982348354062524972887126807952244605287433791462351968680411830837664790435",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "24395104702642353411948925889097630568855366590528757185881735998149149192479",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "2474994172812821906731940905046937405647772936830086080400122272424376650343",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "24808423328362642269928339618535398875519836942812329525201323299850907438220",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "25172545206000541692667496253531562288536270988826888609620735617040533835056",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "25477694375136652194507307287289191174255480169248743454219004739780574482398",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "25714364921494590153126712070237148273556585153060830557346938682702981481913",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "25966703589045426836441036500624688018124806866331192739825948073536875493904",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "2618138322856109565904469085316346602627882727483900432328802655317079880335",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "26573050236936209486171959914177863805306801160894625024516627439387862093174",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "2701913449823469466380873774659154852878836766994267419008628654782137185923",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "27227352588644125911835255791745199294766435051633840882741518772610280264133",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "27589735007801809920895792521249110991864778093988837036036503689605174002385",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "27864379735636967187061174592974985530606192477476602134082994654383977817622",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "27870085196735337387089467371194098802406160667325183183674887905666301487196",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "27980279161647280174291445963025513147732331355563867490150871842361028113568",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "28134558928888227948813381987057565018866784201189850460618625875753502909061",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "28293677056280080359554222049156424637171556977737746792223933800049748849083",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "28428563408232158641020832230598845099279456308678642815367173717175353290703",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "28604200858776949725443771900532479947528528058757267516640410601091432067720",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "28709552853916742051233428360468180906283732902940871675642481670799666825242",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "288881405005644701938669382130096221659404307173045178355284864479406728774",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "29272976156208880523524518696977571662352794148119684805059222229362154113559",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "29296582863501339972029548154128549466562842084431320516838210161873614946088",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "29311755935786363205680204536643787054260832125056777867606384726291200747800",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "29340710087203628054916881063653310634997647642374537159652441277893390730162",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "29850921617086885622321882518009992617707565675149598556157682973609083717715",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "3015477455071606958014729552697672689898195807324746948280693702257424620276",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "30424541292784877350495001354252975055952568624850695789713995653053526735723",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "30718966535311015751929217398361750334834655110246828806892843311659716192347",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "30879673422883665658998557649780314115615509792114924412311244164523672753717",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "31219307402950122745952850812392973255070110377043726968508534613873683660739",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "31278241752941344554610792783012172134444604028259739462416674476234786013273",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "31436003141911636826257012170104365274669938022228084492450613161428480917013",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "31701780224377900346509028138949761304634890925999281900587653803415064749661",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "32591940863680290675071972744258239275874735179355360323845750782366119048535",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "32917251137516319276142553211811111790348422685366643517829612923246196241028",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "3293156985749755727346175922245570855667073190426670969617507718070791646856",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "33213488937256662530482377056557065500011938647623670350418977541117315454320",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "33304449079649201557387369847379560518290837271024516667508560413437432436345",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "33485925353171072312284533208639606685310281710515007938376691890027292332545",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "34054660368274062585986545135737111889365870709341665496215927536250129387407",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "34151693471054832326907352504678670863317940877946622594683256674473306466921",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "35136589390877606418975621999951288920102535927152991703335089202489706671146",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "35770751885924798388281446298756041002177848619471659098755120133048843736673",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "35836144845762083734936716777818582913796871841916057482479347577598882811767",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "36589074670521348842786325911391532620430247097981345860356484520500173888573",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "36658361636301944946350626333493677081031062692438134395348552977069133544334",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "37327444084035787269854507880662541101916131726641992937390933740081521292625",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "37649267567982889592011384409533519112993266261975620703097847510820818713285",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "37713776886536763857380242322222367371582682723176215910322979366716585040762",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "37755135088405799849800190027343457715121200916302661996402931566317384140291",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "37806907368043161074949113436745462734936336037202698916361016094424427186209",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "37982054955350769473225274338511206092834110396688311841877176075150786948028",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "38274379050640062523611849065721372699838119672720475300345842413156391540232",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "39049577873362247817711656638643392635820329555236888904811804977227873779971",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "39154002125405197763794707136923968604358387984246909531145654626829957893230",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "39720463685457026846596900903719403712373357015082509595546409524414612455841",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "40600137944982070120020561148201046074034528738262880058756488608210871246278",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "41727895688258693376847903957662821256714173440177609445045457726450459227657",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "41775449479665930068266329795278714167204411479685732105862933499385131340367",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "42051548638421204218374584975934315188715230248988738148555343950810939155465",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "42594420210859501049513307148403474101836341467382247264708847582692748761285",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "42735362457588261224761749559415584649649275846395314220964286734407090856284",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "43295283577056639281694071578249936735369407445693289764095672178175084599787",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "4360584608318889792359076982751499707146205412289783849766659973245585132129",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "43752127134995564310826939255040140810170663034403700378883950354967468648845",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "43777191461245536274027792855557351629362906569064322165760098912770293918104",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "44982192366147456074879158730587980888410068402154239295576380507554522137788",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "45313345733594868185555395753160583709410932447365926270131052666873677819122",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "45404313587021591687645147323535282421303802762508782139776179473077300208474",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "45697952169290210733788647908439282215277461482653377209044144054693714912010",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "46178221517819340873304464752949449694008471239018842509293907666064868164423",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "4639340586725578716005500791739559303082924048072534329825226706547465941088",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "47410821361368319377218522333433306313753572972827491807608363074924233552004",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "47848555635748009983462962481545341194026880518141560747711492227563791266566",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "47975366268282823322598946778919483335780002591367838795894307024076579116518",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "48125407658537781630126353551882211313520827583468729408685633955919030034320",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "48234106767694705830521871619587028700143463152512886313457017781051803465561",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "48498511771232100148522166869811267217315069499419645745771730197179043728388",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "48595994389294380413605252588038399089739882614541392889205137632817333951567",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "48713763040486181338331079866717596249762656714232229227842124521446386366432",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "48980909355655999335735137257645181263137606430167981969161035375590984102791",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "49797779751182114244550178900838522175054943127409025738411962628574218037267",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "50051241364929222895693566081605692346197807854055532008099278772035698770870",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "50273842713217173135967070517670066246379254064706403726846799660656446284544",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "5040161955776484296351499962568185593215052681792686729696166479023057001842",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "50635500573145079077706052236022272447121646566197183315877718515529765028366",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "50723444598226195342754184700957904925325694503103795593830038565334198169540",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "5086764460439224896909495789484939252244135243589938028556782950980839670109",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "5094605415135546698881240342398119272376247896615792697405924633887669079019",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "51139697479054469944236132595348770797766976112763062697989474877845630491882",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "5210147086444382339849101722545511095151948730486562412029285471203011774407",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "53556044615407667948482140924138670085564709060050296606327145637179427254399",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "55269299240433422758148290868724152324629587438760275683104577693660207425448",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "55410211684588113064622608223269234944992958173935625527924582089831994856267",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "56412855186822728853119072474894085602768054645914780515455268260878947887549",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "56515783740067714541146024238690731191171951191676227554534304907999316653689",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "56999680715177473430966804355924370363620765680932198467899001505216633500449",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "57072421827554294140721361338343029545070199210958375988932007732626623305617",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "57191420250913616150846676905047388827581537310894242160546701872955141155912",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "57265565746838221378365038901649729198937414663367899972498812653529682469258",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "57553502995830775992126087002622990615625670975273656077143914574086079721073",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "57925461341104910435866398583612621937921844618146243318901522652628878376322",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "58046186222956557148380567481022348507421740788139654872430510492438761636276",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "58170582826434624369183137827470621458750832571934268895241793899476487858088",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "58199720710299853890561431207407462985075458766612922964054758657487509750362",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "58414915443056575600546845688231939406497093430617962204950899073959516863962",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "58634004140550291850994935171725344346793564693622773016836026806180360106461",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "58757590052289479996371632351141005979216013605386057994994985198930000872621",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "59197529092850285387032753654097584799334029532851852306533311157622884742559",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "59543187978590547875229144531279992897106638734873892327512448136202059561407",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "59588004575158257289531312065982350985369269880352045258164216668046489178917",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "59674642039945632434991200982713662256203307690119588561924436416775168289415",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "59802490472036913873496121286677427483662122509187681183126522612013504797043",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "60266633784518285894440320396429941962157430996920395588761782000880342269416",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "60418842426512534469642130512596061192215988595473467000352213671045616492638",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "61124290990237905740819218004087985253159695156484630843664573685734418084158",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "61226688777298855109760287075145560866932162430262148603800321887784593630496",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "6136336712352911156426560180855478229745540927722899997193789497766196705020",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "62003269433640683744291727761785528693342099533191419822618434570267086928393",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "62227089537100115269143206481757249285124282589590263790284791475153705872216",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "6282889705019268501830975677564258188191770886711457649647605609853326924852",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "62831517509825405761763142539845746280269675872170259538293560849475982647892",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "63489920267370601861674055201727193070037821987131212130616977843490732048888",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "64025664961497419708095468282573682984741903075312816516046832361290996190088",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "64264976954058187238724333554507208255303776435657387002861226761784169752307",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "6431017214844719071529892865687247898079997766867991700132073831843261535430",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "64564597855888410825779066289398082874334191307203738739152847250485409164101",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "64751505184958139146196081658481476813866015817972108997333100399972093820939",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "64966896006719008074063340757705725595139708147746532030558042213894942485771",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "65059827140173427877494565540061589018062765634764662931826204007544666003583",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "65439356235045131807396247896357430551043166853377401069960230324723866335352",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "6584875983046678011286869107197719818123093254495444235544680527373303971994",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "66273785459475184474276423059036741814958495126134511275805524603240865775761",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "67134560637395660573557297151091376379195027709682746465847662052614726627045",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "67383368745428918221835754455354387457247874591242002569288521422308213906818",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "67501795419284092111663134279812910460154992630407078593989658098590262577673",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "6756779810577885828704276397389282544084821591107025125954859235939281991675",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "67967023811721834738685695249992484419619114809767608640505747182577663027691",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "68021205636604056509276509067526372089338487160185591169779941190006739682906",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "68194463917260305435439145066031544476540679280823247532132832363696000101185",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "68311829543741021184558122622902784954644849677046739184908916756688634040204",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "68370995073141964079913803663665941780115677360430806954011390499916208708512",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "68389262464592733615855588858092426808489089321584563639781215061267356996104",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "68681443500357642360075283680830487598986161680464858837462763850367316916961",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "6929112768711637773301360425699390249119690152097910512296290624303791542087",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "69541728889474243559228458257667024729753704232262882473518688610039296438225",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "69789289578042196242862592447228148302107212333223173021399136587273525438907",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "69975697607439985475728016095706749612060905267125933380755060370332287585393",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "70110943547081522356148631554852443099283839081646948533876907387738782299357",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "70179930004460104520571721963263381325865077807861641105900318902168490512539",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "70611387410738959528084339484893630361746409691183277603893453160832832415748",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "70626084342654528512319514273738308837103071303735022481383733918592331109261",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "70720420928389492978842914190430712299346582376255109200751838945374631181994",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "70766043286887214711082829510749001221536384974744297470820933886454245846858",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "7139801413469770073401277532411270944032393438892966408026282230324220411324",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "71610581811588451243087930916572592402913705975252472987256607890992191263885",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "71632165236422651470429350517544804037517697197619834153829962377081244850682",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "71772627544132140586824126381855151743830987860593343955509593715269534710061",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "71843291452912874468855587618613331793477554078773617186549641958315288186048",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "72139607190315861034411702195742538105117960260100800877125381826122747504258",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "72506703256469236704803392095389359754054700969674670489618759577406730106828",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "72519790371061340119765172065780798251360397199188255055934152186624799324027",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "72897556431793066534367144397662178052579777179114696231988414091530658276758",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "73315402478592033419410800462117761305061445591650606177401306137873754076531",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "74608226602627268611121407899971893976372758902169093133686117573260833124314",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "74615281808972057784946736107971497115735841641665109231803670475441408666609",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "74883630455715593214751459772360468028930271344780030243472846680635150664331",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "75079868093228966915894372964099062660587490227046756021175661325867722540666",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "75685534826787951976275953631896177236439299709473517876953614908104349066066",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "7589880081658059374445882095611024032084645048848237404312287942463647821549",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "77001639760095266374534198365421436593389036687975321536722226607654949914567",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "77004273724753899183699441849597881417275931290950171679615354396048734034984",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "77720965006807607253936909552495699887933379945549132362659973376686128746867",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "78192342236188386087763258420745804515190545117661254581766240746328946228230",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "7861599392964570899063295249757924331582887786226297517280676454972508298031",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "79489800771199803792838465972773376352837733018768490302999836500381020065853",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "79597156840177168343562124064866301094619106642263695929345529947536386203124",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "79928077180713102609948647660034580156932658823394290272651325523866637424642",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "79995747672792115054716674475173589172446551682399210610955904338812431765392",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "80469582416211324277551196813384851504222711072116234686695188046152640511225",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "80536528552003281640741026890878925456783654983296822683495274364289350034456",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "80548090613166591367082748340054574729693035025508775289880033317294974030893",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "80934691869338927255837304938089888360426615780964561477823921040289407849741",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "81262665299593332402996254810488669553080330014117799642811352427402737700753",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "81505692847657373092454383020575585110499837274340613322588228385158919526454",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "81557957224614719909606514321678071196063005584137638675672000952860345431216",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "81686321862694335565315446313311808418324458347147763318024314891537385440805",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "82121500319223927293373601982557547769127598144906695060454723249443375144474",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "82283852366812661010100556525768894264835563690203837127337401846759129565617",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "82410058691149830741200014405570918770267839390767234397030380747995715352939",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "82447760633599304276166610217153706499600792258197984832716823442820598392967",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "82558835789323197481733680122235756483424749365965750477150954147606088637077",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "83208452942880339607911122438031742195323816449987096721739014238143102316792",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "83253007588985953900662535978265304048199216427463571583210985764316132662845",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "83305180123434328264942831061332161630642073183329159190029603770999556008804",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "83554519035704522672644117478876258278018394754028161940314277335853541553559",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "83772236231104306836754599890295414817047560410380925946355605231115771621017",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "83966667308824872880342632752673759552233526664290166226784097408878282862076",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "84241107374483193244606511118129186494443849681135554558545774792234903960353",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "84368524152268016512433556151474175385160499638069024812438264090070245734708",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "85091920580146708593441393469155645206377351164316133922062262386625039242645",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "85481834502498043935806386600094738202338314908938508331117373587697666440459",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "85565449085981219626125045806096417728054675797071084365546294832037886206869",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "86416905792050153858741450992843115075721076916569244288472661364377268335766",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "86746373001655437646455833103379273668271009789768201797953922809057924766586",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "86827974851753312617441915824618617861250657564707166327567168877893121374182",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "87565258770725265966392236652709967744698603916603639644457593228770340754031",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "87725551185270618291722253233951821932371187994043126950008311468794742299797",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "87788307834855462980201710464461387411969659581088060979543565160826300016750",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "88493018854609170398068504899501067700367542483730464912829188861413472007638",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "88628412725357801969852238315853152041907755032296775468463465337049299853893",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "88799262678230165893255813616837100962595819984760588859765042402182443138810",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "88923835626751439335001852098823598444201043849577093630790185644778054232354",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "89007958027779859965143280233607680085743023530197549682171151954048549979817",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "89249778688472138415584633654306240159785502169216857650010692296295315613845",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "89360116714270893780179085960124265123732267737169869616840167951096944527305",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "89440386514063730127176054212356569265462224863655993641953910953752586860824",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "89524111316754281233016446935787527194216234343076592935555965327756401377156",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "89611284751983444666516772199088261836184128361026213372833195934667653681164",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "89691692433810708662044713280560196245651593280559985593960312638148344324296",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "89749451189659806236078281140753717284965641684284805325103046978904196883787",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "90218845846153365380863189597931280535650997637137753229555191267606212456241",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "90239537120799856559379339880905629013239262905922873444067766874892362837014",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "90372155390861985927725007208426512628481630954974454396465379243202196045659",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "90438836256571410927299008367228796312209722771624666597034907143954367060240",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "90586537503873657733095241416513832189066670321128291543199648360200360654604",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "90689690530039118737607894922148077480097700217322320781526913496162509181445",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "90754958922510400552842169151468277929530764031411953233776577468931244763939",
+      "records": 5718,
+      "firstEventTs": 1791781220,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "90757273431062483956880101601137522271949785755347720675502304224330457712154",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "91134056361940201893494305153220998213627095877115808251230716593928688430751",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "91186816975424134991471599978287903711550131664584931108307233067509874308550",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "91225137864927557918564359258664686497955882591355277709464604776409873406547",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "91229309270355860713419309118667426703750737891164301386889922666802507208098",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "91391435832155617612019982139435697661029161851437556799916148343508709382987",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "91449905075128391435919444408745642086656529220300896540428976055571499433207",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "91707391779570593383114349445555065499993612270309541289688275447843966536930",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "9195147677734768024442742821036736857536764911670176289004381980919601134562",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "92489819804290368443943803966220296254525527906989333620579684623025259387169",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "92576281548134350814800877416860562553699794074017301653635964206220838638047",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "9261962954796206285247745021195981577055668829876152281558354142057545087402",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "93154595056268120397334102801062018916555787278126869430194069115332749753248",
+      "records": 5718,
+      "firstEventTs": 1791781224,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "93455992331247261582609314876051620484985877396129230715122967612916153735084",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "93912560256245525429984546771927493927155759286650495356669416323669943507847",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "93969985011170776056000925561172416309286101442856109696106983204369499012978",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "94033987553817825990709512567031751048276730850154145976615728913102874968691",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "94275275907070640522712534747053008279341178769916658518917564436899584909430",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "94387913280398317052582281843978069916338462525042652614881277797162415545237",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "94636756301597598205450967882875575281158446830532208819280555769682215362951",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "94720102345103978732985991591541449349105398685307981352929740529082927790385",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "95569086156685738679963383810968750315205020131235891427787092890131241495362",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "95635456605992781069478891718039467857246490713143468096085991589901671594183",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "96914958250546616618098909674490573266030506817741031776466109480920768219053",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "98075623222143547346037366837071572541450376316433615657989340175250414958486",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "9846414914422486942750462555692240718767368950832862364324602361738794436048",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 333
+    },
+    {
+      "assetId": "98533340650340151055858210214498969967462170000657407829633743183238896087456",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126760,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "98786507200350983058970704927709072143342854075165614881312244283693737859986",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "98793860786103429461036512093518407124361882646235919543546522571597697238170",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "9888897571794010752121877049436014412394792546592129944638664529404498838517",
+      "records": 5718,
+      "firstEventTs": 1791781225,
+      "lastEventTs": 1792126763,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "9923678446010680223075564519648906123468834936314053947915034634742964733395",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "99427340178627001596249525275526063930070347555316661969816068920551832004909",
+      "records": 5718,
+      "firstEventTs": 1791781226,
+      "lastEventTs": 1792126764,
+      "maximumInternalSampleGapSeconds": 335
+    },
+    {
+      "assetId": "99623739376528936259200828775735340185565774472534178634576734430730164844485",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "99708749485515505787886279399315333272854318862171893505519703794034779284777",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "99887310671509850314484982285887474127526700724858978238541410696173839762282",
+      "records": 5718,
+      "firstEventTs": 1791781222,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "99910925406198095411505150408529683823605956793025882664293221366616297632948",
+      "records": 5718,
+      "firstEventTs": 1791781223,
+      "lastEventTs": 1792126762,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "99954012845363784422380244269243499000117818896422626871954380344984773420508",
+      "records": 5718,
+      "firstEventTs": 1791781227,
+      "lastEventTs": 1792126765,
+      "maximumInternalSampleGapSeconds": 334
+    },
+    {
+      "assetId": "99998409366814058509324978903464760824797071645181220838890227821177183933287",
+      "records": 5718,
+      "firstEventTs": 1791781221,
+      "lastEventTs": 1792126761,
+      "maximumInternalSampleGapSeconds": 334
+    }
+  ],
+  "allOriginalHashesAndQueryScopesVerified": true,
+  "outOfRangePricesNotInspectedByAudit": true,
+  "originalHistoricalDeliveryVerified": false,
+  "historicalOrderBooksRecovered": false,
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "gpuDiagnostic": false
+}

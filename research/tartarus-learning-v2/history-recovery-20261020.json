@@ -1,5 +1,5 @@
 {
-  "observedUtc": "2026-10-20T05:16:18.041044+00:00",
+  "observedUtc": "2026-10-20T05:25:11.950606+00:00",
   "classification": "historical_data_recovery_in_progress_not_ideal_training_readiness",
   "requestedCutoffUtc": "2026-10-20T05:00:00Z",
   "recoveryFloorUtc": "2026-09-01T00:00:00Z",
@@ -24,33 +24,45 @@
       "trainingAdmitted": false
     },
     "kalshi-evolution-trades": {
-      "completedTickers": 101,
-      "observedUtc": "2026-10-20T05:16:17.742112+00:00",
+      "completedTickers": 234,
+      "observedUtc": "2026-10-20T05:18:25.190647+00:00",
       "orderBooksReconstructed": false,
       "originalHistoricalDeliveryVerified": false,
-      "pagesRetrievedThisInvocation": 113,
+      "pagesRetrievedThisInvocation": 257,
       "planSha256": "985209c58c0adc2423c892086a9da43dd2c4b58c08200eec20ae2d4142f8206f",
       "productionChanged": false,
-      "records": 23640,
-      "state": "recovering",
+      "records": 48563,
+      "state": "complete_receipt_recovery_not_replay_qualification",
       "totalTickers": 234,
       "trainingAdmitted": false
     },
     "polymarket-train-prices-002": {
-      "state": "recovering",
-      "at": "2026-10-20T05:16:17.897Z",
-      "completedAssets": 168,
+      "state": "complete_receipt_recovery_not_replay_qualification",
+      "at": "2026-10-20T05:20:38.257Z",
+      "completedAssets": 378,
       "totalAssets": 378,
-      "records": 9994131,
-      "excludedOutOfRange": 984,
-      "requestsThisInvocation": 1012,
+      "records": 22396189,
+      "excludedOutOfRange": 2192,
+      "requestsThisInvocation": 2268,
       "planSha256": "1c7480a6eaa256871fa3b79ce61e2f35a72e10e86a52b9b13832fbffc5d66e9c",
       "trainingAdmitted": false,
       "orderBooksReconstructed": false,
       "originalHistoricalDeliveryVerified": false,
-      "productionChanged": false,
-      "assetIndex": 168,
-      "chunk": 3
+      "productionChanged": false
+    },
+    "polymarket-evolution-prices": {
+      "state": "complete_receipt_recovery_not_replay_qualification",
+      "at": "2026-10-20T05:21:55.655Z",
+      "completedAssets": 378,
+      "totalAssets": 378,
+      "records": 2161404,
+      "excludedOutOfRange": 373,
+      "requestsThisInvocation": 378,
+      "planSha256": "29c38af31d9745d1e8943e544a67d70715530fd6ef8c3f5721a462315ca31a30",
+      "trainingAdmitted": false,
+      "orderBooksReconstructed": false,
+      "originalHistoricalDeliveryVerified": false,
+      "productionChanged": false
     }
   },
   "existingGpuLearnerUnchanged": true,
@@ -60,7 +72,14 @@
   "officialSigAccountRequests": 0,
   "historicalSigDepthRecovered": false,
   "polymarketOutOfRangeSamplesQuarantinedBeforePriceUse": true,
-  "actualRecoveryProcessesObserved": [
+  "vpsSearch": {
+    "scope": "known_moloch_shared_and_application_paths_and_archon_opt_Downloads_Documents_metadata_only",
+    "sharedRawFilesOver100k": 2236,
+    "outsideSharedRawFilesOver100k": 18,
+    "earlierThanOctober15OriginalHistoryFound": false,
+    "historicalSourceCompletenessProven": false
+  },
+  "completedRecoveryProcesses": [
     {
       "pid": 19440,
       "role": "polymarket_training_history",
@@ -72,11 +91,7 @@
       "sourceCommit": "75853cfc3617a1f91262c35dc594cc8c89b0c54a"
     }
   ],
-  "vpsSearch": {
-    "scope": "known_moloch_shared_and_application_paths_and_archon_opt_Downloads_Documents_metadata_only",
-    "sharedRawFilesOver100k": 2236,
-    "outsideSharedRawFilesOver100k": 18,
-    "earlierThanOctober15OriginalHistoryFound": false,
-    "historicalSourceCompletenessProven": false
-  }
+  "allExternalReceiptRecoveryJobsComplete": true,
+  "evolutionPolymarketProcessCompleted": 42412,
+  "allRecoveryExecSessionsVerifiedExitCode": 0
 }
