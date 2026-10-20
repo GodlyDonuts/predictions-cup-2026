@@ -1,0 +1,15 @@
+# Exploration-setting search without discarding learned weights
+
+The population already reproduces from the highest-scoring candidates even when all scores are negative or flat. GPU019 completed this transition; [GPU020 evidence](population-020-full-returns-20261019.md) records the actual donors. There is no positive-fitness prerequisite for evolution.
+
+One search weakness remained: multiplying an entropy coefficient of zero by any perturbation leaves it zero. Ordinary stochastic action sampling and weight mutation still explore; zero entropy regularization does not mean deterministic actions. A fresh model could receive another configured coefficient, but this also discards its learned actor.
+
+`population_search.entropy_resample_probability` now permits an offspring to draw its entropy coefficient from `initial_entropy_coefficients` independently of its weight mutation. For example, `0.25` gives each non-fresh child a 25% chance of drawing from that grid. It can move from zero to positive or positive to zero while preserving the donor lineage. The existing `fresh` operator retains its original behavior. The default is zero and preserves the legacy random-number sequence exactly.
+
+This setting does not change the reward, legal actions, rate limits, episode duration, or selection scores. It is a search mechanism, not a claimed source of profit. A resampled coefficient is recorded as `entropy_mutation_operator=configured_grid_resample` in the replacement event and stored in the child's optimizer checkpoint.
+
+Six focused CPU tests passed in 17.190 seconds. They cover exact default RNG equivalence across 20 seeds and all mutation operators, invalid configuration, both directions of coefficient changes, and a real two-cycle population fixture. The fixture starts donors at zero, produces non-fresh children at 0.002, verifies the unchanged donor setting and saved child setting, and performs subsequent training. Synthetic fixture results are not trading evidence.
+
+At the subsequent process check, GPU020 worker11404 remained alive with 71,752 recorded decisions and25 accepted updates. Two selections were complete: reward0 and reward-0.21889879181634642; the latter's worst marked ROI was approximately-19.66%. The second training cohort accepted all22 of its minibatches, so the first cohort's low utilization is not universal. These are inspected development results, not independent testing or proven profit.
+
+GPU020 remains pinned to source544a3986. This new option is checked source for a subsequent frozen population; it has not been hotpatched into the active learner. Adoption must preserve the selected checkpoint weights at a checked handoff. Full requested historical coverage, realistic execution calibration, longer-horizon selection and untouched four-day testing remain incomplete.

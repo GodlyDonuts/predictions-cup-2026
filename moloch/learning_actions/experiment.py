@@ -131,6 +131,8 @@ class Experiment:
         self.search_config=config.get('population_search')
         self.archive=None
         if self.search_config is not None:
+            from .entropy_search import probability
+            probability(self.search_config.get('entropy_resample_probability',0))
             if type(self.search_config.get('retain_island_champions',True))is not bool:
                 raise ValueError('EXPLICIT_RESEARCH_ELITISM_PROFILE')
             from .population import ResearchArchive,island_replacements
@@ -515,8 +517,10 @@ class Experiment:
             scales={'local':(.8,1.2),'medium':(.5,2.),'large':(.25,4.),'head_reset':(.5,2.)}
             rate=(self.config.get('learning_rate',1e-5)if r['operator']=='fresh'else
                   min(.001,max(.000001,donor_rate*self.rng.choice(scales[r['operator']]))))
-            entropy=(self.rng.choice(self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)]))
-                if r['operator']=='fresh'else min(.1,max(0.,donor_entropy*self.rng.choice(scales[r['operator']]))))
+            from .entropy_search import offspring
+            entropy,entropy_operator=offspring(donor_entropy,r['operator'],scales,self.rng,
+                self.config.get('initial_entropy_coefficients',[self.config.get('entropy_coefficient',.01)]),
+                resample_probability=self.search_config.get('entropy_resample_probability',0))
             opt=self.make_optimizer(model,rate,entropy)
             child=self.checkpoint('offspring-%03d-%03d'%(cycle,slot),model,opt)
             self.population[slot]=child
@@ -524,6 +528,7 @@ class Experiment:
                       'donor_checkpoint':donor,'probe_file_sha256':probe_file_sha,
                       'donor_source':donor_source,'parent_learning_rate':donor_rate,'child_learning_rate':rate,
                       'parent_entropy_coefficient':donor_entropy,'child_entropy_coefficient':entropy,
+                      'entropy_mutation_operator':entropy_operator,
                       'child_receives_full_training_block_before_selection':True})
             del model,opt
 

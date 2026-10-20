@@ -40,6 +40,32 @@ class RegressingExperiment(FixtureExperiment):
 
 
 class PopulationExperimentTests(unittest.TestCase):
+    def test_zero_entropy_donors_can_change_exploration_without_fresh_actor(self):
+        from unittest.mock import patch
+        torch.set_num_threads(1);torch.manual_seed(81)
+        with tempfile.TemporaryDirectory()as d:
+            experiment=FixtureExperiment(Path(d))
+            experiment.config['initial_entropy_coefficients']=[.002]
+            experiment.search_config['entropy_resample_probability']=1
+            with patch.object(experiment,'founder_hyperparameters',return_value=(1e-4,0.)):
+                result=experiment.run()
+            children=[e for e in experiment.events if e['event']=='population_replacement']
+            self.assertEqual(len(children),2)
+            for event in children:
+                self.assertNotEqual(event['operator'],'fresh')
+                self.assertEqual(event['entropy_mutation_operator'],'configured_grid_resample')
+                self.assertEqual(event['parent_entropy_coefficient'],0.)
+                self.assertEqual(event['child_entropy_coefficient'],.002)
+                parent=torch.load(event['donor_checkpoint']['path'],map_location='cpu',weights_only=True)
+                child=torch.load(event['checkpoint']['path'],map_location='cpu',weights_only=True)
+                self.assertEqual(parent['optimizer']['param_groups'][0]['tartarus_entropy_coefficient'],0.)
+                self.assertEqual(child['optimizer']['param_groups'][0]['tartarus_entropy_coefficient'],.002)
+                self.assertEqual(child['optimizer']['state'],{})
+                later=json.loads((experiment.output/('result-001-%03d.json'%event['loser'])).read_bytes())
+                self.assertGreater(sum(later['training']['family_counts'].values()),0)
+            self.assertGreater(result['total_accepted_updates'],0)
+            self.assertFalse(result['independent_test_used'])
+
     def test_negative_only_search_restores_older_winners_and_reproduces_from_them(self):
         torch.set_num_threads(1)
         with tempfile.TemporaryDirectory()as d:
