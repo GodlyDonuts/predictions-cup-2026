@@ -98,6 +98,33 @@ class ApiAffordanceTests(unittest.TestCase):
             [f['economic_reward']for f in chunk.frames],role='train',epochs=1)
         self.assertTrue(result[0]['accepted'])
 
+    def test_cache_matches_uncached_and_cannot_be_poisoned_by_caller(self):
+        e=world();first=e.observe();saved=first['contracts'].copy()
+        first['contracts'][:,438:]=-19
+        cached=e.observe();np.testing.assert_array_equal(cached['contracts'],saved)
+        e._api_metadata_cache=None;fresh=e.observe()
+        np.testing.assert_array_equal(cached['contracts'],fresh['contracts'])
+        self.assertFalse(e._api_metadata_cache[1].flags.writeable)
+
+    def test_cache_tracks_packet_order_catalog_and_delivered_cursor_changes(self):
+        e=world();e.observe()
+        for change in(lambda:e.quote_selection.extend(['x','y','y']),
+                       lambda:e.quote_selection.reverse(),
+                       lambda:e.mapping.__setitem__('x','changed-public-market'),
+                       lambda:e.order_page_issued_cursors.__setitem__('delivered',('ALL','x',None))):
+            prior=e._api_metadata_cache;change();cached=e.observe()
+            self.assertIsNot(e._api_metadata_cache,prior)
+            e._api_metadata_cache=None;fresh=e.observe()
+            np.testing.assert_array_equal(cached['contracts'],fresh['contracts'])
+            for key in fresh['masks']:np.testing.assert_array_equal(cached['masks'][key],fresh['masks'][key])
+
+    def test_cache_does_not_freeze_paid_quote_values_or_elapsed_ages(self):
+        from .test_bulk_quotes import read
+        e=world();e.observe();read(e,['x']);quoted=e.observe();before=quoted['contracts'].copy()
+        e.advance(e.now+7);cached=e.observe();e._api_metadata_cache=None;fresh=e.observe()
+        np.testing.assert_array_equal(cached['contracts'],fresh['contracts'])
+        self.assertFalse(np.array_equal(before[:,:438],fresh['contracts'][:,:438]))
+
     def test_sealed_episode_reconstructs_named_features_and_accepts_update(self):
         from .batched import BatchStream
         from .episode_tape import EpisodeWriter,EpisodeReader

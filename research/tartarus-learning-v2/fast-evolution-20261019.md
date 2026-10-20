@@ -35,3 +35,5 @@ GPU019 is now verified learning from source `741397cc2fb6d27c7beb9dc7625551a05c5
 GPU018 was stopped through its exact retained training-process handle before the capacity probe. Three completed members, the unfinished fourth member's accepted snapshot and four queued founders were preserved. Twenty-seven accepted updates after that saved snapshot were **not carried forward**; prior archives and evaluations remain intact. This is a corrective weights transfer, not completion of the old generation or resumption of its worlds. New profile scores start fresh. Least-loss evolution and historical island-champion retention are enabled. No whole-generation wall-time speedup or positive ROI is established by the startup proof.
 
 No production worker, account client, STOP, activation, risk limit or financial ledger was changed by this work.
+
+Subsequent checked source adds an [exact public-metadata cache](api-metadata-cache-20261019.md). Its paired CPU observation measurement is 1.3043 times faster, with all 80 input/mask pairs exact; this is not a whole-run speed claim. It is not patched into frozen GPU019 and does not cause a new restart.

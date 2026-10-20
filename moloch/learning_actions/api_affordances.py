@@ -44,6 +44,14 @@ class ApiAffordanceEpisode(BulkQuoteEpisode):
     def observe(self):
         base=super().observe();old=base['contracts']
         values=np.zeros((len(old),FEATURES),np.float32);values[:,:LEGACY_FEATURES]=old
+        # Only public request/catalog metadata is cached. Every dynamic prefix,
+        # mask and age still comes from the fresh parent observation above.
+        context=(tuple(base['entities']),tuple(self.exchanges),tuple(self.mapping.items()),
+                 tuple(self.quote_selection),tuple(self.order_page_issued_cursors.items()))
+        cached=getattr(self,'_api_metadata_cache',None)
+        if cached is not None and cached[0]==context:
+            values[:,LEGACY_FEATURES:]=cached[1]
+            return {**base,'contracts':values,'observation_feature_schema':'raw_api_named_targets_469_v4'}
         membership={ex:(key,j,len(key[2]))for key in canonical_packets(self)for j,ex in enumerate(key[2])}
         for i,(kind,key)in enumerate(base['entities']):
             ex=market=None
@@ -66,6 +74,8 @@ class ApiAffordanceEpisode(BulkQuoteEpisode):
             elif kind=='quote_remove':
                 values[i,SIGNATURE]=identity('read',('SIG',('bulk_prices',)))
                 values[i,PACKET_INDEX]=key/100.;values[i,PACKET_SIZE]=len(self.quote_selection)/100.
+        metadata=values[:,LEGACY_FEATURES:].copy();metadata.setflags(write=False)
+        self._api_metadata_cache=(context,metadata)
         return {**base,'contracts':values,'observation_feature_schema':'raw_api_named_targets_469_v4'}
 
 
