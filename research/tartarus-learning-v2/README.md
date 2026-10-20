@@ -1,5 +1,7 @@
 [Current ML: GPU021 running source157c873a](population-021-active-20261020.md). Actual36576collecting first full-return cohort;7,936decisions/0committed learner updates at proof observation. All8selected founder tensors exact; serial GPU full-return capacity359decisions/3updates passed separately. Publicflow/identitycache/learningprofiles enabled, packedhash disabled. Full chronology/calibration/independent ROI remain incomplete. Earlier observations below are historical.
 
+October20: [Activity-aware maker TRAIN study](activity-maker-audit-20261020.md) completed eight nominal/stressed cases across two inspected calendars. All marked outcomes negative; no expert adoption or independent ROI qualification.
+
 [Current ML: GPU020 active; GPU021 public-trade profile queued](public-trade-stream-20261019.md). Verified130,748decisions/135updates; five flat/negative development selections. Checked9383f27c restores recorded connected public prints;109/109real-source receipt facts match. Controller26996 waits for completion; next GPU capacity/startup pending. Full history/API calibration/independent ROI remain incomplete. Earlier observations below are historical.
 
 [Maker baseline timing correction and next information gap](maker-dwell-audit-20261019.md): accepted legs did not ensure quote dwell. Corrected CPU-only TRAIN probes remain flat; the derived stream still lacks public-trade delivery. No active model or physics change.
