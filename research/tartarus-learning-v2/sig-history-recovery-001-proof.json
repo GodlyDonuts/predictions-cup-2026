@@ -1,0 +1,26 @@
+{
+  "classification": "independent_completed_SIG_candle_receipt_audit_not_training_qualification",
+  "observedUtc": "2026-10-20T06:48:34.703221+00:00",
+  "acquisitionSourceCommit": "38207921b90078beb62fc668cf01b41138cc1b34",
+  "acquisitionBinarySha256": "7410104fb19650b23b0fd2b9bbbd5924bb70d8dbe983041165f77263082020f7",
+  "acquisitionPlanSha256": "e8916bcd7b84c25bc38bdd4bdf7ef19b3b6b8ce4095ff1e1b87ea867dd216b5a",
+  "auditorSourceCommit": "986d06881ab90afc87cb89badc94622d692379b8",
+  "auditorSha256": "a698326d1479bfd3b3def8be260227c0a5d936d1d11ec09e2a2af215ca08c3ff",
+  "auditReportSha256": "4b4839566abce3fafd86cc68b06485e55596e24606053bb156022aceb42fd54b",
+  "firstSourceUtc": "2026-10-01T16:00:00Z",
+  "lastSourceUtc": "2026-10-16T04:59:00Z",
+  "exchanges": 237,
+  "receiptPages": 1550,
+  "candles": 594935,
+  "roleCounts": {
+    "train": 497561,
+    "evolution": 97374
+  },
+  "originalFailedAuditPreserved": true,
+  "failedAuditReason": "initial Python adapter assumed snake_case; actual SDK uses camelCase; corrected fixture and audit match saved wire receipts",
+  "activeTradeAcquisitionUnchangedByAuditFix": true,
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "historicalExecutionCalibrationEstablished": false,
+  "profitabilityEstablished": false
+}
