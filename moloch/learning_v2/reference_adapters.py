@@ -5,16 +5,18 @@ midpoint; neither contract equivalence nor executable portfolio value follows.
 """
 import hashlib
 import json
-from datetime import datetime
+from datetime import datetime,timezone
 from decimal import Decimal
 
 UNIT=1_000_000
+EPOCH=datetime(1970,1,1,tzinfo=timezone.utc)
 
 
 def millis(text):
     d=datetime.fromisoformat(text.replace('Z','+00:00'))
     if d.utcoffset()is None:raise ValueError('EXPLICIT_REFERENCE_CLOCK_REQUIRED')
-    return int(d.timestamp()*1000)
+    delta=d.astimezone(timezone.utc)-EPOCH
+    return (delta.days*86400+delta.seconds)*1000+delta.microseconds//1000
 
 
 def probability(value):

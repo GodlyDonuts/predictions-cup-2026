@@ -9,9 +9,16 @@ from moloch.learning_v2.liquidity import Book,SharedLiquidity
 from moloch.learning_v2.reference_env import ReferenceEnv
 
 MODE='original_observed_snapshot_world_separate_information_v1'
+REST_ORIGIN='original_official_sig_rest_book_receipt'
 
 
 def source_clock(row):
+    if row.get('snapshot_origin')==REST_ORIGIN:
+        at=row['original_rest_received_at_ms']
+        if type(at)is not int or at<0 or row['available_at_ms']!=at or row['received_at_ms']!=at:
+            raise ValueError('ORIGINAL_REST_SNAPSHOT_CLOCK')
+        if row['kind']=='book'and row['source_at_ms']>at:raise ValueError('SOURCE_CLOCK_AHEAD_OF_OBSERVED_SNAPSHOT')
+        return at
     if row.get('snapshot_origin')=='original_official_sig_realtime_frame':
         at=row['original_realtime_received_at_ms']
         if type(at)is not int or at<0 or row['available_at_ms']!=at or row['received_at_ms']!=at:
@@ -114,7 +121,7 @@ def information_event(env,at,row):
         ex=row['exchange_id'];market=row['market_id']
         env.scope.setdefault(market,set()).add(ex);env.mapping[ex]=market;env._refresh_reference(market)
         env._remember('SIG',('book',ex),row)
-        if env.realtime is not None:
+        if env.realtime is not None and row.get('snapshot_origin')!=REST_ORIGIN:
             from .disk_tape import prepared_book
             payload=SharedLiquidity(prepared_book(env.prepared_books,row));payload.source_state_at_ms=source_clock(row)
             env.realtime.source_book(at,ex,payload)

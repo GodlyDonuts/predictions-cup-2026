@@ -42,7 +42,7 @@ def source_files(dataset):
 
 
 def build(dataset,output):
-    from .snapshot_clock import source_clock
+    from .snapshot_clock import source_clock,REST_ORIGIN
     output=Path(output);m,digest,files=source_files(dataset)
     output.mkdir(parents=True,exist_ok=False)
     db=sqlite3.connect(output/'replay.sqlite')
@@ -67,7 +67,7 @@ def build(dataset,output):
                             if value is not None and type(value)is not str:raise ValueError('CACHE_SOURCE_IDENTIFIER_TYPES')
                         if row['kind']=='book'and any(type(row.get(k))is not str or not row[k]for k in('exchange_id','market_id')):
                             raise ValueError('CACHE_BOOK_SCOPE_REQUIRED')
-                        snapshot=row.get('snapshot_origin')=='original_official_sig_realtime_frame'or'native_event_received_at_ms'in row
+                        snapshot=row.get('snapshot_origin')in('original_official_sig_realtime_frame',REST_ORIGIN)or'native_event_received_at_ms'in row
                         world=source_clock(row)if snapshot and row['venue']=='SIG'and row['kind']in('book','gap')else None
                         db.execute('INSERT INTO market VALUES(?,?,?,?,?,?,?,?,?)',(count,at,row['venue'],row['kind'],row.get('exchange_id'),row.get('market_id'),row.get('source',row['venue']),world,line))
                     else:
