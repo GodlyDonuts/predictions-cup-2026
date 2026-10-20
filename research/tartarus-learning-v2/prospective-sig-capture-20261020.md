@@ -1,0 +1,15 @@
+# Prospective SIG capture prepared on the original account queue
+
+At19:56UTC, controller949555 was verified alive and waiting for the original historical reader948111. It has not yet opened another account client. Historical acquisition had completed201 exchange scopes and retained1,140,303 trades at19:56:03.715UTC.
+
+The new bounded forward mode is checked source `cb262aa6bf54d34060edb13f8949628535986c65`, binary SHA256 `30a79ca43cd5390929859cd3422b345a3453c5a7198407d07808842f1ab44eff3`. All29 transport source files were verified against checked source; ten Linux tests passed. The existing aggregate stream recorder has entry SHA256 `d7f2d6d79debbfd4f27b37f11c38b86380ec64b989788f13f09dd30031db0876`, with its import graph copied from Git and existing Supabase2.117.2 dependencies reused.
+
+The checked controller (`5a4f4022`) waits for the historical worker to exit and restore the original execution/network controls. It then holds the original owner lock and runs sequential ten-minute public capture segments through Oct25 00:00UTC. Each segment uses the original shared SDK queue, 100read admissions/minute and600ms completion pacing. It obtains a budgeted realtime token, sends authentication only through private child stdin, records aggregate stream evidence, and requests public market metadata and200-level books. No order submission or financial ledger mutation is implemented.
+
+The original NETWORK_DISABLED inode is temporarily moved for each authorized data-only segment and restored afterward. EXECUTION_STOP remains unchanged. Low disk capacity triggers the already tested, byte-preserving superseded-generation archiver only between SDK sessions, under the original locks. Durability, unknown-state, lock and stop failures require diagnosis; they are not automatically cleared. Network failures create separately identified segments and retain persistent SDK backoff. Stream gaps and resynchronization boundaries remain explicit data-quality obligations.
+
+Deployment root: `/home/archon/moloch-sig-forward-20261020-001`. Capture output/controller state: `/home/archon/moloch-prospective-SIG-20261020-25`. The output STOP file stops the controller and current segment. The controller boundary test verifies segment length and the final reserved end; it does not prove a live connection. **Fresh SIG capture receipts and end-to-end stream evidence are still pending the historical-reader handoff.**
+
+## Actual training result
+
+GPU024 completed all eight ten-minute training paths for its first fresh candidate, then evaluated the full50-minute development interval in ordinary/stressed cases. [Exact selection record](population-024-first-selection-20261020.json) gives worst marked ROI−10.86959%, with the other case−10.3167875%. This is a losing development candidate, not a qualified finalist. Its reward is the inspected-development proxy, not the full multi-day daily-growth reward. Remaining candidates continue; no independent test has been consumed and no learned model has production authority.
