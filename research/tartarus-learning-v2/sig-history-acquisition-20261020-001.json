@@ -1,0 +1,27 @@
+{
+  "observedUtc": "2026-10-20T06:28:05.702873+00:00",
+  "classification": "authorized_data_only_historical_acquisition_in_progress_not_full_history_audit",
+  "phase": "acquiring",
+  "readerPid": 923501,
+  "controllerPid": 923498,
+  "readerAlive": true,
+  "sourceCommit": "38207921b90078beb62fc668cf01b41138cc1b34",
+  "binarySha256": "7410104fb19650b23b0fd2b9bbbd5924bb70d8dbe983041165f77263082020f7",
+  "planSha256": "e8916bcd7b84c25bc38bdd4bdf7ef19b3b6b8ce4095ff1e1b87ea867dd216b5a",
+  "scopeExchanges": 237,
+  "validatedPagesSoFar": 510,
+  "candlesSoFar": 204682,
+  "exchangesCompletedSoFar": 68,
+  "executionStopPresent": true,
+  "executionStopSha256": "1b1b24f1379d9e3a11c13991afd588d085dc16d99c392eda2a3920769c0b2043",
+  "executionStopHashMatchesBefore": true,
+  "networkTemporarilyEnabledForDataOnly": true,
+  "services": {
+    "moloch-live.service": "0",
+    "moloch-capture.service": "0"
+  },
+  "trainingAdmitted": false,
+  "fullHistoryAuditComplete": false,
+  "orderBooksReconstructed": false,
+  "profitabilityEstablished": false
+}
