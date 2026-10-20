@@ -1,0 +1,39 @@
+{
+  "classification": "small_CPU_rollout_parity_benchmark_not_GPU_throughput_or_ROI",
+  "checkpointSha256": "7bbd5ae2edb1a96e06c57a9c8f47992ab9e8002968e8e05e02562ddcc68b5c42",
+  "legacySourceSha256": "95cdb0cac44fb2a5870a8d0798e55c1a2fe83699de9a5b36b6a418fb8072417f",
+  "cachedSourceSha256": "b4996347994ad85183654c18b3ff8618ce66da1a2ec4374bb7ccfda13b045dd1",
+  "results": [
+    {
+      "arm": "legacy",
+      "wallSeconds": 3.051298099999258,
+      "decisions": 128,
+      "exactControl": true
+    },
+    {
+      "arm": "cached",
+      "wallSeconds": 3.0324233999999706,
+      "decisions": 128,
+      "exactControl": true
+    },
+    {
+      "arm": "cached",
+      "wallSeconds": 2.7418519999991986,
+      "decisions": 128,
+      "exactControl": true
+    },
+    {
+      "arm": "legacy",
+      "wallSeconds": 3.0834669999967446,
+      "decisions": 128,
+      "exactControl": true
+    }
+  ],
+  "medianLegacySeconds": 3.067382549998001,
+  "medianCachedSeconds": 2.8871376999995846,
+  "observedSpeedup": 1.062430292118884,
+  "exactFramesActionsValuesFinanceHiddenAndRng": true,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "optimizerRun": false
+}

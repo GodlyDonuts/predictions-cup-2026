@@ -141,19 +141,28 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         count = len(extra)
         values = np.zeros((len(entities), FEATURES), np.float32)
         values[:len(base['entities']), :OLD] = base['contracts']
-        for i, (kind, address) in enumerate(base['entities']):
-            if kind == 'read' and address in self.historical_providers:
-                venue, key = address
-                if address in self.historical_query_providers:
-                    base['masks']['trade_query'][i,0]=True
-                h = values[i, OLD:]
-                h[KINDS.index(key[0])] = 1
-                h[3 + VENUES.index(venue)] = 1
-                h[6:8] = [key[3] == 'YES', key[3] == 'NO']
-                h[32:39] = identity('historical_source', (venue, key[1]))
-                values[i, MARKET] = identity('market', key[2])
-                if venue == 'SIG':
-                    values[i, CONTRACT] = identity('contract', key[1])
+        context=(tuple(base['entities']),tuple(self.historical_providers),tuple(self.historical_query_providers))
+        cached=getattr(self,'_historical_metadata_cache',None)
+        if cached is None or cached[0]!=context:
+            indices=[];labels=[];markets=[];sig_indices=[];contracts=[];query_indices=[]
+            for i,(kind,address)in enumerate(base['entities']):
+                if kind!='read'or address not in self.historical_providers:continue
+                venue,key=address;h=np.zeros(WIDTH,np.float32)
+                h[KINDS.index(key[0])]=1;h[3+VENUES.index(venue)]=1
+                h[6:8]=[key[3]=='YES',key[3]=='NO']
+                h[32:39]=identity('historical_source',(venue,key[1]))
+                indices.append(i);labels.append(h);markets.append(identity('market',key[2]))
+                if venue=='SIG':sig_indices.append(i);contracts.append(identity('contract',key[1]))
+                if address in self.historical_query_providers:query_indices.append(i)
+            cached=(context,np.asarray(indices,dtype=np.intp),np.asarray(labels,dtype=np.float32).reshape(-1,WIDTH),
+                    np.asarray(markets,dtype=np.float32).reshape(-1,7),np.asarray(sig_indices,dtype=np.intp),
+                    np.asarray(contracts,dtype=np.float32).reshape(-1,7),np.asarray(query_indices,dtype=np.intp))
+            for array in cached[1:]:array.setflags(write=False)
+            self._historical_metadata_cache=cached
+        _,indices,labels,markets,sig_indices,contracts,query_indices=cached
+        values[indices,OLD:]=labels;values[indices,MARKET]=markets
+        values[sig_indices,CONTRACT]=contracts
+        base['masks']['trade_query'][query_indices,0]=True
         if count:
             values[-count:] = extra
         masks = {k: np.concatenate((v, np.zeros((count, *v.shape[1:]), dtype=v.dtype)))

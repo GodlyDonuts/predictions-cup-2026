@@ -37,6 +37,28 @@ def wait():
 
 
 class HistoricalNeuralTests(unittest.TestCase):
+    def test_static_metadata_cache_tracks_layout_and_catalog_without_caching_ages(self):
+        e=environment();e.observe();initial=e._historical_metadata_cache
+        key=('historical_trades','840','m','YES')
+        row={'source_at_ms':0,'simulated_available_at_ms':1,'fact_sha256':'a'*64,
+             'trade':{'id':'4','price':'.3','volume':'2','size':2,'side':'YES'}}
+        e.register_history('SIG',key,lambda now:[row])
+        first=e.observe();catalog=e._historical_metadata_cache
+        self.assertIsNot(initial,catalog)
+        i=first['entities'].index(('read',('SIG',key)))
+        self.assertEqual(first['contracts'][i,OLD+1],1)
+        self.assertEqual(first['contracts'][i,OLD+3],1)
+        e.request_observation('SIG',key);e.advance(1000)
+        delivered=e.observe();cache=e._historical_metadata_cache
+        record=next(i for i,(kind,_)in enumerate(delivered['entities'])if kind=='historical_record')
+        e.advance(1100);later=e.observe()
+        self.assertIs(cache,e._historical_metadata_cache)
+        self.assertGreater(later['contracts'][record,OLD+8],delivered['contracts'][record,OLD+8])
+        e.quote_selection.append(e.exchanges[1]);changed=e.observe()
+        self.assertIsNot(cache,e._historical_metadata_cache)
+        i=changed['entities'].index(('read',('SIG',key)))
+        np.testing.assert_array_equal(changed['contracts'][i,OLD:],first['contracts'][first['entities'].index(('read',('SIG',key))),OLD:])
+
     def test_actor_history_query_parameters_reach_paid_provider(self):
         e=environment();key=('historical_trades','840','m','YES');calls=[]
         def provider(now,**kwargs):calls.append((now,kwargs));return []
