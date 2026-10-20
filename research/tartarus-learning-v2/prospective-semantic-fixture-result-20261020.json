@@ -1,0 +1,43 @@
+{
+  "classification": "original_completed_capture_fixture_semantics_not_continuous_source_or_execution_calibration",
+  "sourceCommit": "bec25f4a8d231b1a71d4e5caa7995378314767db",
+  "originalFixtureManifestSha256": "524f6280c643f905fee05a6af45c06f1d6305464afa710a5180b9d83c521995f",
+  "transportAuditSha256": "2009cfe1cb51d2a71bd048b9116aef8b01d191f111e7d78d5c5ac14a283d134f",
+  "originalTransportRows": 15088,
+  "inputCounts": {
+    "transport/rest_reference": 638,
+    "transport/subscribed": 237,
+    "transport/broadcast": 14213,
+    "REST/market": 237,
+    "REST/book": 401
+  },
+  "normalizedCounts": {
+    "original_official_sig_realtime_frame/gap": 237,
+    "original_official_sig_realtime_frame/book": 14197,
+    "original_official_sig_rest_book_receipt/book": 401
+  },
+  "decoderCounts": {
+    "original_topic_subscriptions": 237,
+    "books": 14197,
+    "original_broadcasts": 14213,
+    "reported_engine_prints": 272,
+    "rest_books": 401,
+    "original_rest_book_receipts": 401,
+    "older_book_ignored": 16
+  },
+  "exchanges": 237,
+  "receiptBoundsMs": [
+    1792527356548,
+    1792527955091
+  ],
+  "sameMillisecondOrderingAssumption": "REST_then_WS_original_channel_order_not_submillisecond_truth",
+  "observationsSha256": "b87b20da484ee0180a51a42f30a0ddf5328ec9e8e2c51bb262ebe04c62cf1ca1",
+  "tradeRowsSha256": "0f7b922e7f7b15d2dceeb7da8911b17477fbc12af26e0d1e5fcfb1d904ebf5ca",
+  "reportedTrades": 272,
+  "RESTSnapshotsAreFreeWebSocketReceipts": false,
+  "rawNativeProcessingClocksFabricated": false,
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0
+}

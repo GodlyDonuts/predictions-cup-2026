@@ -1,0 +1,27 @@
+{
+  "classification": "recorded_SIG_WS_REST_paid_feed_runtime_integration_not_policy_ROI",
+  "sourceCommit": "0e83857b30e60341dc3adc6932fb97e6d5551f1c",
+  "semanticSourceCommit": "bec25f4a8d231b1a71d4e5caa7995378314767db",
+  "semanticEvidenceSha256": "87d8ebf77a4a1bdf9fe75f8bef58508855d4091bc0409545809efa75387d5471",
+  "terminalConvention": "half_open_end_at_last_original_receipt_no_extrapolation",
+  "datasetManifestSha256": "bbbfaaa98f79c0d4e3de4371652728fca761e266ed7706f0f2ec0cc5067b6183",
+  "cacheManifestSha256": "4abbe2f636106baf67ec29a2e17131ab47592c719808a7f25d5e5e9f05dd6098",
+  "sourceExchanges": 237,
+  "actorBookCaches": 237,
+  "realtimeMintAdmissions": 1,
+  "derivedOriginalBookDeliveries": 14197,
+  "managedPaidAdmissions": {
+    "SIG": 995,
+    "Kalshi": 0,
+    "Polymarket": 0
+  },
+  "originalFlowFacts": 272,
+  "virtualMs": 598541,
+  "runtimeSeconds": 3.675417499995092,
+  "cashUnchanged": true,
+  "contestOrders": 0,
+  "fills": 0,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "trainingAdmitted": false
+}
