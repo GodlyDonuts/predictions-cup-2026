@@ -376,7 +376,12 @@ class Experiment:
                 'mode':envs[i].passive.mode,'source_volume':envs[i].passive.source_volume,
                 'intercepted_volume':envs[i].passive.intercepted_volume,'calibrated':False},
             'derived_stream':None if envs[i].realtime is None else {
-                'mints':envs[i].realtime.mints,'book_deliveries':envs[i].realtime.deliveries}}
+                'mints':envs[i].realtime.mints,'book_deliveries':envs[i].realtime.deliveries,
+                'public_trades_enabled':envs[i].realtime.public_trades,
+                'public_trade_deliveries':envs[i].realtime.public_deliveries,
+                'public_trade_duplicates':envs[i].realtime.public_duplicates,
+                'public_trade_suppressed':envs[i].realtime.public_suppressed,
+                'gap_signals':envs[i].realtime.gaps,'connected_at_end':envs[i].realtime.enabled}}
             for i in range(count)]
         return {'classification':'independent_simulated_worlds_not_additional_historical_evidence',
             'worlds':count,'reward':sum(c['reward']for c in cases)/count,
