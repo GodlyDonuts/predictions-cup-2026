@@ -54,7 +54,7 @@ class GrowthLedger:
     markets. A finer map requires a pinned external economic grouping.
     """
     def __init__(self,env,*,maximum_mark_age_ms=120000,clusters=None,cluster_evidence=None,
-                 development=False,historical_last_mark=False):
+                 development=False,historical_last_mark=False,development_daily_growth=False):
         if clusters is not None and not cluster_evidence:
             raise ValueError('PINNED_ECONOMIC_CLUSTER_EVIDENCE_REQUIRED')
         self.env=env;self.maximum_mark_age_ms=maximum_mark_age_ms
@@ -62,6 +62,9 @@ class GrowthLedger:
         if historical_last_mark and not development:
             raise ValueError('STALE_HISTORICAL_MARKING_IS_DEVELOPMENT_ONLY')
         self.development=development;self.historical_last_mark=historical_last_mark
+        if type(development_daily_growth)is not bool or development_daily_growth and not development:
+            raise ValueError('EXPLICIT_DEVELOPMENT_DAILY_GROWTH_PROFILE')
+        self.development_daily_growth=development_daily_growth
         self.stale_exchanges=set();self.stale_observations=0
         self.start=self._value(env)
         self.start_cash=env.cash
@@ -69,7 +72,7 @@ class GrowthLedger:
         self.previous=self.start;self.boundaries=[self.start];self.reward_sum=0.
         self.closed=False
         self.days=(env.end-env.now)//DAY
-        if not development and ((env.end-env.now)%DAY or self.days<2):
+        if (not development or development_daily_growth)and ((env.end-env.now)%DAY or self.days<2):
             raise ValueError('AT_LEAST_TWO_COMPLETE_CONSECUTIVE_DAYS_REQUIRED')
         self.initial_fill_count=len(env.api_fills)
         for at in range(env.now+DAY,env.end+1,DAY):
@@ -114,7 +117,7 @@ class GrowthLedger:
         terminal=self._value(self.env)
         if min(self.start.twice_micros,terminal.twice_micros)<=0:
             raise ValueError('BANKRUPT_OR_NONPOSITIVE_WEALTH')
-        if self.development:
+        if self.development and not self.development_daily_growth:
             reward=math.log(terminal.twice_micros/self.start.twice_micros)
             result={'reward':reward,'D':None,'N':None,'eligible':False,
                     'classification':'partial_history_development_log_wealth_not_daily_growth_qualification'}
@@ -124,6 +127,9 @@ class GrowthLedger:
             rows=[(a.twice_micros,b.twice_micros)for a,b in zip(self.boundaries,self.boundaries[1:])]
             result=growth_score(rows,self._opportunities(terminal))
             if result['reward']is None:raise ValueError('INELIGIBLE_GROWTH_SCORE')
+            if self.development:
+                result.update(eligible=False,development_daily_growth=True,
+                    classification='complete_day_development_growth_not_source_or_independent_qualification')
         correction=result['reward']-self.reward_sum
         self.closed=True
         debt=sum(getattr(getattr(self.env,'component_ledger',None),'debt',{}).values())

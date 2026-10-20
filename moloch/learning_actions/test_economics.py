@@ -163,6 +163,25 @@ class EconomicTests(unittest.TestCase):
         ledger.transition();result=ledger.finish()
         self.assertFalse(result['eligible']);self.assertIsNone(result['D'])
 
+    def test_complete_day_development_uses_human_score_without_qualification(self):
+        results=[]
+        for development in(False,True):
+            e=environment();e.end=e.now+2*DAY
+            ledger=GrowthLedger(e,development=development,development_daily_growth=development)
+            e._execute('ORDER',[OrderSpec('x','YES','BUY',10,450000)])
+            e.books['x'].update(replace(e.books['x'].book,bids=((550000,100),),asks=((600000,100),)))
+            e._execute('ORDER',[OrderSpec('x','YES','SELL',10,550000)])
+            e.advance(e.start+DAY);a=ledger.transition();e.advance(e.end);b=ledger.transition();r=ledger.finish()
+            self.assertAlmostEqual(a+b+r['terminal_reward_correction'],r['reward'])
+            results.append(r)
+        self.assertEqual(results[0]['reward'],results[1]['reward']);self.assertLess(results[1]['reward'],0)
+        self.assertEqual((results[1]['D'],results[1]['N']),(2,1));self.assertFalse(results[1]['eligible'])
+        self.assertEqual(results[1]['classification'],'complete_day_development_growth_not_source_or_independent_qualification')
+
+    def test_daily_development_cannot_turn_short_tapes_into_days(self):
+        with self.assertRaisesRegex(ValueError,'TWO_COMPLETE'):GrowthLedger(environment(),development=True,development_daily_growth=True)
+        with self.assertRaisesRegex(ValueError,'DAILY_GROWTH_PROFILE'):GrowthLedger(environment(),development_daily_growth=True)
+
     def test_independent_test_consumed_once_even_if_evaluator_crashes(self):
         with tempfile.TemporaryDirectory()as d:
             checkpoint=Path(d)/'fixture.bin';checkpoint.write_bytes(b'actual fixture checkpoint')

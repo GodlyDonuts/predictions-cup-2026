@@ -24,6 +24,17 @@ def validate(config):
             if type(spec.get('information_start_ms')) is not int or spec['information_start_ms'] < 0:
                 raise ValueError('EXPLICIT_PUBLIC_HISTORY_LOWER_BOUND')
             Delivery(**spec['delivery'])
+            extra_indexes=spec.get('additional_indexes',[])
+            if(not isinstance(extra_indexes,list)or extra_indexes and venue not in('Kalshi','Polymarket')):
+                raise ValueError('EXPLICIT_EXTERNAL_HISTORY_PARTITIONS')
+            identities={(spec['path'],spec['manifest_sha256'])}
+            for extra in extra_indexes:
+                if(not isinstance(extra,dict)or set(extra)!={'path','manifest_sha256'}
+                        or not isinstance(extra['path'],str)or not extra['path']or not valid_sha(extra['manifest_sha256'])):
+                    raise ValueError('PINNED_ADDITIONAL_HISTORY_INDEX')
+                identity=(extra['path'],extra['manifest_sha256'])
+                if identity in identities:raise ValueError('DUPLICATE_HISTORY_INDEX')
+                identities.add(identity)
             if venue == 'SIG' and 'trade_information' in spec:
                 extra=spec['trade_information']
                 if (not isinstance(extra,dict) or not isinstance(extra.get('path'),str)
@@ -60,9 +71,8 @@ class HistoryBindings:
             try:
                 for venue, cls in (('SIG', CandleHistory), ('Kalshi', KalshiHistory), ('Polymarket', Samples)):
                     spec = self.config['roles'][role][venue]
-                    opened[venue] = cls(spec['path'], spec['manifest_sha256'],
-                        scoring_bounds=bounds, information_start_ms=spec['information_start_ms'],
-                        delivery=Delivery(**spec['delivery']))
+                    from .historical_union import open_indexes
+                    opened[venue] = open_indexes(cls,venue,spec,bounds=bounds,delivery=Delivery(**spec['delivery']))
                 extra=self.config['roles'][role]['SIG'].get('trade_information')
                 if extra is not None:
                     opened['SIGTrades']=SigTradeHistory(extra['path'],extra['manifest_sha256'],

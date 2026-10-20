@@ -492,6 +492,7 @@ class Experiment:
             from .evaluation_batch import EvaluationBatch
             envs=[self.world(role,a,b,finalist,s)for a,b,s in descriptors]
             ledgers=[GrowthLedger(env,development=self.development,
+                development_daily_growth=self.config.get('development_selection_daily_growth',False),
                 historical_last_mark=self.config.get('development_last_observed_marks',False),
                 maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for env in envs]
             calibration=self.stream(model,envs[0]).calibration
@@ -510,6 +511,7 @@ class Experiment:
                 torch.manual_seed(self.seed+90000+seed_offset)
                 env=self.world(role,case_start,case_end,finalist,stress);stream=self.stream(model,env)
                 ledger=GrowthLedger(env,development=self.development,
+                    development_daily_growth=self.config.get('development_selection_daily_growth',False),
                     historical_last_mark=self.config.get('development_last_observed_marks',False),
                     maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
                 while env.now<case_end:
