@@ -611,9 +611,12 @@ class ApiEpisode(PreparedEpisode):
             if getattr(self,'managed_data_profile',None)is not None:result['wake_on_observation']=not bool(int(action['patience']))
             return result
         if family in (1,2,5,6):
+            from .price_parameterization import tick,ABSOLUTE
+            price_tick=tick(getattr(self,'price_parameterization',ABSOLUTE),int(action['price']),
+                observation['contracts'][int(action['market'])],int(action['side']),family)
             spec=OrderSpec(key,('YES','NO')[int(action['side'])],
                 'BUY'if family in (1,5)else'SELL',quantity,
-                None if int(action['price'])==0 else int(action['price'])*TICK,
+                None if price_tick==0 else price_tick*TICK,
                 timestamp if int(action['patience'])and int(action['price'])else None)
             if family in (5,6):
                 if len(self.builder)>=50:return {'status':'API_BATCH_MAX_50'}

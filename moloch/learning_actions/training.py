@@ -202,6 +202,8 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     bundle['read_target_sampling']=sampling_mode(getattr(model,'read_target_sampling',FLAT))
     from .managed_data_service import profile
     bundle['managed_data_profile']=profile(getattr(model,'managed_data_profile',None))
+    from .price_parameterization import policy_mode
+    bundle['price_parameterization']=policy_mode(model)
     path=Path(path)
     with path.open('xb')as f:torch.save(bundle,f)
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -232,6 +234,10 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     model.read_target_sampling=sampling_mode(bundle.get('read_target_sampling',FLAT))
     from .managed_data_service import profile
     model.managed_data_profile=profile(bundle.get('managed_data_profile'))
+    from .price_parameterization import validate as price_mode,ABSOLUTE
+    model.price_parameterization=price_mode(bundle.get('price_parameterization',ABSOLUTE))
+    from .price_parameterization import policy_mode
+    policy_mode(model)
     from .acting_validation import validate as acting_mode,STRICT
     model.acting_validation=acting_mode(bundle.get('acting_validation',STRICT))
     from .state_encoding import validate

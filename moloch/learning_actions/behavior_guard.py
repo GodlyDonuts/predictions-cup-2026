@@ -20,16 +20,21 @@ def contract(model):
     if mode!=FLAT:value=value+(mode,)
     from .managed_data_service import profile
     extension=profile(getattr(model,'managed_data_profile',None))
-    return value if extension is None else value+(extension,)
+    if extension is not None:value=value+(extension,)
+    from .price_parameterization import validate as price_mode,ABSOLUTE
+    price=price_mode(getattr(model,'price_parameterization',ABSOLUTE))
+    return value if price==ABSOLUTE else value+(price,)
 
 
 def require_contract(model,value):
     if value is None:
         from .read_target_sampling import validate as sampling_mode,FLAT
         from .managed_data_service import profile
+        from .price_parameterization import validate as price_mode,ABSOLUTE
         if (getattr(model,'local_memory_joint_density',False)or
                 sampling_mode(getattr(model,'read_target_sampling',FLAT))!=FLAT or
-                profile(getattr(model,'managed_data_profile',None))is not None):
+                profile(getattr(model,'managed_data_profile',None))is not None or
+                price_mode(getattr(model,'price_parameterization',ABSOLUTE))!=ABSOLUTE):
             raise ValueError('EXPLICIT_BEHAVIOR_CONTRACT_REQUIRED')
     elif tuple(value)!=contract(model):raise ValueError('BEHAVIOR_ARCHITECTURE_OR_PROTOCOL_CHANGED')
 

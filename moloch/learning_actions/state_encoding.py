@@ -37,3 +37,6 @@ def matching(environment,model):
     from .managed_data_service import profile
     if profile(getattr(environment,'managed_data_profile',None))!=profile(getattr(model,'managed_data_profile',None)):
         raise ValueError('MODEL_AND_ENVIRONMENT_MANAGED_DATA_MISMATCH')
+    from .price_parameterization import validate as price_mode,ABSOLUTE
+    if price_mode(getattr(environment,'price_parameterization',ABSOLUTE))!=price_mode(getattr(model,'price_parameterization',ABSOLUTE)):
+        raise ValueError('MODEL_AND_ENVIRONMENT_PRICE_PARAMETERIZATION_MISMATCH')

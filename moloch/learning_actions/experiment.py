@@ -118,6 +118,9 @@ class Experiment:
             from .historical_binding import HistoryBindings
             self.history_bindings=HistoryBindings(history)
         expected_protocol=HISTORICAL_INFORMATION if history is not None else API_TARGETS if named else BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
+        from .price_parameterization import validate as price_mode,ABSOLUTE
+        if price_mode(config.get('price_parameterization',ABSOLUTE))!=ABSOLUTE and not config.get('full_depth_observations',False):
+            raise ValueError('QUOTE_RANK_REQUIRES_DELIVERED_FULL_DEPTH')
         if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .resting_power import validate as funding_mode
@@ -276,6 +279,8 @@ class Experiment:
         env.resting_buy_funding=self.config.get('resting_buy_funding')
         from .read_target_sampling import validate as sampling_mode,FLAT
         env.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
+        from .price_parameterization import validate as price_mode,ABSOLUTE
+        env.price_parameterization=price_mode(self.config.get('price_parameterization',ABSOLUTE))
         from .managed_data_service import specification,ManagedDataService
         service=specification(self.config.get('managed_data_service'))
         if service is not None:ManagedDataService(env,service)
@@ -636,6 +641,8 @@ class Experiment:
         model.observation_protocol=self.config.get('observation_protocol',model.observation_protocol)
         from .read_target_sampling import validate as sampling_mode,FLAT
         model.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
+        from .price_parameterization import validate as price_mode,ABSOLUTE
+        model.price_parameterization=price_mode(self.config.get('price_parameterization',ABSOLUTE))
         from .managed_data_service import specification
         service=specification(self.config.get('managed_data_service'))
         model.managed_data_profile=None if service is None else service['profile']
@@ -673,6 +680,9 @@ class Experiment:
         family_shifts=self.config.get('founder_family_logit_shifts')
         if family_shifts is not None and(not isinstance(family_shifts,list)or len(family_shifts)!=members):
             raise ValueError('ONE_EXPLICIT_FAMILY_PRIOR_PER_FOUNDER_REQUIRED')
+        price_shifts=self.config.get('founder_price_logit_shifts')
+        if price_shifts is not None and(not isinstance(price_shifts,list)or len(price_shifts)!=members):
+            raise ValueError('ONE_EXPLICIT_PRICE_PRIOR_PER_FOUNDER_REQUIRED')
         for member in range(members):
             torch.manual_seed(self.seed+member)
             inherited=parents[member%len(parents)]if parents and member<members-fresh else None
@@ -775,6 +785,15 @@ class Experiment:
                     'old':getattr(model,'acting_validation',STRICT),'new':target_mode,
                     'weights_unchanged':True,'fresh_optimizer_and_trajectories':True})
             model.acting_validation=target_mode
+            from .price_parameterization import validate as price_mode,ABSOLUTE
+            old_price=price_mode(getattr(model,'price_parameterization',ABSOLUTE))
+            new_price=price_mode(self.config.get('price_parameterization',ABSOLUTE))
+            if old_price!=new_price:
+                if self.config.get('migrate_price_parameterization')is not True:raise ValueError('EXPLICIT_PRICE_PARAMETERIZATION_MIGRATION_REQUIRED')
+                model.price_parameterization=new_price
+                frozen(self.output/('founder-%03d-price-parameterization-migration.json'%member),{
+                    'old':old_price,'new':new_price,'weightsPreserved':True,'optimizerMomentsReset':True,
+                    'freshTrajectoriesAndScoresRequired':True})
             from .managed_data_service import profile,specification
             service=specification(self.config.get('managed_data_service'))
             old_profile=profile(getattr(model,'managed_data_profile',None))
@@ -809,6 +828,9 @@ class Experiment:
                 frozen(self.output/('founder-%03d-family-prior-mutation.json'%member),
                        mutate_family_logits(model,family_shifts[member]))
             rate,entropy=self.founder_hyperparameters(member)
+            if price_shifts is not None and price_shifts[member]is not None:
+                from .exploration_prior import mutate_price_logits
+                frozen(self.output/('founder-%03d-price-prior-mutation.json'%member),mutate_price_logits(model,price_shifts[member]))
             opt=self.make_optimizer(model,rate=rate,entropy=entropy)
             self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
             del model,opt
