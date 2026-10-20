@@ -8,10 +8,11 @@ ORDER_PAGES='sig_scoped_owned_order_pages_v5'
 COMPONENT_DEBT='sig_scoped_component_debt_v6'
 BULK_QUOTES='sig_scoped_bulk_quotes_v7'
 API_TARGETS='sig_named_api_targets_v8'
+HISTORICAL_INFORMATION='sig_historical_information_receipts_v9'
 
 
 def validate(value):
-    if type(value)is not str or value not in(LEGACY,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS):
+    if type(value)is not str or value not in(LEGACY,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS,HISTORICAL_INFORMATION):
         raise ValueError('EXPLICIT_OBSERVATION_PROTOCOL_REQUIRED')
     return value
 
@@ -35,7 +36,8 @@ def validate_architecture(model):
     from .component_execution import ComponentPolicy
     from .bulk_quotes import BulkQuotePolicy
     from .api_affordances import ApiAffordancePolicy
-    expected={JointMemoryPolicy:MEMORY_JOINT,OrderPagePolicy:ORDER_PAGES,ComponentPolicy:COMPONENT_DEBT,BulkQuotePolicy:BULK_QUOTES,ApiAffordancePolicy:API_TARGETS}
+    from .historical_neural import HistoricalNeuralPolicy
+    expected={JointMemoryPolicy:MEMORY_JOINT,OrderPagePolicy:ORDER_PAGES,ComponentPolicy:COMPONENT_DEBT,BulkQuotePolicy:BULK_QUOTES,ApiAffordancePolicy:API_TARGETS,HistoricalNeuralPolicy:HISTORICAL_INFORMATION}
     if type(model)in expected:
         if model.observation_protocol!=expected[type(model)]:raise ValueError('JOINT_MEMORY_ARCHITECTURE_PROTOCOL_MISMATCH')
-    elif model.observation_protocol in(MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS):raise ValueError('JOINT_MEMORY_ARCHITECTURE_PROTOCOL_MISMATCH')
+    elif model.observation_protocol in(MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS,HISTORICAL_INFORMATION):raise ValueError('JOINT_MEMORY_ARCHITECTURE_PROTOCOL_MISMATCH')

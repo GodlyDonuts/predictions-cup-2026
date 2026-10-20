@@ -1,0 +1,16 @@
+{
+  "classification": "real_three_venue_history_neural_training_integration_not_roi",
+  "registeredHistoryTargets": 787,
+  "deliveredRecordTokens": 1501,
+  "featureCount": 517,
+  "decisions": 4,
+  "acceptedUpdates": 1,
+  "historyEncoderWeightsChanged": true,
+  "checkpointSha256": "6183575238846478513f2798aea0da9e1f796d5928246f56d7e0c9ca03dde7ad",
+  "checkpointArchitecture": "tartarus-historical-information-gru-v10",
+  "checkpointReadbackMatches": true,
+  "experimentSha256": "db2055974bdd188975ade12a2a049091ab799b50e2fc37203631af540529fb95",
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "gpuUsed": false
+}

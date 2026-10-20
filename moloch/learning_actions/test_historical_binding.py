@@ -1,0 +1,52 @@
+import copy
+import unittest
+from unittest.mock import patch
+from .historical_binding import HistoryBindings, validate
+
+
+def config():
+    sources = {venue: {'path': 'private-index', 'manifest_sha256': 'a' * 64,
+                      'information_start_ms': 0,
+                      'delivery': {'delay_ms': 60000 if venue == 'SIG' else 1000,
+                                   'poll_ms': 50, 'phase_ms': 0, 'maximum_age_ms': 100000},
+                      **({} if venue == 'SIG' else {'mapping': {'asset': ['m', 'YES']}})}
+               for venue in ('SIG', 'Kalshi', 'Polymarket')}
+    return {'format': 'three_venue_history_information_v1',
+            'historical_mapping_availability_verified': False,
+            'roles': {'train': sources, 'evolution': copy.deepcopy(sources)}}
+
+
+class HistoricalBindingTests(unittest.TestCase):
+    def test_missing_venue_and_unpinned_sources_fail(self):
+        for change in ('venue', 'sha', 'mapping', 'provenance'):
+            spec = config()
+            if change == 'venue': del spec['roles']['train']['Kalshi']
+            if change == 'sha': spec['roles']['train']['SIG']['manifest_sha256'] = 'bad'
+            if change == 'mapping': spec['roles']['train']['Polymarket']['mapping'] = {}
+            if change == 'provenance': spec['historical_mapping_availability_verified'] = 1
+            with self.assertRaises(ValueError): validate(spec)
+
+    def test_role_bounds_and_test_source_checked_before_opening_files(self):
+        class Env:
+            now, end = 100, 200
+        bindings = HistoryBindings(config())
+        with self.assertRaisesRegex(ValueError, 'NO_HISTORY_SOURCE'):
+            bindings.attach(Env(), 'test', (100, 300))
+        with self.assertRaisesRegex(ValueError, 'OUTSIDE_REGISTERED_ROLE'):
+            bindings.attach(Env(), 'train', (101, 300))
+
+    def test_partial_reader_failure_closes_previously_opened_source(self):
+        class Env:
+            now, end = 100, 200
+        class Reader:
+            closed = False
+            def close(self): self.closed = True
+        reader = Reader()
+        bindings = HistoryBindings(config())
+        with patch('moloch.learning_actions.historical_binding.CandleHistory', return_value=reader), \
+             patch('moloch.learning_actions.historical_binding.KalshiHistory',
+                   side_effect=ValueError('CHANGED_RECEIPT')):
+            with self.assertRaisesRegex(ValueError, 'CHANGED_RECEIPT'):
+                bindings.attach(Env(), 'train', (100, 300))
+        self.assertTrue(reader.closed)
+        self.assertEqual(bindings.readers, {})

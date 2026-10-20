@@ -23,6 +23,8 @@ from .selection import frozen,IndependentTest,DataUse
 
 class Experiment:
     def close(self):
+        history=getattr(self,'history_bindings',None)
+        if history is not None:history.close()
         store=getattr(getattr(self,'original',None),'disk_store',None)
         if store is not None:store.close()
 
@@ -90,7 +92,7 @@ class Experiment:
             development=self.development,episode_ms=config.get('development_selection_episode_ms'))
         from .state_encoding import validate
         validate(config.get('global_state_encoding','raw'))
-        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS
+        from .observation_protocol import validate as protocol,CURRENT,QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS,HISTORICAL_INFORMATION
         windows=config.get('trade_query_windows',False)
         if type(windows)is not bool or(windows and config.get('full_depth_observations')is not True):
             raise ValueError('QUERY_WINDOWS_REQUIRE_EXPLICIT_FULL_DEPTH_PROFILE')
@@ -106,7 +108,15 @@ class Experiment:
         if type(quotes)is not bool or(quotes and not debt):raise ValueError('BULK_QUOTES_REQUIRE_COMPONENT_SCOPED_PROFILE')
         named=config.get('api_target_affordances',False)
         if type(named)is not bool or(named and not quotes):raise ValueError('API_LABELS_REQUIRE_EXPLICIT_BULK_PROFILE')
-        expected_protocol=API_TARGETS if named else BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
+        history=config.get('historical_information')
+        self.history_bindings=None
+        if history is not None:
+            if not named:raise ValueError('HISTORICAL_INFORMATION_REQUIRES_NAMED_API_PROFILE')
+            if config.get('development_initial_checkpoint')or config.get('development_initial_checkpoints'):
+                raise ValueError('HISTORICAL_ARCHITECTURE_REQUIRES_FRESH_FOUNDERS')
+            from .historical_binding import HistoryBindings
+            self.history_bindings=HistoryBindings(history)
+        expected_protocol=HISTORICAL_INFORMATION if history is not None else API_TARGETS if named else BULK_QUOTES if quotes else COMPONENT_DEBT if debt else ORDER_PAGES if pages else MEMORY_JOINT if joint else SCOPED_EXECUTION if scoped else QUERY_WINDOW if windows else CURRENT
         if protocol(config.get('observation_protocol',CURRENT))!=expected_protocol:
             raise ValueError('CURRENT_SIMULATOR_PROTOCOL_REQUIRED')
         from .resting_power import validate as funding_mode
@@ -182,7 +192,10 @@ class Experiment:
         key=(role,finalist)
         if key in self.tape_cache:return self.tape_cache[key]
         tape_type=ApiTape
-        if self.config.get('api_target_affordances',False):
+        if self.config.get('historical_information')is not None:
+            from .historical_neural import HistoricalNeuralTape
+            tape_type=HistoricalNeuralTape
+        elif self.config.get('api_target_affordances',False):
             from .api_affordances import ApiAffordanceTape
             tape_type=ApiAffordanceTape
         elif self.config.get('bulk_quote_observations',False):
@@ -231,6 +244,9 @@ class Experiment:
         env=tape.episode(mechanics,start,end,
             initial_cash_micros=self.config.get('initial_cash_micros',100000000000),
             target_wealth_micros=self.config.get('target_wealth_micros',1100000000000),burnin_ms=burnin)
+        if getattr(self,'history_bindings',None)is not None:
+            bounds=self.train_bounds if role=='train'else self.evolution_bounds if role=='evolution'else self.split.bounds('test')
+            self.history_bindings.attach(env,role,bounds)
         notifications=self.config.get('private_fill_notifications','legacy_implicit_broker')
         if notifications not in('legacy_implicit_broker','requires_active_sig_stream'):
             raise ValueError('EXPLICIT_PRIVATE_RECEIPT_MODEL_REQUIRED')
@@ -573,6 +589,9 @@ class Experiment:
             del model,opt
 
     def policy_type(self):
+        if self.config.get('historical_information')is not None:
+            from .historical_neural import HistoricalNeuralPolicy
+            return HistoricalNeuralPolicy
         if self.config.get('api_target_affordances',False):
             from .api_affordances import ApiAffordancePolicy
             return ApiAffordancePolicy
