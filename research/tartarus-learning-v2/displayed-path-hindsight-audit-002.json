@@ -1,0 +1,515 @@
+{
+  "classification": "hindsight_quote_path_horizon_comparison_not_executable_strategy_profit",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "windows": [
+    {
+      "label": "short",
+      "start_ms": 1792416690500,
+      "end_ms": 1792416810500,
+      "exchangesWithFreshQuotes": 237,
+      "bookChanges": 3724,
+      "positiveDisplayedRoundTripExchanges": 1,
+      "bestEdgeMicrosPerShare": 5000,
+      "largestCandidates": [
+        {
+          "exchange": "983",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416785132,
+            "ask_micros": 445000,
+            "source_sha256": "8de92aa17d6245cf858dbcf8529b5d39339f718a18d7476424960b8f4573719b"
+          },
+          "exit": {
+            "at_ms": 1792416785662,
+            "bid_micros": 450000,
+            "source_sha256": "5a860419ce9f126f018c54a6a918c1c25eefc8f170690796df996d4286d9105f"
+          }
+        }
+      ],
+      "elapsedCpuSeconds": 1.109281999990344
+    },
+    {
+      "label": "short",
+      "start_ms": 1792418189500,
+      "end_ms": 1792418309500,
+      "exchangesWithFreshQuotes": 237,
+      "bookChanges": 4042,
+      "positiveDisplayedRoundTripExchanges": 1,
+      "bestEdgeMicrosPerShare": 35000,
+      "largestCandidates": [
+        {
+          "exchange": "896",
+          "edge_micros": 35000,
+          "entry": {
+            "at_ms": 1792418189500,
+            "ask_micros": 305000,
+            "source_sha256": "029070360ef1c1571e93b8cf0223c2959da6d5a60634cad72ffba577ddcb26f4"
+          },
+          "exit": {
+            "at_ms": 1792418198998,
+            "bid_micros": 340000,
+            "source_sha256": "c37d1e07a29cb036316f2439eedd73efd5ee7745bbed4abb14c34411eb3776fd"
+          }
+        }
+      ],
+      "elapsedCpuSeconds": 1.3246074999915436
+    },
+    {
+      "label": "full_stratum",
+      "start_ms": 1792416001000,
+      "end_ms": 1792417500000,
+      "exchangesWithFreshQuotes": 237,
+      "bookChanges": 37512,
+      "positiveDisplayedRoundTripExchanges": 9,
+      "bestEdgeMicrosPerShare": 10000,
+      "largestCandidates": [
+        {
+          "exchange": "983",
+          "edge_micros": 10000,
+          "entry": {
+            "at_ms": 1792416785132,
+            "ask_micros": 445000,
+            "source_sha256": "8de92aa17d6245cf858dbcf8529b5d39339f718a18d7476424960b8f4573719b"
+          },
+          "exit": {
+            "at_ms": 1792417297307,
+            "bid_micros": 455000,
+            "source_sha256": "0deff1f4f0509f2747bf0d5958d7bb7b682828e74f86c1b7ea2bdfbbfd7731d7"
+          }
+        },
+        {
+          "exchange": "910",
+          "edge_micros": 10000,
+          "entry": {
+            "at_ms": 1792416005082,
+            "ask_micros": 415000,
+            "source_sha256": "97435ecc6ecf86aecd41b4a4d01f4a08327cfcb7d300552bf4bbdcf57d96f9fe"
+          },
+          "exit": {
+            "at_ms": 1792417300673,
+            "bid_micros": 425000,
+            "source_sha256": "477e5955df11ba8ce304d9e8b9d556c0de6e1aedce7c9427b923edacc743daff"
+          }
+        },
+        {
+          "exchange": "954",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416045550,
+            "ask_micros": 95000,
+            "source_sha256": "1d65dc92c560e14dfb6577cb2288c492824e9cb45b0e8a27e932b0918c179c72"
+          },
+          "exit": {
+            "at_ms": 1792416622892,
+            "bid_micros": 100000,
+            "source_sha256": "15805ab3d2d4a9951b24ed9e94f029d5a9634a04cab97f79581d34bc8d69faab"
+          }
+        },
+        {
+          "exchange": "859",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416413866,
+            "ask_micros": 95000,
+            "source_sha256": "5385a8e5e579182b1b7897d2d8166290dc26f291131e36e38b96de1758c13bc8"
+          },
+          "exit": {
+            "at_ms": 1792416686102,
+            "bid_micros": 100000,
+            "source_sha256": "a852e8009b4cb4cfbb1e6c188d89ea51a63bbb7a1ac471853dfd626b1de8bd47"
+          }
+        },
+        {
+          "exchange": "884",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416026717,
+            "ask_micros": 285000,
+            "source_sha256": "00fe204bdf0cf1dece506ef3ee05d2a3ed81c900c7d3b245ac98d446bb875b40"
+          },
+          "exit": {
+            "at_ms": 1792417296469,
+            "bid_micros": 290000,
+            "source_sha256": "7e9bbe1acdafa22b262a38a2b915e2856daa8a056f722dd826b313a502a6f03f"
+          }
+        },
+        {
+          "exchange": "1043",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416001490,
+            "ask_micros": 180000,
+            "source_sha256": "33db93b26e08cff45784477933c1facf81d256868747f05e5817391d683c3cce"
+          },
+          "exit": {
+            "at_ms": 1792417300673,
+            "bid_micros": 185000,
+            "source_sha256": "477e5955df11ba8ce304d9e8b9d556c0de6e1aedce7c9427b923edacc743daff"
+          }
+        },
+        {
+          "exchange": "894",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416005082,
+            "ask_micros": 360000,
+            "source_sha256": "97435ecc6ecf86aecd41b4a4d01f4a08327cfcb7d300552bf4bbdcf57d96f9fe"
+          },
+          "exit": {
+            "at_ms": 1792417300673,
+            "bid_micros": 365000,
+            "source_sha256": "477e5955df11ba8ce304d9e8b9d556c0de6e1aedce7c9427b923edacc743daff"
+          }
+        },
+        {
+          "exchange": "933",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416005082,
+            "ask_micros": 245000,
+            "source_sha256": "97435ecc6ecf86aecd41b4a4d01f4a08327cfcb7d300552bf4bbdcf57d96f9fe"
+          },
+          "exit": {
+            "at_ms": 1792417300673,
+            "bid_micros": 250000,
+            "source_sha256": "477e5955df11ba8ce304d9e8b9d556c0de6e1aedce7c9427b923edacc743daff"
+          }
+        },
+        {
+          "exchange": "899",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792416005082,
+            "ask_micros": 215000,
+            "source_sha256": "97435ecc6ecf86aecd41b4a4d01f4a08327cfcb7d300552bf4bbdcf57d96f9fe"
+          },
+          "exit": {
+            "at_ms": 1792417311969,
+            "bid_micros": 220000,
+            "source_sha256": "ef0014c92855045b96b0cfaa280624610048ec6ac8eb49dc4679ca57595d3219"
+          }
+        }
+      ],
+      "elapsedCpuSeconds": 13.851100599975325
+    },
+    {
+      "label": "full_stratum",
+      "start_ms": 1792417500000,
+      "end_ms": 1792418999000,
+      "exchangesWithFreshQuotes": 237,
+      "bookChanges": 41966,
+      "positiveDisplayedRoundTripExchanges": 12,
+      "bestEdgeMicrosPerShare": 50000,
+      "largestCandidates": [
+        {
+          "exchange": "896",
+          "edge_micros": 50000,
+          "entry": {
+            "at_ms": 1792417711115,
+            "ask_micros": 290000,
+            "source_sha256": "64d262218b7dc7c211ee657c7c39b8f6fc61f9d1bb4402232cb04d43d3a074c5"
+          },
+          "exit": {
+            "at_ms": 1792418170222,
+            "bid_micros": 340000,
+            "source_sha256": "b9130b38098b940781d4be9bee8a255953f3e8cdd8db8fc10aa571b6a88b54a1"
+          }
+        },
+        {
+          "exchange": "894",
+          "edge_micros": 10000,
+          "entry": {
+            "at_ms": 1792417500000,
+            "ask_micros": 360000,
+            "source_sha256": "ad28525db4452fce59835ff38465e603027530f2a3dc1b503b8103bdeac74ae4"
+          },
+          "exit": {
+            "at_ms": 1792417700580,
+            "bid_micros": 370000,
+            "source_sha256": "a649078c1c505955a0d70fe3e2f076be7a9a25494241942b9e40412d5f873e4a"
+          }
+        },
+        {
+          "exchange": "1067",
+          "edge_micros": 10000,
+          "entry": {
+            "at_ms": 1792417959542,
+            "ask_micros": 340000,
+            "source_sha256": "2051e2d03736f480cad7b02c1e4b5d35384b185524e2292c7d26e0ed12c4946b"
+          },
+          "exit": {
+            "at_ms": 1792418433498,
+            "bid_micros": 350000,
+            "source_sha256": "04ccbd89a31b55ff1b5a24c1e99381a1cfff26850451825fa604d781c66756bc"
+          }
+        },
+        {
+          "exchange": "983",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417504781,
+            "ask_micros": 450000,
+            "source_sha256": "b517a65b5628c318a3e1225cd06221251c4c0b02aa74ff500144bc0eef91e916"
+          },
+          "exit": {
+            "at_ms": 1792417673819,
+            "bid_micros": 455000,
+            "source_sha256": "e91d88f732b2eee340735c2941dc8bb51dd6aea3213f9c123028bda928932f54"
+          }
+        },
+        {
+          "exchange": "1043",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417500000,
+            "ask_micros": 190000,
+            "source_sha256": "9b8d58ad9a77685bd4ab4e80c7e810c91dec07dcdb7deef4fb08cd5c10e6ae6a"
+          },
+          "exit": {
+            "at_ms": 1792417673819,
+            "bid_micros": 195000,
+            "source_sha256": "e91d88f732b2eee340735c2941dc8bb51dd6aea3213f9c123028bda928932f54"
+          }
+        },
+        {
+          "exchange": "840",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417682023,
+            "ask_micros": 805000,
+            "source_sha256": "9729f76fca9c338f10b336de20665cf27eaf8b7a7c55db85c3a6be48d5b4cb4e"
+          },
+          "exit": {
+            "at_ms": 1792417694884,
+            "bid_micros": 810000,
+            "source_sha256": "32eb0b8276bb20ebcb09c08f8ab2bc4f7f7287feb598ad8e93dc17aa7ee0a942"
+          }
+        },
+        {
+          "exchange": "880",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417500000,
+            "ask_micros": 140000,
+            "source_sha256": "a12e67dc1b378b14d2a58e351bfe50cc5bc2071bdd5e2e4ffe3c8de17a32292a"
+          },
+          "exit": {
+            "at_ms": 1792417785556,
+            "bid_micros": 145000,
+            "source_sha256": "2ee4ef927827db519ad301f4c9bf0a19967d5dbb9ded197aa157070f8ca4b0bf"
+          }
+        },
+        {
+          "exchange": "842",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417511964,
+            "ask_micros": 640000,
+            "source_sha256": "3898fdb2070affe9b1e2454ed93b7b19a7ebfbf239ba646a2ffd6bbc2aea8dd0"
+          },
+          "exit": {
+            "at_ms": 1792417789426,
+            "bid_micros": 645000,
+            "source_sha256": "c96df19fdd9ed7746e7262982ef0d5076b55bcaeda56997b7175a99afca06e5e"
+          }
+        },
+        {
+          "exchange": "1013",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417500000,
+            "ask_micros": 250000,
+            "source_sha256": "c3d153a13c5bd450d79ab8c3d5a1297bd40df5ddc6e69bb60320326d2dd2294c"
+          },
+          "exit": {
+            "at_ms": 1792417845807,
+            "bid_micros": 255000,
+            "source_sha256": "dbf4349053c91b8a32adc416f844a61a96a738be7a6dbd30d9aa274098d9a780"
+          }
+        },
+        {
+          "exchange": "1002",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417500000,
+            "ask_micros": 750000,
+            "source_sha256": "037a667a6348e4d9c0f1cb245fd77f056011548979e49c3e8ade669c991dea7b"
+          },
+          "exit": {
+            "at_ms": 1792417986159,
+            "bid_micros": 755000,
+            "source_sha256": "4430c6c19dce9be35f2eb9453d8e3c57338bfcf83a7e1db9c9a939f3aebd6755"
+          }
+        },
+        {
+          "exchange": "912",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417799112,
+            "ask_micros": 365000,
+            "source_sha256": "c4c548f498a1810f4a79e2fe693cac5b14c5ea106d9d973526c8b44313954046"
+          },
+          "exit": {
+            "at_ms": 1792418430246,
+            "bid_micros": 370000,
+            "source_sha256": "db34ff923145662fac3a82c7d30baab6c65f1635068cc24cca94f7d547f6b682"
+          }
+        },
+        {
+          "exchange": "1014",
+          "edge_micros": 5000,
+          "entry": {
+            "at_ms": 1792417989082,
+            "ask_micros": 755000,
+            "source_sha256": "df88e7d71cb5af8f831a51d4e0b1eb31e2424bce3050f3e1910963332eb6fa52"
+          },
+          "exit": {
+            "at_ms": 1792418439403,
+            "bid_micros": 760000,
+            "source_sha256": "4de8acd8688fadf30c50762a8e49f2b651b67aed2549ad4388743d24a04732de"
+          }
+        }
+      ],
+      "elapsedCpuSeconds": 15.597982399980538
+    }
+  ],
+  "quoteAgeLimitMs": 60000,
+  "assumptions": [
+    "Perfect future knowledge and free full-universe quote visibility, not actor inputs",
+    "Ignores read/write latency, depth volume, queue, fees and exact account/market eligibility",
+    "Only one-share displayed YES ask-to-later-bid differences; no portfolio return or passive-fill opportunity bound",
+    "Displayed books can change before admission; no fills or account requests performed",
+    "Only already-inspected development calendars"
+  ],
+  "noGpuDiagnostic": true,
+  "httpRequests": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "runtimeSourceSha256": {
+    "moloch\\learning_actions\\account_reads.py": "ea1d068a7e1725cba61b6dd79bdcb9afa83a5f50d85a5823669f80aabb3b52f2",
+    "moloch\\learning_actions\\acting_validation.py": "26e5d33b9f63e223662ac696e4fbb577f73d286571a9acf27dfa5e414e913f66",
+    "moloch\\learning_actions\\acting_validation_benchmark.py": "3c8f196250a345abf61a8fb292c4966c454e9348f6ab24c3926915649cf3ff79",
+    "moloch\\learning_actions\\api_affordances.py": "101bba6a309c7b42b5f05fde8aee19469c312287257f2af2776bd1d03eef333f",
+    "moloch\\learning_actions\\archive.py": "dbee768e2e5367c59ee4dd5c3dee5bec89ae23d42bd242a2fc9bf9665618583c",
+    "moloch\\learning_actions\\batched.py": "ed4e7854c17001c8ff06e21a471470192032a3f85099ed12209c61b4b3207d07",
+    "moloch\\learning_actions\\batch_benchmark.py": "26d41c95b3a27ba8e03365c82f762c661c479c2da632b0d4c7bc9cc0253f51db",
+    "moloch\\learning_actions\\behavior_guard.py": "63a6d70e7dfa0a89ed923785ec1f20cc51fd7cd359b1643c1e973443e8cc343c",
+    "moloch\\learning_actions\\breadth_source.py": "164b0d8d68a42fc8286fafbb8226cfc9dffc1c0f589df456ed1781f195605479",
+    "moloch\\learning_actions\\bulk_quotes.py": "1f4d7583989500f4708a8db909503589bf8517805c16c91906b22661a8bbed52",
+    "moloch\\learning_actions\\clock_prior.py": "159891e2a7b9fb6249f3927e55e1f60247c048da05afe4695942eb260696c6f6",
+    "moloch\\learning_actions\\closed_episode_capacity.py": "b94668bd9b01612fdab25a61b212ae0c7ce05535555fab7607a50c6070b23c4c",
+    "moloch\\learning_actions\\collateral_ledger.py": "4aab571dbf87ce62afc55455dd14eb8c95ade551b1d3cd7846f5bb2b0d192c5c",
+    "moloch\\learning_actions\\compile_archived_cohort.py": "8c0b105e5af5cf2166fbb79474c1db4116cf7713e5693d746fdad0d9e5e780b3",
+    "moloch\\learning_actions\\compile_breadth.py": "8caa96512880a7d4b3943563cb702c89ab9751347bbfbd042cc0eed43c9f5d3c",
+    "moloch\\learning_actions\\compile_snapshot_metadata.py": "6e7fe9cc4f7b1e7a056305a8a4b0fa56d48c594de9c9d9084368552c85491f96",
+    "moloch\\learning_actions\\component_execution.py": "d7272a73f383981ebda30e69f525a67fdc4a7296a7ca9fcfdd57d315dca18c03",
+    "moloch\\learning_actions\\continue_population.py": "a6a3bcee53fd952406dbf35a102b3c7652bd446a6d2a7302213c04dcfdfcec00",
+    "moloch\\learning_actions\\contract.py": "d8edbdba231e340fa15ac335c4e23c181e68fdb0aeae2a95d7dbc9804467e109",
+    "moloch\\learning_actions\\development_calendars.py": "4e2af2e3860fa76cecab239e4fc406bc21a5e872b5eb1cb95bba9daf9c205daa",
+    "moloch\\learning_actions\\disk_replay.py": "6d029c3798cf93e9017e10f160ee63f0bf6b9a3154e6e51d23b735ef0c139661",
+    "moloch\\learning_actions\\disk_tape.py": "76858f927708e52ff1a50564dfaa06dd339a7c3c28e7ae39604eb69fc04558f5",
+    "moloch\\learning_actions\\economics.py": "37566b7ff0f3a487a447b769bda7d243e269f9a818a5d1a49b5a7fe6f46360b6",
+    "moloch\\learning_actions\\engine.py": "29b8476799dfa375abf4a46aee56047b57dceead97000f8173c9419c00070b0f",
+    "moloch\\learning_actions\\entry.py": "a9922bf25df7f5057522170cf2d6934f6de8dca675d28e72b068fd2f91f407c4",
+    "moloch\\learning_actions\\episode_tape.py": "0735cfb27c6ada8de371fd6ddc938877f237e05e3b1cb59d45b7b98a282f3dbc",
+    "moloch\\learning_actions\\episode_training.py": "acd7dc4a2fbde3002e02d45cfdc2cef5d7ffeb538b3dd5112a16171db81cb5f1",
+    "moloch\\learning_actions\\evaluation_batch.py": "4b0812dfee325b37d822619597dd2cf230a81b9227fe3014ffb0aabd95839d0d",
+    "moloch\\learning_actions\\evaluation_benchmark.py": "1f97598ef4403e30a4384fa45f6fdcee41334a4dd50ab1bea0030178ae3a936a",
+    "moloch\\learning_actions\\evaluation_heads_benchmark.py": "ca0919595f115bcb33b3eb714274148b0a6b1cb9da6097f5b2be0f0dd991f554",
+    "moloch\\learning_actions\\execution_receipts.py": "0dc8dd6147838adde60ac3f83d622bf917b7c634d21475b65667787bd325e6db",
+    "moloch\\learning_actions\\experiment.py": "c22221f32cad03f6819289b397cf87d6e2219f94a2d484534e86eba463eb5273",
+    "moloch\\learning_actions\\feature_cache.py": "69fc107fec2a722924a4cd4d83a266f8240cceb89d9a1f009ad7246b9e6d5cc3",
+    "moloch\\learning_actions\\full_depth.py": "4f83ab2fa280fef91d8b8277d6f57d38b53ef30e68e9450b3693df6477a1121e",
+    "moloch\\learning_actions\\gpu_diagnostic_guard.py": "8c80d7fef5e216dd393b6e9ff21a24956fe918dc374228ebe0d88d97ccb13fe3",
+    "moloch\\learning_actions\\history_readiness.py": "333ea5852c496de08d0ae668ab382b54c573fa1c2a421215ac7d0ea6d5ebe00f",
+    "moloch\\learning_actions\\independent_sampling.py": "e44f8d86e8cf640cdb3bf0ff3f767070e429c50f89ec2c1ec6c203f8842f8f21",
+    "moloch\\learning_actions\\inventory.py": "6312a115d41541a66dd70c118e6b2b9627fd2d4a2350f865d9d4f71d4932e5aa",
+    "moloch\\learning_actions\\joint_memory_policy.py": "161e0fca056516848fe08819168222c2dd855bf1960f913305ca6e5e928c0d6b",
+    "moloch\\learning_actions\\lineage.py": "1b55fc414fa6d0ce19f6b38b070efd3498a7b1681f320ce36720b22eb507587a",
+    "moloch\\learning_actions\\observation_protocol.py": "997f5a979a13b1773638d44853024204059b17df39c5aeaacf551ef94819bedc",
+    "moloch\\learning_actions\\official_marks.py": "135e38b8f2ad590369f9af1129ec80c1720357e1a09054091dea6969cbf0c2db",
+    "moloch\\learning_actions\\order_history.py": "30e2023f88a3879bc30626e68977e097d2d299460f4070ae9fffb7ce8dea7620",
+    "moloch\\learning_actions\\order_pages.py": "72997e09177c7d405f872173017eb0252d3d844c988a6c1f06cf676ef80f0c4b",
+    "moloch\\learning_actions\\order_policy.py": "97e48462f7a7f7898115d87863991abf1112c665715e8fd1e7e997a028c68d57",
+    "moloch\\learning_actions\\paired_training_comparison.py": "3ffa2cacf7f144e0360627dcc8b0964c69dd06cd19dab6b9ede2c1671497a8ef",
+    "moloch\\learning_actions\\partial_population.py": "1e64bfecd52ff216076f2a050f760f177a69e4088a3ca57b378931f32af0e762",
+    "moloch\\learning_actions\\passive.py": "441a2d19269d586151e37e6f73c711aea1e8de6edddad628f94eba9ef1be197c",
+    "moloch\\learning_actions\\passive_study.py": "9accc1f9b34b3810d150f8330cf33817ca7e7919d1ef05d7842551871abc2126",
+    "moloch\\learning_actions\\pnl_attribution.py": "b360dd34069786e9ca6842b52fdba64b18497e6b5b3a587bd9eab062f6eb5208",
+    "moloch\\learning_actions\\pnl_diagnostic.py": "441e1bc8d943c97c3d8460b95fc337fac3323e517f5a9921d6664ada29883d11",
+    "moloch\\learning_actions\\policy.py": "a14b6d3e1a3b8ede1a304b71e3ab83fbb5c67015dd2be3c1ec3203bdea1d0da1",
+    "moloch\\learning_actions\\population.py": "10f854ce7d15aa591650a0a1360bbf022662416b7f7fec4b9bc1b2e5e0ed1750",
+    "moloch\\learning_actions\\population_handoff.py": "6c44083ad18dd3cb52988a8293dd41fcb8d11242ef43fd5cf21d5580a5e4dc8a",
+    "moloch\\learning_actions\\query_policy.py": "7064185711584b8a6ba772ba29f25d5341c13f473f2c6ae980cc35d43472b80f",
+    "moloch\\learning_actions\\query_window.py": "b2a56f1995615805400b5712cd14563dd65d24df8376433d4fff5c1e059c13f0",
+    "moloch\\learning_actions\\realtime.py": "3c148289d9b97a013fd91c6db82e35552bba3607930e5fce2efffdde9f635a43",
+    "moloch\\learning_actions\\resting_power.py": "19ed65d69a1bc14d1ff1beeaf6090091801ed8bd81591e0eaf67d41396c9dca9",
+    "moloch\\learning_actions\\rollout_statistics_benchmark.py": "d10f9f0129c28bd834c77fc282dc0f6a63d421bd32f54c8b590f7bb32152e1c0",
+    "moloch\\learning_actions\\selection.py": "e2d558ffe23fe6a3b4f6cb8a064cd4d4cdd7a482ad62319249e775359053813c",
+    "moloch\\learning_actions\\smoke.py": "958d9ffc90ec7695d8ecfcd858283c5702056c8ed7148d06b3c3d5c60a6c1f28",
+    "moloch\\learning_actions\\snapshot_clock.py": "898283690c44d38ff70eb75cbc45988c9cc64873aecd064dfa90778127051544",
+    "moloch\\learning_actions\\state_encoding.py": "87f4042bce8e20c55e00f6b5beaef666e56dbb37a98bf8427d1b7bb7e96d0666",
+    "moloch\\learning_actions\\stream.py": "8e543271aa89bf9c39d43f1dfbfba1778a98728dacde6b455c4e19dcf6ce411a",
+    "moloch\\learning_actions\\trade_history.py": "4631011412c537727a1edc26970a812452bf1fe802440ec77823594654a28d52",
+    "moloch\\learning_actions\\training.py": "9d6eb8ec9599e79dd5e7ed78676916c4c79ee2f2cb81b089d84a16bc4cec5d1a",
+    "moloch\\learning_actions\\training_process.py": "005592903f690d398952b34fd9a64748728eff7010f6ca98aafc62ddcc7de66a",
+    "moloch\\learning_actions\\wake_clock.py": "fe9a2ec3283a0b7edab6f9baae1962838e21e25e8e674006efc2f59217666eb9",
+    "moloch\\learning_actions\\world_confidence.py": "ebfde57ee5fa95e0323b533f36f3d4cf676aad97b66d3009aef200c3e9a97a6f",
+    "moloch\\learning_actions\\__init__.py": "cd14ef4b4bff6c39d04a0f3b7caca94d6d37965728e169e886119e7aa9427a20",
+    "moloch\\learning_realism\\benchmark.py": "b57c72d61303eb097cd538801f3ca4b44efad5718c77370888495d6d797db046",
+    "moloch\\learning_realism\\fast_replay.py": "86ae008abf63edaf721917c573b7356a8f26abf64719c0a8d94cbd97c40a57ad",
+    "moloch\\learning_realism\\prepare.py": "cc25de1f004fd22d59f9f15763974970ac37a14babb26dc8bd394744175a5aeb",
+    "moloch\\learning_realism\\protocol.py": "a828fc149a4fefd9c2bedf556a5cae98265c18c17a4818aeaac17d054bf95be8",
+    "moloch\\learning_realism\\replay.py": "1ba631e100ef7d173a07b2e9b98621bd2a5b1dc473a5e38b4224de2643150a58",
+    "moloch\\learning_realism\\smoke.py": "50b8e35c2f397ef195350d9968ffd5217fea611732ea4820b0c0347d977276ca",
+    "moloch\\learning_realism\\vector_rollout.py": "7b863a8c215464afa4f5fb520b15181c94ca8fb807ca4462ddf176a49e215d48",
+    "moloch\\learning_realism\\__init__.py": "b371cacb8e85b1370ef914cf4ca0a3a69fed35faaedf8f0de26dc8701d6393e6",
+    "moloch\\learning_v2\\account.py": "9b6038e6106f43de6da6319635e46e801cf0e3a5009b5fe29ec13d954062db70",
+    "moloch\\learning_v2\\batched_rollout.py": "8b0c10c0d9faf8d33e0baeb86b183e0bf53b6168f9f946010c3ce110bf4c950b",
+    "moloch\\learning_v2\\benchmark_sequence.py": "91c7d86320d7cd905a3399d2e3a09d3354a42ef0a467258af8e322908d772515",
+    "moloch\\learning_v2\\capture_native_stream.py": "a3eb2c7957f4ee76b541d2c5f0b9dbb3caeedc6fb8ebedafc3e55ea3377ebb6d",
+    "moloch\\learning_v2\\capture_receipt_stream.py": "8721eafff3e4e708a20d7ca0b0cff4d17f11a8e5c15672ca1faefd8df80c8400",
+    "moloch\\learning_v2\\checkpoint_inference.py": "9e9104dee8f7b2351f8e6d1e78db7e0250b2428a1fc9a738079678f301a0708d",
+    "moloch\\learning_v2\\clock.py": "e108cb165eba1ab779a2b5d6e316d8334841de4a04cc6bae2bdd7229d7fc47bd",
+    "moloch\\learning_v2\\compile_forward_development.py": "acb197ec8f9ff2d5283cb6b6c6c413d28a17a93b466b270c8f9fd432fbf8b1e9",
+    "moloch\\learning_v2\\compile_trace.py": "3bc432c9664aa6b11e21688d42a2828e69e6a6a4f59d77ba3a8a353681b98cd9",
+    "moloch\\learning_v2\\episodes.py": "be5b3206d2499e377fb21da2537b1dbd1b04b5420a015b307372f6cbe4ad9c12",
+    "moloch\\learning_v2\\excess_reward.py": "aa966f5faa8a4be1be5c50840640362a17d2e96469a26b6d1c258d67541e4b85",
+    "moloch\\learning_v2\\execution_profiles.py": "3a8ec0d37c408fa8b67b0da747a30f92c0ab7cf994f910a2bb3383d3ae174e84",
+    "moloch\\learning_v2\\feature_migration.py": "1d5010cafe216536bf3bbaeb6d84b0f0186d97b63ce04eef8b7f3062bb3a4cc2",
+    "moloch\\learning_v2\\freeze_finalists.py": "57bc4c594848f8939df9be47cbb40aac3effad3192533bb46ad72f396a8a7709",
+    "moloch\\learning_v2\\fused_policy.py": "62b4d834728b02039ca8726f738bbfef16925290c4772f13a9a5a92500571d14",
+    "moloch\\learning_v2\\historical_wallet.py": "a228ac355e92bacbf9aed2a2322a9707bc9c7ddbc2867799caea65f535cd8f78",
+    "moloch\\learning_v2\\interval_episodes.py": "6d6028681df32692aedd07d330c4b3edbcc4f7c172cd61b2c61d78b4fd0eefd3",
+    "moloch\\learning_v2\\interval_excess_reward.py": "7d0edb1c079d12a0d02d40cab3f3a60a9c9008b4dfd68fae259ac0b174131581",
+    "moloch\\learning_v2\\interval_market_policy.py": "5b9ff84b8a7f2efdb0554609c02310198be1d6e0b74d5c6b92fec55d7883dd56",
+    "moloch\\learning_v2\\inventory_curriculum.py": "873cc78ca548269b636e7b827d7d69304f862a9655f399475263cca1ea53000b",
+    "moloch\\learning_v2\\liquidity.py": "c765ae793296640e00b6f100f83117926e3f489eb4e3b224791e0880773c100f",
+    "moloch\\learning_v2\\market_memory_policy.py": "77ed4ea49462dd33872e914d307b6d8156e6138822e956875278639d31d72a6b",
+    "moloch\\learning_v2\\native_capture_tail.py": "14629a3cedf4f73217f02f47182b1cce80aa015a3ac70fb71b37f4e314499b3b",
+    "moloch\\learning_v2\\packed_io.py": "6bb3d8b1e139a5854e8f89f4f9268d71ce93b6e9fdc410f8f1a356d6cd68d5d8",
+    "moloch\\learning_v2\\policy.py": "694c150b320eea2dabd88aa06407423c5ab5f5bf6ac4a044d0a14e92ac7c06f4",
+    "moloch\\learning_v2\\population.py": "626235e64ed6ccf97dc6ee7c31590a5adc42c2918e656d49f3b44379ecc77346",
+    "moloch\\learning_v2\\process_rollout.py": "21501e73da06c9fe943433c294a5a3a83305973116c62e2749e944e95eedb145",
+    "moloch\\learning_v2\\reference_adapters.py": "088767df8386248121d437d74558fc2f8df571bd514045b61a1b0f6e8a8f52aa",
+    "moloch\\learning_v2\\reference_cache.py": "86aae383c3fb78e5eeee98a9f8467b2a2eab758edb4e6ccdd49bae9bba068c57",
+    "moloch\\learning_v2\\reference_env.py": "2885f51095217e1e51104c3028adad5d1ac85690b10e5e8b1f5f3bc72e6b3667",
+    "moloch\\learning_v2\\run_batched_training.py": "cb1bacd643c728a3cb9ce3f1a6fd824a410e2f89594a1122ce7bbb8d9a512256",
+    "moloch\\learning_v2\\run_comparison.py": "e0c4185e59a024334bc4db428df7b820e1d3435eeed77efce9cb4e4535fdddf9",
+    "moloch\\learning_v2\\run_experiment.py": "1fe75c89a3bafae2989ff8d99cf31b317c69139d63d8db5db90980124ca7eacb",
+    "moloch\\learning_v2\\run_market_training.py": "5b0eec1de2550cccc77c75f06b9067c744e7e9b91999e757f5b0c6f745fde3b4",
+    "moloch\\learning_v2\\run_population.py": "f1e646ad9408368dc27644be20b6606f96c46ba01ca0744aa7fa43a71783ffe3",
+    "moloch\\learning_v2\\sig_capture_tail.py": "5217a6578cdcbbd5d23dc8f4e94269efb1e4e20134f52d79bae923112f339109",
+    "moloch\\learning_v2\\train_inner.py": "0fe1dc353662a472a39be2f2771fe09d5f965dc105e2960d4ef1f7b127ae12f5",
+    "moloch\\learning_v2\\wallet_differential.py": "fe2e3f84e90e04dcbfb1e65aa79691692c0b499f2de30226c2e87c7289205790",
+    "moloch\\learning_v2\\__init__.py": "4fc8d351b2f0256f116dc44525a2eda7bcca90f6f17997182f3c47a4060943e4",
+    "moloch\\learning_flow\\batched_rollout.py": "a646a36f057c271e377e4f023f53d3d23c5f923d76bcf51c8b48daf6258a53c7",
+    "moloch\\learning_flow\\compile.py": "24209ec3d9a2e3e74b88ca0401a6766c677baf513cce7ff69b69e52e671c38b7",
+    "moloch\\learning_flow\\episodes.py": "f790c8cb7c9b7fe677aeda51a07a0cd089e6c3d9b22941ee6e89fced906e8108",
+    "moloch\\learning_flow\\features.py": "3cecdc4b532005494f6b0b9e594915beccc73efcde9f8877f5a84e4b0330aa2c",
+    "moloch\\learning_flow\\policy.py": "694deafb7a2ef4a65474a659377788875d50f4e8a69bc58339ef8415e3846df3",
+    "moloch\\learning_flow\\rollout.py": "83a142fab3efd477a39e1fd3a2c838f76a43846226b698479bc391f57e7fde1e",
+    "moloch\\learning_flow\\run_population.py": "94cd05b4cb887170abf99d16f72d6f517b85edf84eb2a216dc64746b15955541",
+    "moloch\\learning_flow\\__init__.py": "bfde45b018e64662c67a85f2e5ef4e2567608ca2d616c998d4e5f5db1538b732"
+  }
+}

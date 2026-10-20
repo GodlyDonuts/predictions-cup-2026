@@ -4,7 +4,7 @@ The current weakness is not a positive-only reproduction gate. Negative models a
 
 ## Reduce time between generations
 
-The former profile uses eight members, eight 900-second training worlds per member and four selection cases spanning two 1,499.5-second calendar blocks. Even without model/IO overhead, that is substantial inference before a replacement is produced.
+The former profile uses eight members, eight 900-second training worlds per member and four selection cases spanning two 1,499-second calendar blocks. Even without model/IO overhead, that is substantial inference before a replacement is produced.
 
 `development_selection_episode_ms` is an optional **development-only** screen. Each fixed chronological selection stratum supplies its centered interval of that duration. Every member and cycle sees the same calendars, seeds and stresses. No decision cap or new action mask is added; virtual clocks, observation delivery, rate limits and execution remain unchanged within each episode. The default remains full-window evaluation. Full-history experiments reject this option.
 
@@ -41,3 +41,5 @@ Subsequent checked source adds an [exact public-metadata cache](api-metadata-cac
 Next learning work investigates [credit assignment against complete training outcomes](credit-assignment-20261019.md). GPU019 remains active; a full-return comparison must wait for a completed-generation handoff and its own full-size collection/replay/update capacity proof. No positive ROI is implied by preparing that comparison.
 
 [Five-member result review](population-019-five-member-review.md): four negative screens and one flat, zero-fill candidate. The flat policy currently ranks best but is not profitable; the generation and actual reproduction are still incomplete at that observation.
+
+[Selection-horizon audit](selection-horizon-opportunity-20261019.md): displayed quote paths are much sparser in the two-minute screens than in complete development strata. Hindsight counts are not executable profit. Short screens and positive-only confirmation do not establish all longer-horizon strategy quality; that evidence remains outstanding. The active/queued learners were not changed by the audit.
