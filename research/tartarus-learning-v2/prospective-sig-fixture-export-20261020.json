@@ -1,0 +1,32 @@
+{
+  "format": "original_completed_sig_forward_fixture_v1",
+  "segment": 0,
+  "files": {
+    "events.jsonl": {
+      "bytes": 55558911,
+      "sha256": "e05fc8e25bed7bf6a010374aa1a127003c5199b94af57f385e3b946706981e50"
+    },
+    "receipts.jsonl": {
+      "bytes": 2943798,
+      "sha256": "130633adc684f9e0da1aabb7c52395a79c7eb80380ce59178f5cba5fe122039a"
+    }
+  },
+  "counts": {
+    "events.jsonl": {
+      "rest_reference": 638,
+      "subscribed": 237,
+      "broadcast": 14213
+    },
+    "receipts.jsonl": {
+      "market": 237,
+      "book": 401
+    }
+  },
+  "archiveSha256": "8f1178645dab385b6f4c4fcd8775ce6c18182eb22668efd116e345c326dbfec5",
+  "archiveBytes": 10296721,
+  "sourceStreamManifestSha256": "006c8e318c582d5277efc7338d0a1cd33b46c011e3a169a980dea6c7a208b191",
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "privateResultSha256": "524f6280c643f905fee05a6af45c06f1d6305464afa710a5180b9d83c521995f"
+}

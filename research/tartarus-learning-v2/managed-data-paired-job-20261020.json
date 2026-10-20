@@ -1,0 +1,10 @@
+{
+  "pid": 17840,
+  "sourceCommit": "4650f0ea481addd1db89a8223fc48cbd4b01a3cb",
+  "scriptSha256": "60c69183a1d074ab805914fa45cb13e5171371fd69162605b39e6f05e1f54452",
+  "cudaRequested": false,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "resultComplete": true
+}

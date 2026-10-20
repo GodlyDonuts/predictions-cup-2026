@@ -1,0 +1,86 @@
+{
+  "observedUtc": "2026-10-20T22:39:51.773328+00:00",
+  "classification": "repeated_exposed_development_selection_not_independent_roi",
+  "sourceCommit": "7c2e3bcbd255b62236eec5340685cac39bc9b7d5",
+  "originalConfigurationSha256": "d0e24b84cccc14cbf4810d6e5316afeba0b9f010e52e87132f7f0682afdcc23e",
+  "results": [
+    {
+      "resultFile": "result-000-000.json",
+      "resultSha256": "1131d9697d53b91b7fac55ee88b34e90f9aff1dfcfdc983c2f70174c9f142518",
+      "checkpointSha256": "45acaf6587da3ad4c7c4250f8c87eb7af74c6b76a7347243033dfcd855df95e9",
+      "cycle": 0,
+      "member": 0,
+      "reward": -0.20872056444862808,
+      "ordinaryMarkedRoi": -0.07547075000000003,
+      "stressMarkedRoi": -0.18837800000000005,
+      "fillCounts": [
+        55,
+        76
+      ],
+      "eligible": false
+    },
+    {
+      "resultFile": "result-000-001.json",
+      "resultSha256": "deeb1f398a7df92e6481fd25bb7e9596f92add6ad85c32a445e51033a699df55",
+      "checkpointSha256": "edd3798feee66f2c09c1b720be4e280234541ed023827b2797106ca5c5157de7",
+      "cycle": 0,
+      "member": 1,
+      "reward": -0.2386909760896217,
+      "ordinaryMarkedRoi": -0.06598349999999997,
+      "stressMarkedRoi": -0.21234175,
+      "fillCounts": [
+        35,
+        44
+      ],
+      "eligible": false
+    },
+    {
+      "resultFile": "result-000-002.json",
+      "resultSha256": "a6a97a0b61025744a10f234df505ce14ee0aaed22d2115b591fd0169e928cc7a",
+      "checkpointSha256": "81b678be3bfbb5fffc82d5d4ce079805542a4af047358f719a70b950777396a4",
+      "cycle": 0,
+      "member": 2,
+      "reward": -0.3001960466321443,
+      "ordinaryMarkedRoi": -0.053605824999999996,
+      "stressMarkedRoi": -0.259327,
+      "fillCounts": [
+        26,
+        54
+      ],
+      "eligible": false
+    },
+    {
+      "resultFile": "result-000-003.json",
+      "resultSha256": "c354442454ec04a5abd5a9310cb475ece489523538f9f3bce555d8aef413e3a1",
+      "checkpointSha256": "f3bda979985b629a0c7115c7a7a6b0d00c7193d36ac74c4ebba1a91490d507fa",
+      "cycle": 0,
+      "member": 3,
+      "reward": -0.21160228370202852,
+      "ordinaryMarkedRoi": -0.0028420249999999703,
+      "stressMarkedRoi": -0.19071349999999998,
+      "fillCounts": [
+        8,
+        38
+      ],
+      "eligible": false
+    },
+    {
+      "resultFile": "result-001-000.json",
+      "resultSha256": "db5c3a49ca4df64199d1d9c19a8c275cb51c0f486c18cb771ac531715435ab02",
+      "checkpointSha256": "865e9ffe40eb59c8b830d41d34d78124f9a816fed415b6cfa9e13503f818fbdb",
+      "cycle": 1,
+      "member": 0,
+      "reward": -0.13098124701164504,
+      "ordinaryMarkedRoi": -0.07952824999999997,
+      "stressMarkedRoi": -0.12276577499999997,
+      "fillCounts": [
+        72,
+        70
+      ],
+      "eligible": false
+    }
+  ],
+  "newManagedDataProfileUsed": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

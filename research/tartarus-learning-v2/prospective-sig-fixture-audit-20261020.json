@@ -1,0 +1,38 @@
+{
+  "classification": "verified_original_forward_chain_transport_not_market_semantic_admission",
+  "sourceOriginalSha256": "e05fc8e25bed7bf6a010374aa1a127003c5199b94af57f385e3b946706981e50",
+  "canonicalTransportSha256": "e0f5622f335f1ddb8711e17fdd35fd13fb1abe242a0c332f86f79223b885f378",
+  "originalArchiveSha256": "8f1178645dab385b6f4c4fcd8775ce6c18182eb22668efd116e345c326dbfec5",
+  "rows": 15088,
+  "terminalProducerHash": "341091d181b41e9b568e957e17ad75fc1ec77bc9e5411fecba5bc7422e25323d",
+  "counts": {
+    "rest_reference": 638,
+    "subscribed": 237,
+    "broadcast": 14213
+  },
+  "bounds": {
+    "rest_reference": [
+      1792527356307,
+      1792527955090
+    ],
+    "subscribed": [
+      1792527356548,
+      1792527356569
+    ],
+    "broadcast": [
+      1792527357525,
+      1792527954196
+    ]
+  },
+  "metadataClockRegressions": 26,
+  "publicStreamClockMonotonic": true,
+  "producerHashPreserved": true,
+  "sourceScriptSha256": "183c80d36630db541f68b8f15271301935cf1fcad72bcb2ca862bf6e5a6c2c78",
+  "ledgerSourceSha256": "b812d54a35e8f30bdab446d9f601c14181b763400d515369ce8e2b86faa1ef58",
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0,
+  "existingPythonByteHashVerifierRowsPassed": 15088,
+  "privateResultSha256": "2009cfe1cb51d2a71bd048b9116aef8b01d191f111e7d78d5c5ac14a283d134f"
+}
