@@ -93,6 +93,30 @@ class DiskTapeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'SNAPSHOT_WORLD_CLOCK_METADATA_REQUIRED'):
                 d.disk_store.world_view((100,5000))
 
+    def test_cursor_book_reuse_preserves_both_clocks_and_bounded_values(self):
+        from .disk_tape import Books,record_key,prepared_book
+        first=book(100);first['received_at_ms']=80
+        first['original_realtime_received_at_ms']=80
+        first['snapshot_origin']='native_observed_snapshot'
+        first['native_event_received_at_ms']=80
+        first['native_processed_at_ms']=100
+        first['source_at_ms']=70
+        with tempfile.TemporaryDirectory()as td,ExitStack()as resources:
+            _,_,d,_=self.pair(Path(td),rows=[first,book(200),book(5000)],prints=[])
+            resources.callback(d.disk_store.close)
+            original=d.rows[0];before=d.disk_store.decoded_rows
+            for world,expected_time in((False,100),(True,80)):
+                reused=Books(d.disk_store,world=world,capacity=1)
+                actual=prepared_book(reused,original)
+                self.assertEqual(d.disk_store.decoded_rows,before)
+                self.assertEqual(actual.available_at_ms,expected_time)
+                legacy=Books(d.disk_store,world=world)[record_key(original)]
+                before=d.disk_store.decoded_rows
+                self.assertEqual(actual,legacy)
+                other=d.rows[1];before=d.disk_store.decoded_rows
+                reused.from_row(other);self.assertEqual(len(reused.cache),1)
+                self.assertEqual(d.disk_store.decoded_rows,before)
+
     def test_events_observations_finance_and_paid_history_match(self):
         with tempfile.TemporaryDirectory()as td,ExitStack()as resources:
             _,e,d,_=self.pair(Path(td));resources.callback(d.disk_store.close)

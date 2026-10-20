@@ -91,8 +91,8 @@ def world_event(env,at,row):
     before=len(env.api_fills)
     if row['kind']=='book':
         ex=row['exchange_id'];env.world_market_mapping[ex]=row['market_id']
-        from .disk_tape import record_key
-        ReferenceEnv._event(env,at,'book',env.prepared_world_books[record_key(row)])
+        from .disk_tape import prepared_book
+        ReferenceEnv._event(env,at,'book',prepared_book(env.prepared_world_books,row))
         env.books[ex].source_state_at_ms=at
         from .world_confidence import schedule
         schedule(env,ex,at)
@@ -115,8 +115,8 @@ def information_event(env,at,row):
         env.scope.setdefault(market,set()).add(ex);env.mapping[ex]=market;env._refresh_reference(market)
         env._remember('SIG',('book',ex),row)
         if env.realtime is not None:
-            from .disk_tape import record_key
-            payload=SharedLiquidity(env.prepared_books[record_key(row)]);payload.source_state_at_ms=source_clock(row)
+            from .disk_tape import prepared_book
+            payload=SharedLiquidity(prepared_book(env.prepared_books,row));payload.source_state_at_ms=source_clock(row)
             env.realtime.source_book(at,ex,payload)
     elif env.realtime is not None:
         env.realtime.source_gap(row,source_state_at_ms=source_clock(row))

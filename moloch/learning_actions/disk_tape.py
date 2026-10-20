@@ -154,11 +154,18 @@ class Books:
     def __init__(self,store,world=False,capacity=512):
         self.store=store;self.world=world;self.capacity=capacity;self.cache=OrderedDict()
     def __getitem__(self,key):
+        return self._get(key)
+
+    def from_row(self,row):
+        """Reuse the original cursor row; never fetch/decode its body again."""
+        return self._get(row['_disk_record'],row)
+
+    def _get(self,key,row=None):
         from moloch.learning_v2.liquidity import Book
         if key not in self.cache:
             table,i=key
             if table!='market':raise ValueError('MARKET_BOOK_RECORD_REQUIRED')
-            row=self.store.rows[i]
+            if row is None:row=self.store.rows[i]
             if row['kind']!='book':raise ValueError('BOOK_RECORD_REQUIRED')
             if self.world:
                 from .snapshot_clock import source_clock
@@ -168,6 +175,12 @@ class Books:
                 tuple(map(tuple,row['bids'])),tuple(map(tuple,row['asks'])),row['original_sha256'])
             if len(self.cache)>self.capacity:self.cache.popitem(last=False)
         self.cache.move_to_end(key);return self.cache[key]
+
+
+def prepared_book(books,row):
+    # Eager tapes keep their original identity-keyed immutable mapping. Only
+    # disk tapes can reuse the original row carrying the reserved record key.
+    return books.from_row(row)if isinstance(books,Books)else books[record_key(row)]
 
 
 class Store:
