@@ -1,3 +1,5 @@
+[Later correction to the handcrafted maker probe](maker-dwell-audit-20261019.md): earlier zero-fill baseline results had ineffective quote dwell and cannot diagnose maker economics. The corrected finite probe and public-trade-stream observation gap are documented separately. Active neural source remains unchanged.
+
 # GPU020: full-return training is active; profitable ROI remains unproved
 
 Actual worker PID11404 is verified live on frozen source `544a398627099070d8c4c9e5469091aaa7e118e4`. Full-episode training has committed its first actual optimization cohort. This is a learning-method milestone, not a profitable checkpoint or completed human objective. [Source, process, transfer and training evidence](population-020-full-return-start-001.json).

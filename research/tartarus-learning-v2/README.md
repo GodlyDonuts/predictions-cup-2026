@@ -1,5 +1,7 @@
 [Current ML: GPU020 active; GPU021 source5115a4fa queued](closed-bootstrap-elision-20261019.md). Verified89,646decisions/131accepted updates and four flat/negative development selections. Controller18544 waits for the completed generation; next GPU capacity/startup pending. Full history/API calibration/independent positive ROI remain incomplete. Earlier observations below are historical.
 
+[Maker baseline timing correction and next information gap](maker-dwell-audit-20261019.md): accepted legs did not ensure quote dwell. Corrected CPU-only TRAIN probes remain flat; the derived stream still lacks public-trade delivery. No active model or physics change.
+
 [October19 fused recurrent training and current limits](batched-gpu-20261019.md). Production restart observations supersede older running-PID statements below.
 
 # Tartarus Population Learning v2
