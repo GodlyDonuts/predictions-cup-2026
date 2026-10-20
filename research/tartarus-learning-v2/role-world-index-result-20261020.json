@@ -1,0 +1,18 @@
+{
+  "queryClass": "same_missing_world_metadata_check_chronological_cover",
+  "count": 0,
+  "seconds": 2.75,
+  "plan": [
+    [
+      4,
+      0,
+      163,
+      "SEARCH market USING INDEX market_time (at>? AND at<?)"
+    ]
+  ],
+  "productionChanged": false,
+  "sourceCommitForFutureRuns": "85ef1450ace8c3e27ca7a69287f731f25063557d",
+  "notAppliedToFrozen029": true,
+  "baselineMatchedTimingMeasured": false,
+  "cpuChecksPassed": 13
+}

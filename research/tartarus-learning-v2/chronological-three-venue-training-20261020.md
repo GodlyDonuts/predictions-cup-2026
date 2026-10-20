@@ -53,4 +53,10 @@ Population 028's four CPU founders completed 116 actual API-policy decisions in 
 
 The exact population 028 process was stopped and its files retained. Population **029** starts fresh with the corrected priors; it imports neither 028 nor 027 weights. Configuration SHA-256: `aece0a99e5d8a74b501fdd5ce0e22f912b920eaa0d196e9620691d6bdb2b26af`. The earlier CPU mechanics proof remains applicable; it is not relabeled as a rollout of the corrected actor.
 
-Actual GPU collection and optimizer evidence will be recorded after verification. The full ML objective remains incomplete.
+At **23:20:44 UTC**, sole GPU process **10104** had collected **1,142 decisions** in the first eight-world cohort. Its measured local p95 inference cost was **11 ms**. No cohort had closed and **zero optimizer updates** had committed yet; this is collection evidence, not a usable trained checkpoint or ROI result. See `population-029-gpu-collection-20261020.json`. The full ML objective remains incomplete.
+
+## Measured replay startup bottleneck
+
+A live Python stack identified the role metadata check in `Store.world_view` as a startup delay. SQLite chose the contract-first index, causing scattered full-row reads. Checked source `85ef1450` forces the existing chronological index for the identical missing-metadata predicate. On the complete fit window, the forced query returned the same expected zero count in **2.75 seconds**. No matched before/after timing ratio is claimed. Thirteen disk replay checks passed, including rejection of a missing original clock inside its exact role and exclusion of the same row outside that role.
+
+This fix is **not hot-patched into frozen population 029**. That run continues with its original source and trajectories. A 15-second profile of collection also found substantial JSON decoding and disk-book reconstruction overhead; optimizing it requires separate parity evidence. It is not evidence that extra GPU utilization would improve the model's return.

@@ -1,0 +1,60 @@
+{
+  "observedUtc": "2026-10-20T23:20:44.453202+00:00",
+  "classification": "GPU_rollout_collection_not_optimizer_or_profitability_evidence",
+  "sourceCommit": "f4df828db9fe70240e887905450400da60bea4f7",
+  "configurationSha256": "aece0a99e5d8a74b501fdd5ce0e22f912b920eaa0d196e9620691d6bdb2b26af",
+  "actualGpuPid": 10104,
+  "progressPrefixBytes": 3436,
+  "progressPrefixSha256": "83123a16b49c0e7168951f3eeb3f3140666735a0878a3bf146398de2880f6e97",
+  "lastProgress": {
+    "event": "closed_episode_rollout_chunk",
+    "decisions": 118,
+    "updates": [],
+    "behavior_weights_frozen": true,
+    "virtual_ms": [
+      1792080962655,
+      1792165009177,
+      1792145145661,
+      1792112992293,
+      1792130342398,
+      1792166601664,
+      1792174689605,
+      1792050783222
+    ],
+    "completed_worlds": 1,
+    "wall_time_unix": 1792538440.361676,
+    "total_decisions": 1142,
+    "total_updates": 0,
+    "independent_test_used": false
+  },
+  "computeCalibration": {
+    "assumption": "frozen_local_p95_compute_cost",
+    "decision_latency_ms": 11,
+    "device": "cuda:0",
+    "measured_ms": [
+      10.543399999733083,
+      9.380800001963507,
+      10.063699999591336,
+      9.431600003154017,
+      9.197300001687836,
+      10.782500001369044,
+      9.193699996103533,
+      9.899299999233335,
+      9.459699998842552,
+      9.314199996879324,
+      10.71040000533685,
+      10.475799994310364
+    ]
+  },
+  "fitBoundsMs": [
+    1792049116175,
+    1792195200000
+  ],
+  "selectionBoundsMs": [
+    1792195200000,
+    1792368000000
+  ],
+  "oldWeightsImported": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}
