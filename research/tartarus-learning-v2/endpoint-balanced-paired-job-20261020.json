@@ -1,0 +1,19 @@
+{
+  "pid": 5700,
+  "sourceCommit": "69cab438cd6692adcea9cf9e0ea9f2f3c803bc51",
+  "scriptSha256": "7a066eeee065b4e5dc831b9f200205e68bedede02db6af205ec11b6a955ea541",
+  "cudaRequested": false,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "status": {
+    "mode": "flat_targets_v1",
+    "case": 1,
+    "decisions": 384,
+    "nowMs": 1792413382369,
+    "endMs": 1792413662371,
+    "optimizerRun": false
+  },
+  "resultCompleteAtObservation": false,
+  "productionChanged": false,
+  "accountRequests": 0
+}

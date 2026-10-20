@@ -1,0 +1,28 @@
+{
+  "classification": "partial_original_SIG_research_cache_not_training_admission",
+  "sourceNormalizationSha256": "3cdd6416916f9f44f5cc1c5d1ab873e0c910c9dce93cb5eacd83738a89caf8a3",
+  "replayCacheManifestSha256": "f34facef301a3005298008e959108f295acadd2e40ae67d401db52dab081daa1",
+  "calendarRolesMs": {
+    "fit": [
+      1792049104423,
+      1792195200000
+    ],
+    "search": [
+      1792195200000,
+      1792419229250
+    ]
+  },
+  "externalObservationsIncluded": false,
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0,
+  "cacheCounts": {
+    "execution": 71506,
+    "flow": 71506,
+    "market": 5087099,
+    "world": 5087099
+  },
+  "cacheDatabaseBytes": 11893026816,
+  "cacheDatabaseSha256": "97e56e73cb0bfd3602069370a70f680bbe2097bb7656ad4837d8e1ad504be3a8"
+}
