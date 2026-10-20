@@ -125,5 +125,5 @@ def information_event(env,at,row):
             from .disk_tape import prepared_book
             payload=SharedLiquidity(prepared_book(env.prepared_books,row));payload.source_state_at_ms=source_clock(row)
             env.realtime.source_book(at,ex,payload)
-    elif env.realtime is not None:
+    elif env.realtime is not None and row.get('snapshot_origin')!=REST_ORIGIN:
         env.realtime.source_gap(row,source_state_at_ms=source_clock(row))

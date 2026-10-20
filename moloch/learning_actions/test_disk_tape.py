@@ -140,13 +140,16 @@ class DiskTapeTests(unittest.TestCase):
             r=book(at);r.pop('original_realtime_received_at_ms');r.update(snapshot_origin=REST_ORIGIN,original_rest_received_at_ms=at)
             return r
         with tempfile.TemporaryDirectory()as td,ExitStack()as resources:
-            _,e,d,_=self.pair(Path(td),rows=[rest_row(0),rest_row(200),book(5000)],prints=[])
+            gap=rest_row(400);gap.update(kind='gap',exchange_id=None,gap_reason='original_empty_REST_exchange_context')
+            _,e,d,_=self.pair(Path(td),rows=[rest_row(0),rest_row(200),gap,book(5000)],prints=[])
             resources.callback(d.disk_store.close);a,b=episode(prepared(e)),episode(prepared(d))
             for env in(a,b):
                 env.realtime=DerivedStream(env);env.realtime.enabled=True;env.realtime.expires_at=100000
                 env.advance(201);self.assertFalse(env.actor_books)
                 self.assertEqual(env.request_observation('SIG',('book','x'))['status'],'IN_FLIGHT')
                 env.advance(301);self.assertIn('x',env.actor_books);self.assertEqual(len(env.budget.reads),1)
+                env.advance(401);self.assertTrue(env.books['x'].invalidated)
+                self.assertFalse(env.actor_books['x'].invalidated);self.assertEqual(env.realtime.gaps,0)
             self.equal(a,b)
 
     def test_indexed_prefix_preserves_discovery_order_initial_state_and_expiries(self):
