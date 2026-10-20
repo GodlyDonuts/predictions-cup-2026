@@ -129,6 +129,18 @@ class Experiment:
             'actual_split':{'competition_start_ms':self.split.competition_start_ms,'cutoff_ms':self.split.cutoff_ms},
             'actual_train_bounds_ms':list(self.train_bounds),'actual_evolution_bounds_ms':list(self.evolution_bounds),
             'independent_test_source_claim':not self.development and independent_test_claim(self.original.manifest,self.split)}
+        from .public_history_prefix import enabled,query_bounds,MODE
+        self.public_history_prefix=enabled(config)
+        self.frozen['public_trade_reporting_history']={
+            'mode':MODE if self.public_history_prefix else 'legacy_same_scoring_role_only',
+            'train_information_bounds_ms':list(self.train_bounds),
+            'evolution_information_bounds_ms':list(query_bounds(self.train_bounds,self.evolution_bounds)
+                if self.public_history_prefix else self.evolution_bounds),
+            'test_information_bounds_ms':None if self.development else list(
+                query_bounds(self.train_bounds,self.split.bounds('test')) if self.public_history_prefix
+                else self.split.bounds('test')),
+            'scoring_bounds_unchanged':True,'actor_access_requires_paid_read':True,
+            'past_prints_generate_new_counterparty_fills':False}
         if not self.development:
             self.frozen['replay_specification_sha256']=hashlib.sha256(Path(config['specification']).read_bytes()).hexdigest()
         self.spec_sha=frozen(self.output/'experiment.json',self.frozen)
@@ -136,7 +148,9 @@ class Experiment:
         # Register before collection, conservatively covering every training
         # and selection time the run may use, across all compiled versions.
         self.data_use.record('train',*self.train_bounds,self.spec_sha)
-        self.data_use.record('selection',*self.evolution_bounds,self.spec_sha)
+        selection_information=(query_bounds(self.train_bounds,self.evolution_bounds)
+            if self.public_history_prefix else self.evolution_bounds)
+        self.data_use.record('selection',*selection_information,self.spec_sha)
         self.population=[];self.calibration=None;self.total_decisions=0;self.total_updates=0
         self.last_snapshot_bucket=0
         self.tape_cache={}
@@ -193,6 +207,9 @@ class Experiment:
         tape.counterparty_replay_enabled=self.config.get('passive_flow_mode')is not None
         tape.counterparty_information_bounds=(self.train_bounds if role=='train'else
             self.evolution_bounds if role=='evolution'else self.split.bounds('test'))
+        if getattr(self,'public_history_prefix',False):
+            from .public_history_prefix import configure
+            configure(tape,self.train_bounds,tape.counterparty_information_bounds)
         if self.config.get('snapshot_world_clock')is not None:
             from .snapshot_clock import MODE,prepare
             if self.config['snapshot_world_clock']!=MODE:raise ValueError('EXPLICIT_SNAPSHOT_WORLD_CLOCK_MODE')

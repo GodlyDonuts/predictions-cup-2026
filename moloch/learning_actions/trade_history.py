@@ -11,14 +11,18 @@ import bisect
 
 
 def seed_role_history(tape, env, episode_opened_at):
-    """Recorded past remains queryable, but never crosses a chronological role.
+    """Recorded past remains queryable without exposing future information.
 
     Seeding reporting history neither fills an order nor publishes an actor
     observation. The caller must still issue and pay for each requested page.
     """
-    lower, upper = getattr(tape, 'counterparty_information_bounds', tape.split.bounds(tape.role))
-    if not lower <= episode_opened_at < upper:
+    scoring = getattr(tape, 'counterparty_information_bounds', tape.split.bounds(tape.role))
+    if not scoring[0] <= episode_opened_at < scoring[1]:
         raise ValueError('TRADE_HISTORY_EPISODE_MUST_STAY_IN_ROLE')
+    from .public_history_prefix import information_bounds
+    lower, upper = information_bounds(tape, scoring)
+    if hasattr(tape,'reporting_history_information_bounds'):
+        env.trade_history.coverage_reason='recorded_causal_public_prefix_not_full_reporting_projection'
     if hasattr(tape,'disk_store'):
         env.trade_history.backend=(tape.disk_store,(lower,upper))
         env.trade_history.backend_row_through=bisect.bisect_left(tape.flow_times,episode_opened_at)-1
@@ -32,6 +36,7 @@ def seed_role_history(tape, env, episode_opened_at):
 
 class TradeHistory:
     def __init__(self):
+        self.coverage_reason='recorded_role_only_not_full_reporting_projection'
         self.rows = {}
         self.seen = {}
         self.cursors = {}
@@ -100,5 +105,5 @@ class TradeHistory:
         return {'exchange_id': exchange, 'opened_at_ms': opened, 'from_ms': lower,
                 'to_ms': upper, 'data': deepcopy(list(selected)),
                 'pagination': {'limit': limit, 'hasMore': more, 'nextCursor': token},
-                'coverage': {'complete': False, 'reason': 'recorded_role_only_not_full_reporting_projection'},
+                'coverage': {'complete': False, 'reason': self.coverage_reason},
                 'ordering': 'modeled_newest_execution_first_match_id_tie_break'}
