@@ -1,0 +1,84 @@
+{
+  "manifestSha256": "a693e8560ce83c513e9d1c58c921de8079977f803aaa0574134f70b0f126608d",
+  "databaseSha256": "999b6212bcb148a8efecc05c08e36aff4965fec62340f4eea63eb937b1b776c5",
+  "records": 1346717,
+  "receiptPages": 6852,
+  "sqliteIntegrity": "ok",
+  "causalQueriesChecked": 711,
+  "dailyRecords": [
+    {
+      "day": "2026-10-01",
+      "records": 66416
+    },
+    {
+      "day": "2026-10-02",
+      "records": 162729
+    },
+    {
+      "day": "2026-10-03",
+      "records": 184779
+    },
+    {
+      "day": "2026-10-04",
+      "records": 144387
+    },
+    {
+      "day": "2026-10-05",
+      "records": 105180
+    },
+    {
+      "day": "2026-10-06",
+      "records": 107732
+    },
+    {
+      "day": "2026-10-07",
+      "records": 161184
+    },
+    {
+      "day": "2026-10-08",
+      "records": 59797
+    },
+    {
+      "day": "2026-10-09",
+      "records": 62001
+    },
+    {
+      "day": "2026-10-10",
+      "records": 44048
+    },
+    {
+      "day": "2026-10-11",
+      "records": 42221
+    },
+    {
+      "day": "2026-10-12",
+      "records": 41888
+    },
+    {
+      "day": "2026-10-13",
+      "records": 42081
+    },
+    {
+      "day": "2026-10-14",
+      "records": 48355
+    },
+    {
+      "day": "2026-10-15",
+      "records": 66857
+    },
+    {
+      "day": "2026-10-16",
+      "records": 7062
+    }
+  ],
+  "registeredSigTradeTargets": 237,
+  "paidReceiptRecordsEncoded": 200,
+  "oneSerializedSigReadCharged": true,
+  "noExecutableHistoricalRows": true,
+  "noSimulatedFills": true,
+  "deliveryDelayMsAssumption": 5000,
+  "originalHistoricalDeliveryVerified": false,
+  "activeGpuRunChanged": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

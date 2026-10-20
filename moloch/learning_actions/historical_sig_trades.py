@@ -91,18 +91,27 @@ class SigTradeHistory:
         self.bounds,self.start,self.delivery = (lo,hi),information_start_ms,delivery
         self.exchanges = m['exchanges']
 
-    def page(self, exchange, now, *, from_ms=None, to_ms=None, limit=200):
+    def page(self, exchange, now, *, from_ms=None, to_ms=None, limit=200, before=None):
         require(integer(now) and self.bounds[0] <= now < self.bounds[1], 'SIG_TRADE_QUERY_OUTSIDE_ROLE')
         lo = self.start if from_ms is None else from_ms
         hi = self.manifest['sourceBoundsMs'][1] if to_ms is None else to_ms
         require(integer(lo) and integer(hi) and lo <= hi and type(limit) is int and 1 <= limit <= 200,
                 'VALID_SIG_TRADE_HISTORY_QUERY')
         if exchange not in self.exchanges: raise KeyError(exchange)
+        require(before is None or (isinstance(before,tuple) and len(before)==2
+                and integer(before[0]) and isinstance(before[1],str) and len(before[1])==64),
+                'EXACT_SIG_TRADE_CONTINUATION_POSITION')
         frontier = self.delivery.source_frontier(now)
+        # Seek directly to the cursor's timestamp; do not rescan every newer
+        # row for each later page of a long competition history.
+        upper=min(hi,frontier+1,hi if before is None else before[0]+1)
         rows = self.db.execute('''SELECT t.at,t.ready,t.body,t.fact,r.received,r.sha FROM trades t
  JOIN receipts r ON r.i=t.receipt WHERE t.exchange=? AND t.at>=? AND t.at<? AND t.ready<=?
+ AND (? IS NULL OR t.at<? OR (t.at=? AND t.fact>?))
  ORDER BY t.at DESC,t.fact LIMIT ?''',
-            (exchange,max(lo,self.start),min(hi,frontier+1),frontier,limit))
+            (exchange,max(lo,self.start),upper,frontier,
+             None if before is None else before[0],None if before is None else before[0],
+             None if before is None else before[0],None if before is None else before[1],limit))
         return [{'trade':json.loads(body),'fact_sha256':fact,'source_at_ms':at,
                  'simulated_available_at_ms':self.delivery.available(ready),'actual_retrieved_at':received,
                  'original_receipt_sha256':sha,'execution_authority':False,
@@ -112,6 +121,31 @@ class SigTradeHistory:
     def close(self):self.db.close()
     def __enter__(self):return self
     def __exit__(self,*_):self.close()
+
+
+class SigTradePager:
+    """Per-target cursor with the initial request's immutable source watermark."""
+    def __init__(self,reader,exchange):
+        self.reader=reader;self.exchange=exchange;self.cursor=None
+
+    def __call__(self,now,*,trade_limit=200,continue_trade_page=False,
+                 trade_from_ms=None,trade_to_ms=None):
+        require(integer(now) and self.reader.bounds[0]<=now<self.reader.bounds[1],
+                'SIG_TRADE_QUERY_OUTSIDE_ROLE')
+        if continue_trade_page:
+            if self.cursor is None:return []
+            state=dict(self.cursor)
+            require(now>=state['at'],'SIG_TRADE_CONTINUATION_CANNOT_PRECEDE_REQUEST')
+            if state['exhausted']:return []
+        else:
+            state={'at':now,'from_ms':trade_from_ms,'to_ms':trade_to_ms,
+                   'limit':trade_limit,'before':None,'exhausted':False}
+        rows=self.reader.page(self.exchange,state['at'],from_ms=state['from_ms'],
+            to_ms=state['to_ms'],limit=state['limit'],before=state['before'])
+        state['exhausted']=len(rows)<state['limit']
+        if rows:state['before']=(rows[-1]['source_at_ms'],rows[-1]['fact_sha256'])
+        self.cursor=state
+        return rows
 
 
 if __name__ == '__main__':

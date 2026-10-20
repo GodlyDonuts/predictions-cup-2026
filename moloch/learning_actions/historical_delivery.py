@@ -14,9 +14,10 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.historical_providers = {}
+        self.historical_query_providers = {}
         self.known_historical_information = {}
 
-    def register_history(self, venue, key, provider):
+    def register_history(self, venue, key, provider, *, query_provider=None):
         expected = {'SIG': ('historical_candles','historical_trades'), 'Kalshi': ('historical_trades',),
                     'Polymarket': ('historical_sample',)}
         if (venue not in expected or not isinstance(key, tuple) or len(key) != 4
@@ -26,10 +27,13 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
             raise ValueError('HISTORY_CATALOG_MUST_PRECEDE_FIRST_REQUEST')
         if not callable(provider):
             raise ValueError('READ_ONLY_HISTORICAL_PROVIDER_REQUIRED')
+        if query_provider is not None and not callable(query_provider):
+            raise ValueError('CALLABLE_HISTORY_QUERY_PROVIDER_REQUIRED')
         address = (venue, key)
         if address in self.historical_providers or key in self.keys[venue]:
             raise ValueError('DUPLICATE_HISTORY_TARGET')
         self.historical_providers[address] = provider
+        if query_provider is not None:self.historical_query_providers[address]=query_provider
         self.keys[venue].append(key)
 
     def request_observation(self, venue, key, **kwargs):
@@ -55,7 +59,8 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
             return {'status': 'RATE_WAIT', 'ready_ms': ready}
         # Snapshot at request time, never at its later receipt time. Validation
         # errors leave the existing queue unchanged and fail the experiment.
-        payload = deepcopy(provider(now))
+        query_provider=self.historical_query_providers.get((venue,key))
+        payload = deepcopy(provider(now)if query_provider is None else query_provider(now,**kwargs))
         self.feed_sequence += 1
         rid = f'history:{venue}:{self.feed_sequence}'
         if venue == 'SIG':
@@ -103,9 +108,11 @@ def register_candles(env, reader):
 
 
 def register_sig_trades(env, reader):
+    from .historical_sig_trades import SigTradePager
     for exchange, market in reader.exchanges.items():
+        pager=SigTradePager(reader,exchange)
         env.register_history('SIG', ('historical_trades', exchange, market, 'YES'),
-                             lambda now, ex=exchange: reader.page(ex, now))
+                             pager,query_provider=pager)
 
 
 def register_kalshi(env, reader, mapping):

@@ -1,0 +1,13 @@
+# Local recovered SIG trade access — October 20
+
+The laptop now holds the audited 546,721,792-byte SIG public-trade index. Manifest SHA256 `a693e8560ce83c513e9d1c58c921de8079977f803aaa0574134f70b0f126608d`; database SHA256 `999b6212bcb148a8efecc05c08e36aff4965fec62340f4eea63eb937b1b776c5`. SQLite integrity and total1,346,717 facts match the audit.711 sampled contract/time queries respected their causal cutoff. Observed records span October1–16; this does not establish September/competition-start coverage.
+
+## Fixed actor access limitation
+
+The previous historical SIG trade binding always returned the latest200 records. It ignored the existing actor query-time, page-size and continuation choices. Historical trade targets now expose the query mask; chosen bounds and limit reach the provider through the ordinary paid SIG read path. Each simulated world owns separate per-target cursor state. Continuation keeps the original request-time watermark, filters and page size, excludes facts newer than that watermark, and handles same-timestamp facts by stable fact-hash order. A fresh query resets the cursor. Every continuation still charges a read and respects the shared queue; no bulk free history is injected.
+
+A timestamp seek prevents repeated scans of all newer history. A read-only check of the busiest recovered exchange1077 retrieved all25,901 unique facts in131 calls including the terminal empty page, with no skips or duplicates. This index-only check took0.085seconds; it is not simulated API throughput or model performance. The simulator separately verified237 registered SIG trade targets, one charged/serialized read and200 finite encoded receipt records with no executable history rows and no fills.
+
+44 focused CPU tests pass, covering existing API/query behavior, actor filter forwarding, busy-queue behavior, equal-timestamp pagination, immutable initial watermarks and temporal checks. CUDA was disabled for validation. The active GPU025 remains on its frozen source and does not yet consume this new index or query fix. Its proposed binding uses an explicit5second historical-publication delay assumption, not verified original historical latency. Kalshi and Polymarket bindings remain separate information sources; only SIG is executable.
+
+Evidence: [local integration](sig-trade-local-integration-20261020.json), [real pagination](sig-trade-pagination-proof-20261020.json), [complete source audit](sig-trades-complete-audit-20261020.json). Original raw validated receipts remain on the VPS. The independent test window and production financial state are unchanged. Full realistic historical execution still needs depth/lifecycle evidence beyond public prints.

@@ -144,6 +144,8 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         for i, (kind, address) in enumerate(base['entities']):
             if kind == 'read' and address in self.historical_providers:
                 venue, key = address
+                if address in self.historical_query_providers:
+                    base['masks']['trade_query'][i,0]=True
                 h = values[i, OLD:]
                 h[KINDS.index(key[0])] = 1
                 h[3 + VENUES.index(venue)] = 1

@@ -624,7 +624,7 @@ class ApiEpisode(PreparedEpisode):
             if 'query_filter'in action:
                 from .observation_protocol import QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS,HISTORICAL_INFORMATION
                 if self.observation_protocol not in(QUERY_WINDOW,SCOPED_EXECUTION,MEMORY_JOINT,ORDER_PAGES,COMPONENT_DEBT,BULK_QUOTES,API_TARGETS,HISTORICAL_INFORMATION):raise ValueError('QUERY_WINDOW_PROTOCOL_REQUIRED')
-                if key[0]=='SIG'and key[1][0]=='trade_flow':
+                if key[0]=='SIG'and key[1][0]in('trade_flow','historical_trades'):
                     from .query_window import parameters
                     query=parameters(action)
             return self.request_observation(*key,trade_limit=min(200,1+int(fraction*200)),

@@ -37,6 +37,21 @@ def wait():
 
 
 class HistoricalNeuralTests(unittest.TestCase):
+    def test_actor_history_query_parameters_reach_paid_provider(self):
+        e=environment();key=('historical_trades','840','m','YES');calls=[]
+        def provider(now,**kwargs):calls.append((now,kwargs));return []
+        e.register_history('SIG',key,lambda now:[],query_provider=provider)
+        view=e.observe();i=view['entities'].index(('read',('SIG',key)))
+        self.assertTrue(view['masks']['trade_query'][i,0])
+        action={**wait(),'family':10,'market':i,'query_filter':1}
+        result=e.act_raw(action,view)
+        self.assertEqual(result['status'],'IN_FLIGHT')
+        self.assertEqual(calls[0][1],{'trade_limit':1,'continue_trade_page':False,
+            'trade_from_ms':0,'trade_to_ms':253402300799999})
+        self.assertEqual(e.request_observation('SIG',key,continue_trade_page=True)['status'],'BUSY')
+        self.assertEqual(len(calls),1)
+        self.assertFalse(e.api_fills)
+
     def test_sig_public_prints_use_paid_budget_and_keep_null_price_unknown(self):
         e=environment();key=('historical_trades','840','m','YES')
         row={'source_at_ms':0,'simulated_available_at_ms':1,'fact_sha256':'a'*64,
