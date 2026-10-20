@@ -95,13 +95,19 @@ def repair(root, *, execute=False):
     import fcntl
     queue = root / 'account-queue'
     paths = [root / 'EXECUTION_STOP', root.parent / 'NETWORK_DISABLED',
-             queue / 'account-queue-manifest.json']
+             queue / 'account-queue-manifest.json',
+             root.parent / 'moloch-live-tartarus-r57-g12-20261019.json']
     for p in paths:
         require(p.is_file() and not p.is_symlink(), 'ORIGINAL_STOP_OR_MANIFEST_REQUIRED')
     pins = {p: p.read_bytes() for p in paths}
     require(sha(pins[paths[0]]) == '1b1b24f1379d9e3a11c13991afd588d085dc16d99c392eda2a3920769c0b2043',
             'ORIGINAL_EXECUTION_STOP_CHANGED')
     require(pins[paths[1]] == b'', 'ORIGINAL_NETWORK_MARKER_CHANGED')
+    require(sha(pins[paths[3]]) == 'bed178634e699f969a344bb3c1aa3a595c37ef40db1198ee9935a87cce00467a',
+            'ORIGINAL_CONTROL_CHANGED')
+    owner_path = Path(json.loads(pins[paths[3]])['ownerLock'])
+    require(owner_path == root.parent / 'capture.lock' and owner_path.is_file()
+            and not owner_path.is_symlink(), 'ORIGINAL_EXECUTION_OWNER_LOCK')
     manifest = json.loads(pins[paths[2]])
     for key in ('journal', 'checkpoint'):
         name = manifest[key]
@@ -112,7 +118,7 @@ def repair(root, *, execute=False):
     lock = queue / 'offline-account-queue.lock'
     identity = raw({'scope': manifest['scope'], 'token': 'read-tail-recovery-' + str(os.getpid()), 'pid': os.getpid()})
     # Same create-new exclusion used by the SDK; no stale-lock removal.
-    with (root / 'owner.lock').open('rb') as owner:
+    with owner_path.open('rb') as owner:
         fcntl.flock(owner, fcntl.LOCK_EX | fcntl.LOCK_NB)
         with lock.open('xb') as handle:
             handle.write(identity)
