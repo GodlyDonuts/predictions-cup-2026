@@ -1,0 +1,42 @@
+{
+  "classification": "queued_full_return_comparison_not_active_or_gpu_validated",
+  "observedUtc": "2026-10-20T01:25:22.298508+00:00",
+  "sourceCommit": "77c532ef114354a3084b050492fe2423eb058a97",
+  "sourceManifestSha256": "2aeac2df5a9d705f72899eb07509fa2d34df903fcdc7b7d4069a0efdeebdae49",
+  "allFrozenSourcePinsVerified": true,
+  "specSha256": "ce47f3562821766bce5b1388f4027393c86ab5ac65153c66985c5b0fdfc5f35b",
+  "controllerLauncherPid": 40820,
+  "controllerWorkerPid": 41276,
+  "oldTrainerPid": 45560,
+  "oldTrainerCreation": 134369318077378835,
+  "oldTrainerAlive": true,
+  "controllerStatus": {
+    "phase": "waiting_for_completed_generation",
+    "observedUtc": "2026-10-20T01:24:22.983228+00:00",
+    "productionChanged": false,
+    "independentTestUsed": false,
+    "trainerPid": 45560,
+    "cycle": 0
+  },
+  "handoffRequiresCompletedCycle": 0,
+  "transferRequiresAllMembersAndReplacements": 8,
+  "template": {
+    "hidden_size": 4096,
+    "training_worlds": 8,
+    "compute_chunk_decisions": 32,
+    "development_episode_ms": 120000,
+    "development_selection_episode_ms": 120000,
+    "closed_episode_return_replay": true,
+    "compact_rollout_statistics": true,
+    "observation_protocol": "sig_named_api_targets_v8"
+  },
+  "ordinaryGpuCapacityRequiredAfterOldWorkerStops": true,
+  "additionalFullEpisodeGpuCapacityRequired": true,
+  "fullSizeGpuResultAvailable": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "positiveRoiEstablished": false,
+  "oldRunDecisions": 42682,
+  "oldRunAcceptedUpdates": 254,
+  "completedMembers": 4
+}
