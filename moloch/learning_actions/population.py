@@ -71,7 +71,10 @@ def behavior(model,probe):
             # A disabled family has zero joint probability. Supply a harmless
             # target solely to define a normalized conditional distribution.
             if not bool(enabled[0,f]):target_mask[0,0]=True
-            conditional.append(masked_categorical(logits,target_mask).probs)
+            from .read_target_sampling import logits as target_logits
+            corrected=(target_logits(model,logits,torch.full((logits.shape[0],),f,device=device),target_mask,masks)
+                       if f==10 else logits)
+            conditional.append(masked_categorical(corrected,target_mask).probs)
         joint=family.unsqueeze(-1)*torch.stack(conditional,1)
         selected=model._act_from_encoding(encoded,hidden,present,masks,deterministic=True)['actions']
         raw=torch.stack((selected['target_fraction'],selected['child_fraction'],

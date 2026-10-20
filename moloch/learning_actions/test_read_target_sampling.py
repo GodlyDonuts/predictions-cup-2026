@@ -63,6 +63,22 @@ class ReadSamplingTests(unittest.TestCase):
             self.assertEqual(loaded.read_target_sampling,BALANCED);self.assertEqual(contract(loaded),contract(m))
             self.assertEqual(bundle['read_target_sampling'],BALANCED)
 
+    def test_evolution_probe_uses_the_same_endpoint_conditionals(self):
+        from .policy import ApiPolicy
+        from .realtime import DerivedStream
+        from .population import freeze_probe,behavior
+        e=environment();e.realtime=DerivedStream(e);e.keys['SIG'].append(('realtime_token',))
+        e.keys['Kalshi'].extend(('reference','Kalshi','m',str(i))for i in range(100))
+        e.read_target_sampling=BALANCED;o=e.observe();x=tensors(o,'cpu');m=ApiPolicy(16);m.read_target_sampling=BALANCED
+        with torch.no_grad():
+            for parameter in m.parameters():parameter.zero_()
+        probe=freeze_probe([{**x,'reset':torch.ones(1,dtype=torch.bool),'at_ms':e.now}],
+            role='train',dataset_sha256='a'*64,bounds=(0,e.end))
+        joint=behavior(m,probe)[0][0][0,10]
+        token=o['entities'].index(('read',('SIG',('realtime_token',))))
+        external=[i for i,(kind,key)in enumerate(o['entities'])if kind=='read'and key[0]=='Kalshi']
+        self.assertAlmostEqual(float(joint[token]),float(joint[external].sum()),places=7)
+
     def test_full_rollout_and_actions_only_share_the_exact_sampling_law(self):
         e=world();e.read_target_sampling=BALANCED;m=OrderPagePolicy(16);m.read_target_sampling=BALANCED
         x=tensors(e.observe(),'cpu');h=m.initial_state(1);reset=torch.ones(1,dtype=torch.bool)
