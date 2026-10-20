@@ -1,3 +1,5 @@
+[October20 metadata-only external-capture check](external-capture-metadata-20261020.md): existing Kalshi/Polymarket collectors and byte archive are live. Protected observations remain unopened by this audit; copy timestamps do not establish chronological readiness.
+
 # Full-history ML feasibility audit
 
 **The requested chronological experiment is not ready.** At the fixed audit cutoff2026-10-19T23:00:05Z, the inspected compiled sources do not reach the required training partition. The last four days also overlap recorded development/optimization exposure. More optimization on the current short tape cannot supply missing original history or establish an untouched independent test. GPU017 continues its separately labeled development experiment; the checked least-loss/faster-acting018 successor remains queued.

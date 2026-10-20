@@ -1,0 +1,131 @@
+{
+  "classification": "existing_external_collector_and_archived_byte_metadata_not_event_coverage_or_test_eligibility",
+  "observedUtc": "2026-10-20T04:00:42.235955+00:00",
+  "processes": [
+    {
+      "pid": 9956,
+      "script": "kalshi-collector.mjs",
+      "liveCommandVerified": true
+    },
+    {
+      "pid": 43224,
+      "script": "polymarket-live.mjs",
+      "liveCommandVerified": true
+    }
+  ],
+  "kalshiStatus": {
+    "at": "2026-10-20T04:00:41.450Z",
+    "pid": 9956,
+    "state": "collecting",
+    "readOnly": true,
+    "startedAt": "2026-10-18T00:59:33.124Z",
+    "targetRequestsPerSecond": 20,
+    "observedStartsLastSecond": 20,
+    "observedStartsLastMinute": 1192,
+    "rollingRequestCeiling": 20,
+    "successfulBooks": 3639522,
+    "successfullyCachedTickers": 237,
+    "totalMappedTickers": 237,
+    "inFlight": 2,
+    "throttles": 0
+  },
+  "polymarketStatus": {
+    "at": "2026-10-20T04:00:40.865Z",
+    "pid": 43224,
+    "state": "running",
+    "startedAt": "2026-10-19T11:25:45.381Z",
+    "configuredMaximumRps": 30,
+    "markets": 189,
+    "outcomes": 378,
+    "cachedBooks": 378,
+    "inFlight": 12,
+    "pricingAuthority": false,
+    "resolutionEquivalenceVerified": false
+  },
+  "polymarketWsStatus": {
+    "at": "2026-10-20T04:00:40.865Z",
+    "rawFrames": 8736579,
+    "derivedEvents": 17468673,
+    "failed": false,
+    "wsOutcomes": 378,
+    "restOutcomes": 378,
+    "restOnlyOutcomes": 0,
+    "pricingAuthority": false,
+    "resolutionEquivalenceVerified": false
+  },
+  "polymarketStream": {
+    "connections": 7,
+    "droppedFrames": 0,
+    "frames": 8736579,
+    "invalidFrames": 0,
+    "reconnects": 6,
+    "stopped": false,
+    "streamEpoch": 7
+  },
+  "archiveStatus": {
+    "copied_files": 1,
+    "copied_bytes": 4979296,
+    "deferred_active_files": 5,
+    "preserved_source_files": 3240,
+    "http_requests": 0,
+    "original_files_changed": false,
+    "at_unix": 1792468837.7869508
+  },
+  "archiveManifestPrefixBytes": 1576839,
+  "archiveManifestPrefixSha256": "e4030666305fb5ae38b59d3f365b7a6d7d35d930b1b40de60fffb3762a542805",
+  "archiveMetadataGroups": {
+    "Kalshi": {
+      "manifestRecords": 92,
+      "firstCopyUnix": 1792404567.813417,
+      "lastCopyUnix": 1792468412.3224635
+    },
+    "forward_polymarket_002": {
+      "manifestRecords": 430,
+      "firstCopyUnix": 1792404578.087407,
+      "lastCopyUnix": 1792404597.829188
+    },
+    "forward_polymarket_004_r57b": {
+      "manifestRecords": 2219,
+      "firstCopyUnix": 1792404597.8659468,
+      "lastCopyUnix": 1792468837.634783
+    },
+    "forward_polymarket_001": {
+      "manifestRecords": 167,
+      "firstCopyUnix": 1792404605.218821,
+      "lastCopyUnix": 1792404615.500377
+    },
+    "forward_polymarket_003_r56": {
+      "manifestRecords": 332,
+      "firstCopyUnix": 1792404615.5542994,
+      "lastCopyUnix": 1792404624.8096023
+    }
+  },
+  "latestCopiesHashed": [
+    {
+      "source": "Kalshi",
+      "sha256": "489137855527bd740ebef630b9ca83aaac37a58da316932e5a7de8f23f16c311",
+      "bytes": 67115681,
+      "copyUnix": 1792468412.3224635,
+      "snapshotHashAndSizeMatch": true,
+      "observationBodyDecoded": false
+    },
+    {
+      "source": "forward_polymarket_004_r57b",
+      "sha256": "17e542ee7b8c0cdc141e10a6b36b1ecdd89d937f708d1e0eb237c32556092ba7",
+      "bytes": 4979296,
+      "copyUnix": 1792468837.634783,
+      "snapshotHashAndSizeMatch": true,
+      "observationBodyDecoded": false
+    }
+  ],
+  "freeDiskBytes": 429342285824,
+  "copyTimesAreMarketObservationCoverage": false,
+  "sigSourceRecovered": false,
+  "fullChronologicalReadinessEstablished": false,
+  "protectedObservationBodiesOpened": false,
+  "dataUseChanged": false,
+  "httpRequests": 0,
+  "newCollectorsStarted": false,
+  "productionChanged": false,
+  "activeTrainingOrQueueChanged": false
+}
