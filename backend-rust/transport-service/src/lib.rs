@@ -1,6 +1,7 @@
 pub mod admission;
 pub mod credentials;
 pub mod prices;
+pub mod history_evidence;
 pub mod relationships;
 pub mod multi_leg;
 pub mod multi_leg_portfolio;

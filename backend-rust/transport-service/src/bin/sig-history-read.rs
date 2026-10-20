@@ -19,6 +19,8 @@ struct Plan {
     job_stop: PathBuf,
     exchange_id: String,
     through: String,
+    #[serde(default)]
+    response_evidence: Option<PathBuf>,
 }
 #[derive(Deserialize)]
 #[serde(rename_all="camelCase")]
@@ -86,7 +88,9 @@ fn execute(plan:&Plan,config:Config,guard:Guard,credential:PathBuf)->Result<Valu
     let credentials=api::credentials::UnixFileCredentials::approved_file(credential)?;
     let mut sdk=api::Transport::new_with_read_budget(config,Box::new(credentials),Box::new(api::SystemClock),Box::new(guard),100,600)?;
     // A fixed History endpoint has no pagination; maximum_pages is also1.
-    let receipt=sdk.request(Endpoint::History { exchange_id:plan.exchange_id.clone(),to:plan.through.clone() })?;
+    let receipt=if let Some(path)=&plan.response_evidence {
+        sdk.request_history_with_evidence(plan.exchange_id.clone(),plan.through.clone(),path)?
+    } else { sdk.request(Endpoint::History { exchange_id:plan.exchange_id.clone(),to:plan.through.clone() })? };
     Ok(json!({"receipt":receipt,"historicalBooksReconstructed":false,"trainingAdmitted":false,"productionFinancialStateChanged":false}))
 }
 #[cfg(not(unix))]
@@ -113,7 +117,7 @@ mod tests {
         fs::create_dir(&p).unwrap();let p=p.canonicalize().unwrap();let live=p.join("live-production-v1");fs::create_dir(&live).unwrap();
         fs::write(live.join("EXECUTION_STOP"),b"preserve").unwrap();
         let control=p.join("control.json");let raw=serde_json::to_vec(&json!({"root":live,"credentials":p.join("missing-key"),"accountScope":"original-scope","scope":{"tournamentId":"00000000-0000-0000-0000-000000000001","tournamentSlug":"cup","exchanges":{"2":"1"}}})).unwrap();fs::write(&control,&raw).unwrap();
-        let plan=Plan {control_file:control,control_sha256:hash(&raw),binary_sha256:"0".repeat(64),job_stop:p.join("STOP"),exchange_id:"2".into(),through:"2026-10-12T05:00:00Z".into()};(p,plan)
+        let plan=Plan {control_file:control,control_sha256:hash(&raw),binary_sha256:"0".repeat(64),job_stop:p.join("STOP"),exchange_id:"2".into(),through:"2026-10-12T05:00:00Z".into(),response_evidence:None};(p,plan)
     }
     fn cleanup(p:PathBuf){let resolved=p.canonicalize().unwrap();assert_eq!(resolved.parent().unwrap(),std::env::temp_dir().canonicalize().unwrap());assert!(resolved.file_name().unwrap().to_string_lossy().starts_with("sig-history-read-"));fs::remove_dir_all(resolved).unwrap();}
     #[test]fn preflight_opens_no_queue_or_credential(){let(p,plan)=fixture();let(c,g,_,v)=prepare(&plan).unwrap();assert!(g.can_read(&c.scope));assert!(!c.writes_enabled&&!c.queue_dir.exists());assert_eq!(v["networkRequests"],0);assert_eq!(v["credentialsLoaded"],false);cleanup(p);}

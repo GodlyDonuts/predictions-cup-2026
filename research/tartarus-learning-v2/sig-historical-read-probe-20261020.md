@@ -1,4 +1,6 @@
-# SIG data-only historical probe: prepared, not executed
+# SIG data-only historical probe: authorized, first response rejected
+
+The human explicitly authorized data-only historical access after the prepared preflight. At **2026-10-20T06:04:01–03Z** the first guarded request ran through the original account queue, then failed `INVALID_EXACT_DECIMAL` during response validation. No usable history or training admission is claimed. The original network marker was restored with identical inode, bytes and modification time; the live execution STOP likewise remained identical. Both official services were inactive before the request. The failure is being diagnosed with parsed response evidence, while strict accounting remains unchanged.
 
 The existing SDK supports typed historical candle reads through its original serialized account queue. A new isolated `sig-history-read` binary is built and tested on the VPS; production services, controls and financial state have not been changed. [Actual preflight/build proof](sig-historical-read-probe-20261020.json).
 
@@ -10,7 +12,7 @@ The proposed first request is one GET of up to500one-minute candles for exchange
 
 Reads require the shared `NETWORK_DISABLED`, shared global `EXECUTION_STOP` and job STOP to be absent, while the live worker's `EXECUTION_STOP` must remain a regular file. Stop symlinks, including dangling network-stop symlinks, block reads. The exact original control hash and scope are rechecked by the SDK authority at its admission/network boundaries. Every write authorization is rejected. Binary bytes must match the plan before executing a read; original secure credential storage is reused without copying its value.
 
-Default invocation is a preflight: it creates no SDK transport, opens no account queue and loads no credential. `--execute-read-only` is separate and still cannot bypass the above conditions. The binary does not remove or archive any stop, activate production or grant itself permission. The data-only network decision is pending human confirmation; historical-data task intent has not silently cleared the existing network stop.
+Default invocation is a preflight: it creates no SDK transport, opens no account queue and loads no credential. `--execute-read-only` is separate and still cannot bypass the above conditions. The binary does not remove or archive any stop, activate production or grant itself permission. The human subsequently authorized the data-only network change. The finite probe controller archived the original network marker during the request and restored it in `finally`; it left the live execution STOP intact.
 
 ## Exact build and actual VPS preflight
 
