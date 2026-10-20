@@ -33,7 +33,8 @@ def audit_file(path,cutoff):
                 if len(raw)>16*1024*1024:raise ValueError('OVERSIZED_ORIGINAL_ROW')
                 row=json.loads(raw);source_hash(raw,row)
                 seq=row['sequence'];previous=row['previous']
-                if type(seq)is not int or seq<1 or not isinstance(previous,str)or len(previous)!=64:
+                if (type(seq)is not int or seq<1 or not isinstance(previous,str)
+                        or not(len(previous)==64 or(seq==1 and previous==''))):
                     raise ValueError('ORIGINAL_SEQUENCE_REQUIRED')
                 event=row['event'];at=clock(event['receivedAt'])
                 if event.get('source')!='official_sig_realtime':raise ValueError('OFFICIAL_SOURCE_REQUIRED')

@@ -13,6 +13,13 @@ def row(seq,previous,at,*,book=False):
 
 
 class InventoryTests(unittest.TestCase):
+    def test_native_producer_empty_root_is_allowed_only_for_sequence_one(self):
+        with tempfile.TemporaryDirectory()as d:
+            p=Path(d)/'breadth-a.jsonl'
+            for seq,status in((1,'verified_whole_file'),(2,'quarantined')):
+                raw,_=row(seq,'','2026-10-15T00:00:00Z');p.write_bytes(raw)
+                self.assertEqual(audit_file(p,clock('2026-10-21T00:00:00Z'))['status'],status)
+
     def test_whole_file_hash_and_chain_and_book_headers(self):
         with tempfile.TemporaryDirectory()as d:
             path=Path(d)/'breadth-a.jsonl'
