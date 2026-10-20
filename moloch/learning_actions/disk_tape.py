@@ -201,7 +201,11 @@ class Store:
     def world_view(self,bounds):
         if bounds not in self.views:
             lo,hi=bounds;name='role_world_'+str(len(self.views))
-            missing=self.db.execute("SELECT COUNT(*) FROM market WHERE at>=? AND at<? AND venue='SIG' AND kind IN('book','gap') AND world_at IS NULL",(lo,hi)).fetchone()[0]
+            # The venue index orders by contract before time. On a multi-day
+            # corpus it scatters full-row reads across every SIG snapshot just
+            # to validate one role. Keep the identical guard in source-time
+            # order using the cache's mandatory chronological index.
+            missing=self.db.execute("SELECT COUNT(*) FROM market INDEXED BY market_time WHERE at>=? AND at<? AND venue='SIG' AND kind IN('book','gap') AND world_at IS NULL",(lo,hi)).fetchone()[0]
             if missing:raise ValueError('SNAPSHOT_WORLD_CLOCK_METADATA_REQUIRED')
             self.db.execute(f'CREATE TEMP TABLE {name}(i INTEGER PRIMARY KEY,at INTEGER,record INTEGER,kind TEXT,ex TEXT,market TEXT,books INTEGER)')
             self.db.execute(f'''INSERT INTO {name} SELECT ROW_NUMBER() OVER(ORDER BY w.i)-1,w.at,w.record,m.kind,m.ex,m.market,

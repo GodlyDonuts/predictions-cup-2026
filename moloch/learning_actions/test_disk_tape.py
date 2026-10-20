@@ -79,6 +79,20 @@ class DiskTapeTests(unittest.TestCase):
             self.assertEqual(d.disk_store.decoded_rows,3)
             self.assertEqual(d.rows[-1]['available_at_ms'],e.rows[-1]['available_at_ms'])
 
+    def test_world_metadata_guard_retains_exact_role_bounds(self):
+        malformed=book(100)
+        malformed.pop('snapshot_origin')
+        malformed.pop('original_realtime_received_at_ms')
+        malformed.pop('native_event_received_at_ms',None)
+        malformed.pop('native_processed_at_ms',None)
+        with tempfile.TemporaryDirectory()as td,ExitStack()as resources:
+            _,_,d,_=self.pair(Path(td),rows=[book(0),malformed,book(5000)],prints=[])
+            resources.callback(d.disk_store.close)
+            _,rows,_=d.disk_store.world_view((0,100))
+            self.assertEqual(len(rows),1)
+            with self.assertRaisesRegex(ValueError,'SNAPSHOT_WORLD_CLOCK_METADATA_REQUIRED'):
+                d.disk_store.world_view((100,5000))
+
     def test_events_observations_finance_and_paid_history_match(self):
         with tempfile.TemporaryDirectory()as td,ExitStack()as resources:
             _,e,d,_=self.pair(Path(td));resources.callback(d.disk_store.close)
