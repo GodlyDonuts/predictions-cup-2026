@@ -1,3 +1,5 @@
+[Fresh SIG-source status at04:28UTC October20](sig-source-service-metadata-20261020.json): existing VPS live worker and capture service remain inactive/MainPID0; live execution STOP and shared NETWORK_DISABLED remain present. This read-only audit changed no service/control/account state and recovered no continuous SIG history. Earlier observations below are historical.
+
 [October20 metadata-only external-capture check](external-capture-metadata-20261020.md): existing Kalshi/Polymarket collectors and byte archive are live. Protected observations remain unopened by this audit; copy timestamps do not establish chronological readiness.
 
 # Full-history ML feasibility audit

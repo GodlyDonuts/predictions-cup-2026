@@ -1,0 +1,39 @@
+{
+  "classification": "fresh_existing_vps_service_and_control_metadata_not_global_execution_ownership_or_market_coverage",
+  "observedUtc": "2026-10-20T04:28:00.349396+00:00",
+  "source": "read_only_ssh_systemctl_user_show_and_path_exists",
+  "services": {
+    "moloch-live.service": {
+      "returncode": 0,
+      "fields": {
+        "MainPID": "0",
+        "Result": "exec-condition",
+        "Id": "moloch-live.service",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      }
+    },
+    "moloch-capture.service": {
+      "returncode": 0,
+      "fields": {
+        "MainPID": "0",
+        "Result": "success",
+        "Id": "moloch-capture.service",
+        "ActiveState": "inactive",
+        "SubState": "dead"
+      }
+    }
+  },
+  "liveExecutionStop": true,
+  "sharedNetworkDisabled": true,
+  "sharedRootExecutionStop": false,
+  "accountRequests": 0,
+  "servicesOrControlsChanged": false,
+  "newAccountClientStarted": false,
+  "productionFinancialAction": false,
+  "marketObservationBodiesOpened": false,
+  "heldOutDataOpened": false,
+  "newContinuousSigHistoryRecovered": false,
+  "fullChronologicalReadinessEstablished": false,
+  "earlierObservation": "sig-source-service-metadata-20261019.json"
+}
