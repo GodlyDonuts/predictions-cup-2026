@@ -1,0 +1,48 @@
+{
+  "observedUtc": "2026-10-20T05:47:40.565039+00:00",
+  "classification": "checked_read_only_history_probe_prepared_not_executed",
+  "sourceBaseCommit": "2ecc54f90cfc525519a81d924ad5c0fcfc6c87a0",
+  "extraSourceSha256": "60d909ebca3e3a8b9fc57d110f6c617f479e136c18ebf7ba6893e1956b845a83",
+  "binarySha256": "8f3a464c7499ce0fa5842fc12f79e2b41b5c0694c92889e48d883294c12ef436",
+  "planSha256": "0e3c39becb3685ee76fc9b3f0689783ffecf0a786c7d6d62759989831a565925",
+  "cpuBoundaryTestsPassed": 6,
+  "releaseBuildSucceeded": true,
+  "preflight": {
+    "accountQueueOpened": false,
+    "classification": "single_GET_history_preflight_not_recovery_or_training",
+    "controlSha256": "bed178634e699f969a344bb3c1aa3a595c37ef40db1198ee9935a87cce00467a",
+    "credentialsLoaded": false,
+    "endpointKind": "history",
+    "exchangeId": "840",
+    "executionStopPresent": true,
+    "globalExecutionStopPresent": false,
+    "maximumCandles": 500,
+    "maximumHttpRequests": 1,
+    "networkDisabledPresent": true,
+    "networkRequests": 0,
+    "productionFinancialStateChanged": false,
+    "readAdmissionsPerMinute": 100,
+    "readBoundaryCurrentlyOpen": false,
+    "readCompletionPacingMs": 600,
+    "scopeExchanges": 237,
+    "scopeSha256": "eb720801f2031dbcf232b2af58d331d8b6399c1a2d095d7962111263822e328b",
+    "throughExclusive": "2026-10-12T05:00:00Z",
+    "writesEnabled": false
+  },
+  "originalControlStopsAndFinancialLedgerStatUnchanged": true,
+  "services": {
+    "moloch-live.service": {
+      "MainPID": "0",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    },
+    "moloch-capture.service": {
+      "MainPID": "0",
+      "ActiveState": "inactive",
+      "SubState": "dead"
+    }
+  },
+  "productionChanged": false,
+  "officialAccountRequests": 0,
+  "humanNetworkReenableApprovalNotAssumed": true
+}
