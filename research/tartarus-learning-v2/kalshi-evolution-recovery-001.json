@@ -1,0 +1,31 @@
+{
+  "observedUtc": "2026-10-20T05:19:51.817199+00:00",
+  "classification": "verified_evolution_public_trade_receipts_not_executable_book_dataset",
+  "sourceCommit": "75853cfc3617a1f91262c35dc594cc8c89b0c54a",
+  "planSha256": "985209c58c0adc2423c892086a9da43dd2c4b58c08200eec20ae2d4142f8206f",
+  "role": "evolution_history_recovery_only",
+  "rangeStartUtc": "2026-10-12T05:00:00Z",
+  "rangeEndExclusiveUtc": "2026-10-16T05:00:00Z",
+  "completedMappedTickers": 234,
+  "receiptPages": 257,
+  "receiptBytes": 30293335,
+  "sortedReceiptInventorySha256": "c6e27340facbd38459ae8847b0de12caa6cab4df6e1347e7ac008ed0a26de79c",
+  "uniqueTradeRecords": 48563,
+  "firstEventUtc": "2026-10-12T05:00:19.362000+00:00",
+  "lastEventUtc": "2026-10-16T04:59:58.370000+00:00",
+  "dailyTradeCounts": {
+    "2026-10-12": 6822,
+    "2026-10-13": 11953,
+    "2026-10-14": 12897,
+    "2026-10-15": 13379,
+    "2026-10-16": 3512
+  },
+  "allBodyHashesScopesAndExactDecimalStringsVerified": true,
+  "allCursorChainsTerminal": true,
+  "trainingAdmitted": false,
+  "modelSelectionPerformed": false,
+  "independentTestUsed": false,
+  "historicalOrderBooksRecovered": false,
+  "originalHistoricalDeliveryVerified": false,
+  "productionChanged": false
+}
