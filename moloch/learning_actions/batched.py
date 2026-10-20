@@ -83,8 +83,9 @@ class BatchStream:
             'terminal':torch.tensor(terminals,device=self.device),
             'learn':torch.tensor(active,device=self.device),'economic_reward':rewards,'elapsed_ms':elapsed}
 
-    def collect(self,compute_steps=32,*,deterministic=False):
+    def collect(self,compute_steps=32,*,deterministic=False,bootstrap=True):
         if type(compute_steps)is not int or compute_steps<=0:raise ValueError('POSITIVE_COMPUTE_CHUNK')
+        if type(bootstrap)is not bool:raise ValueError('EXPLICIT_CHUNK_BOOTSTRAP_PROFILE')
         live=[i for i,e in enumerate(self.envs)if e.now<e.end]
         if self.compact_finished and 0<len(live)<len(self.envs):
             # Freeze the batch membership for this entire PPO chunk. Worlds
@@ -92,7 +93,7 @@ class BatchStream:
             # The view sends accepted optimizer hidden states back to the same
             # original world IDs; no world/account or clock is restarted.
             view=_ActiveWorldView(self,live)
-            chunk=view.collect(compute_steps,deterministic=deterministic)
+            chunk=view.collect(compute_steps,deterministic=deterministic,bootstrap=bootstrap)
             for j,i in enumerate(live):
                 self.decisions[i]=view.decisions[j]
                 if j in view.completed:self.completed[i]=view.completed[j]
@@ -104,12 +105,15 @@ class BatchStream:
             if frame is None:break
             frames.append(frame)
         if not frames:raise ValueError('NO_ACTIVE_WORLD_FRAMES')
-        with torch.no_grad():
-            prepared=inputs([e.observe()for e in self.envs],self.device)
-            kwargs={**prepared,'hidden':self.hidden,'reset':torch.zeros(len(self.envs),device=self.device,dtype=torch.bool)}
-            value=(self.model.bootstrap_value(**kwargs)if self.rollout_only else self.model.step(**kwargs,deterministic=True)['value'])
-            value=value*torch.tensor([e.now<e.end for e in self.envs],device=self.device)
-        return Chunk(frames,before,'train',frames[0]['initial_hidden'],value.detach(),self,self.behavior_guard,contract(self.model))
+        value=None
+        if bootstrap:
+            with torch.no_grad():
+                prepared=inputs([e.observe()for e in self.envs],self.device)
+                kwargs={**prepared,'hidden':self.hidden,'reset':torch.zeros(len(self.envs),device=self.device,dtype=torch.bool)}
+                value=(self.model.bootstrap_value(**kwargs)if self.rollout_only else self.model.step(**kwargs,deterministic=True)['value'])
+                value=value*torch.tensor([e.now<e.end for e in self.envs],device=self.device)
+        return Chunk(frames,before,'train',frames[0]['initial_hidden'],None if value is None else value.detach(),
+                     self,self.behavior_guard,contract(self.model))
 
 
 class _ActiveWorldView(BatchStream):

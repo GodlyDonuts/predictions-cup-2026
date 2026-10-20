@@ -9,6 +9,50 @@ from .contract import OrderSpec
 
 
 class BatchTests(unittest.TestCase):
+    def test_omitting_unused_bootstrap_keeps_actions_rng_worlds_and_compaction_exact(self):
+        from .api_affordances import ApiAffordancePolicy
+        from .test_api_affordances import world
+        from .episode_tape import tensor_digest,observation_fields,financial_digest
+        torch.set_num_threads(1)
+        for factory,policy in((environment,ApiPolicy),(world,ApiAffordancePolicy)):
+            for rollout in(False,True):
+                for compact in(False,True):
+                    with self.subTest(policy=policy.__name__,rollout=rollout,compact=compact):
+                        torch.manual_seed(431);model=policy(16);model.acting_validation='consolidated_v1'
+                        with torch.no_grad():
+                            model.heads['family'].weight.zero_();model.heads['family'].bias.zero_()
+                            model.heads['family'].bias[11]=100
+                        outputs=[]
+                        for bootstrap in(True,False):
+                            torch.manual_seed(833);envs=[factory(),factory()];envs[0].end=20;envs[1].end=3000
+                            stream=BatchStream(envs,model,[GrowthLedger(e,development=True)for e in envs],
+                                calibration={'decision_latency_ms':50},compact_finished=compact,rollout_only=rollout)
+                            encodes=[];hook=model.encoder.register_forward_hook(lambda *args:encodes.append(True))
+                            frames=[]
+                            try:
+                                for _ in range(3):
+                                    chunk=stream.collect(3,bootstrap=bootstrap)
+                                    self.assertEqual(chunk.bootstrap_value is None,not bootstrap)
+                                    for frame in chunk.frames:
+                                        fields={k:frame[k]for k in('actions','old_logprob','old_value','initial_hidden','reset','learn','terminal')}
+                                        frames.append((tensor_digest(observation_fields(frame)),tensor_digest(fields),
+                                                       frame['economic_reward'],frame['elapsed_ms']))
+                            finally:hook.remove()
+                            outputs.append((frames,torch.get_rng_state().clone(),[financial_digest(e)for e in envs],
+                                            stream.hidden.clone(),len(encodes)))
+                        a,b=outputs;self.assertEqual(a[0],b[0]);self.assertTrue(torch.equal(a[1],b[1]))
+                        self.assertEqual(a[2],b[2]);self.assertTrue(torch.equal(a[3],b[3]))
+                        self.assertEqual(a[4]-b[4],3)
+
+    def test_bootstrap_free_chunks_cannot_silently_train_as_open_streaming_returns(self):
+        from moloch.learning_v2.train_inner import fingerprint
+        torch.set_num_threads(1);torch.manual_seed(51);model=ApiPolicy(16);env=environment()
+        stream=BatchStream([env],model,[GrowthLedger(env,development=True)],calibration={'decision_latency_ms':2})
+        chunk=stream.collect(2,bootstrap=False);before=fingerprint(model);optimizer=torch.optim.Adam(model.parameters())
+        with self.assertRaisesRegex(ValueError,'SEALED_EPISODE_TARGETS_REQUIRED'):
+            update(model,optimizer,chunk,[f['economic_reward']for f in chunk.frames],role='train')
+        self.assertEqual(fingerprint(model),before);self.assertEqual(optimizer.state_dict()['state'],{})
+
     def test_batched_worlds_match_individual_deterministic_inference_and_accounts(self):
         torch.set_num_threads(1);torch.manual_seed(51)
         model=ApiPolicy(16)

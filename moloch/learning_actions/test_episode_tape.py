@@ -41,7 +41,8 @@ class EpisodeTapeTests(unittest.TestCase):
         stream=BatchStream(envs,self.actor(),ledgers,calibration={'decision_latency_ms':100},
             behavior_guard='tensor_versions_v1',compact_finished=True)
         writer=EpisodeWriter(path,stream,dataset_sha256='a'*64,specification_sha256='b'*64)
-        while any(e.now<e.end for e in envs):writer.record(stream.collect(3))
+        while any(e.now<e.end for e in envs):
+            chunk=stream.collect(3,bootstrap=False);self.assertIsNone(chunk.bootstrap_value);writer.record(chunk)
         return writer,writer.seal()
 
     def test_exact_reconstruction_compaction_and_full_episode_returns(self):

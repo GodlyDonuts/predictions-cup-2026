@@ -18,7 +18,7 @@ class Chunk:
     behavior_sha256:str
     role:str
     initial_hidden:torch.Tensor
-    bootstrap_value:torch.Tensor
+    bootstrap_value:torch.Tensor|None
     stream:object=None
     behavior_guard:str='sha256'
     behavior_contract:tuple=None
@@ -127,16 +127,18 @@ def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epo
     learn=torch.stack([f.get('learn',torch.ones_like(f['old_value'],dtype=torch.bool))for f in chunk.frames])
     count=learn.sum().clamp_min(1)
     if not bool(learn.any()):raise ValueError('NO_ACTIVE_ECONOMIC_TRAINING_TRANSITIONS')
-    value=chunk.bootstrap_value.double()if bootstrap_value is None else bootstrap_value.double()
-    returns=[]
-    for i in reversed(range(len(chunk.frames))):
-        terminal=torch.as_tensor(chunk.frames[i]['terminal'],device=device,dtype=torch.bool)
-        value=rewards[i]+(~terminal)*value
-        returns.append(value)
-    returns=torch.stack(list(reversed(returns))).detach()
     if prescribed is not None:
         returns=torch.tensor(prescribed,dtype=torch.float64,device=device)
         if returns.shape!=old_values.shape or not bool(torch.isfinite(returns).all()):raise ValueError('COMPLETE_CLOSED_EPISODE_TARGETS_REQUIRED')
+    else:
+        if chunk.bootstrap_value is None:raise ValueError('SEALED_EPISODE_TARGETS_REQUIRED_WITHOUT_BOOTSTRAP')
+        value=chunk.bootstrap_value.double()if bootstrap_value is None else bootstrap_value.double()
+        returns=[]
+        for i in reversed(range(len(chunk.frames))):
+            terminal=torch.as_tensor(chunk.frames[i]['terminal'],device=device,dtype=torch.bool)
+            value=rewards[i]+(~terminal)*value
+            returns.append(value)
+        returns=torch.stack(list(reversed(returns))).detach()
     advantage=returns-old_values
     if global_advantage is None:
         advantage=(advantage-advantage[learn].mean())/advantage[learn].std(unbiased=False).clamp_min(1e-8)

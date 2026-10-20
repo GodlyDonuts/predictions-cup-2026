@@ -387,7 +387,7 @@ class Experiment:
         writer=EpisodeWriter(path,stream,dataset_sha256=self.dataset_sha,specification_sha256=self.spec_sha)
         try:
             while any(e.now<e.end for e in stream.envs):
-                chunk=stream.collect(self.config.get('compute_chunk_decisions',32));writer.record(chunk)
+                chunk=stream.collect(self.config.get('compute_chunk_decisions',32),bootstrap=False);writer.record(chunk)
                 decisions=sum(int(f['learn'].sum())for f in chunk.frames);self.total_decisions+=decisions
                 self.log({'event':'closed_episode_rollout_chunk','decisions':decisions,'updates':[],
                     'behavior_weights_frozen':True,'virtual_ms':[e.now for e in stream.envs],
