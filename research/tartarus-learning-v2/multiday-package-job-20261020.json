@@ -1,0 +1,15 @@
+{
+  "pid": 16016,
+  "sourceCommit": "f9d994b0031b3fb9e96d607c513b50c477ae59c9",
+  "controllerSha256": "388f534deceb4861397f0b2adf234f02e1acb147a13c2933611cb0e6960dffae",
+  "cudaRequested": false,
+  "accountRequests": 0,
+  "productionChanged": false,
+  "observedUtc": "2026-10-20T21:51:51.523470+00:00",
+  "status": {
+    "phase": "waiting_for_complete_semantic_corpus",
+    "accountRequests": 0,
+    "productionChanged": false
+  },
+  "classification": "checked_future_data_packaging_job_not_dataset_completion"
+}

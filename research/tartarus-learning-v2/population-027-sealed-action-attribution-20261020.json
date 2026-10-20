@@ -1,0 +1,494 @@
+{
+  "classification": "exact_sealed_train_action_replay_not_independent_roi",
+  "sourceCommit": "7c2e3bcbd255b62236eec5340685cac39bc9b7d5",
+  "sourceExperimentSha256": "b57f777912a71f249a63ac805db9ac6b0851ca1ec584663863e0be4a343622a0",
+  "originalConfigurationSha256": "d0e24b84cccc14cbf4810d6e5316afeba0b9f010e52e87132f7f0682afdcc23e",
+  "episodeManifestSha256": "9904db4235e0aa201a8553eda266c4b8b7d0dc3d94c4177d71a28fb5decab122",
+  "actorWeightFingerprint": "bba0308ee770f0610431a75999318d6420d821f4274ae8d80ed3822bad53f74c",
+  "datasetManifestSha256": "7a85747f768652c8fea1fa2cd1647eac5549b0274b9f623d023da084b70de07c",
+  "decisions": 4495,
+  "batches": 72,
+  "worldCount": 8,
+  "allFrameClockRewardAndFinancialChecksPassed": true,
+  "newPolicyInferenceRun": false,
+  "optimizerRun": false,
+  "accountRequests": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "originalFullResultSha256": "f387ccd8a6de0dda271ca5b08902d57d4591c0bf978355b8a55219976061f669",
+  "counts": {
+    "familyCounts": {
+      "5": 168,
+      "0": 2663,
+      "4": 35,
+      "10": 1135,
+      "2": 30,
+      "11": 163,
+      "1": 62,
+      "6": 144,
+      "7": 17,
+      "3": 42,
+      "8": 21,
+      "9": 15
+    },
+    "familyResultCounts": {
+      "5/BUILDER_UPDATED": 78,
+      "5/QUOTE_SELECTION_UPDATED": 90,
+      "0/ALARM": 2663,
+      "4/IN_FLIGHT": 35,
+      "10/IN_FLIGHT": 1135,
+      "2/IN_FLIGHT": 30,
+      "11/BUILDER_CLEARED": 85,
+      "1/IN_FLIGHT": 62,
+      "6/BUILDER_UPDATED": 141,
+      "7/IN_FLIGHT": 17,
+      "3/IN_FLIGHT": 42,
+      "11/STREAM_DISCONNECTED": 78,
+      "8/IN_FLIGHT": 21,
+      "6/QUOTE_SELECTION_UPDATED": 3,
+      "9/IN_FLIGHT": 15
+    },
+    "readTargetsAttempted": {
+      "Kalshi/historical_trades": 206,
+      "Polymarket/historical_sample": 311,
+      "Kalshi/reference": 217,
+      "SIG/owned_orders": 70,
+      "Polymarket/reference": 180,
+      "SIG/book": 27,
+      "SIG/trade_flow": 25,
+      "SIG/historical_trades": 29,
+      "SIG/historical_candles": 30,
+      "SIG/quote": 39,
+      "SIG/collateral": 1
+    },
+    "orderBookStateBeforeAction": {
+      "absent": 127,
+      "invalid": 184
+    },
+    "streamStateBeforeAction": {
+      "disabled": 3908,
+      "enabled": 587
+    }
+  },
+  "worlds": [
+    {
+      "familyCounts": {
+        "5": 18,
+        "0": 314,
+        "4": 5,
+        "10": 119,
+        "2": 5,
+        "11": 16,
+        "1": 7,
+        "6": 18,
+        "7": 3,
+        "3": 11,
+        "8": 4
+      },
+      "familyResultCounts": {
+        "5/BUILDER_UPDATED": 8,
+        "5/QUOTE_SELECTION_UPDATED": 10,
+        "0/ALARM": 314,
+        "4/IN_FLIGHT": 5,
+        "10/IN_FLIGHT": 119,
+        "2/IN_FLIGHT": 5,
+        "11/BUILDER_CLEARED": 7,
+        "1/IN_FLIGHT": 7,
+        "6/BUILDER_UPDATED": 17,
+        "7/IN_FLIGHT": 3,
+        "3/IN_FLIGHT": 11,
+        "11/STREAM_DISCONNECTED": 9,
+        "8/IN_FLIGHT": 4,
+        "6/QUOTE_SELECTION_UPDATED": 1
+      },
+      "readTargetsAttempted": {
+        "Kalshi/historical_trades": 17,
+        "Polymarket/historical_sample": 34,
+        "Kalshi/reference": 26,
+        "SIG/owned_orders": 6,
+        "Polymarket/reference": 21,
+        "SIG/book": 3,
+        "SIG/trade_flow": 4,
+        "SIG/historical_trades": 3,
+        "SIG/historical_candles": 1,
+        "SIG/quote": 4
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 10,
+        "invalid": 27
+      },
+      "streamStateBeforeAction": {
+        "disabled": 382,
+        "enabled": 138
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    },
+    {
+      "familyCounts": {
+        "0": 211,
+        "10": 92,
+        "11": 14,
+        "5": 14,
+        "6": 10,
+        "2": 2,
+        "1": 4,
+        "9": 2,
+        "7": 1,
+        "4": 2,
+        "3": 3
+      },
+      "familyResultCounts": {
+        "0/ALARM": 211,
+        "10/IN_FLIGHT": 92,
+        "11/BUILDER_CLEARED": 6,
+        "5/QUOTE_SELECTION_UPDATED": 7,
+        "6/BUILDER_UPDATED": 10,
+        "11/STREAM_DISCONNECTED": 8,
+        "5/BUILDER_UPDATED": 7,
+        "2/IN_FLIGHT": 2,
+        "1/IN_FLIGHT": 4,
+        "9/IN_FLIGHT": 2,
+        "7/IN_FLIGHT": 1,
+        "4/IN_FLIGHT": 2,
+        "3/IN_FLIGHT": 3
+      },
+      "readTargetsAttempted": {
+        "Polymarket/historical_sample": 21,
+        "SIG/book": 3,
+        "Kalshi/historical_trades": 17,
+        "Polymarket/reference": 17,
+        "Kalshi/reference": 17,
+        "SIG/owned_orders": 9,
+        "SIG/historical_candles": 2,
+        "SIG/quote": 2,
+        "SIG/historical_trades": 2,
+        "SIG/trade_flow": 2
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 7,
+        "invalid": 16
+      },
+      "streamStateBeforeAction": {
+        "disabled": 300,
+        "enabled": 55
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    },
+    {
+      "familyCounts": {
+        "0": 574,
+        "1": 14,
+        "10": 266,
+        "6": 37,
+        "2": 7,
+        "11": 38,
+        "3": 8,
+        "5": 41,
+        "8": 2,
+        "4": 8,
+        "7": 3,
+        "9": 6
+      },
+      "familyResultCounts": {
+        "0/ALARM": 574,
+        "1/IN_FLIGHT": 14,
+        "10/IN_FLIGHT": 266,
+        "6/BUILDER_UPDATED": 36,
+        "2/IN_FLIGHT": 7,
+        "11/BUILDER_CLEARED": 23,
+        "3/IN_FLIGHT": 8,
+        "5/QUOTE_SELECTION_UPDATED": 26,
+        "5/BUILDER_UPDATED": 15,
+        "8/IN_FLIGHT": 2,
+        "11/STREAM_DISCONNECTED": 15,
+        "4/IN_FLIGHT": 8,
+        "7/IN_FLIGHT": 3,
+        "9/IN_FLIGHT": 6,
+        "6/QUOTE_SELECTION_UPDATED": 1
+      },
+      "readTargetsAttempted": {
+        "Kalshi/reference": 54,
+        "Polymarket/reference": 35,
+        "SIG/trade_flow": 5,
+        "Kalshi/historical_trades": 52,
+        "Polymarket/historical_sample": 79,
+        "SIG/owned_orders": 17,
+        "SIG/historical_candles": 7,
+        "SIG/book": 4,
+        "SIG/quote": 6,
+        "SIG/historical_trades": 7
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 22,
+        "invalid": 50
+      },
+      "streamStateBeforeAction": {
+        "disabled": 860,
+        "enabled": 144
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    },
+    {
+      "familyCounts": {
+        "10": 290,
+        "5": 47,
+        "0": 671,
+        "2": 8,
+        "1": 15,
+        "6": 38,
+        "4": 9,
+        "11": 49,
+        "3": 10,
+        "8": 6,
+        "7": 5
+      },
+      "familyResultCounts": {
+        "10/IN_FLIGHT": 290,
+        "5/BUILDER_UPDATED": 24,
+        "0/ALARM": 671,
+        "2/IN_FLIGHT": 8,
+        "1/IN_FLIGHT": 15,
+        "5/QUOTE_SELECTION_UPDATED": 23,
+        "6/BUILDER_UPDATED": 37,
+        "4/IN_FLIGHT": 9,
+        "11/BUILDER_CLEARED": 33,
+        "3/IN_FLIGHT": 10,
+        "8/IN_FLIGHT": 6,
+        "11/STREAM_DISCONNECTED": 16,
+        "7/IN_FLIGHT": 5,
+        "6/QUOTE_SELECTION_UPDATED": 1
+      },
+      "readTargetsAttempted": {
+        "Polymarket/historical_sample": 81,
+        "Kalshi/historical_trades": 54,
+        "Kalshi/reference": 51,
+        "SIG/historical_candles": 12,
+        "Polymarket/reference": 44,
+        "SIG/quote": 16,
+        "SIG/trade_flow": 6,
+        "SIG/owned_orders": 15,
+        "SIG/book": 7,
+        "SIG/historical_trades": 4
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 19,
+        "invalid": 65
+      },
+      "streamStateBeforeAction": {
+        "disabled": 1000,
+        "enabled": 148
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    },
+    {
+      "familyCounts": {
+        "0": 447,
+        "6": 17,
+        "10": 196,
+        "5": 23,
+        "4": 7,
+        "11": 20,
+        "2": 6,
+        "8": 3,
+        "1": 12,
+        "7": 3,
+        "3": 7,
+        "9": 2
+      },
+      "familyResultCounts": {
+        "0/ALARM": 447,
+        "6/BUILDER_UPDATED": 17,
+        "10/IN_FLIGHT": 196,
+        "5/QUOTE_SELECTION_UPDATED": 12,
+        "5/BUILDER_UPDATED": 11,
+        "4/IN_FLIGHT": 7,
+        "11/STREAM_DISCONNECTED": 11,
+        "2/IN_FLIGHT": 6,
+        "8/IN_FLIGHT": 3,
+        "11/BUILDER_CLEARED": 9,
+        "1/IN_FLIGHT": 12,
+        "7/IN_FLIGHT": 3,
+        "3/IN_FLIGHT": 7,
+        "9/IN_FLIGHT": 2
+      },
+      "readTargetsAttempted": {
+        "Polymarket/reference": 33,
+        "SIG/historical_candles": 6,
+        "Kalshi/reference": 36,
+        "Polymarket/historical_sample": 50,
+        "SIG/historical_trades": 8,
+        "SIG/quote": 7,
+        "Kalshi/historical_trades": 37,
+        "SIG/book": 3,
+        "SIG/owned_orders": 12,
+        "SIG/trade_flow": 4
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 30,
+        "invalid": 16
+      },
+      "streamStateBeforeAction": {
+        "disabled": 705,
+        "enabled": 38
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    },
+    {
+      "familyCounts": {
+        "0": 221,
+        "5": 11,
+        "10": 86,
+        "6": 14,
+        "4": 1,
+        "9": 3,
+        "11": 9,
+        "1": 6,
+        "7": 1,
+        "2": 1,
+        "8": 2,
+        "3": 2
+      },
+      "familyResultCounts": {
+        "0/ALARM": 221,
+        "5/BUILDER_UPDATED": 6,
+        "5/QUOTE_SELECTION_UPDATED": 5,
+        "10/IN_FLIGHT": 86,
+        "6/BUILDER_UPDATED": 14,
+        "4/IN_FLIGHT": 1,
+        "9/IN_FLIGHT": 3,
+        "11/BUILDER_CLEARED": 2,
+        "11/STREAM_DISCONNECTED": 7,
+        "1/IN_FLIGHT": 6,
+        "7/IN_FLIGHT": 1,
+        "2/IN_FLIGHT": 1,
+        "8/IN_FLIGHT": 2,
+        "3/IN_FLIGHT": 2
+      },
+      "readTargetsAttempted": {
+        "SIG/owned_orders": 6,
+        "Kalshi/historical_trades": 13,
+        "Polymarket/historical_sample": 21,
+        "Kalshi/reference": 16,
+        "SIG/trade_flow": 2,
+        "Polymarket/reference": 19,
+        "SIG/historical_candles": 1,
+        "SIG/historical_trades": 4,
+        "SIG/quote": 1,
+        "SIG/book": 3
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 19,
+        "invalid": 8
+      },
+      "streamStateBeforeAction": {
+        "disabled": 307,
+        "enabled": 50
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    },
+    {
+      "familyCounts": {
+        "0": 119,
+        "10": 51,
+        "4": 1,
+        "11": 8,
+        "5": 6,
+        "6": 7,
+        "9": 2,
+        "1": 1,
+        "8": 2,
+        "3": 1,
+        "7": 1
+      },
+      "familyResultCounts": {
+        "0/ALARM": 119,
+        "10/IN_FLIGHT": 51,
+        "4/IN_FLIGHT": 1,
+        "11/STREAM_DISCONNECTED": 6,
+        "5/QUOTE_SELECTION_UPDATED": 3,
+        "6/BUILDER_UPDATED": 7,
+        "9/IN_FLIGHT": 2,
+        "1/IN_FLIGHT": 1,
+        "5/BUILDER_UPDATED": 3,
+        "8/IN_FLIGHT": 2,
+        "3/IN_FLIGHT": 1,
+        "11/BUILDER_CLEARED": 2,
+        "7/IN_FLIGHT": 1
+      },
+      "readTargetsAttempted": {
+        "Polymarket/reference": 9,
+        "Polymarket/historical_sample": 12,
+        "SIG/book": 3,
+        "Kalshi/reference": 10,
+        "SIG/owned_orders": 4,
+        "Kalshi/historical_trades": 9,
+        "SIG/trade_flow": 1,
+        "SIG/collateral": 1,
+        "SIG/historical_candles": 1,
+        "SIG/quote": 1
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 9,
+        "invalid": 2
+      },
+      "streamStateBeforeAction": {
+        "disabled": 185,
+        "enabled": 14
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    },
+    {
+      "familyCounts": {
+        "5": 8,
+        "11": 9,
+        "10": 35,
+        "0": 106,
+        "4": 2,
+        "1": 3,
+        "8": 2,
+        "6": 3,
+        "2": 1
+      },
+      "familyResultCounts": {
+        "5/QUOTE_SELECTION_UPDATED": 4,
+        "11/STREAM_DISCONNECTED": 6,
+        "10/IN_FLIGHT": 35,
+        "0/ALARM": 106,
+        "4/IN_FLIGHT": 2,
+        "1/IN_FLIGHT": 3,
+        "5/BUILDER_UPDATED": 4,
+        "8/IN_FLIGHT": 2,
+        "6/BUILDER_UPDATED": 3,
+        "11/BUILDER_CLEARED": 3,
+        "2/IN_FLIGHT": 1
+      },
+      "readTargetsAttempted": {
+        "Kalshi/historical_trades": 7,
+        "Polymarket/historical_sample": 13,
+        "Kalshi/reference": 7,
+        "SIG/quote": 2,
+        "SIG/trade_flow": 1,
+        "Polymarket/reference": 2,
+        "SIG/owned_orders": 1,
+        "SIG/historical_trades": 1,
+        "SIG/book": 1
+      },
+      "orderBookStateBeforeAction": {
+        "absent": 11
+      },
+      "streamStateBeforeAction": {
+        "disabled": 169
+      },
+      "timing": "cached_state_before_action_after_recorded_compute_latency",
+      "requestedReadsAreNotProofOfSuccessfulReceipts": true
+    }
+  ],
+  "scope": "first founder002 training rollout before its 72-update optimizer pass; not updated-policy evaluation"
+}
