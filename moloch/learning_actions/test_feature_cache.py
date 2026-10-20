@@ -3,7 +3,7 @@ import hashlib
 import unittest
 import numpy as np
 import torch
-from .feature_cache import identity,log_quantity
+from .feature_cache import identity,log_quantity,entity_identities
 from .test_actions import environment
 from .contract import OrderSpec
 from .full_depth import extend_observation
@@ -13,6 +13,32 @@ from moloch.learning_v2.liquidity import Book,SharedLiquidity
 
 
 class FeatureCacheTests(unittest.TestCase):
+    def test_entity_matrix_is_exact_immutable_and_invalidates_on_order_or_membership(self):
+        e=environment();entities=[('global',None),('contract','x'),('read',('SIG',('book','x')))]
+        first=entity_identities(e,entities)
+        np.testing.assert_array_equal(first,np.asarray([identity(*key)for key in entities],dtype=np.float32))
+        self.assertIs(first,entity_identities(e,list(entities)))
+        with self.assertRaises(ValueError):first[0,0]=0
+        swapped=entities[::-1];second=entity_identities(e,swapped)
+        np.testing.assert_array_equal(second,first[::-1]);self.assertIsNot(first,second)
+        extra=swapped+[('order',17)];third=entity_identities(e,extra)
+        self.assertEqual(third.shape,(4,7));np.testing.assert_array_equal(third[-1],identity('order',17).astype(np.float32))
+        self.assertEqual(entity_identities(e,[]).shape,(0,7))
+
+    def test_receipt_identity_overrides_do_not_become_stale_with_same_layout(self):
+        e=environment()
+        e.known_acknowledgments=[{'quantity':1,'remaining':1,'quantity_traded':0,'total_cost_micros':0,
+            'last_price_micros':None,'side':'YES','action':'BUY','at_ms':e.now,'exchange':'x','order':7,'open':True}]
+        e.known_private_fills=[{'yes_price_micros':400000,'quantity':3,'executed_at_ms':e.now,'exchange':'x','order':7}]
+        before=e.observe();cached=e._entity_identity_matrix_cache[1]
+        for row in(e.known_acknowledgments[0],e.known_private_fills[0]):row['exchange']='y'
+        after=e.observe();self.assertEqual(before['entities'],after['entities'])
+        self.assertIs(cached,e._entity_identity_matrix_cache[1])
+        for kind in('execution_ack','private_fill'):
+            i=after['entities'].index((kind,0))
+            np.testing.assert_array_equal(before['contracts'][i,33:40],identity('contract','x').astype(np.float32))
+            np.testing.assert_array_equal(after['contracts'][i,33:40],identity('contract','y').astype(np.float32))
+
     def test_eviction_and_immutable_identity_are_exact(self):
         for i in range(8200):
             expected=np.frombuffer(hashlib.sha256(repr(('contract',str(i))).encode()).digest()[:7],np.uint8)/255.

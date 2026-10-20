@@ -16,6 +16,19 @@ def identity(kind,key):
     return value
 
 
+def entity_identities(env,entities):
+    """Immutable default identity columns for this exact ordered layout.
+
+    Receipt rows may override these identities with delivered contract IDs;
+    those overrides remain dynamic in the observation builder.
+    """
+    context=tuple(entities);cached=getattr(env,'_entity_identity_matrix_cache',None)
+    if cached is not None and cached[0]==context:return cached[1]
+    values=np.asarray([identity(kind,key)for kind,key in context],dtype=np.float32).reshape(len(context),7)
+    values.setflags(write=False);env._entity_identity_matrix_cache=(context,values)
+    return values
+
+
 @lru_cache(maxsize=8192)
 def log_quantity(quantity):
     return np.log1p(quantity)

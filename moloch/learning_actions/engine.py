@@ -486,9 +486,9 @@ class ApiEpisode(PreparedEpisode):
             return self.budget.ready_at(self.now,write)<=self.now
         read_ready,write_ready=ready(False),ready(True)
         builder_size=len(self.builder)
-        from .feature_cache import identity,log_quantity,book_statistics
+        from .feature_cache import identity,log_quantity,book_statistics,entity_identities
+        features[:,33:40]=entity_identities(self,entities)
         for i,(kind,key)in enumerate(entities):
-            features[i,33:40]=identity(kind,key)
             if kind=='global':
                 masks['family'][i,[0,11]]=True
                 if write_ready:
