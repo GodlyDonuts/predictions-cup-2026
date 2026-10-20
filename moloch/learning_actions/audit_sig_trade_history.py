@@ -51,9 +51,9 @@ def audit(root, scope, *, start, train_end, end):
         receipt_bytes += len(raw)
         inventory.update(json.dumps([name, entry['sha256']], separators=(',', ':')).encode() + b'\n')
         r = json.loads(raw, parse_float=Decimal)
-        require(r['status'] == 200 and clock(r['request_started_at']) <= clock(r['received_at'])
-                and clock(r['received_at']) >= hi and entry['retrievedAt'] == r['received_at'], 'TRADE_RECEIPT_CLOCK')
-        received = clock(r['received_at'])
+        require(r['status'] == 200 and clock(r['requestStartedAt']) <= clock(r['receivedAt'])
+                and clock(r['receivedAt']) >= hi and entry['retrievedAt'] == r['receivedAt'], 'TRADE_RECEIPT_CLOCK')
+        received = clock(r['receivedAt'])
         retrieval_first, retrieval_last = min(retrieval_first or received, received), max(retrieval_last or received, received)
         u = urlsplit(r['endpoint'])
         query = {'tournamentId': [scope['tournamentId']], 'from': [start], 'to': [end], 'limit': ['200']}

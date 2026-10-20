@@ -19,7 +19,7 @@ class TradeAuditTest(unittest.TestCase):
             if cursor:
                 query['cursor'] = cursor
             receipt = {'endpoint': '/exchanges/840/trades?' + urlencode(query), 'status': 200,
-                'request_started_at': '2026-10-20T00:00:00Z', 'received_at': '2026-10-20T00:00:01Z',
+                'requestStartedAt': '2026-10-20T00:00:00Z', 'receivedAt': '2026-10-20T00:00:01Z',
                 'data': {'exchangeId': '840', 'marketId': '151', 'from': f.start, 'to': f.end,
                     'data': [{'id': '4', 'createdAt': t, 'price': .0600000000000001,
                               'volume': .6000000000000001, 'size': 10, 'side': 'NO'}],
@@ -32,7 +32,7 @@ class TradeAuditTest(unittest.TestCase):
             self.entries.append({'page': n, 'exchangeId': '840', 'file': name,
                 'sha256': hashlib.sha256(raw).hexdigest(), 'fromInclusive': f.start, 'throughExclusive': f.end,
                 'requestCursor': cursor, 'nextCursor': receipt['data']['pagination']['nextCursor'],
-                'trades': 1, 'retrievedAt': receipt['received_at'], 'trainingAdmitted': False,
+                'trades': 1, 'retrievedAt': receipt['receivedAt'], 'trainingAdmitted': False,
                 'bookDepthReconstructed': False})
         self.write_index()
         (f.root / 'complete.json').write_text(json.dumps({'requests': 2, 'trades': 2,

@@ -25,8 +25,8 @@ class HistoryAuditTest(unittest.TestCase):
             name = f'page-{n:06}-validated.json'
             receipt = {'endpoint': '/exchanges/840/price-history?' + urlencode({
                 'tournamentId': 'cup', 'resolution': '1m', 'limit': '500', 'to': through}),
-                'status': 200, 'request_started_at': '2026-10-20T00:00:00Z',
-                'received_at': '2026-10-20T00:00:01Z', 'data': {
+                'status': 200, 'requestStartedAt': '2026-10-20T00:00:00Z',
+                'receivedAt': '2026-10-20T00:00:01Z', 'data': {
                     'exchangeId': '840', 'marketId': '151', 'resolution': '1m',
                     'from': self.first, 'to': through, 'candles': candles,
                     'coverage': {'complete': True, 'projectedThroughSequence': 100}}}
@@ -35,7 +35,7 @@ class HistoryAuditTest(unittest.TestCase):
             self.entries.append({'page': n, 'exchangeId': '840', 'file': name,
                 'sha256': hashlib.sha256(raw).hexdigest(), 'candles': len(candles),
                 'requestedThroughExclusive': through, 'nextThroughExclusive': self.first if n == 0 else None,
-                'retrievedAt': receipt['received_at'], 'trainingAdmitted': False,
+                'retrievedAt': receipt['receivedAt'], 'trainingAdmitted': False,
                 'bookDepthReconstructed': False})
         (self.root / 'complete.json').write_text(json.dumps({'requests': 2, 'candles': 2,
             'exchangesComplete': 1, 'throughExclusive': self.end, 'fromInclusive': self.start}))
