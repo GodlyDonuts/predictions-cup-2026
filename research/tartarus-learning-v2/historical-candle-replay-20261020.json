@@ -1,0 +1,46 @@
+{
+  "observedUtc": "2026-10-20T07:34:59.756112+00:00",
+  "manifestSha256": "11360f469bc3954365866ce133e5f00c76ceac92c010eea83cb0c06011effe24",
+  "manifest": {
+    "format": "audited_sig_candle_information_v1",
+    "sourceAuditSha256": "4b4839566abce3fafd86cc68b06485e55596e24606053bb156022aceb42fd54b",
+    "sourceIndexSha256": "1e40d3797d3f2ac23c5538e7dd5ecda42b0abb8a90d49354bcecc726dc9f9084",
+    "databaseSha256": "de482f5e68b5721e8cc5e7eb82f71fc0dc2903e74f920c4d7d2c95f38a376822",
+    "databaseBytes": 59891712,
+    "records": 594935,
+    "exchanges": 237,
+    "receiptPages": 1550,
+    "roleCountsBySourceStart": {
+      "train": 497561,
+      "evolution": 97374
+    },
+    "normalizedScopedCandleSha256": "2f2fbfb6eacad3a6e3d3917f55b81f012af3b5c39edcbc4cf3377d478e9da46d",
+    "storedDecodedSha256": "2f2fbfb6eacad3a6e3d3917f55b81f012af3b5c39edcbc4cf3377d478e9da46d",
+    "sourceBoundsMs": [
+      1788220800000,
+      1792126800000
+    ],
+    "trainEndExclusiveMs": 1791781200000,
+    "minimumAggregateDelayMs": 60000,
+    "exactObservationDecimalsRetained": true,
+    "originalHistoricalDeliveryVerified": false,
+    "bookDepthReconstructed": false,
+    "trainingAdmitted": false,
+    "independentTestUsed": false,
+    "buildWallSeconds": 22.06239059998188
+  },
+  "queries": 10000,
+  "rowsReturned": 3126,
+  "openAndQueryWallSeconds": 1.1059062000131235,
+  "deliveryProfile": {
+    "delay_ms": 61000,
+    "poll_ms": 1000,
+    "phase_ms": 0,
+    "maximum_age_ms": 120000
+  },
+  "candlesPublishedBeforeTrainEndUnderProfile": 497550,
+  "allQueriedBarsClosedBeforeVisibility": true,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "gpuUsed": false
+}

@@ -1,0 +1,25 @@
+{
+  "classification": "prospective_four_day_test_reservation_not_test_results",
+  "testStartInclusiveUtc": "2026-10-21T00:00:00Z",
+  "testEndExclusiveUtc": "2026-10-25T00:00:00Z",
+  "durationDays": 4,
+  "reason": "The originally requested October16-20 test calendar was already exposed to development optimization. It remains contaminated; this is an explicitly new prospective calendar.",
+  "optimizationAndSelectionForbiddenDuringReservedCalendar": true,
+  "testRequiresWholeReservedCalendarComplete": true,
+  "testRequiresFrozenFinalistAndExistingOneShotReservation": true,
+  "rawCaptureAllowedWithoutModelOrResearchExposure": true,
+  "candidateChronology": {
+    "trainEndExclusiveUtc": "2026-10-17T00:00:00Z",
+    "evolutionStartInclusiveUtc": "2026-10-17T00:00:00Z",
+    "evolutionEndExclusiveUtc": "2026-10-21T00:00:00Z",
+    "competitionStartVerified": false,
+    "freshTrainOnlyWeightLineageRequired": true
+  },
+  "existingGPU022UsesOctober19DevelopmentOnly": true,
+  "existingGPU022WeightsEligibleForCandidateTrainOnlyLineage": false,
+  "historicalDataExtensionAndProspectiveCaptureStillRequired": true,
+  "localRegistryDoesNotProveAbsenceOfManualOrOtherHostExposure": true,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "profitabilityEstablished": false
+}

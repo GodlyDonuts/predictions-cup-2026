@@ -1,0 +1,75 @@
+{
+  "observedUtc": "2026-10-20T07:45:04.242418+00:00",
+  "classification": "causal_exact_public_trade_provider_not_execution_replay",
+  "reports": [
+    {
+      "manifestSha256": "138404d296c28fc95c73ca604720f13958715b12f1d04f2a07e87e703aa9af5b",
+      "manifest": {
+        "format": "audited_kalshi_trade_information_v1",
+        "sourceAuditSha256": "4d9391609f811d4e7a43bbe6fc8c4e6b3bc6a0e6b5c12cea5f04eb02b044f614",
+        "sourcePlanSha256": "3c73f74b800968b466e3b1627eb4d39ced614e0e6e9934325bddf0c0763560e1",
+        "receiptInventorySha256": "f1d7b15194821276a48b6ca0dc202a298255df0e13ebf042980823e501f93f9f",
+        "databaseSha256": "aeae82ac5f42b5f653cfe7ea222770162117fcdbf9eab10555cb9a8a1a07af7f",
+        "databaseBytes": 129527808,
+        "sourceBoundsMs": [
+          1788220800000,
+          1791781200000
+        ],
+        "role": "training_history_recovery_only",
+        "records": 244200,
+        "receiptPages": 419,
+        "excludedUpperBoundaryRows": 0,
+        "duplicateRows": 0,
+        "normalizedTradeSha256": "84c7a49480b2d3c19564cbc268eae13f711b240e3d8421645609f0253a1c1a0c",
+        "originalHistoricalDeliveryVerified": false,
+        "exactDecimalStringsRetained": true,
+        "executionAuthority": false,
+        "subMillisecondPublicationRoundedUp": true,
+        "trainingAdmitted": false,
+        "independentTestUsed": false,
+        "buildWallSeconds": 5.822672400041483
+      },
+      "tickers": 234,
+      "queries": 5000,
+      "rowsReturned": 4789,
+      "openAndQueryWallSeconds": 0.15419860009569675
+    },
+    {
+      "manifestSha256": "9b16e3a96739ec7c06133cb8dba3b7aee622cf0e1aa706b4ddf21527e3c1be79",
+      "manifest": {
+        "format": "audited_kalshi_trade_information_v1",
+        "sourceAuditSha256": "808f4d544b7f51c9dba301301d38a4536b83e4da73193bf90d7ca512170181df",
+        "sourcePlanSha256": "985209c58c0adc2423c892086a9da43dd2c4b58c08200eec20ae2d4142f8206f",
+        "receiptInventorySha256": "c6e27340facbd38459ae8847b0de12caa6cab4df6e1347e7ac008ed0a26de79c",
+        "databaseSha256": "437f3dc9cedd16321ba7bcbc3fbec8ed4f4d1619c728842966779cad3ad84ac4",
+        "databaseBytes": 25374720,
+        "sourceBoundsMs": [
+          1791781200000,
+          1792126800000
+        ],
+        "role": "evolution_history_recovery_only",
+        "records": 48563,
+        "receiptPages": 257,
+        "excludedUpperBoundaryRows": 0,
+        "duplicateRows": 0,
+        "normalizedTradeSha256": "ff46bed929af1f6d4cf47ecd17308c6dd426a14160301c022794db745a79092e",
+        "originalHistoricalDeliveryVerified": false,
+        "exactDecimalStringsRetained": true,
+        "executionAuthority": false,
+        "subMillisecondPublicationRoundedUp": true,
+        "trainingAdmitted": false,
+        "independentTestUsed": false,
+        "buildWallSeconds": 3.3111753999255598
+      },
+      "tickers": 234,
+      "queries": 5000,
+      "rowsReturned": 3961,
+      "openAndQueryWallSeconds": 0.08445040008518845
+    }
+  ],
+  "originalRetrievalPreserved": true,
+  "subMillisecondVisibilityNeverRoundedEarlier": true,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "gpuUsed": false
+}

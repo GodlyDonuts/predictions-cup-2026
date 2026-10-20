@@ -6,9 +6,14 @@ another candidate. This is not a production execution lock.
 """
 import hashlib,json
 import os
+from contextlib import contextmanager
 from pathlib import Path
 from datetime import datetime,timezone
 from moloch.learning_realism.protocol import valid_sha,digest
+
+
+def now_ms():
+    return int(datetime.now(timezone.utc).timestamp()*1000)
 
 
 class DataUse:
@@ -23,6 +28,54 @@ class DataUse:
             Path(os.environ.get('LOCALAPPDATA',Path.home()/'.local/share'))/
                 'Moloch/learning-v2/data-use-registry-v1')
         self.root.mkdir(parents=True,exist_ok=True)
+
+    @contextmanager
+    def _lock(self):
+        # One local OS lock serializes reservation/admission checks and writes.
+        # Closing the descriptor releases it even when a process exits abnormally.
+        with (self.root/'admission.lock').open('a+b') as lock:
+            if lock.seek(0,2)==0:
+                lock.write(b'\0');lock.flush()
+            lock.seek(0)
+            try:
+                if os.name=='nt':
+                    import msvcrt
+                    msvcrt.locking(lock.fileno(),msvcrt.LK_NBLCK,1)
+                else:
+                    import fcntl
+                    fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+            except OSError as error:
+                raise ValueError('DATA_USE_REGISTRY_BUSY')from error
+            yield
+
+    def protected(self,start,end):
+        found=[]
+        for path in (self.root/'protected-calendars').glob('*.json'):
+            row=json.loads(path.read_text())
+            if(row.get('kind')!='prospective_holdout'
+               or any(type(row.get(k))is not int for k in('start_ms','end_ms'))
+               or not 0<=row['start_ms']<row['end_ms']
+               or not valid_sha(row.get('source_sha256'))):
+                raise ValueError('PROTECTED_CALENDAR_RECORD_INVALID')
+            if start<row['end_ms']and row['start_ms']<end:found.append(row)
+        return found
+
+    def reserve_calendar(self,start,end,source_sha256):
+        if(any(type(v)is not int or v<0 for v in(start,end))
+           or start>=end or not valid_sha(source_sha256)):
+            raise ValueError('EXPLICIT_PROSPECTIVE_CALENDAR_REQUIRED')
+        value={'kind':'prospective_holdout','start_ms':start,'end_ms':end,
+               'source_sha256':source_sha256}
+        path=self.root/'protected-calendars'/(digest(value)+'.json')
+        with self._lock():
+            if path.exists():
+                if json.loads(path.read_text())!=value:raise ValueError('PROTECTED_CALENDAR_CHANGED')
+                return path
+            if start<=now_ms():raise ValueError('PROSPECTIVE_CALENDAR_MUST_START_IN_FUTURE')
+            self.require_unseen(start,end)
+            if self.protected(start,end):raise ValueError('PROTECTED_CALENDAR_OVERLAP')
+            frozen(path,value)
+        return path
 
     def overlaps(self,start,end,*,ignore_test=False):
         found=[]
@@ -40,12 +93,19 @@ class DataUse:
             raise ValueError('EXPLICIT_DATA_USE_AND_SOURCE_REQUIRED')
         if any(type(v)is not int or v<0 for v in(start,end))or end<=start:
             raise ValueError('DATA_USE_CALENDAR_REQUIRED')
-        if kind=='test':self.require_unseen(start,end)
         value={'kind':kind,'start_ms':start,'end_ms':end,'source_sha256':source_sha256}
         path=self.root/(digest(value)+'.json')
-        if path.exists():
-            if json.loads(path.read_text())!=value:raise ValueError('DATA_USE_RECORD_CHANGED')
-        else:frozen(path,value)
+        with self._lock():
+            protected=self.protected(start,end)
+            if protected:
+                if kind!='test':raise ValueError('PROTECTED_HOLDOUT_CANNOT_TRAIN_OR_SELECT')
+                if len(protected)!=1 or (start,end)!=(protected[0]['start_ms'],protected[0]['end_ms']):
+                    raise ValueError('PROTECTED_TEST_REQUIRES_EXACT_RESERVED_CALENDAR')
+                if now_ms()<end:raise ValueError('PROTECTED_TEST_CALENDAR_NOT_COMPLETE')
+            if kind=='test':self.require_unseen(start,end)
+            if path.exists():
+                if json.loads(path.read_text())!=value:raise ValueError('DATA_USE_RECORD_CHANGED')
+            else:frozen(path,value)
         return path
 
 

@@ -1,0 +1,16 @@
+{
+  "observedUtc": "2026-10-20T07:45:34.139401+00:00",
+  "planSha256": "9242c6276860756c3486f0adbc7d6bcddded52b61488871c7469858d029b3c06",
+  "reservationSha256": "e3f451c175d1d2a02e32835cf59ee42de38284ffa59df1e879ee4ece88e0a5ca",
+  "reservedBoundsMs": [
+    1792540800000,
+    1792886400000
+  ],
+  "preexistingExposureRecords": 0,
+  "overlappingTrainingAdmissionRejected": true,
+  "probeCreatedNoExposureRecord": true,
+  "rawCaptureAndFullHistoryExperimentNotYetEstablished": true,
+  "manualOrOtherHostExposureNotProvenAbsent": true,
+  "independentTestUsed": false,
+  "productionChanged": false
+}
