@@ -1,1 +1,19 @@
-{"sourceDelta": {"moloch/native/src/live_market_capacity.rs": "ba1c4a82004fbdd038267199dbbb739f8277bfca635c8f8494b7488f51fa9a2f", "moloch/native/tests/live_market_capacity.rs": "7d0d0fe0d79ea095907edc56dd518da60a278be2f2b56644f9c52aaf81f2876d", "moloch/live-runtime/src/worker.rs": "a1418c2d2b5c434db1a358c61207c9498008103d30055f0457e392ff4d8b7c40"}, "nativeChecks": 9, "workerChecks": 3, "productionModified": false, "deployed": false, "checksCompletedUtc": "2026-10-21T14:45:00.081075Z"}
+{
+  "sourceDelta": {
+    "moloch/native/src/live_market_capacity.rs": "ba1c4a82004fbdd038267199dbbb739f8277bfca635c8f8494b7488f51fa9a2f",
+    "moloch/native/tests/live_market_capacity.rs": "7d0d0fe0d79ea095907edc56dd518da60a278be2f2b56644f9c52aaf81f2876d",
+    "moloch/live-runtime/src/worker.rs": "a1418c2d2b5c434db1a358c61207c9498008103d30055f0457e392ff4d8b7c40"
+  },
+  "nativeChecks": 9,
+  "workerChecks": 3,
+  "productionModified": false,
+  "deployed": false,
+  "checksCompletedUtc": "2026-10-21T14:45:00.081075Z",
+  "committedSourceSha256": {
+    "moloch/native/src/live_market_capacity.rs": "858bfee6b0627d87407500965d575e36a73a601998ce6793dd7756a33e7475e6",
+    "moloch/native/tests/live_market_capacity.rs": "844aa6ba41a2769a7968d70a0a37fc8628f13a7392da6f026d82515e166f8372",
+    "moloch/live-runtime/src/worker.rs": "a1418c2d2b5c434db1a358c61207c9498008103d30055f0457e392ff4d8b7c40"
+  },
+  "sourceCommit": "89b2d1a1571c2306e3bbc8c01a4deb10e79479f2",
+  "sourceByteDifference": "Native module and integration test were qualified with CRLF; committed Git blobs are byte-identical after CRLF-to-LF normalization. Worker bytes match exactly. Unrelated local worker changes excluded."
+}
