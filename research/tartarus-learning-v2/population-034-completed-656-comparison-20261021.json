@@ -1,0 +1,102 @@
+{
+  "classification": "matched_CPU_full_two_day_development_not_independent_ROI",
+  "sourceCommit": "91ab753962353a05fdf87cc650c5b56c9f926884",
+  "sourceManifestSha256": "bf527b432ffec3184c648cf2b312fc622f630ddd87c15ac4d9b9bbb137eb40f9",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "priorResultSha256": "0db1470dac3ebb384ce381f20fbbd79198e949715eca6b748ff2d17b45f30a3c",
+  "completedResultSha256": "39b20e1911c699cb7a82b6b3aee658bd5f3d38cacfa5e488d0fc10f181b393ff",
+  "completedPlanSha256": "2fe71d5abf328ee6093797122b6cc0baaac015b43544b66d03a4934089275546",
+  "frozenActorCostMs": 28,
+  "sameSourceCasesAndSeeds": true,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "productionProfitabilityEstablished": false,
+  "result": "656 updates regressed versus84 on worst human reward; neither is independently profitable",
+  "policies": [
+    {
+      "policy": "parent",
+      "checkpointSha256": "0ab16f9707fcc2c9442c3fc3846e9194321c96407047a42c21075ffb751e98a5",
+      "worstHumanReward": -0.2157532062226424,
+      "worstMarkedROI": -0.11855242499999996,
+      "cases": [
+        {
+          "stress": false,
+          "reward": -0.002305082065570103,
+          "marked_roi": 0.000566150000000043,
+          "N": 1,
+          "D": 2,
+          "start_ms": 1792221916175,
+          "end_ms": 1792394716175,
+          "decisions": 153
+        },
+        {
+          "stress": true,
+          "reward": -0.2157532062226424,
+          "marked_roi": -0.11855242499999996,
+          "N": 0,
+          "D": 2,
+          "start_ms": 1792221916175,
+          "end_ms": 1792394716175,
+          "decisions": 10499
+        }
+      ]
+    },
+    {
+      "policy": "84_updates",
+      "checkpointSha256": "ffbc1feab144f89f1cb42009a449b9193eb30ba02805941f89da78e73930d899",
+      "worstHumanReward": -0.04108915723231894,
+      "worstMarkedROI": -0.06687054999999997,
+      "cases": [
+        {
+          "stress": false,
+          "reward": -0.04108915723231894,
+          "marked_roi": -0.06687054999999997,
+          "N": 0,
+          "D": 2,
+          "start_ms": 1792221916175,
+          "end_ms": 1792394716175,
+          "decisions": 966
+        },
+        {
+          "stress": true,
+          "reward": -3.2919138570109056e-05,
+          "marked_roi": -5.574999999979902e-06,
+          "N": 0,
+          "D": 2,
+          "start_ms": 1792221916175,
+          "end_ms": 1792394716175,
+          "decisions": 112
+        }
+      ]
+    },
+    {
+      "policy": "656_updates",
+      "checkpointSha256": "314336f82573527be990cfd646f8413bac66677b2f7bf20d1fc7576ce39904ed",
+      "worstHumanReward": -0.0860473672817296,
+      "worstMarkedROI": -0.06687014999999996,
+      "cases": [
+        {
+          "stress": false,
+          "reward": -0.04108862140109764,
+          "marked_roi": -0.06687014999999996,
+          "N": 0,
+          "D": 2,
+          "start_ms": 1792221916175,
+          "end_ms": 1792394716175,
+          "decisions": 1372
+        },
+        {
+          "stress": true,
+          "reward": -0.0860473672817296,
+          "marked_roi": -0.06540975000000004,
+          "N": 0,
+          "D": 2,
+          "start_ms": 1792221916175,
+          "end_ms": 1792394716175,
+          "decisions": 2996
+        }
+      ]
+    }
+  ]
+}
