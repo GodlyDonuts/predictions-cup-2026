@@ -1,6 +1,9 @@
 # Current Moloch and Tartarus state
 
-Observed October 21, 21:46 UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October 21, 22:06 UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+
+R74 is installed as sole worker1038328 at22:02:31UTC and is restoring the original ledger. Its dispatch fix removes repeated whole-cohort validation after the original intent; the indexed order lookup is also included.143 cohort and233 worker checks pass. All458 original fills and the2,592,376,699-byte financial prefix are retained; native engine and account limiter are unchanged. Fresh trading and the one-filled-order/minute target are not yet verified. [Exact installation](../research/tartarus-learning-v2/r74-dispatch-proof-installed-20261021.json), [dispatch change](../research/tartarus-learning-v2/dispatch-proof-r74-20261021.md).
+
 
 The target is at least one distinct first-filled order/minute and remains unmet. The latest audited993YES sale realized+221.355SUSQies across six partial receipts of one physical order; twelve distinct orders filled todayUTC. All12 recurring policies are activated, confirmed21:42:35UTC. Deep Research is complete and the read-only census has identified stale forecast reviews as an additional blocker. A boundary-aligned forecast updater is installed; fresh forecasts for all12 active targets committed at21:35:16UTC. The same R72 worker1031505 remains running. R73’s cache patch is qualified, not deployed. [Current research, applied changes and limitations](../research/tartarus-learning-v2/turnaround-research-results-20261021.md).
 

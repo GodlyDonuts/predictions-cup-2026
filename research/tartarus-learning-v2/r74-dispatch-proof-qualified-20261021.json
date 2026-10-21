@@ -1,0 +1,19 @@
+{
+  "observedUtc": "2026-10-21T22:00:57.862473+00:00",
+  "binarySha256": "a4b6febea9283f17c0af34062d4d6d98a2816c27fc3361f8c2a40369635d4c49",
+  "sourceSha256": {
+    "moloch/live-runtime/src/worker.rs": "bcaffff15f64edb4952ae3fc0a99199aa7c1a4cf01deed72a8a3c1d06fd62f03",
+    "moloch/live-runtime/src/fundamental_policy.rs": "d509ae9ca90f1c638a81bd3d87407a55e1e53cae17dd0b06d63aeaebdc0b0c7e",
+    "moloch/live-runtime/tests/fundamental_policy.rs": "d320b5ab12b989f02ad5e5379a70ff7cf912d8692be1613b2b74b5b40442eb3f"
+  },
+  "nativeLibrarySha256": "fb56b89e5a6af2788baf4d858fcca02e675f0752a3cabf355aac791b767ba287",
+  "runtimeLibrarySha256": "4c8bcf58e18c460afc26667b7a5b5c32c331befc79d2be8d648ebcff9f526c85",
+  "tests": [
+    "test result: ok. 143 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 63.99s",
+    "test result: ok. 233 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 38.46s"
+  ],
+  "cliLoads": true,
+  "nativeEngineChanged": false,
+  "accountClientsCreated": 0,
+  "productionChanged": false
+}

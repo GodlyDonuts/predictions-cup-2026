@@ -1,4 +1,7 @@
-# Tartarus implementation status — October 21, 21:46 UTC
+# Tartarus implementation status — October 21, 22:06 UTC
+
+R74 is installed as sole worker1038328 at22:02:31UTC and is restoring the original ledger. Its dispatch fix removes repeated whole-cohort validation after the original intent; the indexed order lookup is also included.143 cohort and233 worker checks pass. All458 original fills and the2,592,376,699-byte financial prefix are retained; native engine and account limiter are unchanged. Fresh trading and the one-filled-order/minute target are not yet verified. [Exact installation](r74-dispatch-proof-installed-20261021.json), [dispatch change](dispatch-proof-r74-20261021.md).
+
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
