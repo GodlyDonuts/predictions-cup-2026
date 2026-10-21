@@ -1,5 +1,7 @@
 # Production restoration and account bridge — October 21
 
+**Update01:33UTC:** R57 PID968525 is verified in the trading phase with realtime healthy, original bank manifest/journal prefix/396fills preserved, SDK unknown0/manualFalse and the OS owner lock held. No new fill or ML deployment is established. [Exact current-process evidence](production-verified-live-20261021.json) / [combined current state](current-state-20261021-0137.md). The restoration-stage observations below are dated history.
+
 The human explicitly instructed this thread to restore production immediately. This supersedes the earlier learning-only restriction on changing production state. It does not make the experimental ML population profitable or authorize fabricating account history.
 
 ## Restoration

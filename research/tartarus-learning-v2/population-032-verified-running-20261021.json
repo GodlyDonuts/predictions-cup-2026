@@ -1,0 +1,83 @@
+{
+  "observedUtc": "2026-10-21T01:37:06.104652+00:00",
+  "classification": "verified_single_GPU_complete_day_memory_training_not_ROI",
+  "actualCudaPid": 27732,
+  "actualCreationFiletime": "134370197333411077",
+  "sourceCommit": "b83d8c87cd39473f50208be9ae79db87ee751f47",
+  "configurationSha256": "6e1a0437ec838bd05a268668a96261d657472afc6a2f9a630988aa74f3c56f15",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "trainingReward": {
+    "development_only": true,
+    "episode_ms": 172800000,
+    "mode": "human_complete_day_growth"
+  },
+  "historicalMemoryProfile": "paid_history_latest_response_record_v1",
+  "trainBounds": [
+    1792049116175,
+    1792221916175
+  ],
+  "developmentSelectionBounds": [
+    1792221916175,
+    1792394716175
+  ],
+  "actualFounders": [
+    {
+      "member": 0,
+      "checkpointSha256": "77b71c50c55a6351a0d5950f38ffc31a8db7b1a7409159f43d4b983ce33d3c26",
+      "parameters": 5272685,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true
+    },
+    {
+      "member": 1,
+      "checkpointSha256": "bbcb2a529832a953b6dd46e6d705659a233da12b386258396181ceaf56401b56",
+      "parameters": 5272685,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true
+    },
+    {
+      "member": 2,
+      "checkpointSha256": "ba6a1371dec28e173f00b3a1c208457e9ba1e1994c11711b4b58a86afdc82527",
+      "parameters": 5272685,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true
+    },
+    {
+      "member": 3,
+      "checkpointSha256": "42bd4be4bbaec903e98fcf53051dc0ce9d721a1c8a1d2504a36f6045d42a264d",
+      "parameters": 5272685,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true
+    }
+  ],
+  "trainingWorlds": 8,
+  "latestProgress": {
+    "event": "closed_episode_rollout_chunk",
+    "decisions": 128,
+    "updates": [],
+    "behavior_weights_frozen": true,
+    "virtual_ms": [
+      1792086334692,
+      1792054118662,
+      1792067142789,
+      1792051247482,
+      1792055146821,
+      1792049290697,
+      1792064659561,
+      1792078809099
+    ],
+    "completed_worlds": 0,
+    "wall_time_unix": 1792546624.4826193,
+    "total_decisions": 2432,
+    "total_updates": 0,
+    "independent_test_used": false
+  },
+  "computePids": [
+    27732
+  ],
+  "old030ResultPreserved": true,
+  "old031NeverStarted": true,
+  "independentTestUsed": false,
+  "productionChangedByTraining": false,
+  "profitabilityEstablished": false
+}

@@ -1,5 +1,7 @@
 # Complete-day learning handoff — October 21, 00:59 UTC
 
+**Update01:37UTC:** queued031 was cancelled before GPU start and superseded by032, combining the verified complete-day reward with persistent paid-history memory.030's completed negative result was preserved before the exact-handle handoff.032 is verified collecting eight full two-day worlds on the single GPU. [Current evidence and limitations](current-state-20261021-0137.md).
+
 The next offline population031 is prepared under checked source `a45f590f1865191f3b366d27fc3a33b0c9ec173b`, configuration `11d684e4a05f2b96ac83463c1ffd7c0ab9022e6576d8d929d4f618b84cd2a71f`. It uses the full human daily-growth training reward, not the short log-wealth proxy.
 
 Its explicit **inspected development** calendar is October15 07:25:16.175–October17 07:25:16.175 UTC for training, followed by October17–19 at the same clock for development selection. These are two complete consecutive days per role, within the existing original SIG source span. Earlier development-selection information has been inspected; this is not a newly independent split. The requested full competition train/four-day evolution/four-day independent experiment remains incomplete. Original external live quotes do not cover this training period; available paid historical external information retains its stated source-time and contract-equivalence limitations.

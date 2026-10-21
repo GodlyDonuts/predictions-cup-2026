@@ -1,0 +1,80 @@
+{
+  "classification": "actual_checkpoint_paid_history_receipt_capability_not_ROI",
+  "sourceCommit": "b83d8c87cd39473f50208be9ae79db87ee751f47",
+  "configurationSha256": "6e1a0437ec838bd05a268668a96261d657472afc6a2f9a630988aa74f3c56f15",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "worldBounds": [
+    1792052716175,
+    1792053316175
+  ],
+  "founders": [
+    {
+      "member": 0,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "6933d8321a390d392a951f1a07751c6ac753241c1678924e9a6bdcddc1ce14f1"
+    },
+    {
+      "member": 1,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "450d0e77e9e8fbf5b343d2682cd28d74bfc8fc7547c0792b927e987ea6c8175d"
+    },
+    {
+      "member": 2,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "9a428e2e383ed83fc98e4477dc03cd6f8767b1b52ce3684189b1adbf8b3034b7"
+    },
+    {
+      "member": 3,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "ac7ce546fda8bb4eac63a84890f020861c679f6f854356578dc6112981870048"
+    }
+  ],
+  "unapprovedMigrationRejected": true,
+  "cases": [
+    {
+      "venue": "SIG",
+      "endpoint": "historical_trades",
+      "knownPriceFields": 1,
+      "cacheSurvivesConsumption": true,
+      "receiptAgeGrows": true,
+      "finiteActualModelForward": true,
+      "rawReceiptConsumed": true,
+      "executableDepthInferred": false
+    },
+    {
+      "venue": "Kalshi",
+      "endpoint": "historical_trades",
+      "knownPriceFields": 2,
+      "cacheSurvivesConsumption": true,
+      "receiptAgeGrows": true,
+      "finiteActualModelForward": true,
+      "rawReceiptConsumed": true,
+      "executableDepthInferred": false
+    },
+    {
+      "venue": "Polymarket",
+      "endpoint": "historical_sample",
+      "knownPriceFields": 1,
+      "cacheSurvivesConsumption": true,
+      "receiptAgeGrows": true,
+      "finiteActualModelForward": true,
+      "rawReceiptConsumed": true,
+      "executableDepthInferred": false
+    }
+  ],
+  "simulatedFeedRequestCounts": {
+    "SIG": 3,
+    "Kalshi": 1,
+    "Polymarket": 1
+  },
+  "simulatedFills": 0,
+  "optimizerUpdates": 0,
+  "physicalAccountRequests": 0,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "sourceMappingAvailabilityVerified": false
+}

@@ -1,0 +1,31 @@
+{
+  "classification": "completed_development_selection_not_independent_ROI",
+  "checkpointSha256": "103e4822b674dcf21fe8d8e40ff8620ce98af38a89fddf434336028c0cee794a",
+  "selectionReward": -0.2284674962211563,
+  "cases": [
+    {
+      "stress": false,
+      "start_ms": 1792195200000,
+      "end_ms": 1792368000000,
+      "D": 2,
+      "N": 0,
+      "reward": -0.2284674962211563,
+      "marked_roi": -0.13112025000000005,
+      "fill_count": 31,
+      "decisions": 835
+    },
+    {
+      "stress": true,
+      "start_ms": 1792195200000,
+      "end_ms": 1792368000000,
+      "D": 2,
+      "N": 0,
+      "reward": -0.11690047062088038,
+      "marked_roi": -0.07167855000000001,
+      "fill_count": 63,
+      "decisions": 42078
+    }
+  ],
+  "independentTestUsed": false,
+  "productionChanged": false
+}
