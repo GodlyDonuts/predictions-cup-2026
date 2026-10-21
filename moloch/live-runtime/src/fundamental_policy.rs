@@ -475,7 +475,7 @@ impl EntryPlan{
         self.sidecar.validate()?;self.marker.validate()?;self.authority.validate()?;authority.validate()?;
         need(now>=self.minted&&now<self.until&&current(&self.review,now)&&authority.trusted().contains(&digest(&self.review)?)
             &&digest(transport.scope())?==self.scope_sha&&bytes_sha(transport.account_scope().as_bytes())==self.account_sha
-            &&bank.durable_head()==self.head&&digest(&bank.engine().report()?)?==self.report_sha
+            &&bank.durable_head()==self.head&&crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned()==self.report_sha
             &&log.descriptor_identity()?==self.dispatch&&queue_view(transport)?==self.queue,"FUNDAMENTAL_ENTRY_PLAN_CHANGED")?;
         no_existing_liability(bank,log,&self.review.exchange_id)?;
         if let Some(p)=self.event.get("sameSideTopUp"){
@@ -499,7 +499,7 @@ impl AbandonPlan{
     fn validate(&self,bank:&Session,log:&DispatchLog,transport:&Transport,now:u64)->Result<()>{
         self.sidecar.validate()?;self.marker.validate()?;self.ordinary.validate()?;
         if let Some(pin)=&self.sdk_archive{pin.validate()?;}
-        need(now>=self.minted&&now<self.until&&bank.durable_head()==self.head&&digest(&bank.engine().report()?)?==self.report_sha
+        need(now>=self.minted&&now<self.until&&bank.durable_head()==self.head&&crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned()==self.report_sha
             &&log.descriptor_identity()?==self.dispatch&&queue_view(transport)?==self.queue&&digest(transport.scope())?==self.scope_sha
             &&bytes_sha(transport.account_scope().as_bytes())==self.account_sha,"FUNDAMENTAL_ABANDON_PLAN_CHANGED")?;
         let physical=if self.event["kind"]=="rearm_closed_zero"{log.attempted.contains(&self.qid())&&log.closed.contains(&self.qid())&&bank.engine().live_order_bindings().get(&self.qid()).is_some_and(|id|self.event["closedZeroEvidence"]["actualId"]==*id)}else if self.event["kind"]=="abandon_proved_no_network"{log.proved_no_network(self.qid())&&log.attempted.contains(&self.qid())&&!log.acknowledgments.contains_key(&self.qid())&&!log.closed.contains(&self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())}else{log.never_attempted(self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())};
@@ -941,7 +941,7 @@ impl Cohorts{
         for row in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_ABANDON_ORDERS")?{need(row["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_ABANDON_OPEN_ORDER")?;}
         need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_ABANDON_CASH")?;
         let plan=AbandonPlan{event:json!({"kind":if proved_abort{"abandon_proved_no_network"}else if top_up{"abandon_top_up_never_sent"}else{"abandon_never_sent"},"exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"originalNotSent":not_sent,"committedRetirement":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
-            head:bank.durable_head(),report_sha:digest(&bank.engine().report()?)?,dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
+            head:bank.durable_head(),report_sha:crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned(),dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,sdk_archive,_owner:self._owner.clone()};
         plan.validate(bank,log,transport,now)?;Ok(plan)
     }
@@ -983,7 +983,7 @@ impl Cohorts{
         for row in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_REARM_OPEN_ORDERS")?{need(row["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_REARM_OPEN_ORDER")?;}
         need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_REARM_CASH")?;
         let inner=AbandonPlan{event:json!({"kind":"rearm_closed_zero","exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"closedZeroEvidence":proof,"committedTerminal":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
-            head:bank.durable_head(),report_sha:digest(&bank.engine().report()?)?,dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
+            head:bank.durable_head(),report_sha:crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned(),dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,sdk_archive:None,_owner:self._owner.clone()};inner.validate(bank,log,transport,now)?;Ok(RearmPlan{inner})
     }
     pub fn apply_rearm(&mut self,plan:RearmPlan,bank:&Session,log:&DispatchLog,transport:&Transport,now:u64)->Result<()>{
@@ -1156,7 +1156,7 @@ impl Cohorts{
         if let Some(stop)=policy["entryStopAt"].as_str().map(daily_windows::clock).transpose()?{until=until.min(stop);}
         let expires=now.checked_add(policy["lifetimeMs"].as_u64().ok_or("FUNDAMENTAL_LIFETIME")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?.min(until);
         if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
-        let head=bank.durable_head();let report_sha=digest(&bank.engine().report()?)?;let dispatch=log.descriptor_identity()?;
+        let head=bank.durable_head();let report_sha=crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned();let dispatch=log.descriptor_identity()?;
         let origin=digest(&json!({"review":r,"receipts":receipts,"scope":scope,"bankHead":head,"dispatch":dispatch,"queue":queue}))?;
         let mut event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":tid},"bankHead":head,"expectedReportSha256":report_sha,
             "marketId":market,"exchangeId":hint.exchange_id,"side":hint.side,"originSha256":origin,"reviewSha256":hint.review_sha256,"bookSha256":hashes.get(&hint.exchange_id).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reviewCurrentUntilMs":until,"reviewMaximumQuantity":selected_maximum,"reviewMaximumPrincipal":r.maximum_principal,"expectedPayout":money(add(structure(r)?,amount(&r.margin_per_share)?)?),"marginPerShare":r.margin_per_share,"limitPrice":money(selected_limit),"expiresAt":daily_windows::iso(expires)?});
@@ -1186,7 +1186,7 @@ impl Cohorts{
         self.check(bank,log)?;let ex=&r.input.exchange_id;no_existing_liability(bank,log,ex)?;
         need(!self.policies.contains_key(ex)&&!self.cohorts.contains_key(ex)&&r.input.existing_origin.as_ref()==Some(&snapshot.origin.approval)
             &&r.input.run_id==self.run&&r.input.bank_manifest_sha256==self.manifest&&current(&r.input,now)
-            &&snapshot.head==bank.durable_head()&&snapshot.report_sha==digest(&bank.engine().report()?)?&&snapshot.fill_count==bank.engine().fills().len()&&snapshot.fill_sha==digest(bank.engine().fills())?
+            &&snapshot.head==bank.durable_head()&&snapshot.report_sha==crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned()&&snapshot.fill_count==bank.engine().fills().len()&&snapshot.fill_sha==digest(bank.engine().fills())?
             &&snapshot.dispatch==log.descriptor_identity()?&&snapshot.queue==queue_view(transport)?&&snapshot.scope_sha==digest(transport.scope())?&&snapshot.account_sha==bytes_sha(transport.account_scope().as_bytes())
             &&snapshot.origin.adopted_position["exchangeId"]==*ex&&snapshot.origin.adopted_position["marketId"]==r.input.market_id&&transport.scope().tournament_id==r.input.tournament_id
             &&snapshot.origin.adopted_position["quantity"].as_i64().is_some_and(|n|if n<0{r.input.side=="NO"}else{r.input.side=="YES"})
@@ -1220,7 +1220,7 @@ impl Cohorts{
         let mut expires=now.checked_add(policy["lifetimeMs"].as_u64().ok_or("FUNDAMENTAL_LIFETIME")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?;
         if reason!="reviewed_holding_deadline"{expires=expires.min(until);if !terminal_hold(r){expires=expires.min(deadline);}}
         if expires<=now.checked_add(policy["latencyMs"].as_u64().ok_or("FUNDAMENTAL_LATENCY")?).ok_or("FUNDAMENTAL_CLOCK_RANGE")?{return Ok(None)}
-        let mut event=json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":r.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":digest(&bank.engine().report()?)?,"exchangeId":exchange,"marketId":r.market_id,"side":r.side,"quantity":n,"limitPrice":money(limit),"expiresAt":daily_windows::iso(expires)?,"originSha256":c.origin_sha()?,"reviewSha256":digest(r)?,"expectedPositionSha256":digest(&bank.engine().wallet.positions()[exchange])?,"bookSha256":hashes.get(exchange).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reason":reason,"expectedPayout":money(payout),"reviewCurrentUntilMs":until,"holdingDeadlineMs":deadline,"revoked":r.revoke_existing});
+        let mut event=json!({"type":"reviewed_inventory_exit_reserved_v1","source":"moloch_live_dispatcher","receivedAt":daily_windows::iso(now)?,"bankScope":{"runId":self.run,"bankManifestHash":self.manifest,"tournamentId":r.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned(),"exchangeId":exchange,"marketId":r.market_id,"side":r.side,"quantity":n,"limitPrice":money(limit),"expiresAt":daily_windows::iso(expires)?,"originSha256":c.origin_sha()?,"reviewSha256":digest(r)?,"expectedPositionSha256":digest(&bank.engine().wallet.positions()[exchange])?,"bookSha256":hashes.get(exchange).ok_or("FUNDAMENTAL_BOOK_HASH")?,"reason":reason,"expectedPayout":money(payout),"reviewCurrentUntilMs":until,"holdingDeadlineMs":deadline,"revoked":r.revoke_existing});
         if passive{event["executionMode"]=json!("passiveValueLimit");event["maximumPassiveQuantity"]=json!(r.passive_value_exit.as_ref().unwrap().maximum_quantity);event["modelSha256"]=json!(execution_model_sha(r)?);event["sourceSha256"]=json!(digest(&r.sources)?);}
         if let Some(cost)=fifo_cost{let basis=fifo_basis(r,&event["bankHead"],&event["expectedPositionSha256"],&event["bookSha256"],n,&cost)?;
             event["reason"]=json!("reviewed_fifo_profit_turnover");event["pricingObjective"]=serde_json::to_value(r.passive_value_exit.as_ref().unwrap().pricing_objective.as_ref().unwrap())?;
@@ -1609,7 +1609,7 @@ impl Cohorts{
             let ex=snapshot.origin.adopted_position["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXISTING_SCOPE")?.to_owned();
             let r=loaded.reviews.iter().find(|r|r.input.exchange_id==ex).ok_or("FUNDAMENTAL_GENERATION_EXISTING_REVIEW")?;
             no_existing_liability(bank,log,&ex)?;
-            need(snapshot.head==bank.durable_head()&&snapshot.report_sha==digest(&bank.engine().report()?)?&&snapshot.fill_count==bank.engine().fills().len()&&snapshot.fill_sha==digest(bank.engine().fills())?
+            need(snapshot.head==bank.durable_head()&&snapshot.report_sha==crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned()&&snapshot.fill_count==bank.engine().fills().len()&&snapshot.fill_sha==digest(bank.engine().fills())?
                 &&snapshot.dispatch==log.descriptor_identity()?&&snapshot.queue==queue_view(transport)?&&snapshot.scope_sha==digest(scope)?&&snapshot.scope_sha==digest(transport.scope())?&&snapshot.account_sha==bytes_sha(transport.account_scope().as_bytes())
                 ,"FUNDAMENTAL_EXISTING_ORIGINAL_BOUNDARY_CHANGED")?;
             need(!self.policies.contains_key(&ex)&&!self.cohorts.contains_key(&ex)&&r.input.existing_origin.as_ref()==Some(&snapshot.origin.approval)

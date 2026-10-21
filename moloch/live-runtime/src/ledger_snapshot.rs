@@ -12,6 +12,7 @@ impl Key{fn current(bank:&Session)->Self{Self{session:bank as *const Session as 
 pub struct Snapshot{key:Key,value:Arc<Value>,sha:String}
 impl Snapshot{
  pub fn value(&self)->&Arc<Value>{&self.value}
+ pub fn sha256(&self)->&str{&self.sha}
  pub fn validate_current(&self,bank:&Session)->bool{self.key==Key::current(bank)}
  pub fn matches_value(&self,value:&Value)->Result<bool>{
   // An immutable original allocation needs no repeated serialization. Equal

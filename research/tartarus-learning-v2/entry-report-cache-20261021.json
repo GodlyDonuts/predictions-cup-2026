@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "observedUtc": "2026-10-21T19:15:16Z",
+  "baseRelease": "R70 exact isolated source",
+  "baseNativeEngineIdentity": "f78ad9e3359e982f7567550d2cf0d2788798dda7467f71383b2f9fb463694c9b",
+  "nativeEngineChanged": false,
+  "sourceChanges": [
+    {
+      "path": "moloch/live-runtime/src/alpha_proposal.rs",
+      "beforeSha256": "aaf28c1c45f91b5fedff3991aa1ffa7b1fa606dc825df91319b92e3a6ada694d",
+      "afterSha256": "874dff8ef59f4a6f0278fbe7bb53a1a25782a7e3f98a56548ec9451e1eb2eb68"
+    },
+    {
+      "path": "moloch/live-runtime/src/fundamental_policy.rs",
+      "beforeSha256": "4766307e4ffc24aac9deed6700aed7f922f84fa7e2e81d6cf8d13f08496c4f0d",
+      "afterSha256": "54d90f31937be780383a661c72d916f575bb65cd62a76f2dfb61e4f4ae4eb0ec"
+    },
+    {
+      "path": "moloch/live-runtime/src/ledger_snapshot.rs",
+      "beforeSha256": "980efe21ebbe889b4e08802a014674c49e02fa67300cb783545fb726d52448cf",
+      "afterSha256": "1b08470f672211262bf133a06b0521c5af631d0813cb1861aaf917a1bd623bc1"
+    },
+    {
+      "path": "moloch/live-runtime/tests/ledger_snapshot.rs",
+      "beforeSha256": "4d254c82ce6518ef37919f1ee5455434f75754837ed0ef86d0721bdb435fe15f",
+      "afterSha256": "4f95a9bb7697f7ceeb72c5e83f189dd5056dbbbc308705035d94b21791dcabc5"
+    },
+    {
+      "path": "moloch/live-runtime/tests/alpha_proposal.rs",
+      "beforeSha256": "842417eea9b937887b4cb2f70ba3bb0e915dc590b6b612c367cd58a275c676de",
+      "afterSha256": "f1c6b38e0404770abebb203bf345e47da3f233b394af7efff51e8057a76199ee"
+    }
+  ],
+  "checks": [
+    {
+      "name": "ledger_snapshot",
+      "passed": 3,
+      "logSha256": "33ae01e22ac5988dd91eac5b9c46f62bb682b64f9cbff7c6a172d14d1f99970b",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s"
+    },
+    {
+      "name": "alpha_proposal",
+      "passed": 19,
+      "logSha256": "52aad354fa8fac110a9ea81911e18cfa320416e04fe05981d98265e3f3825efe",
+      "summary": "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s"
+    },
+    {
+      "name": "fundamental_policy",
+      "passed": 134,
+      "logSha256": "2af99584114eb53005b0272378499acbd5d546b0224247aff0324f8d4aa93737",
+      "summary": "test result: ok. 134 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 32.11s"
+    }
+  ],
+  "checkCount": 156,
+  "testProfile": "ARM64 Rust opt-level=1 fixture library; existing release dependencies with thin LTO test linking",
+  "productionDeployed": false,
+  "productionWorkerUnchanged": 1022216,
+  "extraAccountClients": 0,
+  "workerThroughputMeasured": false,
+  "profitabilityEstablished": false
+}

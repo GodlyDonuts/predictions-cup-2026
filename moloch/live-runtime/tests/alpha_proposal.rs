@@ -16,6 +16,21 @@ impl F{
  fn r(&self)->ReviewBounds{ReviewBounds{exchange_id:"101".into(),market_id:"201".into(),side:Side::Yes,review_sha256:"a".repeat(64),model_sha256:"b".repeat(64),source_sha256:"c".repeat(64),reviewed_at_ms:NOW-100,valid_until_ms:NOW+60000,horizon_ms:60000,expected_payout:600000,acquisition_ceiling:440000,maximum_principal:100_000_000,maximum_quantity:5,modes:vec![Mode::JoinBid,Mode::ImproveOneTick,Mode::BoundedLimitMayRest]}}
 }
 #[test]fn three_modes_use_actual_full_depth_without_claiming_fill_probability(){let f=F::new(json!({}));let head=f.b().durable_head();let report=f.b().engine().report().unwrap();let x=compare(f.b(),&f.scope,&f.r(),NOW).unwrap();assert_eq!(x.candidates.len(),3);let a=&x.candidates;assert_eq!((a[0].limit_price(),a[1].limit_price(),a[2].limit_price()),(400000,405000,430000));assert_eq!(a[0].immediate_acquisition_quantity(),0);assert_eq!(a[1].immediate_acquisition_quantity(),0);assert_eq!(a[2].immediate_acquisition_quantity(),5);assert_eq!(a[2].visible_acquisition_notional(),2*420000+3*430000);assert_eq!(a[2].gross_funding(),5*430000);assert_eq!(a[2].visible_liquidation_notional(),4*400000+395000);assert_eq!(a[2].conditional_forecast_surplus(),5*170000);assert!(a[2].provenance()["executionProbability"].is_null());assert_eq!(f.b().durable_head(),head);assert_eq!(f.b().engine().report().unwrap(),report);assert!(f.b().engine().fills().is_empty());}
+#[test]fn cached_comparison_preserves_original_report_digest_and_refreshes_after_real_book(){
+ use sha2::{Digest,Sha256};
+ let mut f=F::new(json!({}));let mut previous=None;
+ for (at,seq) in [(NOW,1),(NOW+1,2)]{
+  if seq>1{f.book(at,seq);}
+  let head=f.b().durable_head();let raw=std::fs::read(f.root.join("events.jsonl")).unwrap();
+  let expected=format!("{:x}",Sha256::digest(serde_json::to_vec(&f.b().engine().report().unwrap()).unwrap()));
+  if let Some(old)=previous{assert_ne!(old,expected);}
+  for _ in 0..3{
+   let x=compare(f.b(),&f.scope,&f.r(),at).unwrap();assert_eq!(x.candidates.len(),3);
+   for candidate in x.candidates{assert_eq!(candidate.provenance()["reportSha256"],expected);assert_eq!(candidate.provenance()["bankHead"],head);}
+  }
+  assert_eq!(f.b().durable_head(),head);assert_eq!(std::fs::read(f.root.join("events.jsonl")).unwrap(),raw);previous=Some(expected);
+ }
+}
 #[test]fn reviewed_ceiling_never_uses_deeper_expensive_asks(){let f=F::new(json!({}));let mut r=f.r();r.maximum_quantity=100;let c=compare(f.b(),&f.scope,&r,NOW).unwrap();let a=&c.candidates[2];assert_eq!(a.quantity(),5);assert_eq!(a.limit_price(),430000);}
 #[test]fn no_side_uses_complemented_depth_in_correct_order(){let f=F::new(json!({}));let mut r=f.r();r.side=Side::No;r.expected_payout=800000;r.acquisition_ceiling=610000;let x=compare(f.b(),&f.scope,&r,NOW).unwrap();assert_eq!(x.candidates[0].limit_price(),580000);assert_eq!(x.candidates[1].limit_price(),585000);assert_eq!(x.candidates[2].limit_price(),605000);assert_eq!(x.candidates[2].visible_acquisition_notional(),4*600000+605000);assert_eq!(x.candidates[2].action()["side"],"no");}
 #[test]fn funding_charges_entire_limit_not_weighted_visible_cost(){let f=F::new(json!({}));let mut r=f.r();r.maximum_principal=2_100_000;let x=compare(f.b(),&f.scope,&r,NOW).unwrap();let a=&x.candidates[2];assert_eq!(a.quantity(),4);assert_eq!(a.gross_funding(),1_720_000);assert!(a.gross_funding()<=r.maximum_principal);}

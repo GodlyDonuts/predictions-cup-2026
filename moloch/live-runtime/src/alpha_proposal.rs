@@ -73,12 +73,13 @@ pub fn compare(bank:&Session,scope:&Scope,r:&ReviewBounds,now:u64)->Result<Compa
  let(bids,asks)=if r.side==Side::Yes{(&b.yes_bids,&b.yes_asks)}else{(&b.no_bids,&b.no_asks)};
  let bid=bids.first().ok_or("ALPHA_DEPTH")?.price;
  let ask=asks.first().ok_or("ALPHA_DEPTH")?.price;
- let report=bank.engine().report()?;
+ let ledger=crate::ledger_snapshot::snapshot(bank)?;let report=ledger.value();
  let reserved=decimal_units(report["reservedCash"].as_str().ok_or("ALPHA_REPORT")?)?;
  let committed=decimal_units(policy["maximumCommitted"].as_str().ok_or("ALPHA_POLICY")?)?;
  let market_cap=decimal_units(policy["maximumMarketCost"].as_str().ok_or("ALPHA_POLICY")?)?;
  let mut market_used=bank.engine().wallet.market_cost(&r.exchange_id);
- for q in bank.engine().order_records().iter().filter(|q|q["exchangeId"]==r.exchange_id&&q["retired"]==false&&q["action"]=="buy"){
+ let orders=crate::order_snapshot::snapshot(bank);
+ for q in orders.records().iter().filter(|q|q["exchangeId"]==r.exchange_id&&q["retired"]==false&&q["action"]=="buy"){
   let quantity=q["quantity"].as_u64().ok_or("ALPHA_ORDER")?.checked_sub(q["filled"].as_u64().ok_or("ALPHA_ORDER")?).ok_or("ALPHA_ORDER")?;
   market_used=market_used.checked_add(times(decimal_units(q["price"].as_str().ok_or("ALPHA_ORDER")?)?,quantity)?).ok_or("ALPHA_RANGE")?;
  }
@@ -89,7 +90,7 @@ pub fn compare(bank:&Session,scope:&Scope,r:&ReviewBounds,now:u64)->Result<Compa
  let liquidation_capacity=bids.iter().try_fold(0u64,|n,l|n.checked_add(l.quantity).ok_or("ALPHA_RANGE"))?;
  let validity=r.valid_until_ms.min(b.source.received_ms.checked_add(age).ok_or("ALPHA_RANGE")?).min(b.observed_ms.checked_add(age).ok_or("ALPHA_RANGE")?);
  let review_bounds=json!({"marketId":r.market_id,"exchangeId":r.exchange_id,"side":if r.side==Side::Yes{"YES"}else{"NO"},"expectedPayout":r.expected_payout,"acquisitionCeiling":r.acquisition_ceiling,"maximumPrincipal":r.maximum_principal,"maximumQuantity":r.maximum_quantity,"modes":r.modes,"horizonMs":r.horizon_ms,"validUntilMs":r.valid_until_ms});
- let provenance=json!({"bankHead":bank.durable_head(),"reportSha256":hash(&report)?,"scopeSha256":hash(scope)?,"bookSha256":b.source.sha256,"reviewSha256":r.review_sha256,"modelSha256":r.model_sha256,"sourceSha256":r.source_sha256,"reviewBounds":review_bounds,"reviewedAtMs":r.reviewed_at_ms,"decisionAtMs":now,"bookObservedMs":b.observed_ms,"bookReceivedMs":b.source.received_ms,"executionProbability":null,"valuationBasis":"operator_reviewed_conditional_forecast","venuePostOnly":false,"venueAllOrNone":false});
+ let provenance=json!({"bankHead":bank.durable_head(),"reportSha256":ledger.sha256(),"scopeSha256":hash(scope)?,"bookSha256":b.source.sha256,"reviewSha256":r.review_sha256,"modelSha256":r.model_sha256,"sourceSha256":r.source_sha256,"reviewBounds":review_bounds,"reviewedAtMs":r.reviewed_at_ms,"decisionAtMs":now,"bookObservedMs":b.observed_ms,"bookReceivedMs":b.source.received_ms,"executionProbability":null,"valuationBasis":"operator_reviewed_conditional_forecast","venuePostOnly":false,"venueAllOrNone":false});
  let mut out=Comparison{candidates:vec![],deferred:vec![]};
  for mode in &r.modes{
   let fail=|out:&mut Comparison,reason|out.deferred.push(Deferred{mode:*mode,reason});

@@ -12,6 +12,7 @@ fn bank(name:&str)->(PathBuf,Session){
 #[test]fn actual_session_full_report_is_shared_without_mutating_any_original(){
  let(root,bank)=bank("original");let head=bank.durable_head();let original=fs::read(root.join("events.jsonl")).unwrap();
  let first=ledger_snapshot::snapshot(&bank).unwrap();assert_eq!(first.value().as_ref(),&bank.engine().report().unwrap());
+ use sha2::{Digest,Sha256};assert_eq!(first.sha256(),format!("{:x}",Sha256::digest(serde_json::to_vec(&bank.engine().report().unwrap()).unwrap())));
  for _ in 0..10{let other=ledger_snapshot::snapshot(&bank).unwrap();assert!(Arc::ptr_eq(&first,&other));assert!(Arc::ptr_eq(first.value(),other.value()));assert!(other.validate_current(&bank));}
  assert_eq!(bank.durable_head(),head);assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),original);
  drop(bank);fs::remove_dir_all(root).unwrap();
@@ -28,6 +29,7 @@ fn bank(name:&str)->(PathBuf,Session){
  let tick=json!({"type":"tick","receivedAt":"2026-10-15T00:00:00.001Z"});first_bank.accept("ticks",1,&tick).unwrap();
  assert!(!old.validate_current(&first_bank));let new=ledger_snapshot::snapshot(&first_bank).unwrap();assert!(!Arc::ptr_eq(&old,&new));
  assert_eq!(new.value().as_ref(),&first_bank.engine().report().unwrap());
+ use sha2::{Digest,Sha256};assert_eq!(new.sha256(),format!("{:x}",Sha256::digest(serde_json::to_vec(&first_bank.engine().report().unwrap()).unwrap())));
  let(other_root,other)=bank("other");assert!(!new.validate_current(&other));let different=ledger_snapshot::snapshot(&other).unwrap();assert!(!Arc::ptr_eq(&new,&different));
  assert!(!first_bank.accept("ticks",1,&tick).unwrap());assert!(new.validate_current(&first_bank));
  drop(first_bank);drop(other);fs::remove_dir_all(root).unwrap();fs::remove_dir_all(other_root).unwrap();
