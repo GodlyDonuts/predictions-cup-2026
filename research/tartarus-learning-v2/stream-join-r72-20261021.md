@@ -8,4 +8,4 @@ The same12second waiting window remains bounded. Typed socket failures, subscrip
 
 Five focused checks cover frame ordering, original timestamps, unconsumed post-JOIN frames, bounded missing acknowledgments, rejected/protocol failures, transient socket failure and both message/byte overflow. The worker uses the unchanged R71 native and runtime libraries; no new financial-engine bridge is needed. The optimized ARM64 worker builds and its CLI loads. Exact staged worker/helper source hashes match the isolated build. [Qualification and original startup failure](r72-stream-join-qualified-20261021.json).
 
-R71's452original fills and financial balances are unchanged. Current live production is stopped; fresh replacement trading and version3 recurring review activation remain pending. This repair does not establish profitability.
+R71's452original fills and financial balances are unchanged. R72 was installed at20:16:38UTC as worker1031505 and is restoring the same ledger. Fresh replacement trading and version3 recurring review activation remain pending. [Installation](r72-stream-join-installed-20261021.json). This repair does not establish profitability.

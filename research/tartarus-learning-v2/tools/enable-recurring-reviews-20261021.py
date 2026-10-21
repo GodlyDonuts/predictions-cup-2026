@@ -1,4 +1,4 @@
-"""Opt fresh R71 reviews into recurring acquisition through the existing worker.
+"""Opt fresh reviews into recurring acquisition through the verified worker.
 
 Requires verified fresh startup and the existing reference updater's quiet
 boundary. The same updater resumes with durable pending metadata, including
@@ -7,6 +7,7 @@ after an uncertain local-channel outcome. No account client is constructed.
 from pathlib import Path
 from datetime import datetime, timezone
 import fcntl
+import argparse
 import hashlib
 import json
 import os
@@ -30,10 +31,9 @@ def put(path, value):
         os.fsync(stream.fileno())
     os.replace(temporary, path)
 
-def main():
+def main(config_path):
     deployment = json.loads((H / 'deployment.public.json').read_bytes())
     live = json.loads((H / 'fresh-live.public.json').read_bytes())
-    config_path = F / 'config-r71.json'
     config = json.loads(config_path.read_bytes())
     assert live['pid'] == config['workerPid'] == deployment['pid']
     assert live['fullOriginalPrefixVerified'] and live['originalFillsUnchanged']
@@ -118,7 +118,7 @@ def main():
                 monetaryCapsLimiterAndWindowsChanged=False, accountClientsCreated=0)
     finally:
         if not updater.exists():
-            log_path = F / ('r71-updater-resumed-' + str(time.time_ns()) + '.log')
+            log_path = F / ('recurring-updater-resumed-' + str(time.time_ns()) + '.log')
             with log_path.open('x') as log:
                 child = subprocess.Popen(['python3', '-u', str(UPDATER), '--config', str(config_path)], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             (H / 'reference-updater-resumed.json').write_text(json.dumps(dict(pid=child.pid, log=str(log_path), at=datetime.now(timezone.utc).isoformat())))
@@ -128,4 +128,9 @@ def main():
     print(json.dumps(result))
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--release-dir', type=Path, default=H)
+    parser.add_argument('--reference-config', type=Path, default=F / 'config-r71.json')
+    args = parser.parse_args()
+    H = args.release_dir
+    main(args.reference_config)

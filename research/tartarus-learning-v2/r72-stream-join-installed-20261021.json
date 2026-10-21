@@ -1,0 +1,38 @@
+{
+  "observedUtc": "2026-10-21T20:16:38.751565+00:00",
+  "sourceCommit": "79e918e1c6b7b01fe3560266526ce260364bc2e0",
+  "binarySha256": "1cf47b2ae83388c6f4b3d9f3a69b5772ef5755255204ca4de6762fb850fb4d00",
+  "originalFills": 452,
+  "originalNativeHead": {
+    "hash": "004af35864a59e184b3faeb71ac18f6a71d15a21afc371d31c2bd53b6b2b7822",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "5bd9f8f61402f7b7124e5cef36833ef7d26e5e37c665352afab75483badab18f",
+    "sequence": 777966
+  },
+  "originalReportHash": "6461f0d958618333f35d647fda9609f5114844fd3bd752bb9d79100a1fda4d4a",
+  "bridgeSha256": "93d1c5194b9e85c92cc43fec761ae85d59aea8419a01435795e74f05eda435d3",
+  "nativeEngineUnchanged": true,
+  "runtimeLibraryUnchanged": true,
+  "originalFinancialStatePreserved": true,
+  "knownOpenOrders": [
+    20292
+  ],
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "recurringReviewsOptedIn": false,
+  "phase": "restoring_original_ledger",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r72-stream-join-20261021T201633Z",
+  "originalFinancialPrefix": {
+    "bytes": 2564024854,
+    "sha256": "e98276ad6976e51482b44be515ee29542acdf018881f1e26fea503360f07d65c"
+  },
+  "controlSha256": "a7a6dcacf0d808989167fed7a9bca860c4592b3b59fe65df4cb97f98c31ba67f",
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "pid": 1031505,
+  "startTicks": 58345276,
+  "referenceUpdaterPid": 1031508,
+  "actualExecutableAndArgumentsVerified": true
+}

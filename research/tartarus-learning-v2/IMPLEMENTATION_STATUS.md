@@ -1,8 +1,8 @@
-# Tartarus implementation status — October21,20:14UTC
+# Tartarus implementation status — October21,20:18UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
-R71 stopped at 20:06:41 UTC after original-ledger restoration with `LIVE_STREAM_JOIN_FAILED`; it did not reach fresh trading. The old worker discarded the specific startup cause. Source inspection found that public market broadcasts may legally arrive between market and private-account JOIN acknowledgments, while the worker required its first message to be the combined JOIN. R72 buffers those messages until both channels join, records typed failure reasons and retries transient subscription failures through the existing persisted connection budget. Five focused checks and the optimized replacement build pass; installation is next. Native engine, original452fills and financial state are unchanged. Repeat-entry version3 opt-in is still pending. [Repair and evidence](stream-join-r72-20261021.md).
+R72 was installed at20:16:38UTC as sole worker1031505/startTicks58345276, binary1cf47b2ae833 and controla7a6dcacf0d8. It is restoring the original ledger; fresh R72 trading and version3 recurring review activation remain pending. The native/runtime libraries and all24engine approvals are unchanged. All452fills, original financial balances and the2,564,024,854-byte journal prefix are preserved. [Exact installation](r72-stream-join-installed-20261021.json).
 
 ## Running and queued work
 
