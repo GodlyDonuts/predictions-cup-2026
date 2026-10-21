@@ -490,18 +490,25 @@ class ApiEpisode(PreparedEpisode):
             if write and self.budget.unknown:return False
             return self.budget.ready_at(self.now,write)<=self.now
         read_ready,write_ready=ready(False),ready(True)
+        from .managed_data_service import INTENT_PROFILE
+        raw_intents=(getattr(self,'managed_data_profile',None)==INTENT_PROFILE
+                     and not self.budget.poisoned and not self.budget.unknown)
+        # Availability of a local request is distinct from network admission.
+        # A raw intent can return BUSY/RATE_WAIT and ask the managed reader to
+        # yield. Dispatch still enforces the same queue, pacing and caps.
+        read_request=read_ready or raw_intents;write_request=write_ready or raw_intents
         builder_size=len(self.builder)
         from .feature_cache import identity,log_quantity,book_statistics,entity_identities
         features[:,33:40]=entity_identities(self,entities)
         for i,(kind,key)in enumerate(entities):
             if kind=='global':
                 masks['family'][i,[0,11]]=True
-                if write_ready:
+                if write_request:
                     masks['family'][i,4]=True
                     if 1<=builder_size<=50:masks['family'][i,7]=True
                     if 1<=builder_size<=10:masks['family'][i,[8,9]]=True
             elif kind=='contract':
-                if write_ready:masks['family'][i,[1,2,4]]=True
+                if write_request:masks['family'][i,[1,2,4]]=True
                 if builder_size<50:masks['family'][i,[5,6]]=True
                 q=self.actor_books.get(key)
                 if q is not None:
@@ -518,12 +525,12 @@ class ApiEpisode(PreparedEpisode):
                 features[i,16:24]=self.flow.observe(key,self.now)
                 features[i,24]=1.
             elif kind=='market':
-                masks['family'][i,4]=write_ready;features[i,24]=2.
+                masks['family'][i,4]=write_request;features[i,24]=2.
             elif kind=='relationship':
-                if write_ready and 1<=builder_size<=10:masks['family'][i,[8,9]]=True
+                if write_request and 1<=builder_size<=10:masks['family'][i,[8,9]]=True
                 features[i,24]=3.
             elif kind=='order':
-                masks['family'][i,3]=write_ready;o=self.known_orders[key]
+                masks['family'][i,3]=write_request;o=self.known_orders[key]
                 features[i,25:30]=[1.,log_quantity(o.remaining),(o.spec.price or 0)/UNIT,
                                    float(o.spec.side=='YES'),float(o.spec.action=='BUY')]
             elif kind=='stream_control':
@@ -552,7 +559,7 @@ class ApiEpisode(PreparedEpisode):
                 features[i,24]=7.
                 features[i,33:40]=identity('contract',ex)
             else:
-                masks['family'][i,10]=((write_ready if key[1][0]=='realtime_token'else read_ready)
+                masks['family'][i,10]=((write_request if key[1][0]=='realtime_token'else read_request)
                     if key[0]=='SIG'else self.now>=self.external_ready[key[0]])
                 features[i,30+('SIG','Kalshi','Polymarket').index(key[0])]=1.
                 if key[0]=='SIG'and key[1][0]=='trade_flow':

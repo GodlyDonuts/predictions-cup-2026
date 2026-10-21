@@ -8,11 +8,12 @@ the background service competes for that slot.
 import math
 
 PROFILE='model_pausable_book_reference_service_v1'
+INTENT_PROFILE='model_pausable_raw_intents_service_v2'
 EVENT='managed_market_data_poll'
 
 
 def profile(value):
-    if value not in(None,PROFILE)or type(value)not in(type(None),str):
+    if value not in(None,PROFILE,INTENT_PROFILE)or type(value)not in(type(None),str):
         raise ValueError('EXPLICIT_MANAGED_DATA_PROFILE')
     return value
 
@@ -21,7 +22,7 @@ def specification(value):
     if value is None:return None
     if(not isinstance(value,dict)or not {'profile','initially_enabled'}<=set(value)
             or set(value)-{'profile','initially_enabled','finance_period_ms'}
-            or profile(value['profile'])!=PROFILE or type(value['initially_enabled'])is not bool):
+            or profile(value['profile'])not in(PROFILE,INTENT_PROFILE)or type(value['initially_enabled'])is not bool):
         raise ValueError('EXPLICIT_MANAGED_DATA_CONFIGURATION')
     period=value.get('finance_period_ms')
     if period is not None and(type(period)is not int or period<1):raise ValueError('EXPLICIT_POSITIVE_FINANCE_READ_PERIOD')
@@ -50,7 +51,7 @@ class ManagedDataService:
         self.original_action=env.act_raw;self.original_remember=env._remember
         env.request_observation=self.request;env.dispatch=self.dispatch
         env.act_raw=self.action;env._remember=self.remember
-        env.managed_data_service=self;env.managed_data_profile=PROFILE
+        env.managed_data_service=self;env.managed_data_profile=config['profile']
         if self.enabled:
             for venue in self.pending:self.queue(venue,env.now)
 

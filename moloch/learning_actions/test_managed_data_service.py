@@ -2,7 +2,7 @@
 import tempfile,unittest
 from pathlib import Path
 import torch
-from .managed_data_service import ManagedDataService,PROFILE,advance_alarm,specification
+from .managed_data_service import ManagedDataService,PROFILE,INTENT_PROFILE,advance_alarm,specification
 from .test_actions import environment
 from .contract import UNIT
 from .policy import ApiPolicy
@@ -24,6 +24,38 @@ def action(env,family,kind='global',patience=0,clock=0.):
 
 class ManagedDataTests(unittest.TestCase):
     def setUp(self):torch.set_num_threads(1);torch.manual_seed(112)
+
+    def test_raw_intent_can_reserve_foreground_turn_without_early_network_admission(self):
+        e=environment();e.budget=RateBudget(BudgetConfig(100,600,24,2500,'a'*64))
+        s=ManagedDataService(e,{'profile':INTENT_PROFILE,'initially_enabled':True});e.advance(1)
+        o=e.observe();i=o['entities'].index(('contract','x'));self.assertTrue(o['masks']['family'][i,1])
+        a={'family':1,'market':i,'side':0,'price':90,'patience':0,'target_fraction':0.,'child_fraction':0.}
+        e.advance(12);self.assertEqual(e.act_raw(a,o)['status'],'BUSY')
+        self.assertEqual(len(e.budget.reads),1);self.assertFalse(e.budget.writes)
+        e.advance(701);self.assertTrue(s.waiting_actor);self.assertEqual(s.requests['SIG'],1)
+        o=e.observe();a['market']=o['entities'].index(('contract','x'));e.advance(712)
+        self.assertEqual(e.act_raw(a,o)['status'],'IN_FLIGHT');self.assertEqual(len(e.budget.writes),1)
+        e.advance(e.busy_until);self.assertEqual(len(e.api_fills),1);self.assertEqual(s.requests['SIG'],1)
+
+    def test_ready_only_profile_remains_masked_while_raw_intents_preserve_stops(self):
+        old=environment();install(old);old.advance(1);o=old.observe();i=o['entities'].index(('contract','x'))
+        self.assertFalse(o['masks']['family'][i,1])
+        for poison in(False,True):
+            e=environment();ManagedDataService(e,{'profile':INTENT_PROFILE,'initially_enabled':True})
+            if poison:e.budget.poisoned=True
+            else:e.budget.unknown.add('uncertain')
+            o=e.observe();i=o['entities'].index(('contract','x'));self.assertFalse(o['masks']['family'][i,1])
+            self.assertFalse(e.budget.writes)
+
+    def test_new_intent_law_is_explicit_in_checkpoint_and_behavior_contract(self):
+        e=environment();ManagedDataService(e,{'profile':INTENT_PROFILE,'initially_enabled':True})
+        m=ApiPolicy(16);m.managed_data_profile=PROFILE
+        with self.assertRaisesRegex(ValueError,'MANAGED_DATA_MISMATCH'):matching(e,m)
+        old=contract(m);m.managed_data_profile=INTENT_PROFILE;matching(e,m)
+        self.assertNotEqual(contract(m),old)
+        with tempfile.TemporaryDirectory()as d:
+            p=Path(d)/'model.pt';pin=save_checkpoint(p,m,torch.optim.Adam(m.parameters()),dataset_manifest_sha256='a'*64,split_specification_sha256='b'*64)
+            loaded,_=load_checkpoint(p,pin,'cpu');self.assertEqual(loaded.managed_data_profile,INTENT_PROFILE)
 
     def test_no_free_book_until_original_paid_receipt_and_no_financial_change(self):
         e=environment();cash=e.cash;s=install(e);self.assertFalse(e.actor_books)
