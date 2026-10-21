@@ -1,0 +1,54 @@
+{
+  "observedUtc": "2026-10-21T19:34:45.294432+00:00",
+  "baseRelease": "R70 plus checked immutable report cache cbd84fcc",
+  "sourceChanges": [
+    {
+      "path": "moloch/live-runtime/src/fundamental_policy.rs",
+      "beforeSha256": "54d90f31937be780383a661c72d916f575bb65cd62a76f2dfb61e4f4ae4eb0ec",
+      "afterSha256": "9a4388a15f153ce6cad158fda77bb04dfba945a2123288626d4260adf2e0d17f"
+    },
+    {
+      "path": "moloch/live-runtime/tests/fundamental_policy.rs",
+      "beforeSha256": "6bcd3cd666fc56ab7a1ebff20bc91f526baafaab6ce7b6faf1541fb9cfa31a01",
+      "afterSha256": "cc907583f025661c531f517faaa08242b9bcf8c9127bd51710f2b98b4fc24454"
+    },
+    {
+      "path": "moloch/native/src/reviewed_fundamental_entry.rs",
+      "beforeSha256": "11dbe0adb9785341ff38a2059d54cc348ae7310f172bfe9793b038929c7599b5",
+      "afterSha256": "bccec114b30d8ce1926ab91da2cbe381741ae208b595a51e6f95cdd813689b57"
+    },
+    {
+      "path": "moloch/native/src/reviewed_inventory_exit.rs",
+      "beforeSha256": "6341c9492aba48fa7418d6aff9e4ce301ae11dac4d92a822f5e756ad2913bfbb",
+      "afterSha256": "18945338994344c2905fd167d0ecce0f7e888dd205e1949e45a420705179acfb"
+    }
+  ],
+  "checks": [
+    {
+      "name": "fundamental_policy",
+      "summary": "test result: ok. 137 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 74.31s",
+      "logSha256": "cbb7b52409fceb46b328ffac92d1169ccb67caa6f29cdd3473c106b653c860c0"
+    },
+    {
+      "name": "ledger_snapshot",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s",
+      "logSha256": "9db0ae8bf80f726d06d84299aaff597062e98d2a0df5f56a5f71488e0e68db77"
+    },
+    {
+      "name": "alpha_proposal",
+      "summary": "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.97s",
+      "logSha256": "ee5f51235cf8f72a1c7131483716d814f930b907f36b162c6bae0de16cb16877"
+    }
+  ],
+  "focusedChecksPassed": 159,
+  "recurringPartialAndFlatRoundTripPassed": true,
+  "originalCashFifoTagsPreserved": true,
+  "unknownOpenOrChangedPriorOrderRejected": true,
+  "productionChanged": false,
+  "releaseBuildPending": true,
+  "limitations": [
+    "Version3 is explicit opt-in; existing version1 and inherited version2 behavior remains.",
+    "Existing monetary, quantity and maximumEntries limits remain; this is not unlimited lifetime turnover.",
+    "Paper fixture profits do not establish production ROI."
+  ]
+}

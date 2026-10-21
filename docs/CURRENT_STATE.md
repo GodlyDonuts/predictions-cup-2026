@@ -1,10 +1,12 @@
 # Current Moloch and Tartarus state
 
-Observed October21,19:17UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October21,19:35UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
-R70 is verified in its live trading loop at19:16:28 as sole PID1022216/startTicks57865921, binary80c6094916c7 and controlbd54be2f1a9e. Realtime is healthy, STOP absent, and original pending order20260 has reconciled terminal:1675 acknowledged/1675 terminal orders,433 original fills. Independent file-only verification confirms every original fill and the complete2,552,479,691-byte financial prefix. The237-exchange capacity revision is active. No additional R70 fill or increased turnover is yet established. [Fresh live proof](../research/tartarus-learning-v2/r70-fresh-live-20261021.json).
+R70 remains live as sole PID1022216/startTicks57865921, binary80c6094916c7 and controlbd54be2f1a9e. At19:30 the ledger has452fills:19 new official receipts across three sell orders since startup. They sold14,762shares and realized-105.925SUSQies combined. Today UTC has11distinct filled orders. The original433fills, full starting2.552GB financial prefix and remaining FIFO are verified. The237-exchange capacity revision is active. [Fresh startup proof](../research/tartarus-learning-v2/r70-fresh-live-20261021.json), [new official receipts and exact FIFO](../research/tartarus-learning-v2/r70-recurring-sales-20261021.json).
+
+A concrete repeat-trading blocker affects all12currently refreshed non-inherited cohorts: version1 top-ups prohibit another buy after an exit binding, and after becoming flat. Explicit version3 supports partial-sale and flat re-entry without resetting history.159focused checks pass; the optimized release is building and is NOT deployed. Existing R70 keeps trading. [Implementation, measured sales and limits](../research/tartarus-learning-v2/recurring-cohort-20261021.md).
 
 R69 had stopped18:43:28 before native replay/orders because its152,404,846-byte upgrade chain exceeded a128MiB parser bound; deployment omitted that size check. R70 raises the engineering bound to256MiB, moves parsed entries and verifies seals by reference.131 native checks pass. The actual22-entry152MB chain passed in9.39s/1.63GiB peak; the final23-entry202MB chain passed in12.03s. All original approvals, including failed R69's, are preserved. Only Session parsing differs from R69's289-source build; all financial engine rules remain unchanged. [Exact qualification](../research/tartarus-learning-v2/r70-history-bound-qualified-20261021.json).
 
@@ -16,14 +18,14 @@ R69 keeps the R68 stream repairs, adds shared immutable review maps and direct s
 
 The reference updater's expired request228844cf was bound to the confirmed-dead R68 process and absent from the original committed cohort journal. Its metadata was resolved under exclusive owner/updater locks, preserving the request and active generation38; no account request, forecast adoption or financial mutation occurred. Updater1022219 now follows R70. [Resolution evidence](../research/tartarus-learning-v2/r68-reference-resolution-20261021.json).
 
-Last reconciled native financial state:
+Last reconciled native financial state,19:30:20UTC:
 
 | Measure | SUSQies |
 |---|---:|
-| Cash | 17,283.635 |
-| Remaining attributed position cost | 78,470.845 |
-| Total attributed realized gross | 174.565 |
-| New-trading portion | 98.045 |
+| Cash | 24,455.475 |
+| Remaining attributed position cost | 71,193.080 |
+| Total attributed realized gross | 68.640 |
+| New-trading portion | -7.880 |
 | Unchanged inherited realized portion | 76.52 |
 
 The latest18:56:58 official observation reports77,425.20 marked position value plus17,283.635 cash =94,708.835, down5,291.165 or5.291165% from the100,000 start. These marks are not executable liquidation proceeds. Today UTC has37 fill receipts across8 distinct filled orders through the last reconciled ledger. The97,000 deadline was missed; no whole-account profit is established. [Latest official aggregates](../research/tartarus-learning-v2/r70-latest-account-20261021.json).

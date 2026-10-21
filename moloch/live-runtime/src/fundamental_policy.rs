@@ -153,7 +153,7 @@ pub struct ReviewInput {
 pub fn review_sha256(input:&ReviewInput)->Result<String>{digest(input)}
 fn structure(r:&ReviewInput)->Result<i128>{
     if let Some(p)=&r.passive_value_exit{if let Some(PassivePricingObjective::FifoProfitTurnover{minimum_net_gain})=&p.pricing_objective{need(r.version==2&&r.existing_origin.is_none()&&(5000..=UNIT).contains(&amount(minimum_net_gain)?),"FUNDAMENTAL_FIFO_PROFIT_POLICY")?;}need(p.version==1&&(r.existing_origin.is_some()||r.version==2)&&p.maximum_quantity>0&&p.maximum_quantity<=r.maximum_quantity,"FUNDAMENTAL_PASSIVE_EXIT_POLICY")?;}
-    if let Some(p)=&r.same_side_top_ups{need(((p.version==1&&r.existing_origin.is_none())||(p.version==2&&r.existing_origin.is_some()))&&(2..=16).contains(&p.maximum_entries)&&r.version==2,"FUNDAMENTAL_TOP_UP_POLICY")?;}
+    if let Some(p)=&r.same_side_top_ups{need(((matches!(p.version,1|3)&&r.existing_origin.is_none())||(p.version==2&&r.existing_origin.is_some()))&&(2..=16).contains(&p.maximum_entries)&&r.version==2,"FUNDAMENTAL_TOP_UP_POLICY")?;}
     if let Some(p)=&r.execution_policy{need(p.version==1&&!p.allowed_modes.is_empty()&&p.allowed_modes.len()<=3,"FUNDAMENTAL_EXECUTION_POLICY")?;
         for(i,m)in p.allowed_modes.iter().enumerate(){need(!p.allowed_modes[..i].contains(m),"FUNDAMENTAL_DUPLICATE_EXECUTION_MODE")?;}}
 
@@ -480,7 +480,7 @@ impl EntryPlan{
         no_existing_liability(bank,log,&self.review.exchange_id)?;
         if let Some(p)=self.event.get("sameSideTopUp"){
             need(digest(&bank.engine().wallet.positions()[&self.review.exchange_id])?==p["positionsSha256"]
-                &&p["heldQuantity"].as_u64().is_some_and(|n|n>0)&&bank.engine().wallet.quantity(&self.review.exchange_id,if self.review.side=="YES"{Side::Yes}else{Side::No})==p["heldQuantity"].as_u64().unwrap(),"FUNDAMENTAL_TOP_UP_POSITION_CHANGED")
+                &&p["heldQuantity"].as_u64().is_some_and(|n|n>0||p["version"]==3)&&bank.engine().wallet.quantity(&self.review.exchange_id,if self.review.side=="YES"{Side::Yes}else{Side::No})==p["heldQuantity"].as_u64().unwrap(),"FUNDAMENTAL_TOP_UP_POSITION_CHANGED")
         }else{need(bank.engine().wallet.quantity(&self.review.exchange_id,Side::Yes)==0&&bank.engine().wallet.quantity(&self.review.exchange_id,Side::No)==0,"FUNDAMENTAL_ENTRY_NOT_FLAT")}
     }
 }
@@ -896,7 +896,7 @@ impl Cohorts{
                 ||bank.engine().fills().iter().any(|f|f["orderId"]==b.qid)||bank.engine().wallet.quantity(ex,Side::Yes)!=0||bank.engine().wallet.quantity(ex,Side::No)!=0{continue}
             out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});
         }
-        for(ex,c)in &self.cohorts{if self.rank_paused(ex){continue}if c.existing.is_none()&&!c.exits.is_empty(){continue}for b in c.top_ups.values(){
+        for(ex,c)in &self.cohorts{if self.rank_paused(ex){continue}if c.existing.is_none()&&!c.exits.is_empty()&&!self.policies[ex].same_side_top_ups.as_ref().is_some_and(|p|p.version==3){continue}for b in c.top_ups.values(){
             if !c.retired_top_ups.contains_key(&b.qid)&&log.never_attempted(b.qid)&&!bank.engine().live_order_bindings().contains_key(&b.qid)
                 &&!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid){out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});}
         }}Ok(out)
@@ -1007,11 +1007,11 @@ impl Cohorts{
     /// allow_drafts is read-hint only; a plan/bind requires no other reservation.
     fn top_up_state(&self,bank:&Session,log:&DispatchLog,ex:&str,current_qid:Option<u64>,allow_drafts:bool)->Result<Option<Value>>{
         if self.rank_paused(ex){return Ok(None)}let r=&self.policies[ex];let Some(p)=&r.same_side_top_ups else{return Ok(None)};let Some(c)=self.cohorts.get(ex)else{return Ok(None)};
-        if (c.existing.is_none()&&(c.entry.is_none()||!c.exits.is_empty()))||(c.existing.is_some()&&!bank.engine().managed_inventory_planning_excludes(ex))||current_qid.is_some()&&current_qid==c.entry_id(){return Ok(None)}
+        if (c.existing.is_none()&&(c.entry.is_none()||(!c.exits.is_empty()&&p.version!=3)))||(c.existing.is_some()&&!bank.engine().managed_inventory_planning_excludes(ex))||current_qid.is_some()&&current_qid==c.entry_id(){return Ok(None)}
         let prior:Vec<_>=c.entries().filter(|b|Some(b.qid)!=current_qid&&!c.retired_top_ups.contains_key(&b.qid)).collect();if (prior.is_empty()&&c.existing.is_none())||prior.len()+usize::from(c.existing.is_some())>=p.maximum_entries as usize||(c.top_ups.len()>=128&&!current_qid.is_some_and(|id|c.top_ups.contains_key(&id))){return Ok(None)}
         let owned=self.owned(bank,ex,c)?;let cost=bank.engine().wallet.market_cost(ex);
-        if owned==0||owned>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
-        let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_TOP_UP_FIFO_CHANGED")?;
+        if (owned==0&&p.version!=3)||owned>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
+        let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots||(p.version==3&&owned==0&&lots.as_array().is_some_and(Vec::is_empty)&&bank.engine().wallet.positions()[ex][&r.side].is_null()),"FUNDAMENTAL_TOP_UP_FIFO_CHANGED")?;
         let snapshot=crate::order_snapshot::snapshot(bank);let orders=snapshot.records();let mut proof=Vec::new();
         if prior.iter().any(|b|!log.attempted.contains(&b.qid)||!log.closed.contains(&b.qid)||!log.acknowledgments.contains_key(&b.qid)){return Ok(None)}
         let wanted=prior.iter().map(|b|b.qid).collect();let records=self.original_closed_records(log,&wanted)?.0;
@@ -1033,6 +1033,11 @@ impl Cohorts{
         if orders.iter().any(|q|q["exchangeId"]==ex&&q["id"].as_u64()!=current_qid&&q["id"].as_u64().is_some_and(|id|physical_pending(bank,log,id))){return Ok(None)}
         if bank.engine().package_blocks_submissions()||bank.engine().package_records().as_array().ok_or("FUNDAMENTAL_PACKAGE_RECORDS")?.iter().any(|p|p["phase"]!="no_execution"&&p["protectionReleased"]!=true&&(p["legs"].as_array().is_some_and(|ls|ls.iter().any(|l|l["exchangeId"]==ex))||p["portfolio"]["componentExchanges"].as_array().is_some_and(|ls|ls.iter().any(|l|l==ex)))){return Ok(None)}
         let mut original=c.clone();if let Some(id)=current_qid{original.top_ups.remove(&id);}
+        if p.version==3{
+            need(c.existing.is_none()&&bank.engine().managed_inventory_planning_excludes(ex),"FUNDAMENTAL_RECURRING_COHORT")?;
+            let Some(origin)=self.cohort_exit_origin(bank,log,ex,&original)?else{return Ok(None)};
+            return Ok(Some(json!({"version":3,"cohortSha256":digest(&original)?,"positionsSha256":digest(&bank.engine().wallet.positions()[ex])?,"heldQuantity":owned,"heldCost":money(cost),"cohortOrigin":origin,"maximumEntries":p.maximum_entries,"maximumTotalQuantity":r.maximum_quantity})))
+        }
         if c.existing.is_some(){
             let Some(origin)=self.cohort_exit_origin(bank,log,ex,&original)?else{return Ok(None)};
             return Ok(Some(json!({"version":2,"cohortSha256":digest(&original)?,"positionsSha256":digest(&bank.engine().wallet.positions()[ex])?,"heldQuantity":owned,"heldCost":money(cost),"priorEntries":proof,"priorExits":origin["exits"],"inheritedOrigin":origin["inheritedOrigin"],"maximumEntries":p.maximum_entries,"maximumTotalQuantity":r.maximum_quantity})))
@@ -1085,9 +1090,9 @@ impl Cohorts{
         // plan/closure authority. prepare_entry independently proves closures.
         let (held,held_cost)=if let Some(c)=self.cohorts.get(&r.exchange_id){
             let Some(p)=&r.same_side_top_ups else{return Ok(None)};
-            if (c.existing.is_none()&&!c.exits.is_empty())||c.entries().filter(|b|!c.retired_top_ups.contains_key(&b.qid)).count()+usize::from(c.existing.is_some())>=p.maximum_entries as usize||c.top_ups.len()>=128{return Ok(None)}
+            if (c.existing.is_none()&&!c.exits.is_empty()&&p.version!=3)||c.entries().filter(|b|!c.retired_top_ups.contains_key(&b.qid)).count()+usize::from(c.existing.is_some())>=p.maximum_entries as usize||c.top_ups.len()>=128{return Ok(None)}
             let held=self.owned(bank,&r.exchange_id,c)?;let cost=bank.engine().wallet.market_cost(&r.exchange_id);
-            if held==0||held>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
+            if (held==0&&p.version!=3)||held>=r.maximum_quantity||cost>=amount(&r.maximum_principal)?{return Ok(None)}
             (held,cost)
         }else{if bank.engine().wallet.quantity(&r.exchange_id,Side::Yes)!=0||bank.engine().wallet.quantity(&r.exchange_id,Side::No)!=0{return Ok(None)}(0,0)};
         let ceiling=structure(r)?.min(UNIT-5000);if ceiling<5000{return Ok(None)}
@@ -1235,7 +1240,7 @@ impl Cohorts{
         // its original resolution requirements instead of minting an exit
         // which the unchanged physical pending-entry gate cannot dispatch.
         if c.pending_entry(log){return Ok(None)}
-        let r=&self.policies[ex];let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots,"FUNDAMENTAL_EXIT_FIFO_CHANGED")?;
+        let r=&self.policies[ex];let lots=self.cohort_lots(bank,ex,c)?;need(bank.engine().wallet.positions()[ex][&r.side]==lots||(lots.as_array().is_some_and(Vec::is_empty)&&bank.engine().wallet.quantity(ex,if r.side=="YES"{Side::Yes}else{Side::No})==0&&bank.engine().wallet.positions()[ex][&r.side].is_null()),"FUNDAMENTAL_EXIT_FIFO_CHANGED")?;
         let snapshot=crate::order_snapshot::snapshot(bank);let records=snapshot.records();let mut bindings=Vec::new();
         for b in c.entries().chain(c.exits.values()).chain(c.rank_trades.values()){
             if !bank.engine().live_order_bindings().contains_key(&b.qid){need(log.never_attempted(b.qid)||log.proved_no_network(b.qid)||log.exposure_resolved(b.qid),"FUNDAMENTAL_EXIT_UNKNOWN_BINDING")?;need(!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid),"FUNDAMENTAL_EXIT_UNBOUND_FILL")?;continue}
@@ -1379,7 +1384,7 @@ impl Cohorts{
                 let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let r=self.policies.get(ex).ok_or("FUNDAMENTAL_REVIEW_MISSING")?;
                 let p=r.same_side_top_ups.as_ref().ok_or("FUNDAMENTAL_TOP_UP_NOT_APPROVED")?;let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
                 let b:Binding=serde_json::from_value(event["binding"].clone())?;
-                need(((c.entry.is_some()&&c.existing.is_none()&&c.exits.is_empty())||(c.existing.is_some()&&p.version==2&&event["proof"]["version"]==2))&&c.entries().filter(|b|!c.retired_top_ups.contains_key(&b.qid)).count()+usize::from(c.existing.is_some())<p.maximum_entries as usize&&c.top_ups.len()<128&&!c.is_entry(b.qid)
+                need(((c.entry.is_some()&&c.existing.is_none()&&(c.exits.is_empty()||(p.version==3&&event["proof"]["version"]==3)))||(c.existing.is_some()&&p.version==2&&event["proof"]["version"]==2))&&c.entries().filter(|b|!c.retired_top_ups.contains_key(&b.qid)).count()+usize::from(c.existing.is_some())<p.maximum_entries as usize&&c.top_ups.len()<128&&!c.is_entry(b.qid)
                     &&event["cohortSha256"]==digest(c)?&&event["proof"]["cohortSha256"]==digest(c)?&&b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]==event["proof"]
                     &&b.review_sha256==digest(r)?&&b.quote["action"]=="buy"&&b.quote["exchangeId"]==ex&&b.quote["side"]==r.side,"FUNDAMENTAL_TOP_UP_EVENT")?;
                 self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?.top_ups.insert(b.qid,b);
@@ -1393,7 +1398,7 @@ impl Cohorts{
             Some("abandon_top_up_never_sent")=>{
                 let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let id=event["qid"].as_u64().ok_or("FUNDAMENTAL_QID")?;let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
                 let b=c.top_ups.get(&id).ok_or("FUNDAMENTAL_TOP_UP_BINDING")?;
-                need(((c.existing.is_none()&&c.exits.is_empty())||(c.existing.is_some()&&b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]["version"]==2))&&!c.retired_top_ups.contains_key(&id)&&event["cohortSha256"]==digest(c)?&&event["originalBindingSha256"]==digest(b)?
+                need(((c.existing.is_none()&&(c.exits.is_empty()||b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]["version"]==3))||(c.existing.is_some()&&b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]["version"]==2))&&!c.retired_top_ups.contains_key(&id)&&event["cohortSha256"]==digest(c)?&&event["originalBindingSha256"]==digest(b)?
                     &&event["originalNotSent"].is_object()&&event["committedRetirement"].is_object(),"FUNDAMENTAL_TOP_UP_ABANDON_EVENT")?;
                 self.cohorts.get_mut(ex).ok_or("FUNDAMENTAL_NO_COHORT")?.retired_top_ups.insert(id,RetiredTopUp{not_sent:event["originalNotSent"].clone(),retirement:event["committedRetirement"].clone()});
             },

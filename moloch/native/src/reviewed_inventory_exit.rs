@@ -3,7 +3,7 @@
 //! these hashes bind the durable decision, not authenticate an outside caller.
 use super::*;
 impl Engine {
-    fn verify_reviewed_cohort_exit_origin(&self,e:&Value,ex:&str,market:&str,side:Side)->Result<()> {
+    pub(super) fn verify_reviewed_cohort_exit_origin(&self,e:&Value,ex:&str,market:&str,side:Side,allow_flat:bool)->Result<()> {
         let p=&e["cohortOrigin"];
         if p["version"]==2{
             if p["originSha256"]!=e["originSha256"]||p["positionsSha256"]!=e["expectedPositionSha256"]{return Err("REVIEWED_COHORT_ORIGIN")}
@@ -30,7 +30,7 @@ impl Engine {
         }
         for(id,(_,filled))in ids{if counts.get(&id).copied().unwrap_or(0)!=filled{return Err("REVIEWED_COHORT_FILL_TOTAL")}}
         let positions=self.wallet.positions();let held=self.wallet.quantity(ex,side);
-        if !started||held==0||self.wallet.quantity(ex,side.other())!=0||positions[ex][label(side)]!=json!(lots)||hash(&positions[ex])!=e["expectedPositionSha256"]||p["heldQuantity"].as_u64()!=Some(held)||dec(&p["heldCost"])?!=self.wallet.market_cost(ex){return Err("REVIEWED_COHORT_FIFO")}
+        if !started||(!allow_flat&&held==0)||self.wallet.quantity(ex,side.other())!=0||!(positions[ex][label(side)]==json!(lots)||(allow_flat&&held==0&&lots.is_empty()&&positions[ex][label(side)].is_null()))||hash(&positions[ex])!=e["expectedPositionSha256"]||p["heldQuantity"].as_u64()!=Some(held)||dec(&p["heldCost"])?!=self.wallet.market_cost(ex){return Err("REVIEWED_COHORT_FIFO")}
         if self.inherited.as_ref().is_some_and(|i|i.remaining.iter().any(|((x,_),lots)|x==ex&&!lots.is_empty())){return Err("REVIEWED_COHORT_INHERITED_MIX")}Ok(())
     }
     /// Conservative acquisition-fee-inclusive cost for the FIRST n remaining
@@ -79,7 +79,7 @@ impl Engine {
         for key in ["originSha256","reviewSha256","bookSha256","expectedPositionSha256"]{
             if e[key].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_EXIT_PROOF")}
         }
-        if cohort{if !self.managed_inventory_planning_excludes(&ex)||e.get("adoptionRef").is_some()||e.get("adoptionReceiptHash").is_some(){return Err("REVIEWED_COHORT_MODE_OR_ORIGIN")};self.verify_reviewed_cohort_exit_origin(e,&ex,&market,side)?;}else{
+        if cohort{if !self.managed_inventory_planning_excludes(&ex)||e.get("adoptionRef").is_some()||e.get("adoptionReceiptHash").is_some(){return Err("REVIEWED_COHORT_MODE_OR_ORIGIN")};self.verify_reviewed_cohort_exit_origin(e,&ex,&market,side,false)?;}else{
             if e["adoptionReceiptHash"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_EXIT_PROOF")}
             let inherited=self.inherited.as_ref().ok_or("REVIEWED_EXIT_NOT_INHERITED")?;
             if e["adoptionReceiptHash"]!=inherited.receipt_hash||!inherited.remaining.contains_key(&(ex.clone(),side)){return Err("REVIEWED_EXIT_ORIGIN")}

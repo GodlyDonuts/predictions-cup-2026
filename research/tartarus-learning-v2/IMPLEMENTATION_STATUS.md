@@ -1,6 +1,8 @@
-# Tartarus implementation status — October21,19:17UTC
+# Tartarus implementation status — October21,19:35UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
+
+Production R70 is live with452fills at19:30. Nineteen new receipts cover14,762shares across three sell orders, net-105.925realized; cash24,455.475. Repeated-acquisition version3 passes159 focused checks and is building, not deployed. It removes the after-exit/flat re-entry restriction while retaining original costs and order reconciliation. [Evidence and limits](recurring-cohort-20261021.md).
 
 ## Running and queued work
 

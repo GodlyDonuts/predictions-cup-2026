@@ -45,6 +45,22 @@ impl Engine{
   Ok((held,cost))
  }
  fn reviewed_top_up_state(&self,p:&Value,ex:&str,market:&str,side:Side)->Result<(u64,i128,u64)>{
+  // Explicit recurring ownership: replay every original closed BUY and SELL
+  // through the existing FIFO verifier. Flat is valid only for this BUY path.
+  // No history, cost basis, actual binding or realized result is reset.
+  if p["version"]==3{
+   if p.as_object().is_none_or(|o|o.len()!=8)||!self.managed_inventory_planning_excludes(ex)||p["cohortOrigin"]["version"]!=1{return Err("REVIEWED_ENTRY_RECURRING_SCHEMA")}
+   if p["cohortSha256"].as_str().is_none_or(|s|s.len()!=64||!s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))){return Err("REVIEWED_ENTRY_TOP_UP_PROOF")}
+   let cap=p["maximumEntries"].as_u64().filter(|n|(2..=16).contains(n)).ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;
+   let entries=p["cohortOrigin"]["entries"].as_array().ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;
+   if entries.is_empty()||entries.len()>=cap as usize{return Err("REVIEWED_ENTRY_TOP_UP_ENTRIES")}
+   let total=p["maximumTotalQuantity"].as_u64().filter(|n|*n>0&&*n<=1_000_000).ok_or("REVIEWED_ENTRY_TOP_UP_CAP")?;
+   let origin=&p["cohortOrigin"];
+   if origin["positionsSha256"]!=p["positionsSha256"]||origin["heldQuantity"]!=p["heldQuantity"]||origin["heldCost"]!=p["heldCost"]{return Err("REVIEWED_ENTRY_RECURRING_OWNERSHIP")}
+   self.verify_reviewed_cohort_exit_origin(&json!({"cohortOrigin":origin,"originSha256":origin["originSha256"],"expectedPositionSha256":p["positionsSha256"]}),ex,market,side,true)?;
+   let held=self.wallet.quantity(ex,side);let cost=self.wallet.market_cost(ex);
+   if held>=total{return Err("REVIEWED_ENTRY_TOP_UP_CAP")}return Ok((held,cost,total))
+  }
   if p["version"]==2{
    if p.as_object().is_none_or(|o|o.len()!=10){return Err("REVIEWED_ENTRY_TOP_UP_SCHEMA")}
    let cap=p["maximumEntries"].as_u64().filter(|n|(2..=16).contains(n)).ok_or("REVIEWED_ENTRY_TOP_UP_ENTRIES")?;

@@ -1,0 +1,77 @@
+{
+  "observedUtc": "2026-10-21T19:33:09.850957+00:00",
+  "workerPid": 1022216,
+  "release": "R70",
+  "originalFillCount": 433,
+  "currentFillCount": 452,
+  "originalFillsUnchanged": true,
+  "remainingFifoExactlyMatches": true,
+  "allNewFillsMatchOriginalOfficialReceipts": true,
+  "reportSha256": "d101ddc0f5bfd9b835d708f6023c484faa066ab423ed1911cc91b5a483f3c764",
+  "reportAt": "2026-10-21T19:32:53.249Z",
+  "orders": {
+    "20267": {
+      "actualOrderId": "54322122",
+      "exchangeId": "1044",
+      "side": "YES",
+      "shares": 3896,
+      "fillReceipts": 7,
+      "proceeds": "3292.120000",
+      "releasedFifoCost": "3253.160000",
+      "fees": "0.000000",
+      "firstExecutedAt": "2026-10-21T19:20:47.252Z",
+      "lastExecutedAt": "2026-10-21T19:22:14.195Z",
+      "realizedGross": "38.960000",
+      "realizedNet": "38.960000"
+    },
+    "20269": {
+      "actualOrderId": "54326243",
+      "exchangeId": "1051",
+      "side": "NO",
+      "shares": 866,
+      "fillReceipts": 3,
+      "proceeds": "753.420000",
+      "releasedFifoCost": "749.090000",
+      "fees": "0.000000",
+      "firstExecutedAt": "2026-10-21T19:24:17.199Z",
+      "lastExecutedAt": "2026-10-21T19:29:31.059Z",
+      "realizedGross": "4.330000",
+      "realizedNet": "4.330000"
+    },
+    "20271": {
+      "actualOrderId": "54329730",
+      "exchangeId": "1067",
+      "side": "YES",
+      "shares": 10000,
+      "fillReceipts": 9,
+      "proceeds": "3126.300000",
+      "releasedFifoCost": "3275.515000",
+      "fees": "0.000000",
+      "firstExecutedAt": "2026-10-21T19:26:18.690Z",
+      "lastExecutedAt": "2026-10-21T19:26:18.690Z",
+      "realizedGross": "-149.215000",
+      "realizedNet": "-149.215000"
+    }
+  },
+  "financial": {
+    "cash": "24455.475000",
+    "ownedCost": "71193.080000",
+    "realized": "68.640000",
+    "newTradingRealized": "-7.880000",
+    "inheritedRealizedGross": "76.520000"
+  },
+  "incrementalRealized": "-105.925000",
+  "officialReceiptFileHashes": {
+    "48585d11e2fdb26638f9bd0d948400c5155dcd48e52643f97244f7edd75e0fa8": "0480789a1c5d83bd3001a5ca7ff9ef5fa28b4fd077a9806573e0ab93dbb033ab",
+    "08dfdb661c66196fe43e9e6cc0bdd8dd1cd2e57d3b94e7c0a0554a2e43a4e2b8": "a06946900a49b42c31932bff7d156930268018e23048f8ea32fde866bc54be1c",
+    "ad43851ccfd044331d4835b429979ef7be62aa5f5265a7b287bbbbb0ddca76de": "860ad9123d3c1aecea86a455bad16fedccfba5e3fe62521d10e03a318617c3b2",
+    "2b53b2b3657425fe54b9c97aff2c508735830511f87ebbd8342bdb9852935e11": "db68a86c2508450e845545bfb4eca37ce4d57015a7ad87ae00cac0e1c4a81da6",
+    "c750ebd08b1bd623554f660c26f5619d362ee1ca315cb182bcc7bde64e47b82d": "b6ca4ce58711d94b9796da90034e743efbbe60fa628d809a392250016e71947d",
+    "9dae595da59a41d1228e1afd616bf9a0fda45938ba01727379be101455dfa20f": "733e96be0fa46ac786ed627239c0ff0ddac6fa4aaa2fbcb4ce96e5ae01b93f14"
+  },
+  "utcDay": "2026-10-21",
+  "dayFillReceipts": 56,
+  "dayDistinctFilledOrders": 11,
+  "noAccountRequestsByAudit": true,
+  "wholeAccountProfitEstablished": false
+}
