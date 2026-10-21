@@ -1,0 +1,27 @@
+{
+  "prepared": true,
+  "sourceCommit": "336e154a8a344477d78d2ee44c418b2c3206cc90",
+  "sourceManifestSha256": "a9db8eadb0dff902db1766bead5ebef2497fdc14d4f55eaae8a34f59e1333508",
+  "specSha256": "462f51fe47fd5e716f40e25730eec2e2dd6cdca0658ca7bb80553fb8747948d8",
+  "oldPid": 18116,
+  "oldCreation": 134370609294086694,
+  "oldConfigurationSha256": "2eba290b32e8023b2082eac5fb10572c9aaec981ec7d8c8e6c7899e379998d56",
+  "existingTrainerVerifiedLive": true,
+  "allIslandsComplete": false,
+  "originalTrainingStopped": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "observedUtc": "2026-10-21T16:20:49.013989+00:00",
+  "watcherLauncherPid": 23852,
+  "verifiedWatcherPythonPid": 19100,
+  "phase": "waiting_for_all_first_generation_boundaries",
+  "newTrainingLaunched": false,
+  "existingTrainingStillLive": true,
+  "oldCheckpointFilesDeleted": false,
+  "sourceUpgradeIncludes": [
+    "initial_founder_retention",
+    "constant_64_transition_PPO_batches",
+    "equivalent_vectorized_historical_record_validation"
+  ],
+  "protectedTestUsed": false
+}
