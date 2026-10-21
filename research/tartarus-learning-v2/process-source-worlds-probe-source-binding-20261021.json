@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "eaf72ddc5495216543d2ec62b19189bcf8005b29",
+  "runtimeScriptBytesSha256": "3efecec255d20f188440ad3b30c610a22992e1479cbe11c81bda495522a70464",
+  "canonicalLFSourceSha256": "aba428c0b445fdec07355759a399b1fd5c2f14ecec68761374846842e73fe77c",
+  "plannedWrapperSha256UsesCanonicalLF": "aba428c0b445fdec07355759a399b1fd5c2f14ecec68761374846842e73fe77c",
+  "publicWorkingScriptBytesMatchRuntime": true,
+  "resultBytesSha256": "c31be7a073338c26e6bbb189621b1680b5ebe3ae7699cf27e8177e48fdd8bec6",
+  "newlinePolicy": "runtime CRLF and checked Git LF source are bound separately"
+}

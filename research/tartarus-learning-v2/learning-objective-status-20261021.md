@@ -37,3 +37,8 @@ The data repair completed all21 SIG capture segments00000–00020, all ending be
 ## October21 05:45UTC continuation — progress
 
 Actual profiling, immutable-book reuse,56 passing checks and repeated retained-source parity are complete. Warm data-only source advancement measured6.8% faster, not whole-training speed. Active033 remains frozen/live, corrected034 queue unchanged; the larger sequential host-world bottleneck remains. Full predecode-once, original-history coverage/calendar and independent ROI are not complete. [Measured scope and next bottleneck](immutable-book-sharing-20261021.md).
+
+
+## October21 06:16UTC continuation — progress
+
+The process source backend is integrated into online PPO;31 checks prove spawned/serial observation, action, hidden-state, RNG, financial/reward and model/Adam equivalence, including a full SQLite Experiment entrypoint and two-day reward mechanism. The completed four-process original-fit source probe measures4.3657x source-advance gain, with full state/receipt parity; this is not whole-training speed or ROI. Source/backend-specific GPU admission and eight-world capacity are next; active033/queued034 and all production finances remain unchanged. [Current evidence](process-source-worlds-20261021.md).

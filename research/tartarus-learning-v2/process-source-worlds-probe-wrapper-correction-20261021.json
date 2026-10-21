@@ -1,0 +1,9 @@
+{
+  "observedUtc": "2026-10-21T06:06:40.761733+00:00",
+  "originalFailedResultPreserved": true,
+  "reason": "parallel transition envelope includes state metadata; local transition returns only economic fields, so direct whole-dictionary equality is invalid",
+  "additionalCorrection": "optional initial_cash_micros now uses the same default as Experiment.world",
+  "sourceImplementationChanged": false,
+  "performanceOrROIAdmittedFromFailedProbe": false,
+  "oldProcessesTerminalVerified": true
+}

@@ -1,0 +1,11 @@
+{
+  "observedUtc": "2026-10-21T06:10:10.493632+00:00",
+  "originalFailedAttemptPreserved": true,
+  "completedAlgorithmRoundsReported": 3,
+  "finalReportAbsent": true,
+  "reason": "optional memory metrics imported psutil, which is not installed; completion report was not persisted before this optional diagnostic",
+  "numericResultsOrTimingReconstructed": false,
+  "sourceImplementationChanged": false,
+  "performanceOrROIAdmitted": false,
+  "oldControllerAndWorkersTerminalVerified": true
+}

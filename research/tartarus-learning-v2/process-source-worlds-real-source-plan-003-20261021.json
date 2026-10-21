@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "eaf72ddc5495216543d2ec62b19189bcf8005b29",
+  "worlds": 4,
+  "sourceRole": "train",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "cacheManifestSha256": "f066e68bbf40fa5c70386054e517eabe29ad9b2b3ad24aaae258fc8f97387957",
+  "bounds": [
+    1792049116175,
+    1792221916175
+  ],
+  "initialUnmeasuredWarmupMs": 60000,
+  "measuredRounds": 3,
+  "roundAdvanceMs": 600000,
+  "originalEpisodeHorizonPreserved": true,
+  "newOptimizerOrModel": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "replacesFailedWrapperAttempt": "process-worlds-real-source-002",
+  "wrapperSha256": "aba428c0b445fdec07355759a399b1fd5c2f14ecec68761374846842e73fe77c",
+  "sameSourceAndEconomicConfiguration": true,
+  "eachRoundPersistedBeforeOptionalTelemetry": true,
+  "optionalMemoryMetricUsesBundledWindowsCLI": true
+}
