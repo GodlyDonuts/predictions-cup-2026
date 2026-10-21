@@ -1,6 +1,10 @@
 # One filled order per minute: execution objective and current gap
 
-Current update,22:32UTC: R74 is verified live as sole1038328. Two new filled orders bought19,992shares for16,821.97SUSQies; exact original receipts/FIFO match, cash10,838.09. First-order post-intent ownership validation is0ms at millisecond resolution versus the earlier1765/3756ms examples. **The target remains unmet:2distinct first-filled orders in15minutes.** [Latest audited turnover](r74-turnover-20261021.json), [current deployment](dispatch-proof-r74-20261021.md). All12 recurring policies are active; R73 is included in R74. R75 no-HTTP repeat-entry recovery is qualified but undeployed, and R76 read-only hint batching is in qualification. The dated observations below remain historical evidence.
+R76 is installed as sole worker 1041499 at 22:44:13 UTC and is restoring the original ledger; fresh trading is not yet verified. It combines batched read-only exit selection with R75's exact no-HTTP repeat-entry recovery. The original 481 fills, 2,601,300,909-byte financial prefix, native engine and known open order 20540 were preserved at the quiet replacement boundary. The worker and reference updater are alive with no STOP at 22:47 UTC. [Installation evidence](r76-hint-batch-installed-20261021.json), [implementation and remaining verification](hint-batch-r76-20261021.md).
+
+The last completed trading audit remains R74 at 22:32 UTC: two new filled buys acquired 19,992 shares for 16,821.97 SUSQies, leaving cash 10,838.09 and original owned cost 85,031.82. These purchases are not realized profit. Today had 14 distinct first-filled orders and 481 partial receipts. **The minute-fill objective remains unmet: two distinct first-filled orders in 15 minutes.** [Original receipts/FIFO/cadence](r74-turnover-20261021.json). R74's post-intent validation improvement was measured; R76's overall speed and economic results are pending live verification.
+
+The dated observations below remain historical evidence.
 
 ## Historical observations at21:16UTC
 
