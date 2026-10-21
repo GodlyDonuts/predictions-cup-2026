@@ -1,0 +1,47 @@
+{
+  "observedUtc": "2026-10-21T20:22:15.581086+00:00",
+  "originalResultSha256": "0137877f439e7caf89f54a8091b8809a0ffd9f2b5ff1295317c521c3ad8b2633",
+  "checkpointSha256": "069b00920235130be3e85903739ab2d7666da3c27585ebfb646fbbbbecad4dc9",
+  "cycle": 0,
+  "member": 1,
+  "island": "island-001",
+  "evaluationRole": "development_selection",
+  "reward": -0.13955065881041967,
+  "markedRoiMinimum": -0.10563429999999996,
+  "cases": [
+    {
+      "D": 2,
+      "G": -0.13955065881041967,
+      "N": 0,
+      "marked_roi": -0.10563429999999996,
+      "reward": -0.13955065881041967,
+      "decisions": 145,
+      "fill_count": 15,
+      "stress": false,
+      "realized_fifo_micros": 0,
+      "stale_mark_exchanges": [
+        "1032",
+        "906"
+      ],
+      "classification": "complete_day_development_growth_not_source_or_independent_qualification"
+    },
+    {
+      "D": 2,
+      "G": -7.631133530390133e-06,
+      "N": 1,
+      "marked_roi": 3.0524999999892444e-05,
+      "reward": -7.631133530390133e-06,
+      "decisions": 102,
+      "fill_count": 2,
+      "stress": true,
+      "realized_fifo_micros": 0,
+      "stale_mark_exchanges": [
+        "952"
+      ],
+      "classification": "complete_day_development_growth_not_source_or_independent_qualification"
+    }
+  ],
+  "independentTestingUsed": false,
+  "productionProfitabilityEstablished": false,
+  "checkpointDeployed": false
+}

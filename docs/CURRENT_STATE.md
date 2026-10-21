@@ -42,9 +42,7 @@ The actual laptop external feeds are healthy:Kalshi237 tickers at1,193 REST admi
 
 ## Learning
 
-Active037 remains on its original frozen source. Its first island completed2,773 optimizer updates/36,730 decisions and entered full-window evaluation. Its second island completed one member, then resumed learning another. No independently profitable checkpoint has emerged.
-
-The2,768-update checkpoint's complete October17–19 development results were-4.35% nominal/-4.94% stressed marked ROI. Its earlier founder is stronger by the human's daily-growth reward. The other island's first member produced only0.05 SUSQie nominal marked gain on100,000 initial wealth and zero stressed; this is near-inactivity, not a demonstrated edge.
+Active037 remains on its original frozen source (process18116 verified20:20UTC). The latest completed island001 member scored-10.56343% nominal/+0.0030525% stressed marked ROI on the two-day development window; its minimum daily-growth reward is-0.13955066. This is worse than the stronger retained founder and is not deployed. The15/2fills were BUY_NO with no realized FIFO gain. No independently profitable checkpoint has emerged. [Latest complete result](../research/tartarus-learning-v2/population-037-second-member-result-20261021.json).
 
 Queued040 preserves the completed island populations before source migration. It includes founder retention, independent learned BUY/SELL target selection,64-transition PPO batches, faster equivalent history validation and owned-response delivery. The last optimization matched every observation, action, paid request/receipt and financial hash in four interleaved fitting-hour passes; measured collection speedup was1.040x alongside existing GPU training. That is not end-to-end training speed or ROI.
 

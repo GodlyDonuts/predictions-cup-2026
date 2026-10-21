@@ -6,7 +6,7 @@ R72 was installed at20:16:38UTC as sole worker1031505/startTicks58345276, binary
 
 ## Running and queued work
 
-GPU population037 remains active on its frozen source, using independent historical worlds and one GPU compute coordinator. The first island saved a2,773-update checkpoint after36,730 decisions and is evaluating it. The second island's first completed member had negligible nominal marked gain and zero stressed return; it has moved to its next member.
+GPU population037 remains active (process18116 verified at20:20UTC). A newly completed second member in island001 produced-10.56343% nominal marked ROI and+0.0030525% stressed marked ROI on the two-day development window. Its minimum daily-growth reward is-0.13955066; it is not a profitable usable checkpoint. The two stochastic cases took145/102decisions and produced15/2fills, with no realized FIFO gain. All new fills in those cases were BUY_NO, so effective exits remain a weakness. [Original-result digest and metrics](population-037-second-member-result-20261021.json).
 
 Continuation040 is queued on helper2288 for the original trainer18116. It replaces039 before any039 launch. Each island's latest completed generation, learned hyperparameters and all original checkpoints are preserved before migration. New040 training has not started. [Exact queue/source pins](population-040-queued-20261021.json).
 
