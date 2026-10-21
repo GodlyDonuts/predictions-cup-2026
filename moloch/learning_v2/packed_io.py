@@ -36,10 +36,25 @@ def transfer(tree,device):
         else:raise TypeError('TENSOR_TREE_REQUIRED')
     collect(tree);moved={}
     for dtype,values in groups.items():
-        packed=torch.cat(values).to(device);offset=0;views=[]
+        # Fused observation assembly already owns a complete contiguous CPU
+        # allocation in this exact traversal order. Reuse it for the upload;
+        # arbitrary tensors retain the original concatenating/copying path.
+        packed=_whole_cpu_allocation(values)if torch.device(device).type!='cpu'else None
+        packed=(torch.cat(values)if packed is None else packed).to(device);offset=0;views=[]
         for value in values:views.append(packed[offset:offset+value.numel()]);offset+=value.numel()
         moved[dtype]=views
     def restore(node,path=()):
         if isinstance(node,dict):return {key:restore(value,path+(key,))for key,value in node.items()}
         dtype,index,shape,_=layout[path];return moved[dtype][index].reshape(shape)
     return restore(tree)
+
+
+def _whole_cpu_allocation(values):
+    if not values or values[0].device.type!='cpu':return None
+    first=values[0];storage=first.untyped_storage();pointer=storage.data_ptr();offset=0
+    for value in values:
+        if (value.device!=first.device or value.dtype!=first.dtype or not value.is_contiguous()
+                or value.untyped_storage().data_ptr()!=pointer or value.storage_offset()!=offset):return None
+        offset+=value.numel()
+    if offset*first.element_size()!=storage.nbytes():return None
+    return first.as_strided((offset,),(1,),storage_offset=0)

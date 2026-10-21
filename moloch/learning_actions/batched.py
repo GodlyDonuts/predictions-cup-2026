@@ -5,21 +5,19 @@ Finished worlds are masked out of learning; their zeros are padding, not invente
 wealth observations. Continuing worlds retain hidden state across compute chunks.
 """
 import torch
-import torch.nn.functional as F
 from collections import Counter
-from .stream import tensors,calibrate
+from .stream import calibrate
 from .training import Chunk
 from moloch.learning_v2.train_inner import fingerprint
 
 
 def inputs(observations,device):
-    values=[tensors(o,'cpu')for o in observations]
-    n=max(v['contracts'].shape[1]for v in values)
-    out={'contracts':torch.cat([F.pad(v['contracts'],(0,0,0,n-v['contracts'].shape[1]))for v in values]),
-        'global_state':torch.cat([v['global_state']for v in values]),
-        'present':torch.cat([F.pad(v['present'],(0,n-v['contracts'].shape[1]))for v in values]),
-        'masks':{k:torch.cat([F.pad(v['masks'][k],(0,n-v['contracts'].shape[1])if k=='market'
-                    else(0,0,0,n-v['contracts'].shape[1]))for v in values])for k in values[0]['masks']}}
+    from .packed_observations import assemble,padded
+    # Measured copy-work threshold, not an entity or decision limit. CPU replay
+    # and smaller batches keep the original faster allocation path.
+    large=(torch.device(device).type!='cpu'and observations and
+           len(observations)*max(o['contracts'].shape[0]for o in observations)*observations[0]['contracts'].shape[1]>=1_000_000)
+    out=assemble(observations)if large else padded(observations)
     if torch.device(device).type!='cpu':
         from moloch.learning_v2.packed_io import transfer
         return transfer(out,device)
