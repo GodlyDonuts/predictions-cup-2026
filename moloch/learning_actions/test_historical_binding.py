@@ -21,7 +21,7 @@ class HistoricalBindingTests(unittest.TestCase):
         from .historical_delivery import register_kalshi,register_polymarket
         class Env:
             def __init__(self):self.targets=[]
-            def register_history(self,venue,key,provider):self.targets.append((venue,key))
+            def register_history(self,venue,key,provider,**kwargs):self.targets.append((venue,key))
         class Reader:
             tickers={'a','z'}
             def page(self,*_):return []

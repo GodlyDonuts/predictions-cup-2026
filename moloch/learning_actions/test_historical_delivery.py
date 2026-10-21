@@ -1,8 +1,9 @@
 import unittest
 from copy import deepcopy
+from unittest.mock import patch
 from moloch.learning_realism.test_vector import tapes
 from moloch.learning_realism.test_replay import fixture
-from .historical_delivery import HistoricalInformationTape
+from .historical_delivery import HistoricalInformationTape, owns_external_payload, register_kalshi
 from .contract import UNIT
 
 
@@ -15,6 +16,61 @@ def environment():
 
 
 class HistoricalDeliveryTests(unittest.TestCase):
+    def test_owned_response_transfers_without_changing_paid_clocks(self):
+        key=('historical_trades','A','m','YES')
+        captured=[]
+        def fresh(now):
+            value=[{'trade':{'id':'original'},'at':now}];captured.append(value);return value
+        snapshots=[]
+        for owned in (False,True):
+            env=environment();env.register_history('Kalshi',key,fresh,payload_is_owned=owned)
+            with patch('moloch.learning_actions.historical_delivery.deepcopy',side_effect=deepcopy) as copy:
+                self.assertEqual(env.request_observation('Kalshi',key),{'status':'IN_FLIGHT'})
+                self.assertEqual(copy.call_count,0 if owned else 1)
+            env.advance(151)
+            payload=env.known_historical_information['Kalshi',key]['payload']
+            self.assertEqual(payload,captured[-1])
+            self.assertEqual(payload is captured[-1],owned)
+            snapshots.append((env.observe(),list(env.feed_requests),list(env.feed_receipts),
+                              list(env.external_admissions['Kalshi']),env.cash))
+        # Finance arrays are covered by the full real-source trace comparison;
+        # exact receipt, limits and copied public payloads are compared here.
+        self.assertEqual(snapshots[0][1:],snapshots[1][1:])
+        self.assertEqual(snapshots[0][0]['historical_information'],snapshots[1][0]['historical_information'])
+
+    def test_builtin_ownership_does_not_cover_subclasses_or_mixed_unions(self):
+        from .historical_kalshi import KalshiHistory
+        from .historical_samples import Samples
+        from .historical_union import KalshiUnion,SampleUnion
+        class Extension(KalshiHistory):pass
+        native=object.__new__(KalshiHistory);samples=object.__new__(Samples)
+        native.tickers={'A'}
+        self.assertTrue(owns_external_payload(native,'Kalshi'))
+        self.assertTrue(owns_external_payload(samples,'Polymarket'))
+        self.assertTrue(owns_external_payload(KalshiUnion([native]),'Kalshi'))
+        self.assertTrue(owns_external_payload(SampleUnion([samples]),'Polymarket'))
+        self.assertFalse(owns_external_payload(object.__new__(Extension),'Kalshi'))
+        self.assertFalse(owns_external_payload(SampleUnion([]),'Polymarket'))
+        self.assertFalse(owns_external_payload(SampleUnion([samples,object()]),'Polymarket'))
+
+    def test_custom_registered_reader_still_snapshots_reused_values(self):
+        class Reader:
+            tickers={'A'}
+            payload=[{'trade':{'id':'original'}}]
+            def page(self,*args,**kwargs):return self.payload
+        reader=Reader();env=environment();register_kalshi(env,reader,{'A':('m','YES')})
+        key=('historical_trades','A','m','YES')
+        self.assertFalse(env.owned_history_payloads)
+        env.request_observation('Kalshi',key);reader.payload[0]['trade']['id']='changed'
+        env.advance(151)
+        self.assertEqual(env.known_historical_information['Kalshi',key]['payload'][0]['trade']['id'],'original')
+
+    def test_ownership_declaration_must_be_boolean(self):
+        env=environment();key=('historical_sample','P','m','YES')
+        with self.assertRaisesRegex(ValueError,'EXPLICIT_HISTORY_PAYLOAD_OWNERSHIP'):
+            env.register_history('Polymarket',key,lambda now:None,payload_is_owned=1)
+        self.assertFalse(env.historical_providers)
+
     def test_sig_shares_existing_queue_and_delays_immutable_snapshot(self):
         env = environment()
         key = ('historical_candles', 'x', 'm', 'YES')

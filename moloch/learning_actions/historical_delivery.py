@@ -16,9 +16,11 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
         self.historical_providers = {}
         self.historical_query_providers = {}
         self.historical_latest_providers = {}
+        self.owned_history_payloads = set()
         self.known_historical_information = {}
 
-    def register_history(self, venue, key, provider, *, query_provider=None, latest_provider=None):
+    def register_history(self, venue, key, provider, *, query_provider=None, latest_provider=None,
+                         payload_is_owned=False):
         expected = {'SIG': ('historical_candles','historical_trades'), 'Kalshi': ('historical_trades',),
                     'Polymarket': ('historical_sample',)}
         if (venue not in expected or not isinstance(key, tuple) or len(key) != 4
@@ -32,12 +34,15 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
             raise ValueError('CALLABLE_HISTORY_QUERY_PROVIDER_REQUIRED')
         if latest_provider is not None and (venue=='SIG' or not callable(latest_provider)):
             raise ValueError('CALLABLE_EXTERNAL_LATEST_HISTORY_PROVIDER_REQUIRED')
+        if type(payload_is_owned) is not bool:
+            raise ValueError('EXPLICIT_HISTORY_PAYLOAD_OWNERSHIP')
         address = (venue, key)
         if address in self.historical_providers or key in self.keys[venue]:
             raise ValueError('DUPLICATE_HISTORY_TARGET')
         self.historical_providers[address] = provider
         if query_provider is not None:self.historical_query_providers[address]=query_provider
         if latest_provider is not None:self.historical_latest_providers[address]=latest_provider
+        if payload_is_owned:self.owned_history_payloads.add(address)
         self.keys[venue].append(key)
 
     def request_observation(self, venue, key, **kwargs):
@@ -72,8 +77,12 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
         # Snapshot at request time, never at its later receipt time. Validation
         # errors leave the existing queue unchanged and fail the experiment.
         query_provider=self.historical_query_providers.get((venue,key))
-        payload = deepcopy(self.historical_latest_providers[(venue,key)](now)if latest
-                           else provider(now)if query_provider is None else query_provider(now,**kwargs))
+        payload = (self.historical_latest_providers[(venue,key)](now)if latest
+                   else provider(now)if query_provider is None else query_provider(now,**kwargs))
+        # Audited external readers return a new value-owned response on every
+        # call. Transfer that response to its delayed receipt; generic providers
+        # retain the original defensive snapshot because they may reuse data.
+        if (venue,key) not in self.owned_history_payloads:payload=deepcopy(payload)
         self.feed_sequence += 1
         rid = f'history:{venue}:{self.feed_sequence}'
         if venue == 'SIG':
@@ -144,7 +153,8 @@ def register_kalshi(env, reader, mapping):
             raise ValueError('PINNED_KALSHI_INFORMATION_MAPPING')
         env.register_history('Kalshi', ('historical_trades', ticker, market, side),
                              lambda now, t=ticker: reader.page(t, now),
-                             latest_provider=lambda now, t=ticker: reader.page(t, now,limit=1))
+                             latest_provider=lambda now, t=ticker: reader.page(t, now,limit=1),
+                             payload_is_owned=owns_external_payload(reader,'Kalshi'))
 
 
 def register_polymarket(env, reader, mapping):
@@ -153,4 +163,20 @@ def register_polymarket(env, reader, mapping):
             raise ValueError('PINNED_POLYMARKET_INFORMATION_MAPPING')
         env.register_history('Polymarket', ('historical_sample', asset, market, side),
                              lambda now, a=asset: reader.at(a, now),
-                             latest_provider=lambda now, a=asset: reader.at(a, now))
+                             latest_provider=lambda now, a=asset: reader.at(a, now),
+                             payload_is_owned=owns_external_payload(reader,'Polymarket'))
+
+
+def owns_external_payload(reader,venue):
+    """Only exact built-in readers (and unions entirely made of them) transfer.
+
+    KalshiHistory parses fresh JSON and Samples constructs a fresh flat value
+    object. Their union readers retain none of these responses. Subclasses and
+    arbitrary test/plugin readers continue using defensive snapshots.
+    """
+    from .historical_kalshi import KalshiHistory
+    from .historical_samples import Samples
+    from .historical_union import KalshiUnion,SampleUnion
+    direct,union={'Kalshi':(KalshiHistory,KalshiUnion),'Polymarket':(Samples,SampleUnion)}[venue]
+    return type(reader)is direct or (type(reader)is union and bool(reader.readers)
+        and all(owns_external_payload(child,venue)for child in reader.readers))
