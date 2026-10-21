@@ -1,0 +1,34 @@
+{
+  "classification": "original_pretest_capture_normalization_not_model_performance_or_admission",
+  "sourceCommit": "a2caaec853f42708496b79c9f5eb326649adbd16",
+  "sourcePackageManifestSha256": "eada0abf3866fb1a11a4f07cd36d1b7dcd782828a1f3edfdfb5b74d0a66166c3",
+  "archiveSha256": "767bdeddf42f137dfcbe2b396470c43e73d7f96eeef7564d9c70eb40267ef509",
+  "segments": 21,
+  "normalizedCounts": {
+    "original_official_sig_realtime_frame/gap": 5725,
+    "original_official_sig_realtime_frame/book": 312027,
+    "original_official_sig_rest_book_receipt/book": 8069
+  },
+  "reportedTradesSumBeforeCrossSegmentDedup": 8341,
+  "wallSeconds": 321.3017510999998,
+  "normalizedCompleteSha256": "75a3763314d7225110ecf10098b82178d37a3fa2e1727f1c00e90b128579f171",
+  "allOriginalProducerAndSemanticChecksPassed": true,
+  "receiptBoundsMs": [
+    1792526400000,
+    1792540800000
+  ],
+  "heldoutStartMs": 1792540800000,
+  "codeSha256": {
+    "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\data-jobs\\pretest-captures-001\\checked-source\\moloch\\research\\audit_completed_capture.mjs": "880c96b8ce4465541e1da911ea1d9c51ba0a81525e11ee18c2e5b0d677385c00",
+    "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\data-jobs\\pretest-captures-001\\checked-source\\execution\\ledger.mjs": "dd57fe01ce6a4d7219228c01ebfc091ea006f78ba3c96644099abf5e5ff3c014"
+  },
+  "nodeDependencySha256": {
+    "moloch/research/audit_completed_capture.mjs": "880c96b8ce4465541e1da911ea1d9c51ba0a81525e11ee18c2e5b0d677385c00",
+    "execution/ledger.mjs": "dd57fe01ce6a4d7219228c01ebfc091ea006f78ba3c96644099abf5e5ff3c014",
+    "execution/atomic-rename.mjs": "afbe15eadb94f7e5df250d02c9e6cfdabbdc9b8e68c7d42325b91845f0fd0515"
+  },
+  "trainingAdmitted": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0
+}

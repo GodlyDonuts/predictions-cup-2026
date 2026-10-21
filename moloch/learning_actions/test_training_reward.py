@@ -13,6 +13,37 @@ from .episode_tape import EpisodeWriter,EpisodeReader
 
 
 class TrainingRewardTests(unittest.TestCase):
+    def test_online_updates_preserve_full_daily_worlds_and_terminal_reward(self):
+        from .training import update
+        from moloch.learning_v2.train_inner import fingerprint
+        torch.set_num_threads(1);torch.manual_seed(817)
+        config={'development_training_daily_growth':True,'training_days':2,
+                'development_last_observed_marks':True,'maximum_mark_age_ms':3*DAY}
+        envs=worlds()
+        for e in envs:e.end=e.now+2*DAY
+        bounds=[(e.now,e.end)for e in envs];ids=[id(e)for e in envs]
+        model=ApiPolicy(16);optimizer=torch.optim.Adam(model.parameters(),lr=1e-5)
+        before=fingerprint(model);ledgers=[ledger(e,config,development=True)for e in envs]
+        # Synthetic six-hour compute steps make a whole two-day mechanism
+        # check finite. This is not a latency or throughput calibration.
+        stream=BatchStream(envs,model,ledgers,calibration={'decision_latency_ms':DAY//4},
+                           behavior_guard='tensor_versions_v1')
+        totals=[0. for e in envs];accepted=0;updates_before_finish=0
+        while any(e.now<e.end for e in envs):
+            chunk=stream.collect(2)
+            for frame in chunk.frames:
+                for i,value in enumerate(frame['economic_reward']):totals[i]+=value
+            reports=update(model,optimizer,chunk,[f['economic_reward']for f in chunk.frames],role='train',epochs=1)
+            accepted+=sum(row['accepted']for row in reports)
+            if any(e.now<e.end for e in envs):updates_before_finish+=sum(row['accepted']for row in reports)
+            self.assertEqual(ids,[id(e)for e in envs]);self.assertEqual([b for _,b in bounds],[e.end for e in envs])
+        self.assertGreater(accepted,0);self.assertGreater(updates_before_finish,0)
+        self.assertNotEqual(before,fingerprint(model))
+        for i,result in stream.completed.items():
+            self.assertEqual(result['D'],2);self.assertTrue(result['development_daily_growth'])
+            self.assertAlmostEqual(totals[i],result['reward'],places=12)
+            self.assertEqual(envs[i].now,bounds[i][1])
+
     def test_explicit_daily_horizon_is_not_clipped_into_short_proxy(self):
         c={'development_training_daily_growth':True,'training_days':2}
         self.assertEqual(horizon(c,(1,3*DAY+1),development=True),2*DAY)

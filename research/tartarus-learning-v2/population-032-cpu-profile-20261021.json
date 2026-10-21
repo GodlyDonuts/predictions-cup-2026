@@ -1,0 +1,86 @@
+{
+  "classification": "active_trainer_sampling_profile_not_ROI_or_full_runtime_benchmark",
+  "trainerPid": 27732,
+  "sourceCommit": "b83d8c87cd39473f50208be9ae79db87ee751f47",
+  "samples": 997,
+  "sampledSeconds": 19.939999999999664,
+  "exclusiveTop": [
+    {
+      "function": "packed_tensor_digest",
+      "file": "moloch/learning_actions/episode_tape.py",
+      "fraction": 0.12838515546640145
+    },
+    {
+      "function": "transfer",
+      "file": "moloch/learning_v2/packed_io.py",
+      "fraction": 0.10531594784353245
+    },
+    {
+      "function": "observe",
+      "file": "moloch/learning_actions/engine.py",
+      "fraction": 0.10130391173520739
+    },
+    {
+      "function": "observe",
+      "file": "moloch/learning_actions/api_affordances.py",
+      "fraction": 0.0672016048144445
+    },
+    {
+      "function": "categorical",
+      "file": "moloch/learning_actions/acting_validation.py",
+      "fraction": 0.06318956870611946
+    },
+    {
+      "function": "observe",
+      "file": "moloch/learning_actions/historical_neural.py",
+      "fraction": 0.05817452357071315
+    },
+    {
+      "function": "_get",
+      "file": "moloch/learning_actions/disk_tape.py",
+      "fraction": 0.051153460381144315
+    },
+    {
+      "function": "append_rows",
+      "file": "moloch/learning_actions/component_execution.py",
+      "fraction": 0.046138415245738015
+    },
+    {
+      "function": "extend",
+      "file": "moloch/learning_actions/order_pages.py",
+      "fraction": 0.045135406218656755
+    },
+    {
+      "function": "raw_decode",
+      "file": "decoder.py",
+      "fraction": 0.0361083249749254
+    },
+    {
+      "function": "pad",
+      "file": "functional.py",
+      "fraction": 0.029087261785356568
+    },
+    {
+      "function": "extend_observation",
+      "file": "moloch/learning_actions/full_depth.py",
+      "fraction": 0.026078234704112784
+    },
+    {
+      "function": "collect",
+      "file": "moloch/learning_actions/batched.py",
+      "fraction": 0.021063189568706477
+    },
+    {
+      "function": "record",
+      "file": "moloch/learning_actions/episode_tape.py",
+      "fraction": 0.015045135406218909
+    },
+    {
+      "function": "_deepcopy_tuple",
+      "file": "copy.py",
+      "fraction": 0.012036108324975125
+    }
+  ],
+  "productionChanged": false,
+  "independentTestUsed": false
+}

@@ -1,0 +1,35 @@
+{
+  "observedUtc": "2026-10-21T02:39:42.453096+00:00",
+  "classification": "verified_original_active_complete_day_training_not_ROI",
+  "actualCudaPid": 27732,
+  "actualCreationFiletime": "134370197333411077",
+  "handleConfirmedAlive": true,
+  "sourceCommit": "b83d8c87cd39473f50208be9ae79db87ee751f47",
+  "configurationSha256": "6e1a0437ec838bd05a268668a96261d657472afc6a2f9a630988aa74f3c56f15",
+  "latestProgress": {
+    "event": "closed_episode_rollout_chunk",
+    "decisions": 64,
+    "updates": [],
+    "behavior_weights_frozen": true,
+    "virtual_ms": [
+      1792088279348,
+      1792082622981,
+      1792221916175,
+      1792197813227,
+      1792084391067,
+      1792221916175,
+      1792221916175,
+      1792221916175
+    ],
+    "completed_worlds": 4,
+    "wall_time_unix": 1792550381.843629,
+    "total_decisions": 30767,
+    "total_updates": 0,
+    "independent_test_used": false
+  },
+  "activeTrainerRestarted": false,
+  "activeSourceOrConfigChanged": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "independentlyPositiveROI": false
+}

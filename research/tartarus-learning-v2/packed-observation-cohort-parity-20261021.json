@@ -1,0 +1,23 @@
+{
+  "classification": "original_sealed_cohort_CUDA_input_reconstruction_not_model_ROI",
+  "candidateCommit": "bd51a7ec26d1f40f91a222637fb779a23e9a5c4f",
+  "originalExperimentSha256": "26496def963c747c69444724ccd79f7f48e29b1fe2e3f2a6a3ccea166fe961cc",
+  "episodeManifestSha256": "7b1f557a58db217ace87d223aabd4f8b50edc25b002f9633d9dd001a619bd22f",
+  "worlds": 8,
+  "decisions": 6126,
+  "batches": 107,
+  "preparationSeconds": 41.83272159999615,
+  "replaySeconds": 318.73864019999746,
+  "allOriginalObservationClockRewardFinancialHashesPassed": true,
+  "everyFrameAlsoChecksActualCUDAUploadBytes": true,
+  "paths": {
+    "fused": 1699,
+    "original": 0
+  },
+  "cudaPeakBytes": 67108864,
+  "newInference": false,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "activeTrainerChanged": false
+}

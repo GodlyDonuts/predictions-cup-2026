@@ -36,7 +36,7 @@ class PackedObservationTests(unittest.TestCase):
             if isinstance(a[k],dict):self.equal(a[k],b[k]);continue
             self.assertEqual(a[k].dtype,b[k].dtype);self.assertEqual(a[k].shape,b[k].shape)
             # Preserve signed zeros and NaN bit patterns as well as values.
-            self.assertEqual(a[k].cpu().contiguous().numpy().tobytes(),b[k].cpu().contiguous().numpy().tobytes())
+            self.assertEqual(a[k].detach().cpu().contiguous().numpy().tobytes(),b[k].detach().cpu().contiguous().numpy().tobytes())
 
     def test_ragged_empty_single_and_large_batches_match_original_bytes(self):
         for lengths in [(1,),(0,3),(5,1,9,0),(25,125,400,89)]:
@@ -77,6 +77,37 @@ class PackedObservationTests(unittest.TestCase):
             rows=[observation(n,i)for i,n in enumerate(lengths)]
             actual=inputs(rows,'cuda');expected=legacy(rows,'cuda');self.equal(expected,actual)
             rows[0]['contracts'].fill(0);self.equal(expected,actual)
+
+    @unittest.skipUnless(torch.cuda.is_available(),'CUDA unavailable')
+    def test_actual_historical_policy_outputs_and_gradients_match(self):
+        from .historical_neural import HistoricalNeuralPolicy
+        rows=[observation(n,i)for i,n in enumerate((1100,800,1050))]
+        for row in rows:
+            row['present'].fill(True)
+            for mask in row['masks'].values():mask.fill(True)
+        # Use the actual architecture's global-state width, not synthetic
+        # padding interpreted as a changed observation specification.
+        from .test_actions import environment
+        width=environment().observe()['global_state'].shape[0]
+        for row in rows:row['global_state']=np.zeros(width,np.float32)
+        torch.manual_seed(6291);a=HistoricalNeuralPolicy(32).cuda()
+        b=HistoricalNeuralPolicy(32).cuda();b.load_state_dict(a.state_dict())
+        results=[]
+        for model,prepared in [(a,legacy(rows,'cuda')),(b,inputs(rows,'cuda'))]:
+            torch.manual_seed(912)
+            out=model.step(**prepared,hidden=model.initial_state(len(rows)),
+                           reset=torch.ones(len(rows),device='cuda',dtype=torch.bool),deterministic=True)
+            loss=out['value'].square().mean()+out['logprob'].mean()
+            self.assertTrue(torch.isfinite(loss));loss.backward()
+            results.append(out)
+        for name in ('value','logprob','hidden'):self.assertTrue(torch.equal(results[0][name],results[1][name]),name)
+        self.equal(results[0]['actions'],results[1]['actions'])
+        gradients=0
+        for (name,p),(other,q)in zip(a.named_parameters(),b.named_parameters()):
+            self.assertEqual(name,other);self.assertEqual(p.grad is None,q.grad is None)
+            if p.grad is not None:
+                gradients+=1;self.assertTrue(torch.equal(p.grad,q.grad),name)
+        self.assertGreater(gradients,0)
 
 
 if __name__=='__main__':unittest.main()
