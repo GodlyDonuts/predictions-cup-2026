@@ -119,6 +119,7 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         self.history_receipt_sequence = 0
         self.history_consumed_sequence = 0
         self.pending_history_receipts = []
+        self.pending_managed_history = {}
         self._paid_history_summaries = {}
 
     def _event(self, at, kind, value):
@@ -126,8 +127,14 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         if kind == EVENT:
             venue, key, *_ = value
             self.history_receipt_sequence += 1
-            self.pending_history_receipts.append((self.history_receipt_sequence, venue, key,
-                self.known_historical_information[(venue, key)]))
+            receipt = (self.history_receipt_sequence, venue, key,
+                       self.known_historical_information[(venue, key)])
+            if len(value) == 6 and value[5] is True:
+                # V4's automatic feed is a latest-snapshot mailbox, just like
+                # the live reference cache. Explicit history pages remain lossless.
+                self.pending_managed_history[(venue, key)] = receipt
+            else:
+                self.pending_history_receipts.append(receipt)
             from .historical_memory import delivered
             delivered(self,venue,key,self.known_historical_information[(venue,key)])
 
@@ -136,7 +143,9 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         base = ApiAffordanceEpisode.observe(self)
         extra = []
         entities = list(base['entities'])
-        for sequence, venue, key, receipt in self.pending_history_receipts:
+        pending = sorted((*self.pending_history_receipts, *self.pending_managed_history.values()),
+                         key=lambda receipt: receipt[0])
+        for sequence, venue, key, receipt in pending:
             rows = records(key, receipt['payload'])
             for ordinal, row in enumerate(rows or [None]):
                 extra.append(encode(venue, key, receipt, row, ordinal, self.now))
@@ -187,6 +196,8 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         # Receipts arriving during inference are newer than the observation;
         # preserve them for the next decision, even if they share a target.
         self.pending_history_receipts = [r for r in self.pending_history_receipts if r[0] > sequence]
+        self.pending_managed_history = {k:r for k,r in self.pending_managed_history.items()
+                                        if r[0] > sequence}
         self.history_consumed_sequence = sequence
         return result
 

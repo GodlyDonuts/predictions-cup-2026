@@ -11,24 +11,28 @@ import math
 PROFILE='model_pausable_book_reference_service_v1'
 INTENT_PROFILE='model_pausable_raw_intents_service_v2'
 HISTORY_PROFILE='model_pausable_history_reference_service_v3'
+SNAPSHOT_PROFILE='model_pausable_history_snapshot_service_v4'
 EVENT='managed_market_data_poll'
 INTENT_EVENT='managed_market_data_poll_v2'
 
 
 def profile(value):
-    if value not in(None,PROFILE,INTENT_PROFILE,HISTORY_PROFILE)or type(value)not in(type(None),str):
+    if value not in(None,PROFILE,INTENT_PROFILE,HISTORY_PROFILE,SNAPSHOT_PROFILE)or type(value)not in(type(None),str):
         raise ValueError('EXPLICIT_MANAGED_DATA_PROFILE')
     return value
 
 
-def raw_intents(value):return value in(INTENT_PROFILE,HISTORY_PROFILE)
+def raw_intents(value):return value in(INTENT_PROFILE,HISTORY_PROFILE,SNAPSHOT_PROFILE)
+
+
+def history_targets(value):return value in(HISTORY_PROFILE,SNAPSHOT_PROFILE)
 
 
 def specification(value):
     if value is None:return None
     if(not isinstance(value,dict)or not {'profile','initially_enabled'}<=set(value)
             or set(value)-{'profile','initially_enabled','finance_period_ms'}
-            or profile(value['profile'])not in(PROFILE,INTENT_PROFILE,HISTORY_PROFILE)or type(value['initially_enabled'])is not bool):
+            or profile(value['profile'])not in(PROFILE,INTENT_PROFILE,HISTORY_PROFILE,SNAPSHOT_PROFILE)or type(value['initially_enabled'])is not bool):
         raise ValueError('EXPLICIT_MANAGED_DATA_CONFIGURATION')
     period=value.get('finance_period_ms')
     if period is not None and(type(period)is not int or period<1):raise ValueError('EXPLICIT_POSITIVE_FINANCE_READ_PERIOD')
@@ -81,13 +85,13 @@ class ManagedDataService:
 
     def allowed(self,venue,key):
         if key[0]==('book'if venue=='SIG'else'reference'):return True
-        return (self.env.managed_data_profile==HISTORY_PROFILE and venue!='SIG'
+        return (history_targets(self.env.managed_data_profile) and venue!='SIG'
                 and (venue,key)in getattr(self.env,'historical_providers',{}))
 
     def targets(self,venue):
         env=self.env
         live=tuple(k for k in env.keys[venue]if k[0]==('book'if venue=='SIG'else'reference')and k in env.latest)
-        if env.managed_data_profile!=HISTORY_PROFILE or venue=='SIG':return live
+        if not history_targets(env.managed_data_profile) or venue=='SIG':return live
         # A live reference's key does not establish equivalence with an
         # individual historical outcome. Preserve both paid source identities.
         history=tuple(k for k in env.keys[venue]if self.allowed(venue,k)
@@ -181,7 +185,7 @@ class ManagedDataService:
             key=keys[self.cursors[venue]%len(keys)]
         self.in_background=True
         kwargs={'order_limit':200,'continue_order_page':True}if finance and key[0]=='owned_orders'else{}
-        if (env.managed_data_profile==HISTORY_PROFILE and venue!='SIG'
+        if (history_targets(env.managed_data_profile) and venue!='SIG'
                 and (venue,key)in getattr(env,'historical_providers',{})):
             kwargs['history_latest_only']=True
         try:result=self.original_request(venue,key,**kwargs)

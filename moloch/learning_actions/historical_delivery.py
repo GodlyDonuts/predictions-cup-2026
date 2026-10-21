@@ -46,8 +46,8 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
         if type(latest)is not bool:raise ValueError('EXPLICIT_LATEST_HISTORY_QUERY')
         if latest:
             service=getattr(self,'managed_data_service',None)
-            from .managed_data_service import HISTORY_PROFILE
-            if (service is None or not service.in_background or self.managed_data_profile!=HISTORY_PROFILE
+            from .managed_data_service import history_targets
+            if (service is None or not service.in_background or not history_targets(self.managed_data_profile)
                     or (venue,key)not in self.historical_latest_providers):
                 raise ValueError('REGISTERED_BACKGROUND_HISTORY_QUERY_REQUIRED')
         if provider is None:
@@ -88,14 +88,22 @@ class HistoricalInformationEpisode(ApiAffordanceEpisode):
                                    'request_id': rid})
         if latest:self.feed_requests[-1]['history_query']='latest_record'
         self.feed_request_counts[venue] += 1
-        self.clock.schedule(now + latency, 30, EVENT,
-                            (venue, key, rid, now, payload))
+        event = (venue, key, rid, now, payload)
+        # Mark the request while its owner is known. The service's background
+        # flag has already reset when this delayed receipt arrives. Old V3 and
+        # all explicit actor queries retain their original event representation.
+        from .managed_data_service import SNAPSHOT_PROFILE
+        if latest and self.managed_data_profile == SNAPSHOT_PROFILE:
+            event += (True,)
+        self.clock.schedule(now + latency, 30, EVENT, event)
         return {'status': 'IN_FLIGHT'}
 
     def _event(self, at, kind, value):
         if kind != EVENT:
             return super()._event(at, kind, value)
-        venue, key, rid, requested, payload = value
+        venue, key, rid, requested, payload = value[:5]
+        if len(value) not in (5, 6) or len(value) == 6 and value[5] is not True:
+            raise ValueError('EXACT_MANAGED_HISTORY_SNAPSHOT_RECEIPT')
         if venue == 'SIG':
             self.budget.complete(rid, at)
         self.known_historical_information[(venue, key)] = {
