@@ -1,0 +1,18 @@
+{
+  "observedUtc": "2026-10-21T17:18:29.884174+00:00",
+  "sourceCommit": "0da954973f3acc07ecba654e09fc7d7f6af0b2f6",
+  "sourceManifestSha256": "a392bb8c0a49a5939e02ebf4eacb9b44c3fc2ac622edeef14e628ec627abf2c8",
+  "specSha256": "aa459c83027d45dcc595dcd4d3eaa91e076f4fe46e9432f94b125c2acfd94ed5",
+  "watcherPid": 2288,
+  "launcherPid": 24824,
+  "originalTrainerPid": 18116,
+  "originalTrainerCreation": 134370609294086694,
+  "phase": "waiting_for_all_first_generation_boundaries",
+  "targetQueryProfile": "family_target_query_v1",
+  "previous039CancelledWithoutLaunch": true,
+  "preservesAllOriginalCheckpoints": true,
+  "newTrainingLaunched": false,
+  "originalTrainingUnchanged": true,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

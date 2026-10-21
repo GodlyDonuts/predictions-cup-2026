@@ -1,5 +1,9 @@
 # Unsent token expiry recovery — October 21
 
+At **17:12:02 UTC**, the file-only observer verified fresh trading on the exact R67 process and executable. Its current-process progress at17:11:58 reports realtime healthy,420 fills and1666 acknowledged/terminal orders. All original420 fills and the complete original2,544,537,909-byte financial prefix are preserved. No new fill is claimed by this observation. Cash remains9,600.83; remaining attributed cost86,309.62. The same reference updater subsequently committed generation35. [Fresh recovery proof](r67-fresh-live-20261021.json).
+
+The following installation details remain dated evidence.
+
 At **16:51:25 UTC**, R67 was installed and verified active as sole worker **1014772/startTicks57113969**, restoring the original ledger. Its binary SHA256 is `33d999eb928e6fbe319e832df40ebbc59007396efee504c76b12c09c0a07915a`; control SHA256 is `1ba65f3838758705b217d0c6593df92347b17e370dfca9e4535cdaf96b2c6a6c`. Fresh trading and new fills are not yet verified. A finite file-only observer is checking current-process progress, executable identity and the preserved ledger prefix. [Installation evidence](physical-token-expiry-deployment-20261021.json).
 
 R66 stopped at16:27:14.623 with `FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED`. The exact failed intent20209 was a10,000-share YES sell on exchange865 at0.88. Its original SDK certificate and dispatch record establish that **no HTTP request was sent**. The worker had already appended `local_final_guard_no_http` and retired the original native quote, but omitted this expiry case from its recoverable-result classification and therefore stopped the entire service.

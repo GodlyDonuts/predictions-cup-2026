@@ -1,0 +1,32 @@
+{
+  "observedUtc": "2026-10-21T17:12:02.780276+00:00",
+  "pid": 1014772,
+  "startTicks": 57113969,
+  "binarySha256": "33d999eb928e6fbe319e832df40ebbc59007396efee504c76b12c09c0a07915a",
+  "controlSha256": "1ba65f3838758705b217d0c6593df92347b17e370dfca9e4535cdaf96b2c6a6c",
+  "freshProgress": {
+    "actualFills": 420,
+    "actualOrders": 1666,
+    "at": "2026-10-21T17:11:58.049Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1014772,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 27,
+    "terminalOrders": 1666
+  },
+  "originalFinancialPrefixPreserved": true,
+  "original420FillsPreserved": true,
+  "observedFills": 420,
+  "newFills": 0,
+  "bankReportSequence": 770059,
+  "bankReportHash": "892ca4b8201208f345c166f0d4dd75787ea12c26da37ea052963fc3b5d5d56bb",
+  "cash": "9600.830000",
+  "ownedCost": "86309.620000",
+  "referenceGenerations": 34,
+  "freshTradingVerified": true,
+  "profitabilityEstablished": false,
+  "accountRequestsByObserver": 0
+}

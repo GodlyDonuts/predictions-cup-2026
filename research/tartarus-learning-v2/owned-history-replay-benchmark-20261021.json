@@ -1,0 +1,90 @@
+{
+  "observedUtc": "2026-10-21T17:13:14.003539+00:00",
+  "sourceCommit": "0da954973f3acc07ecba654e09fc7d7f6af0b2f6",
+  "planSha256": "f1fcd7511b8ec731ab80904b0d1863a923fe8024479016e8938cde8cb1af5cb4",
+  "boundsMs": [
+    1792050316175,
+    1792053916175
+  ],
+  "results": [
+    {
+      "mode": "defensive_copy",
+      "wallSeconds": 53.992620799996075,
+      "decisions": 970,
+      "ownedTargets": 550,
+      "observationSha256": "dc64e5ec99513f76f8456ed0685da59e5f5df104c7cc7598e695276099e47ca0",
+      "actionsSha256": "9924cedd477545058daa58ba0f739eda17e1559f4e1335ea7e3f09f26e84bdc3",
+      "requestReceiptSha256": "eeef05416039a17d7c0a6384d627aff9dc5f84ac693f7fc4d92c3528c397e874",
+      "financialSha256": "4baecacacc5a68beb168a119ed77ca1079381d9ca9b7897398e85192c3aaf461",
+      "fills": 7,
+      "feedRequestCounts": {
+        "Kalshi": 72000,
+        "Polymarket": 105883,
+        "SIG": 5944
+      },
+      "weightsUnchanged": true
+    },
+    {
+      "mode": "owned_response",
+      "wallSeconds": 51.79519280001114,
+      "decisions": 970,
+      "ownedTargets": 550,
+      "observationSha256": "dc64e5ec99513f76f8456ed0685da59e5f5df104c7cc7598e695276099e47ca0",
+      "actionsSha256": "9924cedd477545058daa58ba0f739eda17e1559f4e1335ea7e3f09f26e84bdc3",
+      "requestReceiptSha256": "eeef05416039a17d7c0a6384d627aff9dc5f84ac693f7fc4d92c3528c397e874",
+      "financialSha256": "4baecacacc5a68beb168a119ed77ca1079381d9ca9b7897398e85192c3aaf461",
+      "fills": 7,
+      "feedRequestCounts": {
+        "Kalshi": 72000,
+        "Polymarket": 105883,
+        "SIG": 5944
+      },
+      "weightsUnchanged": true
+    },
+    {
+      "mode": "owned_response",
+      "wallSeconds": 53.419417400000384,
+      "decisions": 970,
+      "ownedTargets": 550,
+      "observationSha256": "dc64e5ec99513f76f8456ed0685da59e5f5df104c7cc7598e695276099e47ca0",
+      "actionsSha256": "9924cedd477545058daa58ba0f739eda17e1559f4e1335ea7e3f09f26e84bdc3",
+      "requestReceiptSha256": "eeef05416039a17d7c0a6384d627aff9dc5f84ac693f7fc4d92c3528c397e874",
+      "financialSha256": "4baecacacc5a68beb168a119ed77ca1079381d9ca9b7897398e85192c3aaf461",
+      "fills": 7,
+      "feedRequestCounts": {
+        "Kalshi": 72000,
+        "Polymarket": 105883,
+        "SIG": 5944
+      },
+      "weightsUnchanged": true
+    },
+    {
+      "mode": "defensive_copy",
+      "wallSeconds": 55.38727159998962,
+      "decisions": 970,
+      "ownedTargets": 550,
+      "observationSha256": "dc64e5ec99513f76f8456ed0685da59e5f5df104c7cc7598e695276099e47ca0",
+      "actionsSha256": "9924cedd477545058daa58ba0f739eda17e1559f4e1335ea7e3f09f26e84bdc3",
+      "requestReceiptSha256": "eeef05416039a17d7c0a6384d627aff9dc5f84ac693f7fc4d92c3528c397e874",
+      "financialSha256": "4baecacacc5a68beb168a119ed77ca1079381d9ca9b7897398e85192c3aaf461",
+      "fills": 7,
+      "feedRequestCounts": {
+        "Kalshi": 72000,
+        "Polymarket": 105883,
+        "SIG": 5944
+      },
+      "weightsUnchanged": true
+    }
+  ],
+  "speedup": 1.0395884392106385,
+  "checkpointSha256": "2a551324b30fe3afd46edde7b34813096a9a0e465de6300d2957de171475fc73",
+  "actorCalibrationSha256": "98d905bedf20583dd2a5aa34145834bc30c7e84a62692d73ae60a050fdf40b1b",
+  "originalExperimentSha256": "678af7728f4619b7eaf55c72875479cc712bc13489bf0f5ad10b01d5c30ddacc",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "equivalent": true,
+  "role": "train",
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "interpretation": "interleaved CPU collection with hashing alongside existing GPU training, not end-to-end training or ROI"
+}
