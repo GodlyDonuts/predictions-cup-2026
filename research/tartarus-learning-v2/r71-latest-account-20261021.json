@@ -1,0 +1,13 @@
+{
+  "observedUtc": "2026-10-21T19:48:30.492418+00:00",
+  "officialAt": "2026-10-21T19:48:09.145Z",
+  "cash": "24455.475",
+  "officialMarkedPositions": "70223.17",
+  "officialMarkedEquity": "94678.645",
+  "changeFromInitial": "-5321.355",
+  "markedRoiPct": "-5.32135500",
+  "openOrders": 1,
+  "receiptSha256": "fd10034738018c3f79bbfea361bded8c9471bcc3465dbb569b063cd27510a9fd",
+  "valuationBasis": "Official portfolio marks; not executable liquidation",
+  "accountRequestsByAudit": 0
+}

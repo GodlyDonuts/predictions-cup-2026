@@ -1,6 +1,6 @@
 # Repeated acquisition after a sale
 
-Observed October 21, 19:35 UTC. Production remains R70; the change below is qualified in isolation and is building for release. It is not deployed yet.
+Observed October 21, 19:49 UTC. R71 is installed as sole worker1028075 and is restoring the original ledger. The release passed159focused runtime and131native checks. Fresh R71 trading and explicit version3 review opt-in are pending. [Exact installation](r71-recurring-installed-20261021.json), [qualified source/build](r71-recurring-release-20261021.json).
 
 ## The restriction
 
@@ -29,4 +29,4 @@ R70 itself has resumed actual execution. At 19:30:20 the ledger contains 452 fil
 
 Cash is 24,455.475 and remaining original FIFO cost is 71,193.080. These are ledger amounts, not a fresh whole-account market valuation. Today UTC contains 11 distinct filled orders, with partial receipts counted separately. More execution is established; positive account growth is not. [Original-receipt audit](r70-recurring-sales-20261021.json), [file-only auditor](tools/audit-r70-sales-20261021.py).
 
-Next: complete the optimized release, preserve the exact active control and financial journal during one planned worker replacement, opt the reviewed cohorts into version 3 through the existing local reload channel, then verify current-process entries, fills and realized results. Keep the current sole worker trading until that replacement is ready.
+Next: verify fresh current-process trading after ledger restoration, opt the12reviewed cohorts into version3 through the existing local reload channel, then verify actual entries, fills and realized results. The original452fills,2.564GB financial prefix and every prior engine approval are preserved; monetary caps, rate limits and windows are unchanged.

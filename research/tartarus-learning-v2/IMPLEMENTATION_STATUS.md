@@ -1,8 +1,8 @@
-# Tartarus implementation status — October21,19:35UTC
+# Tartarus implementation status — October21,19:49UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
-Production R70 is live with452fills at19:30. Nineteen new receipts cover14,762shares across three sell orders, net-105.925realized; cash24,455.475. Repeated-acquisition version3 passes159 focused checks and is building, not deployed. It removes the after-exit/flat re-entry restriction while retaining original costs and order reconciliation. [Evidence and limits](recurring-cohort-20261021.md).
+R71 is installed as sole1028075 and restoring all452original fills/2.564GB history. Repeat acquisition and immutable report cache passed290checks; fresh current-process trading and version3 review opt-in remain pending. The latest official19:48account mark is94,678.645(-5.32%). Prior R70 increased actual trading but its latest three filled sales realized-105.925combined. [Installation](r71-recurring-installed-20261021.json), [implementation and limits](recurring-cohort-20261021.md).
 
 ## Running and queued work
 
