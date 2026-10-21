@@ -1,0 +1,228 @@
+{
+  "observedUtc": "2026-10-21T03:52:29.828492+00:00",
+  "classification": "sampled_exact_typed_replay_decode_benchmark_not_full_cache_parity_or_training_speedup",
+  "cacheManifestSha256": "df6d11e965f46c8a86af73ee4747baba68a026a5eeb1851c646108f3301199d3",
+  "sampledRows": 40000,
+  "sampledBytes": 29267620,
+  "blocks": [
+    {
+      "table": "market",
+      "start": 0,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 794169,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 1588339,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 2382509,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 3176679,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 3970848,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 4765018,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 5559188,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 6353358,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 7147528,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 7941697,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 8735867,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 9530037,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 10324207,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 11118377,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 11912546,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 12706716,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 13500886,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 14295056,
+      "rows": 1000
+    },
+    {
+      "table": "market",
+      "start": 15089226,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 0,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 4149,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 8299,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 12449,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 16599,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 20749,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 24899,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 29048,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 33198,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 37348,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 41498,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 45648,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 49798,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 53947,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 58097,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 62247,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 66397,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 70547,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 74697,
+      "rows": 1000
+    },
+    {
+      "table": "flow",
+      "start": 78847,
+      "rows": 1000
+    }
+  ],
+  "typedValuesAndFloatBitsEqualForEverySample": true,
+  "paritySeconds": 0.7860535999934655,
+  "parseWallSeconds": {
+    "stdlib": [
+      0.15121820000058506,
+      0.15042299999913666
+    ],
+    "orjson": [
+      0.0595675999938976,
+      0.06060869999055285
+    ]
+  },
+  "orjsonVersion": "3.11.3",
+  "sourceAndPricesUnchanged": true,
+  "activeLearnerUnchanged": true,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "physicalAccountRequests": 0,
+  "admittedToLearner": false
+}

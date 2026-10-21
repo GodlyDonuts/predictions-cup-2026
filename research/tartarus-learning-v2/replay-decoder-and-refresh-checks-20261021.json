@@ -1,0 +1,19 @@
+{
+  "observedUtc": "2026-10-21T03:56:15.888468+00:00",
+  "sourceCommit": "59d13e1dc8557d9919ae4377475930779e8e705d",
+  "command": "python -m unittest moloch.learning_actions.test_replay_decoder moloch.learning_actions.test_disk_tape moloch.learning_actions.test_token_refresh moloch.learning_actions.test_execution_receipts",
+  "passed": 39,
+  "skipped": 0,
+  "testWallSeconds": 5.819,
+  "privateFillCases": [
+    "paid refresh before private batch publication; old expiry timer fenced",
+    "paid refresh between batch publication and delayed receipt"
+  ],
+  "numericFailureCase": "greater-than-64-bit integer changed by optional parser rejects whole audit",
+  "typedComparison": "exact Python types, recursive structure, IEEE754 float bits including signed zero",
+  "readerParity": "original actor inputs and economic trajectory under identical forced SIG operations",
+  "heldoutGuard": "crossing cache rejected before exposure registration or row decoding",
+  "activeLearnerChanged": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

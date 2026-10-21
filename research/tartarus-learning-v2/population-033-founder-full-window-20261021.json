@@ -1,0 +1,514 @@
+{
+  "policy": "founder",
+  "checkpointSha256": "a0620ce76bbf208435a8f6507f7ef90a1482603b8a0b9a4c435613f4866d8e2d",
+  "parameterSha256": "10bbad44094bc573d316e797b30a28ad591ed66c623dbdd1317481cd60737498",
+  "sourceExperimentSha256": "3564bb98a38744a3015360e90e2712df3796f1d84a5db0435db652698496cbbb",
+  "selection": {
+    "role": "development_selection",
+    "development_screen": false,
+    "full_window_development_confirmation": true,
+    "eligible": false,
+    "checkpoint_sha256": "a0620ce76bbf208435a8f6507f7ef90a1482603b8a0b9a4c435613f4866d8e2d",
+    "reward": -0.26781237406608877,
+    "cases": [
+      {
+        "reward": -0.26781237406608877,
+        "G": -0.26781237406608877,
+        "daily_log_returns": [
+          -0.20288214446954128,
+          0.0568387739166487
+        ],
+        "sample_daily_std": 0.1836504226068728,
+        "D": 2,
+        "N": 0,
+        "bankrupt": false,
+        "eligible": false,
+        "development_daily_growth": true,
+        "classification": "complete_day_development_growth_not_source_or_independent_qualification",
+        "terminal_reward_correction": -0.26781237406608877,
+        "wealth_attribution": {
+          "initial_cash_micros": 100000000000,
+          "terminal_cash_micros": 165000,
+          "initial_collateral_debt_micros": 0,
+          "terminal_collateral_debt_micros": 0,
+          "cash_change_twice_micros": -199999670000,
+          "liability_change_twice_micros": 0,
+          "inventory_mark_change_twice_micros": 172823715000,
+          "wealth_change_twice_micros": -27175955000,
+          "exact_reconciliation": true,
+          "terminal_holdings": [
+            {
+              "exchange": "1021",
+              "side": "NO",
+              "quantity": 94,
+              "remaining_lot_cost_micros": 31020000,
+              "marked_value_twice_micros": 62510000,
+              "mark_minus_lot_cost_twice_micros": 470000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1030",
+              "side": "NO",
+              "quantity": 5699,
+              "remaining_lot_cost_micros": 713465000,
+              "marked_value_twice_micros": 1282275000,
+              "mark_minus_lot_cost_twice_micros": -144655000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1031",
+              "side": "NO",
+              "quantity": 27603,
+              "remaining_lot_cost_micros": 13440300000,
+              "marked_value_twice_micros": 26084835000,
+              "mark_minus_lot_cost_twice_micros": -795765000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1047",
+              "side": "NO",
+              "quantity": 972,
+              "remaining_lot_cost_micros": 369360000,
+              "marked_value_twice_micros": 665820000,
+              "mark_minus_lot_cost_twice_micros": -72900000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1048",
+              "side": "NO",
+              "quantity": 7,
+              "remaining_lot_cost_micros": 4270000,
+              "marked_value_twice_micros": 8820000,
+              "mark_minus_lot_cost_twice_micros": 280000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1062",
+              "side": "NO",
+              "quantity": 61,
+              "remaining_lot_cost_micros": 7625000,
+              "marked_value_twice_micros": 13725000,
+              "mark_minus_lot_cost_twice_micros": -1525000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1068",
+              "side": "NO",
+              "quantity": 8159,
+              "remaining_lot_cost_micros": 448745000,
+              "marked_value_twice_micros": 734310000,
+              "mark_minus_lot_cost_twice_micros": -163180000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "849",
+              "side": "YES",
+              "quantity": 100502,
+              "remaining_lot_cost_micros": 21477125000,
+              "marked_value_twice_micros": 35175700000,
+              "mark_minus_lot_cost_twice_micros": -7778550000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "867",
+              "side": "NO",
+              "quantity": 11,
+              "remaining_lot_cost_micros": 9460000,
+              "marked_value_twice_micros": 18865000,
+              "mark_minus_lot_cost_twice_micros": -55000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "869",
+              "side": "NO",
+              "quantity": 24269,
+              "remaining_lot_cost_micros": 2799070000,
+              "marked_value_twice_micros": 5460525000,
+              "mark_minus_lot_cost_twice_micros": -137615000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "916",
+              "side": "NO",
+              "quantity": 77,
+              "remaining_lot_cost_micros": 8470000,
+              "marked_value_twice_micros": 14245000,
+              "mark_minus_lot_cost_twice_micros": -2695000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "925",
+              "side": "NO",
+              "quantity": 1049,
+              "remaining_lot_cost_micros": 886280000,
+              "marked_value_twice_micros": 1736095000,
+              "mark_minus_lot_cost_twice_micros": -36465000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "932",
+              "side": "NO",
+              "quantity": 100502,
+              "remaining_lot_cost_micros": 24619385000,
+              "marked_value_twice_micros": 45728410000,
+              "mark_minus_lot_cost_twice_micros": -3510360000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "943",
+              "side": "YES",
+              "quantity": 16,
+              "remaining_lot_cost_micros": 1600000,
+              "marked_value_twice_micros": 2000000,
+              "mark_minus_lot_cost_twice_micros": -1200000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "975",
+              "side": "NO",
+              "quantity": 298507,
+              "remaining_lot_cost_micros": 31782160000,
+              "marked_value_twice_micros": 49253655000,
+              "mark_minus_lot_cost_twice_micros": -14310665000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "978",
+              "side": "NO",
+              "quantity": 4179,
+              "remaining_lot_cost_micros": 3401500000,
+              "marked_value_twice_micros": 6581925000,
+              "mark_minus_lot_cost_twice_micros": -221075000,
+              "stale_mark": false
+            }
+          ],
+          "fill_flows": {
+            "BUY_YES": {
+              "fills": 6,
+              "quantity": 100518,
+              "cash_delta_micros": -21478725000,
+              "realized_delta_micros": 0
+            },
+            "BUY_NO": {
+              "fills": 42,
+              "quantity": 471189,
+              "cash_delta_micros": -78521110000,
+              "realized_delta_micros": 0
+            }
+          },
+          "valuation_convention": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+          "executable_liquidation_established": false
+        },
+        "initial_wealth_twice_micros": 200000000000,
+        "terminal_wealth_twice_micros": 172824045000,
+        "marked_roi": -0.13587977500000004,
+        "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+        "fees_micros": 0,
+        "realized_fifo_micros": 0,
+        "fill_count": 48,
+        "stale_mark_observations": 1,
+        "stale_mark_exchanges": [
+          "1021",
+          "1030",
+          "1031",
+          "1047",
+          "1048",
+          "1062",
+          "1068",
+          "849",
+          "867",
+          "869",
+          "916",
+          "925",
+          "932",
+          "943",
+          "975",
+          "978"
+        ],
+        "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+        "depth_executable_roi_established": false,
+        "production_profitability_established": false,
+        "stress": false,
+        "start_ms": 1792221916175,
+        "end_ms": 1792394716175,
+        "selection_seed": 281307,
+        "decisions": 32555,
+        "passive_execution": {
+          "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+          "source_volume": 14629129,
+          "intercepted_volume": 0,
+          "calibrated": false
+        },
+        "family_counts": {
+          "10": 1545,
+          "0": 1461,
+          "4": 924,
+          "2": 12004,
+          "5": 1145,
+          "6": 451,
+          "8": 12345,
+          "9": 80,
+          "1": 1153,
+          "7": 1145,
+          "3": 290,
+          "11": 12
+        },
+        "status_counts": {
+          "IN_FLIGHT": 887,
+          "ALARM": 1461,
+          "BUSY": 24962,
+          "BUILDER_UPDATED": 1273,
+          "QUOTE_SELECTION_UPDATED": 320,
+          "QUOTE_SELECTION_CLEARED": 3,
+          "RATE_WAIT": 3637,
+          "DATA_SERVICE_PAUSED": 3,
+          "DATA_SERVICE_STARTED": 2,
+          "STREAM_DISCONNECTED": 4,
+          "BUILDER_CLEARED": 3
+        },
+        "entity_counts": {
+          "read": 1545,
+          "global": 15037,
+          "contract": 15171,
+          "quote_add": 274,
+          "order": 290,
+          "quote_clear": 3,
+          "data_service_control": 5,
+          "quote_remove": 46,
+          "market": 180,
+          "stream_control": 4
+        },
+        "valuation_observation_schedule": "start_daily_boundaries_and_terminal",
+        "evaluation_compute_mode": "batch_encoding_and_action_heads_case_local_generators"
+      },
+      {
+        "reward": -0.12024593296745842,
+        "G": -0.12024593296745842,
+        "daily_log_returns": [
+          -0.09837739891523337,
+          -0.010903262706333156
+        ],
+        "sample_daily_std": 0.061853554891749055,
+        "D": 2,
+        "N": 0,
+        "bankrupt": false,
+        "eligible": false,
+        "development_daily_growth": true,
+        "classification": "complete_day_development_growth_not_source_or_independent_qualification",
+        "terminal_reward_correction": -0.12024593296745842,
+        "wealth_attribution": {
+          "initial_cash_micros": 100000000000,
+          "terminal_cash_micros": 170000,
+          "initial_collateral_debt_micros": 0,
+          "terminal_collateral_debt_micros": 0,
+          "cash_change_twice_micros": -199999660000,
+          "liability_change_twice_micros": 0,
+          "inventory_mark_change_twice_micros": 179295415000,
+          "wealth_change_twice_micros": -20704245000,
+          "exact_reconciliation": true,
+          "terminal_holdings": [
+            {
+              "exchange": "1033",
+              "side": "YES",
+              "quantity": 11975,
+              "remaining_lot_cost_micros": 4109500000,
+              "marked_value_twice_micros": 7843625000,
+              "mark_minus_lot_cost_twice_micros": -375375000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1036",
+              "side": "NO",
+              "quantity": 27,
+              "remaining_lot_cost_micros": 4455000,
+              "marked_value_twice_micros": 8505000,
+              "mark_minus_lot_cost_twice_micros": -405000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1050",
+              "side": "NO",
+              "quantity": 3,
+              "remaining_lot_cost_micros": 2595000,
+              "marked_value_twice_micros": 5025000,
+              "mark_minus_lot_cost_twice_micros": -165000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1052",
+              "side": "NO",
+              "quantity": 93,
+              "remaining_lot_cost_micros": 13950000,
+              "marked_value_twice_micros": 23715000,
+              "mark_minus_lot_cost_twice_micros": -4185000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1068",
+              "side": "YES",
+              "quantity": 85,
+              "remaining_lot_cost_micros": 81175000,
+              "marked_value_twice_micros": 162350000,
+              "mark_minus_lot_cost_twice_micros": 0,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1070",
+              "side": "NO",
+              "quantity": 4,
+              "remaining_lot_cost_micros": 640000,
+              "marked_value_twice_micros": 1220000,
+              "mark_minus_lot_cost_twice_micros": -60000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "1071",
+              "side": "YES",
+              "quantity": 145985,
+              "remaining_lot_cost_micros": 29481565000,
+              "marked_value_twice_micros": 48904975000,
+              "mark_minus_lot_cost_twice_micros": -10058155000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "855",
+              "side": "YES",
+              "quantity": 108,
+              "remaining_lot_cost_micros": 53460000,
+              "marked_value_twice_micros": 109620000,
+              "mark_minus_lot_cost_twice_micros": 2700000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "869",
+              "side": "NO",
+              "quantity": 1233,
+              "remaining_lot_cost_micros": 135555000,
+              "marked_value_twice_micros": 277425000,
+              "mark_minus_lot_cost_twice_micros": 6315000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "908",
+              "side": "NO",
+              "quantity": 60957,
+              "remaining_lot_cost_micros": 58105935000,
+              "marked_value_twice_micros": 112770450000,
+              "mark_minus_lot_cost_twice_micros": -3441420000,
+              "stale_mark": false
+            },
+            {
+              "exchange": "990",
+              "side": "NO",
+              "quantity": 63369,
+              "remaining_lot_cost_micros": 8011000000,
+              "marked_value_twice_micros": 9188505000,
+              "mark_minus_lot_cost_twice_micros": -6833495000,
+              "stale_mark": false
+            }
+          ],
+          "fill_flows": {
+            "BUY_NO": {
+              "fills": 19,
+              "quantity": 125686,
+              "cash_delta_micros": -66274130000,
+              "realized_delta_micros": 0
+            },
+            "BUY_YES": {
+              "fills": 12,
+              "quantity": 158153,
+              "cash_delta_micros": -33725700000,
+              "realized_delta_micros": 0
+            }
+          },
+          "valuation_convention": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+          "executable_liquidation_established": false
+        },
+        "initial_wealth_twice_micros": 200000000000,
+        "terminal_wealth_twice_micros": 179295755000,
+        "marked_roi": -0.10352122500000005,
+        "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+        "fees_micros": 0,
+        "realized_fifo_micros": 0,
+        "fill_count": 31,
+        "stale_mark_observations": 1,
+        "stale_mark_exchanges": [
+          "1033",
+          "1036",
+          "1050",
+          "1052",
+          "1068",
+          "1070",
+          "1071",
+          "855",
+          "869",
+          "908",
+          "990"
+        ],
+        "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+        "depth_executable_roi_established": false,
+        "production_profitability_established": false,
+        "stress": true,
+        "start_ms": 1792221916175,
+        "end_ms": 1792394716175,
+        "selection_seed": 281308,
+        "decisions": 2099,
+        "passive_execution": {
+          "mode": "displayed_queue_ahead_no_cancel_credit_uncalibrated",
+          "source_volume": 14629129,
+          "intercepted_volume": 0,
+          "calibrated": false
+        },
+        "family_counts": {
+          "0": 355,
+          "5": 130,
+          "8": 73,
+          "1": 246,
+          "7": 163,
+          "9": 53,
+          "10": 400,
+          "6": 186,
+          "2": 183,
+          "4": 135,
+          "3": 164,
+          "11": 11
+        },
+        "status_counts": {
+          "ALARM": 355,
+          "BUILDER_UPDATED": 252,
+          "BUSY": 1084,
+          "IN_FLIGHT": 144,
+          "QUOTE_SELECTION_UPDATED": 59,
+          "STREAM_DISCONNECTED": 6,
+          "RATE_WAIT": 189,
+          "QUOTE_SELECTION_CLEARED": 5,
+          "DATA_SERVICE_PAUSED": 2,
+          "BUILDER_CLEARED": 1,
+          "DATA_SERVICE_STARTED": 2
+        },
+        "entity_counts": {
+          "global": 646,
+          "contract": 806,
+          "read": 400,
+          "quote_add": 49,
+          "order": 164,
+          "stream_control": 6,
+          "quote_remove": 10,
+          "quote_clear": 5,
+          "data_service_control": 4,
+          "market": 9
+        },
+        "valuation_observation_schedule": "start_daily_boundaries_and_terminal",
+        "evaluation_compute_mode": "batch_encoding_and_action_heads_case_local_generators"
+      }
+    ],
+    "marked_roi_min": -0.13587977500000004,
+    "source_and_execution_calibration_complete": false,
+    "production_profitability_established": false
+  },
+  "wallSeconds": 2266.883595799998,
+  "weightsUnchanged": true,
+  "optimizerRun": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}
