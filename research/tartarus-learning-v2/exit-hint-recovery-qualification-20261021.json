@@ -1,0 +1,16 @@
+{
+  "observedUtc": "2026-10-21T05:44:44.115056-08:00",
+  "runtimeChangeCommit": "06b5d7b7e618391a10266537c4f87109037292d6",
+  "binarySha256": "7f56d8da1d4739a2dd55e2ee972eb3bc9cdbbc9ea32c38f5329be992593c85bd",
+  "exactSourceDelta": {
+    "moloch/live-runtime/tests/fundamental_policy.rs": "6bcd3cd666fc56ab7a1ebff20bc91f526baafaab6ce7b6faf1541fb9cfa31a01",
+    "moloch/live-runtime/src/fundamental_policy.rs": "4766307e4ffc24aac9deed6700aed7f922f84fa7e2e81d6cf8d13f08496c4f0d"
+  },
+  "fundamentalIntegrationPassed": 134,
+  "workerRefreshPassed": 23,
+  "workerReservedExitPassed": 12,
+  "cachePassed": 22,
+  "existingBenchmarksIgnored": 2,
+  "nativeEngineChanged": false,
+  "productionChanged": false
+}

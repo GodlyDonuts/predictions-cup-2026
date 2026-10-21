@@ -1,0 +1,14 @@
+{
+  "observedUtc": "2026-10-21T05:43:55.068131-08:00",
+  "requestSha256": "879f47bda778c4300ca72c2472ccf60eb2ebe2d08de5a745ee3329cf781d46d2",
+  "requestExpiresAtMs": 1792589990981,
+  "committedGeneration": "59b2e02546c2e49e68d7c661f219814937e8910bb06b7503c9501c6a614d72ee",
+  "ownerStatusAfterExpiry": true,
+  "nativeViewAfterExpiry": "2026-10-21T13:42:42.633Z",
+  "originalCohortPrefixBytes": 2440587,
+  "originalCohortPrefixSha256": "98b9978d6997f5301a9190d0e9d9f2e81dd5493dbfa2edfb1382bfdb66b5400e",
+  "requestFoundInGenerationLog": false,
+  "requestResent": false,
+  "accountRequests": 0,
+  "financialStateChanged": false
+}

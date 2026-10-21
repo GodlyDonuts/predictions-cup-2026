@@ -15,6 +15,7 @@ import subprocess
 import time
 import urllib.request
 from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
+from datetime import datetime
 
 
 def sha(p):
@@ -54,6 +55,96 @@ def changed_scopes(capture, current_control, open_exchanges, now):
     return selected
 
 
+def reload_resolution(root, config, state, pending, now):
+    """File-only proof of a late commit or an expired, uncommitted request.
+
+    Time alone never resolves a request. Require the exact request, live-owner
+    binding, matching later owner/native views and the original cohort prefix.
+    Returning None means wait without submitting another generation.
+    """
+    root = Path(root)
+    staged = pending['staged']
+    request_path = Path(staged['controlPath']).parent / 'request.json'
+    wanted = pending['expectedGenerationSha256']
+    raw = request_path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != wanted:
+        raise ValueError('RELOAD_RECONCILIATION_REQUEST_CHANGED')
+    request = json.loads(raw)
+    previous = pending['previousGenerationSha256']
+    bindings = {'workerPid': config['workerPid'], 'workerStartTicks': config['workerStartTicks'],
+        'baseControlSha256': config['baseControlSha256'], 'previousGenerationSha256': previous,
+        'controlPath': staged['controlPath'], 'controlSha256': staged['controlSha256'],
+        'expiresAtMs': pending['expiresAtMs']}
+    if any(request.get(k) != v for k, v in bindings.items()) or state['generationSha256'] not in (previous, wanted):
+        raise ValueError('RELOAD_RECONCILIATION_BINDING_CHANGED')
+    if sha(staged['controlPath']) != staged['controlSha256']:
+        raise ValueError('RELOAD_RECONCILIATION_CONTROL_CHANGED')
+    owner_path = root / 'fundamental-reload/status.json'
+    owner_raw = owner_path.read_bytes()
+    owner = json.loads(owner_raw)
+    owner_mtime = owner_path.stat().st_mtime_ns
+    for key in ('workerPid', 'workerStartTicks', 'baseControlSha256'):
+        if owner.get(key) != config[key]:
+            raise ValueError('RELOAD_RECONCILIATION_OWNER_CHANGED')
+    for key in ('ownerLease', 'bankManifestSha256', 'runId'):
+        if owner.get(key) != request[key]:
+            raise ValueError('RELOAD_RECONCILIATION_OWNER_SCOPE_CHANGED')
+    view = json.loads((root / 'tartarus-current-native-state.json').read_bytes())
+    generation = owner['previousGenerationSha256']
+    if generation not in (previous, wanted):
+        raise ValueError('RELOAD_RECONCILIATION_EXTERNAL_GENERATION')
+    if view['generationSha256'] != generation:
+        return None
+    original = (root / 'fundamental.ndjson').read_bytes()
+    prefix = original[:original.rfind(b'\n') + 1]
+    generations = []
+    for line in prefix.splitlines():
+        row = json.loads(line)
+        if row['manifestHash'] != request['bankManifestSha256'] or row['runId'] != request['runId']:
+            raise ValueError('RELOAD_RECONCILIATION_COHORT_SCOPE')
+        event = row['event']
+        if event.get('kind') == 'review_generation':
+            generations.append(event['generation']['generationSha256'])
+    if not generations or generations[-1] != generation:
+        return None
+    if owner_path.read_bytes() != owner_raw or owner_path.stat().st_mtime_ns != owner_mtime:
+        return None
+    if generation == wanted:
+        outcome = 'committed'
+    else:
+        expiry = request['expiresAtMs']
+        written = datetime.fromisoformat(view['writtenAt'].replace('Z', '+00:00'))
+        if written.tzinfo is None:
+            raise ValueError('RELOAD_RECONCILIATION_UTC_VIEW_REQUIRED')
+        if (now <= expiry or owner_mtime // 1_000_000 <= expiry
+                or int(written.timestamp() * 1000) <= expiry or wanted in generations):
+            return None
+        outcome = 'expired_uncommitted'
+    return {'outcome': outcome, 'requestSha256': wanted, 'previousGenerationSha256': previous,
+        'committedGenerationSha256': generation, 'observedAtMs': now,
+        'requestExpiresAtMs': request['expiresAtMs'], 'nativeViewWrittenAt': view['writtenAt'],
+        'originalCohortPrefixBytes': len(prefix), 'originalCohortPrefixSha256': hashlib.sha256(prefix).hexdigest(),
+        'requestResent': False, 'accountRequests': 0, 'financialStateChanged': False}
+
+
+def record_resolution(out, state, pending, resolution):
+    """Preserve the old request; make metadata recovery idempotent across crashes."""
+    wanted = pending['expectedGenerationSha256']
+    for name, value in [('reload-request-' + wanted + '.json', pending),
+                        ('reload-resolution-' + wanted + '.json', resolution)]:
+        path = out / name
+        if not path.exists():
+            put(path, value)
+    if state.get('lastResolvedReloadRequestSha256') != wanted:
+        if resolution['outcome'] == 'committed' and state['generationSha256'] != wanted:
+            state.update(generationSha256=wanted, controlPath=pending['staged']['controlPath'],
+                controlSha256=pending['staged']['controlSha256'], commits=state['commits'] + 1)
+        state.update(index=state['index'] + 1, lastResolvedReloadRequestSha256=wanted)
+        put(out / 'state.json', state)
+    put(out / 'pending.json', {'resolved': True, 'generationSha256': state['generationSha256'],
+        'resolvedRequestSha256': wanted, 'outcome': resolution['outcome']})
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, required=True)
@@ -73,9 +164,8 @@ def main():
     state = json.loads(state_path.read_bytes()) if state_path.exists() else {
         'generationSha256': c['initialGenerationSha256'], 'controlPath': str(base),
         'controlSha256': c['baseControlSha256'], 'commits': 0, 'index': 0}
-    if (out / 'pending.json').exists() and json.loads((out / 'pending.json').read_bytes()).get('resolved') is not True:
-        raise ValueError('PRIOR_RELOAD_OUTCOME_REQUIRES_RECONCILIATION')
-    pending = None
+    retained = json.loads((out / 'pending.json').read_bytes()) if (out / 'pending.json').exists() else None
+    pending = retained if retained is not None and retained.get('resolved') is not True else None
 
     def report(phase, **fields):
         value = {'atMs': time.time_ns() // 1_000_000, 'pid': os.getpid(), 'phase': phase,
@@ -99,6 +189,14 @@ def main():
                 report('waiting_for_current_worker'); time.sleep(5); continue
             if status['baseControlSha256'] != c['baseControlSha256']:
                 report('worker_base_binding_changed'); return
+            if pending is not None:
+                resolution = reload_resolution(root, c, state, pending, time.time_ns() // 1_000_000)
+                if resolution is None:
+                    report('waiting_for_reload_reconciliation'); time.sleep(5); continue
+                record_resolution(out, state, pending, resolution)
+                report('reload_reconciled', outcome=resolution['outcome'], requestSha256=resolution['requestSha256'])
+                pending = None
+                continue  # Capture new values on a new pass; never resend the old request.
             if status['previousGenerationSha256'] != state['generationSha256']:
                 report('external_generation_changed'); return
             if sha(state['controlPath']) != state['controlSha256']:
@@ -169,13 +267,14 @@ def main():
                 if phase.startswith(('rejected_', 'deferred_')) and observed['previousGenerationSha256'] == state['generationSha256']:
                     report('deferred', exchanges=selected, reason=response.get('reason', phase)); pending = None
                 else:
-                    report('reload_outcome_requires_reconciliation', exitCode=reply.returncode); return
-            state['index'] += 1
-            put(state_path, state)
-            put(out / 'pending.json', {'resolved': True, 'generationSha256': state['generationSha256']})
+                    report('reload_outcome_requires_reconciliation', exitCode=reply.returncode)
+            if pending is None:
+                state['index'] += 1
+                put(state_path, state)
+                put(out / 'pending.json', {'resolved': True, 'generationSha256': state['generationSha256']})
         except Exception as e:
             report('error', reason=str(e)[-700:], unresolvedRequest=pending is not None)
-            if pending is not None:
+            if pending is not None and not isinstance(e, subprocess.TimeoutExpired):
                 return
         time.sleep(max(1, c['intervalSeconds'] - (time.monotonic() - started)))
 
