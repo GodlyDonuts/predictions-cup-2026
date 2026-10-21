@@ -130,7 +130,7 @@ class Series(Sequence):
             base='flow'if self.table=='execution'else'market'
             query=f'SELECT b.i,b.body FROM {self.table} s JOIN {base} b ON b.i=s.record WHERE s.i>=? AND s.i<? ORDER BY s.i'
         for i,body in self.store.query(query,(start,stop)):
-            row=json.loads(body);row['_disk_record']=(base,i)
+            row=self.store.decode(body);row['_disk_record']=(base,i)
             self.store.decoded_rows+=1
             yield row
 
@@ -184,7 +184,7 @@ def prepared_book(books,row):
 
 
 class Store:
-    def __init__(self,path,expected_manifest_sha256,source_dataset):
+    def __init__(self,path,expected_manifest_sha256,source_dataset,*,decoder_audit=None,decoder_audit_sha256=None):
         path=Path(path).resolve();raw=(path/'manifest.json').read_bytes();digest=hashlib.sha256(raw).hexdigest()
         if digest!=expected_manifest_sha256 or json.loads((path/'COMPLETE.json').read_text())['manifestSha256']!=digest:
             raise ValueError('FROZEN_REPLAY_CACHE_MANIFEST_CHANGED')
@@ -197,6 +197,8 @@ class Store:
         source_manifest,source_sha,_=source_files(source_dataset)
         if source_sha!=self.manifest['sourceManifestSha256']or source_manifest!=self.manifest['sourceManifest']:
             raise ValueError('CACHE_IS_NOT_CONFIGURED_SOURCE_DATASET')
+        from .replay_decoder import audited_decoder
+        self.decode=audited_decoder(self.manifest,digest,decoder_audit,decoder_audit_sha256)
         self.db=sqlite3.connect(database.as_uri()+'?mode=ro',uri=True)
         self.db.execute('PRAGMA cache_size=-16384');self.db.execute('PRAGMA temp_store=FILE')
         self.decoded_rows=0;self.views={};self.cursors=set();self.closed=False
@@ -271,7 +273,7 @@ class Store:
         query='''SELECT body FROM flow WHERE i IN(SELECT MIN(i) FROM flow WHERE ex=? AND at>=? AND at<?
            AND at<=? AND executed>=? AND executed<? AND (? IS NULL OR i<=?) GROUP BY tid,ex,match)
            ORDER BY executed DESC,match LIMIT ? OFFSET ?'''
-        return [json.loads(r[0])for r in self.db.execute(query,(exchange,lo,hi,opened,lower,upper,through,through,limit,offset))]
+        return [self.decode(r[0])for r in self.db.execute(query,(exchange,lo,hi,opened,lower,upper,through,through,limit,offset))]
 
     def coverage(self,split,maximum_gap_ms):
         result={}
@@ -299,8 +301,9 @@ class Store:
 
 
 class DiskFlowTape(FlowTape):
-    def __init__(self,cache,expected_sha256,source_dataset):
-        self.disk_store=Store(cache,expected_sha256,source_dataset);s=self.disk_store
+    def __init__(self,cache,expected_sha256,source_dataset,*,decoder_audit=None,decoder_audit_sha256=None):
+        self.disk_store=Store(cache,expected_sha256,source_dataset,decoder_audit=decoder_audit,
+                              decoder_audit_sha256=decoder_audit_sha256);s=self.disk_store
         self.manifest=s.manifest['sourceManifest'];self.manifest_sha256=s.manifest['sourceManifestSha256']
         self.rows,self.times,self.flow_rows,self.flow_times=s.rows,s.times,s.flow_rows,s.flow_times
         self.exchanges=('__GLOBAL_WAIT__',)+tuple(r[0]for r in s.db.execute("SELECT DISTINCT ex FROM market WHERE kind='book' ORDER BY ex"))

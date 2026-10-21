@@ -1,0 +1,2 @@
+# Optional: only enabled with an exhaustive cache-specific typed parity audit.
+orjson==3.11.3

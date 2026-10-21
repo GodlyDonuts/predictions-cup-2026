@@ -75,7 +75,8 @@ class Experiment:
         if config.get('replay_cache')is not None:
             from .disk_tape import DiskFlowTape
             cache=config['replay_cache']
-            disk_original=DiskFlowTape(cache['path'],cache['manifest_sha256'],config['dataset'])
+            disk_original=DiskFlowTape(cache['path'],cache['manifest_sha256'],config['dataset'],
+                decoder_audit=cache.get('decoder_audit'),decoder_audit_sha256=cache.get('decoder_audit_sha256'))
         if self.development:
             self.original=disk_original if disk_original is not None else FlowTape(Path(config['dataset']))
             self.split=Split(self.original.times[0],self.original.times[-1]+9*DAY)
