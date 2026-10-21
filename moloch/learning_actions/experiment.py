@@ -35,6 +35,11 @@ class Experiment:
     def __init__(self,config,output,*,data_use=None):
         from .training_chunks import validate as validate_chunks
         validate_chunks(config)
+        founders=config.get('evaluate_founders_before_training',False)
+        if type(founders)is not bool:raise ValueError('EXPLICIT_FOUNDER_EVALUATION_PROFILE')
+        if founders and (not isinstance(config.get('population_search'),dict)
+                or not config['population_search'].get('retain_island_champions',True)):
+            raise ValueError('FOUNDER_EVALUATION_REQUIRES_CHAMPION_RETENTION')
         process_worlds=config.get('process_source_worlds',False)
         if type(process_worlds)is not bool:raise ValueError('EXPLICIT_PROCESS_SOURCE_WORLD_PROFILE')
         if process_worlds and config.get('closed_episode_return_replay',False):
@@ -885,6 +890,38 @@ class Experiment:
                 self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
                 del model,opt
         best=None;island_champions={}
+        if self.config.get('evaluate_founders_before_training',False):
+            founder_rows=[]
+            for member,checkpoint in enumerate(self.population):
+                model,bundle=load_checkpoint(checkpoint['path'],checkpoint['sha256'],self.device)
+                if bundle['split_specification_sha256']!=self.spec_sha:
+                    raise ValueError('FOREIGN_FOUNDER_EXPERIMENT_CHECKPOINT')
+                del bundle
+                result=self.evaluate(model,checkpoint)
+                row={'member':member,'cycle':-1,'checkpoint':checkpoint,
+                    'training':{'performed':False,'classification':'founder_before_this_experiment_optimization'},
+                    'selection':result}
+                frozen(self.output/('founder-selection-%03d.json'%member),row)
+                founder_rows.append(row);self.log({'event':'founder_evaluated',**row})
+                del model
+            from .population import retain_island_champions
+            initial,island_champions,_=retain_island_champions(founder_rows,{},
+                members=members,islands=self.search_config['islands'])
+            best=initial[0]
+            frozen(self.output/'initial-island-champions.json',{
+                'classification':'measured_founders_not_independent_evidence',
+                'dataset_sha256':self.dataset_sha,'experiment_sha256':self.spec_sha,
+                'champions':{str(k):v for k,v in island_champions.items()},
+                'independent_test_used':False,'production_authority':False})
+            if (self.development and self.config.get('development_selection_episode_ms')is not None
+                    and best['selection']['reward']>0):
+                cp=best['checkpoint'];model,bundle=load_checkpoint(cp['path'],cp['sha256'],self.device)
+                del bundle
+                confirmation=self.evaluate(model,cp,confirmation=True)
+                frozen(self.output/'development-confirmation-founder.json',confirmation)
+                self.log({'event':'development_full_window_confirmation','cycle':-1,'checkpoint':cp,
+                    'confirmation':confirmation,'screen_reward':best['selection']['reward']})
+                del model
         for cycle in range(cycles):
             ranking=[]
             for member in self.member_order(cycle,members):

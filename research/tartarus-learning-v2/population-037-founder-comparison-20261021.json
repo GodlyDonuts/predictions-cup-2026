@@ -1,0 +1,219 @@
+{
+  "observedUtc": "2026-10-21T15:51:14.498312+00:00",
+  "classification": "immutable_checkpoint_vs_its_founder_full_development_window_not_independent_test",
+  "sourceCommit": "7da3921b6d27953329a5244959038759fd755d3c",
+  "planSha256": "9d5315ad5f241de746ac3c36802966fa6cec8827f9ef20dc8a810748850dcf88",
+  "trainingUpdates": 540,
+  "trainingDecisions": 18853,
+  "device": "cpu",
+  "frozenActorCostMs": 84,
+  "wallSeconds": 3974.6506590999925,
+  "optimizerRun": false,
+  "active037Modified": false,
+  "independentTestUsed": false,
+  "productionModified": false,
+  "physicalAccountRequests": 0,
+  "rawResultSha256": "5ddb5dcbce1d1dd164be33e602c8e66fe617552abcdaf43411e0c7a55aa0fe58",
+  "results": {
+    "candidate": {
+      "policy": "candidate",
+      "checkpointSha256": "4df256531fb37d4249da0b9399c0ff6db8638a7a84de09f2f11e6990598bd5cd",
+      "parameterSha256": "72a2539a0dbaa403395d600cea1a02fe7a4648f1caaef1907e1a6b6f05092b6e",
+      "wallSeconds": 2453.6671904000104,
+      "weightsUnchanged": true,
+      "optimizerRun": false,
+      "productionModified": false,
+      "independentTestUsed": false,
+      "selection": {
+        "role": "development_selection",
+        "reward": -0.24272373697203398,
+        "marked_roi_min": -0.170649575,
+        "source_and_execution_calibration_complete": false,
+        "production_profitability_established": false,
+        "cases": [
+          {
+            "reward": -0.07297611496238074,
+            "G": -0.07297611496238074,
+            "daily_log_returns": [
+              -0.05585185305646672,
+              0.012645194567189391
+            ],
+            "D": 2,
+            "N": 0,
+            "marked_roi": -0.042286550000000034,
+            "fill_count": 50,
+            "realized_fifo_micros": 0,
+            "stress": false,
+            "start_ms": 1792221916175,
+            "end_ms": 1792394716175,
+            "selection_seed": 281307,
+            "decisions": 6347,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "wealth_attribution": {
+              "initial_cash_micros": 100000000000,
+              "terminal_cash_micros": 300000,
+              "fill_flows": {
+                "BUY_NO": {
+                  "fills": 45,
+                  "quantity": 332690,
+                  "cash_delta_micros": -95411130000,
+                  "realized_delta_micros": 0
+                },
+                "BUY_YES": {
+                  "fills": 5,
+                  "quantity": 31807,
+                  "cash_delta_micros": -4588570000,
+                  "realized_delta_micros": 0
+                }
+              },
+              "exact_reconciliation": true
+            }
+          },
+          {
+            "reward": -0.24272373697203398,
+            "G": -0.24272373697203398,
+            "daily_log_returns": [
+              -0.193001242161474,
+              0.005888737080765943
+            ],
+            "D": 2,
+            "N": 0,
+            "marked_roi": -0.170649575,
+            "fill_count": 121,
+            "realized_fifo_micros": 0,
+            "stress": true,
+            "start_ms": 1792221916175,
+            "end_ms": 1792394716175,
+            "selection_seed": 281308,
+            "decisions": 6253,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "wealth_attribution": {
+              "initial_cash_micros": 100000000000,
+              "terminal_cash_micros": 55000,
+              "fill_flows": {
+                "BUY_NO": {
+                  "fills": 119,
+                  "quantity": 443880,
+                  "cash_delta_micros": -99992805000,
+                  "realized_delta_micros": 0
+                },
+                "BUY_YES": {
+                  "fills": 2,
+                  "quantity": 34,
+                  "cash_delta_micros": -7140000,
+                  "realized_delta_micros": 0
+                }
+              },
+              "exact_reconciliation": true
+            }
+          }
+        ]
+      }
+    },
+    "founder": {
+      "policy": "founder",
+      "checkpointSha256": "2a551324b30fe3afd46edde7b34813096a9a0e465de6300d2957de171475fc73",
+      "parameterSha256": "fbb63ffcf6d3377a15ffd6295ec8a7c99f748936db5c5037f05fa4b5fda281c5",
+      "wallSeconds": 1519.8083557000064,
+      "weightsUnchanged": true,
+      "optimizerRun": false,
+      "productionModified": false,
+      "independentTestUsed": false,
+      "selection": {
+        "role": "development_selection",
+        "reward": -0.06033673496954075,
+        "marked_roi_min": -0.040442175000000025,
+        "source_and_execution_calibration_complete": false,
+        "production_profitability_established": false,
+        "cases": [
+          {
+            "reward": -0.04592530367883864,
+            "G": -0.04592530367883864,
+            "daily_log_returns": [
+              -0.037497319050371125,
+              -0.003785380536501079
+            ],
+            "D": 2,
+            "N": 0,
+            "marked_roi": -0.040442175000000025,
+            "fill_count": 90,
+            "realized_fifo_micros": 0,
+            "stress": false,
+            "start_ms": 1792221916175,
+            "end_ms": 1792394716175,
+            "selection_seed": 281307,
+            "decisions": 1977,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "wealth_attribution": {
+              "initial_cash_micros": 100000000000,
+              "terminal_cash_micros": 85385000,
+              "fill_flows": {
+                "BUY_NO": {
+                  "fills": 83,
+                  "quantity": 167210,
+                  "cash_delta_micros": -58743785000,
+                  "realized_delta_micros": 0
+                },
+                "BUY_YES": {
+                  "fills": 7,
+                  "quantity": 118290,
+                  "cash_delta_micros": -41170830000,
+                  "realized_delta_micros": 0
+                }
+              },
+              "exact_reconciliation": true
+            }
+          },
+          {
+            "reward": -0.06033673496954075,
+            "G": -0.06033673496954075,
+            "daily_log_returns": [
+              -0.044775162586254746,
+              0.017471126946889282
+            ],
+            "D": 2,
+            "N": 0,
+            "marked_roi": -0.02693464999999995,
+            "fill_count": 15,
+            "realized_fifo_micros": 0,
+            "stress": true,
+            "start_ms": 1792221916175,
+            "end_ms": 1792394716175,
+            "selection_seed": 281308,
+            "decisions": 116,
+            "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+            "depth_executable_roi_established": false,
+            "production_profitability_established": false,
+            "wealth_attribution": {
+              "initial_cash_micros": 100000000000,
+              "terminal_cash_micros": 18101335000,
+              "fill_flows": {
+                "BUY_NO": {
+                  "fills": 8,
+                  "quantity": 136054,
+                  "cash_delta_micros": -27791890000,
+                  "realized_delta_micros": 0
+                },
+                "BUY_YES": {
+                  "fills": 7,
+                  "quantity": 100502,
+                  "cash_delta_micros": -54106775000,
+                  "realized_delta_micros": 0
+                }
+              },
+              "exact_reconciliation": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  "preferredMeasuredCheckpoint": "founder",
+  "preferenceReason": "Higher worst-case human daily-growth reward on matching CPU development cases; both lose money. No CPU score import into active GPU selection."
+}
