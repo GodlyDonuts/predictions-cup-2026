@@ -1,0 +1,268 @@
+{
+  "observedUtc": "2026-10-21T22:52:37.228000+00:00",
+  "workerPid": 1038328,
+  "nativeViewWrittenAt": "2026-10-21T22:42:41.381Z",
+  "nativeViewAgeMs": 595847,
+  "reportSha256": "7738716a64650631b2d21286494cfb9f0b9e52861b7f6430c2d310c9415d6636",
+  "fillCount": 481,
+  "rows": [
+    {
+      "exchangeId": "966",
+      "side": "YES",
+      "reasons": [
+        "existing_order",
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 695,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:42:59.573Z",
+      "bookSourceAt": "2026-10-21T22:42:58.6829608+00:00",
+      "bookSequence": "227480935",
+      "bookAgeMs": 577655,
+      "bestBid": "0.92",
+      "bestAsk": "0.925",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 0,
+        "cost": "0",
+        "displayedProceeds": "0",
+        "limit": null,
+        "maximumUnitCost": "0"
+      },
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "977",
+      "side": "NO",
+      "reasons": [
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 10675,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:42:24.359Z",
+      "bookSourceAt": "2026-10-21T22:42:24.0066532+00:00",
+      "bookSequence": "227476301",
+      "bookAgeMs": 612869,
+      "bestBid": "0.935",
+      "bestAsk": "0.945",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 0,
+        "cost": "0",
+        "displayedProceeds": "0",
+        "limit": null,
+        "maximumUnitCost": "0"
+      },
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "865",
+      "side": "YES",
+      "reasons": [
+        "existing_order",
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 11521,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:42:49.051Z",
+      "bookSourceAt": "2026-10-21T22:42:48.6784411+00:00",
+      "bookSequence": "227479597",
+      "bookAgeMs": 588177,
+      "bestBid": "0.865",
+      "bestAsk": "0.875",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 0,
+        "cost": "0",
+        "displayedProceeds": "0",
+        "limit": null,
+        "maximumUnitCost": "0"
+      },
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "993",
+      "side": "YES",
+      "reasons": [
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 9911,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:43:02.686Z",
+      "bookSourceAt": "2026-10-21T22:43:01.7533844+00:00",
+      "bookSequence": "227481442",
+      "bookAgeMs": 574542,
+      "bestBid": "0.76",
+      "bestAsk": "0.765",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 9911,
+        "cost": "7016.310000",
+        "displayedProceeds": "7468.670",
+        "limit": "0.75",
+        "maximumUnitCost": "0.710000"
+      },
+      "currentAskRelativeLimitForSamePrefix": "0.760",
+      "minimumLimitGain": "416.940000",
+      "displayedDepthGain": "452.360000",
+      "askRelativePolicyMissesProfitableBid": false,
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "885",
+      "side": "YES",
+      "reasons": [
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 14166,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:42:59.573Z",
+      "bookSourceAt": "2026-10-21T22:42:58.6829608+00:00",
+      "bookSequence": "227480935",
+      "bookAgeMs": 577655,
+      "bestBid": "0.675",
+      "bestAsk": "0.68",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 0,
+        "cost": "0",
+        "displayedProceeds": "0",
+        "limit": null,
+        "maximumUnitCost": "0"
+      },
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "1051",
+      "side": "NO",
+      "reasons": [
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 10736,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:42:56.319Z",
+      "bookSourceAt": "2026-10-21T22:42:55.677559+00:00",
+      "bookSequence": "227480344",
+      "bookAgeMs": 580909,
+      "bestBid": "0.865",
+      "bestAsk": "0.87",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 0,
+        "cost": "0",
+        "displayedProceeds": "0",
+        "limit": null,
+        "maximumUnitCost": "0"
+      },
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "851",
+      "side": "NO",
+      "reasons": [
+        "flat"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 0,
+      "originalZeroFeeFifoMatched": true
+    },
+    {
+      "exchangeId": "1043",
+      "side": "NO",
+      "reasons": [
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 12048,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:43:02.686Z",
+      "bookSourceAt": "2026-10-21T22:43:01.7533844+00:00",
+      "bookSequence": "227481442",
+      "bookAgeMs": 574542,
+      "bestBid": "0.805",
+      "bestAsk": "0.81",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 0,
+        "cost": "0",
+        "displayedProceeds": "0",
+        "limit": null,
+        "maximumUnitCost": "0"
+      },
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "1044",
+      "side": "YES",
+      "reasons": [
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 10470,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:42:56.319Z",
+      "bookSourceAt": "2026-10-21T22:42:55.677559+00:00",
+      "bookSequence": "227480344",
+      "bookAgeMs": 580909,
+      "bestBid": "0.845",
+      "bestAsk": "0.85",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 470,
+        "cost": "392.450000",
+        "displayedProceeds": "397.150",
+        "limit": "0.845",
+        "maximumUnitCost": "0.835000"
+      },
+      "currentAskRelativeLimitForSamePrefix": "0.845",
+      "minimumLimitGain": "4.700000",
+      "displayedDepthGain": "4.700000",
+      "askRelativePolicyMissesProfitableBid": false,
+      "currentResearchNomination": false
+    },
+    {
+      "exchangeId": "1077",
+      "side": "NO",
+      "reasons": [
+        "review_not_current",
+        "stale_book"
+      ],
+      "executionAuthority": false,
+      "heldQuantity": 9,
+      "originalZeroFeeFifoMatched": true,
+      "bookReceivedAt": "2026-10-21T22:42:59.573Z",
+      "bookSourceAt": "2026-10-21T22:42:58.6829608+00:00",
+      "bookSequence": "227480935",
+      "bookAgeMs": 577655,
+      "bestBid": "0.845",
+      "bestAsk": "0.85",
+      "minimumNetGain": "0.005000",
+      "profitableBidPrefix": {
+        "quantity": 0,
+        "cost": "0",
+        "displayedProceeds": "0",
+        "limit": null,
+        "maximumUnitCost": "0"
+      },
+      "currentResearchNomination": false
+    }
+  ],
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "hypotheticalQuotesNotFills": true,
+  "futureFillProbabilityEstimated": false
+}

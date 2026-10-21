@@ -20,18 +20,25 @@ impl Recorder{
   let next=self.path.with_file_name(format!("{stem}-part-{segment:04}.jsonl"));
   let mut new=Self::new(&next)?;new.rotating=self.rotating;new.segment_limit=self.segment_limit;new.total_limit=self.total_limit;new.total_bytes=self.total_bytes;new.path=self.path.clone();new.segment=segment;*self=new;Ok(())
  }
- fn row(&self,event:&str,payload:&Value,received:&str)->Result<Vec<u8>>{
-  let mut row=json!({"sequence":self.chain.sequence+1,"previous":self.chain.previous,"event":{"source":"official_sig_realtime","event":event,"payload":payload,"receivedAt":received}});
-  row["hash"]=json!(format!("{:x}",Sha256::digest(serde_json::to_vec(&row)?)));Ok(serde_json::to_vec(&row)?)
+ fn row(&self,event:&str,payload:&Value,received:&str)->Result<(Vec<u8>,u64,String)>{
+  let sequence=self.chain.sequence.checked_add(1).ok_or("BREADTH_SEQUENCE_OVERFLOW")?;
+  let mut row=json!({"sequence":sequence,"previous":self.chain.previous,"event":{"source":"official_sig_realtime","event":event,"payload":payload,"receivedAt":received}});
+  let hash=format!("{:x}",Sha256::digest(serde_json::to_vec(&row)?));row["hash"]=json!(hash);
+  Ok((serde_json::to_vec(&row)?,sequence,hash))
  }
  pub fn observe(&mut self,event:&str,payload:&Value,received:&str){
   if self.error.is_some(){return}
   let result=(||->Result<()>{
-   let mut data=self.row(event,payload,received)?;
+   let(mut data,mut sequence,mut hash)=self.row(event,payload,received)?;
    if data.len()>8*1024*1024||self.total_bytes+data.len() as u64+1>self.total_limit{return Err("BREADTH_CAPTURE_LIMIT".into())}
-   if self.bytes+data.len() as u64+1>self.segment_limit{if !self.rotating{return Err("BREADTH_CAPTURE_LIMIT".into())}self.next_segment()?;data=self.row(event,payload,received)?;}
+   if self.bytes+data.len() as u64+1>self.segment_limit{if !self.rotating{return Err("BREADTH_CAPTURE_LIMIT".into())}self.next_segment()?;(data,sequence,hash)=self.row(event,payload,received)?;}
    if data.len() as u64+1>self.segment_limit{return Err("BREADTH_CAPTURE_LIMIT".into())}
-   let row=serde_json::from_slice(&data)?;self.file.write_all(&data)?;self.file.write_all(b"\n")?;self.file.sync_data()?;self.chain.accept(&row)?;self.bytes+=data.len() as u64+1;self.total_bytes+=data.len() as u64+1;Ok(())
+   self.file.write_all(&data)?;self.file.write_all(b"\n")?;self.file.sync_data()?;
+   // These exact bytes and their hash were built from this held chain above.
+   // Advance only after durable append; reparsing/cloning our own payload is
+   // unnecessary. External replay still verifies every original row normally.
+   self.chain.sequence=sequence;self.chain.previous=hash;
+   self.bytes+=data.len() as u64+1;self.total_bytes+=data.len() as u64+1;Ok(())
   })();if let Err(e)=result{self.error=Some(e.to_string())}
  }
  pub fn status(&self)->Value{json!({"sequence":self.chain.sequence,"previous":self.chain.previous,"bytes":self.bytes,"totalBytes":self.total_bytes,"segment":self.segment,"segmentLimit":self.segment_limit,"totalLimit":self.total_limit,"rotating":self.rotating,"error":self.error,"executionAuthority":false})}
@@ -103,9 +110,29 @@ pub fn replay(path:&Path)->Result<Value>{
  let mut report=study.report();report["sourceSequence"]=json!(journal.sequence);report["sourcePrevious"]=json!(journal.previous);Ok(report)
 }
 #[cfg(test)]mod tests{
+ #[test]fn generated_capture_bytes_match_independent_original_journal(){
+  let p=std::env::temp_dir().join(format!("breadth-parity-{}-{}.jsonl",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+  let mut recorder=Recorder::new(&p).unwrap();let mut original=Journal::default();let mut expected=Vec::new();
+  for (event,payload) in [("markets_batch",json!({"markets":[{"marketId":7,"text":"unicode: λ\nquoted \"value\"","prices":[0.125,0.875]}]})),("stream_reset",json!({"localBoundary":true})),("ping",json!(null))]{
+   let at="2026-10-21T00:00:00.123456Z";
+   let mut row=json!({"sequence":original.sequence+1,"previous":original.previous,"event":{"source":"official_sig_realtime","event":event,"payload":payload,"receivedAt":at}});
+   row["hash"]=json!(format!("{:x}",Sha256::digest(serde_json::to_vec(&row).unwrap())));
+   expected.extend(serde_json::to_vec(&row).unwrap());expected.push(b'\n');original.accept(&row).unwrap();
+   recorder.observe(event,&payload,at);assert!(recorder.error.is_none());
+   assert_eq!(recorder.chain.sequence,original.sequence);assert_eq!(recorder.chain.previous,original.previous);
+  }
+  assert_eq!(std::fs::read(&p).unwrap(),expected);drop(recorder);std::fs::remove_file(p).unwrap();
+ }
+ #[cfg(target_os="linux")]
+ #[test]fn failed_durable_capture_never_advances_chain_or_retries(){
+  let p=std::env::temp_dir().join(format!("breadth-failure-{}-{}.jsonl",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+  let mut r=Recorder::new(&p).unwrap();r.file=OpenOptions::new().write(true).open("/dev/full").unwrap();
+  r.observe("ping",&json!({}),"2026-10-21T00:00:00Z");assert!(r.error.is_some());assert_eq!(r.chain.sequence,0);assert!(r.chain.previous.is_empty());assert_eq!(r.bytes,0);
+  r.observe("ping",&json!({}),"2026-10-21T00:00:01Z");assert_eq!(r.chain.sequence,0);drop(r);std::fs::remove_file(p).unwrap();
+ }
  #[test]fn rotating_capture_preserves_sealed_prefix_and_independent_hash_chains(){
   let dir=std::env::temp_dir().join(format!("breadth-rotation-{}-{}",std::process::id(),std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));std::fs::create_dir(&dir).unwrap();let p=dir.join("capture.jsonl");
-  let mut r=Recorder::new_rotating(&p).unwrap();let f=frame(0,1,0,0.4,0.6,json!([]));r.segment_limit=r.row("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap()).unwrap().len() as u64+10;
+  let mut r=Recorder::new_rotating(&p).unwrap();let f=frame(0,1,0,0.4,0.6,json!([]));r.segment_limit=r.row("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap()).unwrap().0.len() as u64+10;
   r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());let first=std::fs::read(&p).unwrap();
   r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert!(r.error.is_none());assert_eq!(r.segment,1);assert_eq!(std::fs::read(&p).unwrap(),first);assert_eq!(replay(&p).unwrap()["sourceSequence"],1);let next=dir.join("capture-part-0001.jsonl");assert_eq!(replay(&next).unwrap()["sourceSequence"],1);
   r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert!(r.error.is_none());assert_eq!(r.segment,2);r.total_limit=r.total_bytes;r.observe("markets_batch",&f["payload"],f["receivedAt"].as_str().unwrap());assert_eq!(r.error.as_deref(),Some("BREADTH_CAPTURE_LIMIT"));drop(r);

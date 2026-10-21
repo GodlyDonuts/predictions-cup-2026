@@ -1,0 +1,523 @@
+External ChatGPT research captured from the authorized browser conversation. Public source revision: 20132b490fbeb3cd66d79b4ba159fd1bd7f9a407. Equations may lose layout in DOM text. This is research evidence, not execution authority.
+Conversation: https://chatgpt.com/c/6ad928b5-1bb8-83e9-9aa3-b7e4aa97c4de
+
+Follow up your completed Deep Research using current public main commit 20132b490fbeb3cd66d79b4ba159fd1bd7f9a407 in GodlyDonuts/predictions-cup-2026. Current evidence: research/tartarus-learning-v2/r74-turnover-20261021.json, r74-first-filled-order-20261021.json, hint-batch-r76-20261021.md and docs/CURRENT_STATE.md. These are nonredeemable contest points, not real money. R74 has now filled 9992 NO1043 for8288.47 and10000 YES1044 for8533.50, with original receipts/FIFO matched. Cash10838.09; owned cost85031.82. They are acquisitions, not realized profit. First order post-intent validation is0ms at millisecond resolution versus1765/3756ms before. There remain60–120second source-scope cycles and only2distinct first-filled orders in15minutes. All12 recurring policies are active;10 targets use fifoProfitTurnover with minimumNetGain0.005, two retain value exits. R76 (being deployed) batches whole-cohort read-hint validation once instead of repeating per market and includes exact no-HTTP top-up recovery; it retains the native engine, original finances and one shared account worker.
+
+Focus only on the ECONOMIC feasibility of at least60distinct filled orders/hour with account growth: quantify the implied inventory/cash recycling and exit requirements at present order sizes; explain when terminal reference-price edge can or cannot support near-term profitable turnover. Identify the smallest concrete change to selection, sizing or exit objectives worth a finite evidence-based experiment, with code seams from the current revision where accessible. Do not recommend splitting one trade merely to game the count, uncalibrated fill probabilities, automatic blanket allowance removal, or another broad rewrite. Distinguish source-verified facts from assumptions and say if current GitHub source is inaccessible. No action or trading authority is being delegated.
+…
+Show more
+Worked for 10m 7s
+Analyzed
+ChatGPT said:
+Executive decision
+
+At the current order sizes, 60 distinct filled orders/hour requires roughly 30 substantial sales and 30 purchases per hour, recycling about 252,330 SUSQies of principal. The current evidence establishes acquisition capacity, not that recycling capacity.
+
+The smallest economic change worth testing is an opt-in exit that takes already available, FIFO-profitable bid depth instead of continuing to quote near the ask. Keep the existing 0.005-per-share profit requirement, authenticate the same FIFO prefix, and do not create extra purchases merely to generate cycles. First measure how often this would actually change a decision.
+
+Source access succeeded. I read all four requested artifacts at commit 20132b490fbeb3cd66d79b4ba159fd1bd7f9a407, plus the relevant entry-sizing and exit-pricing code. The pinned R76 document says qualified but not deployed; your statement that deployment is underway is newer operational information. Neither establishes a measured R76 economic improvement yet.
+
+1. What 60 filled orders/hour economically requires
+Verified starting point
+
+The 22:32 audit records:
+
+Acquisition	Filled shares	Cost	Calculated average acquisition price
+NO1043	9,992	8,288.47	0.829511
+YES1044	10,000	8,533.50	0.853350
+Combined	19,992	16,821.97	0.841435
+
+These are two distinct filled orders, despite producing 23 partial-fill receipts. Their realized profit is zero. Cash is 10,838.09 and owned cost is 85,031.82. The audit explicitly says whole-account profit is not established.
+
+The average recent order therefore consumes 8,410.985 SUSQies for 9,996 shares.
+
+For sustained turnover with approximately stable inventory, purchases and sales must balance in quantity, not merely count. At these sizes, the implied requirements are:
+
+Requirement	Calculation	Result
+Purchase orders/hour	Half of 60 balanced orders	30
+Sale orders/hour	Other half	30
+Shares acquired and subsequently sold/hour	
+30
+×
+9
+,
+996
+30×9,996	299,880 each direction
+Purchase expenditure/hour	
+30
+×
+8
+,
+410.985
+30×8,410.985	252,329.55
+Sale proceeds/hour at acquisition cost plus 0.005/share	Purchase expenditure + minimum margin	253,828.95
+Conditional realized cycle profit/hour	
+299
+,
+880
+×
+0.005
+299,880×0.005	1,499.40
+
+These are derived capacity requirements, not forecasts. The profit row requires those quantities actually to complete profitable exits. Sixty orders receiving tiny first fills would not satisfy the cash-recycling requirement.
+
+Also, a sustained BUY → SELL → REBUY → SELL sequence is not twenty independent three-order cycles with forty buys and twenty sells. That interpretation would steadily accumulate inventory.
+
+Cash is already a binding constraint
+
+At the recent average size, current cash finances only 1.289 additional orders, or one full average purchase with approximately 2,427.11 left. Funding at the protective limit, outstanding reservations, or other constraints can reduce that further.
+
+At the target cadence, purchase expenditure averages:
+
+252,329.55
+/
+60
+=
+4,205.49
+ SUSQies/minute
+.
+252,329.55/60=4,205.49 SUSQies/minute.
+
+Consequently:
+
+Using only the currently free cash as a new trading pool, capital must recycle approximately every 2.58 minutes on average, with no reserve.
+Using the existing 85,031.82 of inventory cost as a continuously cycling inventory pool, the corresponding average residence time is approximately 20.22 minutes.
+
+The second calculation is especially conditional: owned cost is not executable proceeds, and the existing positions have not been demonstrated to support that exit rate.
+
+With ten FIFO-turnover targets, an evenly distributed target would mean approximately three complete buy/sell cycles per target per hour, each around 10,000 shares. Activating repeat policies makes that mechanically permissible; it does not supply counterparties.
+
+The economic question is now whether the venue supplies enough profitable exit depth, frequently enough, to finance those purchases. SIG explicitly uses peer-to-peer matching, so an executable trade requires compatible counterparty liquidity. 
+sig.thesuper.market
+
+Smaller orders change the capital requirement, not the existence of edge
+
+For purchase rate 
+𝜆
+𝑏
+=
+0.5
+λ
+b
+	​
+
+=0.5 orders/minute, average price 
+𝑝
+p, measured holding time 
+𝐻
+H, and allocated cycling capital 
+𝐶
+C:
+
+𝑞
+max
+⁡
+≈
+𝐶
+𝜆
+𝑏
+𝑝
+𝐻
+.
+q
+max
+	​
+
+≈
+λ
+b
+	​
+
+pH
+C
+	​
+
+.
+
+Using the recent weighted price and a hypothetical ten-minute recycling horizon:
+
+All current cash allocated: about 2,576 shares/order.
+Half current cash allocated: about 1,288 shares/order.
+
+That is a legitimate capital-budget sizing calculation, not a recommendation to split 10,000-share intentions into smaller orders. Each acquisition must remain a separately justified opportunity. Smaller orders might fit real exit depth better, but they cannot make an unprofitable signal profitable or turn one persistent opportunity into ten independent ones.
+
+2. What the current code actually optimizes
+
+Two source-verified details matter more economically than the recent validation-time reduction.
+
+Entry sizing does not require profitable exit depth
+
+In moloch/live-runtime/src/alpha_proposal.rs::compare:
+
+liquidation_capacity sums the quantities across admitted bid levels.
+The acquisition quantity is capped by that total quantity.
+BoundedLimitMayRest then searches ask prefixes within the terminal acquisition ceiling and available funding.
+The candidate records visible_liquidation_notional, but admission does not require that liquidation proceeds cover acquisition cost or the FIFO profit floor.
+
+The code correctly labels execution probability unknown. Nevertheless, it can choose a large terminal-value acquisition because sufficient bid quantity exists, even when those bids are far below a profitable exit price.
+
+“There are enough bids to liquidate” is not “there are enough bids to recycle profitably.”
+
+fifoProfitTurnover still quotes near the ask
+
+The current passive_terms calculation is effectively:
+
+𝑃
+exit
+=
+max
+⁡
+(
+𝐴
+held side
+−
+0.005
+,
+  
+feeAdjustedTickCeiling
+⁡
+[
+𝐶
+max
+⁡
+,
+F
+I
+F
+O
+ 
+p
+r
+e
+f
+i
+x
++
+0.005
+]
+)
+.
+P
+exit
+	​
+
+=max(A
+held side
+	​
+
+−0.005,feeAdjustedTickCeiling[C
+max,FIFO prefix
+	​
+
++0.005]).
+
+It selects a qualifying contiguous FIFO prefix and never skips an expensive leading lot. The native engine independently enforces the same ask-anchored price. Therefore this is not merely a suggestion made by the runtime.
+
+Illustration, not a current market observation:
+
+Authenticated FIFO cost: 0.830.
+Required net gain: 0.005.
+Best bid: 0.840, with adequate depth.
+Best ask: 0.870.
+Zero configured fees.
+
+The current rule quotes 0.865, although selling at 0.840 would already realize 0.010/share.
+
+This creates a precise testable hypothesis:
+
+Some cash recycling may be delayed not because a profitable exit is unavailable, but because the exit rule demands an additional spread concession from the next buyer.
+
+The supplied artifacts do not contain the contemporaneous books needed to establish how often that situation occurs. It is a verified pricing restriction, not yet a verified explanation for the actual missing exits.
+
+Do not substitute average acquisition price for the exit floor
+
+The 0.005 requirement is per share and uses the maximum acquisition unit cost within the selected FIFO prefix, including conservative acquisition-fee treatment. It is not simply VWAP plus 0.005.
+
+For the two new purchases considered by themselves, optimistic VWAP-based full-lot thresholds round to approximately 0.835 for NO1043 and 0.860 for YES1044. Their actual required floors can be higher because of individual fill prices. Existing earlier FIFO lots can also change which costs an immediate sale would consume. The native FIFO reconstruction, not these averages, must determine eligibility.
+
+3. Terminal edge and profitable turnover are different hypotheses
+
+A terminal-value purchase tests:
+
+𝐸
+[
+𝑋
+𝑇
+∣
+𝐹
+𝑡
+]
+−
+𝐴
+𝑡
+(
+𝑞
+)
+>
+0
+,
+E[X
+T
+	​
+
+∣F
+t
+	​
+
+]−A
+t
+	​
+
+(q)>0,
+
+where 
+𝑋
+𝑇
+X
+T
+	​
+
+ is eventual SIG payout and 
+𝐴
+𝑡
+(
+𝑞
+)
+A
+t
+	​
+
+(q) is acquisition VWAP.
+
+A short-horizon turnover strategy instead needs:
+
+𝐸
+ ⁣
+[
+𝐵
+𝑡
++
+𝐻
+𝑒
+𝑥
+𝑒
+𝑐
+(
+𝑞
+)
+∣
+entry actually fills
+,
+𝐹
+𝑡
+]
+−
+𝐴
+𝑡
+(
+𝑞
+)
+−
+costs
+>
+0
+,
+E[B
+t+H
+exec
+	​
+
+(q)∣entry actually fills,F
+t
+	​
+
+]−A
+t
+	​
+
+(q)−costs>0,
+
+plus an exit time and executed quantity compatible with the capital requirements above.
+
+The first inequality does not imply the second.
+
+When reference-price edge can support turnover
+
+It can support turnover when the external signal predicts a subsequent change in SIG executable bids, at the relevant size and within the required holding horizon. Evidence would include actual size-qualified bid improvement, recurring contra-side replenishment, and exits that survive measured submission delays.
+
+A large reference discount can also justify holding to settlement, but that is a different economic use of capital. SIG pays winning positions at settlement; markets can remain pending until valid results arrive. That payout mechanism is not an hourly cash-recycling facility. 
+sig.thesuper.market
+
+When it cannot
+
+A reference discount alone does not establish near-term turnover when SIG prices remain persistently different, bid depth is thin, the reference mapping is uncertain, or the entry fills precisely when the apparent edge is deteriorating.
+
+Repeatedly buying the same persistent discount can simply exhaust cash. Repeatedly realizing old low-cost winners while retaining deteriorating positions can produce positive realized FIFO statistics without growing the account.
+
+Likewise, a profitable sale can sacrifice modeled terminal value. Selling 
+𝑞
+q shares at net price 
+𝑆
+S, rather than holding at conditional value 
+𝑉
+V, needs sufficient value from redeployment or risk reduction:
+
+𝐸
+[
+Π
+redeployment
+]
++
+risk-reduction value
+≳
+𝑞
+(
+𝑉
+−
+𝑆
+)
+.
+E[Π
+redeployment
+	​
+
+]+risk-reduction value≳q(V−S).
+
+The existing FIFO-turnover implementation explicitly acknowledges that selling below forecast value has not been shown to outperform holding.
+
+One further accounting distinction: selling at the current executable bid converts inventory into cash, but does not instantly increase executable liquidation equity if the inventory was already valued at that bid. Realized profit is useful evidence, not a substitute for measuring the whole account.
+
+4. The smallest worthwhile experiment: take profitable bid depth
+Proposed change
+
+For the existing FIFO-turnover cohorts only:
+
+When fresh counterparty bids can buy an authenticated FIFO prefix at or above its existing fee-inclusive profit floor, nominate one covered sale against that depth instead of insisting on ask-minus-one-tick pricing.
+
+Keep allowances, entry forecasts, the 0.005 gain requirement, quantity caps, and all ownership constraints unchanged. Leave the two value-exit cohorts outside this experiment unless their existing objectives independently permit the sale.
+
+This tests exit price selection, not whether more aggressive buying can inflate the count.
+
+For a prefix of 
+𝑞
+q shares, define:
+
+𝐹
+(
+𝑞
+)
+=
+max
+⁡
+first 
+𝑞
+ FIFO shares
+(
+fee-inclusive acquisition unit cost
+)
++
+0.005.
+F(q)=
+first q FIFO shares
+max
+	​
+
+(fee-inclusive acquisition unit cost)+0.005.
+
+Select the largest permitted prefix satisfying:
+
+𝐵
+marginal
+(
+𝑞
+)
+−
+conservativeSellFeePerShare
+⁡
+≥
+𝐹
+(
+𝑞
+)
+.
+B
+marginal
+	​
+
+(q)−conservativeSellFeePerShare≥F(q).
+
+Pseudocode:
+
+Plain text
+for each eligible owned FIFO-turnover cohort:
+    require fresh held-side bid depth
+    require no conflicting or uncertain order
+
+    find largest contiguous FIFO prefix q such that:
+        q is within existing quantity caps
+        actual counterparty bid depth covers q
+        marginal bid net of fee >= authenticated FIFO floor(q)
+
+    if q == 0:
+        record "no currently executable profitable exit"
+        continue
+
+    compare:
+        current ask-anchored quote
+        proposed marginal-bid limit
+        cash released
+        FIFO net profit
+        conditional value surrendered
+
+    emit one shadow proposal for this inventory/opportunity state
+
+A repeated observation of unchanged depth is not another opportunity.
+
+Exact source seams
+Current seam	Minimal experiment/change
+fundamental_policy.rs::cohort_fifo_cost, fee_floor_tick, passive_terms, fifo_basis	Compute and report the executable-bid alternative beside the existing ask-anchored result.
+reviewed_inventory_exit.rs::Engine::reviewed_fifo_cost	Reuse the existing authenticated prefix-cost calculation. Do not replace it with average cost.
+reviewed_inventory_exit.rs::Engine::reserve_reviewed_inventory_exit	A later execution variant must independently verify bid depth and the same profit floor. The existing exact ask-anchored-price check otherwise rejects the alternative.
+
+These seams are present in the pinned source. This cannot be enabled safely by changing only a runtime price or configuration field: the native verifier deliberately enforces the present pricing rule. The first experiment should therefore remain read-only; an eventual execution change would need a narrowly versioned pricing variant with unchanged legacy behavior.
+
+Fixed evidence window and decision criteria
+
+Use a predeclared 60-minute observation window from existing captured books and authoritative inventory/FIFO data, without another account client.
+
+Measure:
+
+Measurement	What it decides
+Distinct occasions where current quote is not marketable but the alternative is FIFO-profitable	Whether ask anchoring actually blocks recycling
+Executable quantity and net proceeds	Whether the available exits are economically substantial
+Depth remaining at the measured dispatch delay	Whether the opportunity survives execution timing
+Genuine replenishment after hypothetical consumption	Whether the same displayed liquidity is being counted repeatedly
+Subsequent buy opportunities and completed inventory transitions	Whether this is repeatable turnover or one-time liquidation
+Same-clock whole-account and experiment-portfolio valuation	Whether realized wins conceal inventory deterioration
+
+Use post-R76 measured delays when available. Until then, do not model zero latency: the first R74 trace still has 7.921-second book age at ACK and approximately 19.666 seconds from candidate creation to ACK, despite the isolated post-intent stage taking 0 ms.
+
+Decision rules:
+
+If qualifying profitable bid depth is rare or negligible, reject this exit-pricing hypothesis. Do not weaken the floor to rescue the experiment.
+If it releases meaningful cash once but subsequent profitable re-entry/exit opportunities are absent, classify it as inventory liquidation improvement, not evidence for 60 fills/hour.
+To support the target at current sizes, a sequential, cash-constrained replay must expose roughly 30 meaningful purchase opportunities and 30 corresponding sales/hour, with around 252,000 SUSQies of principal recycling. It must not reuse consumed depth without evidence of replenishment.
+A positive shadow result remains provisional. Counterfactual fills and market response are not exchange-confirmed executions. Actual fills would be required in any separately authorized trial.
+5. What would count as account growth
+
+The present 10,838.09 cash + 85,031.82 owned cost = 95,869.91 is a cost-accounting sum, not current equity. The source explicitly warns against interpreting these acquisition balances as an account valuation.
+
+Evaluate the experiment against both the unchanged strategy and holding the starting inventory, using the same timestamps and valuation method. Report realized FIFO profit alongside remaining inventory, depth-qualified liquidation value, and any quantity that cannot be liquidated within observed depth. Keep conditional terminal value separate.
+
+This matters because one 0.05/share loss on 10,000 remaining shares erases ten 0.005/share wins on similarly sized cycles. A profit-only exit floor can improve the appearance of realized trades while leaving that loss unrecognized.
+
+Bottom line: R74 demonstrated that the bot can acquire substantial positions again. It has not demonstrated an economic engine capable of recycling roughly a quarter-million SUSQies per hour. Test whether the existing ask-anchored exit rule is overlooking genuinely executable, FIFO-profitable bids. That is a smaller and better-supported experiment than changing forecasts, enlarging acquisitions, or assuming latency improvements will produce profitable counterparties. No trading or production changes were made. 
+
+ChatGPT can make mistakes. Check important info.
+Latest response
+
+
+
+
+Pro
+Response complete

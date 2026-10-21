@@ -1,0 +1,72 @@
+{
+  "observedUtc": "2026-10-21T22:58:37.493826+00:00",
+  "sourceSha256": {
+    "original": "9b24209cbd40b67bdaf3b37c558563cf7447c7c5f5769e23d0cbee4f686394a9",
+    "candidate": "db935993f1d74f93bca35b42c88acd9c5edc26aab5ae168113c1b73f34471307"
+  },
+  "payloadSha256": "d495878befbfdef54078801006993f74e1d08088a021f0125d76af99fffa9cd0",
+  "payloadBytes": 341781,
+  "runs": [
+    {
+      "bytes": 5472935,
+      "frames": 16,
+      "seconds": 0.496268536,
+      "sha256": "91f8953db57bb834b5b6715efbda6cf370493e8e5832f9d20450cee09da95e62",
+      "variant": "original",
+      "round": 0
+    },
+    {
+      "bytes": 5472935,
+      "frames": 16,
+      "seconds": 0.179469016,
+      "sha256": "91f8953db57bb834b5b6715efbda6cf370493e8e5832f9d20450cee09da95e62",
+      "variant": "candidate",
+      "round": 0
+    },
+    {
+      "bytes": 5472935,
+      "frames": 16,
+      "seconds": 0.181383358,
+      "sha256": "91f8953db57bb834b5b6715efbda6cf370493e8e5832f9d20450cee09da95e62",
+      "variant": "candidate",
+      "round": 1
+    },
+    {
+      "bytes": 5472935,
+      "frames": 16,
+      "seconds": 0.495199495,
+      "sha256": "91f8953db57bb834b5b6715efbda6cf370493e8e5832f9d20450cee09da95e62",
+      "variant": "original",
+      "round": 1
+    },
+    {
+      "bytes": 5472935,
+      "frames": 16,
+      "seconds": 0.502678586,
+      "sha256": "91f8953db57bb834b5b6715efbda6cf370493e8e5832f9d20450cee09da95e62",
+      "variant": "original",
+      "round": 2
+    },
+    {
+      "bytes": 5472935,
+      "frames": 16,
+      "seconds": 0.181714535,
+      "sha256": "91f8953db57bb834b5b6715efbda6cf370493e8e5832f9d20450cee09da95e62",
+      "variant": "candidate",
+      "round": 2
+    }
+  ],
+  "medianSeconds": {
+    "original": 0.496268536,
+    "candidate": 0.181383358
+  },
+  "relativeReduction": 0.6345056258009474,
+  "allCaptureBytesIdentical": true,
+  "tests": [
+    "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s"
+  ],
+  "productionChanged": false,
+  "accountRequests": 0,
+  "liveCadenceImprovementEstablished": false,
+  "limitation": "Isolated recorder only, low-priority under concurrent original-ledger restoration; not whole-worker performance."
+}
