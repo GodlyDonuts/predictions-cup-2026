@@ -1868,6 +1868,9 @@ fn existing_facts_until(f:&SnapshotSet,at:u64)->Result<Option<u64>>{
   until=until.min(start.checked_add(age).ok_or("LIVE_EXISTING_FACT_CLOCK_RANGE")?).min(end.checked_add(age).ok_or("LIVE_EXISTING_FACT_CLOCK_RANGE")?);
  }Ok((at<until).then_some(until))
 }
+fn existing_exit_activation_fits(at:u64,activation:u64,facts_until:u64)->bool{
+ at.checked_add(activation).is_some_and(|end|end<facts_until)
+}
 fn existing_reservation_stage(q:&Value,original:&Value,at:u64,facts_until:u64)->Result<Option<u64>>{
  if q!=original{return Err("LIVE_EXISTING_RESERVED_QUOTE_CHANGED".into())}
  if q["reviewedInventoryExit"].is_null()||q["action"]!="sell"||q["retired"]!=false||q["cancelEffectiveAt"].is_u64()||q["expiresAt"].as_u64().is_none_or(|end|end<=at)||at>=facts_until{return Err("LIVE_EXISTING_RESERVATION_OR_FACTS_EXPIRED".into())}
@@ -1930,13 +1933,12 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  // This positive not-sent retirement suppresses planning for this event only;
  // no tick/source event may run between it and the covered native reservation.
  retire_existing_drafts(bank,log,ex)?;
- // Fresh source admission may itself create ordinary quotes and consume the
- // existing native write gap. Wait, never bypass the financial write budget.
- let gap=bank.engine().policy()["writeGapMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_WRITE_GAP")?;
+ // Do not charge a blanket second write gap after the seven serialized GETs.
+ // The original native preview below rejects an actually exhausted write
+ // budget, and the sole SDK independently enforces physical completion pacing.
+ // Activation and every original receipt expiry still apply unchanged.
  let activation=bank.engine().policy()["latencyMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_ACTIVATION")?;
- let ready=now().checked_add(gap).ok_or("LIVE_EXISTING_CLOCK_RANGE")?;
- if ready.checked_add(activation).is_none_or(|end|end>=facts_until){return existing_exit_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
- while now()<ready{refresh_controls(c,authority,stream)?;f.authority.validate()?;std::thread::sleep(Duration::from_millis(ready.saturating_sub(now()).clamp(1,100)));}
+ if !existing_exit_activation_fits(now(),activation,facts_until){return existing_exit_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
  refresh_controls(c,authority,stream)?;f.authority.validate()?;
  if now()>=facts_until{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")}
  let Some(plan)=f.cohorts.prepare_existing_exit(bank,log,t,&c.scope,ex,f.authority.trusted(),now())?else{return existing_exit_deferred(c,ex,"value","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")};
@@ -4432,6 +4434,19 @@ mod local_final_guard_recovery_tests{
   let(fresh,at)=packet(RANK_REALTIME_FRAMES_PER_SERVICE,300);assert!(existing_facts_until(&fresh,at).unwrap().is_some());
   assert_eq!(moloch_live_runtime::daily_windows::clock(&fresh.account.received_at).unwrap()-moloch_live_runtime::daily_windows::clock(&fresh.account.request_started_at).unwrap(),300);
   let first=moloch_live_runtime::daily_windows::clock(&fresh.account.request_started_at).unwrap();assert_eq!(at-first,5700);
+ }
+ #[test]fn seven_read_packet_keeps_usable_activation_window_without_redundant_gap(){
+  let(facts,end)=packet(RANK_REALTIME_FRAMES_PER_SERVICE,300);
+  let until=existing_facts_until(&facts,end).unwrap().unwrap();
+  // Simulate post-read preparation leaving 4s: enough for the unchanged
+  // actual native activation, but no room for another unconditional 2.5s.
+  let at=until-4000;assert!(at>end);
+  assert!(!existing_exit_activation_fits(at+2500,3000,until));
+  assert!(existing_exit_activation_fits(at,3000,until));
+  assert!(!existing_exit_activation_fits(until-3000,3000,until));
+  assert!(!existing_exit_activation_fits(until,0,until));
+  assert!(!existing_exit_activation_fits(u64::MAX-1,3000,u64::MAX));
+  assert!(existing_facts_until(&facts,until).unwrap().is_none());
  }
  #[test]fn bounded_service_does_not_extend_original_receipt_expiry(){
   let(facts,at)=packet(RANK_REALTIME_FRAMES_PER_SERVICE,300);let until=existing_facts_until(&facts,at).unwrap().unwrap();

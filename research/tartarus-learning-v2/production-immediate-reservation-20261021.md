@@ -1,0 +1,11 @@
+# Immediate reviewed exit reservation — October21
+
+The human directed maximum useful execution throughput and removal of unnecessary software restrictions. At08:43UTC the actual production worker988227 remained in its trading loop with healthy realtime and no STOP. It still had396fills and1660acknowledged/terminal orders. Its current1042exit rejected INSUFFICIENT_ORIGINAL_PACKET_WINDOW. Being in the trading loop has not meant submitting trades.
+
+The exit path charged an unconditional2500ms native write gap after seven original serialized GETs, book admission and draft retirement. It rejected the packet unless both that extra gap and the original3000ms activation fit. The native reservation preview independently checks the actual rolling write count and last write time; the sole account SDK independently charges physical completion pacing. Thus the blanket extra sleep was redundant when the real native budget was already ready.
+
+The focused correction reserves immediately when the original native preview permits it. A genuinely exhausted native budget still defers; original receipt expiry and activation are unchanged. No global cap, STOP, unknown-acceptance resolution, quantity, pricing, cost basis, ledger, daily window or approved review changes. No second account client is introduced. This addresses order-window starvation; it does not establish that a quote will fill or earn a profit.
+
+An actual ARM64 worker type check and startup regression pass. Focused existing exit/clock/rank/preflight checks pass:3,46,10,28 respectively (overlapping filters). The new seven-read regression demonstrates a usable4second remaining window that the former additional2500ms wait rejected, while preserving activation expiry and overflow rejection. These fixture timings are not a measurement of production post-read preparation time. The optimized production build is pending; the current process has not been replaced by this source yet.
+
+Unrelated pending rank/report changes and all ML checkpoints remain preserved. Sole GPU23524 continues population034; the logged latest retained training progress is661optimizer updates/15996decisions. No independently profitable ML checkpoint or new production fill is claimed.
