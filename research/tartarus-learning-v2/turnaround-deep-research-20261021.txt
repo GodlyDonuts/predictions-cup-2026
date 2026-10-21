@@ -1,0 +1,784 @@
+External ChatGPT Deep Research output, retrieved October 21, 2026. Original conversation: https://chatgpt.com/c/6ad928b5-1bb8-83e9-9aa3-b7e4aa97c4de
+Plain-text extraction; equation formatting and inline citations may be incomplete. Treat as research, not operational authority.
+
+Moloch/Tartarus Predictions Cup Turnaround Audit
+Moloch/Tartarus Predictions Cup Turnaround Audit
+Executive decision
+
+Repository access was successful. I inspected the requested published main commit f5f5b397c90056ddb05d795d2cc7dc8e6f7b7991, including README.md, docs/CURRENT_STATE.md, research/tartarus-learning-v2/IMPLEMENTATION_STATUS.md, issues 120/178 and their recent comments, the live Rust worker, transport layer, recurring-cohort logic, immutable order snapshot/cache, maker policy, scheduling/read-priority code, the owned-fill calibration, and the older research papers. The repository itself explicitly says R72 is the sole official-account worker and Tartarus is offline research; no learned model is deployed.
+
+My decision is: keep Rust as the sole live account/execution/ledger authority, add only a limited Python shadow/offline strategy layer, and do not undertake a broad rewrite. The highest-value work is not language migration. It is, in order: remove the known decision-path latency pathology; finish safe V3 recurring-cohort activation; then test an event-driven, edge-gated, immediately executable turnover strategy across all markets. The current Rust stack contains hard-won properties—exact FIFO accounting, unknown-write reconciliation, durable idempotency, stream recovery, one-account rate ownership and replay—that a rewrite would have to recreate before it could improve a single economic decision. Recent R71/R72 failures also show how expensive apparently small lifecycle mistakes can be.
+
+The new target of at least one distinct exchange-confirmed filled order per minute is mechanically possible under the API budget, but it is not presently demonstrated to be economically feasible. Current official documentation says the budget is account-wide at 100 reads and 30 writes/minute, shared across API keys; production's self-imposed 24-write/minute pacing is therefore conservative rather than an exchange rule. 
+1
+ The problem is fill probability. The repository's best actual passive-order calibration found that only 41 of 891 ordinary BUY orders obtained any fill, about 4.60%. At that historical unconditional rate, 24 fresh placements/minute would imply only about 1.10 filled orders/minute in expectation, consuming essentially the entire production write allowance; reserving even six of those writes for cancellation, recovery and risk management lowers the naïve expectation to about 0.83/minute. Worse, the covered short-horizon markouts on those ordinary fills were negative. A passive-quote-only plan therefore cannot robustly deliver one profitable fill/minute.
+
+The alternative is not “cross more spreads until the counter says 60.” SIG is peer-to-peer: execution requires compatible liquidity, and self-trade prevention prevents your own resting orders from satisfying your incoming order. Selling an unowned side is simply the complementary economic position, not free short leverage; the competition is cash-only. 
+1
+ The cadence target should consequently be a capacity constraint on positive-edge opportunities, not an objective that lowers the edge threshold. When there is no positive conservative expected edge, the correct filled-order rate is zero.
+
+The three changes I would put in front of a coding agent today are:
+
+Priority	Change	Why now	Production restart?
+A	Finish V3 opt-in for the 12 fresh, quiet, non-inherited cohorts through the existing reload mechanism; expose rejection-reason counters.	V1 literally prevents a genuine sell→rebuy cycle after an exit, including a retired never-sent exit. V3 already fixes this.	No
+B	Replace existing_target_busy()'s fresh bank.engine().order_records() rebuild with the existing immutable order_snapshot::snapshot(bank) and indexed quote() path; add end-to-end stage timers.	The pinned worker still rebuilds the full order set in this function, while the repository already contains an exact per-head cache and direct single-order lookup.	Only when deploying; batch with one justified release
+C	Build an offline/shadow event-driven turnover scorer over the existing SIG/Kalshi/Polymarket captures. It emits proposals only; Rust remains the only account client.	Before changing production strategy, establish whether ≥1 net-positive, depth-qualified, semantically matched executable opportunity/minute even exists.	No
+
+The most important adversarial conclusion is that the system currently has two independent problems. The slow worker explains missed/stale execution and sparse turnover, but it does not explain the negative economic record. Conversely, better alpha would not overcome 60–120 second market-scope processing. Both must be fixed; neither should be used to excuse the other.
+
+Your newer 20:54:44–56 observation materially improves the most recent realized-sale picture: the +220.145 SUSQie sale turns the four cited recent sales from −105.925 combined to +114.220 combined realized gross. That is encouraging evidence that some inventory can be exited profitably, but it does not overturn the last official whole-account observation of 94,780.155 or establish a profitable repeatable policy. It is one economically successful distinct order, not five fills because it produced five partial receipts.
+
+Root-cause audit and cadence feasibility
+
+The repository corroborates the key production pathology. At the published boundary, R72's own issue record says scope processing was approximately 60–120 seconds and that three new acknowledgements had still produced no reconciled new fills; it explicitly warns not to present ACKs as realized profit. Separately, an R68 trace shows a plan created at 18:05:25.976 reaching validation only at 18:05:30.898, after its 18:05:29.281 fact window had already expired, with no physical request sent.
+
+Ranked causes
+Rank	Root cause	Actual evidence	Confidence	Discriminating measurement	Smallest remedy	Expected effect	Downtime
+1	Economic signal failure / adverse selection	Whole-account last official mark −5.22%; historical ordinary strategy negative; ordinary passive BUYs filled only 41/891 and available post-fill executable-depth diagnostics were negative; current PPO candidates remain unprofitable.	High	For every independent signal, compute realized FIFO P&L plus size-matched executable markout at 1/5/30/120s. Compare against “do nothing.”	Stop using fill count/spread width as sufficient entry evidence. Require conservative net edge after spread, slippage, adverse-selection and semantic uncertainty.	Fewer bad fills; may initially reduce cadence. This is desirable if current fills are negative-EV.	None in shadow/config stage
+2	Stale-data / decision-path latency	60–120s market scopes; an actual reviewed packet expired during preparation; user debugger found HTTP waits, 50MB report processing and an unnecessary 20k-order render. Existing single-order caching reduced a synthetic full-render lookup from ~144ms to ~0.068ms, but whole-worker improvement was not established.	High	Timestamp stream receive → shortlist → preflight start/end → POST start/end → ACK → first/last fill, by distinct order ID. Report p50/p95/p99.	Use immutable snapshot/direct lookup; stop rebuilding large reports/order arrays inside repeated eligibility checks; shortlist from stream before expensive REST.	Potentially changes seconds/minutes of decision age into sub-second local scoring plus final network gates. Profit effect unknown.	Zero for measurement; one 19–21m replay outage if/when deployed per human operational observation
+3	Eligibility/cohort restrictions	V1 forbids new acquisition after an exit is recorded and also requires positive residual inventory; V3 permits purchase after partial/full exit.	High	Count candidate rejections by exact reason: exit-history, flat-cohort, maximum entries, top-up history, physical liability, stale review.	Complete V3 activation via existing worker reload.	Directly enables genuine BUY→SELL→REBUY without changing economic threshold.	None
+4	Order price, queue position and expiry	Actual passive calibration: 891 ordinary BUYs, 850 zero, 23 partial, 18 full; only 41 had any fill. Conversely, 26/26 reviewed boundedLimitMayRest orders filled, but all were already marketable against the pre-request book and therefore are not passive-fill calibration.	High	Fill hazard conditional on price relative to BBO, displayed quantity ahead, order lifetime, volatility and post-placement book movement.	Prefer marketable limits only when independent edge pays for crossing; use passive orders only where conditional fill EV is positive.	Raises conditional fill probability without blindly chasing activity.	None in shadow
+5	Simulator/action-interface error	Tartarus has repeatedly encountered mechanics that can masquerade as “no signal”: zero delivered external history in an earlier service configuration, SELL selections against zero holdings becoming complementary BUYs, long waits/OOMs, and current all-BUY_NO behavior.	High for ML; low as cause of live losses	Replay actual production attempts through simulator and compare order-by-order eligibility, fill quantity/time, FIFO and terminal state.	Fix mechanics and establish scripted baselines before further PPO population search.	Prevents optimizer from learning simulator artifacts; does not itself create edge.	None
+6	Unrealized inventory marking / liquidation basis	Repository and current state explicitly distinguish official marked position values from executable liquidation proceeds.	High	Alongside official mark, compute depth-limited executable liquidation value and terminal expected value under independently stated assumptions.	Report three separate numbers: realized cash P&L, executable liquidation equity, official marked equity.	Better strategy selection; no direct fills.	None
+7	Accounting/reporting confusion	The code and project correctly distinguish fills from ACKs, but partial receipts make activity easy to overcount; current human observation is 61 receipts but 12 distinct filled orders today.	High as reporting risk, low as economic root cause	Deduplicate by official orderId; count one order as “filled” once cumulative official fills >0.	Make distinct_filled_order_ids the cadence numerator everywhere.	Prevents fake progress and reward gaming.	None
+
+Two restrictions deserve explicit classification. In fundamental_policy.rs, SameSideTopUps.maximum_entries is constrained by repository code to 2–16, and eligibility stops once the cumulative entry count reaches that limit; c.top_ups.len() >= 128 is another hard eligibility stop. These are implementation/risk-policy constraints, not SIG exchange limits. At most, 12 completely unused 16-entry cohorts represent 192 acquisitions before this lifetime cap; prior acquisitions reduce that number. This alone makes 16 a poor long-run representation of a strategy intended to cycle repeatedly.
+
+I would not simply raise 16 and 128 today. The 50MB financial structures, 2.56GB replay and restart cost show that “just retain more historical objects” can worsen the problem. The right successor is a rolling risk bound, not a lifetime trade bound:
+
+text
+Copy
+admit new cohort entry iff
+    unresolved_physical_orders == 0
+    AND active_entry_count < max_active_entries
+    AND held_quantity + new_quantity <= max_quantity
+    AND held_cost + reserved_cost <= max_principal
+    AND daily_realized_loss > -loss_limit
+    AND current source/review facts are fresh
+
+
+Every historical order should remain in the authoritative append-only ledger, but fully reconciled closed-cycle proof should be represented to the hot decision path by a compact immutable checkpoint/index rather than by an ever-growing vector that is rescanned each time. The 128-slot hot-history limit is therefore a reasonable memory-defense symptom, but not an economically sensible lifetime turnover ceiling.
+
+What one fill per minute really requires
+
+Under the historical ordinary-passive fill rate:
+
+[ p_{\text{fill}}=\frac{41}{891}\approx4.60% ]
+
+and therefore:
+
+[ E[\text{placements per filled order}]\approx21.73. ]
+
+With all 24 production write slots used as placements:
+
+[ 24\times0.0460\approx1.10 \text{ filled orders/min}. ]
+
+With a safer 18 entry/reprice writes and six writes retained for exits/cancels/recovery:
+
+[ 18\times0.0460\approx0.83 \text{ filled orders/min}. ]
+
+Those calculations are deliberately optimistic: they treat the old conditional mix as stationary and independent, ignore cancellations, and say nothing about profit. The underlying calibration explicitly warns that its historical closure-conditioned fractions are not a calibrated future passive fill probability.
+
+Thus the human's ≥1/min requirement is feasible only if at least one of these becomes true:
+
+there are routinely enough marketable, positive-edge opportunities for conditional fill probability to be much higher than 4.6%;
+a much better passive filter materially raises fill probability and improves post-fill markout; or
+safe batch/multi-leg execution captures multiple independently worthwhile trades without overwhelming cancellation and inventory controls.
+
+The decisive pre-production test is therefore:
+
+[ \lambda_{\rm edge}\times p_{\rm fill|edge} \ge 1.25/\text{minute} ]
+
+over rolling 30-minute shadow windows, where (\lambda_{\rm edge}) counts independent, semantically valid, executable-depth, net-positive opportunities, not quote updates. I recommend 1.25 rather than 1.0 as headroom for timing variance. Failure of that test means “one profitable fill/min” is not currently supportable by observed liquidity; production must not manufacture activity to meet the KPI.
+
+SIG operation audit and exact strategy surface
+
+The official Scalar API page itself is reachable, but its detailed interactive schema was not fully extractable with the research browser. I therefore cross-checked the current SIG changelog and public trading/settlement documentation against the pinned repository's typed transport client and its earlier October 1 primary-schema audit. Claims below distinguish those evidence levels rather than pretending the entire current Scalar schema was machine-readable.
+
+Current SIG documentation is unambiguous on the account budget: 100 reads and 30 writes/minute per account, shared by all keys. Creating more keys does not add capacity. The bulk price endpoint can accept up to 100 exchange IDs in one request. 
+1
+ Temporary transaction conflicts can return 503 with Retry-After, for which SIG explicitly instructs waiting and backing off. 
+2
+
+Operation	What is actually verified	Implementation consequence
+Single buy/sell order	The pinned Rust client supports yes/no × buy/sell, integer positive quantity, a price, future expirationDate, tournament ID and idempotency key. It enforces 0.005 ticks between 0.005 and 0.995. SIG's public trading guide documents market and limit orders, with unmatched limits resting until match or cancellation. 
+3
+	Use marketable limits for API automation unless the current Scalar schema is manually verified for a distinct API market-order shape.
+Selling / “shorting”	SIG explicitly allows selling shares not held. Selling YES at (p) is economically buying NO at (1-p); opposite-side purchases automatically cancel existing shares pairwise and produce 1 SUSQie per pair. Accounts remain cash-only with no margin or leverage. 
+1
+	No borrow/short-locate strategy exists. Treat the side transformation correctly in inventory and ML action spaces.
+Cancel	Public portfolio docs expose cancellation of open orders; current changelog documents faster cancel-all and safe continuation after a 503. 
+4
+	Cancellation consumes scarce write capacity. Risk exits/cancels outrank new passive quote churn.
+Amend / queue-preserving replace	Not verified in the inspected SIG participant surface or pinned typed client. The Oct 1 API audit found no participant amend primitive.	Model “replace” as cancel + new order unless current Scalar schema is manually shown otherwise. Do not assume queue preservation.
+IOC / FOK / post-only	Not verified for participant single orders. The October 1 schema audit explicitly found no participant IOC/FOK/post-only fields.	A short expiration can limit resting risk, but it is not an IOC substitute.
+Batch order placement	Current changelog confirms batch orders exist by stating single and batch orders can return ORDER_STATUS_UNKNOWN; the Oct 1 schema audit found up to 50 placements in one best-effort write request. 
+5
+	Useful for write efficiency only after economic candidates exist. It is dangerous as a “spray 50 quotes” cadence hack because partial success and cancellation burden remain.
+Multi-leg	Current SIG changelog explicitly confirms POST /api/v1/orders/multi-leg; if status is unknown, an identical retry with the same idempotency key is safe. 
+2
+ The pinned client implements a conservative buy-only 2–3-leg allOrNone subset, while the Oct 1 schema review recorded platform support for up to 10 legs.	Platform capability is broader than current production authority. Do not enable package execution merely because the endpoint exists; current code deliberately requires separate package reservation/authority.
+Idempotent retry	Order idempotency protects against duplicate placement for at least 24h; completed stored responses persist 48h; expired old keys are rejected instead of reused. 
+2
+	Preserve the current fail-closed same-key reconciliation design. Never invent a new key after an ambiguous response.
+Bulk prices	Official current limit is 100 exchange IDs/call. Repository validation treats returned bestBid, bestAsk, latest price and spread as display/BBO fields and explicitly does not treat them as executable-depth evidence. 
+6
+	Excellent 3-call universe screening for 237 markets; not sufficient to size taker trades. Full/versioned book is required before dispatch.
+Realtime market data	SIG restored a tournament-wide tournament:{tournament_id}:markets channel on Oct 4; it carries changed markets with the same versioned books/revisions as per-market channels. The underlying tournament updates are batched on approximately one-second boundaries. 
+7
+	This is not microsecond HFT. Maintain a local universe from the stream and spend REST reads on recovery/final authority, not sequential discovery.
+Positions / orders / fills / settlements	The pinned typed client exposes account, positions, orders, owned order/fills, portfolio fills, P&L and settlements. Current SIG changelog specifically documents corrections in GET /api/v1/portfolio/settlements. 
+2
+	These remain authoritative for reconciliation.
+Relationships / collateral reads	The pinned client maps GET /relationships, relationship graph/constraints and GET /portfolio/collateral.	Valuable research inputs, but a readable collateral state is not proof of a participant-initiated collateral-conversion operation.
+Mint / merge / split / convert / redeem	No explicit participant write operation of these kinds was verified in the current public docs or pinned participant transport. SIG automatically nets opposite shares, and settlement pays/refunds positions. 
+3
+	Do not base an implementation on generic prediction-market “complete-set mint/merge” terminology. The feasible primitive here is trading/netting, not an assumed hidden conversion API.
+Settlement	Winning shares pay 1, losing shares 0; cancelled/N/A markets refund refundable cost. Final competition standings wait for every market to settle. 
+8
+	Cross-market “guarantees” must explicitly model N/A/cancellation and each contract's actual settlement rule.
+Strategy feasibility on this exact venue
+
+Inventory-aware passive market making: technically feasible, economically unproven, cadence-poor in its current form. SIG permits resting both sides while preventing self-trading. 
+3
+ But historical Moloch ordinary passive orders had very low fill incidence and the sparse executable post-fill marks were negative. Do not reactivate a broad maker simply because 60 fills/hour is desired. A maker quote belongs only where expected spread capture exceeds fill-conditioned adverse movement, likely unwind cost, inventory carry and the shadow value of a write.
+
+Inventory liquidation: immediately feasible and probably the best source of near-term genuine SELL legs, but not automatically profitable. The new human-verified 993 YES sale is concrete evidence that at least one sizable inventory exit could cross at positive FIFO realized gross. The preceding three exits lost a combined 105.925, so liquidation quality varies sharply. The strategy should rank owned inventory by marginal expected benefit of exiting now, not by age alone and not by a blanket “only sell above FIFO” rule.
+
+Fast external-reference dislocation trading: the best near-term alpha candidate, but only after semantic certification. Kalshi's API exposes primary/secondary rules and market expiration/settlement metadata, enabling much stronger matching than names alone. 
+9
+ Polymarket's own documentation describes its 0–1 outcome shares and $1 winning outcome, but that still does not prove that any given Polymarket question settles identically to a SIG contract. 
+10
+ The external venue should therefore be treated as information only when all of outcome definition, resolver/source, date boundary, cancellation/N/A behavior, geography/candidate identity and relevant runoff rules have been explicitly mapped.
+
+Complement/complete-set conversion: ordinary same-market “YES + NO < 1” is not a separate hidden conversion strategy here. SIG already defines YES and NO as complements and automatically nets opposite holdings. 
+3
+ The inspected participant API does not expose an explicit mint/merge/redeem operation. Any apparent complement edge must exist in actual peer depth after this matching algebra, not in a synthetic API feature.
+
+Cross-market relationships: potentially useful, but older research overstated its implementation readiness. The October 15 paper's relationship/collateral thesis was directionally interesting, because the repository really does contain relationship and collateral-read machinery. But a relationship metadata endpoint is not itself a settlement-floor certificate, and a collateral GET is not a participant mint/borrow operation. The near-term valid use is to screen for logically related contracts, verify every payoff state and then trade only if ordinary/multi-leg execution can lock a positive executable payoff. Treat the old “package arbitrage” proposal as dated hypothesis, not a currently implementable free-money path.
+
+Traditional HFT claims are impossible here. Market updates are approximately second-batched, account writes are 30/minute, production intentionally uses 24/minute, and liquidity is peer-to-peer. 
+6
+ A 60–120 second worker is far too slow; a 200-microsecond worker is unnecessary. The useful target is sub-second local decision processing after a received versioned batch, followed by only the minimum authoritative exchange reads/writes.
+
+Minimal profitable-turnover candidate
+
+I would test one strategy before adding more architecture: an edge-gated executable turnover router. “Profitable” here is a falsification criterion, not a promise.
+
+Its purpose is to create genuine BUY→SELL→REBUY cycles only when a conservative fair-value interval says the currently executable SIG price is wrong enough to pay for crossing and adverse selection.
+
+Market selection
+
+Maintain all 237 SIG markets from realtime. Do not run a 60–120 second monolithic “scope review” before knowing whether the market deserves work. The repository already has scheduling primitives that prioritize urgent owned scopes and interleave owned/fresh work, without granting extra execution authority.
+
+For every new SIG book version, update a cheap in-memory candidate:
+
+[ C_m = (\text{SIG BBO/depth}, \text{inventory}, \text{matched external refs}, \text{source ages}, \text{semantic mapping id}). ]
+
+A market is trade-eligible only when:
+
+[ \text{mapping_verified}=1, \quad \text{book_fresh}=1, \quad \text{external_fresh}=1, \quad \text{unknown_order_state}=0. ]
+
+The mapping itself should be an immutable versioned record. Similar title strings should never set mapping_verified.
+
+Fair-value interval
+
+Do not pretend the external midpoint is truth. Construct an uncertainty interval:
+
+[ \hat f = \operatorname{weightedMedian} (p_{\rm Kalshi}, p_{\rm Polymarket}, p_{\rm simple\ forecast}) ]
+
+using only sources actually available at that causal timestamp, then define:
+
+[ u = u_{\rm venue\ disagreement} + u_{\rm staleness} + u_{\rm settlement} + u_{\rm model}, ]
+
+[ f_L=\max(0,\hat f-u),\qquad f_U=\min(1,\hat f+u). ]
+
+The first production experiment should use simple static calibration, not PPO. A source whose mapping or contemporaneous availability is uncertain gets zero weight.
+
+Executable BUY and SELL equations
+
+For a YES purchase against actual SIG asks, each price level (p_i) is eligible only if:
+
+[ e^{buy}_i = f_L - p_i
+
+c_{\rm fee}
+c_{\rm adverse}
+c_{\rm latency}
+
+\theta . ]
+
+For selling YES into bids:
+
+[ e^{sell}_i = p_i - f_U
+
+c_{\rm fee}
+c_{\rm adverse}
+c_{\rm latency}
+\lambda_{\rm inv}
+
+\theta , ]
+
+where (\lambda_{\rm inv}) is positive when reducing unwanted inventory has independent risk value.
+
+For NO, transform the probability consistently rather than letting the action API accidentally convert an intended exit into a new complementary BUY.
+
+The initial shadow threshold should be deliberately demanding: at least 0.010 SUSQie/share—two SIG ticks—after all buffers, plus a minimum expected order-level gain such as 0.50 SUSQie. Those are test parameters, not empirically proven optimums. They prevent one-share “fill farming” from satisfying the cadence metric without useful economics.
+
+Size and price
+
+For each executable level:
+
+[ q = \min\left( hD,; Q_{\rm risk},; \frac{N_{\rm max}}{p},; Q_{\rm inventory} \right) ]
+
+where (D) is displayed external counterparty depth at the accepted SIG price, and (h) begins at a conservative haircut such as 0.5 until actual depth survival is measured.
+
+For immediate opportunities, use a marketable limit, not an unbounded market assumption:
+
+text
+Copy
+BUY:
+    walk SIG ask levels from cheapest upward
+    include a level only while conservative edge(level) > theta
+    limit_price = worst included price
+
+SELL:
+    walk SIG bid levels from highest downward
+    include only levels satisfying conservative sell edge
+    limit_price = worst included price
+
+
+If a nominally immediate order does not fill and begins resting, give it a short lifetime—initial experiment around 5–10 seconds—and do not refresh it automatically unless the edge is re-established. SIG documents limit order expiration in the repository's typed order model; participant IOC/FOK was not verified.
+
+Genuine sell/rebuy logic
+
+V3 makes the mechanical sequence possible. The economic sequence should be:
+
+text
+Copy
+BUY event:
+    require positive conservative BUY edge
+    record signal_id, fill order_id, fill VWAP and FIFO lot
+
+SELL event:
+    do not require "profit at any cost"
+    sell when:
+        current SELL edge > threshold
+        OR inventory-risk-adjusted continuation value is worse than exiting
+
+REBUY event after sale/flat:
+    require a fresh BUY signal
+    and either:
+        new ask <= prior sell VWAP - cycle_buffer
+    or:
+        independent fair-value edge is again > threshold
+
+Never rebuy merely because a sale occurred.
+
+
+For a clean same-side sold-and-rebought slice, the realized/re-established cycle spread is:
+
+[ M_{\rm cycle}
+P_{\rm sell}
+P_{\rm rebuy}
+\text{fees}
+
+\text{slippage}. ]
+
+But this cycle margin must be reported separately from FIFO realized P&L. A profitable sale of an old low-cost lot and a costly rebuy can show positive FIFO realization while leaving the portfolio economically worse.
+
+Write-budget controller
+
+Production currently self-limits to 24 contest writes/minute. A suitable initial allocation is dynamic rather than 24 unconditional placements:
+
+text
+Copy
+capacity = 24 writes/min
+
+reserve:
+    at least 6/min for risk exits, cancellations,
+    ambiguous-write reconciliation and control traffic
+
+new-exposure placements:
+    <= 18/min
+    ranked by conservative expected SUSQie gain per scarce write
+
+when reserve pressure rises:
+    suppress new exposure first
+
+
+Candidates should be ranked approximately by:
+
+[ S_i = \frac{ q_i e_i p_{{fill},i} }{ 1+\eta_w w_i+\eta_c K_i T_i }, ]
+
+where (w_i) is expected write consumption, (K_iT_i) represents capital-time consumption and (p_{\rm fill}) comes from the matching mode: actual executable depth for a marketable order, historical own-fill hazard for passive orders.
+
+The existing maker policy already ranks qualified candidates by gain relative to gross capital and holding horizon and prioritizes owned exits ahead of new exposure, which is conceptually aligned with this approach.
+
+Cadence and economic acceptance
+
+Do not use ACK rate. Use:
+
+[ R_{\rm fill}
+
+\frac{ |{\text{distinct official order IDs with quantity filled}>0}| }{ \text{active minutes} }. ]
+
+The new objective should be declared met only when a rolling 60-minute live observation has at least 60 distinct filled order IDs. Partial receipts for one order remain one filled order.
+
+Track genuine cycling separately:
+
+[ R_{\rm cycle}
+
+#{\text{cohorts completing BUY}\rightarrow\text{SELL}\rightarrow\text{REBUY}} ]
+
+with three genuinely distinct filled order IDs and actual inventory transitions.
+
+For every fill at price (p_t), direction (d\in{+1,-1}), and size (q), measure size-matched executable markout, not just midpoint markout:
+
+[ MO_h = d,q,(P^{exec}_{t+h}-p_t). ]
+
+Report at 1s, 5s, 30s and 120s where data exists. A strategy that realizes 60 fills/hour but has negative realized-cycle economics and negative executable markouts has failed.
+
+Kill conditions
+
+New exposure should fail closed immediately on the existing categories: stale/gapped stream, unresolved/unknown order acceptance, account mismatch, missing fresh book, semantic mapping mismatch or rate-budget stress. SIG's current guidance specifically calls for respecting Retry-After and retrying ambiguous orders with the same idempotency key rather than creating duplicate operations. 
+2
+
+Economic family-level kill conditions for the initial experiment should include:
+
+after at least 20 distinct fills in a strategy family, stop that family if conservative realized P&L plus executable liquidation markout is negative by more than two average ticks per filled share;
+stop passive quoting if median 30-second size-matched markout remains negative and its confidence interval no longer overlaps the required spread capture;
+stop external-reference trading if time-shifting the reference by a placebo offset performs similarly to the causal reference;
+never lower (\theta) merely because filled-order cadence is below 1/min.
+Passive making versus liquidation versus reference trades
+Family	Expected cadence	Current economic evidence	Recommendation
+Broad passive market making	Low under historical 4.6% any-fill rate unless nearly all writes are consumed	Weak/negative; sparse covered markouts negative.	Do not use as primary one-fill/min engine. Keep only conditionally qualified maker experiments.
+Inventory liquidation	Can be high when depth exists	Mixed: three cited earlier sales −105.925 combined; human-verified latest 993 sale +220.145	Highest immediate SELL priority. Rank by risk-adjusted exit EV, not raw turnover.
+External-reference marketable trades	Potentially high because immediate liquidity gives far better fill probability	Not yet proven because exact cross-venue equivalence and candidate arrival rate remain unknown	Best near-term new-alpha experiment. Shadow first.
+Relationship/package trades	Potentially attractive if payoff floor is truly locked	Older paper is hypothesis; participant conversion/collateral-write surface not verified	Research lane, not today's production cadence lane.
+Architecture and implementation seam
+
+A broad Python rewrite is the wrong turnaround.
+
+The current repository has a very large Rust live worker plus separate modules for authority, dispatch, execution edge/routing, maker decisions, immutable order snapshots, scheduling, relationship/package work and stream recovery. Python is already extensively used in moloch/learning_actions, so there is no language-policy reason the strategy research layer itself must be Rust.
+
+What must stay in Rust
+
+Keep these live-authoritative responsibilities where they are:
+
+authority.rs / production authority; dispatch.rs / durable intents and unknown acceptance; account_realtime.rs; order_snapshot.rs; fundamental_policy.rs; native FIFO/session/replay; REST/realtime ownership and the shared account limiter.
+
+Those are precisely the components whose failure can duplicate a write, corrupt a ledger assumption or race another account operation. Moving them does not create alpha.
+
+What can be Python
+
+An independent Python strategy process can safely consume captured/replayed:
+
+text
+Copy
+SIG versioned books/trades
+Kalshi historical/current books
+Polymarket historical/current books
+exact contract-mapping metadata
+inventory snapshots exported from Rust
+
+
+and emit a proposal such as:
+
+json
+Copy
+{
+  "schemaVersion": 1,
+  "proposalId": "...",
+  "exchangeId": "993",
+  "side": "YES",
+  "action": "buy",
+  "maximumLimit": "0.755",
+  "maximumQuantity": 800,
+  "fairLow": "0.778",
+  "fairHigh": "0.794",
+  "minimumEdge": "0.010",
+  "mappingId": "...",
+  "sigBookSequence": "...",
+  "sourceObservedAt": "...",
+  "validUntilMs": 1792617000000
+}
+
+
+It should not possess SIG credentials and should never call the SIG account/trading API. During the first phase it should only write shadow proposals and score them against subsequent captured reality.
+
+Only after this strategy beats the static baselines should the Rust worker gain a tiny proposal-ingestion seam. Even then Python's output is a nomination, not authority: Rust must re-check current book, current inventory, account state, STOP, rate limit, proposal expiry, semantic binding, quantity and price before any physical order.
+
+The immediate cache patch
+
+The pinned worker.rs currently implements:
+
+rust
+Copy
+fn existing_target_busy(
+    bank: &Session,
+    log: &DispatchLog,
+    exchange: &str,
+) -> Result<bool> {
+    log.require_resolved_attempts()?;
+    let orders = bank.engine().order_records();
+    // ...
+}
+
+
+and repeatedly calls this around reviewed entries/exits and reload activation.
+
+Yet order_snapshot.rs already provides a per-Session/manifest/durable-head immutable cache and an indexed quote(qid) path, with an explicit goal of avoiding a complete render for a single lookup.
+
+The minimal equivalent correction is conceptually:
+
+rust
+Copy
+fn existing_target_busy(
+    bank: &Session,
+    log: &DispatchLog,
+    exchange: &str,
+) -> Result<bool> {
+    log.require_resolved_attempts()?;
+
+    let snapshot = moloch_live_runtime::order_snapshot::snapshot(bank);
+
+    for id in log.acknowledgments.keys().filter(|id| !log.closed.contains(id)) {
+        let q = snapshot
+            .quote(*id)
+            .ok_or("LIVE_ACK_QUOTE_MISSING")?;
+
+        if q["exchangeId"] == exchange {
+            return Ok(true);
+        }
+    }
+
+    Ok(snapshot.records().iter().any(|q| {
+        q["exchangeId"] == exchange
+            && q["retired"] == false
+            && (
+                q.get("reviewedInventoryExit").is_some()
+                || q.get("reviewedFundamentalEntry").is_some()
+                || q["id"].as_u64().is_some_and(|id| {
+                    bank.engine().is_package_order(id)
+                        || !log.never_attempted(id)
+                })
+            )
+    }))
+}
+
+
+That is consistent with the human's report that a two-line cache correction already passes 48 focused tests; I did not inspect that unpublished local patch, so I am not claiming byte-for-byte identity. The pinned published source still shows the old full order_records() construction.
+
+What must leave the hot path
+
+The following belong before nomination or asynchronously, not between a fleeting edge and POST /orders:
+
+full financial-report serialization and hashing when the durable head is unchanged;
+20k-order history rendering for a target lookup;
+ML training/inference that is not a very small frozen model;
+cross-venue semantic resolution;
+relationship-graph discovery;
+full historic source scans;
+verbose stream recording JSON transformations that are not necessary for the immediate durable event;
+expensive whole-universe ranking after every candidate has already been identified.
+
+The final dispatch path should resemble:
+
+text
+Copy
+realtime frame
+    ↓
+incremental local book update
+    ↓
+O(1)/O(log N) candidate re-score
+    ↓
+cheap eligibility + inventory test
+    ↓
+ONLY winner gets expensive authoritative preflight
+    ↓
+immutable final facts
+    ↓
+durable intent
+    ↓
+single Rust transport
+
+
+The repository already contains cooperative drain budgets and a one-per-pass expensive preflight budget, so this direction can be implemented incrementally rather than by replacing the worker.
+
+Honest migration choice
+Option	Economic upside	Operational risk	Verdict
+Keep everything Rust	Neutral; good execution safety but slows research iteration	Low	Acceptable, but unnecessarily cumbersome for alpha research
+Rust executor + Python offline/shadow strategy	Highest near-term experiment velocity without duplicating account ownership	Low	Recommended
+Python live strategy controlling same Rust transport	Moderate after shadow qualification	Medium; adds IPC/source-of-truth races	Later only
+Rewrite live executor in Python	No demonstrated economic advantage	Very high; replay/reconciliation must be recreated	Reject
+Rewrite entire system	Negative near-term expected value	Extreme, especially with 19–21m replay/restart and recent churn	Reject
+ML methodology repair
+
+The current ML result is not merely “the network needs more training.” The latest completed population member produced −10.56343% nominal marked ROI, +0.0030525% stressed, 15/2 fills, all BUY_NO and zero realized FIFO gain. A separately evaluated 656-update candidate was also substantially negative; an earlier 84-update state was actually better on the existing development metric. More optimizer steps are therefore not monotonic evidence of progress.
+
+There is, however, evidence that the historical SIG dataset contains price movement worth attempting to discover: a fit-only perfect-hindsight census found 327 exchange-sides across 190 exchanges with a positive one-share ask-to-later-bid move over 3 seconds to 1 hour, with a maximum screened move of 0.06/share. The report correctly warns that this omitted scheduler, latency, fill and capital realism. This means “zero exploitable information exists” has not been established. The immediate ML question is instead whether causal policy learning can find enough of those opportunities after execution constraints.
+
+Separate four failure classes
+
+Action starvation. Count, at every decision, how many legal BUY, SELL, WAIT and target choices exist; then report how frequently the policy assigns each family probability and chooses it. SELL-against-zero-inventory transformations must be categorized by resulting economic exposure, not by nominal API verb. The current repository has already observed SELL selections turning into complementary BUY exposure.
+
+Policy optimization bugs. Compare frozen founder, trained descendant and the same network with randomized action heads on identical worlds/seeds. Founder retention is sensible engineering, but “least losing survivor” is not evidence of learned edge.
+
+Simulator mistakes. Replay actual production orders through the simulator and require agreement on: legal action, API admission time, available book, partial quantities, FIFO inventory, cash, order expiry and resulting markout. The 26 reviewed historical orders that were already marketable must not be mixed into passive queue calibration.
+
+No usable signal. Only after mechanics and simple baselines pass should failure to outperform cash/static policies be interpreted as evidence that the available predictors do not justify trading.
+
+Baselines before another population run
+
+Use identical chronology and compute budget for:
+
+Baseline	Purpose
+Cash / no trade	Non-negotiable zero-turnover benchmark
+Buy-and-hold current reviewed fundamentals	Tests whether active trading adds value
+External-fair-value marketable router	Tests the strongest simple information hypothesis
+FIFO/inventory liquidation controller	Tests whether improved exits alone solve much of the account problem
+Passive join-bid/ask maker	Reproduces existing weak baseline
+Random legal policy with identical action-rate budget	Detects action-interface or reward bugs
+Fit-only clairvoyant opportunity upper bound	Checks whether the simulator could profit at all; never candidate for deployment
+
+Do not run a larger neural search until the learned policy beats at least one nontrivial deterministic baseline and cash under conservative execution.
+
+Historical external-feed alignment
+
+Kalshi and Polymarket information must be delivered to a simulated actor only at the time it would really have arrived. This is particularly important because issue 178 records that an earlier managed history service had valid historical external targets but delivered zero Kalshi/Polymarket automatic requests in an initial fit sample; a later V3 service correction changed that behavior substantially. That is a simulator/interface change large enough that scores from before and after it should not be treated as directly comparable strategy evidence.
+
+Every external mapping should contain:
+
+text
+Copy
+SIG contract text/hash
+SIG settlement source/rules/date
+external venue + contract ID
+external rules hash
+YES/NO orientation
+effective_from timestamp
+effective_until timestamp
+mapping confidence
+human/automatic verification provenance
+
+
+A future edit to a contract mapping cannot retroactively improve old training observations.
+
+Walk-forward and holdout
+
+Use the requested chronology literally:
+
+text
+Copy
+training:
+    all data strictly before evolution boundary
+
+evolution/development:
+    next four chronological days
+    model/threshold/family selection allowed
+
+embargo:
+    at least max(feature lookback,
+                 maximum modeled holding horizon,
+                 external data delivery lag,
+                 label horizon)
+
+final holdout:
+    final locked four-day interval
+    exactly one frozen-finalist evaluation
+    no model/threshold/mapping changes after opening
+
+
+The human states that the protected October 21–25 material is still unconsumed. Keep it sealed. Before opening it, pin exact timestamp boundaries—the phrase “October 21–25” can denote five calendar dates while the desired final test is described as four days, so that boundary must be resolved from the frozen dataset manifest without inspecting target outcomes.
+
+Reward gaming
+
+The requested reward,
+
+[ R = \begin{cases} G\sqrt{\frac{N}{N+10}}, & G>0\ G, & G\le0 \end{cases} ]
+
+with
+
+[ G=\overline{r}_{daily}
+
+1.5\frac{s(r_{daily})}{\sqrt D}, ]
+
+is defensible only if (N) is not an activity counter.
+
+Define one opportunity identity before training, for example:
+
+text
+Copy
+(mapping_id,
+ SIG exchange_id,
+ signal direction,
+ causal signal episode)
+
+
+and retain the same opportunity ID across partial receipts, replace attempts and fills. Five partial receipts from one order are one execution, and ten fills responding to one external price jump should not magically become ten independent opportunities.
+
+The qualification report should always accompany the scalar reward with:
+
+text
+Copy
+distinct opportunities N
+distinct filled order IDs
+completed BUY→SELL→REBUY cycles
+realized FIFO gross
+realized cycle margin
+executable liquidation value
+official marked value
+1/5/30/120s executable markouts
+writes/opportunity
+capital-minutes/opportunity
+
+
+A policy should not qualify merely because an irregular official mark lifts (G) while it never realizes exits.
+
+Compute-efficient falsification matrix
+
+Run these ablations before more population generations:
+
+Ablation	What failure means
+SIG-only	Establishes base microstructure value
+SIG + Kalshi only	Marginal value of Kalshi
+SIG + Polymarket only	Marginal value of Polymarket
+Exact-mapping external only	Tests whether sloppy mappings were adding fake signal
+External timestamps shifted forward/backward	A causal strategy should degrade under placebo misalignment
+BUY target fixed, SELL target learned	Isolates exit-selection quality
+BUY learned, SELL scripted	Isolates entry discovery
+Perfect fill versus conservative queue fill	Measures how much performance is execution fantasy
+Actual-production replay	Hard simulator validation
+8-policy search versus 32-policy search	Establishes whether population breadth helps before spending GPU cycles
+
+The repository already found an optional child-process evaluation path to be 32.58% slower than local evaluation while preserving exact behavior; leave that path disabled. GPU utilization is not the bottleneck to solve until the experiment itself can beat the baselines.
+
+Immediate implementation and research plan
+Two-hour implementation window
+Window	Work	Acceptance criterion
+First 20 minutes	Add a no-write telemetry view keyed by official order ID: stream receive time, candidate selection, each preflight read, native plan, POST, ACK, first fill, terminal. Add counters for exact deferral causes including existing_target_busy, V3 lifetime cap, 128-history cap, stale review/book and unknown liability.	One line/order reconstructs the full latency waterfall; partial receipts never increment filled-order count twice.
+20–40 minutes	Finish/verify V3 activation for each of the 12 fresh quiet cohorts through the existing reload mechanism only when target has no physical/open order and source data has been freshly restored. This is an operational recommendation; this audit itself performs no activation.	Synthetic and replay tests prove fully flat cohort can nominate a new acquisition; unresolved prior submission still blocks it. No worker restart.
+40–70 minutes	Stage the existing_target_busy snapshot correction described above and add a benchmark at realistic ~20k order history. Re-run the focused suite plus the existing snapshot and recurring-cohort checks.	Exact before/after boolean results on adversarial histories; no full order reconstruction on repeated unchanged-head calls; no financial hash change.
+70–100 minutes	Implement turnover_shadow.py or equivalent under the Python research tree. Read existing captured SIG/Kalshi/Poly streams, exact mapping manifest and current inventory snapshots. Emit proposal JSON only.	For every candidate record exact source timestamps, BBO/depth, fL/fU, edge, expected gain, proposed size and later outcome. No credentials/API client.
+100–120 minutes	Run the first bounded all-market shadow census and make a deployment/no-deployment decision.	Measure (\lambda_{\rm edge}), marketable conditional fillability, required writes and projected fills/min. A cadence claim requires ≥1.25 expected positive-edge fills/min with reserved write headroom.
+
+Do not use the two-hour window for another live restart unless the timing waterfall proves the already-qualified cache patch is actually blocking economically valid packets often enough to justify the 19–21 minute replay outage. A restart consumes roughly a third of the requested implementation window and interrupts the very turnover being measured.
+
+Source-level patch targets
+
+Hot lookup patch: moloch/live-runtime/src/worker.rs::existing_target_busy, using moloch/live-runtime/src/order_snapshot.rs. The pinned source directly confirms this is the current mismatch.
+
+Latency/candidate scheduling instrumentation: instrument around existing logic in worker.rs; reuse scheduling.rs and throughput_discovery.rs rather than inventing a second scheduler.
+
+Shadow strategy: place new Python code alongside the existing learning/research stack, with no SIG account dependency. The repository already supports a substantial Python learning layer, so this does not create a new production language runtime.
+
+Later, not today: redesign SameSideTopUps.maximum_entries and the 128-entry hot history as rolling risk limits plus compact immutable closed-cycle proof. The current source confirms both are local implementation constraints.
+
+Twenty-four-hour research program
+
+The first research block should build a complete opportunity census from the live/captured 237-market SIG universe and the exact-matched external feeds. Measure every fresh candidate, including candidates that are not traded. Without this denominator, “we filled X orders” says nothing about missed edge or adverse selection. The current realtime architecture supports maintaining tournament-wide books without spending one REST call per market update. 
+7
+
+Next, replay the historical 1,502 actual placed-order sample through the current simulator and stratify fills by aggressiveness, market, time, price level, queue/depth proxy and subsequent executable markout. The calibration packet already establishes that most ordinary orders did not fill and that the 26 reviewed fully filled orders were marketable, so passive and taker-like observations must remain separate.
+
+Then run exact strategy ablations over the same chronology:
+
+text
+Copy
+A: no trade
+B: current production nomination logic
+C: V3 recurrence only
+D: external fair-value marketable router only
+E: inventory liquidation controller only
+F: D + E
+G: conditional passive maker only
+H: relationship-qualified packages, shadow only
+
+
+For each, output:
+
+text
+Copy
+candidate opportunities/min
+placements/min
+distinct fills/min
+completed cycles/hour
+gross turnover
+realized FIFO P&L
+cycle margin
+executable liquidation equity
+1/5/30/120s markout
+writes/min
+reads/min
+rate-limit/backoff events
+capital-minutes
+maximum inventory
+
+
+The relationship research lane should specifically revisit the strong claims in the October 15 paper. Query the official relationship graph and each market's settlement source, enumerate every outcome state including cancellation/N/A, and only then calculate a lower-bound package payoff. No trade should be classified as “arbitrage” merely because two election titles appear exhaustive. The competition explicitly refunds N/A/cancelled positions at refundable cost rather than enforcing a binary winning side in that state. 
+8
+
+The ML lane should run the static baselines and causal ablations above without touching the protected final window. Do not launch more generations simply because the RTX 5070 Ti is idle. The existing research already shows later training can produce a worse candidate and that infrastructure parallelism can make evaluation slower.
+
+At the end of the 24-hour research horizon, a strategy is eligible for a production trial only if all of these are true:
+
+Cadence capacity: shadow/replay predicts at least 1.25 economically qualified filled orders/minute under no more than 18 routine entry/reprice writes/minute, retaining risk headroom.
+Economic edge: positive conservative realized-plus-executable-liquidation economics; positive result is not driven solely by official marks.
+Execution quality: non-negative 30-second size-matched executable markout for the strategy family, or an independently justified terminal-value edge large enough to dominate it.
+Semantic integrity: every external-reference trade has exact versioned contract mapping.
+Operational integrity: no second SIG account client, no write-budget evasion, no new-key retry after unknown acceptance, no stale-stream trading.
+Turnover integrity: distinct order IDs rather than receipts; at least several genuine BUY→SELL→REBUY cycles, not repeated one-direction accumulation.
+Replay integrity: current original fills, cash, costs, receipts and financial prefix remain byte/economically identical across the proposed release.
+Single-release discipline: combine qualified hot-path changes into one controlled deployment instead of another sequence of short-lived releases.
+What not to do
+
+Do not chase 60 fills/hour by crossing negative expected spread, reducing every trade to one-share cadence farming, batch-spraying dozens of passive orders, self-trading, spoofing, wash-like cycling or manufacturing marks. SIG explicitly prohibits unfair/manipulative activity and its matching logic prevents self-trades in any case. 
+1
+
+Do not add another official-account client, API key strategy or process intended to multiply rate capacity. The limits are account-wide. 
+6
+
+Do not rewrite or truncate the original financial state. The current system's 2.56GB replay cost is painful, but preserving authoritative historical state is more important than shortening startup.
+
+Do not deploy PPO because stressed marked ROI happened to be barely positive while nominal ROI was deeply negative, all fills were BUY_NO and realized FIFO gain was zero.
+
+Do not describe relationship metadata or /portfolio/collateral as a proven participant conversion/arbitrage API. The inspected surface establishes reads; the participant write primitive needed for a generic mint/merge strategy was not verified.
+
+Do not treat BBO bulk prices as executable depth. The repository validator itself explicitly avoids that inference.
+
+Do not count an ACK as a fill, a partial receipt as an independent order, invested principal as P&L, or official marked inventory as immediately liquidatable cash.
+
+Uncertainties and primary sources
+
+The largest unresolved uncertainty is current actual SIG depth and positive-edge candidate arrival rate. Public documentation establishes mechanics but cannot establish that 60 economically worthwhile counterparties/hour are available now. Old crawled public market pages are not valid evidence of current depth. The requested shadow census is the minimum honest measurement.
+
+A second uncertainty is the current Scalar schema for participant batch limits, single-order time-in-force variants and any operation added after the October 1 schema audit. The current changelog proves single, batch and multi-leg order families exist, but I could not fully parse the interactive Scalar operation schemas through the research browser. 
+5
+ I therefore treat “50 orders/batch,” “up to 10 multi-leg legs,” and absence of participant IOC/FOK/post-only/amend as October 1 primary-doc evidence still reflected in the repository, not as newly re-proven October 21 schema facts.
+
+A third uncertainty is the exact cause of the two recent recovered R72 stream read failures. The repository proves the earlier JOIN-ordering bug and the R72 bounded-buffer/retry correction, but it does not establish the transport cause of the newer transient failures. That should remain telemetry work, not justification for another transport rewrite.
+
+A fourth uncertainty is the newest 20:54 sale and post-sale account state: those observations are newer human-verified operational input than the published pinned commit. I have used them as supplied, without pretending to have independently fetched authenticated account state.
+
+Primary public documentation actually consulted:
+
+https://sig.thesuper.market/api/v1/docs#description/introduction
+
+https://sig.thesuper.market/docs/changelog
+
+https://sig.thesuper.market/docs/markets-and-trading
+
+https://sig.thesuper.market/docs/settlement-and-payouts
+
+https://sig.thesuper.market/docs/faq
+
+https://sig.thesuper.market/docs/tournaments-and-organizations
+
+https://docs.kalshi.com/
+
+https://docs.polymarket.com/
+
+The current official SIG sources establish the governing strategic constraint: the competition is cash-only, account API capacity is shared at 100 reads/30 writes per minute, trading is peer-to-peer, the final objective is final settled SUSQie balance rather than fill count, and every market settles under its own rules. 
+1
+
+Bottom line: the turnaround should not be “more architecture” or “more PPO.” It should be V3 recurrence + a genuinely fast current-head execution path + a brutally simple edge-gated executable strategy, measured in distinct fills, completed economic cycles, realized FIFO/cycle margin and adverse markout. One filled order/minute is a plausible throughput target only if the shadow opportunity census shows enough positive executable edge; under the historical passive fill hazard alone it is barely mechanically achievable and economically unsupported. The Rust executor should stay. Python should be used to discover and falsify edge without becoming a second account owner.

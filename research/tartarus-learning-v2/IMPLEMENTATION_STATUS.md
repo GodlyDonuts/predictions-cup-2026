@@ -1,8 +1,8 @@
-# Tartarus implementation status — October 21, 21:16 UTC
+# Tartarus implementation status — October 21, 21:46 UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
-Execution priority is now at least one distinct filled order/minute, currently unmet. R72 has realized+221.355 on its latest993YES sale; twelve distinct orders filled todayUTC. Five recurring policies are activated; the first three also survive the corrected reference updater's fresh forecasts. Seven remain. R73's minimal order-cache fix is built/checked, not deployed. ChatGPT Deep Research was started at the human's request, including the cadence target and a Rust/Python decision. This changes no claim about ML profitability or completed learning requirements. [Current execution report](filled-minute-20261021.md).
+Execution priority is one distinct filled order/minute, currently unmet. All12 recurring policies have committed, confirmed21:42:35UTC. ChatGPT Deep Research is complete. A file-only census found expired forecasts despite available external data; the boundary-aligned continuous updater is now installed without restarting R72, and fresh forecasts for all12 active targets committed at21:35:16UTC. R73’s cache correction remains qualified, not deployed. The latest audited993YES sale realized+221.355SUSQies on one filled order; this is not whole-account profitability. These changes make no new claim about ML qualification. [Research and current applied fixes](turnaround-research-results-20261021.md).
 
 R72 is verified live at 20:36:52 UTC as sole worker 1031505, with real-time subscriptions connected and no STOP. Its original 452 fills and complete 2,564,024,854-byte financial prefix match. Repeat-acquisition review activation is in progress. [Fresh live proof](r72-fresh-live-20261021.json).
 

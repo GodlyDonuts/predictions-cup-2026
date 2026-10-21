@@ -1,5 +1,5 @@
 {
-  "observedUtc": "2026-10-21T21:08:58.572774+00:00",
+  "observedUtc": "2026-10-21T21:45:49.738800+00:00",
   "baselineIncident": "r71-recurring-20261021T194753Z",
   "baselineReportSha256": "12e615ac513fd4a9eb6a601cd83402e263d25f74fcf9634050f67ac36c8105ba",
   "originalFillCount": 452,
@@ -7,8 +7,8 @@
   "originalFillsUnchanged": true,
   "remainingFifoExactlyMatches": true,
   "allNewFillsMatchOriginalOfficialReceipts": true,
-  "reportSha256": "9751cc8ea9d0336e6fb8a7a06dd682f67d3cf9f4ea5f26e55d6ee60c305c6d27",
-  "reportAt": "2026-10-21T21:08:43.436Z",
+  "reportSha256": "7dc9a3817adf7b301b3e39e12674ed4513910f34eb6bb738cbec2446e6b5cad3",
+  "reportAt": "2026-10-21T21:45:45.768Z",
   "orders": {
     "20317": {
       "actualOrderId": "54473043",
@@ -46,7 +46,7 @@
   "dayFillReceipts": 62,
   "dayDistinctFilledOrders": 12,
   "cadence": {
-    "observedUtc": "2026-10-21T21:08:58.572774+00:00",
+    "observedUtc": "2026-10-21T21:45:49.738800+00:00",
     "targetFilledOrdersPerMinute": 1,
     "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
     "windowsMinutes": {
@@ -63,8 +63,8 @@
         "averageTargetMet": false
       },
       "15": {
-        "distinctFirstFilledOrders": 1,
-        "filledOrdersPerMinute": 0.06666666666666667,
+        "distinctFirstFilledOrders": 0,
+        "filledOrdersPerMinute": 0.0,
         "targetFilledOrders": 15,
         "averageTargetMet": false
       },
@@ -76,7 +76,7 @@
       }
     },
     "latestNewFilledOrderUtc": "2026-10-21T20:54:44.744000+00:00",
-    "secondsSinceNewFilledOrder": 853.828774,
+    "secondsSinceNewFilledOrder": 3064.9948,
     "accountRequests": 0,
     "executionAuthority": false
   },

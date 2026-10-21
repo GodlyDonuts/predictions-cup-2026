@@ -1,0 +1,26 @@
+{
+  "observedUtc": "2026-10-21T21:42:35.359854+00:00",
+  "workerPid": 1031505,
+  "exchanges": [
+    "1043",
+    "1044",
+    "1051",
+    "1067",
+    "1077",
+    "851",
+    "865",
+    "872",
+    "885",
+    "966",
+    "977",
+    "993"
+  ],
+  "allRecurringReviewsEnabled": true,
+  "batches": [
+    "/tmp/moloch-stream-join-r72-20261021/recurring-batch-1792618516869898693.json",
+    "/tmp/moloch-stream-join-r72-20261021/recurring-batch-1792618556183482330.json",
+    "/tmp/moloch-stream-join-r72-20261021/recurring-batch-1792618716801657638.json",
+    "/tmp/moloch-stream-join-r72-20261021/recurring-batch-1792618828112210816.json"
+  ],
+  "accountRequests": 0
+}

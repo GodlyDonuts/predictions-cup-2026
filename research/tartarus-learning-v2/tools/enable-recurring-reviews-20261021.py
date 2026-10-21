@@ -60,13 +60,14 @@ def main(config_path, exchanges):
     deployment = json.loads((H / 'deployment.public.json').read_bytes())
     live = json.loads((H / 'fresh-live.public.json').read_bytes())
     config = json.loads(config_path.read_bytes())
+    updater_script = Path(config.get('updaterScript', str(UPDATER)))
     assert live['pid'] == config['workerPid'] == deployment['pid']
     assert live['fullOriginalPrefixVerified'] and live['originalFillsUnchanged']
     assert not (R / 'EXECUTION_STOP').exists()
     process = Path('/proc') / str(config['workerPid'])
     assert int((process / 'stat').read_text().rsplit(') ', 1)[1].split()[19]) == config['workerStartTicks']
     assert sha(process / 'exe') == config['binarySha256']
-    assert sha(UPDATER) == 'c30af610216c51d7f8bba378f3fce8f6aac04b71102f7b79fee809a482fa2953'
+    assert sha(updater_script) == config.get('updaterSha256', 'c30af610216c51d7f8bba378f3fce8f6aac04b71102f7b79fee809a482fa2953')
     assert sha(config['reviewHelper']) == config['reviewHelperSha256']
     pending = json.loads((F / 'pending.json').read_bytes())
     assert pending.get('resolved') is True
@@ -88,7 +89,7 @@ def main(config_path, exchanges):
     resumed = H / 'reference-updater-resumed.json'
     updater_pid = json.loads(resumed.read_bytes())['pid'] if resumed.exists() else deployment['referenceUpdaterPid']
     updater = Path('/proc') / str(updater_pid)
-    assert (updater / 'cmdline').read_bytes().split(b'\0')[:-1] == [b'python3', b'-u', str(UPDATER).encode(), b'--config', str(config_path).encode()]
+    assert (updater / 'cmdline').read_bytes().split(b'\0')[:-1] == [b'python3', b'-u', str(updater_script).encode(), b'--config', str(config_path).encode()]
     result = None
     try:
         os.kill(updater_pid, signal.SIGTERM)
@@ -162,7 +163,7 @@ def main(config_path, exchanges):
         if not updater.exists():
             log_path = F / ('recurring-updater-resumed-' + str(time.time_ns()) + '.log')
             with log_path.open('x') as log:
-                child = subprocess.Popen(['python3', '-u', str(UPDATER), '--config', str(config_path)], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+                child = subprocess.Popen(['python3', '-u', str(updater_script), '--config', str(config_path)], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
             (H / 'reference-updater-resumed.json').write_text(json.dumps(dict(pid=child.pid, log=str(log_path), at=datetime.now(timezone.utc).isoformat())))
     assert result is not None
     result['referenceUpdaterPid'] = child.pid

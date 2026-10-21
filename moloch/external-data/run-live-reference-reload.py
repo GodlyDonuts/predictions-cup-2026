@@ -10,6 +10,8 @@ import gzip
 import hashlib
 import json
 import os
+import socket
+import struct
 from pathlib import Path
 import subprocess
 import time
@@ -26,6 +28,30 @@ def put(path, value):
     tmp = path.with_suffix('.pending')
     tmp.write_text(json.dumps(value, separators=(',', ':')), encoding='utf-8')
     tmp.replace(path)
+
+
+def connect_at_boundary(root, config, expected_status, timeout=240):
+    """Keep the authenticated client alive; mint TTL only when owner polls."""
+    status_path = root / 'fundamental-reload/status.json'
+    before = status_path.stat().st_mtime_ns
+    channel = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        channel.connect(str(root / 'fundamental-reload/owner.sock'))
+        pid, uid, _gid = struct.unpack('3i', channel.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+        assert pid == config['workerPid'] and uid == os.geteuid()
+        proc = Path('/proc') / str(pid)
+        assert int((proc / 'stat').read_text().rsplit(') ', 1)[1].split()[19]) == config['workerStartTicks']
+        deadline = time.monotonic() + timeout
+        while status_path.stat().st_mtime_ns == before:
+            assert time.monotonic() < deadline, 'Owner reload boundary timeout; no request sent'
+            assert proc.exists() and not (root / 'EXECUTION_STOP').exists()
+            time.sleep(.005)
+        assert json.loads(status_path.read_bytes()) == expected_status
+        assert not (root / 'EXECUTION_STOP').exists()
+        return channel
+    except BaseException:
+        channel.close()
+        raise
 
 
 def executable_ticks(review, midpoint):
@@ -241,19 +267,41 @@ def main():
             current = json.loads((root / 'fundamental-reload/status.json').read_bytes())
             if current['previousGenerationSha256'] != state['generationSha256'] or current['workerPid'] != c['workerPid']:
                 report('generation_changed_before_request'); return
-            now = time.time_ns() // 1_000_000
-            request = {k: current[k] for k in ('version', 'workerPid', 'workerStartTicks', 'ownerLease',
-                'baseControlSha256', 'bankManifestSha256', 'runId', 'previousGenerationSha256')}
-            request.update(requestId='live-reference-' + stamp, controlPath=staged['controlPath'],
-                controlSha256=staged['controlSha256'], issuedAtMs=now, expiresAtMs=now + 60_000)
-            request_path = generation / 'request.json'
-            request_path.write_text(json.dumps(request, separators=(',', ':')), encoding='utf-8')
-            wanted = sha(request_path)
-            pending = {'expectedGenerationSha256': wanted, 'previousGenerationSha256': state['generationSha256'],
-                'expiresAtMs': request['expiresAtMs'], 'staged': staged, 'selected': selected}
-            put(out / 'pending.json', pending)
-            reply = subprocess.run([c['binary'], 'fundamental-reload', str(base), str(request_path), wanted],
-                capture_output=True, text=True, timeout=75)
+            # Before this change the65s CLI could die in the owner's queue,
+            # invalidating peer authentication and consuming the whole request
+            # lifetime before the worker even read it. No request is issued or
+            # renewed while waiting for this exact owner's poll boundary.
+            with connect_at_boundary(root, c, current) as channel:
+                now = time.time_ns() // 1_000_000
+                request = {k: current[k] for k in ('version', 'workerPid', 'workerStartTicks', 'ownerLease',
+                    'baseControlSha256', 'bankManifestSha256', 'runId', 'previousGenerationSha256')}
+                request.update(requestId='live-reference-' + stamp, controlPath=staged['controlPath'],
+                    controlSha256=staged['controlSha256'], issuedAtMs=now, expiresAtMs=now + 60_000)
+                request_path = generation / 'request.json'
+                raw_request = json.dumps(request, separators=(',', ':')).encode()
+                request_path.write_bytes(raw_request)
+                wanted = sha(request_path)
+                pending = {'expectedGenerationSha256': wanted, 'previousGenerationSha256': state['generationSha256'],
+                    'expiresAtMs': request['expiresAtMs'], 'staged': staged, 'selected': selected}
+                put(out / 'pending.json', pending)
+                response, reply_code = {}, 1
+                try:
+                    channel.settimeout(75)
+                    channel.sendall(struct.pack('!I', len(raw_request)) + raw_request)
+                    body = b''
+                    while not body.endswith(b'\n'):
+                        part = channel.recv(4096)
+                        if not part:
+                            break
+                        body += part
+                        if len(body) > 65536:
+                            raise ValueError('OWNER_REPLY_BOUND')
+                    response = json.loads(body)
+                    reply_code = 0
+                except (OSError, ValueError) as error:
+                    # A send/receive timeout never implies nonacceptance.
+                    # Preserve pending; existing exact file proofs decide it.
+                    report('reload_reply_uncertain', reason=type(error).__name__)
             observed = json.loads((root / 'fundamental-reload/status.json').read_bytes())
             if observed['previousGenerationSha256'] == wanted:
                 state.update(generationSha256=wanted, controlPath=staged['controlPath'],
@@ -262,12 +310,11 @@ def main():
                 report('committed', generationSha256=wanted, exchanges=selected)
                 pending = None
             else:
-                response = json.loads(reply.stdout) if reply.returncode == 0 else {}
                 phase = response.get('state', '')
                 if phase.startswith(('rejected_', 'deferred_')) and observed['previousGenerationSha256'] == state['generationSha256']:
                     report('deferred', exchanges=selected, reason=response.get('reason', phase)); pending = None
                 else:
-                    report('reload_outcome_requires_reconciliation', exitCode=reply.returncode)
+                    report('reload_outcome_requires_reconciliation', exitCode=reply_code)
             if pending is None:
                 state['index'] += 1
                 put(state_path, state)

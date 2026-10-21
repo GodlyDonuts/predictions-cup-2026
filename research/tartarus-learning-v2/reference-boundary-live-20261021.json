@@ -1,0 +1,56 @@
+{
+  "installation": {
+    "observedUtc": "2026-10-21T21:32:41.520713+00:00",
+    "workerPid": 1031505,
+    "workerRestarted": false,
+    "updaterPid": 1036249,
+    "watcherPid": 1036250,
+    "updaterSha256": "85e17cf68c22664e55d14b0cb8a4f4961b533d33dc800045a4631594769d93fb",
+    "pendingRequestPreserved": true,
+    "sourceClocksChanged": false,
+    "requestLifetimeMs": 60000,
+    "accountClientsCreated": 0,
+    "orderRequests": 0,
+    "changedConfigKeys": [
+      "updaterScript",
+      "updaterSha256"
+    ]
+  },
+  "freshCommit": {
+    "observedUtc": "2026-10-21T21:36:06.185521+00:00",
+    "workerPid": 1031505,
+    "workerAlive": true,
+    "stopPresent": false,
+    "committedGeneration": "25fa83edbf3a1d5c8abe2117c42f5262cacac647aa092f516e2685198ead3377",
+    "committedAt": "2026-10-21T21:35:16.787Z",
+    "currentGeneration": "a765e15a5bcdf03417c103305c6d3985c1d0b94b2bedb9d72a055e6bb5a8ae1b",
+    "currentCommitCount": 54,
+    "freshReviews": [
+      "966",
+      "977",
+      "1067",
+      "865",
+      "872",
+      "993",
+      "885",
+      "1051",
+      "851",
+      "1043",
+      "1044",
+      "1077"
+    ],
+    "recurringReviews": [
+      "966",
+      "1067",
+      "872",
+      "885",
+      "1051",
+      "851",
+      "1043",
+      "1044",
+      "1077"
+    ],
+    "originalCohortJournalContainsGeneration": true,
+    "ordersRequestedByHelper": 0
+  }
+}
