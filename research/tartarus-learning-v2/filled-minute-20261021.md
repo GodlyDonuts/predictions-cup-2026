@@ -1,5 +1,9 @@
 # One filled order per minute: execution objective and current gap
 
+Current update,22:32UTC: R74 is verified live as sole1038328. Two new filled orders bought19,992shares for16,821.97SUSQies; exact original receipts/FIFO match, cash10,838.09. First-order post-intent ownership validation is0ms at millisecond resolution versus the earlier1765/3756ms examples. **The target remains unmet:2distinct first-filled orders in15minutes.** [Latest audited turnover](r74-turnover-20261021.json), [current deployment](dispatch-proof-r74-20261021.md). All12 recurring policies are active; R73 is included in R74. R75 no-HTTP repeat-entry recovery is qualified but undeployed, and R76 read-only hint batching is in qualification. The dated observations below remain historical evidence.
+
+## Historical observations at21:16UTC
+
 Observed October 21, 21:16 UTC. The human now targets at least one exchange-confirmed filled order per minute, together with money growth. Count a physical order once at its first execution. Subsequent partial receipts, acknowledgments, cancellations and invested principal do not count as additional trades or profit. The target is not achieved.
 
 ## Actual execution and money

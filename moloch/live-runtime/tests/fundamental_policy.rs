@@ -394,6 +394,16 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
             let head=f.bank.durable_head();let cash=f.bank.engine().wallet.cash;let result=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+20000);assert!(result.is_err()||result.unwrap().is_empty(),"{case}");assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().wallet.cash,cash);
         }
     }
+    #[test]fn batched_exit_hints_preserve_partial_flat_deadline_and_unknown_semantics_without_mutation(){
+        for sold in [1,2]{let(mut f,_t,_facts,_,_)=recurring_after_exit(sold,true);let exchanges:BTreeSet<String>=["101".into(),"missing".into()].into();
+            let head=f.bank.durable_head();let report=f.bank.engine().report().unwrap();let sidecar=std::fs::read(f.root.join("fundamental.ndjson")).unwrap();
+            for at in [NOW+18010,NOW+600001]{let single:Vec<_>=exchanges.iter().filter_map(|ex|f.store.as_ref().unwrap().existing_exit_hint(&f.bank,&f.log,&f.scope,ex,&f.trust,at).unwrap()).collect();
+                let bulk=f.store.as_ref().unwrap().existing_exit_hints(&f.bank,&f.log,&f.scope,&exchanges,&f.trust,at).unwrap();assert_eq!(serde_json::to_value(bulk).unwrap(),serde_json::to_value(single).unwrap());}
+            assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),report);assert_eq!(std::fs::read(f.root.join("fundamental.ndjson")).unwrap(),sidecar);
+            f.log.append(json!({"kind":"intent","qid":999})).unwrap();f.log.append(json!({"kind":"attempt","qid":999})).unwrap();
+            assert!(f.store.as_ref().unwrap().existing_exit_hints(&f.bank,&f.log,&f.scope,&exchanges,&f.trust,NOW+18011).is_err());
+        }
+    }
     #[test]fn recurring_v3_native_rejects_changed_history_or_position_without_mutation(){
         let(mut f,t,facts,_first,_sell)=recurring_after_exit(2,true);let facts=recurring_packet(&mut f,facts,NOW+21000);let authority=f.authority();let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+21025).unwrap().remove(0);let plan=f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&authority,NOW+21025).unwrap().unwrap();let event=plan.event().clone();drop(plan);drop(authority);
         for case in ["missing_exit","actual","filled","position","cost","cap","legacy"]{let mut e=event.clone();let p=&mut e["sameSideTopUp"];match case{"missing_exit"=>p["cohortOrigin"]["exits"]=json!([]),"actual"=>p["cohortOrigin"]["exits"][0]["actualOrderId"]=json!("999"),"filled"=>p["cohortOrigin"]["exits"][0]["filledQuantity"]=json!(1),"position"=>p["positionsSha256"]=json!("0".repeat(64)),"cost"=>p["heldCost"]=json!("0.010000"),"cap"=>p["maximumTotalQuantity"]=json!(0),_=>p["version"]=json!(1)}let head=f.bank.durable_head();let report=f.bank.engine().report().unwrap();assert!(f.bank.accept("recurring-mutated",1,&e).is_err(),"{case}");assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),report);}

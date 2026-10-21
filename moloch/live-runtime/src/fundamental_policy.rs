@@ -1208,7 +1208,19 @@ impl Cohorts{
         plan.validate_current(bank,log,transport,authority,now)?;Ok(Some(plan))
     }
     pub fn existing_exit_hint(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExitHint>>{
-        self.check(bank,log)?;if self.rank_paused(exchange){return Ok(None)} log.require_resolved_attempts()?;
+        self.check(bank,log)?;self.existing_exit_hint_checked(bank,log,scope,exchange,trusted,now)
+    }
+    /// One immutable, read-only selection pass. No Session, log or cohort
+    /// mutation is possible between these hints. Actual preparation/dispatch
+    /// still checks the then-current prefix, clocks, receipts and ownership.
+    pub fn existing_exit_hints(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchanges:&BTreeSet<String>,trusted:&BTreeSet<String>,now:u64)->Result<Vec<ExistingExitHint>>{
+        if exchanges.is_empty(){return Ok(Vec::new())}
+        self.check(bank,log)?;let mut out=Vec::new();
+        for exchange in exchanges{if let Some(hint)=self.existing_exit_hint_checked(bank,log,scope,exchange,trusted,now)?{out.push(hint);}}
+        Ok(out)
+    }
+    fn existing_exit_hint_checked(&self,bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&str,trusted:&BTreeSet<String>,now:u64)->Result<Option<ExistingExitHint>>{
+        if self.rank_paused(exchange){return Ok(None)} log.require_resolved_attempts()?;
         let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some()||(c.entry.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange)))else{return Ok(None)};
         if c.existing.is_none()&&c.pending_entry(log){return Ok(None)}
         if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|physical_pending(bank,log,*id)){return Ok(None)}

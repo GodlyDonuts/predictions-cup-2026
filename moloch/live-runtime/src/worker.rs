@@ -1154,6 +1154,17 @@ fn mixed_reviewed_preflight(exits:&[fundamental::ExistingExitHint],entries:&[fun
   for code in ["OFFICIAL_REQUEST_REJECTED","BODY_UNCONFIRMED","CONNECTION_UNCONFIRMED","LIVE_CASH_MISMATCH"]{assert!(!expected_ordinary_final_guard(code));}
  }
 }
+fn existing_exit_read_hints(bank:&Session,log:&DispatchLog,scope:&Scope,f:&FundamentalRuntime,at:u64)->Result<Vec<fundamental::ExistingExitHint>>{
+ let mut exchanges=std::collections::BTreeSet::new();let mut reserved=std::collections::BTreeSet::new();
+ for ex in f.cohorts.managed_exchanges(){
+  if existing_target_busy(bank,log,&ex)?{if reviewed_reserved_exit(bank,log,scope,&ex,at)?.is_none(){continue}reserved.insert(ex.clone());}
+  exchanges.insert(ex);
+ }
+ let mut hints=f.cohorts.existing_exit_hints(bank,log,scope,&exchanges,f.authority.trusted(),at)?;
+ for hint in &mut hints{if reserved.contains(&hint.exchange_id)&&hint.reason=="reviewed_inventory_book_refresh"{hint.reason="reviewed_passive_reservation_retry".into();}}
+ Ok(hints)
+}
+#[cfg(test)]
 fn existing_exit_read_hint(bank:&Session,log:&DispatchLog,scope:&Scope,f:&FundamentalRuntime,exchange:&str,at:u64)->Result<Option<fundamental::ExistingExitHint>>{
  let untouched_passive=if existing_target_busy(bank,log,exchange)?{if reviewed_reserved_exit(bank,log,scope,exchange,at)?.is_none(){return Ok(None)}true}else{false};
  let mut hint=f.cohorts.existing_exit_hint(bank,log,scope,exchange,f.authority.trusted(),at)?;
@@ -2571,7 +2582,9 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let mut stale_existing_hints=Vec::new();
  if let Some(f)=fundamental.as_deref_mut(){
   f.authority.validate()?;let mut existing_hints=Vec::new();
-  for ex in f.cohorts.managed_exchanges(){if let Some(hint)=existing_exit_read_hint(bank,log,&c.scope,f,&ex,now())?{if hint.reason=="reviewed_inventory_book_refresh"{stale_existing_hints.push(hint)}else{existing_hints.push(hint);}}}
+  let hint_started=now();let batch=existing_exit_read_hints(bank,log,&c.scope,f,hint_started)?;
+  let _=atomic_json(&c.root.join("fundamental-hint-selection.json"),&json!({"at":iso(now()),"pid":std::process::id(),"elapsedMs":now().saturating_sub(hint_started),"managedScopes":f.cohorts.managed_exchanges().len(),"hints":batch.len(),"diagnosticOnly":true}));
+  for hint in batch{if hint.reason=="reviewed_inventory_book_refresh"{stale_existing_hints.push(hint)}else{existing_hints.push(hint);}}
   if !existing_hints.is_empty(){let(existing,index,key)=mixed_reviewed_preflight(&existing_hints,&entry_hints,preflight_cursor.as_deref()).ok_or("LIVE_REVIEWED_PREFLIGHT_CHOICE")?;
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
    if existing{let hint=&existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}
@@ -3761,6 +3774,7 @@ pub fn main()->Result<()>{
    assert!(existing_target_busy(&f.bank,&f.log,"101").unwrap());
    let priority=moloch_live_runtime::quote_priority::from_native(&f.bank,&c.scope,std::slice::from_ref(&q),at,None).unwrap();assert_eq!(priority.assessments[0].decision.class,moloch_live_runtime::quote_priority::Class::Deferred);assert!(priority.ordered_indices.is_empty());
    assert!(existing_exit_read_hint(&f.bank,&f.log,&c.scope,&runtime,"101",at).unwrap().is_some());
+   assert_eq!(serde_json::to_value(existing_exit_read_hints(&f.bank,&f.log,&c.scope,&runtime,at).unwrap()).unwrap(),json!([existing_exit_read_hint(&f.bank,&f.log,&c.scope,&runtime,"101",at).unwrap().unwrap()]));
    if prebound{runtime.cohorts.bind(&f.bank,&f.log,&c.scope,id,&request,runtime.authority.trusted(),at).unwrap();}
    let before=f.bank.engine().report().unwrap();let orders=f.bank.engine().order_records();let dispatch=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();let mut reads=Reads::new();
    let(facts,until)=reviewed_reserved_preflight(&c,&mut f.bank,&f.log,&mut source,&runtime,&q,&mut reads).unwrap().expect("untouched passive limit must survive ordinary Deferred ranking");
@@ -3779,6 +3793,7 @@ pub fn main()->Result<()>{
   let raw_hint=runtime.cohorts.existing_exit_hint(&f.bank,&f.log,&c.scope,"101",runtime.authority.trusted(),at).unwrap().unwrap();assert_eq!(raw_hint.reason,"reviewed_inventory_book_refresh");assert!(!runtime.eligible(&f.bank,&f.log,&c.scope,id,at).unwrap());
   let head=f.bank.durable_head();let before=f.bank.engine().report().unwrap();let orders=f.bank.engine().order_records();let dispatch=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();
   let hint=existing_exit_read_hint(&f.bank,&f.log,&c.scope,&runtime,"101",at).unwrap().unwrap();assert_eq!(hint.reason,"reviewed_passive_reservation_retry");assert_eq!((hint.exchange_id.as_str(),hint.market_id.as_str(),hint.side.as_str()),("101","201","NO"));assert_eq!(f.bank.durable_head(),head,"nomination changes no source clock or financial state");
+  assert_eq!(serde_json::to_value(existing_exit_read_hints(&f.bank,&f.log,&c.scope,&runtime,at).unwrap()).unwrap(),json!([hint]));
   let mut stale=Reads::new();stale.stale=true;assert!(reviewed_reserved_preflight(&c,&mut f.bank,&f.log,&mut source,&runtime,&q,&mut stale).unwrap().is_none());assert_eq!(stale.endpoints.len(),7);assert_eq!(f.bank.durable_head(),head,"stale final packet is not admitted");
   let mut fresh=Reads::new();let(facts,until)=reviewed_reserved_preflight(&c,&mut f.bank,&f.log,&mut source,&runtime,&q,&mut fresh).unwrap().unwrap();assert_eq!(fresh.endpoints.len(),7);assert_eq!(fresh.services,7);assert_eq!(json!(fresh.returned),serde_json::to_value([&facts.account,&facts.positions,&facts.open_orders,&facts.cash_balance,&facts.market,&facts.contract,&facts.book]).unwrap());
   assert_eq!(existing_reservation_stage(&quote(&f.bank,id).unwrap(),&q,now(),until).unwrap(),None);assert!(runtime.eligible(&f.bank,&f.log,&c.scope,id,now()).unwrap());let request=f.spec(&q);runtime.cohorts.bind(&f.bank,&f.log,&c.scope,id,&request,runtime.authority.trusted(),now()).unwrap();
@@ -3793,6 +3808,8 @@ pub fn main()->Result<()>{
     _=>{f.log.append(json!({"kind":"intent","qid":id})).unwrap();f.log.append(json!({"kind":"attempt","qid":id})).unwrap();if case=="ack"{f.log.append(json!({"kind":"ack","qid":id,"receipt":{"orderId":"901"}})).unwrap();}}
    }
    let head=f.bank.durable_head();let original=quote(&f.bank,id).unwrap();let result=existing_exit_read_hint(&f.bank,&f.log,&c.scope,&runtime,"101",at);
+   let batch=existing_exit_read_hints(&f.bank,&f.log,&c.scope,&runtime,at);
+   if let Ok(hint)=&result{assert_eq!(serde_json::to_value(batch.unwrap()).unwrap(),serde_json::to_value(hint.iter().collect::<Vec<_>>()).unwrap());}else{assert!(batch.is_err());}
    if case=="attempt"{assert!(result.is_err(),"unknown attempt remains fatal");}else{let hint=result.unwrap();assert!(hint.as_ref().is_none_or(|h|h.reason!="reviewed_passive_reservation_retry"),"{case}");if case=="revoked"{assert_eq!(hint.unwrap().reason,"reviewed_source_revocation");}}
    assert_eq!(f.bank.durable_head(),head);assert_eq!(quote(&f.bank,id).unwrap(),original);assert_eq!(f.bank.engine().order_records().iter().filter(|q|q["retired"]==false&&q["exchangeId"]=="101").count(),1);
   }
