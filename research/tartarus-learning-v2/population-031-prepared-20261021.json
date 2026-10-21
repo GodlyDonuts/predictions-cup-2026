@@ -1,0 +1,70 @@
+{
+  "sourceCommit": "a45f590f1865191f3b366d27fc3a33b0c9ec173b",
+  "configurationSha256": "11d684e4a05f2b96ac83463c1ffd7c0ab9022e6576d8d929d4f618b84cd2a71f",
+  "trainBounds": [
+    1792049116175,
+    1792221916175
+  ],
+  "developmentSelectionBounds": [
+    1792221916175,
+    1792394716175
+  ],
+  "episodeMs": 172800000,
+  "trainingWorlds": 8,
+  "parents": [
+    {
+      "path": "cycle-000-member-000.pt",
+      "sha256": "103e4822b674dcf21fe8d8e40ff8620ce98af38a89fddf434336028c0cee794a"
+    },
+    {
+      "path": "founder-001.pt",
+      "sha256": "71376848d352ed48f788abd25077b2dacec70c9424eadc22bdbcc2427f759885"
+    },
+    {
+      "path": "founder-002.pt",
+      "sha256": "a48f5485dc66bb4b008982b45a68ef7bb2c29bd127421d43e4175961d17da1ea"
+    },
+    {
+      "path": "founder-003.pt",
+      "sha256": "b73c1fbb82c5597a22593e8c7ff58c70d21abea2d1ff59e8faeab2b628a20b8b"
+    }
+  ],
+  "newFitnessRequired": true,
+  "independentTestUsed": false,
+  "productionAuthority": false,
+  "automaticGPUStartConfigured": true,
+  "requirementsBeforeHandoff": [
+    "CPU founder weight and optimizer-reset proof",
+    "complete-day real-history world result",
+    "original030 sealed cohort reconstruction parity",
+    "first completed030 selection preserved"
+  ],
+  "handoffCondition": "all listed proofs plus first completed030 selection, exact old trainer identity and GPU exclusion",
+  "watcherActualPid": 23644,
+  "founderProof": [
+    {
+      "member": 0,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "4963150c83b088d2b1cd17f0f54011c3e4deb7602f781a70deaf408f98af05f2"
+    },
+    {
+      "member": 1,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "0537036f1ed9214ab7742c2b9e04af3077a2bb0ef852d1dd41082d3fc68c7ab1"
+    },
+    {
+      "member": 2,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "37e88043f5f52c612d561fa7a55346b66a305bb3d7d73ab3f9b4acceb3634e7b"
+    },
+    {
+      "member": 3,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "checkpointSha256": "fb6e1ebc3838e2f079f17aca255a0fcb7f2be79586ed13dab17759a0f2bd46d0"
+    }
+  ]
+}

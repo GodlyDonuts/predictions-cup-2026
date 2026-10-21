@@ -1,0 +1,24 @@
+{
+  "classification": "original_sealed_cohort_reconstruction_not_model_ROI",
+  "candidateCommit": "a45f590f1865191f3b366d27fc3a33b0c9ec173b",
+  "originalExperimentSha256": "26496def963c747c69444724ccd79f7f48e29b1fe2e3f2a6a3ccea166fe961cc",
+  "episodeManifestSha256": "7b1f557a58db217ace87d223aabd4f8b50edc25b002f9633d9dd001a619bd22f",
+  "changedExistingSourceFiles": [
+    "moloch/learning_actions/experiment.py",
+    "moloch/learning_actions/realtime.py"
+  ],
+  "additionalSourceFiles": [
+    "moloch/learning_actions/liquidity_snapshot.py",
+    "moloch/learning_actions/training_reward.py"
+  ],
+  "worlds": 8,
+  "decisions": 6126,
+  "batches": 107,
+  "preparationSeconds": 46.55225239999709,
+  "replaySeconds": 233.204465099996,
+  "allOriginalObservationClockRewardFinancialHashesPassed": true,
+  "newInference": false,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

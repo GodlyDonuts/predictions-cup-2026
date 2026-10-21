@@ -1,0 +1,67 @@
+{
+  "classification": "real_history_complete_day_engine_validation_not_learning_or_ROI",
+  "sourceCommit": "4d0bccaec01d7277499e139b23db96b075e7473a",
+  "configSha256": "87b50b36f0b089e636a6f8f9adfcb0fc0b86e5bf3a687bae8c0b513ae1f9771c",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "trainBounds": [
+    1792049116175,
+    1792221916175
+  ],
+  "selectionBounds": [
+    1792221916175,
+    1792394716175
+  ],
+  "economicResult": {
+    "reward": 0.0,
+    "G": 0.0,
+    "daily_log_returns": [
+      0.0,
+      0.0
+    ],
+    "sample_daily_std": 0.0,
+    "D": 2,
+    "N": 0,
+    "bankrupt": false,
+    "eligible": false,
+    "development_daily_growth": true,
+    "classification": "complete_day_development_growth_not_source_or_independent_qualification",
+    "terminal_reward_correction": 0.0,
+    "wealth_attribution": {
+      "initial_cash_micros": 100000000000,
+      "terminal_cash_micros": 100000000000,
+      "initial_collateral_debt_micros": 0,
+      "terminal_collateral_debt_micros": 0,
+      "cash_change_twice_micros": 0,
+      "liability_change_twice_micros": 0,
+      "inventory_mark_change_twice_micros": 0,
+      "wealth_change_twice_micros": 0,
+      "exact_reconciliation": true,
+      "terminal_holdings": [],
+      "fill_flows": {},
+      "valuation_convention": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+      "executable_liquidation_established": false
+    },
+    "initial_wealth_twice_micros": 200000000000,
+    "terminal_wealth_twice_micros": 200000000000,
+    "marked_roi": 0.0,
+    "valuation": "last_observed_SIG_midpoint_with_explicit_staleness_not_current_wealth",
+    "fees_micros": 0,
+    "realized_fifo_micros": 0,
+    "fill_count": 0,
+    "stale_mark_observations": 0,
+    "stale_mark_exchanges": [],
+    "cluster_evidence": "all_contracts_one_conservative_correlated_cluster",
+    "depth_executable_roi_established": false,
+    "production_profitability_established": false
+  },
+  "boundaries": [
+    1792049116175,
+    1792135516175,
+    1792221916175
+  ],
+  "seconds": 647.4526824999994,
+  "optimizerUpdates": 0,
+  "accountRequests": 0,
+  "productionChanged": false,
+  "independentTestUsed": false
+}
