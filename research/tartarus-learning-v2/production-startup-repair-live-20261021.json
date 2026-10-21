@@ -1,0 +1,16 @@
+{
+  "observedUtc": "2026-10-21T06:18:13.439232+00:00",
+  "pid": 979680,
+  "serviceMainPid": 979680,
+  "startTicks": "53034794",
+  "actualBinarySha256": "f889b34762e594685ac1c759d0a0cea1487a2994febd053644a95f58995b86cb",
+  "progressAt": "2026-10-21T06:17:23.499Z",
+  "phase": "trading",
+  "realtimeHealthy": true,
+  "stopPresent": false,
+  "classification": "actual_current_process_operational_state_not_profit_or_new_fills",
+  "observerAndVerificationAccountRequests": 0,
+  "productionModifiedByVerification": false,
+  "MLModelDeployed": false,
+  "independentTestPricesRead": false
+}

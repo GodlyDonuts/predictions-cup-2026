@@ -30,3 +30,10 @@ Three paired ten-minute source-advance rounds alternate serial/parallel ordering
 Attempt002 completed its numerical rounds but failed final reporting on an unavailable optional psutil dependency. It remains a failed wrapper attempt with no admitted timing result. Attempt003 removes that dependency, saves each round before optional telemetry and uses existing Windows process metadata; its final report is complete. [Retained diagnosis](process-source-worlds-probe-telemetry-correction-20261021.json).
 
 The next necessary step is to make the GPU-capacity handoff exercise this actual process backend, including eight-world memory/accepted-PPO evidence. The old batch capacity probe only exercises local worlds, so its green result cannot authorize this new backend. Current033 stays live and the previous034 watcher remains unchanged until that admission path is concrete. No full-generation evolution or independently positive ROI is claimed.
+
+
+## Runtime-profile and operational readback
+
+A further31-case run passes in39.501s after extending the spawned/local equality checks to both compact-rollout modes and encoder activation checkpointing used by the queued configuration. Final carried hidden states, parent RNG, model parameters and Adam moments remain identical. Only test coverage changed; the implementation measured by the recorded-source probe is unchanged. [Exact profile-matched check](process-source-worlds-profile-matched-checks-20261021.json).
+
+Separate read-only production verification at06:18UTC confirms the same installed979680/startTicks53034794 and binaryf889b34762e5 in the trading loop with healthy realtime and no STOP. This goal turn changed no runtime control or financial file and made no account request. New trades or profits are not established by operational health. [Actual current-process proof](production-startup-repair-live-20261021.json).

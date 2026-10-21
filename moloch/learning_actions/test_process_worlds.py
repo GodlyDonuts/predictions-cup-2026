@@ -40,7 +40,7 @@ class ProcessWorldTests(unittest.TestCase):
             for x,y in zip(a,b):self.equal_tree(x,y)
         else:self.assertEqual(a,b)
 
-    def run_case(self,remote,daily):
+    def run_case(self,remote,daily,rollout=False):
         torch.set_num_threads(1);torch.manual_seed(984)
         model=ApiPolicy(16);model.acting_validation='consolidated_v1'
         with torch.no_grad():
@@ -58,7 +58,7 @@ class ProcessWorldTests(unittest.TestCase):
                 envs=[x[0]for x in pairs];ledgers=[x[1]for x in pairs]
             self.assertTrue(all((e.details['fill_count']if remote else len(e.api_fills))>0 for e in envs))
             stream=BatchStream(envs,model,ledgers,calibration={'decision_latency_ms':DAY//4 if daily else 100},
-                behavior_guard='tensor_versions_v1',compact_finished=True,world_backend=backend)
+                behavior_guard='tensor_versions_v1',compact_finished=True,world_backend=backend,rollout_only=rollout)
             torch.manual_seed(773);frames=[];accepted=0;totals=[0.]*3
             while any(e.now<e.end for e in envs):
                 chunk=stream.collect(3)
@@ -70,7 +70,7 @@ class ProcessWorldTests(unittest.TestCase):
                     indices=(chunk.stream.indices.tolist()if hasattr(chunk.stream,'indices')else list(range(3)))
                     for i,value in zip(indices,f['economic_reward']):totals[i]+=value
                 accepted+=sum(r['accepted']for r in update(model,optimizer,chunk,
-                    [f['economic_reward']for f in chunk.frames],role='train',epochs=1))
+                    [f['economic_reward']for f in chunk.frames],role='train',epochs=1,checkpoint_encoder=rollout))
             self.assertGreater(accepted,0)
             self.assertTrue(all(r['fill_count']>=0 for r in stream.completed.values()))
             if daily:
@@ -92,7 +92,9 @@ class ProcessWorldTests(unittest.TestCase):
 
     def test_identical_actions_finance_rewards_hidden_states_and_optimizer(self):
         for daily in(False,True):
-            with self.subTest(daily=daily):self.equal_tree(self.run_case(False,daily),self.run_case(True,daily))
+            for rollout in(False,True):
+                with self.subTest(daily=daily,compactRollout=rollout):
+                    self.equal_tree(self.run_case(False,daily,rollout),self.run_case(True,daily,rollout))
 
     def test_remote_ipc_cannot_become_live_compute_latency(self):
         with self.assertRaisesRegex(ValueError,'IPC_MUST_NOT_CALIBRATE'):

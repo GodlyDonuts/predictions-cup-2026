@@ -1,0 +1,19 @@
+{
+  "observedUtc": "2026-10-21T06:21:32.727503+00:00",
+  "testsPassed": 31,
+  "failed": 0,
+  "skipped": 0,
+  "wallSeconds": 39.501,
+  "newCoverage": [
+    "compact_rollout_statistics_true_and_false",
+    "checkpoint_entity_encoder_true_and_false",
+    "final_carried_hidden_state",
+    "parent_torch_rng",
+    "model_parameters_and_adam_moments",
+    "same_two_day_growth_reward"
+  ],
+  "testSourceCanonicalLFSha256": "b738ba25556d7968935f33f5649aa44a9c7e608ef585f9594f8c4da2da90e2e5",
+  "runtimeImplementationChangedSinceRecordedSourceProbe": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}
