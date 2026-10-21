@@ -37,7 +37,7 @@ fn classified(e:TransportError)->Box<dyn std::error::Error>{TokenFailure::from_t
  b=stream_connect_retry::prepare_attempt(&b,121004,Some(61004)).unwrap();
  // A real restart reloads the SAME original attempts, without refunding failures.
  let original=serde_json::to_vec(&b).unwrap();let reloaded:RecoveryBudget=serde_json::from_slice(&original).unwrap();
- assert!(after_token_failure(&reloaded,122000,Some(121006),token).is_err());assert_eq!(serde_json::to_vec(&reloaded).unwrap(),original);assert_eq!(reloaded.attempts(),&[1000,61002,121004]);
+ assert_eq!(after_token_failure(&reloaded,122000,Some(121006),token).unwrap(),601001);assert_eq!(serde_json::to_vec(&reloaded).unwrap(),original);assert_eq!(reloaded.attempts(),&[1000,61002,121004]);
 }
 #[test]fn retry_after_exceeds_mint_spacing_without_mutating_or_double_charging_budget(){
  let b=stream_connect_retry::prepare_attempt(&RecoveryBudget::new(0).unwrap(),0,None).unwrap();let saved=serde_json::to_vec(&b).unwrap();let mut e=error("OFFICIAL_REQUEST_REJECTED",Some(429));e.retry_after_ms=180000;

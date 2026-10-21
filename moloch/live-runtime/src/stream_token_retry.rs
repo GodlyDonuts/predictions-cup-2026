@@ -48,7 +48,7 @@ impl fmt::Display for TokenRetryError{fn fmt(&self,f:&mut fmt::Formatter<'_>)->f
 impl Error for TokenRetryError{}
 
 /// Query only. The same persisted budget was charged BEFORE this failed mint;
-/// never refund, reseed, charge again, or start waiting out an exhausted window.
+/// never refund, reseed or charge again. A full window waits for its next admission.
 /// SDK Retry-After is remaining persisted account cooldown, not a new limiter.
 pub fn after_token_failure(budget:&RecoveryBudget,now_ms:u64,last_auth_mint_ms:Option<u64>,failure:&TokenFailure)->Result<u64,TokenRetryError>{
  let next=stream_connect_retry::next_attempt(budget,now_ms,last_auth_mint_ms).map_err(TokenRetryError::Timing)?;

@@ -8,12 +8,28 @@ use std::{
     sync::{
         Arc, Mutex,
         atomic::{AtomicBool, AtomicU64, Ordering},
-        mpsc::{self, Receiver, SyncSender, TrySendError},
+        mpsc::TrySendError,
     },
     thread::{self, JoinHandle},
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 use tungstenite::{Message, WebSocket, stream::MaybeTlsStream};
+#[path="realtime_queue.rs"]mod ingress;
+use ingress::{Receiver,Sender as SyncSender};
+const INGRESS_MESSAGES:usize=1024;
+const INGRESS_ENCODED_BYTES:usize=64*1024*1024;
+fn ingress_channel(count:usize)->(SyncSender<Incoming>,Receiver<Incoming>){ingress::channel(count,INGRESS_ENCODED_BYTES,incoming_weight)}
+fn incoming_weight(value:&Incoming)->usize{
+    struct Count(usize);
+    impl std::io::Write for Count{
+        fn write(&mut self,bytes:&[u8])->std::io::Result<usize>{self.0=self.0.checked_add(bytes.len()).ok_or_else(||std::io::Error::other("encoded size overflow"))?;Ok(bytes.len())}
+        fn flush(&mut self)->std::io::Result<()>{Ok(())}
+    }
+    match value{
+        Incoming::Joined{received_at}=>256+received_at.len(),Incoming::Failed(code)=>256+code.len(),
+        Incoming::Broadcast{event,payload,received_at}=>{let mut count=Count(256+event.len()+received_at.len());if serde_json::to_writer(&mut count,payload).is_err(){usize::MAX}else{count.0}},
+    }
+}
 fn now() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -438,7 +454,7 @@ impl Realtime {
         tcp(socket.get_ref())?
             .set_read_timeout(Some(Duration::from_millis(100)))
             .map_err(|_| "STREAM_TIMEOUT")?;
-        let (tx, incoming) = mpsc::sync_channel(64);
+        let (tx, incoming) = ingress_channel(INGRESS_MESSAGES);
         let stop = Arc::new(AtomicBool::new(false));
         let failed = Arc::new(AtomicBool::new(false));
         let exit_reason=Arc::new(Mutex::new(None));
@@ -535,13 +551,21 @@ fn run_socket(
 mod tests {
     use super::*;
     const CUP: &str = "bda92870-621e-47b0-bc3c-3602c5c26f55";
+    #[test]
+    fn complete_universe_burst_preserves_every_frame_and_order(){
+        let(tx,rx)=ingress_channel(INGRESS_MESSAGES);
+        for sequence in 0..1024 {deliver(&tx,Incoming::Broadcast{event:"orderbook".into(),payload:json!({"sequence":sequence}),received_at:"2026-10-21T00:00:00Z".into()}).unwrap();}
+        assert_eq!(deliver(&tx,Incoming::Joined{received_at:"later".into()}),Err("STREAM_QUEUE_FULL"));
+        for sequence in 0..1024 {match rx.try_recv().unwrap(){Incoming::Broadcast{payload,..}=>assert_eq!(payload["sequence"],sequence),_=>panic!("changed frame")}}
+        deliver(&tx,Incoming::Joined{received_at:"after drain".into()}).unwrap();assert!(matches!(rx.try_recv().unwrap(),Incoming::Joined{..}));
+    }
     fn reporter()->(ExitReporter,Arc<Mutex<Option<&'static str>>>,Arc<AtomicBool>){
         let reason=Arc::new(Mutex::new(None));let failed=Arc::new(AtomicBool::new(false));
         (ExitReporter{reason:reason.clone(),failed:failed.clone(),published:false},reason,failed)
     }
     #[test]
     fn saturated_queue_cannot_hide_published_reason_or_weaken_failed_gate(){
-        let(tx,rx)=mpsc::sync_channel(64);
+        let(tx,rx)=ingress_channel(64);
         for _ in 0..64{deliver(&tx,Incoming::Joined{received_at:"fixture".into()}).unwrap();}
         let error=deliver(&tx,Incoming::Joined{received_at:"overflow".into()}).unwrap_err();
         assert_eq!(error,"STREAM_QUEUE_FULL");
@@ -554,7 +578,7 @@ mod tests {
     }
     #[test]
     fn disconnected_consumer_is_not_queue_capacity_failure(){
-        let(tx,rx)=mpsc::sync_channel(64);drop(rx);
+        let(tx,rx)=ingress_channel(64);drop(rx);
         assert_eq!(deliver(&tx,Incoming::Joined{received_at:"fixture".into()}).unwrap_err(),"STREAM_CONSUMER_DISCONNECTED");
     }
     #[test]
@@ -592,7 +616,7 @@ mod tests {
             let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();let address=listener.local_addr().unwrap();
             let server=thread::spawn(move||{let(stream,_)=listener.accept().unwrap();let _ws=tungstenite::accept(stream).unwrap();});
             let(mut socket,_)=tungstenite::connect(format!("ws://{address}/fixture")).unwrap();
-            let(tx,_rx)=mpsc::sync_channel(64);let mut protocol=Protocol::new(CUP).unwrap();let stop=AtomicBool::new(requested);
+            let(tx,_rx)=ingress_channel(64);let mut protocol=Protocol::new(CUP).unwrap();let stop=AtomicBool::new(requested);
             let exit=run_socket(&mut socket,&mut protocol,&tx,&stop,if requested{now()+10_000}else{0}).unwrap();
             assert_eq!(exit,if requested{PlannedExit::RequestedStop}else{PlannedExit::Deadline});
             let(mut reporter,reason,failed)=reporter();reporter.publish(exit.code());

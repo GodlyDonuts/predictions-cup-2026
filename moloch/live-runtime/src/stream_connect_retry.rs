@@ -21,10 +21,10 @@
 //! Preserve the old per-scope history boundaries and ordinary fill liabilities.
 //!
 //! Max three admitted attempts per inclusive rolling ten minutes; >=60 seconds
-//! between all attempts, also honoring the durable token-mint marker. Exhaustion
-//! stops the current startup/recovery operation, rather than waiting ten minutes
-//! to start an unbounded loop. A retry never retries an order or renews authority.
-use crate::stream_recovery::{BudgetError,RecoveryBudget,MAXIMUM_CLOCK_MS,RECOVERY_MAXIMUM_ATTEMPTS,RECOVERY_MINIMUM_GAP_MS,RECOVERY_WINDOW_MS};
+//! between all attempts, also honoring the durable token-mint marker. A full
+//! window returns its next admission time; the worker waits cooperatively with
+//! STOP/control checks. A retry never retries an order or renews authority.
+use crate::stream_recovery::{BudgetError,RecoveryBudget,MAXIMUM_CLOCK_MS,RECOVERY_MINIMUM_GAP_MS};
 use std::{error::Error,fmt};
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
@@ -55,7 +55,6 @@ impl From<BudgetError> for RetryError{fn from(e:BudgetError)->Self{Self::Budget(
 /// durable state. Caller still validates the reason for replacing a live stream.
 pub fn next_attempt(budget:&RecoveryBudget,now_ms:u64,last_auth_mint_ms:Option<u64>)->Result<u64,RetryError>{
  budget.validate(now_ms)?;
- if budget.attempts().iter().filter(|at|now_ms-**at<=RECOVERY_WINDOW_MS).count()>=RECOVERY_MAXIMUM_ATTEMPTS{return Err(RetryError::Exhausted)}
  let mut next=budget.next_allowed(now_ms)?;
  if let Some(auth)=last_auth_mint_ms{
   if auth>MAXIMUM_CLOCK_MS{return Err(RetryError::AuthClockRange)}
