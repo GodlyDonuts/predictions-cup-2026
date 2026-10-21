@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "91ab753962353a05fdf87cc650c5b56c9f926884",
+  "catalogSha256": "0a647ee8c614c5d794e7c4e008d408c237b19f16f550895c1f3db64ea1f52fa7",
+  "wrapperSha256": "bbee0ecddf7858e29a947889f9f73d71c76b8d13ddfa270ca425382170288a5d",
+  "configSha256": "1f4c946da1b4fe9946c2ec82c637d7e473061e43b46d8ab790cb2164786d2b51",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "rounds": 6,
+  "roundMs": 300000,
+  "warmupMs": 60000,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "physicalAccountRequests": 0,
+  "role": "evolution",
+  "requireThreeVenueReads": true,
+  "priorSigmaOnlyTrialRetained": true,
+  "startMs": 1792366530904,
+  "windowChosenForDocumentedThreeVenueAvailability": true,
+  "priorAttempt002RejectedAbsentThreeVenuePaidReads": true
+}

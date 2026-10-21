@@ -1,0 +1,11 @@
+{
+  "classification": "rejected_probe_window_not_three_venue_timing_result",
+  "sourceCommit": "91ab753962353a05fdf87cc650c5b56c9f926884",
+  "failure": {
+    "type": "AssertionError",
+    "reason": ""
+  },
+  "reason": "The first minute of the original evolution window has no live external-reference rows. The explicit three-venue paid-read assertion rejected this window. No timing from this failed trial was admitted.",
+  "productionChanged": false,
+  "independentTestUsed": false
+}

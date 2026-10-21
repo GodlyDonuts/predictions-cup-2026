@@ -1,0 +1,21 @@
+{
+  "observedUtc": "2026-10-21T07:28:54.318998+00:00",
+  "tests": 52,
+  "failed": 0,
+  "skipped": 0,
+  "wallSeconds": 24.463,
+  "modules": [
+    "moloch.learning_realism.test_read_catalog",
+    "moloch.learning_realism.test_replay",
+    "moloch.learning_actions.test_managed_data_service",
+    "moloch.learning_actions.test_read_target_sampling",
+    "moloch.learning_actions.test_process_worlds",
+    "moloch.learning_actions.test_evaluation_batch"
+  ],
+  "actualRealSourceTimingPending": false,
+  "activeFrozenTrainerChanged": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "defaultRuntimeAdopted": false,
+  "disposition": "prototype_rejected_mixed_small_source_timing_gain"
+}

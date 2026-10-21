@@ -1,0 +1,110 @@
+{
+  "classification": "six_paired_recorded_role_source_rounds_not_whole_training_or_ROI",
+  "sourceCalendarRole": "evolution",
+  "sourceBoundsMs": [
+    1792366530904,
+    1792394716175
+  ],
+  "sourceCommit": "91ab753962353a05fdf87cc650c5b56c9f926884",
+  "catalogSha256": "0a647ee8c614c5d794e7c4e008d408c237b19f16f550895c1f3db64ea1f52fa7",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "rounds": [
+    {
+      "round": 0,
+      "listSeconds": 1.475856000004569,
+      "indexedSeconds": 1.504777699999977,
+      "state": {
+        "virtualMs": 1792366890904,
+        "financialSha256": "230610258ccde3b8244a83c0613faa057a0d06a49290044cc01b8acdd416409c",
+        "observationSha256": "1be3de3f5cf119e5b4a55a6c85f9cc96c319006b9eafe995093d472fee32f65c",
+        "paidRequests": {
+          "Kalshi": 7201,
+          "Polymarket": 10589,
+          "SIG": 599
+        }
+      }
+    },
+    {
+      "round": 1,
+      "listSeconds": 2.1278443000046536,
+      "indexedSeconds": 2.0479902000079164,
+      "state": {
+        "virtualMs": 1792367190904,
+        "financialSha256": "ffcc630a31001eb51739541cc6f33904893560d2b353fe59e789065d71386b48",
+        "observationSha256": "ae26229c67119f52146412517601c411652e7c1707a3e11f01aef43bbcf0cf6e",
+        "paidRequests": {
+          "Kalshi": 13201,
+          "Polymarket": 19412,
+          "SIG": 1098
+        }
+      }
+    },
+    {
+      "round": 2,
+      "listSeconds": 1.9353555999987293,
+      "indexedSeconds": 1.8967370000027586,
+      "state": {
+        "virtualMs": 1792367490904,
+        "financialSha256": "cd4e0ddf28c2e2600a66181eaa0fbcfd14d9054cab3057fe19a584b8fecd5015",
+        "observationSha256": "07fcedfa82d9e375f9d7a4bd7b07684b5f523618b8ec39a4fd88b523818f4a71",
+        "paidRequests": {
+          "Kalshi": 19201,
+          "Polymarket": 28236,
+          "SIG": 1597
+        }
+      }
+    },
+    {
+      "round": 3,
+      "listSeconds": 1.5515643999970052,
+      "indexedSeconds": 1.487799599999562,
+      "state": {
+        "virtualMs": 1792367790904,
+        "financialSha256": "a14c8cff05861f6dbff81cd85f2db8d8232e60bbc8589a33645649ab42b66b7d",
+        "observationSha256": "779d5eccccd995bb445632f0edee442e7e05c2aa220fce75c993638c050c31e5",
+        "paidRequests": {
+          "Kalshi": 25201,
+          "Polymarket": 37059,
+          "SIG": 2096
+        }
+      }
+    },
+    {
+      "round": 4,
+      "listSeconds": 1.9222527999954764,
+      "indexedSeconds": 1.9098876000061864,
+      "state": {
+        "virtualMs": 1792368090904,
+        "financialSha256": "9d82b811a869273bd8a49a0bf6e4194f30ad787d12369bda995b3844144fc635",
+        "observationSha256": "11f9f7db59db811f91b5f54e6be5cda0ad80c9fd987465000b3cb8ec702dc69e",
+        "paidRequests": {
+          "Kalshi": 31201,
+          "Polymarket": 45883,
+          "SIG": 2595
+        }
+      }
+    },
+    {
+      "round": 5,
+      "listSeconds": 0.525646099995356,
+      "indexedSeconds": 0.5982963999995263,
+      "state": {
+        "virtualMs": 1792368390904,
+        "financialSha256": "e8e0b44b1d58063463d461d842b2df34393b334f0eab7f9b09ad56e5e8acd384",
+        "observationSha256": "e66681545bf86d1fac5b83026a48242c4293ff89d7a24f5f3ebbb0d3e12fa12f",
+        "paidRequests": {
+          "Kalshi": 37201,
+          "Polymarket": 54706,
+          "SIG": 3094
+        }
+      }
+    }
+  ],
+  "medianSourceSpeedRatio": 1.021255971638073,
+  "exactObservationFinanceCatalogRequestsAndReceipts": true,
+  "optimizerRun": false,
+  "modelInference": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "physicalAccountRequests": 0
+}

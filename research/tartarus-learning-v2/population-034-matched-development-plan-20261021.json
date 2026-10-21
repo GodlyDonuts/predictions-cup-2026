@@ -1,0 +1,38 @@
+{
+  "preparedUtc": "2026-10-21T07:16:17.015033+00:00",
+  "classification": "matched_current_snapshot_against_unchanged_parent_full_development_window",
+  "sourceCommit": "91ab753962353a05fdf87cc650c5b56c9f926884",
+  "sourceManifestSha256": "bf527b432ffec3184c648cf2b312fc622f630ddd87c15ac4d9b9bbb137eb40f9",
+  "wrapperCommit": "a410595b8da965110cfbc3a0c9c98a5b0ea40c7b",
+  "wrapperSha256": "e2876a8c6fde56a40c9369618db37e277ed8d8f61fa0d2cb65095ffa221a8f4e",
+  "configSha256": "3479ed224d9a59b84d778ccd130d75a98ce4eb4a2bc535ca38d3f34a8cebcb0d",
+  "calibrationSha256": "b47bcdcea5158bb2fbb2cc542242cf788595bf21d937a4f3c65872b8d91a4207",
+  "experimentSha256": "6aadf5ae0a0750ebd5f65ca5244644914a3d8371f2dcd09b55714878ec604361",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "evaluationBoundsMs": [
+    1792221916175,
+    1792394716175
+  ],
+  "frozenActorCostMs": 28,
+  "newOptimizerUpdates": false,
+  "financialWorldsResumed": false,
+  "independentTestUsed": false,
+  "selectionFeedback": false,
+  "productionChanged": false,
+  "physicalAccountRequests": 0,
+  "parent": {
+    "sha256": "0ab16f9707fcc2c9442c3fc3846e9194321c96407047a42c21075ffb751e98a5",
+    "origin": "unchanged034founder000_from033completed570update_parent"
+  },
+  "candidate": {
+    "sha256": "ffbc1feab144f89f1cb42009a449b9193eb30ba02805941f89da78e73930d899",
+    "updates": 84,
+    "decisions": 5271,
+    "origin": "accepted_rotating_weight_snapshot_unfinished_episode"
+  },
+  "launchObservedUtc": "2026-10-21T07:17:52.143621+00:00",
+  "wrapperPid": 11168,
+  "actualCPUWorkerPid": 14848,
+  "currentGPUTrainerPid": 23524,
+  "status": "CPU_comparison_running_results_pending"
+}

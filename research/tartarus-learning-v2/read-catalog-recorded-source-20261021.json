@@ -1,0 +1,93 @@
+{
+  "classification": "six_paired_recorded_fit_source_rounds_not_whole_training_or_ROI",
+  "sourceCommit": "91ab753962353a05fdf87cc650c5b56c9f926884",
+  "catalogSha256": "0a647ee8c614c5d794e7c4e008d408c237b19f16f550895c1f3db64ea1f52fa7",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "rounds": [
+    {
+      "round": 0,
+      "listSeconds": 1.3682002999994438,
+      "indexedSeconds": 1.4746160000067903,
+      "state": {
+        "virtualMs": 1792049476175,
+        "financialSha256": "71b6a8f2cf670a190f05e9073d1dbe39548eaad2cc2eba722276dfca1c353ad7",
+        "observationSha256": "a88232f9197122725090f6f4f0e8a7d2f900516dcb3ad37652f7aed681ffc1fa",
+        "paidRequests": {
+          "SIG": 599
+        }
+      }
+    },
+    {
+      "round": 1,
+      "listSeconds": 2.1132879000069806,
+      "indexedSeconds": 1.9608869999938179,
+      "state": {
+        "virtualMs": 1792049776175,
+        "financialSha256": "149913dbae0ec979006957e3fe6ee5385a9fc733114ab47b6e5881d3177cfe41",
+        "observationSha256": "50650fe26150deba4c448d82ecfc36495f1d80291a62a06d3e5d9f997187a9a7",
+        "paidRequests": {
+          "SIG": 1098
+        }
+      }
+    },
+    {
+      "round": 2,
+      "listSeconds": 2.084363999994821,
+      "indexedSeconds": 2.1475566000008257,
+      "state": {
+        "virtualMs": 1792050076175,
+        "financialSha256": "a6d808fe536010a37510eb8ddf41a6e39d977f4258e0150ec33f3e63df79a44c",
+        "observationSha256": "15bf307ab5d294e9423d122a584f5b293148940a632cd6a3cd4b7b00908716fd",
+        "paidRequests": {
+          "SIG": 1597
+        }
+      }
+    },
+    {
+      "round": 3,
+      "listSeconds": 1.0165979999874253,
+      "indexedSeconds": 1.0105210000037914,
+      "state": {
+        "virtualMs": 1792050376175,
+        "financialSha256": "5620aee7d70e762239dacb93a885beb936001f639a05e49d43ce59d977aa5a8d",
+        "observationSha256": "caad4622c965ab1305287cf7c5c4cc2ee2025547acc20b9e318201c8dfa98770",
+        "paidRequests": {
+          "SIG": 2096
+        }
+      }
+    },
+    {
+      "round": 4,
+      "listSeconds": 0.06644709999090992,
+      "indexedSeconds": 0.05883140000514686,
+      "state": {
+        "virtualMs": 1792050676175,
+        "financialSha256": "4361dcad01a45bc49e62af60be052aacd640092b24554808f9783a2fe6f77fa5",
+        "observationSha256": "56e5e055299a1c0020d23e814ab3f53e0b49ca59b2091626604ce78391000ef2",
+        "paidRequests": {
+          "SIG": 2595
+        }
+      }
+    },
+    {
+      "round": 5,
+      "listSeconds": 0.06184160000702832,
+      "indexedSeconds": 0.06048610000289045,
+      "state": {
+        "virtualMs": 1792050976175,
+        "financialSha256": "b8cc919680176be44582dc4a5a729cc256754b414d1a4b15d1365b776ea7f80e",
+        "observationSha256": "e4a7af20eb52ebb7e08878c57f60aa9025a697335dd34234e952f4511f531026",
+        "paidRequests": {
+          "SIG": 3094
+        }
+      }
+    }
+  ],
+  "medianSourceSpeedRatio": 0.9596244794458876,
+  "exactObservationFinanceCatalogRequestsAndReceipts": true,
+  "optimizerRun": false,
+  "modelInference": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "physicalAccountRequests": 0
+}

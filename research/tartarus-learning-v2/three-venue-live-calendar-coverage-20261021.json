@@ -1,0 +1,32 @@
+{
+  "classification": "source_clock_metadata_not_observed_policy_usage_or_independent_prices",
+  "cacheManifestSha256": "f066e68bbf40fa5c70386054e517eabe29ad9b2b3ad24aaae258fc8f97387957",
+  "trainBoundsMs": [
+    1792049116175,
+    1792221916175
+  ],
+  "selectionBoundsMs": [
+    1792221916175,
+    1792394716175
+  ],
+  "sourceAvailableBoundsMs": {
+    "SIG": [
+      1792049104423,
+      1792419229249
+    ],
+    "Kalshi": [
+      1792302906304,
+      1792533259071
+    ],
+    "Polymarket": [
+      1792362930904,
+      1792533419094
+    ]
+  },
+  "liveExternalReferenceRowsDuringFit": false,
+  "threeVenueHistoricalQueryProvidersConfigured": true,
+  "historicalMappingAvailabilityVerified": false,
+  "conclusion": "Fitting can query separately configured historical providers but cannot learn from live external-reference stream rows absent from its fit calendar. The cache containing three venues does not prove live three-venue fitting coverage.",
+  "protectedPricesRead": false,
+  "productionChanged": false
+}
