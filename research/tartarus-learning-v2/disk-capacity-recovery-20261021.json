@@ -1,0 +1,91 @@
+{
+  "observedUtc": "2026-10-21T15:38:21Z",
+  "sourceCommit": "98a1edf3a6eeae2b81d7cc9e7b67f1cca317f796",
+  "production": {
+    "pid": 1010157,
+    "startTicks": 56518875,
+    "binarySha256": "7b6ba68644b3e3749dbd78d73d1fefebb3b2c9cf1649fd8deeb660413c0b9ace",
+    "progress": {
+      "actualFills": 409,
+      "actualOrders": 1664,
+      "at": "2026-10-21T15:38:13.790Z",
+      "completedReadScopes": 3,
+      "maximumRealtimeFramesPerDrain": 64,
+      "phase": "trading",
+      "pid": 1010157,
+      "profitabilityEstablished": false,
+      "realtimeHealthy": true,
+      "selectedReadScopes": 24,
+      "terminalOrders": 1664
+    },
+    "stopAbsent": true,
+    "originalSaleFillPrefixPreserved": true,
+    "originalFillCount": 409,
+    "currentFillCount": 409,
+    "financialScalars": {
+      "activeOrders": 2,
+      "at": "2026-10-21T15:38:11.311Z",
+      "bot": "Moloch",
+      "cash": "4919.980000",
+      "conditionalQueueFills": 0,
+      "contestOrders": 1664,
+      "continuation": null,
+      "events": 764065,
+      "executionMode": "live",
+      "fees": "0.000000",
+      "fillModel": "actualAccountFills",
+      "fills": 409,
+      "inheritedRealizedGross": "76.520000",
+      "netLiquidationPnl": null,
+      "networkRequests": 0,
+      "newTradingRealized": "138.265000",
+      "openingInventoryCost": "24729.485000",
+      "orders": 20168,
+      "ownedCost": "90874.720000",
+      "policyHash": "ebf5770a11f4ac663550f543d801affaf5457369a394558b430a4a00510b8ab9",
+      "profitSignalEligible": false,
+      "profitabilityEstablished": false,
+      "realized": "214.785000",
+      "reservedCash": "0.000000",
+      "runtime": "rust",
+      "unresolvedOrders": 2
+    },
+    "financialReportLargeSectionsOmitted": true
+  },
+  "archival": {
+    "completedBatches": 18,
+    "originalBytes": 18263465213,
+    "archiveBytes": 330283422,
+    "freeBytes": 21700526080,
+    "financialStateChanged": false,
+    "accountRequests": 0,
+    "allOriginalBytesRecoverable": true,
+    "observedUtc": "2026-10-21T15:37:47Z"
+  },
+  "archivalLaunch": {
+    "pid": 1010508,
+    "sourceCommit": "98a1edf3a6eeae2b81d7cc9e7b67f1cca317f796",
+    "output": "/home/archon/apps/moloch/shared/account-queue-cold-preserved-20261021-v2",
+    "sourceHashes": {
+      "moloch/learning_actions/archive_cold_queue.py": "22ba504c740fe5f9ca8b8b2219af8132cbf07b30918177f636c59e52e9064d31",
+      "moloch/learning_actions/test_archive_cold_queue.py": "eebadba9a67ed1c26b4bdb72139d6b5fac56445453844cc7e8d6c43fe18bde9e"
+    }
+  },
+  "qualifiedUndeployedCandidate": {
+    "utc": "2026-10-21T15:26:42Z",
+    "binarySha256": "aa3b2b67890b0897f29073e1e4afc51bf007902818ffc11a36565b361ee93ba6",
+    "bytes": 18779368,
+    "workerLinkExit": 0,
+    "freeBytes": 3954966528,
+    "productionModified": false,
+    "commandFile": "worker-release-command.json"
+  },
+  "reproducibleExecutableCleanup": {
+    "utc": "2026-10-21T15:23:30Z",
+    "removedReproducibleExecutables": 214,
+    "bytes": 2979220528,
+    "freeBytes": 3973730304,
+    "financialFilesChanged": false,
+    "runningExecutablesChanged": false
+  }
+}

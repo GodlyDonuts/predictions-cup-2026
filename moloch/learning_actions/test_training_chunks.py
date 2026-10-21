@@ -68,6 +68,41 @@ class TrainingChunkTests(unittest.TestCase):
         self.assertTrue(torch.equal(a[3], b[3]))
         self.assertTrue(torch.equal(a[4], b[4]))
 
+    def test_experiment_uses_target_without_changing_full_world_horizon(self):
+        import contextlib
+        import io
+        import json
+        from .experiment import Experiment
+        from .test_disk_tape import dataset
+        from .disk_tape import build
+        from .snapshot_clock import MODE
+        from .policy import ApiPolicy
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); source=dataset(root); cache=root/'cache'; digest=build(source,cache)
+            config={'mode':'inspected_development','device':'cpu','cpu_threads':1,
+                    'dataset':str(source),'mechanics':str(Path(__file__).resolve().parents[2]/
+                        'research/tartarus-learning-v2/development-mechanics-v2.json'),
+                    'replay_cache':{'path':str(cache),'manifest_sha256':digest},
+                    'development_train_ms':[1,1001],'development_selection_ms':[1001,5000],
+                    'development_episode_ms':200,'initial_world_history_ms':0,
+                    'training_worlds':2,'compute_chunk_decisions':2,'training_chunk_transitions':6,
+                    'snapshot_world_clock':MODE,'compact_finished_worlds':True}
+            experiment=Experiment(config,root/'run')
+            try:
+                experiment.calibration={'decision_latency_ms':20}; model=ApiPolicy(16)
+                optimizer=experiment.make_optimizer(model)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    result=experiment.train_parallel(model,optimizer)
+                rows=[json.loads(r) for r in (root/'run/progress.jsonl').read_text().splitlines()]
+                chunks=[r for r in rows if r['event']=='parallel_train_chunk']
+                self.assertTrue(chunks)
+                self.assertTrue(all(r['compute_steps']==steps(config,r['active_worlds_at_chunk_start'])for r in chunks))
+                self.assertTrue(all(r['training_chunk_transitions']==6 for r in chunks))
+                self.assertEqual(chunks[-1]['virtual_ms'],chunks[-1]['episode_end_ms'])
+                self.assertTrue(result['all_worlds_preserve_financial_state_through_horizon'])
+                self.assertGreater(experiment.total_updates,0)
+            finally:experiment.close()
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,3 +1,13 @@
+## Current qualification — October 21, 15:40 UTC
+
+Population037 is training from retained parents on two full fitting days, with separate October17–19 development selection. Its540-update checkpoint completed evaluation with−4.23%/−17.06% marked ROI, no profitable rotation, and nearly all100,000 paper capital spent. Founder comparison remains running; newer2,756-update weights have no completed score. Full competition-history execution replay and the requested4+4 qualification are not complete. Protected October21–25 remains unconsumed. No learned policy is deployed.
+
+An explicit64-transition PPO batch target is now checked for subsequent runs, so one remaining world need not optimize after just eight decisions. It preserves the full action space, virtual clocks, continuous wallets and daily-growth reward; active037 is unchanged, GPU admission for the new target is pending. [Exact current results and limitations](tail-training-batches-20261021.md).
+
+Production uses the earlier R66 strategy and recovered from the build-caused disk outage. Verified cold-history archival leaves21.7GB free without changing financial state. [Current production evidence](disk-capacity-recovery-20261021.md). Older implementation observations below are dated history, not current qualification.
+
+---
+
 [Current ML: GPU021 first cohort committed](population-021-learning-001.json). At2026-10-20T05:00:09Z actual36576/source157c873a has37,317decisions and2committed updates from147attempts. CPU audit verifies32changed parameter tensors, finite saved weights, exact process and source/config/data pins. Evaluation pending; no profitable checkpoint or independent ROI established. Full daily-reward chronology/calibration remain incomplete. Earlier observations below are historical.
 
 [October20 historical recovery complete](history-recovery-20261020.md): Kalshi244,200training/48,563evolution unique trades; Polymarket22,396,189training/2,161,404evolution unique price samples. Separate partitions, receipt hashes and cursor/scope audits verified;2565out-of-range Polymarket points excluded. Recovered data remains unadmitted; missing earlier SIG execution history and an exposed requested test calendar still prevent the ideal daily-reward run.
