@@ -1,0 +1,39 @@
+{
+  "observedUtc": "2026-10-21T16:51:25.680954+00:00",
+  "sourceCommit": "164440e7760e153191b33e9f1c2028f93e7dac23",
+  "binarySha256": "33d999eb928e6fbe319e832df40ebbc59007396efee504c76b12c09c0a07915a",
+  "originalFills": 420,
+  "cash": "9600.830000",
+  "ownedCost": "86309.620000",
+  "originalNativeHead": {
+    "hash": "3ea7ec36d7e9e906ad0c6ebcd15cf1add601cd9220042ffcd1e2fa21313b4038",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "4a0ea12a3a5d3e2d972d44e1c443878ed70e7040c58372aae8a28eb3cfe7277e",
+    "sequence": 769808
+  },
+  "bridgeSha256": "43371c3f0405218b640eb9ec65647aca3a9a743c6ba78e082eafc56387ef2e3a",
+  "originalDispatchSha256": "453e8f60aa39f762ac0a8ce64f13f9b11057862fddb1ea91a134357e1b988db5",
+  "acknowledgedOrders": 1666,
+  "terminalOrders": 1665,
+  "knownOpenOrders": [
+    20208
+  ],
+  "originalUnsentQid": 20209,
+  "originalKeyRetried": false,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "originalFinancialStatePreserved": true,
+  "financialCapsLimiterAndWindowsChanged": false,
+  "nativeEngineUnchanged": true,
+  "SDKUnchanged": true,
+  "phase": "restoring_original_ledger",
+  "freshTradingVerified": false,
+  "originalFinancialPrefixBytes": 2544537909,
+  "originalFinancialPrefixSha256": "0399862845816bc0d253308fe14a6f767258ce019aa322d3185b52107636aa42",
+  "controlSha256": "1ba65f3838758705b217d0c6593df92347b17e370dfca9e4535cdaf96b2c6a6c",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r67-physical-token-20261021T165119Z",
+  "pid": 1014772,
+  "startTicks": 57113969,
+  "referenceUpdaterPid": 1014775,
+  "actualExecutableAndArgumentsVerified": true
+}
