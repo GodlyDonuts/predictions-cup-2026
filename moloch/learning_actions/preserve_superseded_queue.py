@@ -69,11 +69,27 @@ def choose(queue, maximum_bytes):
     return result
 
 
-def archive_batch(queue, destination, maximum_bytes, *, recheck=lambda: None):
-    """Caller holds both original owner and SDK exclusion locks."""
+def archive_batch(queue, destination, maximum_bytes, *, recheck=lambda: None,
+                  cold_guard=None):
+    """Offline callers hold owner/SDK locks; online callers supply ColdQueue.
+
+    The online guard independently pins the live owner and admits only immutable
+    generations older than a full day, below the initial selected generation.
+    """
     queue, destination = Path(queue), Path(destination)
     manifest, excluded, _ = selected(queue)
-    paths = choose(queue, maximum_bytes)
+    if cold_guard is None:
+        paths = choose(queue, maximum_bytes)
+    else:
+        from .archive_cold_queue import ColdQueue
+        require(type(cold_guard) is ColdQueue and cold_guard.queue == queue,
+                'EXACT_COLD_QUEUE_GUARD_REQUIRED')
+        paths = cold_guard.choose(maximum_bytes)
+    def check_selection(remaining=None):
+        if cold_guard is None:
+            require(selected(queue)[0] == manifest, 'SELECTED_GENERATION_CHANGED')
+        else:
+            cold_guard.check(paths if remaining is None else remaining)
     if not paths:
         return None
     require(shutil.disk_usage(destination.parent).free > maximum_bytes + 128 * 1024 ** 2,
@@ -139,7 +155,7 @@ def archive_batch(queue, destination, maximum_bytes, *, recheck=lambda: None):
         directory = os.open(folder, os.O_RDONLY)
         try: os.fsync(directory)
         finally: os.close(directory)
-    require(selected(queue)[0] == manifest, 'SELECTED_GENERATION_CHANGED')
+    check_selection()
     recheck()
     for path in paths:
         expected = inventory[path.name]
@@ -150,7 +166,7 @@ def archive_batch(queue, destination, maximum_bytes, *, recheck=lambda: None):
     # All original bytes are now in a durable, fully decoded verified archive.
     for path in paths:
         recheck()
-        require(selected(queue)[0] == manifest, 'SELECTED_GENERATION_CHANGED')
+        check_selection([path])
         path.unlink()
     directory = os.open(queue, os.O_RDONLY)
     try: os.fsync(directory)

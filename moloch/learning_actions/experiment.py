@@ -33,6 +33,8 @@ class Experiment:
         if store is not None:store.close()
 
     def __init__(self,config,output,*,data_use=None):
+        from .training_chunks import validate as validate_chunks
+        validate_chunks(config)
         process_worlds=config.get('process_source_worlds',False)
         if type(process_worlds)is not bool:raise ValueError('EXPLICIT_PROCESS_SOURCE_WORLD_PROFILE')
         if process_worlds and config.get('closed_episode_return_replay',False):
@@ -386,7 +388,8 @@ class Experiment:
         ledger=training_ledger(env,self.config,development=self.development)
         final=None;reports=[]
         while env.now<end:
-            chunk=collect_chunk(stream,self.config.get('compute_chunk_decisions',32),reward_ledger=ledger)
+            from .training_chunks import steps as chunk_steps
+            chunk=collect_chunk(stream,chunk_steps(self.config,1),reward_ledger=ledger)
             rewards=[f['economic_reward']for f in chunk.frames]
             reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1),**self.training_arguments(optimizer))
             self.total_updates+=sum(r['accepted']for r in reports)
@@ -445,13 +448,18 @@ class Experiment:
         closed=self.config.get('closed_episode_return_replay',False)
         if closed:self.train_closed_episode(stream,model,optimizer)
         while not closed and any(e.now<e.end for e in envs):
-            chunk=stream.collect(self.config.get('compute_chunk_decisions',32))
+            from .training_chunks import steps as chunk_steps
+            active_worlds=sum(e.now<e.end for e in envs)
+            compute_steps=chunk_steps(self.config,active_worlds)
+            chunk=stream.collect(compute_steps)
             rewards=[f['economic_reward']for f in chunk.frames]
             reports=update(model,optimizer,chunk,rewards,role='train',epochs=self.config.get('ppo_epochs',1),**self.training_arguments(optimizer))
             self.total_updates+=sum(r['accepted']for r in reports)
             decisions=sum(int(f['learn'].sum())for f in chunk.frames)
             self.total_decisions+=decisions
             self.log({'event':'parallel_train_chunk','worlds':count,'decisions':decisions,
+                'compute_steps':compute_steps,'active_worlds_at_chunk_start':active_worlds,
+                'training_chunk_transitions':self.config.get('training_chunk_transitions'),
                 'compute_batch_worlds':len(chunk.initial_hidden),
                 'virtual_ms':[e.now for e in envs],'episode_end_ms':[e.end for e in envs],
                 'completed_worlds':len(stream.completed),'updates':reports,
