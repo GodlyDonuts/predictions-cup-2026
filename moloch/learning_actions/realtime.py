@@ -131,10 +131,11 @@ class DerivedStream:
 
     def source_book(self,at,exchange,payload=None):
         if self.enabled:
+            from .liquidity_snapshot import receipt_snapshot
             # The compiler already records first observation availability.
             # No earlier synthetic receipt or reset of original source age.
             self.env.clock.schedule(at,30,'derived_book_receipt',
-                (self.connection,exchange,deepcopy(self.env.books[exchange]if payload is None else payload)))
+                (self.connection,exchange,receipt_snapshot(self.env.books[exchange]if payload is None else payload)))
 
     def public_generation(self,row):
         return(self.connection,self.public_global_revision,

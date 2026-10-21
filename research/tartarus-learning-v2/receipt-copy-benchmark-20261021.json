@@ -1,0 +1,60 @@
+{
+  "classification": "receipt_copy_microbenchmark_not_end_to_end_training_or_ROI",
+  "recordedRows": 5000,
+  "rowBodiesSha256": "6bb33a707e127ace9744b8ec4956781a688b43365a4830c4ba943c094675aa0a",
+  "sourcePins": {
+    "moloch\\learning_actions\\liquidity_snapshot.py": "36262e4035c2cf36bfb8ea333a46905a0a35b18c7f3266d2710224245f8db859",
+    "moloch\\learning_actions\\realtime.py": "205a1f7b539c881182fb97010d976cf2f55f6c3b5e90aecc3922e9d9408fe2d0"
+  },
+  "allCopiedValuesEqual": true,
+  "baselineMedianSeconds": 0.37354600000253413,
+  "candidateMedianSeconds": 0.15115800000057789,
+  "componentSpeedup": 2.471228780488668,
+  "results": [
+    {
+      "repeat": 0,
+      "mode": "deepcopy",
+      "seconds": 0.37354600000253413,
+      "valuesSha256": "27ecf6761b03fd8eefd03f8640e3686674d134a4c295d57d164a3fc409ea585f",
+      "sharesOnlyVerifiedImmutableBook": false
+    },
+    {
+      "repeat": 0,
+      "mode": "receipt_snapshot",
+      "seconds": 0.1672030999980052,
+      "valuesSha256": "27ecf6761b03fd8eefd03f8640e3686674d134a4c295d57d164a3fc409ea585f",
+      "sharesOnlyVerifiedImmutableBook": true
+    },
+    {
+      "repeat": 1,
+      "mode": "receipt_snapshot",
+      "seconds": 0.10624870000174269,
+      "valuesSha256": "27ecf6761b03fd8eefd03f8640e3686674d134a4c295d57d164a3fc409ea585f",
+      "sharesOnlyVerifiedImmutableBook": true
+    },
+    {
+      "repeat": 1,
+      "mode": "deepcopy",
+      "seconds": 0.3639530000000377,
+      "valuesSha256": "27ecf6761b03fd8eefd03f8640e3686674d134a4c295d57d164a3fc409ea585f",
+      "sharesOnlyVerifiedImmutableBook": false
+    },
+    {
+      "repeat": 2,
+      "mode": "deepcopy",
+      "seconds": 0.37654579999798443,
+      "valuesSha256": "27ecf6761b03fd8eefd03f8640e3686674d134a4c295d57d164a3fc409ea585f",
+      "sharesOnlyVerifiedImmutableBook": false
+    },
+    {
+      "repeat": 2,
+      "mode": "receipt_snapshot",
+      "seconds": 0.15115800000057789,
+      "valuesSha256": "27ecf6761b03fd8eefd03f8640e3686674d134a4c295d57d164a3fc409ea585f",
+      "sharesOnlyVerifiedImmutableBook": true
+    }
+  ],
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0
+}
