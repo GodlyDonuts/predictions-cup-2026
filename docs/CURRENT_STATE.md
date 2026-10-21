@@ -1,10 +1,10 @@
 # Current Moloch and Tartarus state
 
-Observed October21,20:18UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October 21, 20:41 UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
-R72 was installed at20:16:38UTC as sole worker1031505/startTicks58345276, binary1cf47b2ae833 and controla7a6dcacf0d8. It is restoring the original ledger; fresh R72 trading and version3 recurring review activation remain pending. The native/runtime libraries and all24engine approvals are unchanged. All452fills, original financial balances and the2,564,024,854-byte journal prefix are preserved. [Exact installation](../research/tartarus-learning-v2/r72-stream-join-installed-20261021.json).
+R72 is verified live at 20:36:52 UTC as sole worker 1031505, with real-time subscriptions connected and no STOP. Its original 452 fills and complete 2,564,024,854-byte financial prefix were independently verified. At 20:38:29 the exchange acknowledged a new 10,000-share sell on exchange 865 (actual order 54443777); that acknowledgment is not a fill. Version 3 repeat-purchase review activation is in progress through the existing worker. Binary 1cf47b2ae833, control a7a6dcacf0d8, native/runtime libraries and all 24 engine approvals are unchanged. [Exact installation](../research/tartarus-learning-v2/r72-stream-join-installed-20261021.json).
 
 R71 stopped at 20:06:41 UTC after original-ledger restoration with `LIVE_STREAM_JOIN_FAILED`; it did not reach fresh trading. The old worker discarded the specific startup cause. Source inspection found that public market broadcasts may legally arrive between market and private-account JOIN acknowledgments, while the worker required its first message to be the combined JOIN. R72 buffers those messages until both channels join, records typed failure reasons and retries transient subscription failures through the existing persisted connection budget. Five focused checks and the optimized replacement build pass. Native engine, original452fills and financial state are unchanged. Repeat-entry version3 opt-in is still pending. [Repair and evidence](../research/tartarus-learning-v2/stream-join-r72-20261021.md).
 

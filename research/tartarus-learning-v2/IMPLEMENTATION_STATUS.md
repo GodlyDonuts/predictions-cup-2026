@@ -1,8 +1,8 @@
-# Tartarus implementation status — October21,20:18UTC
+# Tartarus implementation status — October 21, 20:41 UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
-R72 was installed at20:16:38UTC as sole worker1031505/startTicks58345276, binary1cf47b2ae833 and controla7a6dcacf0d8. It is restoring the original ledger; fresh R72 trading and version3 recurring review activation remain pending. The native/runtime libraries and all24engine approvals are unchanged. All452fills, original financial balances and the2,564,024,854-byte journal prefix are preserved. [Exact installation](r72-stream-join-installed-20261021.json).
+R72 is verified live at 20:36:52 UTC as sole worker 1031505, with real-time subscriptions connected and no STOP. Its original 452 fills and complete 2,564,024,854-byte financial prefix match. Repeat-acquisition review activation is in progress. [Fresh live proof](r72-fresh-live-20261021.json).
 
 ## Running and queued work
 
@@ -31,4 +31,4 @@ Three venues provide information; execution is SIG-only. Requests, receipts, vir
 
 Current detailed development is2 fitting days plus2 development days. Full competition execution history and the requested4+4 evaluation chronology remain incomplete. ProtectedOctober21–25 has not been consumed. No learned model is deployed or independently profitable.
 
-Production is separate: R70 is verified live at19:16:28 as sole1022216, with healthy realtime, no STOP,433 preserved original fills and all1675 acknowledged orders terminal. The complete original financial prefix is independently verified. Additional R70 fills or increased turnover are not yet established. At18:56:58 official marked equity is94,708.835, down5.29% from initial. The latest R68 sale realized+8.66; earlier R67 sales net-164.63. [Fresh live proof](r70-fresh-live-20261021.json), [current production state](../../docs/CURRENT_STATE.md).
+Production is separate from ML. The latest official marked equity remains the 20:16:40 observation of 94,780.155 SUSQies, down 5.22% from the start. R70's last three filled sell orders realized a net loss of 105.925; no whole-account profit is established. [Current production state](../../docs/CURRENT_STATE.md).

@@ -112,7 +112,7 @@ def audit(baseline, output):
     assert N(post['cash']) - N(pre['cash']) == total('cashDelta')
     assert N(post['realized']) - N(pre['realized']) == total('realizedNet')
     today = [f for f in after['fills'] if f.get('executedAt', '').startswith('2026-10-21')]
-    proof = dict(observedUtc=datetime.now(timezone.utc).isoformat(), release='R71',
+    proof = dict(observedUtc=datetime.now(timezone.utc).isoformat(), baselineIncident=baseline.parent.name,
         baselineReportSha256=hashlib.sha256(before_raw).hexdigest(),
         originalFillCount=count, currentFillCount=len(after['fills']), originalFillsUnchanged=True,
         remainingFifoExactlyMatches=True, allNewFillsMatchOriginalOfficialReceipts=True,

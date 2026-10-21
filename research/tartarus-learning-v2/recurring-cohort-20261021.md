@@ -1,6 +1,6 @@
 # Repeated acquisition after a sale
 
-Observed October 21, 19:49 UTC. R71 is installed as sole worker1028075 and is restoring the original ledger. The release passed159focused runtime and131native checks. Fresh R71 trading and explicit version3 review opt-in are pending. [Exact installation](r71-recurring-installed-20261021.json), [qualified source/build](r71-recurring-release-20261021.json).
+Observed October 21, 20:41 UTC. R72 carries the R71 recurring-acquisition implementation and is verified live after repairing subscription startup. The release passed 159 focused runtime and 131 native checks; the R72 worker fix passed five additional checks. A finite local coordinator opts fresh, quiet markets into version 3 through the existing worker, with original generation and journal verification. It does not restart the worker or construct an account client. [Fresh live proof](r72-fresh-live-20261021.json), [activation coordinator](tools/enable-recurring-reviews-20261021.py).
 
 ## The restriction
 

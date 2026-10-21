@@ -31,7 +31,7 @@ def put(path, value):
         os.fsync(stream.fileno())
     os.replace(temporary, path)
 
-def main(config_path):
+def main(config_path, exchanges):
     deployment = json.loads((H / 'deployment.public.json').read_bytes())
     live = json.loads((H / 'fresh-live.public.json').read_bytes())
     config = json.loads(config_path.read_bytes())
@@ -48,7 +48,8 @@ def main(config_path):
     state = json.loads((F / 'state.json').read_bytes())
     assert sha(state['controlPath']) == state['controlSha256']
     control = json.loads(Path(state['controlPath']).read_bytes())
-    selected = set(config['exchanges'])
+    selected = set(exchanges.split(',')) if exchanges else set(config['exchanges'])
+    assert selected and selected <= set(config['exchanges'])
     now = time.time_ns() // 1_000_000
     seen = set()
     for item in control['fundamentalPolicy']['reviews']:
@@ -74,6 +75,22 @@ def main(config_path):
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             assert json.loads((F / 'pending.json').read_bytes()).get('resolved') is True
             assert json.loads((F / 'state.json').read_bytes()) == state
+            # The owner services reloads between source/dispatch phases. Avoid
+            # starting the 60-second request lifetime just after that boundary.
+            # Wait on its next completed scope; trading continues throughout.
+            progress_path = R / 'progress.json'
+            previous_progress = progress_path.read_bytes()
+            deadline = time.monotonic() + 240
+            while progress_path.read_bytes() == previous_progress:
+                assert time.monotonic() < deadline, 'No fresh worker progress within activation wait'
+                assert process.exists() and not (R / 'EXECUTION_STOP').exists()
+                time.sleep(.1)
+            progress = json.loads(progress_path.read_bytes())
+            assert progress['pid'] == config['workerPid'] and progress['phase'] == 'trading'
+            for item in control['fundamentalPolicy']['reviews']:
+                review = json.loads(Path(item['path']).read_bytes())
+                if review['exchangeId'] in selected:
+                    assert review['expiresAtMs'] > time.time_ns() // 1_000_000 + 120_000
             stage = H / ('recurring-generation-' + str(time.time_ns()))
             subprocess.run(['python3', str(H / 'stage-recurring-reviews-20261021.py'),
                 '--base-control', state['controlPath'], '--base-sha256', state['controlSha256'],
@@ -131,6 +148,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--release-dir', type=Path, default=H)
     parser.add_argument('--reference-config', type=Path, default=F / 'config-r71.json')
+    parser.add_argument('--exchanges', help='Optional subset; native reload still checks current open orders.')
     args = parser.parse_args()
     H = args.release_dir
-    main(args.reference_config)
+    main(args.reference_config, args.exchanges)
