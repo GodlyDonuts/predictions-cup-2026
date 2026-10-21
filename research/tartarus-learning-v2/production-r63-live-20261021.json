@@ -1,0 +1,25 @@
+{
+  "observedUtc": "2026-10-21T12:35:20.745835+00:00",
+  "pid": 998876,
+  "startTicks": 55448089,
+  "binarySha256": "9a03cb1eb0d48daacb632620b7c825760f56e0dceea8d5f6bd5d2b779de0e114",
+  "controlSha256": "2dabc71dea29868a298589b5fd3476640b5361b68034a9e8da0dc8875c09aadc",
+  "progress": {
+    "at": "2026-10-21T12:35:20.381Z",
+    "phase": "trading",
+    "realtimeHealthy": true,
+    "actualFills": 396,
+    "actualOrders": 1660,
+    "terminalOrders": 1660,
+    "dispatchEnabled": null
+  },
+  "stopPresent": false,
+  "officialRequestsByAudit": 0,
+  "profitabilityEstablished": false,
+  "referenceUpdater": {
+    "commits": 27,
+    "index": 28,
+    "generationSha256": "caed565fccfd22abe00e509bd8c5875d0631112978084f082fd08a89f6f4a162",
+    "controlSha256": "8e2d479b62bca5b01018c6b09e2f488c7d473ef3a451d0629f61898c35d0885e"
+  }
+}

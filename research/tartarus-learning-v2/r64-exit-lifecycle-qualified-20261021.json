@@ -1,0 +1,45 @@
+{
+  "observedUtc": "2026-10-21T05:04:55.013825-08:00",
+  "runtimePatchCommit": "2f6dd473b59f87473659e88d8a7b50ee3f58d912",
+  "runtimeBase": "installed R63 source",
+  "binarySha256": "493fdfbb1c334f309091758cb139d784a2128156aeaa021a545a7e02f4200e6c",
+  "nativeLibrarySha256": "89e4d644ac4f8de37add9350d1fd801a5a5b91e5cccd86d2698f78c00c6365cb",
+  "transportLibrarySha256": "7889a086aed9d483fdf5f8cd6399d74f16997bed9bace1f3aa6435c6cdf4bdea",
+  "sourceChanges": [
+    {
+      "path": "moloch/live-runtime/src/authority.rs",
+      "sha256": "441a83a8a0dc2400db482dc2cb02538a5db9c1fc1336b064cace3027599572d5"
+    },
+    {
+      "path": "moloch/live-runtime/src/exit_refresh_snapshot.rs",
+      "sha256": "f37ef3d897bf778e5a99abfa117ee26328b74536d05628f7d49b75cfd6bd4eb7"
+    },
+    {
+      "path": "moloch/live-runtime/src/fundamental_policy.rs",
+      "sha256": "4fd5ed78cefa863a0690111472ec387b385f0cc2613e9337e08d0f645f0d4d7c"
+    },
+    {
+      "path": "moloch/live-runtime/src/lib.rs",
+      "sha256": "68e3e063084489f57bc773ce9cbf68c30a331a72494d3367c13d0c6cabd76e9e"
+    },
+    {
+      "path": "moloch/live-runtime/src/worker.rs",
+      "sha256": "62b019bd623a419cf5851397028a8aab2ea2fe624c6d0c8288038495f4eed5ab"
+    },
+    {
+      "path": "moloch/live-runtime/tests/fundamental_policy.rs",
+      "sha256": "8cd3e59ec06c0a55dab6b41f9d0ada701d09f9a812536f176f684da6b20d7b78"
+    }
+  ],
+  "tests": {
+    "authority": 30,
+    "fundamentalCache": 22,
+    "lifecycleCache": 1,
+    "exitRefresh": 21,
+    "fundamentalIntegration": 133,
+    "refreshWorker": 23,
+    "reservedExit": 12
+  },
+  "preexistingBenchmarksIgnored": 2,
+  "productionProfitabilityEstablished": false
+}

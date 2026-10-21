@@ -1,0 +1,48 @@
+{
+  "sourceCommit": "a682904055c9d4f889e140c446b343105f272026",
+  "sourceManifestSha256": "f09b61900e029158db922cf4e1b11a4bb44627bae1f070a42a897f2e70141a5a",
+  "oldTrainerPid": 23524,
+  "newRun": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\runs\\raw-api-growth-development-036-history-corrective",
+  "parentPlanSha256": "e52368a4b9d084ce4042bcdf33626f39a30dabc40267ffbd97b636f63c789eda",
+  "activeSnapshotUpdates": 11424,
+  "activeSnapshotDecisions": 192658,
+  "parents": [
+    {
+      "member": 0,
+      "sha256": "314336f82573527be990cfd646f8413bac66677b2f7bf20d1fc7576ce39904ed",
+      "origin": "checked_evaluated_partial_generation_member"
+    },
+    {
+      "member": 1,
+      "sha256": "95bae07ca9d30350aef578949edbcc8e52746c291e6812c7b8447743fc837bc7",
+      "origin": "checked_evaluated_partial_generation_member"
+    },
+    {
+      "member": 2,
+      "sha256": "f77b59cdce6011a755430390f4f7028344f2a6b0f7fafda8a826cad2dc1f83e5",
+      "origin": "checked_evaluated_partial_generation_member"
+    },
+    {
+      "member": 3,
+      "sha256": "3fa73714a97899b895ddf73d0af0f6dac90b7611a1d5931a4a1b182f95a8a4ae",
+      "origin": "checked_unfinished_member_accepted_weights"
+    }
+  ],
+  "oldScoresReused": false,
+  "oldFinancialWorldsResumed": false,
+  "completedGeneration": false,
+  "decisionLatencyMs": 84,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "outcome": {
+    "status": "stopped_cuda_out_of_memory",
+    "requestedInputAllocationGiB": 26.21,
+    "physicalGpuGiB": 12,
+    "acceptedNewUpdates": 4,
+    "acceptedNewDecisions": 256,
+    "preservedNewCheckpointSha256": "cc48c4e433f01c41becc6cebb869849efc9d13fb388bb4ced58608da0c5cec4e",
+    "successor": "population-037-snapshot-service",
+    "completedGeneration": false,
+    "profitabilityEstablished": false
+  }
+}

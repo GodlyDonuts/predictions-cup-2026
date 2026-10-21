@@ -1,0 +1,14 @@
+{
+  "observedUtc": "2026-10-21T05:04:02.338296-08:00",
+  "outcome": "expired_uncommitted_reference_request",
+  "workerPid": 998876,
+  "originalRequestSha256": "3df1f4c660ce7a28d7307be2c44d3c732ac1e1fa76e590ab5f4b413c158abbb1",
+  "requestExpiresAtMs": 1792587698737,
+  "laterNativeViewAtMs": 1792587778394,
+  "retainedGenerationSha256": "72c4a9b1eb370197b07788772e4ab37817345374be8485243a5d72120af51aa5",
+  "cohortPrefixSha256": "92f19cc18b71562024b12bf8556d43d80456d364064250705e5b48ba5f7e0cd2",
+  "cohortPrefixBytes": 2395117,
+  "newReloadRequestSent": false,
+  "officialSigRequests": 0,
+  "financialStateChanged": false
+}

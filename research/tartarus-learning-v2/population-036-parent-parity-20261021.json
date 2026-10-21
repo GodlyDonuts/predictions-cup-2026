@@ -1,0 +1,41 @@
+{
+  "allFourOriginalNeuralWeightsPreserved": true,
+  "parentWeights": [
+    {
+      "globalMember": 0,
+      "island": 0,
+      "localMember": 0,
+      "originalCheckpointSha256": "314336f82573527be990cfd646f8413bac66677b2f7bf20d1fc7576ce39904ed",
+      "founderCheckpointSha256": "d77a53dcc3ea6aa771def22437fcd755e4dfa7e8b3160507ab6c92bdde8360eb",
+      "identicalParameterFingerprint": "c4f27a1b29b7fb74077bbe2ad3e6577e530e88da3684e4de6063c451c29f7938"
+    },
+    {
+      "globalMember": 1,
+      "island": 1,
+      "localMember": 0,
+      "originalCheckpointSha256": "95bae07ca9d30350aef578949edbcc8e52746c291e6812c7b8447743fc837bc7",
+      "founderCheckpointSha256": "fe4a910b7c8f1009a502897811a5b6dab7a7700392f7d88d6ec3c2d9c30e97c9",
+      "identicalParameterFingerprint": "ea248a5732afbb43b4d961c86848ae1cd86cd869e71071b69d9ad9a7e8a09b0d"
+    },
+    {
+      "globalMember": 2,
+      "island": 0,
+      "localMember": 1,
+      "originalCheckpointSha256": "f77b59cdce6011a755430390f4f7028344f2a6b0f7fafda8a826cad2dc1f83e5",
+      "founderCheckpointSha256": "c4bbb1a91061896b35101dc51011d2b65e4a8a9069a7c05aaaa20d93272406df",
+      "identicalParameterFingerprint": "4838ceb04f2eee0e56979854b048ed781ed12d24a45956556fb09c59469b4436"
+    },
+    {
+      "globalMember": 3,
+      "island": 1,
+      "localMember": 1,
+      "originalCheckpointSha256": "3fa73714a97899b895ddf73d0af0f6dac90b7611a1d5931a4a1b182f95a8a4ae",
+      "founderCheckpointSha256": "f77b5506aa781074317fb803ae59db76d5a6fd717a1959e3af7c00e55e50f559",
+      "identicalParameterFingerprint": "8688b1725e65536851708ec3e1b09ebc1336494d77e6dcaaea103f4a884849ce"
+    }
+  ],
+  "sourceCommit": "a682904055c9d4f889e140c446b343105f272026",
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "newProfitabilityEstablished": false
+}

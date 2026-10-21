@@ -1,0 +1,65 @@
+{
+  "observedUtc": "2026-10-21T13:07:55.556132+00:00",
+  "sourceCommit": "7da3921b6d27953329a5244959038759fd755d3c",
+  "configurationSha256": "2eba290b32e8023b2082eac5fb10572c9aaec981ec7d8c8e6c7899e379998d56",
+  "sourceManifestSha256": "842f50eb63244a7a20d1540fec4358f57c0e909c8e0d4339dba050819aa417a5",
+  "trainerPid": 18116,
+  "parents": [
+    {
+      "member": 0,
+      "allParentTensorsEqual": true,
+      "founderSha256": "2a551324b30fe3afd46edde7b34813096a9a0e465de6300d2957de171475fc73"
+    },
+    {
+      "member": 1,
+      "allParentTensorsEqual": true,
+      "founderSha256": "efd60efeafc97eb711d45552217c0466f504a4c852e22b2e423c33ed6aab7004"
+    },
+    {
+      "member": 2,
+      "allParentTensorsEqual": true,
+      "founderSha256": "7cc7f5e7014023e5973da39a39573dcdc6b27a551613d9890ff6cd44e392c6c0"
+    },
+    {
+      "member": 3,
+      "allParentTensorsEqual": true,
+      "founderSha256": "9fca1332ccd99c1381ed3dede81eb5fc8b18ea94cd6bce9f6867be1f93a6a65e"
+    }
+  ],
+  "preservedPriorRunUpdates": 4,
+  "actualFitWaitProbe": {
+    "virtualWaitMs": 600000,
+    "elapsedSeconds": 9.429754400000093,
+    "automaticRequests": {
+      "SIG": 998,
+      "Kalshi": 12001,
+      "Polymarket": 17648
+    },
+    "receivedHistoryCount": 29641,
+    "pendingSnapshotEntities": 550,
+    "observedShape": [
+      3484,
+      517
+    ],
+    "explicitPagesTruncated": false
+  },
+  "learning": [
+    {
+      "island": 0,
+      "totalUpdates": 31,
+      "totalDecisions": 1984,
+      "simulatedFills": 76,
+      "cudaPeakBytes": 2335172096
+    },
+    {
+      "island": 1,
+      "totalUpdates": 0,
+      "totalDecisions": 0,
+      "simulatedFills": 0,
+      "cudaPeakBytes": 0
+    }
+  ],
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "profitabilityEstablished": false
+}
