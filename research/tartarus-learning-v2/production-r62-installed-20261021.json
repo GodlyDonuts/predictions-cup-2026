@@ -1,0 +1,77 @@
+{
+  "observedUtc": "2026-10-21T11:37:43.446288+00:00",
+  "runtimeChangeCommit": "00a5f9674f34a01b98561c96b9919e3ba4916fcf",
+  "nativeSourceCommit": "25420da8fe3d59ee9691606371b676d7f75662be",
+  "binarySha256": "204a4746dff3a2157eab6c8a76dcf0c74a8498025abf2f1e544ecee788ff69a8",
+  "controlSha256": "a6999b46634195604ae2ecf6fd0c9a771952e4636f84eb8c812010878e2fc829",
+  "nativeEngineIdentity": "de9c7e870a4b1b9d113a07d10456b9f2c480565599a9a226f59557e2be654eec",
+  "nativeEngineUnchanged": true,
+  "bridgeCount": 21,
+  "bridgeSha256": "43371c3f0405218b640eb9ec65647aca3a9a743c6ba78e082eafc56387ef2e3a",
+  "originalNativeHead": {
+    "hash": "6128f520a567be7d23d49016a93b6a9a6a00782b70e5162e93e1077c98e5795c",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "480c9e994ae3b78c09d9ee1a7451861c86ccaea6b69fee64e70038c7c18805e8",
+    "sequence": 747295
+  },
+  "originalReportHash": "176aa373a73c66cd12ff29748e06a7d7968fcbda84bf9c0cbd487fcef6cdf615",
+  "originalFills": 396,
+  "acknowledgedOrders": 1660,
+  "terminalOrders": 1660,
+  "exactCommittedActiveOverlayPreserved": true,
+  "financialCapsLimiterAndWindowsChanged": false,
+  "originalFifoAndHistoryPreserved": true,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "ordersSubmittedByDeployment": 0,
+  "phase": "restoring_original_ledger",
+  "freshTradingVerified": false,
+  "pid": 998119,
+  "startTicks": 55231743,
+  "referenceUpdaterPid": 998122,
+  "actualExecutableAndArgumentsVerified": true,
+  "cacheQualification": {
+    "coldNs": 1142192425,
+    "financialAuthority": false,
+    "fullParsePasses": 1,
+    "originalBytes": 26981638,
+    "originalSequence": 26650,
+    "originalUncachedNs": 1162266342,
+    "physicalFullFileHashRequired": true,
+    "rowsSha256": "c0a28322fa54c6c3d9989ef6a90cbd6157bd504e3a0e0eb34836d1795b88f757",
+    "wanted": [
+      14854,
+      14992,
+      15178,
+      15500,
+      15952,
+      16581,
+      16761
+    ],
+    "warmFullFileHashRequired": false,
+    "warmHeldVersionRequired": true,
+    "warmMedianNs": 75393,
+    "warmRounds": 7,
+    "wholeWorkerSpeedupMeasured": false,
+    "cacheChecksPassed": 21,
+    "productionDeployed": false,
+    "nativeAndSdkReusedFromR61": true,
+    "sourceSha256": "738d3bf34b4a0d27fa56010331516d8ca4848d2480e7a0da5fd1c57a6b09c6b5"
+  },
+  "sourceDelta": {
+    "base": "R61 checked deployment source",
+    "runtimeCommit": "00a5f9674f34a01b98561c96b9919e3ba4916fcf",
+    "changedFiles": [
+      "moloch/live-runtime/src/fundamental_policy.rs",
+      "research/moloch-fundamental-not-sent-cache-20261017/tests.rs",
+      "research/moloch-fundamental-closure-cache-20261017/tests.rs"
+    ],
+    "nativeBinaryReused": true,
+    "sdkBinaryReused": true
+  },
+  "deploymentAssertionCorrection": {
+    "initialComparison": "incorrectly compared final event hash to sealed head envelope hash",
+    "correctComparison": "final event hash equals head.previous, sequences equal",
+    "financialStateModifiedByCorrection": false
+  }
+}
