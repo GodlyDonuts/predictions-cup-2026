@@ -1,10 +1,10 @@
 # Current Moloch and Tartarus state
 
-Observed October21,18:43UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October21,18:48UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
-R69 was installed18:43:11 as sole PID1021520/startTicks57784596, binary8b903763c346 and controlebca4459c87a verified. It is restoring the original ledger; fresh current-process trading/fills remain unverified. All433 original fills, the2,552,479,691-byte financial prefix and every original engine bridge are preserved. [Actual installation](../research/tartarus-learning-v2/r69-throughput-installed-20261021.json).
+Production is stopped. R69 was installed18:43:11 as PID1021520/startTicks57784596, binary8b903763c346 and controlebca4459c87a verified, then stopped18:43:28 with `UPGRADE_FILE_BOUND` before native replay/orders. Its152,404,846-byte preserved upgrade chain exceeded the128MiB parser bound; deployment omitted that size check. Financial head773995/all433 fills and the2,552,479,691-byte prefix are unchanged. R70 raises the engineering bound to256MiB, moves parsed approval entries instead of cloning them and verifies seals by reference. It is building/qualifying. The failed R69 approval remains preserved. [Initial installation observation](../research/tartarus-learning-v2/r69-throughput-installed-20261021.json).
 
 R68 stopped18:22:52 when fundamental attempt20264 expired before SDK admission. Original SDK archives prove no HTTP was sent. The checked repair retires such attempts and continues only for genuine expiry; clock regression and actual uncertain acceptance retain their handling. File-only recovery appended the exact no-send proof, preserved STOP until installation and did not retry the order or alter finances. Historical reconciled exposure18533 still requires its original native startup verification. [Exact recovery](../research/tartarus-learning-v2/r68-expiry-recovery-20261021.json).
 

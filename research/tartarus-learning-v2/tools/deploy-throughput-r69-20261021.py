@@ -57,6 +57,7 @@ def main(apply):
     bridge_raw = (B/'engine-upgrade-v1.json').read_bytes()
     old_bridge = json.loads(bridge_raw)
     proposed_raw = (D/'upgrade.proposed.json').read_bytes()
+    assert len(proposed_raw) <= 128*1024*1024, 'R69 upgrade parser byte bound'
     proposed = json.loads(proposed_raw)
     assert proposed['upgrades'][:-1] == old_bridge['upgrades']
     last = proposed['upgrades'][-1]
