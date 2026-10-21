@@ -1,0 +1,29 @@
+{
+  "preparedUtc": "2026-10-21T04:15:56.140091+00:00",
+  "classification": "later_immutable_checkpoint_same_full_window_source_and_calibration_comparison_not_independent_test",
+  "sourceCommit": "7291bc4f5132a58870e72fdb9657d4feadba9f11",
+  "trainingSourceCommit": "df2bb138cb38d0233a7626367034097208505bc8",
+  "commonSourceFilesUnchanged": true,
+  "originalExperimentSha256": "3564bb98a38744a3015360e90e2712df3796f1d84a5db0435db652698496cbbb",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "candidate": {
+    "path": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\studies\\033-later-full-window-001\\candidate.pt",
+    "sha256": "7bb2cac0888b6829bf3197b6af62962dba82e37fe5c7b69107ae2cfac543982e",
+    "updates": 444,
+    "decisions": 19964
+  },
+  "founder": {
+    "path": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\studies\\033-early-full-window-001\\founder.pt",
+    "sha256": "a0620ce76bbf208435a8f6507f7ef90a1482603b8a0b9a4c435613f4866d8e2d"
+  },
+  "gpuCalibrationSha256": "1d6680b215a30c684462e4bc986445a1e85c6ee688d3ad1fa4c70e8b5d784b0b",
+  "virtualComputeCostMs": 12,
+  "device": "cpu",
+  "modelOutputsBitEquivalentToGPU": false,
+  "policyDeviceIsSharedAcrossComparison": true,
+  "physicalAccountRequests": 0,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "completedEarlierComparisonSha256": "8b65fb1396a6f466c33767c1f0c28d9f4a42c396c0c18e9dac4c6ee8c346249f",
+  "completedEarlierComparisonPath": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\studies\\033-early-full-window-001\\RESULT.json"
+}

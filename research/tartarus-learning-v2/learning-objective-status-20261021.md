@@ -23,3 +23,7 @@ The data repair completed all21 SIG capture segments00000–00020, all ending be
 ## October21 04:08 continuation
 
 [Full-cache decoder parity, actual complete actor timing and limits](current-learning-20261021-0408.md). All15170073 source records match exactly. New future-run timing includes preparation and host conversion; actual316-update CPU measurements23/27ms cover current shapes only. Frozen033 and its comparison are unchanged; full033 selection/evolution and independent positive ROI remain unproven.
+
+## October21 04:27 continuation
+
+[Completed80-update development comparison and queued verified-generation upgrade](current-learning-20261021-0427.md). Candidate full48h marked ROI improves to -6.39%/-0.91% from founder -13.59%/-10.35%, but remains negative/unqualified. Later444-update full-window comparison is running. Original-cache exact parser parity is complete;034 is queued after full033 generation, not running. Full history/calendar/source qualification and independently positive ROI remain incomplete.

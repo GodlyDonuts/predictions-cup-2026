@@ -1,0 +1,28 @@
+{
+  "format": "exact_full_replay_decoder_parity_v1",
+  "complete": true,
+  "cacheManifestSha256": "f066e68bbf40fa5c70386054e517eabe29ad9b2b3ad24aaae258fc8f97387957",
+  "databaseSha256": "a6a070b3f99d9e8fc093bbd5661dbf09e2b883c18b7dcde3cbc40052af5f9a2b",
+  "implementation": {
+    "version": "3.11.3",
+    "filesSha256": {
+      "__init__.py": "198ed4eeaa6df801c493b327403dc7b4fb5882c58a51d7942500bffe84ea1e37",
+      "orjson.cp312-win_amd64.pyd": "5c55a1bc258ed172a0373e1e1a057280c2be699cfdf1fe5cb98684404eee98c6"
+    },
+    "pythonVersion": "3.12.14"
+  },
+  "rows": {
+    "market": 14764405,
+    "flow": 71506
+  },
+  "allTypedDecodedRowsEqual": true,
+  "receiptBoundsMs": [
+    1792049104423,
+    1792540800000
+  ],
+  "wallSeconds": 527.5261204999988,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "physicalAccountRequests": 0,
+  "classification": "full_cache_parse_equivalence_not_training_speed_or_ROI"
+}
