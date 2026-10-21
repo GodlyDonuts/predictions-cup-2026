@@ -490,8 +490,8 @@ class ApiEpisode(PreparedEpisode):
             if write and self.budget.unknown:return False
             return self.budget.ready_at(self.now,write)<=self.now
         read_ready,write_ready=ready(False),ready(True)
-        from .managed_data_service import INTENT_PROFILE
-        raw_intents=(getattr(self,'managed_data_profile',None)==INTENT_PROFILE
+        from .managed_data_service import raw_intents as uses_raw_intents
+        raw_intents=(uses_raw_intents(getattr(self,'managed_data_profile',None))
                      and not self.budget.poisoned and not self.budget.unknown)
         # Availability of a local request is distinct from network admission.
         # A raw intent can return BUSY/RATE_WAIT and ask the managed reader to

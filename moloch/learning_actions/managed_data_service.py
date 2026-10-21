@@ -1,29 +1,34 @@
 """Optional actor-pausable data collection on the existing simulated queues.
 
 Every payload still uses request_observation and its original paid receipt.
-Only known book/live-reference targets are collected; missing history is not
-invented. A waiting foreground SIG operation gets the next actor turn before
+Known books and reference targets are collected; the explicit history profile
+also collects registered external history through original paid queries. A
+waiting foreground SIG operation gets the next actor turn before
 the background service competes for that slot.
 """
 import math
 
 PROFILE='model_pausable_book_reference_service_v1'
 INTENT_PROFILE='model_pausable_raw_intents_service_v2'
+HISTORY_PROFILE='model_pausable_history_reference_service_v3'
 EVENT='managed_market_data_poll'
 INTENT_EVENT='managed_market_data_poll_v2'
 
 
 def profile(value):
-    if value not in(None,PROFILE,INTENT_PROFILE)or type(value)not in(type(None),str):
+    if value not in(None,PROFILE,INTENT_PROFILE,HISTORY_PROFILE)or type(value)not in(type(None),str):
         raise ValueError('EXPLICIT_MANAGED_DATA_PROFILE')
     return value
+
+
+def raw_intents(value):return value in(INTENT_PROFILE,HISTORY_PROFILE)
 
 
 def specification(value):
     if value is None:return None
     if(not isinstance(value,dict)or not {'profile','initially_enabled'}<=set(value)
             or set(value)-{'profile','initially_enabled','finance_period_ms'}
-            or profile(value['profile'])not in(PROFILE,INTENT_PROFILE)or type(value['initially_enabled'])is not bool):
+            or profile(value['profile'])not in(PROFILE,INTENT_PROFILE,HISTORY_PROFILE)or type(value['initially_enabled'])is not bool):
         raise ValueError('EXPLICIT_MANAGED_DATA_CONFIGURATION')
     period=value.get('finance_period_ms')
     if period is not None and(type(period)is not int or period<1):raise ValueError('EXPLICIT_POSITIVE_FINANCE_READ_PERIOD')
@@ -31,9 +36,9 @@ def specification(value):
 
 
 def advance_alarm(env,before,result):
-    if getattr(env,'managed_data_profile',None)==INTENT_PROFILE and result.get('actor_turn_pending',False):return
+    if raw_intents(getattr(env,'managed_data_profile',None)) and result.get('actor_turn_pending',False):return
     if result.get('wake_on_observation',True):
-        deadline=(result.get('ready_ms')if getattr(env,'managed_data_profile',None)==INTENT_PROFILE
+        deadline=(result.get('ready_ms')if raw_intents(getattr(env,'managed_data_profile',None))
                   else env.decision_times(result.get('ready_ms')))
         target=min(env.end,max(before+1,deadline))
         env.advance_until_observable(target)
@@ -64,7 +69,7 @@ class ManagedDataService:
         old=self.pending[venue]
         if old is not None and old[0]<=at:return
         self.sequence+=1;self.pending[venue]=(at,self.sequence)
-        kind=INTENT_EVENT if self.env.managed_data_profile==INTENT_PROFILE else EVENT
+        kind=INTENT_EVENT if raw_intents(self.env.managed_data_profile) else EVENT
         self.env.clock.schedule(at,25,kind,(venue,self.sequence))
 
     def remember(self,venue,key,row):
@@ -74,14 +79,26 @@ class ManagedDataService:
             if self.allowed(venue,key):self.queue(venue,self.env.now)
         return result
 
-    @staticmethod
-    def allowed(venue,key):return key[0]==('book'if venue=='SIG'else'reference')
+    def allowed(self,venue,key):
+        if key[0]==('book'if venue=='SIG'else'reference'):return True
+        return (self.env.managed_data_profile==HISTORY_PROFILE and venue!='SIG'
+                and (venue,key)in getattr(self.env,'historical_providers',{}))
+
+    def targets(self,venue):
+        env=self.env
+        live=tuple(k for k in env.keys[venue]if k[0]==('book'if venue=='SIG'else'reference')and k in env.latest)
+        if env.managed_data_profile!=HISTORY_PROFILE or venue=='SIG':return live
+        # A live reference's key does not establish equivalence with an
+        # individual historical outcome. Preserve both paid source identities.
+        history=tuple(k for k in env.keys[venue]if self.allowed(venue,k)
+                      and (venue,k)in env.historical_providers)
+        return live+history
 
     def foreground(self,result):
         if self.in_background:return
         if result['status']in('RATE_WAIT','BUSY'):
             self.actor_ready=max(self.env.now+1,result['ready_ms'])
-            if self.env.managed_data_profile==INTENT_PROFILE and not self.waiting_actor:
+            if raw_intents(self.env.managed_data_profile) and not self.waiting_actor:
                 self.queue('SIG',self.actor_ready)
         elif result['status']=='IN_FLIGHT':self.actor_ready=None
 
@@ -100,7 +117,7 @@ class ManagedDataService:
         result=self.original_action(action,observation)
         family=int(action['family']);kind,key=observation['entities'][int(action['market'])]
         sig_attempt=(family in(1,2,3,4,7,8,9)or family==10 and kind=='read'and key[0]=='SIG')
-        if self.env.managed_data_profile==INTENT_PROFILE:
+        if raw_intents(self.env.managed_data_profile):
             if holding and sig_attempt:
                 self.waiting_actor=False
                 if result['status']in('RATE_WAIT','BUSY'):
@@ -156,7 +173,7 @@ class ManagedDataService:
         else:
             keys=self.catalog[venue]
             if keys is None:
-                keys=tuple(k for k in env.keys[venue]if self.allowed(venue,k)and k in env.latest)
+                keys=self.targets(venue)
                 self.catalog[venue]=keys
             if not keys:
                 if venue=='SIG'and self.finance_period is not None:self.queue(venue,self.finance_due)
@@ -164,6 +181,9 @@ class ManagedDataService:
             key=keys[self.cursors[venue]%len(keys)]
         self.in_background=True
         kwargs={'order_limit':200,'continue_order_page':True}if finance and key[0]=='owned_orders'else{}
+        if (env.managed_data_profile==HISTORY_PROFILE and venue!='SIG'
+                and (venue,key)in getattr(env,'historical_providers',{})):
+            kwargs['history_latest_only']=True
         try:result=self.original_request(venue,key,**kwargs)
         finally:self.in_background=False
         status=result['status']

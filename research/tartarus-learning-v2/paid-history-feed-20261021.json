@@ -1,0 +1,158 @@
+{
+  "classification": "same_fit_sample_paid_history_delivery_comparison_not_ROI",
+  "baseline": {
+    "classification": "training_role_information_delivery_audit_not_ROI",
+    "fitBounds": [
+      1792049116175,
+      1792221916175
+    ],
+    "observedVirtualMs": 1792050326175,
+    "backgroundRequests": {
+      "SIG": 16,
+      "Kalshi": 0,
+      "Polymarket": 0
+    },
+    "backgroundTargets": {
+      "SIG/account": 1,
+      "SIG/positions": 1,
+      "SIG/owned_orders": 1,
+      "SIG/book": 13
+    },
+    "knownLatestKinds": {
+      "SIG": {
+        "book": 237
+      },
+      "Kalshi": {},
+      "Polymarket": {}
+    },
+    "registeredHistoryKinds": {
+      "SIG/historical_candles": 237,
+      "SIG/historical_trades": 237,
+      "Kalshi/historical_trades": 234,
+      "Polymarket/historical_sample": 316
+    },
+    "knownHistoryReceipts": 0,
+    "historicalSources": {
+      "Kalshi": {
+        "registered": 234,
+        "withCausalValueAtSampleTime": 234,
+        "examples": [
+          {
+            "target": "CONTROLH-2026-D",
+            "sourceAtMs": 1792047540949
+          },
+          {
+            "target": "CONTROLH-2026-R",
+            "sourceAtMs": 1792047569399
+          },
+          {
+            "target": "CONTROLS-2026-D",
+            "sourceAtMs": 1792047541772
+          }
+        ]
+      },
+      "Polymarket": {
+        "registered": 316,
+        "withCausalValueAtSampleTime": 316,
+        "examples": [
+          {
+            "target": "100483443247041044563874634953278400972311005965822139457018312114391318359850",
+            "sourceAtMs": 1792050320000
+          },
+          {
+            "target": "100828434651155155710172841941100159662807201107427176770262475413650206834153",
+            "sourceAtMs": 1792050321000
+          },
+          {
+            "target": "100828696543935567055426435169492108205416727222428840833576998724854096459903",
+            "sourceAtMs": 1792050321000
+          }
+        ]
+      }
+    },
+    "independentTestUsed": false,
+    "gpuUsed": false,
+    "productionChanged": false
+  },
+  "candidate": {
+    "classification": "training_role_information_delivery_audit_not_ROI",
+    "fitBounds": [
+      1792049116175,
+      1792221916175
+    ],
+    "observedVirtualMs": 1792050326175,
+    "backgroundRequests": {
+      "SIG": 16,
+      "Kalshi": 201,
+      "Polymarket": 295
+    },
+    "backgroundTargets": {
+      "Kalshi/historical_trades": 201,
+      "Polymarket/historical_sample": 295,
+      "SIG/account": 1,
+      "SIG/positions": 1,
+      "SIG/owned_orders": 1,
+      "SIG/book": 13
+    },
+    "knownLatestKinds": {
+      "SIG": {
+        "book": 237
+      },
+      "Kalshi": {},
+      "Polymarket": {}
+    },
+    "registeredHistoryKinds": {
+      "SIG/historical_candles": 237,
+      "SIG/historical_trades": 237,
+      "Kalshi/historical_trades": 234,
+      "Polymarket/historical_sample": 316
+    },
+    "knownHistoryReceipts": 488,
+    "historicalSources": {
+      "Kalshi": {
+        "registered": 234,
+        "withCausalValueAtSampleTime": 234,
+        "examples": [
+          {
+            "target": "CONTROLH-2026-D",
+            "sourceAtMs": 1792047540949
+          },
+          {
+            "target": "CONTROLH-2026-R",
+            "sourceAtMs": 1792047569399
+          },
+          {
+            "target": "CONTROLS-2026-D",
+            "sourceAtMs": 1792047541772
+          }
+        ]
+      },
+      "Polymarket": {
+        "registered": 316,
+        "withCausalValueAtSampleTime": 316,
+        "examples": [
+          {
+            "target": "100483443247041044563874634953278400972311005965822139457018312114391318359850",
+            "sourceAtMs": 1792050320000
+          },
+          {
+            "target": "100828434651155155710172841941100159662807201107427176770262475413650206834153",
+            "sourceAtMs": 1792050321000
+          },
+          {
+            "target": "100828696543935567055426435169492108205416727222428840833576998724854096459903",
+            "sourceAtMs": 1792050321000
+          }
+        ]
+      }
+    },
+    "independentTestUsed": false,
+    "gpuUsed": false,
+    "productionChanged": false
+  },
+  "focusedTestsPassed": 43,
+  "active034Changed": false,
+  "queued035Changed": false,
+  "independentTestUsed": false,
+  "productionChanged": false
+}
