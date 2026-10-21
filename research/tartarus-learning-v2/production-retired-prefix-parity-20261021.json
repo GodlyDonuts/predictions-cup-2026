@@ -1,0 +1,45 @@
+{
+  "actualFillCount": 396,
+  "baselineOuterClonePlusTransactionalNs": [
+    16617106986,
+    16758957846,
+    16767382038,
+    16619674203,
+    16622272974
+  ],
+  "candidateOuterClonePlusConsumingNs": [
+    234203426,
+    234879219,
+    234371747,
+    234333313,
+    233349477
+  ],
+  "engineIdentity": "de9c7e870a4b1b9d113a07d10456b9f2c480565599a9a226f59557e2be654eec",
+  "eventOrderSha256": "60583e52262a023ecb79e7ef71452cae8490627ab06f1053366556b96914c8da",
+  "eventsPerRound": 64,
+  "finalStateSha256": "8a723d91f63b624fb331d59e588ca89b1ca8e1eaa9efa6c5a27f653516030261",
+  "financialParity": true,
+  "limitations": [
+    "In-memory Session staging component only; excludes fsync/report serialization/HTTP/full-cycle timing.",
+    "Both strategies use the same original starting Engine and original 64-event order.",
+    "Reduced-priority CPU sharing and cache noise remain; no production throughput/latency guarantee."
+  ],
+  "mode": "original_prefix_unpublished_staging_memory_only",
+  "networkRequests": 0,
+  "orderCount": 20040,
+  "originalReportHash": "ca50cd60e7a69e0415122a454d07b21347d962ceae329c2d4bfdc1c5b55bf375",
+  "prefixBytes": 2492994478,
+  "prefixSequence": 743614,
+  "prefixSha256": "014a4178cfc9c7c90e622ae6a4bcdaf174d0437b4fbb1d591a5ce62b30ea9588",
+  "replayWallNs": 1057016681123,
+  "rounds": 5,
+  "schemaVersion": 1,
+  "sourceMutated": false,
+  "startingStateSha256": "9421c58857d1ebf4b60777dfa97d5b42c425a54adb67e73746f3dba82006190c",
+  "nativeUnitChecks": 125,
+  "binarySha256": "153a4347eac54946053601d3e28d5e253b05392cb5aeb767933936107a7b7766",
+  "nativeEngineSourceSha256": "d8b881c0bae5dd8c844444ce0e2712f3ce53455cc378edf67c007890e5025ed9",
+  "nativeSessionSourceSha256": "edb281c58bfe92d08fc9ee779d9be93b4d59597d20e2c86d1c76a575282b080a",
+  "productionDeployed": false,
+  "productionTradingVerified": false
+}

@@ -470,6 +470,9 @@ pub struct Engine {
     pub wallet: Wallet,
     books: BTreeMap<String, Arc<Book>>,
     orders: Vec<Order>,
+    // Orders are append-only and retirement is permanent. This derived cursor
+    // skips only the fully retired leading prefix; no history is removed.
+    retired_prefix: usize,
     fills: Vec<Value>,
     seen: BTreeMap<String, (String, i64, i128, u64)>,
     flow: BTreeMap<String, Vec<(i64, u64)>>,
@@ -565,6 +568,13 @@ impl Engine {
         *self = next;
         Ok(())
     }
+    fn advance_retired_prefix(&mut self) {
+        while self.orders.get(self.retired_prefix).is_some_and(|q|q.retired) {
+            self.retired_prefix += 1;
+        }
+        debug_assert!(self.retired_prefix <= self.orders.len());
+        debug_assert!(self.orders[..self.retired_prefix].iter().all(|q|q.retired));
+    }
     fn audit(&self) -> Result<()> {
         self.wallet.audit()?;
         self.audit_packages()?;
@@ -578,7 +588,7 @@ impl Engine {
         // shortage is never hidden by a later scope's malformed order.
         let mut active:BTreeMap<(&str,Side),(Option<u64>,Option<u64>)>=self.wallet.lots.keys()
             .map(|(ex,side)|((ex.as_str(),*side),(Some(0),Some(0)))).collect();
-        for q in self.orders.iter().filter(|q|!q.retired){
+        for q in self.orders[self.retired_prefix..].iter().filter(|q|!q.retired){
             let key=(q.exchange.as_str(),if q.buy{q.side.other()}else{q.side});
             let Some(sums)=active.get_mut(&key)else{continue};
             let n=q.quantity.checked_sub(q.filled);
@@ -725,6 +735,7 @@ impl Engine {
             wallet,
             books: BTreeMap::new(),
             orders: Vec::new(),
+            retired_prefix: 0,
             fills: Vec::new(),
             seen: BTreeMap::new(),
             flow: BTreeMap::new(),
@@ -879,11 +890,11 @@ impl Engine {
             // A reviewed resting BUY owns this flat scope's entry selection.
             // Filled inventory still uses normal exit generation, with runtime
             // review authority controlling every physical disposition.
-            if (!self.reviewed_fundamental_entries.is_empty()||!self.reviewed_rank_campaigns.is_empty())&&yes==0&&no==0&&self.orders.iter().any(|q|q.exchange==b.exchange&&!q.retired&&(self.reviewed_fundamental_entries.contains_key(&q.id)||self.reviewed_rank_campaigns.contains_key(&q.id))){continue;}
+            if (!self.reviewed_fundamental_entries.is_empty()||!self.reviewed_rank_campaigns.is_empty())&&yes==0&&no==0&&self.orders[self.retired_prefix..].iter().any(|q|q.exchange==b.exchange&&!q.retired&&(self.reviewed_fundamental_entries.contains_key(&q.id)||self.reviewed_rank_campaigns.contains_key(&q.id))){continue;}
             if yes > 0 || no > 0 {
                 if self.managed_inventory_planning_excludes(&b.exchange){continue;}
                 if p.raw["repriceProfitableHedge"] != true {
-                    for q in &self.orders {
+                    for q in &self.orders[self.retired_prefix..] {
                         if !q.retired
                             && q.exchange == b.exchange
                             && q.end() > at
@@ -1253,8 +1264,9 @@ impl Engine {
             self.count("writeBudgetHolds");
             return Ok(());
         }
-        for i in 0..self.orders.len() {
+        for i in self.retired_prefix..self.orders.len() {
             let q = &self.orders[i];
+            if q.retired || q.end() <= at || q.cancel.is_some() { continue; }
             if self.is_package_order(q.id)||self.reviewed_inventory_exits.contains_key(&q.id)||self.reviewed_fundamental_entries.contains_key(&q.id)||self.reviewed_rank_campaigns.contains_key(&q.id) {continue;}
             // Planning exclusion cannot manufacture cancellation or release old liabilities.
             if self.managed_inventory_planning_excludes(&q.exchange){continue;}
@@ -1262,9 +1274,6 @@ impl Engine {
             // flat-scope BUY. The worker separately proves never-sent retirement;
             // original expiration/owned terminal handling remain authoritative.
             if q.buy&&self.ordinary_entry_excluded(&q.exchange)&&self.wallet.quantity(&q.exchange,Side::Yes)==0&&self.wallet.quantity(&q.exchange,Side::No)==0{continue;}
-            if q.retired || q.end() <= at || q.cancel.is_some() {
-                continue;
-            }
             let target = targets.iter().find(|t| t.key() == q.key());
             let book = self.books.get(&q.exchange);
             let covered = if q.buy {
@@ -1308,7 +1317,7 @@ impl Engine {
                 markets.insert(ex.clone());
             }
         }
-        for q in &self.orders {
+        for q in &self.orders[self.retired_prefix..] {
             if !q.retired {
                 markets.insert(q.exchange.clone());
             }
@@ -1320,7 +1329,7 @@ impl Engine {
         for ex in &markets {
             costs.insert(ex.clone(), self.wallet.market_cost(ex));
         }
-        for q in &self.orders {
+        for q in &self.orders[self.retired_prefix..] {
             if !q.retired && q.buy {
                 *costs.entry(q.exchange.clone()).or_default() +=
                     self.policy.unit(q.limit)? * q.remaining() as i128;
@@ -1371,7 +1380,7 @@ impl Engine {
                 }
                 let opposite = if self.policy.quote == "pairedSpread"
                     && mate.is_none()
-                    && !self.orders.iter().any(|q| {
+                    && !self.orders[self.retired_prefix..].iter().any(|q| {
                         !q.retired
                             && q.end() > at
                             && q.exchange == t.book.exchange
@@ -1417,7 +1426,7 @@ impl Engine {
                 continue;
             }
             if t.buy
-                && (self.orders.iter().any(|q| {
+                && (self.orders[self.retired_prefix..].iter().any(|q| {
                     !q.retired
                         && q.end() > at
                         && q.buy
@@ -1554,7 +1563,7 @@ impl Engine {
                         return Err("BOOK_CONFLICT");
                     }
                 }
-                for i in 0..self.orders.len() {
+                for i in self.retired_prefix..self.orders.len() {
                     let q = &self.orders[i];
                     if self.live_mode || q.retired
                         || !q.aon
@@ -1602,7 +1611,7 @@ impl Engine {
                     self.orders[i].retired = true;
                     self.count("inventoryAonEvaluations");
                 }
-                for q in &mut self.orders {
+                for q in &mut self.orders[self.retired_prefix..] {
                     if q.retired || q.exchange != b.exchange {
                         continue;
                     }
@@ -1690,7 +1699,7 @@ impl Engine {
                         .or_default()
                         .push((executed / 1_000_000, quantity));
                     self.count("uniqueTrades");
-                    for i in 0..self.orders.len() {
+                    for i in self.retired_prefix..self.orders.len() {
                         if self.live_mode { break; }
                         let q = &mut self.orders[i];
                         if q.retired
@@ -1809,7 +1818,7 @@ impl Engine {
                 if e["complete"] != true || from >= to || to > at_ns {
                     return Err("COVERAGE");
                 }
-                for q in &mut self.orders {
+                for q in &mut self.orders[self.retired_prefix..] {
                     if !self.live_mode && !q.retired
                         && e["marketId"] == q.market
                         && e["exchangeId"] == q.exchange
@@ -1858,6 +1867,7 @@ impl Engine {
         if kind!="unsubmitted_intent_retired"&&e.get("deferPlanningForPackage").is_some(){return Err("PACKAGE_PLANNING_FLAG_EVENT")}
         let defer_package_plan=kind=="unsubmitted_intent_retired"&&e["deferPlanningForPackage"]==true;
         if kind!="managed_inventory_planning_v1"&&kind!="reviewed_cohort_exit_reserved_v1"&&kind!="ordinary_profitable_depth_mode_v1"&&kind!="live_entry_window"&&kind!="ordinary_entry_exclusions_v1"&&kind!="live_market_capacity_v1"&&kind!="live_capital_allocation_v1"&&kind!="live_owner_mandate_revision_v1"&&kind!="reviewed_inventory_exit_reserved_v1"&&kind!="reviewed_fundamental_entry_reserved_v1"&&kind!="reviewed_rank_campaign_reserved_v1"&&!kind.starts_with("live_package_")&&!kind.starts_with("probabilistic_portfolio_")&&!kind.starts_with("actual_collateral_")&&!defer_package_plan{self.reconcile(at)?;}
+        self.advance_retired_prefix();
         Ok(())
     }
     pub fn report(&self) -> Result<Value> {
@@ -2024,6 +2034,24 @@ impl Engine {
  fn hold(e:&mut Engine,ex:&str,side:Side,n:u64){let id=format!("fixture-held-{ex}");e.wallet.reserve(&id,Reservation{exchange:ex.into(),side,quantity:n,limit:400000}).unwrap();e.wallet.buy_fill(&id,n).unwrap();}
  fn old_check(e:&Engine)->Result<()>{for(ex,side)in e.wallet.lots.keys(){let held=e.wallet.quantity(ex,*side);if held<e.pledge(ex,*side)+held.min(e.opposite_buys(ex,*side)){return Err("SHARE_PLEDGE")}}Ok(())}
  fn order(q:&Order,ex:&str,side:Side,buy:bool,n:u64,filled:u64)->Order{let mut out=q.clone();out.exchange=ex.into();out.side=side;out.buy=buy;out.quantity=n;out.filled=filled;out.retired=false;out}
+ #[test]fn retired_prefix_keeps_every_record_and_all_live_share_pledges(){
+  let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);
+  for i in 0..20000{let mut old=q.clone();old.id=i+1;old.retired=true;e.orders.push(old);}
+  let mut active=order(&q,"101",Side::Yes,false,10,0);active.id=20001;e.orders.push(active);
+  let before=e.order_records();let report=e.report().unwrap();e.advance_retired_prefix();
+  assert_eq!(e.retired_prefix,20000);assert_eq!(e.order_records(),before);assert_eq!(e.report().unwrap(),report);assert_eq!(e.audit(),old_check(&e));
+  e.orders[20000].quantity=11;assert_eq!(e.audit(),Err("SHARE_PLEDGE"));
+  e.orders[20000].retired=true;e.advance_retired_prefix();assert_eq!(e.retired_prefix,20001);assert!(e.audit().is_ok());
+  let mut next=order(&q,"101",Side::Yes,false,11,0);next.id=20002;e.orders.push(next);
+  e.advance_retired_prefix();assert_eq!(e.retired_prefix,20001);assert_eq!(e.audit(),Err("SHARE_PLEDGE"));assert_eq!(e.orders.len(),20002);
+ }
+ #[test]fn retired_prefix_stops_at_expired_and_cancel_pending_unretired_liabilities(){
+  for canceled in [false,true]{let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);
+   let mut old=q.clone();old.retired=true;e.orders.push(old);let mut active=order(&q,"101",Side::Yes,false,11,0);
+   active.expires=0;if canceled{active.cancel=Some(0)}e.orders.push(active);
+   e.advance_retired_prefix();assert_eq!(e.retired_prefix,1);assert_eq!(e.audit(),old_check(&e));assert_eq!(e.audit(),Err("SHARE_PLEDGE"));
+  }
+ }
  #[test]fn partial_sells_opposite_buys_and_retired_history_match_original_equation(){
   let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);hold(&mut e,"102",Side::No,8);
   e.orders.push(order(&q,"101",Side::Yes,false,10,3));e.orders.push(order(&q,"101",Side::No,true,5,2));

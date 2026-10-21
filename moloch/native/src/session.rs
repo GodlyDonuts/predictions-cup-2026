@@ -922,7 +922,7 @@ mod staged_prefix_benchmark {
         if !root.is_absolute()||fs::symlink_metadata(&root)?.file_type().is_symlink(){return Err("BENCH_FROZEN_DIRECTORY".into())}
         let expected_bytes: u64=std::env::var("MOLOCH_FROZEN_PREFIX_BYTES")?.parse()?;
         let expected_sha=std::env::var("MOLOCH_FROZEN_PREFIX_SHA256")?;
-        if expected_bytes==0||expected_bytes>2*1024*1024*1024||expected_sha.len()!=64||!expected_sha.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("BENCH_FROZEN_BOUND".into())}
+        if expected_bytes==0||expected_bytes>4*1024*1024*1024||expected_sha.len()!=64||!expected_sha.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b)){return Err("BENCH_FROZEN_BOUND".into())}
         let path=root.join("events.jsonl");let metadata=fs::symlink_metadata(&path)?;
         if !metadata.is_file()||metadata.file_type().is_symlink()||metadata.len()!=expected_bytes{return Err("BENCH_FROZEN_LENGTH".into())}
         // Verify original bytes BEFORE any replay. No source, lease, queue,
