@@ -6,13 +6,44 @@ belongs to the environment's shared limiter, not this per-series lookup.
 """
 import hashlib
 import json
-import math
 import mmap
 import struct
+import numpy as np
 from dataclasses import dataclass
 from pathlib import Path
 
 RECORD = struct.Struct('<qdII')
+RECORD_DTYPE = np.dtype([('at','<i8'),('price','<f8'),('receipt','<u4'),('flag','<u4')])
+VALIDATION_CHUNK_RECORDS = 65536
+
+
+def validate_records(mapped, asset_id, receipts, manifest):
+    """Validate every pinned record in bounded vectorized chunks.
+
+    Copies release the mmap buffer before any exception/close path. Integer
+    endpoint comparisons stay in Python so even out-of-range manifest bounds
+    have the same meaning as the original scalar checks.
+    """
+    previous = -1
+    for offset in range(0, len(mapped), VALIDATION_CHUNK_RECORDS * RECORD.size):
+        count = min(VALIDATION_CHUNK_RECORDS, (len(mapped)-offset)//RECORD.size)
+        rows = np.frombuffer(mapped, dtype=RECORD_DTYPE, count=count, offset=offset).copy()
+        times, prices, indices = rows['at'], rows['price'], rows['receipt']
+        if (int(times[0]) <= previous or np.any(times[1:] <= times[:-1])
+                or not np.isfinite(prices).all() or np.any(prices < 0) or np.any(prices > 1)
+                or np.any(rows['flag'] != 1) or np.any(indices >= len(receipts))):
+            raise ValueError('SCOPED_SORTED_SAMPLE_REQUIRED')
+        if (int(times[0]) < manifest['startTs'] * 1000
+                or int(times[-1]) >= manifest['endExclusiveTs'] * 1000):
+            raise ValueError('ORIGINAL_SAMPLE_RECEIPT_SCOPE')
+        for index in np.unique(indices):
+            receipt = receipts[int(index)]
+            group = times[indices == index]
+            if (receipt['assetId'] != asset_id
+                    or int(group[0]) < receipt['startTs'] * 1000
+                    or int(group[-1]) >= receipt['endExclusiveTs'] * 1000):
+                raise ValueError('ORIGINAL_SAMPLE_RECEIPT_SCOPE')
+        previous = int(times[-1])
 
 
 def integer(value):
@@ -100,18 +131,7 @@ class Samples:
                 if (len(mapped) != asset['records'] * RECORD.size
                         or hashlib.sha256(mapped).hexdigest() != asset['sha256']):
                     raise ValueError('ORIGINAL_SAMPLE_ASSET_CHANGED')
-                previous = -1
-                for offset in range(0, len(mapped), RECORD.size):
-                    at, price, receipt, flag = RECORD.unpack_from(mapped, offset)
-                    if (at <= previous or not math.isfinite(price) or not 0 <= price <= 1
-                            or flag != 1 or receipt >= len(self.receipts)):
-                        raise ValueError('SCOPED_SORTED_SAMPLE_REQUIRED')
-                    r = self.receipts[receipt]
-                    if (r['assetId'] != asset_id
-                            or not r['startTs'] * 1000 <= at < r['endExclusiveTs'] * 1000
-                            or not self.manifest['startTs'] * 1000 <= at < self.manifest['endExclusiveTs'] * 1000):
-                        raise ValueError('ORIGINAL_SAMPLE_RECEIPT_SCOPE')
-                    previous = at
+                validate_records(mapped, asset_id, self.receipts, self.manifest)
             except BaseException:
                 if 'mapped' in locals():
                     mapped.close()

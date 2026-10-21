@@ -1,0 +1,17 @@
+{
+  "schema": "training_sample_validation_benchmark_v1",
+  "records": 24557593,
+  "assets": 756,
+  "scalarSeconds": 10.786217499902705,
+  "vectorSeconds": 0.5086129002302187,
+  "speedup": 21.20712529119971,
+  "manifestSha256": [
+    "89ab9b727e36a861606d9c4d23c26e21041813859f0b5427bb2ea33f9e6ccb14",
+    "d738f8b6b6e51b3c1a718423387826ea776c6ec208f7b50d83721125248f0409"
+  ],
+  "allOriginalAssetHashesVerified": true,
+  "allRecordsCheckedByBoth": true,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "fullTrainingSpeedupEstablished": false
+}
