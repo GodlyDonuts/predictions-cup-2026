@@ -207,3 +207,43 @@ class ExperimentFactory:
             env=experiment.world('train',self.start,self.end)
             return env,ledger(env,config,development=experiment.development),experiment
         except BaseException:experiment.close();raise
+
+
+def prime_books(env,count):
+    """Charged reads for an explicit capacity diagnostic, never free prices."""
+    if type(count)is not int or count<0:raise ValueError('NONNEGATIVE_CAPACITY_PRIMING_READS')
+    targets=[key for key in env.keys['SIG']if key[0]=='book'][:count]
+    if len(targets)!=count:raise ValueError('CAPACITY_PRIMING_TARGETS_UNAVAILABLE')
+    for key in targets:
+        while True:
+            result=env.request_observation('SIG',key)
+            if result['status']=='IN_FLIGHT':env.advance(env.busy_until);break
+            if result['status']not in('BUSY','RATE_WAIT'):raise ValueError('CAPACITY_PRIMING_READ_FAILED')
+            at=result['ready_ms']
+            if not env.now<at<env.end:raise ValueError('CAPACITY_PRIMING_EXCEEDS_DIAGNOSTIC_HORIZON')
+            env.advance(at)
+
+
+@dataclass(frozen=True)
+class CapacityFactory:
+    """Short allocation/optimizer probe. Cannot stand in for full-day training."""
+    config:dict
+    directory:str
+    start:int
+    end:int
+    priming_reads:int=0
+
+    def __call__(self):
+        from .experiment import Experiment
+        from .economics import GrowthLedger
+        config=dict(self.config,device='cpu',cpu_threads=1,process_source_worlds=False)
+        experiment=Experiment(config,Path(self.directory),data_use=WaitingDataUse())
+        try:
+            if not experiment.train_bounds[0]<=self.start<self.end<=experiment.train_bounds[1]:
+                raise ValueError('CAPACITY_WORLD_OUTSIDE_AUTHORIZED_TRAIN_CALENDAR')
+            env=experiment.world('train',self.start,self.end);prime_books(env,self.priming_reads)
+            # This matches the existing allocation probe's explicit short
+            # development ledger. It never creates complete-day fitness.
+            ledger=GrowthLedger(env,development=True,historical_last_mark=True)
+            return env,ledger,experiment
+        except BaseException:experiment.close();raise

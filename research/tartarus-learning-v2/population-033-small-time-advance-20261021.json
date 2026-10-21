@@ -1,0 +1,28 @@
+{
+  "observedUtc": "2026-10-21T06:37:55.553679+00:00",
+  "classification": "observed_small_virtual_advancement_not_stopped_worker_or_profit_score",
+  "currentPid": 7108,
+  "sampleChunks": 100,
+  "wallSeconds": 48.843217611312866,
+  "totalDecisionDelta": 1584,
+  "activeWorlds": 2,
+  "optimizerUpdates": 4329,
+  "totalDecisions": 89272,
+  "worlds": [
+    {
+      "index": 3,
+      "virtualAdvanceMs": 9857,
+      "remainingHorizonMs": 130295856
+    },
+    {
+      "index": 4,
+      "virtualAdvanceMs": 9504,
+      "remainingHorizonMs": 78451716
+    }
+  ],
+  "fullGenerationComplete": false,
+  "noDecisionLimitIntroduced": true,
+  "reasonForTransfer": "validated process runtime and explicit inherited WAIT exploration; preserve every neural parent, discard no history, recompute all fitness",
+  "productionChanged": false,
+  "independentTestUsed": false
+}

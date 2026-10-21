@@ -1,0 +1,30 @@
+{
+  "observedUtc": "2026-10-21T06:42:15.335467+00:00",
+  "testsPassed": 31,
+  "failed": 0,
+  "skipped": 0,
+  "wallSeconds": 33.653,
+  "device": "cpu",
+  "scope": [
+    "actual_spawned_capacity_entrypoint_and_optimizer",
+    "process_specific_probe_routing",
+    "local_only_GPU_proof_rejected_for_process_mode",
+    "exact_source_config_worker_memory_binding",
+    "full_day_process_PPO_equivalence",
+    "protected_calendar_and_registry_lock",
+    "explicit_WAIT_mutation_full_action_support",
+    "all_partial_neural_parents_preserved"
+  ],
+  "sourceCanonicalLFSha256": {
+    "process_capacity.py": "d79e562c16be88c1136a9d213a36f3a747b1b9bd694a8ccb80ab4e12f8a288dd",
+    "process_worlds.py": "19dfbe3e01053e675983d0ea48b91efc9b46c1e60982f5b492652417b467b223",
+    "continue_population.py": "fcadd66862657d080de442479105215255bf220ebe85c0ba5ba65ae18edb96d5",
+    "gpu_diagnostic_guard.py": "06f6872587192e71cbaf3e168787c9aaa1b83544b2146f83c421fcc1230f2377",
+    "test_process_capacity.py": "55a41677635e953596b6b2238171825554edba9fee4ee4fa2b9f4119dee2fc3b",
+    "test_population_handoff.py": "c54375ecee31889992fba406f43f8f686f05d99f6d03b09a2735a44a9ba192a0"
+  },
+  "actualCUDAAdmissionEstablished": false,
+  "oldTrainerStopped": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

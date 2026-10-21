@@ -72,6 +72,23 @@ def started_learning(run,config,source,dataset_sha):
     return True
 
 
+def require_process_capacity(proof,config,config_path,source_manifest_sha):
+    """A local-only green probe cannot admit a spawned-world configuration."""
+    if config.get('process_source_worlds')is not True:return
+    workers=proof.get('workerIdentities');count=config['training_worlds']
+    if (proof.get('processSourceWorlds')is not True
+            or proof.get('sourceWorkerCount')!=count
+            or proof.get('sourceWorkersCPUOnly')is not True
+            or proof.get('exactObservationActionsHiddenRewardsAndReceipts')is not True
+            or proof.get('configurationSha256')!=sha_file(config_path)
+            or proof.get('sourceManifestSha256')!=source_manifest_sha
+            or proof.get('effectiveCudaMemoryFraction')!=config['cuda_memory_fraction']
+            or type(workers)is not list or len(workers)!=count
+            or any(type(w)is not dict or type(w.get('pid'))is not int or w['pid']<=0 or w.get('cudaInitialized')is not False for w in workers)
+            or len({w['pid']for w in workers})!=count):
+        raise ValueError('ACTUAL_PROCESS_BACKEND_CAPACITY_PROOF_REQUIRED')
+
+
 def run(spec_path):
     spec_path=Path(spec_path);spec=json.loads(spec_path.read_text());job=spec_path.parent
     source=Path(spec['sourceRoot']);cancel=job/'cancel';handle=None
@@ -121,7 +138,9 @@ def run(spec_path):
             config=next_configuration(spec['template'],plan,compute_steps=steps)
             config_path=job/('capacity-%d-config.json'%steps);frozen(config_path,config)
             output=job/('capacity-%d'%steps);log=job/('capacity-%d.log'%steps)
-            command=[spec['python'],'-m','moloch.learning_actions.batch_benchmark','--config',str(config_path),
+            module=('moloch.learning_actions.process_capacity'if config.get('process_source_worlds')is True
+                    else'moloch.learning_actions.batch_benchmark')
+            command=[spec['python'],'-m',module,'--config',str(config_path),
                 '--output',str(output),'--worlds',str(config['training_worlds']),'--steps',str(steps),
                 '--guard','tensor_versions_v1','--checkpoint-encoder','--start-offset-ms','1200000',
                 '--memory-fraction',str(config['cuda_memory_fraction']),'--prime-books','8']
@@ -138,6 +157,7 @@ def run(spec_path):
             if proof['device']!='cuda:0'or not proof['identical_wallets_orders_fills_and_clocks']or not any(p['accepted']for p in proof['ppo']):
                 raise ValueError('REAL_GPU_UPDATE_AND_EXACT_FINANCE_REQUIRED')
             if not proof['on_policy_guard_changed_after_optimizer_step']:raise ValueError('OPTIMIZER_GUARD_PROOF_REQUIRED')
+            require_process_capacity(proof,config,config_path,spec['sourceManifestSha256'])
             chosen=config;checks.append({'computeSteps':steps,'accepted':True,'resultSha256':sha_file(output/'RESULT.json')});break
         if chosen is None:raise ValueError('NO_MEASURED_GPU_CAPACITY_PROFILE')
         if chosen.get('closed_episode_return_replay',False):

@@ -136,6 +136,34 @@ class PopulationHandoffTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'FROZEN_SOURCE_CHANGED'):run_handoff(path)
                 process.assert_not_called()
 
+    def test_process_driver_routes_to_process_probe_and_rejects_local_only_result(self):
+        with tempfile.TemporaryDirectory()as directory:
+            root=Path(directory);path,spec,plan=self.driver_fixture(root)
+            spec['template']['process_source_worlds']=True;spec['capacityChunks']=[8]
+            path.write_text(json.dumps(spec));state={'stopped':False,'module':None}
+            class Handle:
+                def __init__(self,*args,**kwargs):pass
+                def alive(self):return not state['stopped']
+                def terminate_for_handoff(self):state['stopped']=True
+                def close(self):pass
+            def probe(argv,**kwargs):
+                self.assertTrue(state['stopped']);state['module']=argv[2]
+                output=Path(argv[argv.index('--output')+1]);output.mkdir()
+                (output/'RESULT.json').write_text(json.dumps({'device':'cuda:0',
+                    'identical_wallets_orders_fills_and_clocks':True,'ppo':[{'accepted':True}],
+                    'on_policy_guard_changed_after_optimizer_step':True}))
+                return SimpleNamespace(returncode=0)
+            with patch('moloch.learning_actions.continue_population.TrainingProcess',Handle),\
+                 patch('moloch.learning_actions.continue_population.boundary',return_value={'cycle':0}),\
+                 patch('moloch.learning_actions.continue_population.select_population',return_value=plan),\
+                 patch('moloch.learning_actions.continue_population.subprocess.run',side_effect=probe),\
+                 patch('moloch.learning_actions.continue_population.subprocess.Popen',side_effect=AssertionError('must not launch')):
+                with self.assertRaisesRegex(ValueError,'ACTUAL_PROCESS_BACKEND'):
+                    run_handoff(path)
+            self.assertEqual(state['module'],'moloch.learning_actions.process_capacity')
+            self.assertTrue((root/'population-plan.json').exists())
+            self.assertFalse((root/'next-config.json').exists())
+
     def test_closed_return_handoff_requires_extra_complete_episode_probe_before_launch(self):
         for accepted in(False,True):
             with tempfile.TemporaryDirectory()as directory:
