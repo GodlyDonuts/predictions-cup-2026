@@ -1126,12 +1126,14 @@ fn reviewed_reserved_exit(bank:&Session,log:&DispatchLog,scope:&Scope,exchange:&
  }
  Ok(Some(q.clone()))
 }
-// Owned passive retries share the cursor with reviewed acquisitions. Actual
-// deadline/revocation liquidations retain priority; selection grants no permit.
+// Deadline/revocation exits precede currently marketable FIFO-profit exits;
+// passive retries otherwise share the acquisition cursor. Selection is no permit.
+fn reviewed_hint_priority(h:&fundamental::ExistingExitHint)->u8{match h.reason.as_str(){"reviewed_holding_deadline"|"reviewed_source_revocation"=>2,"reviewed_fifo_crosses_bid"|"refreshed_value_exit"=>1,_=>0}}
+fn partition_reviewed_hints(hints:Vec<fundamental::ExistingExitHint>)->(Vec<fundamental::ExistingExitHint>,Vec<fundamental::ExistingExitHint>){hints.into_iter().partition(|h|reviewed_hint_priority(h)>0)}
 fn mixed_reviewed_preflight(exits:&[fundamental::ExistingExitHint],entries:&[fundamental::EntryHint],cursor:Option<&str>)->Option<(bool,usize,String)>{
- let urgent=exits.iter().any(|h|matches!(h.reason.as_str(),"reviewed_holding_deadline"|"reviewed_source_revocation"));
- let mut jobs:Vec<_>=exits.iter().enumerate().map(|(i,h)|(true,i,format!("{}:{}:sell",h.exchange_id,h.side))).collect();
- if !urgent{jobs.extend(entries.iter().enumerate().map(|(i,h)|(false,i,format!("{}:{}:buy",h.exchange_id,h.side))));}
+ let best=exits.iter().map(reviewed_hint_priority).max().unwrap_or(0);
+ let mut jobs:Vec<_>=exits.iter().enumerate().filter(|(_,h)|reviewed_hint_priority(h)==best).map(|(i,h)|(true,i,format!("{}:{}:sell",h.exchange_id,h.side))).collect();
+ if best==0{jobs.extend(entries.iter().enumerate().map(|(i,h)|(false,i,format!("{}:{}:buy",h.exchange_id,h.side))));}
  let keys:Vec<_>=jobs.iter().map(|j|j.2.clone()).collect();let index=*moloch_live_runtime::scheduling::preflight_rotation(&keys,cursor).first()?;Some(jobs.swap_remove(index))
 }
 #[cfg(test)]mod mixed_reviewed_preflight_tests{
@@ -1146,8 +1148,25 @@ fn mixed_reviewed_preflight(exits:&[fundamental::ExistingExitHint],entries:&[fun
  #[test]fn genuine_deadline_or_source_revocation_retains_exit_priority(){
   for reason in ["reviewed_holding_deadline","reviewed_source_revocation"]{let choice=mixed_reviewed_preflight(&[exit(reason)],&[entry("1043")],Some("865:YES:sell")).unwrap();assert!(choice.0);}
  }
+ #[test]fn profitable_bid_exits_rotate_ahead_of_passive_retries_and_entries(){
+  let mut a=exit("reviewed_fifo_crosses_bid");a.exchange_id="1044".into();let mut b=a.clone();b.exchange_id="993".into();
+  let exits=[exit("reviewed_passive_value_exit"),a,b];let entries=[entry("1043")];let mut cursor=Some("1043:NO:buy".to_owned());let mut seen=std::collections::BTreeSet::new();
+  for _ in 0..4{let(is_exit,index,key)=mixed_reviewed_preflight(&exits,&entries,cursor.as_deref()).unwrap();assert!(is_exit&&index>0);seen.insert(index);cursor=Some(key);}
+  assert_eq!(seen,std::collections::BTreeSet::from([1,2]));
+  for reason in ["reviewed_holding_deadline","reviewed_source_revocation"]{let mut all=exits.to_vec();all.push(exit(reason));let choice=mixed_reviewed_preflight(&all,&entries,Some("865:YES:sell")).unwrap();assert_eq!((choice.0,choice.1),(true,3));}
+ }
  #[test]fn empty_or_exit_only_candidates_keep_original_behavior(){
   assert!(mixed_reviewed_preflight(&[],&[],None).is_none());assert_eq!(mixed_reviewed_preflight(&[exit("refreshed_value_exit")],&[],None).unwrap(),(true,0,"865:YES:sell".into()));
+ }
+ #[test]fn non_crossing_passive_hints_cannot_bypass_ready_quotes_or_stale_refreshes(){
+  let mut stale=exit("reviewed_inventory_book_refresh");stale.exchange_id="993".into();
+  for reason in ["reviewed_passive_value_exit","reviewed_passive_reservation_retry"]{
+   let(priority,fair)=partition_reviewed_hints(vec![exit(reason),stale.clone()]);assert!(priority.is_empty());
+   let entries=[entry("1044")];let physical=[("1043:NO:buy".into(),7,false)];let mut cursor=None;let mut seen=std::collections::BTreeSet::new();
+   for _ in 0..8{let(job,key)=shared_preflight_rotation(&fair,&entries,&physical,cursor.as_deref()).unwrap();seen.insert(key.clone());if key=="1043:NO:buy"{assert_eq!(job,SharedPreflight::Physical(7));}cursor=Some(key);}
+   assert_eq!(seen,std::collections::BTreeSet::from(["1043:NO:buy".into(),"1044:NO:buy".into(),"865:YES:sell".into(),"993:YES:sell".into()]));
+  }
+  for reason in ["reviewed_fifo_crosses_bid","refreshed_value_exit","reviewed_holding_deadline","reviewed_source_revocation"]{let(priority,fair)=partition_reviewed_hints(vec![exit(reason)]);assert_eq!(priority.len(),1);assert!(fair.is_empty());}
  }
  #[test]fn only_exact_expected_local_expiry_codes_continue_after_opaque_sdk_proof(){
   for code in ["LIVE_ACCOUNT_STALE","LIVE_CONTRACT_OR_BOOK_STALE","LIVE_VERIFIED_STREAM_REQUIRED","PERMIT_EXPIRED_OR_INVALID"]{assert!(expected_ordinary_final_guard(code));}
@@ -2579,12 +2598,14 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  if let Some(f)=fundamental.as_deref_mut(){if refresh_fundamental_cohort(t,c,bank,log,authority,stream,f)?{return Ok(())}}
  let mut preflight_budget=moloch_live_runtime::scheduling::PreflightBudget::default();
  let entry_hints=if !owner_capital_ready(c,bank)?{Vec::new()}else if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.entry_hints(bank,log,&c.scope,f.authority.trusted(),now())?.into_iter().filter(|h|!moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().any(|q|q["exchangeId"]==h.exchange_id&&q["retired"]==false&&q.get("reviewedFundamentalEntry").is_some())).collect::<Vec<_>>()}else{Vec::new()};
- let mut stale_existing_hints=Vec::new();
+ let mut fair_existing_hints=Vec::new();
  if let Some(f)=fundamental.as_deref_mut(){
-  f.authority.validate()?;let mut existing_hints=Vec::new();
+  f.authority.validate()?;
   let hint_started=now();let batch=existing_exit_read_hints(bank,log,&c.scope,f,hint_started)?;
   let _=atomic_json(&c.root.join("fundamental-hint-selection.json"),&json!({"at":iso(now()),"pid":std::process::id(),"elapsedMs":now().saturating_sub(hint_started),"managedScopes":f.cohorts.managed_exchanges().len(),"hints":batch.len(),"diagnosticOnly":true}));
-  for hint in batch{if hint.reason=="reviewed_inventory_book_refresh"{stale_existing_hints.push(hint)}else{existing_hints.push(hint);}}
+  // Non-crossing passive quotes share the lower union with ready physical
+  // orders and stale-book refreshes; they must not return before that queue.
+  let(existing_hints,fair)=partition_reviewed_hints(batch);fair_existing_hints=fair;
   if !existing_hints.is_empty(){let(existing,index,key)=mixed_reviewed_preflight(&existing_hints,&entry_hints,preflight_cursor.as_deref()).ok_or("LIVE_REVIEWED_PREFLIGHT_CHOICE")?;
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
    if existing{let hint=&existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}
@@ -2663,13 +2684,13 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
  let early_at=now();let early=early_native_side_filter(c.ordinary_side_edge,bank,&c.scope,log,&managed,&quotes,&mut physical,early_at);
  if !early.is_empty(){let _=atomic_json(&c.root.join("ordinary-side-edge-early.json"),&json!({"at":iso(early_at),"mode":c.ordinary_side_edge,"assessments":early,"httpReads":0,"reservationReleased":false,"physicalAttempted":false,"executionAuthority":false}));}
- let mut chosen=shared_preflight_with_profit(&stale_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
+ let mut chosen=shared_preflight_with_profit(&fair_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
  if let Some((SharedPreflight::Physical(index),key))=&chosen{
   let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
   let vetoes=bulk_negative_vetoes(c,&quotes,&physical,&selection,&managed,*index,&mut LivePreflightReads{last_stream_service:None,frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?;
   if !vetoes.is_empty(){
    if apply_bulk_vetoes(&c.scope,&quotes,&mut physical,&vetoes,*index,now())?{*preflight_cursor=Some(key.clone());}
-   chosen=shared_preflight_with_profit(&stale_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
+   chosen=shared_preflight_with_profit(&fair_existing_hints,&entry_hints,&profit_keys,&physical,&covered_profit,preflight_cursor.as_deref());
   }
  }
  let Some((chosen,key))=chosen else{return Ok(())};
@@ -2683,7 +2704,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   SharedPreflight::ExistingRead(index)|SharedPreflight::EntryRead(index)=>{
    if !preflight_budget.try_start(){return Ok(())}*preflight_cursor=Some(key);
    let f=fundamental.as_deref_mut().ok_or("LIVE_FUNDAMENTAL_READ_RUNTIME")?;f.authority.validate()?;
-   if matches!(chosen,SharedPreflight::ExistingRead(_)){let hint=&stale_existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}
+   if matches!(chosen,SharedPreflight::ExistingRead(_)){let hint=&fair_existing_hints[index];reviewed_existing_exit(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}
    else{let hint=&entry_hints[index];reviewed_fundamental_entry(t,c,bank,log,authority,source,stream,f,hint,*windows.get(&hint.exchange_id).ok_or("LIVE_RECOVERY_WINDOW_MISSING")?,breadth,universe)?;}return Ok(())
   }
  };

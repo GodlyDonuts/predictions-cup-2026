@@ -1,0 +1,13 @@
+# R78: execute profitable exits and stop passive hints starving ready orders
+
+R78 is qualified; it is not deployed. R77 is restoring the original ledger. The one-distinct-filled-order-per-minute objective remains unmet.
+
+The partial R76 observation retained 92 consistent samples. Exchanges 993 and 1044 each had 25 samples with current reviews, original FIFO basis, no observed occupying order and displayed bids meeting their existing profit price. No new sale occurred during that observed window. Quotes and repeated depth are not fills or additive profit. [Original partial observation](r76-exit-census-partial-20261021.json).
+
+Source inspection found two scheduling problems. All current passive exit hints competed with new entries regardless of whether their quotes crossed an actual bid. Worse, any such hint entered an early branch that returned before the shared queue could consider stale-book refreshes and already-created physical orders. A continuously available non-crossing passive hint could therefore keep ready orders out of that later queue.
+
+R78 classifies an existing FIFO-profit quote as marketable only when its unchanged limit meets a current displayed bid with positive quantity. Deadline/revocation exits retain first priority. Current executable reviewed exits then rotate among themselves. Non-crossing passive quotes and reservation retries enter the existing shared queue with ready physical orders, entries and book refreshes. The existing ready physical quote still supersedes a read hint for the same market/side/action. Selection grants no order permission; the normal fresh account/book packet and original dispatch checks remain required.
+
+The change does not alter forecast probabilities, profit floors, quantities, fees, monetary limits, original costs, account pacing, or native accounting. A read-only hint cannot claim a fill, profit, complete depth coverage or future marketability. Scope completion gaps and distinct first-filled orders must be measured separately after deployment.
+
+The new FIFO test checks marketable, non-marketable, below-cost and stale-book cases without changing the native financial state. Scheduler checks cover rotation among executable exits, actual deadline priority, and inclusion of ready orders and stale refreshes despite passive hints. All 10 FIFO, 146 fundamental integration and 235 worker checks passed. The final optimized ARM64 binary loads, hashes to `4c86b9026621653a49aa2eec07df52946fdd2f691619698f7db4d9239bdfa134`, and uses the unchanged native library. Its exact source hashes match the staged main change. [Final qualification](r78-exit-priority-qualified-20261021.json). No production result is claimed from these tests.

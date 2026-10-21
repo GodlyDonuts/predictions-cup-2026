@@ -1279,8 +1279,16 @@ impl Cohorts{
             else if r.revoke_existing{"reviewed_source_revocation"}
             else{let(books,_)=package_admission::native_books(bank,scope,now,bank.engine().policy()["bookAgeMs"].as_u64().ok_or("FUNDAMENTAL_BOOK_POLICY")?)?;
                 if let Some(book)=books.get(exchange){let levels=if r.side=="YES"{&book.yes_bids}else{&book.no_bids};let payout=add(structure(r)?,amount(&r.margin_per_share)?)?.max(0);
-                    if (c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&passive_exit_clear(bank,log,exchange,None,true)?&&passive_terms(r,bank,exchange,c,self.owned(bank,exchange,c)?.min(r.maximum_quantity).min(bank.engine().policy()["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?),if r.side=="YES"{book.yes_asks.first()}else{book.no_asks.first()}.map(|l|l.price))?.is_some(){"reviewed_passive_value_exit"}
-                    else{if levels.first().is_none_or(|l|l.price<payout){return Ok(None)}"refreshed_value_exit"}
+                    let passive=if (c.existing.is_some()||c.entry.is_some())&&r.passive_value_exit.is_some()&&passive_exit_clear(bank,log,exchange,None,true)?{
+                        passive_terms(r,bank,exchange,c,self.owned(bank,exchange,c)?.min(r.maximum_quantity).min(bank.engine().policy()["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?),if r.side=="YES"{book.yes_asks.first()}else{book.no_asks.first()}.map(|l|l.price))?
+                    }else{None};
+                    if let Some((_n,limit,cost))=passive{
+                        // Scheduling evidence only: some displayed bid quantity
+                        // crosses this unchanged original FIFO-profit limit.
+                        // Preparation and physical dispatch still obtain fresh
+                        // facts and recheck the original price/quantity/owner.
+                        if cost.is_some()&&levels.first().is_some_and(|l|l.quantity>0&&l.price>=limit){"reviewed_fifo_crosses_bid"}else{"reviewed_passive_value_exit"}
+                    }else{if levels.first().is_none_or(|l|l.price<payout){return Ok(None)}"refreshed_value_exit"}
                 }else{"reviewed_inventory_book_refresh"}};
         Ok(Some(ExistingExitHint{exchange_id:exchange.into(),market_id:r.market_id.clone(),contract_id:r.contract_id.clone(),side:r.side.clone(),reason:reason.into()}))
     }

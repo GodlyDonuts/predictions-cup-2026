@@ -1,0 +1,23 @@
+{
+  "observedUtc": "2026-10-21T23:56:04.015051+00:00",
+  "binarySha256": "4c86b9026621653a49aa2eec07df52946fdd2f691619698f7db4d9239bdfa134",
+  "runtimeLibrarySha256": "6e18bd3e8d8fdbbac135e0fecb068e2e87f0a8c71aecb12fd0843df15551501a",
+  "nativeLibrarySha256": "fb56b89e5a6af2788baf4d858fcca02e675f0752a3cabf355aac791b767ba287",
+  "cliLoads": true,
+  "sourceSha256": {
+    "moloch/live-runtime/src/fundamental_policy.rs": "b1eca76d27a69f6f94cf147ee0e9802145bbc327f98cd765e541a3e6fce1a63e",
+    "moloch/live-runtime/tests/fundamental_policy.rs": "b3f7ff02e8a574028003b8ebc135416cd8df9d5f203e68bfa5a15758eae16c4e",
+    "moloch/live-runtime/tests/fundamental_fifo_profit_exits.rs": "f91a6a6883218d1afa3d62962fa88334fd896569a5512c95afbb68e848f4bc90",
+    "moloch/live-runtime/src/worker.rs": "e48be2e81592319df6ca8feda23cb534520ce5a50c784006b2404459c5d9afe8",
+    "research/moloch-fundamental-closure-cache-20261017/tests.rs": "7bcb77ac6235b8099f7cdc5ea2b105ce1d512c1ac4d319e79b9c10884cf9b942"
+  },
+  "tests": [
+    "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.12s",
+    "test result: ok. 146 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 77.79s",
+    "test result: ok. 235 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.36s"
+  ],
+  "nativeEngineChanged": false,
+  "accountClientsCreated": 0,
+  "productionChanged": false,
+  "finalSharedQueueRevision": true
+}
