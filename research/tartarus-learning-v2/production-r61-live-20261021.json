@@ -1,0 +1,56 @@
+{
+  "at": 1792581790.0664713,
+  "workerProgress": {
+    "actualFills": 396,
+    "actualOrders": 1660,
+    "at": "2026-10-21T11:23:03.124Z",
+    "completedReadScopes": 4,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 996893,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 37,
+    "terminalOrders": 1660
+  },
+  "dispatch": {
+    "allowed": true,
+    "at": "2026-10-21T11:22:21.133Z",
+    "collateralBlocked": false,
+    "packageBlocked": false,
+    "pid": 996893,
+    "reconciliationBlocked": false
+  },
+  "reference": {
+    "atMs": 1792581766990,
+    "pid": 996896,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 23,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "capturedAtMs": 1792581766629,
+    "openTargets": 0
+  },
+  "originalObservations": [
+    {
+      "receiptSha256": "20b895d46b3ecc1567db6c61de45c40940ffbc6873f60bd7217d6b2f601e60f4",
+      "receivedAt": "2026-10-21T11:22:51.841Z",
+      "fields": {
+        "balance": 403.36,
+        "availableAdvance": 0,
+        "buyingPower": 403.36
+      }
+    },
+    {
+      "receiptSha256": "efdd0e69bf73ca89499b938e805ee8b1cf4573c1d29c42b092e62d3a5e7dadd2",
+      "receivedAt": "2026-10-21T11:22:50.054Z",
+      "fields": {
+        "totalCostBasis": 95016.8,
+        "totalMarketValue": 94667.48,
+        "totalUnrealizedPnl": -349.28
+      }
+    }
+  ]
+}

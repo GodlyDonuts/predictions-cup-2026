@@ -18,7 +18,8 @@
     }
   },
   "nativeArm64ChecksPassed": 126,
-  "fullOriginalPrefixReplay": "running, not yet qualified",
+  "fullOriginalPrefixReplay": "passed; same original 743614-event prefix, 396 fills, 20040 orders and sealed report",
   "productionDeployed": false,
-  "productionModified": false
+  "productionModified": false,
+  "fullOriginalPrefixResult": "shared-review-maps-parity-20261021.json"
 }

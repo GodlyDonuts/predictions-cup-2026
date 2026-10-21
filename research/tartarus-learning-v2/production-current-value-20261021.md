@@ -78,3 +78,9 @@ Population034 continues; the [checkpoint-preserving cooperative handoff](coopera
 ### Fixed target deadline: 10:58:40 UTC
 
 The97,000 target was not achieved in verified evidence by the two-hour deadline. The sole new worker996893 remains alive, no STOP is present, and it is restoring. Its10:57:10/12 original account receipts show94,562.32 marked positions and403.36cash, totaling**94,965.68**. That is172.68 above the94,793.00 baseline and2,034.32 below the target. No new physical order or fill is verified. Restoration, tests and mark changes are not execution success. The missed target and failed R60 handoff remain part of this report; the deadline is not rolled forward.
+
+### Live loop and next bottleneck at 11:23 UTC
+
+R61/996893 is now verified trading with healthy realtime and allowed dispatch. The reference updater has committed generation23 through this exact worker; subsequent unchanged price ticks correctly avoid reload churn. Original receipts at11:22:50/51 show94,667.48 marked positions plus403.36cash, totaling**95,070.84**. This is277.84 above the08:53 mark baseline, not newly realized trading profit. Counts remain396fills/1660acknowledged and terminalorders. [Whitelisted current-process evidence](production-r61-live-20261021.json).
+
+An actual bounded stack sample found `FilePin::validate` hashing the full27MB dispatch journal inside `Cohorts::check -> entry_cancellations`. Ordinary repeated cache hits are being changed to validate held inode, size and nanosecond mtime/ctime at the same dispatch head. Cache misses or changed heads retain full original chain verification; physical preparation retains full-byte pins. This targets time spent validating unchanged history, not account freshness, ownership or uncertain execution. The candidate is not yet deployed. The separate native shared-review change passed full original financial replay but also remains undeployed; production stays running during preparation.
