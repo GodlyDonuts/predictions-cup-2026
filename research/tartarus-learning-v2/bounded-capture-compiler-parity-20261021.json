@@ -1,0 +1,20 @@
+{
+  "classification": "bounded_compiler_original_fixture_parity_not_model_ROI_or_admission",
+  "sourceCommit": "4cf6d0c221e45133c905bd719e6ebc2ad0245606",
+  "completeSha256": "ef15c67ba19ef488e0244cb5ba1c61a4111c3dcca39ecf4c74c50bc540040877",
+  "originalObservationBodySha256": "8f2c831cdf8cc6422e459fcae7b9c5de8d818241146b8d72d2c59507ce139d8b",
+  "originalTradeBodySha256": "c56ba77043084e2ab6b681160d351b4f7682109d9b042994cd2efcefbd3effe5",
+  "normalizedCounts": {
+    "original_official_sig_realtime_frame/gap": 237,
+    "original_official_sig_realtime_frame/book": 14197,
+    "original_official_sig_rest_book_receipt/book": 401
+  },
+  "exchanges": 237,
+  "reportedTrades": 272,
+  "allOriginalDecodedRowBytesEqual": true,
+  "allOriginalTradeRowBytesEqual": true,
+  "wallSeconds": 11.852990300001693,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0
+}

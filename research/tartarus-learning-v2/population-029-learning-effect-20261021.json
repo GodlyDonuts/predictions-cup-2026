@@ -1,0 +1,543 @@
+{
+  "classification": "paired_checkpoint_comparison_on_already_fitted_training_windows_not_qualification",
+  "planSha256": "56177e400456bd8a43cfd31f52b5315e122c666cb6f37426bf100ce72cd19900",
+  "cases": [
+    {
+      "case": 0,
+      "arm": "founder",
+      "seed": 191391,
+      "startMs": 1792080544520,
+      "endMs": 1792081144520,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 414,
+      "actionCounts": {
+        "10": 163,
+        "5": 32,
+        "6": 29,
+        "0": 181,
+        "2": 2,
+        "7": 3,
+        "1": 3,
+        "11": 1
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 158,
+        "QUOTE_SELECTION_UPDATED": 28,
+        "BUILDER_UPDATED": 33,
+        "ALARM": 181,
+        "BUSY": 13,
+        "STREAM_DISCONNECTED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 14.231041700004425
+    },
+    {
+      "case": 0,
+      "arm": "trained33",
+      "seed": 191391,
+      "startMs": 1792080544520,
+      "endMs": 1792081144520,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 198,
+      "actionCounts": {
+        "10": 59,
+        "5": 19,
+        "6": 20,
+        "0": 97,
+        "1": 2,
+        "7": 1
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 58,
+        "QUOTE_SELECTION_UPDATED": 4,
+        "BUILDER_UPDATED": 35,
+        "ALARM": 97,
+        "BUSY": 4
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 6.425432700001693
+    },
+    {
+      "case": 1,
+      "arm": "trained33",
+      "seed": 191392,
+      "startMs": 1792080544520,
+      "endMs": 1792081144520,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 60,
+      "actionCounts": {
+        "5": 15,
+        "10": 17,
+        "6": 11,
+        "0": 16,
+        "11": 1
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 7,
+        "IN_FLIGHT": 17,
+        "BUILDER_UPDATED": 19,
+        "ALARM": 16,
+        "STREAM_DISCONNECTED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 2.004789599996002
+    },
+    {
+      "case": 1,
+      "arm": "founder",
+      "seed": 191392,
+      "startMs": 1792080544520,
+      "endMs": 1792081144520,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 22,
+      "actionCounts": {
+        "5": 5,
+        "10": 5,
+        "6": 3,
+        "0": 9
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 4,
+        "IN_FLIGHT": 5,
+        "BUILDER_UPDATED": 4,
+        "ALARM": 9
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 0.799160499998834
+    },
+    {
+      "case": 2,
+      "arm": "founder",
+      "seed": 191391,
+      "startMs": 1792164757548,
+      "endMs": 1792165357548,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 24,
+      "actionCounts": {
+        "10": 10,
+        "5": 2,
+        "6": 1,
+        "0": 11
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 9,
+        "QUOTE_SELECTION_UPDATED": 2,
+        "BUILDER_UPDATED": 1,
+        "ALARM": 11,
+        "BUSY": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 9.10707050000201
+    },
+    {
+      "case": 2,
+      "arm": "trained33",
+      "seed": 191391,
+      "startMs": 1792164757548,
+      "endMs": 1792165357548,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 191,
+      "actionCounts": {
+        "10": 59,
+        "5": 23,
+        "6": 32,
+        "0": 75,
+        "2": 1,
+        "11": 1
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 58,
+        "QUOTE_SELECTION_UPDATED": 13,
+        "BUILDER_UPDATED": 42,
+        "ALARM": 75,
+        "BUSY": 2,
+        "STREAM_DISCONNECTED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 13.150410700000066
+    },
+    {
+      "case": 3,
+      "arm": "trained33",
+      "seed": 191392,
+      "startMs": 1792164757548,
+      "endMs": 1792165357548,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 119,
+      "actionCounts": {
+        "5": 20,
+        "10": 32,
+        "6": 18,
+        "0": 44,
+        "7": 2,
+        "11": 3
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 11,
+        "IN_FLIGHT": 30,
+        "BUILDER_UPDATED": 27,
+        "ALARM": 44,
+        "BUSY": 4,
+        "STREAM_DISCONNECTED": 2,
+        "BUILDER_CLEARED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 9.635636999999406
+    },
+    {
+      "case": 3,
+      "arm": "founder",
+      "seed": 191392,
+      "startMs": 1792164757548,
+      "endMs": 1792165357548,
+      "markedRoi": -0.10101352500000005,
+      "reward": -0.10648728911756845,
+      "fills": 9,
+      "decisions": 62,
+      "actionCounts": {
+        "5": 9,
+        "10": 19,
+        "6": 8,
+        "0": 22,
+        "11": 1,
+        "1": 1,
+        "8": 2
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 7,
+        "IN_FLIGHT": 22,
+        "BUILDER_UPDATED": 10,
+        "ALARM": 22,
+        "DATA_SERVICE_PAUSED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 0,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 10.680035299999872
+    },
+    {
+      "case": 4,
+      "arm": "founder",
+      "seed": 191391,
+      "startMs": 1792143919878,
+      "endMs": 1792144519878,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 24,
+      "actionCounts": {
+        "10": 10,
+        "5": 2,
+        "6": 1,
+        "0": 11
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 9,
+        "QUOTE_SELECTION_UPDATED": 2,
+        "BUILDER_UPDATED": 1,
+        "ALARM": 11,
+        "BUSY": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 0.8689077000017278
+    },
+    {
+      "case": 4,
+      "arm": "trained33",
+      "seed": 191391,
+      "startMs": 1792143919878,
+      "endMs": 1792144519878,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 72,
+      "actionCounts": {
+        "10": 23,
+        "5": 7,
+        "6": 11,
+        "0": 30,
+        "1": 1
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 22,
+        "QUOTE_SELECTION_UPDATED": 6,
+        "BUILDER_UPDATED": 12,
+        "ALARM": 30,
+        "BUSY": 2
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 2.364093199998024
+    },
+    {
+      "case": 5,
+      "arm": "trained33",
+      "seed": 191392,
+      "startMs": 1792143919878,
+      "endMs": 1792144519878,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 121,
+      "actionCounts": {
+        "5": 20,
+        "10": 33,
+        "6": 18,
+        "0": 45,
+        "7": 2,
+        "11": 3
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 11,
+        "IN_FLIGHT": 31,
+        "BUILDER_UPDATED": 27,
+        "ALARM": 45,
+        "BUSY": 4,
+        "STREAM_DISCONNECTED": 2,
+        "BUILDER_CLEARED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 3.651764499998535
+    },
+    {
+      "case": 5,
+      "arm": "founder",
+      "seed": 191392,
+      "startMs": 1792143919878,
+      "endMs": 1792144519878,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 106,
+      "actionCounts": {
+        "5": 18,
+        "10": 30,
+        "6": 17,
+        "0": 36,
+        "11": 1,
+        "1": 2,
+        "7": 2
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 11,
+        "IN_FLIGHT": 34,
+        "BUILDER_UPDATED": 24,
+        "ALARM": 36,
+        "DATA_SERVICE_PAUSED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 0,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 3.2251388000004226
+    },
+    {
+      "case": 6,
+      "arm": "founder",
+      "seed": 191391,
+      "startMs": 1792110889307,
+      "endMs": 1792111489307,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 73,
+      "actionCounts": {
+        "10": 22,
+        "5": 11,
+        "6": 13,
+        "0": 26,
+        "9": 1
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 22,
+        "QUOTE_SELECTION_UPDATED": 7,
+        "BUILDER_UPDATED": 17,
+        "ALARM": 26,
+        "BUSY": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 7.176726300000155
+    },
+    {
+      "case": 6,
+      "arm": "trained33",
+      "seed": 191391,
+      "startMs": 1792110889307,
+      "endMs": 1792111489307,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 103,
+      "actionCounts": {
+        "10": 26,
+        "5": 17,
+        "6": 15,
+        "0": 44,
+        "1": 1
+      },
+      "statusCounts": {
+        "IN_FLIGHT": 24,
+        "QUOTE_SELECTION_UPDATED": 9,
+        "BUILDER_UPDATED": 23,
+        "ALARM": 44,
+        "BUSY": 3
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 8.24410980000539
+    },
+    {
+      "case": 7,
+      "arm": "trained33",
+      "seed": 191392,
+      "startMs": 1792110889307,
+      "endMs": 1792111489307,
+      "markedRoi": 0.0,
+      "reward": 0.0,
+      "fills": 0,
+      "decisions": 239,
+      "actionCounts": {
+        "5": 43,
+        "10": 69,
+        "6": 42,
+        "0": 78,
+        "9": 1,
+        "4": 1,
+        "11": 3,
+        "2": 1,
+        "1": 1
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 23,
+        "IN_FLIGHT": 69,
+        "BUILDER_UPDATED": 62,
+        "ALARM": 78,
+        "BUSY": 4,
+        "BUILDER_CLEARED": 2,
+        "STREAM_DISCONNECTED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 998,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 12.92320589999872
+    },
+    {
+      "case": 7,
+      "arm": "founder",
+      "seed": 191392,
+      "startMs": 1792110889307,
+      "endMs": 1792111489307,
+      "markedRoi": -0.04058942499999996,
+      "reward": -0.041436167460849625,
+      "fills": 12,
+      "decisions": 179,
+      "actionCounts": {
+        "5": 33,
+        "10": 46,
+        "6": 24,
+        "0": 61,
+        "11": 1,
+        "1": 2,
+        "9": 3,
+        "8": 3,
+        "2": 3,
+        "7": 1,
+        "3": 2
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 24,
+        "IN_FLIGHT": 60,
+        "BUILDER_UPDATED": 33,
+        "ALARM": 61,
+        "DATA_SERVICE_PAUSED": 1
+      },
+      "managedPaidAdmissions": {
+        "SIG": 0,
+        "Kalshi": 0,
+        "Polymarket": 0
+      },
+      "elapsedSeconds": 10.992666400001326
+    }
+  ],
+  "pairedRoiDifferenceTrainedMinusFounder": [
+    0.0,
+    0.0,
+    0.0,
+    0.10101352500000005,
+    0.0,
+    0.0,
+    0.0,
+    0.04058942499999996
+  ],
+  "meanPairedDifference": 0.01770036875,
+  "wallSeconds": 252.08836149999843,
+  "newOptimizerUpdates": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "profitabilityEstablished": false
+}

@@ -1,0 +1,91 @@
+{
+  "classification": "completed_two_day_development_selection_not_independent_or_production_ROI",
+  "sourceResultSha256": "a5b438c18f8daceafc7e3f018348746f72b5dd1692a2e08802d9707207a4dd51",
+  "run": "raw-api-growth-development-029",
+  "member": 0,
+  "cycle": 0,
+  "checkpointSha256": "df99e3bec706d7902eaee0d7038bc2574f4b0d801791b9de0da6550cbf03a660",
+  "selectionReward": -0.5243174911865662,
+  "cases": [
+    {
+      "marked_roi": -0.11693512500000003,
+      "reward": -0.12885524508183155,
+      "fill_count": 56,
+      "decisions": 23629,
+      "D": 2,
+      "N": 0,
+      "eligible": false,
+      "start_ms": 1792195200000,
+      "end_ms": 1792368000000,
+      "stress": false,
+      "classification": "complete_day_development_growth_not_source_or_independent_qualification",
+      "family_counts": {
+        "0": 1143,
+        "1": 330,
+        "2": 9,
+        "3": 12,
+        "4": 8,
+        "5": 188,
+        "6": 13395,
+        "7": 10,
+        "8": 3,
+        "9": 3,
+        "10": 8517,
+        "11": 11
+      },
+      "status_counts": {
+        "ALARM": 1143,
+        "BUILDER_CLEARED": 5,
+        "BUILDER_UPDATED": 263,
+        "BUSY": 15,
+        "DATA_SERVICE_PAUSED": 2,
+        "DATA_SERVICE_STARTED": 1,
+        "IN_FLIGHT": 8877,
+        "QUOTE_SELECTION_CLEARED": 13158,
+        "QUOTE_SELECTION_UPDATED": 162,
+        "STREAM_DISCONNECTED": 3
+      }
+    },
+    {
+      "marked_roi": -0.41682470000000005,
+      "reward": -0.5243174911865662,
+      "fill_count": 71,
+      "decisions": 1897,
+      "D": 2,
+      "N": 0,
+      "eligible": false,
+      "start_ms": 1792195200000,
+      "end_ms": 1792368000000,
+      "stress": true,
+      "classification": "complete_day_development_growth_not_source_or_independent_qualification",
+      "family_counts": {
+        "0": 701,
+        "1": 18,
+        "2": 10,
+        "3": 19,
+        "4": 22,
+        "5": 277,
+        "6": 262,
+        "7": 15,
+        "8": 5,
+        "9": 5,
+        "10": 548,
+        "11": 15
+      },
+      "status_counts": {
+        "ALARM": 701,
+        "BUILDER_CLEARED": 5,
+        "BUILDER_UPDATED": 298,
+        "BUSY": 15,
+        "DATA_SERVICE_PAUSED": 3,
+        "DATA_SERVICE_STARTED": 2,
+        "IN_FLIGHT": 627,
+        "QUOTE_SELECTION_CLEARED": 12,
+        "QUOTE_SELECTION_UPDATED": 229,
+        "STREAM_DISCONNECTED": 5
+      }
+    }
+  ],
+  "productionChanged": false,
+  "independentTestUsed": false
+}

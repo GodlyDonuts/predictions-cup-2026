@@ -1,0 +1,118 @@
+{
+  "sourceCommit": "b1033fbfc644677200c74102cfc9e7bec6ea8c9a",
+  "configurationSha256": "bcd813b1d064d18cd1ac855f5f4c963791930f7af8c4e9592067ce90b2230604",
+  "founders": [
+    {
+      "member": 0,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "profile": "model_pausable_raw_intents_service_v2",
+      "checkpointSha256": "39f04dbceca38428c1995c8d0f7d5c0990a382a0df6e1d29cd94fd7b23597e01"
+    },
+    {
+      "member": 1,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "profile": "model_pausable_raw_intents_service_v2",
+      "checkpointSha256": "e1f9d0d965f4d88fad4d12931e7cb2bee542054bcd2dc63b0d38e22a2d4cd15c"
+    },
+    {
+      "member": 2,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "profile": "model_pausable_raw_intents_service_v2",
+      "checkpointSha256": "fe916d96d295f2c210dbe5663522938006fc85822e8e8910d3dad3ca71ee0a3f"
+    },
+    {
+      "member": 3,
+      "weightsPreserved": true,
+      "optimizerMomentsReset": true,
+      "profile": "model_pausable_raw_intents_service_v2",
+      "checkpointSha256": "bc0f1934e572d2a9390059f793cbc79247b2a90891ad3778495681c9604dd8df"
+    }
+  ],
+  "cases": [
+    {
+      "seed": 191391,
+      "startMs": 1792164757548,
+      "endMs": 1792165357548,
+      "decisions": 43,
+      "writeAdmissionsAfterInitialToken": 0,
+      "readAdmissions": 998,
+      "fills": 0,
+      "markedRoi": 0.0,
+      "familyCounts": {
+        "10": 5,
+        "5": 5,
+        "6": 3,
+        "4": 5,
+        "2": 3,
+        "8": 6,
+        "0": 10,
+        "1": 4,
+        "9": 2
+      },
+      "statusCounts": {
+        "BUSY": 24,
+        "QUOTE_SELECTION_UPDATED": 3,
+        "BUILDER_UPDATED": 5,
+        "ALARM": 10,
+        "IN_FLIGHT": 1
+      },
+      "budget": {
+        "reads_per_minute": 100,
+        "writes_per_minute": 30,
+        "read_completion_gap_ms": 0,
+        "write_completion_gap_ms": 0,
+        "source_sha256": "a7d5b76ce9c79afdb8ad327bd606d0b8d1287904dd690dd1a0a1009c02a5092d"
+      },
+      "elapsedSeconds": 7.10655830000178
+    },
+    {
+      "seed": 191392,
+      "startMs": 1792164757548,
+      "endMs": 1792165357548,
+      "decisions": 426,
+      "writeAdmissionsAfterInitialToken": 10,
+      "readAdmissions": 983,
+      "fills": 13,
+      "markedRoi": -0.03809419999999997,
+      "familyCounts": {
+        "5": 29,
+        "10": 85,
+        "1": 36,
+        "6": 37,
+        "0": 70,
+        "7": 41,
+        "9": 16,
+        "2": 30,
+        "4": 32,
+        "8": 17,
+        "3": 30,
+        "11": 3
+      },
+      "statusCounts": {
+        "QUOTE_SELECTION_UPDATED": 15,
+        "BUSY": 259,
+        "BUILDER_UPDATED": 51,
+        "ALARM": 70,
+        "IN_FLIGHT": 28,
+        "STREAM_DISCONNECTED": 1,
+        "BUILDER_CLEARED": 2
+      },
+      "budget": {
+        "reads_per_minute": 100,
+        "writes_per_minute": 30,
+        "read_completion_gap_ms": 0,
+        "write_completion_gap_ms": 0,
+        "source_sha256": "a7d5b76ce9c79afdb8ad327bd606d0b8d1287904dd690dd1a0a1009c02a5092d"
+      },
+      "elapsedSeconds": 18.4892233999999
+    }
+  ],
+  "actualAdmissionCapsHeld": true,
+  "publicationProfitabilityEstablished": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "trainingUpdatesDuringSmoke": 0
+}

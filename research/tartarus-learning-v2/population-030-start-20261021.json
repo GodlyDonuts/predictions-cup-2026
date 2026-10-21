@@ -1,0 +1,22 @@
+{
+  "classification": "supervised_GPU_start_not_new_optimizer_or_profitability_evidence",
+  "observedUtc": "2026-10-21T00:28:28.038401+00:00",
+  "launch": {
+    "observedUtc": "2026-10-21T00:25:35.834687+00:00",
+    "supervisorPid": 7252,
+    "childPid": 12380,
+    "childCreationFiletime": "134370159358293930",
+    "configurationSha256": "bcd813b1d064d18cd1ac855f5f4c963791930f7af8c4e9592067ce90b2230604",
+    "sourceCommit": "b1033fbfc644677200c74102cfc9e7bec6ea8c9a",
+    "productionChanged": false,
+    "automaticRestart": false
+  },
+  "verifiedActualGpuPid": 5860,
+  "parentTrainedUpdates": 33,
+  "parentOtherMembersUntrained": true,
+  "oldRunFilesRetained": true,
+  "oldSelectionFitnessReused": false,
+  "newOptimizerMomentsReset": true,
+  "productionChanged": false,
+  "independentTestUsed": false
+}
