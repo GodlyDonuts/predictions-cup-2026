@@ -1,0 +1,16 @@
+{
+  "checkedMainCommit": "4ac9a2f8cd958125e78f4198e811811e135535cf",
+  "compiledChangedSourcesMatchCheckedMain": true,
+  "changedSourceSha256": {
+    "moloch/live-runtime/src/worker.rs": "5ff7abe0952c4ad03b365363ab446967f2eafe491ac79181e14c6d8ac479647c",
+    "moloch/live-runtime/src/seed_identity.rs": "6f145fde2d6ef5ae5bd670e517319042c76c964908ec2970cdbcea2443aeaec6"
+  },
+  "actualBinarySha256": "795f29d0e25d6eee3a23cc63bf876d909e2871b032043534f4d5ff191ff20683",
+  "qualifiedUtc": "2026-10-21T02:16:35.320994+00:00",
+  "nativeAndSdkLibrariesReusedUnchanged": true,
+  "regressionTestsPassed": 2,
+  "fullWorkerTypecheckPassed": true,
+  "arm64ReleaseBuilt": true,
+  "deployed": false,
+  "executionAuthority": false
+}

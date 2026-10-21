@@ -12,6 +12,8 @@ The existing worker's research snapshot request made four serialized account rea
 
 Two regression tests cover both seed types and negative cases for profile, run, manifest, tournament, slug, cash, clock, endpoint, status and missing independent identity. Both pass against the deployed transport library. The full isolated R57 worker also type checks. The actual new Rust validator successfully checked the original October15 seed receipt against the existing worker's October21 02:13:04 account receipt and durable owner record, with zero network requests. [Actual retained-source check](legacy-seed-profile-retained-check-20261021.json), [check scope](legacy-seed-profile-fix-checks-20261021.json).
 
+The ARM64 release also built successfully, reusing the unchanged native/SDK libraries. Both changed compiled Rust sources match checked GitHub main `4ac9a2f8` after line-ending normalization. [Actual release verification](legacy-seed-profile-release-20261021.json).
+
 This change is an export prerequisite, not a trading strategy or execution approval. It has **not been deployed**. Production remains on checked R57; no additional account client, risk increase, order or fill resulted from these checks. The rank lane separately reports `RANK_CAMPAIGN_NOT_OWNER_APPROVED`: a fresh portfolio campaign still requires its own current source-bound assessment. An expired packet is not reused as a current opportunity.
 
 ## Learning and throughput
