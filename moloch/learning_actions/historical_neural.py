@@ -119,6 +119,7 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         self.history_receipt_sequence = 0
         self.history_consumed_sequence = 0
         self.pending_history_receipts = []
+        self._paid_history_summaries = {}
 
     def _event(self, at, kind, value):
         super()._event(at, kind, value)
@@ -127,6 +128,8 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
             self.history_receipt_sequence += 1
             self.pending_history_receipts.append((self.history_receipt_sequence, venue, key,
                 self.known_historical_information[(venue, key)]))
+            from .historical_memory import delivered
+            delivered(self,venue,key,self.known_historical_information[(venue,key)])
 
     def observe(self):
         # Do not copy all previously delivered raw archives into each frame.
@@ -162,6 +165,8 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         _,indices,labels,markets,sig_indices,contracts,query_indices=cached
         values[indices,OLD:]=labels;values[indices,MARKET]=markets
         values[sig_indices,CONTRACT]=contracts
+        from .historical_memory import populate,bound_profile
+        populate(self,values,context[0],indices)
         base['masks']['trade_query'][query_indices,0]=True
         if count:
             values[-count:] = extra
@@ -170,7 +175,8 @@ class HistoricalNeuralEpisode(HistoricalInformationEpisode):
         return {**base, 'contracts': values, 'entities': entities, 'masks': masks,
                 'present': np.ones(len(entities), bool),
                 'history_receipt_sequence': self.history_receipt_sequence,
-                'observation_feature_schema': 'historical_receipt_records_517_v1'}
+                'observation_feature_schema': ('historical_records_and_paid_cache_517_v1'
+                    if bound_profile(self)is not None else 'historical_receipt_records_517_v1')}
 
     def act_raw(self, action, observation):
         sequence = observation['history_receipt_sequence']

@@ -204,6 +204,8 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     bundle['managed_data_profile']=profile(getattr(model,'managed_data_profile',None))
     from .price_parameterization import policy_mode
     bundle['price_parameterization']=policy_mode(model)
+    from .historical_memory import bound_profile
+    bundle['historical_memory_profile']=bound_profile(model)
     path=Path(path)
     with path.open('xb')as f:torch.save(bundle,f)
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -230,6 +232,9 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
     model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
+    from .historical_memory import profile,bound_profile
+    model.historical_memory_profile=profile(bundle.get('historical_memory_profile'))
+    bound_profile(model)
     from .read_target_sampling import validate as sampling_mode,FLAT
     model.read_target_sampling=sampling_mode(bundle.get('read_target_sampling',FLAT))
     from .managed_data_service import profile

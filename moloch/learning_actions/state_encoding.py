@@ -26,6 +26,9 @@ def encode(state,mode):
 
 
 def matching(environment,model):
+    from .historical_memory import bound_profile
+    if bound_profile(environment)!=bound_profile(model):
+        raise ValueError('MODEL_AND_ENVIRONMENT_HISTORICAL_MEMORY_MISMATCH')
     if validate(getattr(environment,'global_state_encoding',RAW))!=validate(getattr(model,'global_state_encoding',RAW)):
         raise ValueError('MODEL_AND_OBSERVATION_STATE_ENCODING_MISMATCH')
     from .observation_protocol import validate as protocol,CURRENT

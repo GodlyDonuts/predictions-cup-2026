@@ -23,15 +23,19 @@ def contract(model):
     if extension is not None:value=value+(extension,)
     from .price_parameterization import validate as price_mode,ABSOLUTE
     price=price_mode(getattr(model,'price_parameterization',ABSOLUTE))
-    return value if price==ABSOLUTE else value+(price,)
+    if price!=ABSOLUTE:value=value+(price,)
+    from .historical_memory import bound_profile
+    memory=bound_profile(model)
+    return value if memory is None else value+(memory,)
 
 
 def require_contract(model,value):
     if value is None:
+        from .historical_memory import bound_profile
         from .read_target_sampling import validate as sampling_mode,FLAT
         from .managed_data_service import profile
         from .price_parameterization import validate as price_mode,ABSOLUTE
-        if (getattr(model,'local_memory_joint_density',False)or
+        if (bound_profile(model)is not None or getattr(model,'local_memory_joint_density',False)or
                 sampling_mode(getattr(model,'read_target_sampling',FLAT))!=FLAT or
                 profile(getattr(model,'managed_data_profile',None))is not None or
                 price_mode(getattr(model,'price_parameterization',ABSOLUTE))!=ABSOLUTE):

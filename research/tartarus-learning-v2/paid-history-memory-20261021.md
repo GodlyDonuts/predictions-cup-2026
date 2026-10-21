@@ -1,0 +1,15 @@
+# Persistent paid historical information
+
+The recurrent actor previously received every raw historical record once, then consumed those record tokens. The API-side latest response remained stored, but its prices were absent from subsequent neural observations. A small recurrent state had to retain the information for every source/instrument across later decisions.
+
+The optional `historical_memory_profile: "paid_history_latest_response_record_v1"` exposes the latest actually delivered response on its existing history-read target. Each exact venue, source, mapped market, side and endpoint retains a separate summary. It selects the returned row with the greatest simulated publication time, then source time and original ordinal. All raw records still reach the actor through their existing pending receipt tokens.
+
+The profile uses the existing517-feature encoding. It preserves candle OHLC/VWAP, public print or sample price kinds and their missingness flags, venue/source identity and side metadata. Receipt, source and publication ages advance with the virtual clock. It does not convert a print into a bid/ask, turn a Polymarket/Kalshi mapping into verified SIG equivalence, or create executable depth. Earlier backfilled source-time and mapping assumptions remain unresolved.
+
+The summary updates **only at an admitted paid request's actual simulated receipt**. Repeated observations do not query providers or refresh prices. An explicit older-page query replaces that endpoint's latest response with the older returned information; an empty response replaces its summary with an empty-response flag and no known price. A null price remains unknown. A fresh world starts with an empty cache. Cached features are copied values, so later provider changes or receipts cannot rewrite an observation already used by the actor.
+
+The default profile remains absent and retains the old observation law. The new profile is pinned in checkpoints and behavior contracts; a model/environment mismatch or mixing trajectories from the old law rejects. Inherited development weights require explicit `migrate_historical_memory_profile: true`, fresh optimizer moments and fresh trajectories/fitness. Feature width, legal API actions, rate limits and decision freedom are unchanged.
+
+38 focused historical-memory, legacy historical-neural, population and managed-data tests passed. They cover paid-only access for all three venues, persistence after receipt consumption, increasing ages, no automatic refresh, older/empty/null responses, future-clock rejection, receipt arrival during inference, checkpoint/contract isolation, and actual sealed episode reconstruction with optimizer gradients into the historical feature encoder. These are capability and causality checks, not profitable learning evidence.
+
+The running030 and queued031 use their original frozen sources. This candidate is not deployed or silently enabled in either run. An actual parent-bootstrap check and real-source receipt probe remain before any later controlled learning adoption. Independent October21–25 is unconsumed.

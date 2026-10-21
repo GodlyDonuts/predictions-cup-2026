@@ -111,6 +111,9 @@ class Experiment:
         named=config.get('api_target_affordances',False)
         if type(named)is not bool or(named and not quotes):raise ValueError('API_LABELS_REQUIRE_EXPLICIT_BULK_PROFILE')
         history=config.get('historical_information')
+        from .historical_memory import profile as memory_profile
+        if memory_profile(config.get('historical_memory_profile'))is not None and history is None:
+            raise ValueError('HISTORICAL_MEMORY_REQUIRES_EXPLICIT_HISTORY_BINDING')
         self.history_bindings=None
         if history is not None:
             if not named:raise ValueError('HISTORICAL_INFORMATION_REQUIRES_NAMED_API_PROFILE')
@@ -287,6 +290,8 @@ class Experiment:
         env.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
         from .price_parameterization import validate as price_mode,ABSOLUTE
         env.price_parameterization=price_mode(self.config.get('price_parameterization',ABSOLUTE))
+        from .historical_memory import profile as memory_profile
+        env.historical_memory_profile=memory_profile(self.config.get('historical_memory_profile'))
         from .managed_data_service import specification,ManagedDataService
         service=specification(self.config.get('managed_data_service'))
         if service is not None:ManagedDataService(env,service)
@@ -634,6 +639,8 @@ class Experiment:
         model.read_target_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
         from .price_parameterization import validate as price_mode,ABSOLUTE
         model.price_parameterization=price_mode(self.config.get('price_parameterization',ABSOLUTE))
+        from .historical_memory import profile as memory_profile
+        model.historical_memory_profile=memory_profile(self.config.get('historical_memory_profile'))
         from .managed_data_service import specification
         service=specification(self.config.get('managed_data_service'))
         model.managed_data_profile=None if service is None else service['profile']
@@ -778,6 +785,16 @@ class Experiment:
             model.acting_validation=target_mode
             from .price_parameterization import validate as price_mode,ABSOLUTE
             old_price=price_mode(getattr(model,'price_parameterization',ABSOLUTE))
+            from .historical_memory import bound_profile,profile as memory_profile
+            old_memory=bound_profile(model);new_memory=memory_profile(self.config.get('historical_memory_profile'))
+            if old_memory!=new_memory:
+                if not self.development or self.config.get('migrate_historical_memory_profile')is not True:
+                    raise ValueError('EXPLICIT_DEVELOPMENT_HISTORICAL_MEMORY_MIGRATION_REQUIRED')
+                model.historical_memory_profile=new_memory
+                bound_profile(model)
+                frozen(self.output/('founder-%03d-historical-memory-migration.json'%member),{
+                    'old':old_memory,'new':new_memory,'weightsPreserved':True,'optimizerMomentsReset':True,
+                    'freshTrajectoriesAndScoresRequired':True})
             new_price=price_mode(self.config.get('price_parameterization',ABSOLUTE))
             if old_price!=new_price:
                 if self.config.get('migrate_price_parameterization')is not True:raise ValueError('EXPLICIT_PRICE_PARAMETERIZATION_MIGRATION_REQUIRED')
