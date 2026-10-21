@@ -1,0 +1,9 @@
+# Removing repeated dispatch-history hashing
+
+A live stack sample from R61 PID996893 on October21 placed the main thread in `FilePin::validate -> Cohorts::original_not_sent_records -> Cohorts::check -> entry_cancellations -> dispatch`. The file contains about27MB of original order lifecycle history. The existing parse cache still hashed all those bytes on every hit, including ordinary read-only decision checks.
+
+The runtime now reuses previously verified rows at the identical held dispatch head while checking file identity, length, and nanosecond mtime/ctime before returning them. An actual append changes the descriptor and requires full verification again. Replaced, truncated, symlinked, or same-length edited files are rejected, including edits that restore mtime. Physical preparation retains the original full-byte validation, and SDK-proved abort paths still verify their original archive. The existing owner lease remains the trust boundary; this does not claim protection against an attacker who can rewrite process memory or kernel metadata.
+
+21 ARM64 cache regressions pass. On a separately copied original26,981,638-byte/26,650-row dispatch journal, the original uncached function took1.162seconds, the cold verified cache took1.142seconds, and seven warm lookups had a75.393microsecond median. The seven real not-sent selections have identical retained rows/digest. This compares cold validation with reuse, not a complete worker or order latency benchmark.
+
+The production release is building against the exact R61 native engine and existing production SDK. The separate copy-on-write native candidate is not included, so this fix needs no new financial-engine bridge. R61 remains running during preparation. Deployment, fresh execution speed, new fills and profit are not yet established.

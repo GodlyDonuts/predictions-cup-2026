@@ -1,0 +1,28 @@
+{
+  "coldNs": 1142192425,
+  "financialAuthority": false,
+  "fullParsePasses": 1,
+  "originalBytes": 26981638,
+  "originalSequence": 26650,
+  "originalUncachedNs": 1162266342,
+  "physicalFullFileHashRequired": true,
+  "rowsSha256": "c0a28322fa54c6c3d9989ef6a90cbd6157bd504e3a0e0eb34836d1795b88f757",
+  "wanted": [
+    14854,
+    14992,
+    15178,
+    15500,
+    15952,
+    16581,
+    16761
+  ],
+  "warmFullFileHashRequired": false,
+  "warmHeldVersionRequired": true,
+  "warmMedianNs": 75393,
+  "warmRounds": 7,
+  "wholeWorkerSpeedupMeasured": false,
+  "cacheChecksPassed": 21,
+  "productionDeployed": false,
+  "nativeAndSdkReusedFromR61": true,
+  "sourceSha256": "738d3bf34b4a0d27fa56010331516d8ca4848d2480e7a0da5fd1c57a6b09c6b5"
+}

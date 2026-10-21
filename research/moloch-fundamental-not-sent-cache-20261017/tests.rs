@@ -83,12 +83,24 @@ impl F{
     }assert!(f.read(&[1]).is_err(),"mode {mode}");}
 }
 
-#[test]fn full_hash_is_required_even_when_cached_metadata_matches_changed_file(){
-    let mut f=F::new();f.not_sent(1,8);f.read(&[1]).unwrap();let mut raw=fs::read(&f.path).unwrap();let at=raw.windows(8).position(|w|w==b"xxxxxxxx").unwrap();raw[at]=b'y';fs::write(&f.path,raw).unwrap();
-    // Simulate a metadata-equivalent prefix change: matching metadata alone
-    // must never substitute for the original full-byte pin hash.
-    {let mut c=f.cache.lock().unwrap();let entry=c.entries.get_mut(&[1].into()).unwrap();entry.pin.version=file_version(&entry.pin.file).unwrap();entry.pin.validate_metadata().unwrap();}
-    assert!(f.read(&[1]).err().unwrap().to_string().contains("PINNED_FILE_CHANGED"));assert_eq!(f.parses(),1);
+#[test]fn physical_pin_still_rehashes_if_in_memory_version_is_artificially_replaced(){
+    let mut f=F::new();f.not_sent(1,8);let(_,mut pin)=f.read(&[1]).unwrap();let mut raw=fs::read(&f.path).unwrap();let at=raw.windows(8).position(|w|w==b"xxxxxxxx").unwrap();raw[at]=b'y';fs::write(&f.path,raw).unwrap();
+    // Ordinary changes fail the immutable cached version. Physical validation
+    // additionally retains its full-byte digest even in this memory-corruption
+    // fixture; normal callers cannot rewrite a private pin's version.
+    assert!(f.read(&[1]).is_err());
+    pin.version=file_version(&pin.file).unwrap();pin.validate_metadata().unwrap();
+    assert!(pin.validate().err().unwrap().to_string().contains("PINNED_FILE_CHANGED"));assert_eq!(f.parses(),1);
+}
+
+#[test]fn restoring_mtime_cannot_hide_same_length_edit_from_cached_ctime(){
+    let mut f=F::new();f.not_sent(1,8);f.read(&[1]).unwrap();
+    let old=fs::metadata(&f.path).unwrap().modified().unwrap();
+    std::thread::sleep(std::time::Duration::from_millis(2));
+    let mut raw=fs::read(&f.path).unwrap();let at=raw.windows(8).position(|w|w==b"xxxxxxxx").unwrap();raw[at]=b'y';fs::write(&f.path,raw).unwrap();
+    File::open(&f.path).unwrap().set_times(std::fs::FileTimes::new().set_modified(old)).unwrap();
+    assert_eq!(fs::metadata(&f.path).unwrap().modified().unwrap(),old);
+    assert!(f.read(&[1]).is_err());assert_eq!(f.parses(),1);
 }
 
 #[test]fn poisoned_optimization_lock_falls_back_but_original_chain_failure_still_fails(){
@@ -130,5 +142,5 @@ impl F{
     let t=std::time::Instant::now();let(cold,q)=original_not_sent_rows(&cache,&path,&identity,&log,&wanted).unwrap();let cold_ns=t.elapsed().as_nanos();
     let mut warm=Vec::new();for _ in 0..7{let t=std::time::Instant::now();let(rows,pin)=original_not_sent_rows(&cache,&path,&identity,&log,&wanted).unwrap();warm.push(t.elapsed().as_nanos());assert_eq!(rows,original);pin.validate().unwrap();}warm.sort_unstable();
     assert_eq!(cold,original);assert_eq!(cache.lock().unwrap().parses,1);assert_eq!(head,log.descriptor_identity().unwrap());p.validate().unwrap();q.validate().unwrap();
-    println!("{}",json!({"originalBytes":head["bytes"],"originalSequence":head["sequence"],"wanted":wanted,"rowsSha256":digest(&original).unwrap(),"fullParsePasses":1,"originalUncachedNs":original_ns,"coldNs":cold_ns,"warmMedianNs":warm[3],"warmRounds":7,"warmFullFileHashRequired":true,"wholeWorkerSpeedupMeasured":false,"financialAuthority":false}));
+    println!("{}",json!({"originalBytes":head["bytes"],"originalSequence":head["sequence"],"wanted":wanted,"rowsSha256":digest(&original).unwrap(),"fullParsePasses":1,"originalUncachedNs":original_ns,"coldNs":cold_ns,"warmMedianNs":warm[3],"warmRounds":7,"warmFullFileHashRequired":false,"warmHeldVersionRequired":true,"physicalFullFileHashRequired":true,"wholeWorkerSpeedupMeasured":false,"financialAuthority":false}));
 }

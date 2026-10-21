@@ -25,5 +25,5 @@ impl F{
  let start=std::time::Instant::now();let(cold,p)=original_closed_rows(&cache,&path,&identity,&log,&wanted).unwrap();let cold_ms=start.elapsed().as_secs_f64()*1000.0;
  let start=std::time::Instant::now();let(warm,q)=original_closed_rows(&cache,&path,&identity,&log,&wanted).unwrap();let warm_ms=start.elapsed().as_secs_f64()*1000.0;
  assert_eq!(cold,warm);assert_eq!(cache.lock().unwrap().parses,1);assert_eq!(head,log.descriptor_identity().unwrap());p.validate().unwrap();q.validate().unwrap();
- println!("{}",json!({"originalBytes":head["bytes"],"originalSequence":head["sequence"],"wanted":wanted,"rowsSha256":digest(&cold).unwrap(),"fullParsePasses":1,"coldMs":cold_ms,"warmMs":warm_ms,"warmFullFileHashRequired":true,"financialAuthority":false}));
+ println!("{}",json!({"originalBytes":head["bytes"],"originalSequence":head["sequence"],"wanted":wanted,"rowsSha256":digest(&cold).unwrap(),"fullParsePasses":1,"coldMs":cold_ms,"warmMs":warm_ms,"warmFullFileHashRequired":false,"warmHeldVersionRequired":true,"physicalFullFileHashRequired":true,"financialAuthority":false}));
 }

@@ -595,9 +595,11 @@ fn original_closed_rows(cache:&std::sync::Mutex<ClosedRowsCache>,ordinary_path:&
             if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.bytes=0;retained.descriptor=Some(before.clone());}
             if let Some(entry)=retained.entries.get(wanted){
                 need(entry.pin.path==*ordinary_path&&entry.pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
-                // EVERY hit rehashes the full held file and checks path/version.
-                // Only JSON parse/chain reconstruction is memoized.
-                entry.pin.validate()?;
+                // The sole owner already verified this exact dispatch head.
+                // Retain inode, size and nanosecond mtime/ctime fences here;
+                // rehashing all history on every decision starves dispatch.
+                // Misses and physical-plan validation still verify full bytes.
+                entry.pin.validate_metadata()?;
                 need(before==log.descriptor_identity()?,"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
                 let pin=FilePin{file:entry.pin.file.try_clone()?,path:entry.pin.path.clone(),identity:entry.pin.identity.clone(),bytes:entry.pin.bytes,sha:entry.pin.sha.clone(),maximum:entry.pin.maximum,version:entry.pin.version.clone()};
                 pin.validate_metadata()?;return Ok((entry.rows.clone(),pin));
@@ -628,8 +630,8 @@ fn original_closed_rows(cache:&std::sync::Mutex<ClosedRowsCache>,ordinary_path:&
 #[cfg(all(test,unix))]
 #[path="../../../research/moloch-fundamental-closure-cache-20261017/tests.rs"]
 mod closed_rows_cache_tests;
-// Only ordinary NEVER-ATTEMPTED original rows are memoized. Every hit still
-// rehashes the FULL held dispatch file; SDK-proved aborts always use the parser.
+// Only ordinary NEVER-ATTEMPTED original rows are memoized. Hits retain the
+// exact dispatch head and held file version; SDK-proved aborts use the parser.
 const NOT_SENT_CACHE_BYTES:usize=8*1024*1024;
 const NOT_SENT_CACHE_COUNT:usize=32;
 struct CachedNotSentRows{rows:BTreeMap<u64,Value>,pin:FilePin}
@@ -646,7 +648,7 @@ fn original_not_sent_rows(cache:&std::sync::Mutex<NotSentRowsCache>,ordinary_pat
         if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.bytes=0;retained.descriptor=Some(before.clone());}
         if let Some(entry)=retained.entries.get(wanted){
             need(entry.pin.path==*ordinary_path&&entry.pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
-            entry.pin.validate()?;
+            entry.pin.validate_metadata()?;
             need(before==log.descriptor_identity()?,"FUNDAMENTAL_ABANDON_DISPATCH_CHANGED")?;
             let pin=FilePin{file:entry.pin.file.try_clone()?,path:entry.pin.path.clone(),identity:entry.pin.identity.clone(),bytes:entry.pin.bytes,sha:entry.pin.sha.clone(),maximum:entry.pin.maximum,version:entry.pin.version.clone()};
             pin.validate_metadata()?;return Ok((entry.rows.clone(),pin))
