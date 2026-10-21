@@ -74,3 +74,7 @@ Checked source25420da8 and binary153a4347eac54946053601d3e28d5e253b05392cb5aeb76
 At10:53:13/15 the official receipts report94,562.96 marked positions plus403.36cash, totaling**94,966.32**:173.32 above the08:53 baseline and2,033.68 below the97,000 target. This mark change is not a new realized trading profit. Counts remain396fills/1660acknowledged and terminal orders. The worker is restoring and no new physical trade is verified. The deadline remains10:58:40UTC.
 
 Population034 continues; the [checkpoint-preserving cooperative handoff](cooperative-continuation-20261021.md) waits for its complete generation. No independent profitable learned model is deployed.
+
+### Fixed target deadline: 10:58:40 UTC
+
+The97,000 target was not achieved in verified evidence by the two-hour deadline. The sole new worker996893 remains alive, no STOP is present, and it is restoring. Its10:57:10/12 original account receipts show94,562.32 marked positions and403.36cash, totaling**94,965.68**. That is172.68 above the94,793.00 baseline and2,034.32 below the target. No new physical order or fill is verified. Restoration, tests and mark changes are not execution success. The missed target and failed R60 handoff remain part of this report; the deadline is not rolled forward.
