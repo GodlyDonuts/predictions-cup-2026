@@ -141,12 +141,17 @@ pub fn engine_identity() -> String {
 struct UpgradeChain { entries: Vec<Value>, checked: usize }
 // Keep every original approval and prefix check as the live lineage grows.
 const MAX_UPGRADE_ENTRIES:usize=32;
-const MAX_UPGRADE_BYTES:u64=128*1024*1024;
+const MAX_UPGRADE_BYTES:u64=256*1024*1024;
 fn digest_text(value:&Value)->bool{value.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit()))}
-fn verify_value(mut value:Value)->Result<Value>{
-    let claimed=value.as_object_mut().ok_or("UPGRADE_OBJECT")?.remove("hash").ok_or("UPGRADE_HASH")?;
-    if claimed.as_str()!=Some(hash(&value).as_str()){return Err("UPGRADE_HASH_MISMATCH".into())}
-    value["hash"]=claimed;Ok(value)
+fn verify_value_ref(value:&Value)->Result<()>{
+    let object=value.as_object().ok_or("UPGRADE_OBJECT")?;
+    let claimed=object.get("hash").ok_or("UPGRADE_HASH")?;
+    let unsigned:BTreeMap<_,_>=object.iter().filter(|(key,_)|key.as_str()!="hash").collect();
+    let actual=format!("{:x}",Sha256::digest(serde_json::to_vec(&unsigned)?));
+    if claimed.as_str()!=Some(actual.as_str()){return Err("UPGRADE_HASH_MISMATCH".into())}Ok(())
+}
+fn verify_value(value:Value)->Result<Value>{
+    verify_value_ref(&value)?;Ok(value)
 }
 fn upgrade_document(root:&Path)->Result<Value>{
     let path=root.join("engine-upgrade-v1.json");let metadata=fs::symlink_metadata(&path)?;
@@ -155,14 +160,16 @@ fn upgrade_document(root:&Path)->Result<Value>{
 }
 impl UpgradeChain {
     fn load(root:&Path,manifest:&Value,target:&str,head_sequence:u64)->Result<Self>{
-        let document=upgrade_document(root)?;
+        Self::from_document(upgrade_document(root)?,manifest,target,head_sequence)
+    }
+    fn from_document(mut document:Value,manifest:&Value,target:&str,head_sequence:u64)->Result<Self>{
         if document["schemaVersion"]!=1||document["kind"]!="moloch_live_engine_upgrade_chain_v1"||document["manifestHash"]!=manifest["hash"]{return Err("UPGRADE_SCOPE".into())}
-        let entries=document["upgrades"].as_array().filter(|xs|!xs.is_empty()&&xs.len()<=MAX_UPGRADE_ENTRIES).ok_or("UPGRADE_CHAIN_BOUND")?.clone();
+        let entries=std::mem::take(document["upgrades"].as_array_mut().filter(|xs|!xs.is_empty()&&xs.len()<=MAX_UPGRADE_ENTRIES).ok_or("UPGRADE_CHAIN_BOUND")?);
         if !digest_text(&manifest["engineIdentity"]){return Err("UPGRADE_IDENTITY".into())}
         let mut identity=manifest["engineIdentity"].as_str().ok_or("UPGRADE_IDENTITY")?.to_owned();let mut previous=Value::String(String::new());let mut bytes=0;let mut sequence=0;
         for entry in &entries {
-            verify_value(entry.clone())?;
-            let head=verify_value(entry["oldHead"].clone())?;let report=verify_value(entry["oldReportEnvelope"].clone())?;
+            verify_value_ref(entry)?;
+            let head=&entry["oldHead"];let report=&entry["oldReportEnvelope"];verify_value_ref(head)?;verify_value_ref(report)?;
             let n=entry["journalPrefix"]["bytes"].as_u64().ok_or("UPGRADE_PREFIX_BYTES")?;let seq=head["sequence"].as_u64().ok_or("UPGRADE_PREFIX_SEQUENCE")?;
             if entry["schemaVersion"]!=1||entry["manifestHash"]!=manifest["hash"]||entry["fromEngineIdentity"]!=identity||!digest_text(&entry["toEngineIdentity"])||entry["fromEngineIdentity"]==entry["toEngineIdentity"]||entry["previousUpgradeHash"]!=previous||head["manifestHash"]!=manifest["hash"]||report["manifestHash"]!=manifest["hash"]||report["sequence"]!=head["sequence"]||report["previous"]!=head["previous"]||!digest_text(&entry["journalPrefix"]["sha256"])||n<bytes||seq<sequence||seq>head_sequence||entry["approval"]["role"]!="human_authorized_execution_owner"||entry["approval"]["previousProcessStopped"]!=true||!digest_text(&entry["approval"]["oldBinarySha256"]){return Err("UPGRADE_BINDING".into())}
             chrono::DateTime::parse_from_rfc3339(entry["approval"]["approvedAt"].as_str().ok_or("UPGRADE_APPROVAL_CLOCK")?)?;
@@ -193,7 +200,7 @@ pub fn propose_live_engine_upgrade(root:&Path,old_binary_sha256:&str,approved_at
     let manifest=verified(&root.join("manifest.json"))?;let head=verified(&root.join("head.json"))?;let report=verified(&root.join("report.json"))?;
     if manifest["mode"]!="rust_live_session"||head["manifestHash"]!=manifest["hash"]||report["manifestHash"]!=manifest["hash"]||head["sequence"]!=report["sequence"]||head["previous"]!=report["previous"]{return Err("UPGRADE_SOURCE_SNAPSHOT".into())}
     let mut entries=Vec::new();let mut from=manifest["engineIdentity"].as_str().ok_or("UPGRADE_SOURCE_IDENTITY")?.to_owned();let mut previous=json!("");
-    if root.join("engine-upgrade-v1.json").exists(){let document=upgrade_document(root)?;from=document["upgrades"].as_array().and_then(|xs|xs.last()).and_then(|last|last["toEngineIdentity"].as_str()).ok_or("UPGRADE_CHAIN_BOUND")?.into();let prior=UpgradeChain::load(root,&manifest,&from,head["sequence"].as_u64().ok_or("UPGRADE_PREFIX_SEQUENCE")?)?;entries=prior.entries;previous=entries.last().ok_or("UPGRADE_CHAIN_BOUND")?["hash"].clone();}
+    if root.join("engine-upgrade-v1.json").exists(){let document=upgrade_document(root)?;from=document["upgrades"].as_array().and_then(|xs|xs.last()).and_then(|last|last["toEngineIdentity"].as_str()).ok_or("UPGRADE_CHAIN_BOUND")?.into();let prior=UpgradeChain::from_document(document,&manifest,&from,head["sequence"].as_u64().ok_or("UPGRADE_PREFIX_SEQUENCE")?)?;entries=prior.entries;previous=entries.last().ok_or("UPGRADE_CHAIN_BOUND")?["hash"].clone();}
     if entries.len()>=MAX_UPGRADE_ENTRIES||from==engine_identity(){return Err("UPGRADE_CHAIN_BOUND_OR_NO_CHANGE".into())}
     let mut input=BufReader::new(File::open(root.join("events.jsonl"))?);let mut line=Vec::new();let mut bytes=0u64;let mut digest=Sha256::new();let mut chain=Journal::default();
     while input.read_until(b'\n',&mut line)?>0{if !line.ends_with(b"\n")||line.len()>16*1024*1024{return Err("UPGRADE_SOURCE_TAIL".into())}bytes=bytes.checked_add(line.len() as u64).ok_or("UPGRADE_PREFIX_BYTES")?;digest.update(&line);chain.accept(&serde_json::from_slice(&line)?)?;line.clear();}
@@ -907,6 +914,29 @@ mod upgrade_capacity_tests {
     fn oversized_bridge_is_rejected_before_json_allocation() {
         let t=Temp::new();let f=File::create(t.0.join("engine-upgrade-v1.json")).unwrap();f.set_len(MAX_UPGRADE_BYTES+1).unwrap();
         assert_eq!(upgrade_document(&t.0).unwrap_err().to_string(),"UPGRADE_FILE_BOUND");
+    }
+    #[test]
+    fn borrowed_seal_verification_preserves_original_nested_values() {
+        let original=sealed(json!({"z":[null,true,17,"text",{"hash":"nested remains hashed"}],"a":{"orders":[1,2,3]}}));
+        let bytes=serde_json::to_vec(&original).unwrap();verify_value_ref(&original).unwrap();
+        assert_eq!(serde_json::to_vec(&original).unwrap(),bytes);
+        let mut changed=original.clone();changed["z"][4]["hash"]=json!("changed");
+        assert_eq!(verify_value_ref(&changed).unwrap_err().to_string(),"UPGRADE_HASH_MISMATCH");
+        assert_eq!(verify_value(original.clone()).unwrap(),original);
+    }
+    #[test]
+    #[ignore="explicit copied upgrade directory and target identity; no live Session"]
+    fn original_large_upgrade_chain_is_verified_without_mutation()->Result<()> {
+        let root=PathBuf::from(std::env::var("MOLOCH_FROZEN_UPGRADE_DIRECTORY")?);
+        if !root.is_absolute()||fs::symlink_metadata(&root)?.file_type().is_symlink(){return Err("UPGRADE_FIXTURE_PATH".into())}
+        let path=root.join("engine-upgrade-v1.json");let size=fs::metadata(&path)?.len();
+        if size<=128*1024*1024||size>MAX_UPGRADE_BYTES{return Err("UPGRADE_FIXTURE_BOUND".into())}
+        let digest=|path:&Path|->Result<String>{let mut f=File::open(path)?;let mut h=Sha256::new();let mut b=[0u8;65536];loop{let n=f.read(&mut b)?;if n==0{break}h.update(&b[..n]);}Ok(format!("{:x}",h.finalize()))};
+        let before=digest(&path)?;let manifest=verified(&root.join("manifest.json"))?;let head=verified(&root.join("head.json"))?;
+        let target=std::env::var("MOLOCH_FROZEN_UPGRADE_TARGET")?;
+        let chain=UpgradeChain::load(&root,&manifest,&target,head["sequence"].as_u64().ok_or("UPGRADE_FIXTURE_HEAD")?)?;
+        if digest(&path)?!=before||chain.checked!=0{return Err("UPGRADE_FIXTURE_CHANGED".into())}
+        println!("{}",json!({"originalBytes":size,"sha256":before,"approvedEntries":chain.entries.len(),"allSealsAndBindingsVerified":true,"financialReplayStillRequired":true,"sourceMutated":false,"networkRequests":0}));Ok(())
     }
 }
 
