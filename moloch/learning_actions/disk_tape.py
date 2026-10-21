@@ -10,6 +10,7 @@ import json
 from pathlib import Path
 import sqlite3
 import atexit
+from weakref import WeakValueDictionary
 from collections import OrderedDict
 from collections.abc import Sequence
 from moloch.learning_flow.episodes import FlowTape,FEATURE_SCHEMA
@@ -171,8 +172,18 @@ class Books:
                 from .snapshot_clock import source_clock
                 at=source_clock(row)
             else:at=row['available_at_ms']
-            self.cache[key]=Book(row['exchange_id'],at,row.get('source_at_ms'),
-                tuple(map(tuple,row['bids'])),tuple(map(tuple,row['asks'])),row['original_sha256'])
+            # One immutable source record can be consumed by multiple world /
+            # information cursors. Share only Book, never SharedLiquidity,
+            # depletion, invalidation, source cursors or actor permissions.
+            # Clocks are part of identity: an earlier hidden-world snapshot
+            # must never replace its later information-delivery representation.
+            pool=getattr(self.store,'book_pool',None);pool_key=(key,at)
+            book=pool.get(pool_key)if pool is not None else None
+            if book is None:
+                book=Book(row['exchange_id'],at,row.get('source_at_ms'),
+                    tuple(map(tuple,row['bids'])),tuple(map(tuple,row['asks'])),row['original_sha256'])
+                if pool is not None:pool[pool_key]=book
+            self.cache[key]=book
             if len(self.cache)>self.capacity:self.cache.popitem(last=False)
         self.cache.move_to_end(key);return self.cache[key]
 
@@ -202,6 +213,9 @@ class Store:
         self.db=sqlite3.connect(database.as_uri()+'?mode=ro',uri=True)
         self.db.execute('PRAGMA cache_size=-16384');self.db.execute('PRAGMA temp_store=FILE')
         self.decoded_rows=0;self.views={};self.cursors=set();self.closed=False
+        # Weak values retain no extra book lifetime; the existing bounded view
+        # caches and current financial worlds remain the only strong owners.
+        self.book_pool=WeakValueDictionary()
         self.world_groups={};self.information_groups=None
         counts=self.manifest['counts']
         for table in('market','flow','world','execution'):

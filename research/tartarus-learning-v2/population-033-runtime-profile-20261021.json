@@ -1,0 +1,21 @@
+{
+  "observedUtc": "2026-10-21T05:38:41.207129+00:00",
+  "pid": 7108,
+  "frozenSourceCommit": "df2bb138cb38d0233a7626367034097208505bc8",
+  "durationSeconds": 20,
+  "sampleRate": 20,
+  "samples": 399,
+  "samplingErrors": 0,
+  "inclusiveStackCounts": {
+    "sourceClockAdvance": 399,
+    "jsonDecode": 109,
+    "bookMaterialization": 132,
+    "bookValidation": 38,
+    "immutableDepthScan": 30,
+    "deepCopy": 23
+  },
+  "stackArtifactSha256": "29d6e559dc6a7134208ce37dbc9c1ab5a31ca1efefbdee0511f0da810969d0b4",
+  "classification": "short_live_event_advance_sample_not_whole_training_speed_or_GPU_duty_cycle",
+  "productionChanged": false,
+  "independentTestUsed": false
+}
