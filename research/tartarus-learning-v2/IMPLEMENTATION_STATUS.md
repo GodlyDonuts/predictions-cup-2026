@@ -1,4 +1,4 @@
-# Tartarus implementation status — October21,18:59UTC
+# Tartarus implementation status — October21,19:17UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
@@ -29,4 +29,4 @@ Three venues provide information; execution is SIG-only. Requests, receipts, vir
 
 Current detailed development is2 fitting days plus2 development days. Full competition execution history and the requested4+4 evaluation chronology remain incomplete. ProtectedOctober21–25 has not been consumed. No learned model is deployed or independently profitable.
 
-Production is separate: R70 is installed18:56:45 as sole1022216, restoring the original433-fill ledger. It passes R69's startup file-bound failure; current-process trading is not yet verified. At18:56:58 official marked equity is94,708.835, down5.29% from initial. The latest R68 sale realized+8.66; earlier R67 sales net−164.63. [Current production state](../../docs/CURRENT_STATE.md), [latest account](r70-latest-account-20261021.json).
+Production is separate: R70 is verified live at19:16:28 as sole1022216, with healthy realtime, no STOP,433 preserved original fills and all1675 acknowledged orders terminal. The complete original financial prefix is independently verified. Additional R70 fills or increased turnover are not yet established. At18:56:58 official marked equity is94,708.835, down5.29% from initial. The latest R68 sale realized+8.66; earlier R67 sales net-164.63. [Fresh live proof](r70-fresh-live-20261021.json), [current production state](../../docs/CURRENT_STATE.md).

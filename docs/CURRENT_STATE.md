@@ -1,10 +1,10 @@
 # Current Moloch and Tartarus state
 
-Observed October21,18:59UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October21,19:17UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
-R70 is installed18:56:45 as sole PID1022216/startTicks57865921, binary80c6094916c7 and controlbd54be2f1a9e verified. At18:59:16 it remains active, STOP absent, replaying the original ledger; fresh trading/fill throughput is not yet verified. All433 original fills and the2,552,479,691-byte financial prefix remain preserved. [Installation](../research/tartarus-learning-v2/r70-history-bound-installed-20261021.json).
+R70 is verified in its live trading loop at19:16:28 as sole PID1022216/startTicks57865921, binary80c6094916c7 and controlbd54be2f1a9e. Realtime is healthy, STOP absent, and original pending order20260 has reconciled terminal:1675 acknowledged/1675 terminal orders,433 original fills. Independent file-only verification confirms every original fill and the complete2,552,479,691-byte financial prefix. The237-exchange capacity revision is active. No additional R70 fill or increased turnover is yet established. [Fresh live proof](../research/tartarus-learning-v2/r70-fresh-live-20261021.json).
 
 R69 had stopped18:43:28 before native replay/orders because its152,404,846-byte upgrade chain exceeded a128MiB parser bound; deployment omitted that size check. R70 raises the engineering bound to256MiB, moves parsed entries and verifies seals by reference.131 native checks pass. The actual22-entry152MB chain passed in9.39s/1.63GiB peak; the final23-entry202MB chain passed in12.03s. All original approvals, including failed R69's, are preserved. Only Session parsing differs from R69's289-source build; all financial engine rules remain unchanged. [Exact qualification](../research/tartarus-learning-v2/r70-history-bound-qualified-20261021.json).
 
@@ -45,3 +45,5 @@ Queued040 preserves the completed island populations before source migration. It
 A separate optional process-evaluation implementation passed22 unique focused checks and exact parity. Four interleaved CPU passes over the same five-minute development slice took116.24s median locally versus154.12s with child worlds:32.6% slower including startup/IPC. It remains disabled and is not added to037/040. No optimizer step or protected-test access occurred. [Negative benchmark](../research/tartarus-learning-v2/process-evaluation-benchmark-20261021.json).
 
 The full requested competition-history training plus4-day evolution/4-day independent test remains incomplete. Current detailed development uses2 fitting days and2 development days. ProtectedOctober21–25 is unconsumed; no learned model is deployed. [Implementation and evidence](../research/tartarus-learning-v2/IMPLEMENTATION_STATUS.md).
+
+The additional unchanged-head financial-report cache is checked and published, with156 focused report/alpha/fundamental checks. It remains undeployed while fresh R70 execution timing is measured. [Candidate and exact limits](../research/tartarus-learning-v2/entry-report-cache-20261021.md).
