@@ -8,7 +8,10 @@ from ctypes import wintypes as w
 
 
 class TrainingProcess:
-    def __init__(self,pid,expected_run,expected_config,*,expected_creation=None):
+    def __init__(self,pid,expected_run,expected_config,*,expected_creation=None,
+                 expected_module='moloch.learning_actions.experiment'):
+        if expected_module not in ('moloch.learning_actions.experiment','moloch.learning_actions.asynchronous_islands'):
+            raise ValueError('EXPLICIT_SIMULATED_TRAINING_MODULE_REQUIRED')
         if os.name!='nt':raise ValueError('WINDOWS_TRAINING_HANDLE_REQUIRED')
         if type(pid)is not int or pid<=0:raise ValueError('POSITIVE_EXACT_TRAINING_PID')
         self.kernel=ctypes.WinDLL('kernel32',use_last_error=True)
@@ -44,7 +47,7 @@ class TrainingProcess:
             def option(name):
                 if argv.count(name)!=1 or argv.index(name)+1>=len(argv):raise ValueError('EXACT_TRAINING_ARGUMENT_REQUIRED')
                 return argv[argv.index(name)+1]
-            if option('-m')!='moloch.learning_actions.experiment':raise ValueError('TARGET_IS_NOT_RAW_API_TRAINING')
+            if option('-m')!=expected_module:raise ValueError('TARGET_IS_NOT_RAW_API_TRAINING')
             if Path(option('--output')).resolve()!=Path(expected_run).resolve()or Path(option('--config')).resolve()!=Path(expected_config).resolve():
                 raise ValueError('TARGET_IS_NOT_EXPECTED_TRAINING_RUN')
             if not self.alive():raise ValueError('TRAINING_PROCESS_ALREADY_EXITED')

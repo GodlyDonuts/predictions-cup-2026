@@ -10,7 +10,7 @@ def sha_file(path):
 
 def boundary(run,cycle=0):
     """A complete marker after all replacements, never just completed members."""
-    run=Path(run);digest=hashlib.sha256();offset=0;current=None;replacements=[];retentions=[];seen=set();result_hashes={}
+    run=Path(run);digest=hashlib.sha256();offset=0;current=None;replacements=[];retentions=[];migrations=[];seen=set();result_hashes={}
     with (run/'progress.jsonl').open('rb')as f:
         for raw in f:
             if not raw.endswith(b'\n'):break
@@ -24,8 +24,9 @@ def boundary(run,cycle=0):
                     result_hashes[str(row['member'])]=hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
             elif row['event']=='population_replacement'and current==cycle:replacements.append(row)
             elif row['event']=='research_champion_retained'and row['cycle']==cycle:retentions.append(row)
+            elif row['event']=='cross_island_migration'and row['cycle']==cycle:migrations.append(row)
             elif row['event']=='cycle_complete'and row['cycle']==cycle:
-                return {'cycle':cycle,'members':sorted(seen),'replacements':replacements,'retentions':retentions,
+                return {'cycle':cycle,'members':sorted(seen),'replacements':replacements,'retentions':retentions,'migrations':migrations,
                         'completedResultSemanticSha256':result_hashes,
                         'progressPrefixBytes':offset,'progressPrefixSha256':digest.hexdigest()}
     return None
@@ -51,7 +52,8 @@ def select_population(run,*,cycle=0,members=8,hidden_size=4096):
             raise ValueError('COMPLETED_MEMBER_IDENTITY_CHANGED')
         if not math.isfinite(row['selection']['reward']):raise ValueError('FINITE_COMPLETED_SELECTION_REQUIRED')
         slots.append(row['checkpoint']);results.append({'member':member,'resultSha256':sha_file(p),'selectionReward':row['selection']['reward']})
-    if config.get('population_search')and len(b['replacements'])!=config['population_search']['islands']:
+    expected_replacements=config['population_search']['islands']if config.get('population_search')and cycle+1<config.get('cycles',3)else 0
+    if config.get('population_search')and len(b['replacements'])!=expected_replacements:
         raise ValueError('EVERY_ISLAND_REPLACEMENT_MUST_BE_COMPLETE')
     retained=set()
     champions=run/('island-champions-%03d.json'%cycle)
@@ -72,6 +74,16 @@ def select_population(run,*,cycle=0,members=8,hidden_size=4096):
         slot=row['loser']
         if type(slot)is not int or not 0<=slot<members or slot in losers:raise ValueError('UNIQUE_OFFSPRING_SLOT_REQUIRED')
         losers.add(slot);slots[slot]=row['checkpoint']
+    migrated=set()
+    for row in b['migrations']:
+        slot=row['slot']
+        if type(slot)is not int or not 0<=slot<members or slot in migrated:
+            raise ValueError('UNIQUE_MIGRATED_CHAMPION_SLOT_REQUIRED')
+        proof=json.loads((run.parent/f"migration-{row['island']:03d}-{cycle:06d}.json").read_text())
+        if (any(row.get(k)!=v for k,v in proof.items())or proof.get('event')!='cross_island_migration'
+                or proof.get('productionAuthority')is not False or proof.get('completedWorldsOrScoresRewritten')is not False):
+            raise ValueError('COMMITTED_ISLAND_MIGRATION_CHANGED')
+        migrated.add(slot);slots[slot]=row['checkpoint']
     parents=[]
     for member,cp in enumerate(slots):
         p=Path(cp['path']).resolve()
@@ -85,7 +97,7 @@ def select_population(run,*,cycle=0,members=8,hidden_size=4096):
         group=bundle['optimizer']['param_groups'][0];rate=group['lr'];entropy=group['tartarus_entropy_coefficient']
         if not math.isfinite(rate)or rate<=0 or not math.isfinite(entropy)or entropy<0:raise ValueError('FINITE_PARENT_HYPERPARAMETERS')
         parents.append({'member':member,'path':str(p),'sha256':cp['sha256'],'learning_rate':rate,'entropy_coefficient':entropy,
-                        'origin':'checked_evolved_child'if member in losers else
+                        'origin':'checked_cross_island_champion'if member in migrated else'checked_evolved_child'if member in losers else
                         'checked_historical_island_champion'if member in retained else'checked_retained_generation_member'})
         del model,bundle
     # Check the exact observed prefix again after reading all checkpoint bytes.
