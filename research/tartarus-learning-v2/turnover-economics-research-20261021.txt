@@ -1,4 +1,4 @@
-External ChatGPT research captured from the authorized browser conversation. Public source revision: 20132b490fbeb3cd66d79b4ba159fd1bd7f9a407. Equations may lose layout in DOM text. This is research evidence, not execution authority.
+External ChatGPT research captured from the authorized browser conversation. Public source revision: 20132b490fbeb3cd66d79b4ba159fd1bd7f9a407. Trailing whitespace is normalized; equations may lose layout in DOM text. This is research evidence, not execution authority.
 Conversation: https://chatgpt.com/c/6ad928b5-1bb8-83e9-9aa3-b7e4aa97c4de
 
 Follow up your completed Deep Research using current public main commit 20132b490fbeb3cd66d79b4ba159fd1bd7f9a407 in GodlyDonuts/predictions-cup-2026. Current evidence: research/tartarus-learning-v2/r74-turnover-20261021.json, r74-first-filled-order-20261021.json, hint-batch-r76-20261021.md and docs/CURRENT_STATE.md. These are nonredeemable contest points, not real money. R74 has now filled 9992 NO1043 for8288.47 and10000 YES1044 for8533.50, with original receipts/FIFO matched. Cash10838.09; owned cost85031.82. They are acquisitions, not realized profit. First order post-intent validation is0ms at millisecond resolution versus1765/3756ms before. There remain60–120second source-scope cycles and only2distinct first-filled orders in15minutes. All12 recurring policies are active;10 targets use fifoProfitTurnover with minimumNetGain0.005, two retain value exits. R76 (being deployed) batches whole-cohort read-hint validation once instead of repeating per market and includes exact no-HTTP top-up recovery; it retains the native engine, original finances and one shared account worker.
@@ -36,14 +36,14 @@ For sustained turnover with approximately stable inventory, purchases and sales 
 Requirement	Calculation	Result
 Purchase orders/hour	Half of 60 balanced orders	30
 Sale orders/hour	Other half	30
-Shares acquired and subsequently sold/hour	
+Shares acquired and subsequently sold/hour
 30
 ×
 9
 ,
 996
 30×9,996	299,880 each direction
-Purchase expenditure/hour	
+Purchase expenditure/hour
 30
 ×
 8
@@ -51,7 +51,7 @@ Purchase expenditure/hour
 410.985
 30×8,410.985	252,329.55
 Sale proceeds/hour at acquisition cost plus 0.005/share	Purchase expenditure + minimum margin	253,828.95
-Conditional realized cycle profit/hour	
+Conditional realized cycle profit/hour
 299
 ,
 880
@@ -87,12 +87,12 @@ The second calculation is especially conditional: owned cost is not executable p
 
 With ten FIFO-turnover targets, an evenly distributed target would mean approximately three complete buy/sell cycles per target per hour, each around 10,000 shares. Activating repeat policies makes that mechanically permissible; it does not supply counterparties.
 
-The economic question is now whether the venue supplies enough profitable exit depth, frequently enough, to finance those purchases. SIG explicitly uses peer-to-peer matching, so an executable trade requires compatible counterparty liquidity. 
+The economic question is now whether the venue supplies enough profitable exit depth, frequently enough, to finance those purchases. SIG explicitly uses peer-to-peer matching, so an executable trade requires compatible counterparty liquidity.
 sig.thesuper.market
 
 Smaller orders change the capital requirement, not the existence of edge
 
-For purchase rate 
+For purchase rate
 𝜆
 𝑏
 =
@@ -101,11 +101,11 @@ For purchase rate
 b
 	​
 
-=0.5 orders/minute, average price 
+=0.5 orders/minute, average price
 𝑝
-p, measured holding time 
+p, measured holding time
 𝐻
-H, and allocated cycling capital 
+H, and allocated cycling capital
 𝐶
 C:
 
@@ -173,7 +173,7 @@ held side
 −
 0.005
 ,
-  
+
 feeAdjustedTickCeiling
 ⁡
 [
@@ -185,7 +185,7 @@ F
 I
 F
 O
- 
+
 p
 r
 e
@@ -270,14 +270,14 @@ t
 
 (q)>0,
 
-where 
+where
 𝑋
 𝑇
 X
 T
 	​
 
- is eventual SIG payout and 
+ is eventual SIG payout and
 𝐴
 𝑡
 (
@@ -345,7 +345,7 @@ When reference-price edge can support turnover
 
 It can support turnover when the external signal predicts a subsequent change in SIG executable bids, at the relevant size and within the required holding horizon. Evidence would include actual size-qualified bid improvement, recurring contra-side replenishment, and exits that survive measured submission delays.
 
-A large reference discount can also justify holding to settlement, but that is a different economic use of capital. SIG pays winning positions at settlement; markets can remain pending until valid results arrive. That payout mechanism is not an hourly cash-recycling facility. 
+A large reference discount can also justify holding to settlement, but that is a different economic use of capital. SIG pays winning positions at settlement; markets can remain pending until valid results arrive. That payout mechanism is not an hourly cash-recycling facility.
 sig.thesuper.market
 
 When it cannot
@@ -354,11 +354,11 @@ A reference discount alone does not establish near-term turnover when SIG prices
 
 Repeatedly buying the same persistent discount can simply exhaust cash. Repeatedly realizing old low-cost winners while retaining deteriorating positions can produce positive realized FIFO statistics without growing the account.
 
-Likewise, a profitable sale can sacrifice modeled terminal value. Selling 
+Likewise, a profitable sale can sacrifice modeled terminal value. Selling
 𝑞
-q shares at net price 
+q shares at net price
 𝑆
-S, rather than holding at conditional value 
+S, rather than holding at conditional value
 𝑉
 V, needs sufficient value from redeployment or risk reduction:
 
@@ -398,7 +398,7 @@ Keep allowances, entry forecasts, the 0.005 gain requirement, quantity caps, and
 
 This tests exit price selection, not whether more aggressive buying can inflate the count.
 
-For a prefix of 
+For a prefix of
 𝑞
 q shares, define:
 
@@ -409,7 +409,7 @@ q shares, define:
 =
 max
 ⁡
-first 
+first
 𝑞
  FIFO shares
 (
@@ -511,7 +511,7 @@ Evaluate the experiment against both the unchanged strategy and holding the star
 
 This matters because one 0.05/share loss on 10,000 remaining shares erases ten 0.005/share wins on similarly sized cycles. A profit-only exit floor can improve the appearance of realized trades while leaving that loss unrecognized.
 
-Bottom line: R74 demonstrated that the bot can acquire substantial positions again. It has not demonstrated an economic engine capable of recycling roughly a quarter-million SUSQies per hour. Test whether the existing ask-anchored exit rule is overlooking genuinely executable, FIFO-profitable bids. That is a smaller and better-supported experiment than changing forecasts, enlarging acquisitions, or assuming latency improvements will produce profitable counterparties. No trading or production changes were made. 
+Bottom line: R74 demonstrated that the bot can acquire substantial positions again. It has not demonstrated an economic engine capable of recycling roughly a quarter-million SUSQies per hour. Test whether the existing ask-anchored exit rule is overlooking genuinely executable, FIFO-profitable bids. That is a smaller and better-supported experiment than changing forecasts, enlarging acquisitions, or assuming latency improvements will produce profitable counterparties. No trading or production changes were made.
 
 ChatGPT can make mistakes. Check important info.
 Latest response
