@@ -59,6 +59,13 @@ class IslandGenerationHandoffTests(unittest.TestCase):
             self.assertEqual(changed['training_chunk_transitions'],64)
             self.assertTrue(changed['evaluate_founders_before_training'])
             self.assertFalse(changed['test_finalist_once'])
+            from .family_target_query import FAMILY,LEGACY
+            self.assertNotIn('target_query_profile',changed)
+            extended=subject.next_configuration(config,plan,target_query_profile=FAMILY)
+            self.assertEqual(extended['target_query_profile'],FAMILY)
+            self.assertEqual({k:v for k,v in extended.items()if k!='target_query_profile'},changed)
+            with self.assertRaisesRegex(ValueError,'CANNOT_DISCARD'):
+                subject.next_configuration(extended,plan,target_query_profile=LEGACY)
             self.assertEqual([p['sha256']for p in changed['development_initial_checkpoints']],
                              [p['sha256']for p in plan['parents']])
             # An unfinished second island cannot authorize stopping the whole

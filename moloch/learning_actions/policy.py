@@ -52,7 +52,8 @@ class ApiPolicy(FusedRecurrentPolicy):
         family_dist=categorical(self.heads['family'](torch.cat((h,pooled),-1)),family_mask,fast)
         family=(actions['family']if actions is not None else
                 family_dist.probs.argmax(-1)if deterministic else family_dist.sample()if sampler is None else sampler.categorical(family_dist))
-        logits=(encoded*self.market_query(h).unsqueeze(1)).sum(-1)/16
+        from .family_target_query import query
+        logits=(encoded*query(self,h,family).unsqueeze(1)).sum(-1)/16
         batch=torch.arange(h.shape[0],device=h.device)
         eligible=masks['family'].gather(2,family[:,None,None].expand(-1,present.shape[1],1)).squeeze(-1)
         from .read_target_sampling import logits as target_logits

@@ -24,6 +24,9 @@ def contract(model):
     from .price_parameterization import validate as price_mode,ABSOLUTE
     price=price_mode(getattr(model,'price_parameterization',ABSOLUTE))
     if price!=ABSOLUTE:value=value+(price,)
+    from .family_target_query import mode as target_mode,LEGACY
+    target=target_mode(model)
+    if target!=LEGACY:value=value+(target,)
     from .historical_memory import bound_profile
     memory=bound_profile(model)
     return value if memory is None else value+(memory,)
@@ -35,10 +38,12 @@ def require_contract(model,value):
         from .read_target_sampling import validate as sampling_mode,FLAT
         from .managed_data_service import profile
         from .price_parameterization import validate as price_mode,ABSOLUTE
+        from .family_target_query import mode as target_mode,LEGACY
         if (bound_profile(model)is not None or getattr(model,'local_memory_joint_density',False)or
                 sampling_mode(getattr(model,'read_target_sampling',FLAT))!=FLAT or
                 profile(getattr(model,'managed_data_profile',None))is not None or
-                price_mode(getattr(model,'price_parameterization',ABSOLUTE))!=ABSOLUTE):
+                price_mode(getattr(model,'price_parameterization',ABSOLUTE))!=ABSOLUTE or
+                target_mode(model)!=LEGACY):
             raise ValueError('EXPLICIT_BEHAVIOR_CONTRACT_REQUIRED')
     elif tuple(value)!=contract(model):raise ValueError('BEHAVIOR_ARCHITECTURE_OR_PROTOCOL_CHANGED')
 

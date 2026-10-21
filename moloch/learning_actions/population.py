@@ -65,15 +65,18 @@ def behavior(model,probe):
         active=masks['family']&present.unsqueeze(-1)&masks['market'].unsqueeze(-1)
         enabled=active.any(1)
         family=masked_categorical(model.heads['family'](torch.cat((hidden,pooled),-1)),enabled).probs
-        logits=(encoded*model.market_query(hidden).unsqueeze(1)).sum(-1)/16
+        from .family_target_query import query
+        shared=model.market_query(hidden)
         conditional=[]
         for f in range(12):
+            families=torch.full((hidden.shape[0],),f,device=device)
+            logits=(encoded*query(model,hidden,families,shared=shared).unsqueeze(1)).sum(-1)/16
             target_mask=active[:,:,f].clone()
             # A disabled family has zero joint probability. Supply a harmless
             # target solely to define a normalized conditional distribution.
             if not bool(enabled[0,f]):target_mask[0,0]=True
             from .read_target_sampling import logits as target_logits
-            corrected=(target_logits(model,logits,torch.full((logits.shape[0],),f,device=device),target_mask,masks)
+            corrected=(target_logits(model,logits,families,target_mask,masks)
                        if f==10 else logits)
             conditional.append(masked_categorical(corrected,target_mask).probs)
         joint=family.unsqueeze(-1)*torch.stack(conditional,1)
@@ -102,7 +105,7 @@ def distance(parent,child):
 
 def _actor_parameter(name,operator):
     if name.startswith(('value.','monetary_quantiles.','target_success.')):return False
-    if operator=='local':return name.startswith(('heads.','conditioners.','fractions.','market_query.','query_filter.','query_times.'))
+    if operator=='local':return name.startswith(('heads.','conditioners.','fractions.','market_query.','target_family_embedding.','query_filter.','query_times.'))
     return True
 
 
@@ -120,12 +123,16 @@ def mutate(model,probe,operator,seed,*,maximum_trials=8,fresh_initializer=None):
         with torch.random.fork_rng(devices=[device]if device.type=='cuda'else[]):
             seed_neural(seed)
             if operator=='fresh':
-                model.load_state_dict(type(model)(model.hidden_size).to(device).state_dict())
+                from .family_target_query import install,mode
+                fresh=type(model)(model.hidden_size).to(device)
+                install(fresh,mode(model))
+                model.load_state_dict(fresh.state_dict())
                 if fresh_initializer is not None:report['fresh_initialization']=fresh_initializer(model)
             elif operator=='head_reset':
                 modules=[model.heads,model.conditioners,model.fractions,model.market_query,
                          model.value,model.monetary_quantiles,model.target_success]
                 if hasattr(model,'query_filter'):modules.extend((model.query_filter,model.query_times))
+                if hasattr(model,'target_family_embedding'):modules.append(model.target_family_embedding)
                 for module in modules:
                     for part in module.modules():
                         if hasattr(part,'reset_parameters'):part.reset_parameters()

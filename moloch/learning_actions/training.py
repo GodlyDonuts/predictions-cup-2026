@@ -209,6 +209,8 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     bundle['price_parameterization']=policy_mode(model)
     from .historical_memory import bound_profile
     bundle['historical_memory_profile']=bound_profile(model)
+    from .family_target_query import mode as target_mode
+    bundle['target_query_profile']=target_mode(model)
     path=Path(path)
     with path.open('xb')as f:torch.save(bundle,f)
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -235,7 +237,10 @@ def load_checkpoint(path,expected_sha256,device='cpu'):
                    HistoricalNeuralPolicy.architecture:HistoricalNeuralPolicy}
     if bundle['architecture']not in architectures or bundle['production_authority']is not False:
         raise ValueError('RAW_API_ARCHITECTURE_REQUIRED_NO_LEGACY_CHECKPOINT_RELABELLING')
-    model=architectures[bundle['architecture']](bundle['hidden_size']).to(device);model.load_state_dict(bundle['model'])
+    model=architectures[bundle['architecture']](bundle['hidden_size']).to(device)
+    from .family_target_query import install,LEGACY
+    install(model,bundle.get('target_query_profile',LEGACY))
+    model.load_state_dict(bundle['model'])
     from .historical_memory import profile,bound_profile
     model.historical_memory_profile=profile(bundle.get('historical_memory_profile'))
     bound_profile(model)

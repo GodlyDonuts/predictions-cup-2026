@@ -33,6 +33,8 @@ class Experiment:
         if store is not None:store.close()
 
     def __init__(self,config,output,*,data_use=None):
+        from .family_target_query import validate as target_mode,LEGACY
+        target_mode(config.get('target_query_profile',LEGACY))
         from .training_chunks import validate as validate_chunks
         validate_chunks(config)
         founders=config.get('evaluate_founders_before_training',False)
@@ -677,6 +679,8 @@ class Experiment:
     @neural_only
     def make_policy(self):
         model=self.policy_type()(self.model_size).to(self.device)
+        from .family_target_query import install,LEGACY
+        install(model,self.config.get('target_query_profile',LEGACY))
         from .acting_validation import validate as acting_mode,STRICT
         model.acting_validation=acting_mode(self.config.get('acting_validation',STRICT))
         model.global_state_encoding=self.config.get('global_state_encoding','raw')
@@ -733,6 +737,9 @@ class Experiment:
                 inherited=parents[member%len(parents)]if parents and member<members-fresh else None
                 if inherited:
                     model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
+                    from .family_target_query import mode as target_mode,LEGACY
+                    if type(model)is not self.policy_type()and target_mode(model)!=LEGACY:
+                        raise ValueError('FAMILY_TARGET_TRANSFER_REQUIRES_MATCHED_POLICY_CLASS')
                     from .observation_protocol import migrate_development
                     migration=migrate_development(model,self.config)
                     if self.history_bindings is not None and type(model)is not self.policy_type():
@@ -817,6 +824,10 @@ class Experiment:
                                 raise ValueError('EXPLICIT_API_AFFORDANCE_MIGRATION_REQUIRED')
                             model,migration=migrate_api_affordances(model)
                             frozen(self.output/('founder-%03d-api-affordance-migration.json'%member),migration)
+                    from .family_target_query import install,LEGACY
+                    migration=install(model,self.config.get('target_query_profile',LEGACY))
+                    if migration is not None:
+                        frozen(self.output/('founder-%03d-target-query-migration.json'%member),migration)
                     del parent
                     if member>=len(parents):
                         with torch.no_grad():

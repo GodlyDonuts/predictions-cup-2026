@@ -72,7 +72,7 @@ def select_completed_generations(run, expected_configuration, expected_calibrati
         oldScoresReusedForNewSelection=False,oldFinancialWorldsResumed=False,productionAuthority=False)
 
 
-def next_configuration(base,plan):
+def next_configuration(base,plan,*,target_query_profile=None):
     if base.get('mode')!='inspected_development'or not plan['completedGeneration']:
         raise ValueError('COMPLETED_DEVELOPMENT_ISLAND_GENERATION_REQUIRED')
     c=copy.deepcopy(base);parents=plan['parents']
@@ -91,6 +91,12 @@ def next_configuration(base,plan):
         transferred_source_global_configuration_sha256=plan['sourceGlobalConfigurationSha256'],
         transferred_completed_island_cycles=plan['cycles'],test_finalist_once=False,
         training_chunk_transitions=64,evaluate_founders_before_training=True)
+    if target_query_profile is not None:
+        from .family_target_query import validate,LEGACY
+        requested=validate(target_query_profile)
+        if requested==LEGACY and c.get('target_query_profile',LEGACY)!=LEGACY:
+            raise ValueError('CANNOT_DISCARD_LEARNED_FAMILY_TARGET_QUERY')
+        c['target_query_profile']=requested
     from .training_chunks import validate
     validate(c)
     configurations(c)
@@ -113,6 +119,9 @@ def run(spec_path):
         if sha_file(spec['oldConfig'])!=spec['oldConfigSha256']:
             raise ValueError('ORIGINAL_TRAINER_CONFIG_CHANGED')
     try:
+        if spec.get('targetQueryProfile') is not None:
+            from .family_target_query import validate
+            validate(spec['targetQueryProfile'])
         checked()
         if old.parent!=new.parent or new.exists():raise ValueError('NEW_PRIVATE_RESEARCH_RUN_REQUIRED')
         base=json.loads((old/'global-experiment.json').read_text(encoding='utf-8'))
@@ -131,7 +140,8 @@ def run(spec_path):
         # All selected checkpoints verify before any process control. The new
         # source must evaluate them afresh rather than importing the old scores.
         frozen(job/'population-plan.json',plan)
-        config=next_configuration(base,plan);config_path=job/'next-config.json';frozen(config_path,config)
+        config=next_configuration(base,plan,target_query_profile=spec.get('targetQueryProfile'))
+        config_path=job/'next-config.json';frozen(config_path,config)
         calibration=json.loads((old/'shared-actor-calibration.json').read_text(encoding='utf-8'))
         calibration_path=job/'actor-calibration.json';frozen(calibration_path,calibration)
         checked()
