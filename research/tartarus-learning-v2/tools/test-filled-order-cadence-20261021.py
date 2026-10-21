@@ -1,8 +1,14 @@
 """Physical orders, partial receipts and UTC boundaries remain distinct."""
 import importlib.util
+import contextlib
+import hashlib
+import io
+import json
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('audit', Path(__file__).with_name('audit-r71-turnover-20261021.py'))
 audit = importlib.util.module_from_spec(spec)
@@ -58,6 +64,40 @@ class Cadence(unittest.TestCase):
         self.assertEqual(window['maximumGapWithinWindowSeconds'], 60)
         empty = audit.filled_order_cadence([], now)['windowsMinutes']['1']
         self.assertFalse(empty['rollingMinuteCadenceMet'])
+
+    def test_actual_buy_preserves_both_old_and_new_fifo_execution_clocks(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root/'bank-all-markets-v1').mkdir()
+            (root/'receipts').mkdir()
+            executed = '2026-10-20T10:00:00Z'
+            lot = dict(quantity=4, price='0.500000', executedAt='2026-10-18T10:00:00Z')
+            before = dict(fills=[], report=dict(positions={'1': dict(YES=[], NO=[lot])},
+                cash='100.000000', ownedCost='2.000000', realized='0.000000'))
+            baseline = root/'before.json'
+            baseline.write_text(json.dumps(before))
+            receipt = dict(status=200, endpoint='/orders/99/fills?limit=200', data=dict(data=[
+                dict(id=7, filledAt=executed, quantity=-3, side='no', price=0.8)]))
+            raw = json.dumps(receipt).encode()
+            digest = hashlib.sha256(raw).hexdigest()
+            (root/'receipts'/f'{digest}.json').write_bytes(raw)
+            fill = dict(counterfactual=False, orderId=1, actualOrderId='99', sourceId='7',
+                exchangeId='1', side='NO', action='buy', executedAt=executed, quantity=3,
+                price='0.800000', fee='0.000000', receiptHash=digest)
+            after = dict(fills=[fill], report=dict(positions={'1': dict(YES=[], NO=[lot,
+                dict(quantity=3, price='0.800000', executedAt=executed)])},
+                cash='97.600000', ownedCost='4.400000', realized='0.000000',
+                newTradingRealized='0.000000', inheritedRealizedGross='0.000000', at=executed))
+            (root/'bank-all-markets-v1/report.json').write_text(json.dumps(after))
+            ack = dict(event=dict(kind='ack', qid=1, receipt=dict(status=200, endpoint='/orders',
+                data=dict(orderId=99, exchangeId='1', side='no', action='buy'))))
+            (root/'dispatch.ndjson').write_text(json.dumps(ack)+'\n')
+            output = root/'audit.json'
+            with patch.object(audit, 'ROOT', root), contextlib.redirect_stdout(io.StringIO()):
+                audit.audit(baseline, output)
+            proof = json.loads(output.read_text())
+            self.assertTrue(proof['remainingFifoExactlyMatches'])
+            self.assertEqual(proof['orders']['1']['cashDelta'], '-2.400000')
 
 
 if __name__ == '__main__':

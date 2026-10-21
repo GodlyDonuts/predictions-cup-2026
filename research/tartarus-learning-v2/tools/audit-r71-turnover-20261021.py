@@ -132,7 +132,7 @@ def audit(baseline, output):
             group['ownedCostDelta'] -= cost
             group['realizedGross'] += value - cost
         else:
-            lots.append(dict(quantity=fill['quantity'], price=fill['price']))
+            lots.append(dict(quantity=fill['quantity'], price=fill['price'], executedAt=fill['executedAt']))
             group['cashDelta'] -= value + N(fill['fee'])
             group['ownedCostDelta'] += value
             other = sides['NO' if fill['side'] == 'YES' else 'YES']
