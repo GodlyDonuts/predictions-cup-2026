@@ -14,6 +14,7 @@ from pathlib import Path
 import subprocess
 import time
 import urllib.request
+from decimal import Decimal, ROUND_FLOOR, ROUND_CEILING
 
 
 def sha(p):
@@ -24,6 +25,33 @@ def put(path, value):
     tmp = path.with_suffix('.pending')
     tmp.write_text(json.dumps(value, separators=(',', ':')), encoding='utf-8')
     tmp.replace(path)
+
+
+def executable_ticks(review, midpoint):
+    point = midpoint if review['side'] == 'YES' else 1 - midpoint
+    allowance = Decimal(review['exceptionalProbabilityAllowance'])
+    value = (1 - allowance) * point + allowance * Decimal(review['minimumExceptionalPayout'])
+    tick = Decimal('0.005')
+    entry = int(((value - Decimal(review['marginPerShare'])) / tick).to_integral_value(rounding=ROUND_FLOOR))
+    passive = review.get('passiveValueExit')
+    exit_tick = int((value / tick).to_integral_value(rounding=ROUND_CEILING)) if passive and not passive.get('pricingObjective') else None
+    return entry, exit_tick
+
+
+def changed_scopes(capture, current_control, open_exchanges, now):
+    inputs = {r['exchangeId']: r for r in capture['rows']}
+    selected = []
+    for file in current_control['fundamentalPolicy']['reviews']:
+        review = json.loads(Path(file['path']).read_bytes())
+        ex = review['exchangeId']
+        if ex not in inputs or ex in open_exchanges:
+            continue
+        old = Decimal(review['ordinaryProbability'])
+        old_midpoint = old if review['side'] == 'YES' else 1 - old
+        new_midpoint = Decimal(inputs[ex]['yesMidpoint'])
+        if review['expiresAtMs'] - now <= 120_000 or executable_ticks(review, old_midpoint) != executable_ticks(review, new_midpoint):
+            selected.append(ex)
+    return selected
 
 
 def main():
@@ -75,8 +103,7 @@ def main():
                 report('external_generation_changed'); return
             if sha(state['controlPath']) != state['controlSha256']:
                 report('active_review_file_changed'); return
-            selected = c['exchanges'] if state['commits'] == 0 else [c['exchanges'][state['index'] % len(c['exchanges'])]]
-            url = c['captureUrl'] + '?exchanges=' + ','.join(selected)
+            url = c['captureUrl'] + '?exchanges=' + ','.join(c['exchanges'])
             with urllib.request.urlopen(url, timeout=20) as response:
                 raw = response.read(2_000_001)
                 if len(raw) > 2_000_000:
@@ -86,8 +113,22 @@ def main():
             if len(raw) > 4_000_000:
                 raise ValueError('PUBLIC_CAPTURE_DECOMPRESSED_BOUND')
             capture = json.loads(raw)
-            if {x['exchangeId'] for x in capture['rows']} != set(selected):
+            if {x['exchangeId'] for x in capture['rows']} != set(c['exchanges']):
                 raise ValueError('EXACT_CAPTURE_RESPONSE_SCOPE')
+            # The original refresh changed review hashes even when all actual
+            # order-price ticks were identical. That consumed account reads and
+            # displaced pending plans without new economic information.
+            view = json.loads((root / 'tartarus-current-native-state.json').read_bytes())
+            unclosed = set(view['knownUnclosedAcknowledgments'])
+            open_exchanges = {q['exchangeId'] for q in view['activeNativeOrders'] if q['id'] in unclosed}
+            current_control = json.loads(Path(state['controlPath']).read_bytes())
+            selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000)
+            if not selected:
+                report('fresh_reference_no_price_tick_change', capturedAtMs=capture['capturedAtMs'], openTargets=len(open_exchanges))
+                time.sleep(max(1, c['intervalSeconds'] - (time.monotonic() - started)))
+                continue
+            capture['rows'] = [x for x in capture['rows'] if x['exchangeId'] in selected]
+            raw = json.dumps(capture, separators=(',', ':')).encode()
             stamp = str(time.time_ns())
             capture_path = out / ('capture-' + stamp + '.json')
             capture_path.write_bytes(raw)
