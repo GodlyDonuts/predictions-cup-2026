@@ -9,6 +9,24 @@ from . import continue_async_population as subject
 
 
 class ContinuationTests(unittest.TestCase):
+    def test_history_migration_retains_parents_and_requires_bound_v2_source(self):
+        from .managed_data_service import INTENT_PROFILE,HISTORY_PROFILE
+        template,plan=self.fixture()
+        template['managed_data_service']={'profile':INTENT_PROFILE,'initially_enabled':True,'finance_period_ms':30000}
+        template['historical_information']={'format':'three_venue_history_information_v1'}
+        before=copy.deepcopy(template)
+        config,_=subject.continuation_configuration(template,plan,managed_profile=HISTORY_PROFILE)
+        self.assertEqual(template,before)
+        self.assertEqual(config['managed_data_service'],{**before['managed_data_service'],'profile':HISTORY_PROFILE})
+        self.assertTrue(config['migrate_managed_data_profile'])
+        self.assertEqual([p['sha256']for p in config['development_initial_checkpoints']],['0'*64,'1'*64])
+        for invalid in [None,{}]:
+            template['historical_information']=invalid
+            with self.assertRaisesRegex(ValueError,'BOUND_HISTORY_MIGRATION'):
+                subject.continuation_configuration(template,plan,managed_profile=HISTORY_PROFILE)
+        with self.assertRaisesRegex(ValueError,'BOUND_HISTORY_MIGRATION'):
+            subject.continuation_configuration(before,plan,managed_profile='arbitrary')
+
     def fixture(self):
         template = dict(mode='inspected_development', device='cuda', members=2,
                         compute_chunk_decisions=8, inherited_wait_logit_shifts=[[6,0],None],

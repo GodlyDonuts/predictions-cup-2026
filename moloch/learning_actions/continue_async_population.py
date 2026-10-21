@@ -17,7 +17,7 @@ from .selection import frozen
 from .training_process import TrainingProcess
 
 
-def continuation_configuration(template, plan):
+def continuation_configuration(template, plan, *, managed_profile=None):
     config = next_configuration(copy.deepcopy(template), plan,
                                 compute_steps=template['compute_chunk_decisions'])
     # These are one-time initialization mutations. Applying them again to an
@@ -29,6 +29,14 @@ def continuation_configuration(template, plan):
     config['test_finalist_once'] = False
     if config['mode'] != 'inspected_development' or config.get('device') != 'cuda':
         raise ValueError('EXPLICIT_CUDA_DEVELOPMENT_CONTINUATION_REQUIRED')
+    if managed_profile is not None:
+        from .managed_data_service import INTENT_PROFILE,HISTORY_PROFILE
+        service=config.get('managed_data_service')
+        if (managed_profile!=HISTORY_PROFILE or not isinstance(service,dict)
+                or service.get('profile')!=INTENT_PROFILE or not config.get('historical_information')):
+            raise ValueError('EXPLICIT_V2_TO_V3_BOUND_HISTORY_MIGRATION_REQUIRED')
+        config['managed_data_service']={**service,'profile':HISTORY_PROFILE}
+        config['migrate_managed_data_profile']=True
     return config, removed
 
 
@@ -69,11 +77,27 @@ def run(spec_path):
                                  hidden_size=spec['template']['hidden_size'])
         if plan is None: raise ValueError('COMPLETED_GENERATION_DISAPPEARED')
         frozen(job/'population-plan.json', plan)
-        config, removed = continuation_configuration(spec['template'], plan)
+        config, removed = continuation_configuration(spec['template'], plan,
+            managed_profile=spec.get('managedDataProfile'))
         frozen(job/'removed-one-time-mutations.json', removed)
         next_path = job/'next-config.json'; frozen(next_path, config)
         next_calibration = job/'inherited-actor-calibration.json'
-        frozen(next_calibration, json.loads(calibration.read_text()))
+        actor_calibration=json.loads(calibration.read_text())
+        replacement=spec.get('replacementCalibration')
+        if spec.get('managedDataProfile')is not None and replacement is None:
+            raise ValueError('HISTORY_MIGRATION_REQUIRES_FRESH_ACTOR_CALIBRATION')
+        if replacement is not None:
+            if (not isinstance(replacement,dict)or set(replacement)!={'path','sha256'}
+                    or sha_file(replacement['path'])!=replacement['sha256']):
+                raise ValueError('PINNED_REPLACEMENT_ACTOR_CALIBRATION_REQUIRED')
+            candidate=json.loads(Path(replacement['path']).read_text())
+            if (candidate.get('managed_data_profile')!=spec.get('managedDataProfile')
+                    or candidate.get('device')!='cpu' or candidate.get('policy_rng_preserved')is not True
+                    or type(candidate.get('decision_latency_ms'))is not int
+                    or candidate['decision_latency_ms']<actor_calibration['decision_latency_ms']):
+                raise ValueError('CAUSAL_HISTORY_ACTOR_CALIBRATION_REQUIRED')
+            actor_calibration=candidate
+        frozen(next_calibration, actor_calibration)
         checked_source()
         if (job/'cancel').exists(): status('cancelled_before_handoff'); return
         # The immutable selected population is already saved. This retained OS
@@ -98,7 +122,8 @@ def run(spec_path):
         frozen(job/'launch.json', dict(pid=process.pid, command=command,
                sourceCommit=spec['sourceCommit'], sourceManifestSha256=spec['sourceManifestSha256'],
                parentPlanSha256=sha_file(job/'population-plan.json'), productionChanged=False,
-               calibration='inherited measured single-policy actor cost, not a new shared-load measurement'))
+               calibration=('fresh pinned CPU history-context actor cost, not remote hardware or shared-island measurement'
+                   if replacement is not None else 'inherited measured single-policy actor cost, not a new shared-load measurement')))
         status('island_process_launched_learning_not_yet_verified', launcherPid=process.pid)
     except BaseException as error:
         status('handoff_failed_no_automatic_restart', error=type(error).__name__, reason=str(error))
