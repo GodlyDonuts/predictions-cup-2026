@@ -20,8 +20,10 @@ def main():
  EvaluationBatch.run_chunk=progress
  try:
   e=Experiment(c,j/'experiment');assert e.dataset_sha==plan['datasetManifestSha256'];assert list(e.evolution_bounds)==plan['evaluationBoundsMs'];e.calibration=json.loads((j/'calibration.json').read_bytes());assert e.calibration['decision_latency_ms']==plan['frozenActorCostMs']
-  profiles=None;results={}
-  for label in ['parent','candidate']:
+  profiles=plan.get('expectedModelProfile');results={}
+  labels=plan.get('policies',['parent','candidate'])
+  if type(labels)is not list or not labels or len(set(labels))!=len(labels) or any(x not in ('parent','candidate')for x in labels):raise ValueError('EXPLICIT_UNIQUE_RETAINED_POLICY_LABELS')
+  for label in labels:
    cp=plan[label];assert sha(cp['path'])==cp['sha256'];model,bundle=load_checkpoint(cp['path'],cp['sha256'],'cpu');assert bundle['split_specification_sha256']==plan['experimentSha256']
    current={k:bundle.get(k) for k in ['architecture','hidden_size','historical_memory_profile','read_target_sampling','managed_data_profile','price_parameterization','acting_validation','global_state_encoding','observation_protocol']}
    if profiles is None:profiles=current
