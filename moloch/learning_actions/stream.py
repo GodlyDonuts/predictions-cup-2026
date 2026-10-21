@@ -21,21 +21,40 @@ def tensors(observation,device):
 
 
 def calibrate(environment,model,rounds=12):
-    """Freeze measured local actor compute cost; never sleep on virtual time."""
+    """Measure the complete local actor pipeline without consuming policy RNG.
+
+    Current observation shape only: not remote-hardware or maximum-context
+    calibration. Replay source parsing and API network latency are separate.
+    """
+    if type(rounds)is not int or rounds<1:raise ValueError('POSITIVE_CALIBRATION_ROUNDS')
     from .state_encoding import matching
     matching(environment,model)
-    device=next(model.parameters()).device;inputs=tensors(environment.observe(),device)
-    hidden=model.initial_state(1);reset=torch.tensor([True],device=device);measurements=[]
-    with torch.no_grad():
+    device=next(model.parameters()).device
+    hidden=model.initial_state(1);reset=torch.tensor([True],device=device);measurements=[];shapes=[]
+    devices=[device.index if device.index is not None else torch.cuda.current_device()]if device.type=='cuda'else[]
+    with torch.random.fork_rng(devices=devices),torch.no_grad():
         for n in range(rounds+3):
             if device.type=='cuda':torch.cuda.synchronize()
             started=time.perf_counter()
-            model.step(**inputs,hidden=hidden,reset=reset,deterministic=True)
+            inputs=tensors(environment.observe(),device)
+            output=model.step(**inputs,hidden=hidden,reset=reset,deterministic=False)
+            # Match the live one-world stream's actual host conversion. A
+            # forward result left on CUDA is not yet a dispatchable action.
+            if getattr(model,'acting_validation','strict')=='consolidated_v1':
+                from .acting_validation import actions_to_python
+                actions_to_python(output['actions'])
+            else:{k:v.item()for k,v in output['actions'].items()}
             if device.type=='cuda':torch.cuda.synchronize()
-            if n>=3:measurements.append((time.perf_counter()-started)*1000)
+            elapsed=(time.perf_counter()-started)*1000
+            if n>=3:
+                measurements.append(elapsed);shapes.append(list(inputs['contracts'].shape))
     samples=sorted(measurements)
     return {'decision_latency_ms':max(1,math.ceil(samples[math.ceil(.95*len(samples))-1])),
-            'measured_ms':measurements,'device':str(device),'assumption':'frozen_local_p95_compute_cost'}
+            'measured_ms':measurements,'device':str(device),
+            'assumption':'frozen_local_p95_complete_actor_pipeline_v2',
+            'timing_scope':['observation_construction','tensor_preparation_and_transfer','stochastic_forward','action_host_conversion'],
+            'observation_shapes':shapes,'warmup_rounds':3,'policy_rng_preserved':True,
+            'shape_coverage':'current_observation_only_not_maximum_or_remote_hardware'}
 
 
 class Stream:
