@@ -6,6 +6,8 @@ Full chronological execution history, calibrated execution assumptions and the r
 
 Production R66 is healthy and its reference updater has resumed fresh generation commits. A verified partial sale realized115.75 against original FIFO, bringing cash to9,600.83 and fill records to420. This is not whole-account ROI or a completed-order claim. The full-universe replacement is built but not deployed. [Current production and ML evidence](current-state-20261021-1604.md). Older observations below are dated history.
 
+At16:20, continuation038 was queued on verified helper19100. It will preserve each island's latest completed population, learned hyperparameters and all original checkpoint files before source migration. Existing037 and CPU evaluation24904 remain live; no new038 learning is claimed. [Continuation evidence](island-generation-continuation-20261021.md).
+
 ---
 
 [Current ML: GPU021 first cohort committed](population-021-learning-001.json). At2026-10-20T05:00:09Z actual36576/source157c873a has37,317decisions and2committed updates from147attempts. CPU audit verifies32changed parameter tensors, finite saved weights, exact process and source/config/data pins. Evaluation pending; no profitable checkpoint or independent ROI established. Full daily-reward chronology/calibration remain incomplete. Earlier observations below are historical.
