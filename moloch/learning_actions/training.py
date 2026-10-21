@@ -97,6 +97,9 @@ def collect_chunk(stream,decisions=128,*,reward_ledger=None):
                  frames[0]['initial_hidden'],value.detach(),stream,guard,contract(stream.model))
 
 
+from .neural_sessions import neural_only
+
+@neural_only
 def update(model,optimizer,chunk,rewards,*,role,bootstrap_value=None,clip=.2,epochs=2,
            checkpoint_encoder=False,entropy_coefficient=.01,episode_session=None):
     """Economic rewards must be supplied for every decision, never imputed.
@@ -211,6 +214,7 @@ def save_checkpoint(path,model,optimizer,*,dataset_manifest_sha256,split_specifi
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+@neural_only
 def load_checkpoint(path,expected_sha256,device='cpu'):
     from .policy import ApiPolicy
     from .full_depth import FullDepthPolicy

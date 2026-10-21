@@ -7,6 +7,7 @@ from collections import Counter
 import torch
 from .batched import inputs
 from .behavior_guard import identity
+from .neural_sessions import neural_section
 
 
 class EvaluationBatch:
@@ -41,41 +42,43 @@ class EvaluationBatch:
         live=[i for i,e in enumerate(self.envs)if e.now<e.end]
         if not live:self.last_rows=[];return 0
         for i in live:self.envs[i].advance(self.envs[i].now)
-        observed=[self.envs[i].observe()for i in live];prepared=inputs(observed,self.device)
-        indices=torch.tensor(live,device=self.device)
-        reset=torch.tensor([self.decisions[i]==0 for i in live],device=self.device)
-        actions=[];global_rng=self.get_rng()
-        try:
-            with torch.no_grad():
-                encoded,h=self.model.encode(prepared['contracts'],prepared['global_state'],prepared['present'],
-                                            self.hidden.index_select(0,indices),reset)
-                if self.batch_action_heads:
-                    from .independent_sampling import IndependentSampling
-                    sampler=IndependentSampling([self.generators[i]for i in live],[len(o['entities'])for o in observed])
-                    out=self.model._act_from_encoding(encoded,h,prepared['present'],prepared['masks'],
-                        deterministic=deterministic,sampler=sampler,statistics=not self.actions_only)
-                    # One transfer per action head rather than a synchronization
-                    # for every scalar of every case.
-                    if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
-                        from .acting_validation import actions_to_python
-                        actions=actions_to_python(out['actions'])
-                    else:
-                        values={k:v.tolist()for k,v in out['actions'].items()}
-                        actions=[{k:v[j]for k,v in values.items()}for j in range(len(live))]
-                    for i in live:self.rng[i]=self.generators[i].get_state()
-                for j,i in enumerate(live if not self.batch_action_heads else[]):
-                    # Trim padding before sampling. Otherwise categorical RNG
-                    # consumption could depend on another case's entity count.
-                    n=len(observed[j]['entities']);self.set_rng(self.rng[i])
-                    out=self.model._act_from_encoding(encoded[j:j+1,:n],h[j:j+1],prepared['present'][j:j+1,:n],
-                        {k:v[j:j+1,:n]for k,v in prepared['masks'].items()},deterministic=deterministic,statistics=not self.actions_only)
-                    self.rng[i]=self.get_rng()
-                    if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
-                        from .acting_validation import actions_to_python
-                        actions.append(actions_to_python(out['actions'])[0])
-                    else:actions.append({k:v.item()for k,v in out['actions'].items()})
-                self.hidden=self.hidden.index_copy(0,indices,h)
-        finally:self.set_rng(global_rng)
+        observed=[self.envs[i].observe()for i in live]
+        with neural_section():
+            prepared=inputs(observed,self.device)
+            indices=torch.tensor(live,device=self.device)
+            reset=torch.tensor([self.decisions[i]==0 for i in live],device=self.device)
+            actions=[];global_rng=self.get_rng()
+            try:
+                with torch.no_grad():
+                    encoded,h=self.model.encode(prepared['contracts'],prepared['global_state'],prepared['present'],
+                                                self.hidden.index_select(0,indices),reset)
+                    if self.batch_action_heads:
+                        from .independent_sampling import IndependentSampling
+                        sampler=IndependentSampling([self.generators[i]for i in live],[len(o['entities'])for o in observed])
+                        out=self.model._act_from_encoding(encoded,h,prepared['present'],prepared['masks'],
+                            deterministic=deterministic,sampler=sampler,statistics=not self.actions_only)
+                        # One transfer per action head rather than a synchronization
+                        # for every scalar of every case.
+                        if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+                            from .acting_validation import actions_to_python
+                            actions=actions_to_python(out['actions'])
+                        else:
+                            values={k:v.tolist()for k,v in out['actions'].items()}
+                            actions=[{k:v[j]for k,v in values.items()}for j in range(len(live))]
+                        for i in live:self.rng[i]=self.generators[i].get_state()
+                    for j,i in enumerate(live if not self.batch_action_heads else[]):
+                        # Trim padding before sampling. Otherwise categorical RNG
+                        # consumption could depend on another case's entity count.
+                        n=len(observed[j]['entities']);self.set_rng(self.rng[i])
+                        out=self.model._act_from_encoding(encoded[j:j+1,:n],h[j:j+1],prepared['present'][j:j+1,:n],
+                            {k:v[j:j+1,:n]for k,v in prepared['masks'].items()},deterministic=deterministic,statistics=not self.actions_only)
+                        self.rng[i]=self.get_rng()
+                        if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+                            from .acting_validation import actions_to_python
+                            actions.append(actions_to_python(out['actions'])[0])
+                        else:actions.append({k:v.item()for k,v in out['actions'].items()})
+                    self.hidden=self.hidden.index_copy(0,indices,h)
+            finally:self.set_rng(global_rng)
         self.last_rows=[]
         for j,i in enumerate(live):
             env=self.envs[i];before=env.now;action=actions[j];obs=observed[j]

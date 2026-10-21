@@ -17,6 +17,7 @@ from .engine import ApiTape
 from .policy import ApiPolicy
 from .stream import Stream,calibrate
 from .training import collect_chunk,update,save_checkpoint,load_checkpoint
+from .neural_sessions import neural_section,neural_only,seed_neural
 from .economics import GrowthLedger
 from .training_reward import horizon as training_horizon,ledger as training_ledger
 from .selection import frozen,IndependentTest,DataUse
@@ -67,13 +68,14 @@ class Experiment:
         observation_digest(config.get('episode_observation_digest','legacy'))
         if config.get('episode_observation_digest','legacy')!='legacy'and not config.get('closed_episode_return_replay',False):
             raise ValueError('PACKED_EPISODE_DIGEST_REQUIRES_CLOSED_EPISODES')
-        if 'cuda_memory_fraction'in config:
-            fraction=config['cuda_memory_fraction']
-            if type(fraction)not in(int,float)or not 0<fraction<=1:raise ValueError('VALID_CUDA_ALLOCATION_FRACTION')
-            if self.device.startswith('cuda'):torch.cuda.set_per_process_memory_fraction(fraction)
-        torch.backends.cuda.matmul.allow_tf32=config.get('allow_tf32',False)
-        torch.backends.cudnn.allow_tf32=config.get('allow_tf32',False)
-        torch.set_num_threads(config.get('cpu_threads',2));torch.manual_seed(self.seed)
+        with neural_section():
+            if 'cuda_memory_fraction'in config:
+                fraction=config['cuda_memory_fraction']
+                if type(fraction)not in(int,float)or not 0<fraction<=1:raise ValueError('VALID_CUDA_ALLOCATION_FRACTION')
+                if self.device.startswith('cuda'):torch.cuda.set_per_process_memory_fraction(fraction)
+            torch.backends.cuda.matmul.allow_tf32=config.get('allow_tf32',False)
+            torch.backends.cudnn.allow_tf32=config.get('allow_tf32',False)
+            torch.set_num_threads(config.get('cpu_threads',2));seed_neural(self.seed)
         self.rng=random.Random(self.seed)
         self.model_size=config.get('hidden_size',4096)
         self.mechanics=load_mechanics(Path(config['mechanics']))
@@ -539,7 +541,7 @@ class Experiment:
                 stream=SimpleNamespace(decisions=batch.decisions[seed_offset],action_counts=batch.action_counts[seed_offset],
                     status_counts=batch.status_counts[seed_offset],entity_counts=batch.entity_counts[seed_offset])
             else:
-                torch.manual_seed(self.seed+90000+seed_offset)
+                seed_neural(self.seed+90000+seed_offset)
                 env=self.world(role,case_start,case_end,finalist,stress);stream=self.stream(model,env)
                 ledger=GrowthLedger(env,development=self.development,
                     development_daily_growth=self.config.get('development_selection_daily_growth',False),
@@ -659,6 +661,7 @@ class Experiment:
             return FullDepthPolicy
         return ApiPolicy
 
+    @neural_only
     def make_policy(self):
         model=self.policy_type()(self.model_size).to(self.device)
         from .acting_validation import validate as acting_mode,STRICT
@@ -691,7 +694,7 @@ class Experiment:
             raise ValueError('FIRST_CYCLE_ORDER_MUST_INCLUDE_EVERY_MEMBER_ONCE')
         return order
 
-    def run(self):
+    def run(self,*,cycle_callback=None):
         members=self.config.get('members',4);cycles=self.config.get('cycles',8)
         if type(members)is not int or members<2 or type(cycles)is not int or cycles<1:
             raise ValueError('POSITIVE_POPULATION_AND_CYCLE_COUNTS_REQUIRED')
@@ -712,172 +715,173 @@ class Experiment:
         if price_shifts is not None and(not isinstance(price_shifts,list)or len(price_shifts)!=members):
             raise ValueError('ONE_EXPLICIT_PRICE_PRIOR_PER_FOUNDER_REQUIRED')
         for member in range(members):
-            torch.manual_seed(self.seed+member)
-            inherited=parents[member%len(parents)]if parents and member<members-fresh else None
-            if inherited:
-                model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
-                from .observation_protocol import migrate_development
-                migration=migrate_development(model,self.config)
-                if self.history_bindings is not None and type(model)is not self.policy_type():
-                    raise ValueError('EXACT_HISTORICAL_ARCHITECTURE_TRANSFER_REQUIRED')
-                if migration is not None:
-                    frozen(self.output/('founder-%03d-observation-protocol-migration.json'%member),migration)
-                target_encoding=self.config.get('global_state_encoding','raw')
-                if model.global_state_encoding!=target_encoding:
-                    if self.config.get('migrate_global_state_encoding')is not True:
-                        raise ValueError('EXPLICIT_GLOBAL_STATE_ENCODING_MIGRATION_REQUIRED')
-                    frozen(self.output/('founder-%03d-state-encoding-migration.json'%member),{
-                        'old':model.global_state_encoding,'new':target_encoding,'all_weights_retained':True,
-                        'optimizer_moments_reset':True,'old_trajectories_discarded':True,'new_training_and_scores_required':True})
-                from .lineage import development_parent
-                lineage=development_parent(parent,inherited['path'],new_dataset_sha256=self.dataset_sha,
-                    allow_cross_dataset=self.config.get('development_allow_cross_dataset_transfer',False))
-                if lineage is not None:
-                    for role,bounds in lineage['prior_calendar_bounds_ms'].items():
-                        self.data_use.record('train'if role=='train'else'selection',*bounds,lineage['source_experiment_sha256'])
-                    frozen(self.output/('founder-%03d-lineage.json'%member),lineage)
-                    if (self.config.get('short_alarm_prior_scope')=='wait_only'and
-                        lineage['parent_short_alarm_prior_scope']!='wait_only'):
-                        if self.config.get('migrate_shared_short_alarm_prior')is not True:
-                            raise ValueError('EXPLICIT_PRIOR_MIGRATION_REQUIRED')
-                        from .clock_prior import migrate_shared_prior
-                        frozen(self.output/('founder-%03d-clock-migration.json'%member),migrate_shared_prior(model))
-                if type(model)is not self.policy_type():
-                    from .api_affordances import ApiAffordancePolicy,migrate_api_affordances
-                    if type(model)is ApiPolicy:
-                        if self.config.get('migrate_full_depth_encoder')is not True or self.policy_type()is ApiPolicy:
-                            raise ValueError('EXPLICIT_DEPTH_ARCHITECTURE_MIGRATION_REQUIRED')
-                        from .full_depth import migrate_legacy_policy
-                        model,migration=migrate_legacy_policy(model)
-                        frozen(self.output/('founder-%03d-depth-migration.json'%member),migration)
-                    from .full_depth import FullDepthPolicy
-                    if type(model)is FullDepthPolicy and type(model)is not self.policy_type():
-                        from .query_policy import QueryWindowPolicy,migrate_full_depth
-                        from .joint_memory_policy import JointMemoryPolicy
-                        from .order_policy import OrderPagePolicy
-                        from .component_execution import ComponentPolicy
-                        from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_query_window_heads')is not True:
-                            raise ValueError('EXPLICIT_QUERY_WINDOW_ARCHITECTURE_MIGRATION_REQUIRED')
-                        model,migration=migrate_full_depth(model)
-                        frozen(self.output/('founder-%03d-query-window-migration.json'%member),migration)
-                    from .query_policy import QueryWindowPolicy
-                    if type(model)is QueryWindowPolicy and type(model)is not self.policy_type():
-                        from .joint_memory_policy import JointMemoryPolicy,migrate_query_memory
-                        from .order_policy import OrderPagePolicy
-                        from .component_execution import ComponentPolicy
-                        from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_joint_memory_density')is not True:
-                            raise ValueError('EXPLICIT_JOINT_MEMORY_ARCHITECTURE_MIGRATION_REQUIRED')
-                        model,migration=migrate_query_memory(model)
-                        frozen(self.output/('founder-%03d-joint-memory-migration.json'%member),migration)
-                    from .joint_memory_policy import JointMemoryPolicy
-                    if type(model)is JointMemoryPolicy and type(model)is not self.policy_type():
-                        from .order_policy import OrderPagePolicy,migrate_owned_orders
-                        from .component_execution import ComponentPolicy
-                        from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_owned_order_pages')is not True:
-                            raise ValueError('EXPLICIT_ORDER_PAGE_ARCHITECTURE_MIGRATION_REQUIRED')
-                        model,migration=migrate_owned_orders(model)
-                        frozen(self.output/('founder-%03d-order-page-migration.json'%member),migration)
-                    from .order_policy import OrderPagePolicy
-                    if type(model)is OrderPagePolicy and type(model)is not self.policy_type():
-                        from .component_execution import ComponentPolicy,migrate_component_debt
-                        from .bulk_quotes import BulkQuotePolicy
-                        if self.policy_type()not in(ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_component_debt')is not True:
-                            raise ValueError('EXPLICIT_COMPONENT_DEBT_MIGRATION_REQUIRED')
-                        model,migration=migrate_component_debt(model)
-                        frozen(self.output/('founder-%03d-component-debt-migration.json'%member),migration)
-                    from .component_execution import ComponentPolicy
-                    if type(model)is ComponentPolicy and type(model)is not self.policy_type():
-                        from .bulk_quotes import BulkQuotePolicy,migrate_bulk_quotes
-                        if self.policy_type()not in(BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_bulk_quotes')is not True:
-                            raise ValueError('EXPLICIT_BULK_QUOTE_MIGRATION_REQUIRED')
-                        model,migration=migrate_bulk_quotes(model)
-                        frozen(self.output/('founder-%03d-bulk-quote-migration.json'%member),migration)
+            with neural_section():
+                seed_neural(self.seed+member)
+                inherited=parents[member%len(parents)]if parents and member<members-fresh else None
+                if inherited:
+                    model,parent=load_checkpoint(inherited['path'],inherited['sha256'],self.device)
+                    from .observation_protocol import migrate_development
+                    migration=migrate_development(model,self.config)
+                    if self.history_bindings is not None and type(model)is not self.policy_type():
+                        raise ValueError('EXACT_HISTORICAL_ARCHITECTURE_TRANSFER_REQUIRED')
+                    if migration is not None:
+                        frozen(self.output/('founder-%03d-observation-protocol-migration.json'%member),migration)
+                    target_encoding=self.config.get('global_state_encoding','raw')
+                    if model.global_state_encoding!=target_encoding:
+                        if self.config.get('migrate_global_state_encoding')is not True:
+                            raise ValueError('EXPLICIT_GLOBAL_STATE_ENCODING_MIGRATION_REQUIRED')
+                        frozen(self.output/('founder-%03d-state-encoding-migration.json'%member),{
+                            'old':model.global_state_encoding,'new':target_encoding,'all_weights_retained':True,
+                            'optimizer_moments_reset':True,'old_trajectories_discarded':True,'new_training_and_scores_required':True})
+                    from .lineage import development_parent
+                    lineage=development_parent(parent,inherited['path'],new_dataset_sha256=self.dataset_sha,
+                        allow_cross_dataset=self.config.get('development_allow_cross_dataset_transfer',False))
+                    if lineage is not None:
+                        for role,bounds in lineage['prior_calendar_bounds_ms'].items():
+                            self.data_use.record('train'if role=='train'else'selection',*bounds,lineage['source_experiment_sha256'])
+                        frozen(self.output/('founder-%03d-lineage.json'%member),lineage)
+                        if (self.config.get('short_alarm_prior_scope')=='wait_only'and
+                            lineage['parent_short_alarm_prior_scope']!='wait_only'):
+                            if self.config.get('migrate_shared_short_alarm_prior')is not True:
+                                raise ValueError('EXPLICIT_PRIOR_MIGRATION_REQUIRED')
+                            from .clock_prior import migrate_shared_prior
+                            frozen(self.output/('founder-%03d-clock-migration.json'%member),migrate_shared_prior(model))
                     if type(model)is not self.policy_type():
-                        if self.policy_type()is not ApiAffordancePolicy or self.config.get('migrate_api_target_affordances')is not True:
-                            raise ValueError('EXPLICIT_API_AFFORDANCE_MIGRATION_REQUIRED')
-                        model,migration=migrate_api_affordances(model)
-                        frozen(self.output/('founder-%03d-api-affordance-migration.json'%member),migration)
-                del parent
-                if member>=len(parents):
-                    with torch.no_grad():
-                        for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
-            else:model=self.make_policy()
-            model.global_state_encoding=self.config.get('global_state_encoding','raw')
-            from .acting_validation import validate as acting_mode,STRICT
-            target_mode=acting_mode(self.config.get('acting_validation',STRICT))
-            if getattr(model,'acting_validation',STRICT)!=target_mode:
-                frozen(self.output/('founder-%03d-acting-validation-migration.json'%member),{
-                    'old':getattr(model,'acting_validation',STRICT),'new':target_mode,
-                    'weights_unchanged':True,'fresh_optimizer_and_trajectories':True})
-            model.acting_validation=target_mode
-            from .price_parameterization import validate as price_mode,ABSOLUTE
-            old_price=price_mode(getattr(model,'price_parameterization',ABSOLUTE))
-            from .historical_memory import bound_profile,profile as memory_profile
-            old_memory=bound_profile(model);new_memory=memory_profile(self.config.get('historical_memory_profile'))
-            if old_memory!=new_memory:
-                if not self.development or self.config.get('migrate_historical_memory_profile')is not True:
-                    raise ValueError('EXPLICIT_DEVELOPMENT_HISTORICAL_MEMORY_MIGRATION_REQUIRED')
-                model.historical_memory_profile=new_memory
-                bound_profile(model)
-                frozen(self.output/('founder-%03d-historical-memory-migration.json'%member),{
-                    'old':old_memory,'new':new_memory,'weightsPreserved':True,'optimizerMomentsReset':True,
-                    'freshTrajectoriesAndScoresRequired':True})
-            new_price=price_mode(self.config.get('price_parameterization',ABSOLUTE))
-            if old_price!=new_price:
-                if self.config.get('migrate_price_parameterization')is not True:raise ValueError('EXPLICIT_PRICE_PARAMETERIZATION_MIGRATION_REQUIRED')
-                model.price_parameterization=new_price
-                frozen(self.output/('founder-%03d-price-parameterization-migration.json'%member),{
-                    'old':old_price,'new':new_price,'weightsPreserved':True,'optimizerMomentsReset':True,
-                    'freshTrajectoriesAndScoresRequired':True})
-            from .managed_data_service import profile,specification
-            service=specification(self.config.get('managed_data_service'))
-            old_profile=profile(getattr(model,'managed_data_profile',None))
-            new_profile=None if service is None else service['profile']
-            if old_profile!=new_profile:
-                if self.config.get('migrate_managed_data_profile')is not True:
-                    raise ValueError('EXPLICIT_MANAGED_DATA_PROFILE_MIGRATION_REQUIRED')
-                model.managed_data_profile=new_profile
-                frozen(self.output/('founder-%03d-managed-data-migration.json'%member),{
-                    'old':old_profile,'new':new_profile,'weightsPreserved':True,
-                    'optimizerMomentsReset':True,'freshTrajectoriesAndScoresRequired':True})
-            from .read_target_sampling import validate as sampling_mode,FLAT
-            old_sampling=sampling_mode(getattr(model,'read_target_sampling',FLAT))
-            new_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
-            if old_sampling!=new_sampling:
-                if self.config.get('migrate_read_target_sampling')is not True:
-                    raise ValueError('EXPLICIT_READ_SAMPLING_MIGRATION_REQUIRED')
-                model.read_target_sampling=new_sampling
-                frozen(self.output/('founder-%03d-read-sampling-migration.json'%member),{
-                    'old':old_sampling,'new':new_sampling,'weightsPreserved':True,
-                    'optimizerMomentsReset':True,'freshTrajectoriesAndScoresRequired':True})
-            # Initialization changes exploration probability, never legal action
-            # support: favor initially short alarms without forbidding long ones.
-            if not inherited and self.config.get('initial_short_alarm_prior',True):
-                self.initialize_alarm_prior(model)
-            if inherited and clock_shifts is not None and clock_shifts[member] is not None:
-                from .clock_prior import mutate_inherited_wait
-                frozen(self.output/('founder-%03d-inherited-clock-mutation.json'%member),
-                       mutate_inherited_wait(model,clock_shifts[member]))
-            if family_shifts is not None and family_shifts[member] is not None:
-                from .exploration_prior import mutate_family_logits
-                frozen(self.output/('founder-%03d-family-prior-mutation.json'%member),
-                       mutate_family_logits(model,family_shifts[member]))
-            rate,entropy=self.founder_hyperparameters(member)
-            if price_shifts is not None and price_shifts[member]is not None:
-                from .exploration_prior import mutate_price_logits
-                frozen(self.output/('founder-%03d-price-prior-mutation.json'%member),mutate_price_logits(model,price_shifts[member]))
-            opt=self.make_optimizer(model,rate=rate,entropy=entropy)
-            self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
-            del model,opt
+                        from .api_affordances import ApiAffordancePolicy,migrate_api_affordances
+                        if type(model)is ApiPolicy:
+                            if self.config.get('migrate_full_depth_encoder')is not True or self.policy_type()is ApiPolicy:
+                                raise ValueError('EXPLICIT_DEPTH_ARCHITECTURE_MIGRATION_REQUIRED')
+                            from .full_depth import migrate_legacy_policy
+                            model,migration=migrate_legacy_policy(model)
+                            frozen(self.output/('founder-%03d-depth-migration.json'%member),migration)
+                        from .full_depth import FullDepthPolicy
+                        if type(model)is FullDepthPolicy and type(model)is not self.policy_type():
+                            from .query_policy import QueryWindowPolicy,migrate_full_depth
+                            from .joint_memory_policy import JointMemoryPolicy
+                            from .order_policy import OrderPagePolicy
+                            from .component_execution import ComponentPolicy
+                            from .bulk_quotes import BulkQuotePolicy
+                            if self.policy_type()not in(QueryWindowPolicy,JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_query_window_heads')is not True:
+                                raise ValueError('EXPLICIT_QUERY_WINDOW_ARCHITECTURE_MIGRATION_REQUIRED')
+                            model,migration=migrate_full_depth(model)
+                            frozen(self.output/('founder-%03d-query-window-migration.json'%member),migration)
+                        from .query_policy import QueryWindowPolicy
+                        if type(model)is QueryWindowPolicy and type(model)is not self.policy_type():
+                            from .joint_memory_policy import JointMemoryPolicy,migrate_query_memory
+                            from .order_policy import OrderPagePolicy
+                            from .component_execution import ComponentPolicy
+                            from .bulk_quotes import BulkQuotePolicy
+                            if self.policy_type()not in(JointMemoryPolicy,OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_joint_memory_density')is not True:
+                                raise ValueError('EXPLICIT_JOINT_MEMORY_ARCHITECTURE_MIGRATION_REQUIRED')
+                            model,migration=migrate_query_memory(model)
+                            frozen(self.output/('founder-%03d-joint-memory-migration.json'%member),migration)
+                        from .joint_memory_policy import JointMemoryPolicy
+                        if type(model)is JointMemoryPolicy and type(model)is not self.policy_type():
+                            from .order_policy import OrderPagePolicy,migrate_owned_orders
+                            from .component_execution import ComponentPolicy
+                            from .bulk_quotes import BulkQuotePolicy
+                            if self.policy_type()not in(OrderPagePolicy,ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_owned_order_pages')is not True:
+                                raise ValueError('EXPLICIT_ORDER_PAGE_ARCHITECTURE_MIGRATION_REQUIRED')
+                            model,migration=migrate_owned_orders(model)
+                            frozen(self.output/('founder-%03d-order-page-migration.json'%member),migration)
+                        from .order_policy import OrderPagePolicy
+                        if type(model)is OrderPagePolicy and type(model)is not self.policy_type():
+                            from .component_execution import ComponentPolicy,migrate_component_debt
+                            from .bulk_quotes import BulkQuotePolicy
+                            if self.policy_type()not in(ComponentPolicy,BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_component_debt')is not True:
+                                raise ValueError('EXPLICIT_COMPONENT_DEBT_MIGRATION_REQUIRED')
+                            model,migration=migrate_component_debt(model)
+                            frozen(self.output/('founder-%03d-component-debt-migration.json'%member),migration)
+                        from .component_execution import ComponentPolicy
+                        if type(model)is ComponentPolicy and type(model)is not self.policy_type():
+                            from .bulk_quotes import BulkQuotePolicy,migrate_bulk_quotes
+                            if self.policy_type()not in(BulkQuotePolicy,ApiAffordancePolicy)or self.config.get('migrate_bulk_quotes')is not True:
+                                raise ValueError('EXPLICIT_BULK_QUOTE_MIGRATION_REQUIRED')
+                            model,migration=migrate_bulk_quotes(model)
+                            frozen(self.output/('founder-%03d-bulk-quote-migration.json'%member),migration)
+                        if type(model)is not self.policy_type():
+                            if self.policy_type()is not ApiAffordancePolicy or self.config.get('migrate_api_target_affordances')is not True:
+                                raise ValueError('EXPLICIT_API_AFFORDANCE_MIGRATION_REQUIRED')
+                            model,migration=migrate_api_affordances(model)
+                            frozen(self.output/('founder-%03d-api-affordance-migration.json'%member),migration)
+                    del parent
+                    if member>=len(parents):
+                        with torch.no_grad():
+                            for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
+                else:model=self.make_policy()
+                model.global_state_encoding=self.config.get('global_state_encoding','raw')
+                from .acting_validation import validate as acting_mode,STRICT
+                target_mode=acting_mode(self.config.get('acting_validation',STRICT))
+                if getattr(model,'acting_validation',STRICT)!=target_mode:
+                    frozen(self.output/('founder-%03d-acting-validation-migration.json'%member),{
+                        'old':getattr(model,'acting_validation',STRICT),'new':target_mode,
+                        'weights_unchanged':True,'fresh_optimizer_and_trajectories':True})
+                model.acting_validation=target_mode
+                from .price_parameterization import validate as price_mode,ABSOLUTE
+                old_price=price_mode(getattr(model,'price_parameterization',ABSOLUTE))
+                from .historical_memory import bound_profile,profile as memory_profile
+                old_memory=bound_profile(model);new_memory=memory_profile(self.config.get('historical_memory_profile'))
+                if old_memory!=new_memory:
+                    if not self.development or self.config.get('migrate_historical_memory_profile')is not True:
+                        raise ValueError('EXPLICIT_DEVELOPMENT_HISTORICAL_MEMORY_MIGRATION_REQUIRED')
+                    model.historical_memory_profile=new_memory
+                    bound_profile(model)
+                    frozen(self.output/('founder-%03d-historical-memory-migration.json'%member),{
+                        'old':old_memory,'new':new_memory,'weightsPreserved':True,'optimizerMomentsReset':True,
+                        'freshTrajectoriesAndScoresRequired':True})
+                new_price=price_mode(self.config.get('price_parameterization',ABSOLUTE))
+                if old_price!=new_price:
+                    if self.config.get('migrate_price_parameterization')is not True:raise ValueError('EXPLICIT_PRICE_PARAMETERIZATION_MIGRATION_REQUIRED')
+                    model.price_parameterization=new_price
+                    frozen(self.output/('founder-%03d-price-parameterization-migration.json'%member),{
+                        'old':old_price,'new':new_price,'weightsPreserved':True,'optimizerMomentsReset':True,
+                        'freshTrajectoriesAndScoresRequired':True})
+                from .managed_data_service import profile,specification
+                service=specification(self.config.get('managed_data_service'))
+                old_profile=profile(getattr(model,'managed_data_profile',None))
+                new_profile=None if service is None else service['profile']
+                if old_profile!=new_profile:
+                    if self.config.get('migrate_managed_data_profile')is not True:
+                        raise ValueError('EXPLICIT_MANAGED_DATA_PROFILE_MIGRATION_REQUIRED')
+                    model.managed_data_profile=new_profile
+                    frozen(self.output/('founder-%03d-managed-data-migration.json'%member),{
+                        'old':old_profile,'new':new_profile,'weightsPreserved':True,
+                        'optimizerMomentsReset':True,'freshTrajectoriesAndScoresRequired':True})
+                from .read_target_sampling import validate as sampling_mode,FLAT
+                old_sampling=sampling_mode(getattr(model,'read_target_sampling',FLAT))
+                new_sampling=sampling_mode(self.config.get('read_target_sampling',FLAT))
+                if old_sampling!=new_sampling:
+                    if self.config.get('migrate_read_target_sampling')is not True:
+                        raise ValueError('EXPLICIT_READ_SAMPLING_MIGRATION_REQUIRED')
+                    model.read_target_sampling=new_sampling
+                    frozen(self.output/('founder-%03d-read-sampling-migration.json'%member),{
+                        'old':old_sampling,'new':new_sampling,'weightsPreserved':True,
+                        'optimizerMomentsReset':True,'freshTrajectoriesAndScoresRequired':True})
+                # Initialization changes exploration probability, never legal action
+                # support: favor initially short alarms without forbidding long ones.
+                if not inherited and self.config.get('initial_short_alarm_prior',True):
+                    self.initialize_alarm_prior(model)
+                if inherited and clock_shifts is not None and clock_shifts[member] is not None:
+                    from .clock_prior import mutate_inherited_wait
+                    frozen(self.output/('founder-%03d-inherited-clock-mutation.json'%member),
+                           mutate_inherited_wait(model,clock_shifts[member]))
+                if family_shifts is not None and family_shifts[member] is not None:
+                    from .exploration_prior import mutate_family_logits
+                    frozen(self.output/('founder-%03d-family-prior-mutation.json'%member),
+                           mutate_family_logits(model,family_shifts[member]))
+                rate,entropy=self.founder_hyperparameters(member)
+                if price_shifts is not None and price_shifts[member]is not None:
+                    from .exploration_prior import mutate_price_logits
+                    frozen(self.output/('founder-%03d-price-prior-mutation.json'%member),mutate_price_logits(model,price_shifts[member]))
+                opt=self.make_optimizer(model,rate=rate,entropy=entropy)
+                self.population.append(self.checkpoint('founder-%03d'%member,model,opt))
+                del model,opt
         best=None;island_champions={}
         for cycle in range(cycles):
             ranking=[]
             for member in self.member_order(cycle,members):
                 previous=self.population[member]
-                torch.manual_seed(self.seed+cycle*1000+member)
+                seed_neural(self.seed+cycle*1000+member)
                 model,bundle=load_checkpoint(previous['path'],previous['sha256'],self.device)
                 if bundle['split_specification_sha256']!=self.spec_sha:raise ValueError('FOREIGN_EXPERIMENT_CHECKPOINT')
                 opt=self.make_optimizer(model)
@@ -928,12 +932,13 @@ class Experiment:
                 donor=ranking[0]['checkpoint'];loser=ranking[-1]['member']
                 model,donor_bundle=load_checkpoint(donor['path'],donor['sha256'],self.device)
                 del donor_bundle
-                torch.manual_seed(self.seed+cycle+70000)
-                with torch.no_grad():
+                seed_neural(self.seed+cycle+70000)
+                with neural_section(),torch.no_grad():
                     for p in model.parameters():p.add_(torch.randn_like(p)*self.config.get('mutation_std',1e-4))
                 opt=self.make_optimizer(model)
                 self.population[loser]=self.checkpoint('offspring-%03d'%cycle,model,opt)
                 del model,opt
+            if cycle_callback is not None:cycle_callback(self,cycle,ranking,best)
             self.log({'event':'cycle_complete','cycle':cycle,'best_selection_reward':best['selection']['reward']})
         summary={'classification':'inspected_development_only'if self.development else 'frozen_daily_growth_experiment',
             'best':best,'total_decisions':self.total_decisions,'total_accepted_updates':self.total_updates,

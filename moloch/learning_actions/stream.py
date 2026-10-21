@@ -8,6 +8,7 @@ import time
 import math
 import torch
 from collections import deque,Counter
+from .neural_sessions import neural_only,neural_section
 
 
 def tensors(observation,device):
@@ -20,6 +21,7 @@ def tensors(observation,device):
     return out
 
 
+@neural_only
 def calibrate(environment,model,rounds=12,*,inference_mode='actions_only'):
     """Measure the complete local actor pipeline without consuming policy RNG.
 
@@ -82,17 +84,19 @@ class Stream:
     def step(self,forced_action=None,deterministic=False):
         if self.env.now>=self.env.end:return {'terminal':True}
         self.env.advance(self.env.now)
-        before=self.env.now;observed=self.env.observe();inputs=tensors(observed,self.device)
-        reset=torch.tensor([self.decisions==0],device=self.device)
-        initial_hidden=self.hidden
-        method=self.model.step_rollout if self.rollout_only else self.model.step_actions_only if self.actions_only else self.model.step
-        with torch.no_grad():out=method(**inputs,hidden=self.hidden,reset=reset,deterministic=deterministic)
-        self.hidden=out['hidden']
-        if forced_action is not None:action=forced_action
-        elif getattr(self.model,'acting_validation','strict')=='consolidated_v1':
-            from .acting_validation import actions_to_python
-            action=actions_to_python(out['actions'])[0]
-        else:action={k:v.item()for k,v in out['actions'].items()}
+        before=self.env.now;observed=self.env.observe()
+        with neural_section():
+            inputs=tensors(observed,self.device)
+            reset=torch.tensor([self.decisions==0],device=self.device)
+            initial_hidden=self.hidden
+            method=self.model.step_rollout if self.rollout_only else self.model.step_actions_only if self.actions_only else self.model.step
+            with torch.no_grad():out=method(**inputs,hidden=self.hidden,reset=reset,deterministic=deterministic)
+            self.hidden=out['hidden']
+            if forced_action is not None:action=forced_action
+            elif getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+                from .acting_validation import actions_to_python
+                action=actions_to_python(out['actions'])[0]
+            else:action={k:v.item()for k,v in out['actions'].items()}
         self.env.advance(min(self.env.end,before+self.latency))
         result=({'status':'HORIZON_REACHED_NO_DISPATCH'}if self.env.now>=self.env.end
                 else self.env.act_raw(action,observed))

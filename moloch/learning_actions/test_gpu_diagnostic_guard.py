@@ -1,9 +1,15 @@
 import unittest
 from unittest.mock import patch,Mock
-from .gpu_diagnostic_guard import require_idle_gpu
+from .gpu_diagnostic_guard import require_idle_gpu,training_pids
 
 
 class DiagnosticGpuGuardTests(unittest.TestCase):
+    def test_one_parent_island_runner_is_in_the_existing_owner_inventory(self):
+        with patch('moloch.learning_actions.gpu_diagnostic_guard.os.name','nt'),\
+             patch('moloch.learning_actions.gpu_diagnostic_guard.subprocess.run',return_value=Mock(stdout='[]'))as run:
+            self.assertEqual(training_pids(),[])
+        script=run.call_args.args[0][-1]
+        self.assertIn('asynchronous_islands',script);self.assertIn('process_capacity',script)
     def test_cpu_never_queries_or_reserves_training_gpu(self):
         with patch('moloch.learning_actions.gpu_diagnostic_guard.training_pids',side_effect=AssertionError):require_idle_gpu('cpu')
 

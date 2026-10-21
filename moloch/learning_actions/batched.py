@@ -7,6 +7,7 @@ wealth observations. Continuing worlds retain hidden state across compute chunks
 import torch
 from collections import Counter
 from .stream import calibrate
+from .neural_sessions import neural_section
 from .training import Chunk
 from moloch.learning_v2.train_inner import fingerprint
 
@@ -54,18 +55,19 @@ class BatchStream:
                 if live:e.advance(e.now)
             observations=[e.observe()for e in self.envs]
         else:observations=self.world_backend.prepare(self.envs,active)
-        prepared=inputs(observations,self.device)
-        reset=torch.tensor([n==0 or not live for n,live in zip(self.decisions,active)],device=self.device)
-        initial=self.hidden
-        method=self.model.step_rollout if self.rollout_only else self.model.step
-        with torch.no_grad():out=method(**prepared,hidden=self.hidden,reset=reset,deterministic=deterministic)
-        self.hidden=out['hidden']
-        packed=None
-        if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
-            from .acting_validation import actions_to_python
-            packed=actions_to_python(out['actions'])
-        else:actions={k:v.detach().cpu().tolist()for k,v in out['actions'].items()}
-        python_actions=packed if packed is not None else [{k:v[i]for k,v in actions.items()}for i in range(len(self.envs))]
+        with neural_section():
+            prepared=inputs(observations,self.device)
+            reset=torch.tensor([n==0 or not live for n,live in zip(self.decisions,active)],device=self.device)
+            initial=self.hidden
+            method=self.model.step_rollout if self.rollout_only else self.model.step
+            with torch.no_grad():out=method(**prepared,hidden=self.hidden,reset=reset,deterministic=deterministic)
+            self.hidden=out['hidden']
+            packed=None
+            if getattr(self.model,'acting_validation','strict')=='consolidated_v1':
+                from .acting_validation import actions_to_python
+                packed=actions_to_python(out['actions'])
+            else:actions={k:v.detach().cpu().tolist()for k,v in out['actions'].items()}
+            python_actions=packed if packed is not None else [{k:v[i]for k,v in actions.items()}for i in range(len(self.envs))]
         transitions=None if self.world_backend is None else self.world_backend.transitions(
             self.envs,active,python_actions,self.latency)
         rewards=[];terminals=[];elapsed=[]
@@ -80,10 +82,11 @@ class BatchStream:
             if result['final']is not None:self.completed[i]=result['final']
             self.decisions[i]+=1;self.action_counts[i][int(action['family'])]+=1
             rewards.append(reward);terminals.append(result['terminal']);elapsed.append(result['elapsed_ms'])
-        return {**prepared,'reset':reset,'initial_hidden':initial.detach(),'actions':out['actions'],
-            'old_logprob':out['logprob'],'old_value':out['value'],
-            'terminal':torch.tensor(terminals,device=self.device),
-            'learn':torch.tensor(active,device=self.device),'economic_reward':rewards,'elapsed_ms':elapsed}
+        with neural_section():
+            return {**prepared,'reset':reset,'initial_hidden':initial.detach(),'actions':out['actions'],
+                'old_logprob':out['logprob'],'old_value':out['value'],
+                'terminal':torch.tensor(terminals,device=self.device),
+                'learn':torch.tensor(active,device=self.device),'economic_reward':rewards,'elapsed_ms':elapsed}
 
     def collect(self,compute_steps=32,*,deterministic=False,bootstrap=True):
         if type(compute_steps)is not int or compute_steps<=0:raise ValueError('POSITIVE_COMPUTE_CHUNK')
@@ -109,7 +112,7 @@ class BatchStream:
         if not frames:raise ValueError('NO_ACTIVE_WORLD_FRAMES')
         value=None
         if bootstrap:
-            with torch.no_grad():
+            with neural_section(),torch.no_grad():
                 prepared=inputs([e.observe()for e in self.envs],self.device)
                 kwargs={**prepared,'hidden':self.hidden,'reset':torch.zeros(len(self.envs),device=self.device,dtype=torch.bool)}
                 value=(self.model.bootstrap_value(**kwargs)if self.rollout_only else self.model.step(**kwargs,deterministic=True)['value'])

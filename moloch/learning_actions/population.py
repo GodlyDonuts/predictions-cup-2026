@@ -11,6 +11,7 @@ import hashlib
 import math
 import random
 import torch
+from .neural_sessions import neural_only,seed_neural
 from .policy import ApiPolicy
 from moloch.learning_v2.policy import masked_categorical
 from moloch.learning_v2.train_inner import fingerprint
@@ -105,6 +106,7 @@ def _actor_parameter(name,operator):
     return True
 
 
+@neural_only
 def mutate(model,probe,operator,seed,*,maximum_trials=8,fresh_initializer=None):
     if operator not in OPERATORS:raise ValueError('KNOWN_POPULATION_OPERATOR_REQUIRED')
     if type(maximum_trials)is not int or maximum_trials<1:raise ValueError('POSITIVE_MUTATION_TRIALS')
@@ -116,7 +118,7 @@ def mutate(model,probe,operator,seed,*,maximum_trials=8,fresh_initializer=None):
             'old_on_policy_trajectories_must_be_discarded':True}
     try:
         with torch.random.fork_rng(devices=[device]if device.type=='cuda'else[]):
-            torch.manual_seed(seed)
+            seed_neural(seed)
             if operator=='fresh':
                 model.load_state_dict(type(model)(model.hidden_size).to(device).state_dict())
                 if fresh_initializer is not None:report['fresh_initialization']=fresh_initializer(model)
