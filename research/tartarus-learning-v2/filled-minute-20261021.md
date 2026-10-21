@@ -1,10 +1,11 @@
 # One filled order per minute: execution objective and current gap
 
-R76 is verified live as sole worker 1041499. At 23:05:28 UTC its executable, original 481 fills and complete 2,601,300,909-byte financial prefix matched the installation evidence. Original no-network repeat entry 20449 was recovered without resubmission. [Live verification](r76-fresh-live-20261021.json), [recovery](r76-topup-recovery-20261021.json).
+R76 remains the sole live worker while R77 is prepared. The replacement removes repeated closed-order history scans: median reader work fell from 14.8446 to 1.0228 seconds with identical original rows, a 93.11% component improvement. Full build and 379 integration/worker checks pass; whole-worker speed and fill-rate improvement are not yet established. [Change and exact qualification](closed-index-r77-20261021.md).
 
-At 23:12:27 UTC, the original-receipt audit counted **one distinct first-filled order in 15 minutes**, four in 60 minutes and 16 today. **The one-trade-per-minute target remains unmet.** R76 order 20545/54709337 bought six 1043 NO shares for 4.86 SUSQies at 23:08:50.266. The preceding 385-share 966 buy was an R74 resting order filled during restoration, not a new R76 decision. Cash is 10,479.03 and remaining original position cost is 85,390.88; neither is current equity. Attributed realized net remains 289.995, including the unchanged 76.52 inherited portion. [Original receipts, FIFO and cadence](r76-turnover-20261021.json).
+At 23:25 UTC, original receipts establish **18 distinct first-filled orders today, two in 15 minutes and five in 60 minutes**. The one-trade-per-minute target remains unmet. Three new R76 buy orders filled; partial receipts count only once. Cash is 895.22 and remaining original cost is 94,974.69. Attributed realized net remains 289.995, including 76.52 inherited. [Receipts and FIFO](r76-turnover-later-20261021.json).
 
-R76's 14-market exit-hint pass measured 505 ms at 23:11:39; completed scope work still takes roughly 60–120 seconds. Another order acknowledgment is not counted as a fill. Focused ChatGPT research is complete, and the finite file-only exit census is running. An isolated recorder optimization remains undeployed. [Execution evidence and limits](hint-batch-r76-20261021.md), [turnover economics](turnover-economics-20261021.md).
+Separate official account receipts at 23:26:10–12 show marked equity **94,398.90 SUSQies, down 5.6011%** from 100,000. This is neither an atomic snapshot nor executable liquidation value. Most capital is deployed; sustained turnover now depends on exits. [Account evidence](r76-latest-account-20261021.json).
+
 
 The dated observations below remain historical evidence.
 

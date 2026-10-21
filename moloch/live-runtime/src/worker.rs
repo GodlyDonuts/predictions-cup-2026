@@ -81,8 +81,8 @@ fn rank_yield_unsubmitted_drafts(c:&Control,bank:&mut Session,log:&mut DispatchL
 // A reviewed handoff may yield only the target's exact never-submitted drafts.
 // Original bindings and all positive not-sent/retirement records remain intact.
 fn rank_managed_yield_candidates(bank:&Session,log:&DispatchLog,ex:&str)->Vec<Value>{
- bank.engine().order_records().into_iter().filter(|q|q["exchangeId"]==ex&&q["retired"]==false&&!rank_quote(q)&&q["filled"]==0
-  &&q["id"].as_u64().is_some_and(|id|!bank.engine().is_package_order(id)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))).collect()
+ moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["exchangeId"]==ex&&q["retired"]==false&&!rank_quote(q)&&q["filled"]==0
+  &&q["id"].as_u64().is_some_and(|id|!bank.engine().is_package_order(id)&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&!bank.engine().fills().iter().any(|f|f["orderId"]==id))).cloned().collect()
 }
 fn rank_yield_managed_drafts(bank:&mut Session,log:&mut DispatchLog,ex:&str)->Result<()>{
  log.require_resolved_attempts()?;
@@ -477,7 +477,7 @@ fn snapshot_write_observation(c:&Control,original_control:&[u8],bank:&Session,or
 fn write_tartarus_native_view(c:&Control,bank:&Session,ordinary:&DispatchLog,f:Option<&FundamentalRuntime>)->Result<()>{
  let ownership=f.map(|f|f.cohorts.rank_inventory_states(bank,ordinary)).transpose()?.unwrap_or_default();
  let receipts=SNAPSHOT_RECEIPTS.with(|cache|cache.borrow().as_ref().filter(|v|v.root==c.root).map(|v|v.rows.iter().flatten().map(|r|json!({"receiptSha256":feedback::digest(r).ok(),"endpoint":r.endpoint,"requestStartedAt":r.request_started_at,"receivedAt":r.received_at})).collect::<Vec<_>>()).unwrap_or_default());
- let orders:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).collect();
+ let orders:Vec<_>=moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false).cloned().collect();
  let managed=f.map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();let yieldable=rank_yield_candidates(c,bank,ordinary,&managed)?;
  let after_yield=rank_after_yield_reserved(bank,&yieldable)?;
  let mut target_projections=serde_json::Map::new();for ex in &managed{let selected=rank_managed_yield_candidates(bank,ordinary,ex);let mut all=yieldable.clone();all.extend(selected.iter().cloned());target_projections.insert(ex.clone(),json!({"expectedReservedCash":money(rank_after_yield_reserved(bank,&all)?),"targetQuoteIds":selected.iter().map(|q|q["id"].clone()).collect::<Vec<_>>(),"alreadyRetired":false,"actualCashCredited":"0.000000","executionAuthority":false}));}

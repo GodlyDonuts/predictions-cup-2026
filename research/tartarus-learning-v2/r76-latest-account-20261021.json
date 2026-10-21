@@ -1,0 +1,28 @@
+{
+  "observedUtc": "2026-10-21T23:28:45.210775+00:00",
+  "cash": "895.22",
+  "officialMarkedPositions": "93503.68",
+  "officialMarkedEquity": "94398.90",
+  "changeFromInitial": "-5601.10",
+  "markedRoiPct": "-5.601100",
+  "sourceReceipts": {
+    "cash": {
+      "receivedAt": "2026-10-21T23:26:12.689Z",
+      "originalReceiptSha256": "46f255a2f5eed3f82befd9cfe6d3bc43cdbd1a5fd829895396b2a021d5e3dbbd",
+      "retainedFileSha256": "3c52544c0e42d166b696e966ea835e788e4a95407fdf6ce5dc398eecdcec050e"
+    },
+    "positions": {
+      "receivedAt": "2026-10-21T23:26:10.888Z",
+      "originalReceiptSha256": "9567227a5c0b368dc4aa8cdfcdb21ed7f26a71a326b71906b46f725e6f75a068",
+      "retainedFileSha256": "0ce2590f17102084866b32bb783419031ad804eb81c3b8892c25511b32df5e1e"
+    },
+    "orders": {
+      "receivedAt": "2026-10-21T23:26:11.733Z",
+      "originalReceiptSha256": "9a6beee14282d107f5dc428929b85212ffa6f235a103552223ded47b5fe43b91",
+      "retainedFileSha256": "a3a0f0569174d19006c81e63eda14b5ae76e1f4f269fddcbb61d4076be190144"
+    }
+  },
+  "officialAtomicSnapshot": false,
+  "valuationBasis": "Separate existing owner receipts; official marks, not executable liquidation",
+  "accountRequestsByAudit": 0
+}

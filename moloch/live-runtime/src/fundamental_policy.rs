@@ -585,14 +585,43 @@ fn generation_package_protects(p:&Value,ex:&str)->bool{
 // Bounded original dispatch parse cache. No account/native/book/clock facts.
 const CLOSED_CACHE_BYTES:usize=8*1024*1024;
 const CLOSED_CACHE_COUNT:usize=32;
+// Row offsets share one fully verified, immutable dispatch head. Different
+// market selections must not each reparse and hash the same complete journal.
+// An oversized index falls back to the original full scan; no row is omitted
+// from validation and no financial/clock/account fact is cached here.
+const CLOSED_INDEX_ROWS:usize=65_536;
+struct ClosedRowsIndex{pin:FilePin,offsets:BTreeMap<u64,Vec<(u64,usize)>>}
 struct CachedClosedRows{rows:BTreeMap<u64,Vec<Value>>,pin:FilePin}
-#[derive(Default)]struct ClosedRowsCache{descriptor:Option<Value>,entries:BTreeMap<BTreeSet<u64>,CachedClosedRows>,bytes:usize,#[cfg(test)]parses:u64}
+#[derive(Default)]struct ClosedRowsCache{descriptor:Option<Value>,entries:BTreeMap<BTreeSet<u64>,CachedClosedRows>,index:Option<ClosedRowsIndex>,bytes:usize,#[cfg(test)]parses:u64}
+fn index_closed_row(index:&mut Option<BTreeMap<u64,Vec<(u64,usize)>>>,count:&mut usize,id:u64,offset:u64,len:usize,maximum:usize){
+    if *count>=maximum{*index=None;return}
+    if let Some(rows)=index{rows.entry(id).or_default().push((offset,len));*count+=1;}
+}
+fn closed_rows_from_index(index:&ClosedRowsIndex,wanted:&BTreeSet<u64>)->Result<BTreeMap<u64,Vec<Value>>>{
+    index.pin.validate_cached_rows()?;let mut found=BTreeMap::new();
+    for id in wanted{
+        let offsets=index.offsets.get(id).ok_or("FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
+        need(offsets.len()<=4,"FUNDAMENTAL_REARM_DUPLICATE_LIFECYCLE")?;
+        need(offsets.len()==4,"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;let mut rows=Vec::new();
+        for &(offset,len) in offsets{
+            need(len<=MAX_DISPATCH_ROW&&offset.checked_add(len as u64).is_some_and(|end|end<=index.pin.bytes),"FUNDAMENTAL_REARM_DISPATCH_ROW_BOUND")?;
+            let mut bytes=vec![0;len];
+            #[cfg(unix)]{use std::os::unix::fs::FileExt;index.pin.file.read_exact_at(&mut bytes,offset)?;}
+            #[cfg(not(unix))]{return Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
+            let original:Value=serde_json::from_slice(&bytes)?;
+            need(original["event"]["qid"]==*id&&matches!(original["event"]["kind"].as_str(),Some("intent"|"attempt"|"ack"|"recovered_ack"|"closed")),"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
+            rows.push(original);
+        }
+        found.insert(*id,rows);
+    }
+    index.pin.validate_metadata()?;Ok(found)
+}
 fn original_closed_rows(cache:&std::sync::Mutex<ClosedRowsCache>,ordinary_path:&PathBuf,ordinary_identity:&Value,log:&DispatchLog,wanted:&BTreeSet<u64>)->Result<(BTreeMap<u64,Vec<Value>>,FilePin)>{
         need(wanted.len()<=128&&wanted.iter().all(|id|log.attempted.contains(id)&&log.closed.contains(id)&&log.acknowledgments.contains_key(id)),"FUNDAMENTAL_REARM_NOT_CLOSED")?;
         let before=log.descriptor_identity()?;
-        {
+        let indexed={
             let mut retained=cache.lock().map_err(|_|"FUNDAMENTAL_CLOSED_CACHE_LOCK")?;
-            if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.bytes=0;retained.descriptor=Some(before.clone());}
+            if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.index=None;retained.bytes=0;retained.descriptor=Some(before.clone());}
             if let Some(entry)=retained.entries.get(wanted){
                 need(entry.pin.path==*ordinary_path&&entry.pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
                 // The sole owner already verified this exact dispatch head.
@@ -604,24 +633,44 @@ fn original_closed_rows(cache:&std::sync::Mutex<ClosedRowsCache>,ordinary_path:&
                 let pin=FilePin{file:entry.pin.file.try_clone()?,path:entry.pin.path.clone(),identity:entry.pin.identity.clone(),bytes:entry.pin.bytes,sha:entry.pin.sha.clone(),maximum:entry.pin.maximum,version:entry.pin.version.clone()};
                 pin.validate_metadata()?;return Ok((entry.rows.clone(),pin));
             }
-            #[cfg(test)]{retained.parses+=1;}
-        }
+            if let Some(index)=&retained.index{
+                need(index.pin.path==*ordinary_path&&index.pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
+                let found=closed_rows_from_index(index,wanted)?;
+                need(before==log.descriptor_identity()?,"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
+                let p=&index.pin;let pin=FilePin{file:p.file.try_clone()?,path:p.path.clone(),identity:p.identity.clone(),bytes:p.bytes,sha:p.sha.clone(),maximum:p.maximum,version:p.version.clone()};
+                Some((found,pin))
+            }else{#[cfg(test)]{retained.parses+=1;}None}
+        };
+        let(mut new_index,mut index_count)=(None,0usize);
+        let(found,pin)=if let Some(result)=indexed{result}else{
         let pin=FilePin::from_held(File::open(ordinary_path)?,ordinary_path.clone(),64*1024*1024,None)?;
         need(pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;let bytes=read_file(&pin.file,pin.maximum)?;need(bytes.is_empty()||bytes.last()==Some(&b'\n'),"FUNDAMENTAL_REARM_DISPATCH_TORN")?;
         let mut sequence=0u64;let mut previous="0".repeat(64);let mut found:BTreeMap<u64,Vec<Value>>=BTreeMap::new();
-        for line in bytes.split(|b|*b==b'\n').filter(|l|!l.is_empty()){
+        new_index=Some(BTreeMap::new());let mut offset=0u64;
+        for encoded in bytes.split_inclusive(|b|*b==b'\n'){
+            let line=&encoded[..encoded.len()-1];let row_offset=offset;offset+=encoded.len() as u64;if line.is_empty(){continue}
             need(line.len()<=MAX_DISPATCH_ROW,"FUNDAMENTAL_REARM_DISPATCH_ROW_BOUND")?;let original:Value=serde_json::from_slice(line)?;let mut row=original.clone();let sha=row.as_object_mut().ok_or("FUNDAMENTAL_REARM_DISPATCH_ROW")?.remove("hash").ok_or("FUNDAMENTAL_REARM_DISPATCH_HASH")?;
             need(row["sequence"]==sequence+1&&row["previous"]==previous&&sha==digest(&row)?,"FUNDAMENTAL_REARM_DISPATCH_CHAIN")?;
+            if let Some(id)=row["event"]["qid"].as_u64(){if matches!(row["event"]["kind"].as_str(),Some("intent"|"attempt"|"ack"|"recovered_ack"|"closed")){
+                index_closed_row(&mut new_index,&mut index_count,id,row_offset,line.len(),CLOSED_INDEX_ROWS);
+            }}
             if let Some(id)=row["event"]["qid"].as_u64().filter(|id|wanted.contains(id)){
                 if matches!(row["event"]["kind"].as_str(),Some("intent"|"attempt"|"ack"|"recovered_ack"|"closed")){let rows=found.entry(id).or_default();need(rows.len()<4,"FUNDAMENTAL_REARM_DUPLICATE_LIFECYCLE")?;rows.push(original);}}
             sequence+=1;previous=sha.as_str().ok_or("FUNDAMENTAL_REARM_DISPATCH_HASH")?.into();
         }
         pin.validate()?;need(before==log.descriptor_identity()?&&before["sequence"]==sequence&&before["previous"]==previous&&found.len()==wanted.len()&&found.values().all(|r|r.len()==4),"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
+        (found,pin)};
+        if let Some(offsets)=new_index{
+            let p=&pin;let index_pin=FilePin{file:p.file.try_clone()?,path:p.path.clone(),identity:p.identity.clone(),bytes:p.bytes,sha:p.sha.clone(),maximum:p.maximum,version:p.version.clone()};
+            let mut retained=cache.lock().map_err(|_|"FUNDAMENTAL_CLOSED_CACHE_LOCK")?;
+            need(retained.descriptor.as_ref()==Some(&before),"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
+            retained.index=Some(ClosedRowsIndex{pin:index_pin,offsets});
+        }
         let serialized=serde_json::to_vec(&found)?.len().saturating_add(wanted.len().saturating_mul(std::mem::size_of::<u64>()));
         if serialized<=CLOSED_CACHE_BYTES{
             let cached_pin=FilePin{file:pin.file.try_clone()?,path:pin.path.clone(),identity:pin.identity.clone(),bytes:pin.bytes,sha:pin.sha.clone(),maximum:pin.maximum,version:pin.version.clone()};
             let mut retained=cache.lock().map_err(|_|"FUNDAMENTAL_CLOSED_CACHE_LOCK")?;
-            if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.bytes=0;retained.descriptor=Some(before.clone());}
+            need(retained.descriptor.as_ref()==Some(&before),"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
             if retained.entries.len()>=CLOSED_CACHE_COUNT||retained.bytes.saturating_add(serialized)>CLOSED_CACHE_BYTES{retained.entries.clear();retained.bytes=0;}
             retained.bytes+=serialized;retained.entries.insert(wanted.clone(),CachedClosedRows{rows:found.clone(),pin:cached_pin});
         }
