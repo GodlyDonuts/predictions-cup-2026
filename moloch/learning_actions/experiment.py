@@ -34,6 +34,10 @@ class Experiment:
         if type(batch)is not bool or type(heads)is not bool or(heads and not batch):
             raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_REQUIRE_BATCH_EVALUATION')
         self.config=config;self.output=Path(output)
+        from .realtime import refresh_profile
+        effective_refresh=refresh_profile(config.get('sig_realtime_refresh_mode'))
+        if config.get('sig_realtime_refresh_mode')is not None and config.get('sig_realtime_mode')is None:
+            raise ValueError('REFRESH_PROFILE_REQUIRES_REALTIME_ADAPTER')
         if type(config.get('evaluation_actions_only',False))is not bool:raise ValueError('EXPLICIT_EVALUATION_STATISTICS_PROFILE')
         if type(config.get('compact_rollout_statistics',False))is not bool:raise ValueError('EXPLICIT_ROLLOUT_STATISTICS_PROFILE')
         self.output.mkdir(parents=True,exist_ok=False)
@@ -142,6 +146,7 @@ class Experiment:
               for root in ('learning_actions','learning_realism','learning_v2','learning_flow')
               for p in (Path('moloch')/root).glob('*.py')if not p.name.startswith('test_')}
         self.frozen={'config':config,'dataset_manifest_sha256':self.dataset_sha,
+            'realtime_refresh_mode':effective_refresh if config.get('sig_realtime_mode')is not None else None,
             'mechanics_sha256':hashlib.sha256(Path(config['mechanics']).read_bytes()).hexdigest(),
             'source_sha256':pins,'production_authority':False,
             'full_history_experiment':not self.development,'independent_test_used':False,
@@ -277,7 +282,8 @@ class Experiment:
         if self.config.get('sig_realtime_mode')is not None:
             from .realtime import DerivedStream
             if self.config['sig_realtime_mode']!=DerivedStream.mode:raise ValueError('EXPLICIT_DERIVED_STREAM_ASSUMPTION_REQUIRED')
-            env.realtime=DerivedStream(env,public_trades=self.config.get('derived_public_trade_stream',False))
+            env.realtime=DerivedStream(env,public_trades=self.config.get('derived_public_trade_stream',False),
+                                      refresh_mode=self.config.get('sig_realtime_refresh_mode'))
             env.keys['SIG'].append(('realtime_token',))
             initial=self.config.get('initial_sig_realtime')
             if initial not in(None,'request_token'):raise ValueError('EXPLICIT_INITIAL_STREAM_STATE')

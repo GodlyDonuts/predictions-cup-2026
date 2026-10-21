@@ -9,14 +9,25 @@ original transport frames. Token minting is a write; connected delivery is not.
 from copy import deepcopy
 from math import log1p
 
+LEGACY_REFRESH='reconnect_on_token_receipt_v1'
+CONTINUOUS_REFRESH='preserve_active_channel_on_token_refresh_v2'
+
+
+def refresh_profile(value):
+    if value is None:return CONTINUOUS_REFRESH
+    if type(value)is not str or value not in(LEGACY_REFRESH,CONTINUOUS_REFRESH):
+        raise ValueError('EXPLICIT_REALTIME_REFRESH_PROFILE_REQUIRED')
+    return value
+
 
 class DerivedStream:
     mode='producer_validated_derived_books_not_raw_topic_replay'
     token_lifetime_ms=3*60*60*1000  # Official public API docs observed October19.
     reconciliation_interval_ms=120000  # Frozen example cadence, not an API limit.
 
-    def __init__(self,env,*,public_trades=False):
+    def __init__(self,env,*,public_trades=False,refresh_mode=None):
         if type(public_trades)is not bool:raise ValueError('EXPLICIT_DERIVED_PUBLIC_TRADE_PROFILE')
+        self.refresh_mode=refresh_profile(refresh_mode);self.token_revision=0
         self.env=env;self.enabled=False;self.expires_at=0
         self.public_trades=public_trades;self.public_deliveries=0;self.public_duplicates=0;self.public_suppressed=0
         self.public_global_revision=0;self.public_market_revisions={};self.public_exchange_revisions={}
@@ -66,14 +77,22 @@ class DerivedStream:
         if kind=='derived_token_receipt':
             rid,revision=value;env.budget.complete(rid,at)
             if revision!=self.control_revision:return True
-            self.connection+=1;self.enabled=True;self.expires_at=at+self.token_lifetime_ms
-            self.private_pending=False
-            self.private_fills.clear();self.private_orders.clear();self.private_fill_cursor=len(env.api_fills)
-            self.invalidate()
-            env.clock.schedule(self.expires_at,30,'derived_token_expiry',self.connection)
+            # Refreshing auth on a still-open channel is not a reconnect. A
+            # genuine closure/expiry still requires rejoin and a paid baseline.
+            preserve=(self.refresh_mode==CONTINUOUS_REFRESH and self.enabled and at<self.expires_at)
+            if not preserve:
+                self.connection+=1;self.private_pending=False
+                self.private_fills.clear();self.private_orders.clear();self.private_fill_cursor=len(env.api_fills)
+                self.invalidate()
+            else:env.observation_revision+=1
+            self.enabled=True;self.expires_at=at+self.token_lifetime_ms;self.token_revision+=1
+            expiry=(self.connection,self.token_revision,self.expires_at)if self.refresh_mode==CONTINUOUS_REFRESH else self.connection
+            env.clock.schedule(self.expires_at,30,'derived_token_expiry',expiry)
             return True
         if kind=='derived_token_expiry':
-            if value==self.connection:self.enabled=False;self.private_pending=False;self.invalidate()
+            expected=((self.connection,self.token_revision,self.expires_at)
+                      if self.refresh_mode==CONTINUOUS_REFRESH else self.connection)
+            if value==expected:self.enabled=False;self.private_pending=False;self.invalidate()
             return True
         if kind=='derived_private_publish':
             if self.enabled and value==self.connection:
