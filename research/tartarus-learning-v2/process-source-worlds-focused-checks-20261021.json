@@ -1,0 +1,37 @@
+{
+  "observedUtc": "2026-10-21T06:00:25.015454+00:00",
+  "testsPassed": 31,
+  "failed": 0,
+  "skipped": 0,
+  "wallSeconds": 33.511,
+  "modules": [
+    "test_process_worlds",
+    "test_batched",
+    "test_training_reward",
+    "test_population_experiment",
+    "test_episode_tape",
+    "test_book_pool"
+  ],
+  "sourceSha256": {
+    "process_worlds.py": "9d6495a65ff0e0e13d688c170a471d6cefc563828f19dcd9ef457c3b6e49172a",
+    "world_step.py": "ff843fa6207f896cbfe1bae5378f6ea24506d85ce67cf41a0f5770f9a11f453e",
+    "batched.py": "49cd55e05135c4d7423d4f8f88cac274a0ac746660c9379e62160ad0c0035ba1",
+    "experiment.py": "554d338411ca95f51a76ecfb6f239524792aff723b78d2ee5d61d01741ab5dc9",
+    "test_process_worlds.py": "f00a11d0dd43a568c631c1ac882f5b8b9c3ef6ec8b4406d0466d67c1897a130a"
+  },
+  "mechanisticProof": [
+    "spawnedCPUWorkers",
+    "exactObservationAndActionFrames",
+    "sameFinalHiddenAndParentRNG",
+    "identicalModelWeightsAndAdamState",
+    "completeTwoDayHumanRewardConservation",
+    "actualSQLiteExperimentEntrypoint",
+    "realRegistryLockWaitAndHoldoutRejection",
+    "noRestartAfterWorkerLoss"
+  ],
+  "actualMarketSpeedOrROIEstablished": false,
+  "active033Changed": false,
+  "queued034Changed": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

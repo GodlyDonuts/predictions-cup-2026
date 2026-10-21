@@ -24,12 +24,18 @@ from .selection import frozen,IndependentTest,DataUse
 
 class Experiment:
     def close(self):
+        cohort=getattr(self,'_source_cohort',None)
+        if cohort is not None:cohort.close();self._source_cohort=None
         history=getattr(self,'history_bindings',None)
         if history is not None:history.close()
         store=getattr(getattr(self,'original',None),'disk_store',None)
         if store is not None:store.close()
 
-    def __init__(self,config,output):
+    def __init__(self,config,output,*,data_use=None):
+        process_worlds=config.get('process_source_worlds',False)
+        if type(process_worlds)is not bool:raise ValueError('EXPLICIT_PROCESS_SOURCE_WORLD_PROFILE')
+        if process_worlds and config.get('closed_episode_return_replay',False):
+            raise ValueError('PROCESS_SOURCE_WORLDS_CURRENTLY_REQUIRE_ONLINE_PPO')
         batch=config.get('batched_evaluation',False);heads=config.get('batched_evaluation_action_heads',False)
         if type(batch)is not bool or type(heads)is not bool or(heads and not batch):
             raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_REQUIRE_BATCH_EVALUATION')
@@ -173,7 +179,9 @@ class Experiment:
         if not self.development:
             self.frozen['replay_specification_sha256']=hashlib.sha256(Path(config['specification']).read_bytes()).hexdigest()
         self.spec_sha=frozen(self.output/'experiment.json',self.frozen)
-        self.data_use=DataUse()
+        if data_use is not None and not isinstance(data_use,DataUse):
+            raise ValueError('ORIGINAL_DATA_USE_REGISTRY_REQUIRED')
+        self.data_use=DataUse()if data_use is None else data_use
         # Register before collection, conservatively covering every training
         # and selection time the run may use, across all compiled versions.
         self.data_use.record('train',*self.train_bounds,self.spec_sha)
@@ -402,15 +410,36 @@ class Experiment:
         a,b=self.train_bounds
         length=training_horizon(self.config,self.train_bounds,development=self.development)
         starts=[self.rng.randrange(a,b-length+1)for _ in range(count)]
-        envs=[self.world('train',start,start+length)for start in starts]
-        ledgers=[training_ledger(e,self.config,development=self.development)for e in envs]
-        if self.calibration is None:
-            self.calibration=calibrate(envs[0],model)
-            frozen(self.output/'compute-calibration.json',self.calibration)
+        backend=None
+        if self.config.get('process_source_worlds',False):
+            # IPC is offline organization, not live actor compute cost. Measure
+            # the original complete local actor before constructing any proxy.
+            if self.calibration is None:
+                from .episode_training import release_worlds
+                local=self.world('train',starts[0],starts[0]+length)
+                try:self.calibration=calibrate(local,model)
+                finally:release_worlds([local])
+                frozen(self.output/'compute-calibration.json',self.calibration)
+            from .process_worlds import ProcessCohort,ExperimentFactory
+            index=getattr(self,'source_cohort_counter',0);self.source_cohort_counter=index+1
+            directory=self.output/'source-cohorts'/('cohort-%06d'%index)
+            factories=[(ExperimentFactory(self.config,str(directory/('world-%03d'%i)),start,start+length),())
+                       for i,start in enumerate(starts)]
+            backend=ProcessCohort(factories);self._source_cohort=backend
+            envs=backend.worlds;ledgers=[None]*len(envs)
+            frozen(directory/'worker-identities.json',{'startMethod':'spawn',
+                'workers':backend.identities,'worldBounds':[[e.now,e.end]for e in envs],
+                'modelInParentOnly':True,'productionAuthority':False})
+        else:
+            envs=[self.world('train',start,start+length)for start in starts]
+            ledgers=[training_ledger(e,self.config,development=self.development)for e in envs]
+            if self.calibration is None:
+                self.calibration=calibrate(envs[0],model)
+                frozen(self.output/'compute-calibration.json',self.calibration)
         stream=BatchStream(envs,model,ledgers,calibration=self.calibration,
                            behavior_guard=self.config.get('on_policy_guard','sha256'),
                            compact_finished=self.config.get('compact_finished_worlds',False),
-                           rollout_only=self.config.get('compact_rollout_statistics',False))
+                           rollout_only=self.config.get('compact_rollout_statistics',False),world_backend=backend)
         closed=self.config.get('closed_episode_return_replay',False)
         if closed:self.train_closed_episode(stream,model,optimizer)
         while not closed and any(e.now<e.end for e in envs):
@@ -424,21 +453,15 @@ class Experiment:
                 'compute_batch_worlds':len(chunk.initial_hidden),
                 'virtual_ms':[e.now for e in envs],'episode_end_ms':[e.end for e in envs],
                 'completed_worlds':len(stream.completed),'updates':reports,
-                'fills':sum(len(e.api_fills)for e in envs),
+                'fills':sum(e.details['fill_count']if backend is not None else len(e.api_fills)for e in envs),
                 'cuda_peak_bytes':torch.cuda.max_memory_allocated()if self.device.startswith('cuda')else 0})
             self.training_snapshot(model,optimizer)
+        from .world_step import details
+        summaries=[e.details if backend is not None else details(e)for e in envs]
         cases=[{**stream.completed[i],'family_counts':dict(stream.action_counts[i]),
-            'passive_execution':None if envs[i].passive is None else {
-                'mode':envs[i].passive.mode,'source_volume':envs[i].passive.source_volume,
-                'intercepted_volume':envs[i].passive.intercepted_volume,'calibrated':False},
-            'derived_stream':None if envs[i].realtime is None else {
-                'mints':envs[i].realtime.mints,'book_deliveries':envs[i].realtime.deliveries,
-                'public_trades_enabled':envs[i].realtime.public_trades,
-                'public_trade_deliveries':envs[i].realtime.public_deliveries,
-                'public_trade_duplicates':envs[i].realtime.public_duplicates,
-                'public_trade_suppressed':envs[i].realtime.public_suppressed,
-                'gap_signals':envs[i].realtime.gaps,'connected_at_end':envs[i].realtime.enabled}}
-            for i in range(count)]
+                'passive_execution':summaries[i]['passive_execution'],
+                'derived_stream':summaries[i]['derived_stream']}for i in range(count)]
+        if backend is not None:backend.close();self._source_cohort=None
         return {'classification':'independent_simulated_worlds_not_additional_historical_evidence',
             'worlds':count,'reward':sum(c['reward']for c in cases)/count,
             'marked_roi':sum(c['marked_roi']for c in cases)/count,

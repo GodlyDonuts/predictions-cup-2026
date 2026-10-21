@@ -25,7 +25,7 @@ def inputs(observations,device):
 
 
 class BatchStream:
-    def __init__(self,envs,model,ledgers,*,calibration=None,behavior_guard='sha256',compact_finished=False,rollout_only=False):
+    def __init__(self,envs,model,ledgers,*,calibration=None,behavior_guard='sha256',compact_finished=False,rollout_only=False,world_backend=None):
         if type(rollout_only)is not bool:raise ValueError('EXPLICIT_ROLLOUT_STATISTICS_PROFILE')
         self.rollout_only=rollout_only
         if not envs or len(envs)!=len(ledgers)or any(e.role!='train'for e in envs):
@@ -34,6 +34,9 @@ class BatchStream:
         from .state_encoding import matching
         for env in envs:matching(env,model)
         self.envs=envs;self.model=model;self.ledgers=ledgers
+        self.world_backend=world_backend
+        if world_backend is not None and calibration is None:
+            raise ValueError('PROCESS_IPC_MUST_NOT_CALIBRATE_LIVE_ACTOR_LATENCY')
         self.device=next(model.parameters()).device
         self.hidden=model.initial_state(len(envs));self.decisions=[0]*len(envs)
         self.calibration=calibration or calibrate(envs[0],model)
@@ -46,9 +49,11 @@ class BatchStream:
     def step(self,*,deterministic=False):
         active=[e.now<e.end for e in self.envs]
         if not any(active):return None
-        for e,live in zip(self.envs,active):
-            if live:e.advance(e.now)
-        observations=[e.observe()for e in self.envs]
+        if self.world_backend is None:
+            for e,live in zip(self.envs,active):
+                if live:e.advance(e.now)
+            observations=[e.observe()for e in self.envs]
+        else:observations=self.world_backend.prepare(self.envs,active)
         prepared=inputs(observations,self.device)
         reset=torch.tensor([n==0 or not live for n,live in zip(self.decisions,active)],device=self.device)
         initial=self.hidden
@@ -60,22 +65,21 @@ class BatchStream:
             from .acting_validation import actions_to_python
             packed=actions_to_python(out['actions'])
         else:actions={k:v.detach().cpu().tolist()for k,v in out['actions'].items()}
+        python_actions=packed if packed is not None else [{k:v[i]for k,v in actions.items()}for i in range(len(self.envs))]
+        transitions=None if self.world_backend is None else self.world_backend.transitions(
+            self.envs,active,python_actions,self.latency)
         rewards=[];terminals=[];elapsed=[]
         for i,(env,live,observation)in enumerate(zip(self.envs,active,observations)):
             if not live:rewards.append(0.);terminals.append(True);elapsed.append(0);continue
-            before=env.now;action=packed[i]if packed is not None else{k:v[i]for k,v in actions.items()}
-            env.advance(min(env.end,before+self.latency))
-            if env.now<env.end:
-                result=env.act_raw(action,observation)
-                if result['status']=='ALARM':
-                    from .managed_data_service import advance_alarm
-                    advance_alarm(env,before,result)
-            reward=self.ledgers[i].transition()
-            if env.now>=env.end:
-                final=self.ledgers[i].finish();reward+=final['terminal_reward_correction']
-                self.completed[i]=final
+            action=python_actions[i]
+            if transitions is None:
+                from .world_step import transition
+                result=transition(env,self.ledgers[i],action,observation,self.latency)
+            else:result=transitions[i]
+            reward=result['reward']
+            if result['final']is not None:self.completed[i]=result['final']
             self.decisions[i]+=1;self.action_counts[i][int(action['family'])]+=1
-            rewards.append(reward);terminals.append(env.now>=env.end);elapsed.append(env.now-before)
+            rewards.append(reward);terminals.append(result['terminal']);elapsed.append(result['elapsed_ms'])
         return {**prepared,'reset':reset,'initial_hidden':initial.detach(),'actions':out['actions'],
             'old_logprob':out['logprob'],'old_value':out['value'],
             'terminal':torch.tensor(terminals,device=self.device),
@@ -122,6 +126,7 @@ class _ActiveWorldView(BatchStream):
         self.model=parent.model;self.device=parent.device;self.calibration=parent.calibration
         self.behavior_guard=parent.behavior_guard;self.compact_finished=False;self.latency=parent.latency
         self.rollout_only=parent.rollout_only
+        self.world_backend=parent.world_backend
         self.decisions=[parent.decisions[i]for i in indices]
         self.action_counts=[parent.action_counts[i]for i in indices];self.completed={}
         self._hidden=parent.hidden.index_select(0,self.indices)
