@@ -14,6 +14,13 @@ def main():
  sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
  assert sha(j/'config.json')==plan['configSha256'];assert sha(j/'calibration.json')==plan['calibrationSha256'];assert sha(root/'source-snapshot.json')==plan['sourceManifestSha256'];assert verify_source(root)['commit']==plan['sourceCommit']
  c=json.loads((j/'config.json').read_bytes());assert c['device']=='cpu' and c['cpu_threads']==1;assert c['batched_evaluation'] is True and c['batched_evaluation_action_heads'] is True;assert c['process_source_worlds'] is False
+ reference=plan.get('referenceComparison')
+ if reference is not None:
+  assert sha(reference['resultPath'])==reference['resultSha256'];assert sha(reference['planPath'])==reference['planSha256']
+  previous=json.loads(Path(reference['resultPath']).read_bytes());prior_plan=json.loads(Path(reference['planPath']).read_bytes())
+  assert previous['sourceManifestSha256']==plan['sourceManifestSha256'] and previous['datasetManifestSha256']==plan['datasetManifestSha256']
+  assert prior_plan['configSha256']==plan['configSha256'] and prior_plan['calibrationSha256']==plan['calibrationSha256']
+  assert previous['device']=='cpu' and previous['frozenActorCostMs']==plan['frozenActorCostMs'] and previous['independentTestUsed'] is False
  assert not torch.cuda.is_initialized();e=None;started=time.perf_counter();label=None;original=EvaluationBatch.run_chunk
  def progress(batch,*a,**kw):
   n=original(batch,*a,**kw);d=dict(observedUtc=datetime.now(timezone.utc).isoformat(),policy=label,decisions=batch.decisions,virtualMs=[x.now for x in batch.envs],endMs=[x.end for x in batch.envs],wallSeconds=time.perf_counter()-started,optimizerRun=False,independentTestUsed=False);q=j/'progress.pending';q.write_text(json.dumps(d));q.replace(j/'progress.json');return n
@@ -32,7 +39,8 @@ def main():
    assert len(selection['cases'])==2 and all(x['D']==2 and x['start_ms']==plan['evaluationBoundsMs'][0] and x['end_ms']==plan['evaluationBoundsMs'][1] for x in selection['cases'])
    value=dict(policy=label,checkpointSha256=cp['sha256'],parameterSha256=before,selection=selection,wallSeconds=time.perf_counter()-t,weightsUnchanged=True,optimizerRun=False)
    (j/(label+'-RESULT.json')).write_text(json.dumps(value,indent=2)+'\n');results[label]=value;del model,bundle;gc.collect()
-  e.close();e=None;verify_source(root);result=dict(observedUtc=datetime.now(timezone.utc).isoformat(),classification='paired_CPU_full_two_day_development_not_independent_ROI',sourceCommit=plan['sourceCommit'],sourceManifestSha256=plan['sourceManifestSha256'],planSha256=sha(j/'PLAN.json'),datasetManifestSha256=plan['datasetManifestSha256'],candidateTrainingUpdates=plan['candidate']['updates'],candidateTrainingDecisions=plan['candidate']['decisions'],device='cpu',frozenActorCostMs=plan['frozenActorCostMs'],sameHistoricalSourceAndCaseSeeds=True,nominalAndStressedPathsDiffer=True,bitEquivalentToGPU=False,results=results,wallSeconds=time.perf_counter()-started,optimizerRun=False,activeTrainerChanged=False,independentTestUsed=False,productionChanged=False,physicalAccountRequests=0)
+  e.close();e=None;verify_source(root);result=dict(observedUtc=datetime.now(timezone.utc).isoformat(),classification='matched_CPU_full_two_day_development_not_independent_ROI',sourceCommit=plan['sourceCommit'],sourceManifestSha256=plan['sourceManifestSha256'],planSha256=sha(j/'PLAN.json'),datasetManifestSha256=plan['datasetManifestSha256'],candidateTrainingUpdates=plan['candidate']['updates'],candidateTrainingDecisions=plan['candidate']['decisions'],device='cpu',frozenActorCostMs=plan['frozenActorCostMs'],sameHistoricalSourceAndCaseSeeds=True,nominalAndStressedPathsDiffer=True,bitEquivalentToGPU=False,results=results,wallSeconds=time.perf_counter()-started,optimizerRun=False,activeTrainerChanged=False,independentTestUsed=False,productionChanged=False,physicalAccountRequests=0)
+  result['referenceComparison']=reference
   (j/'RESULT.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:dict(reward=v['selection']['reward'],markedROI=v['selection']['marked_roi_min'])for k,v in results.items()}),flush=True)
  except BaseException as ex:
   (j/'FAILED.json').write_text(json.dumps(dict(type=type(ex).__name__,reason=str(ex))));traceback.print_exc();raise
