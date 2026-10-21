@@ -792,6 +792,10 @@ fn recover_unadmitted(c:&Control)->Result<()>{
 /// account nor send an order. The proof factory verifies the original SDK and
 /// dispatch chains and the externally pinned approval before this is created.
 struct LocalGuardRecoveryAuthority{scope:Value,binding:Value}
+/// Used only after an SDK proof of no HTTP and retirement of the original key.
+fn expired_fundamental_final_guard(code:&str,end:u64,original_expiry:Option<u64>)->bool{
+ code=="FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED"&&original_expiry.is_some_and(|expiry|end>=expiry)
+}
 fn expected_ordinary_final_guard(code:&str)->bool{matches!(code,"LIVE_CONTRACT_OR_BOOK_STALE"|"LIVE_ACCOUNT_STALE"|"LIVE_VERIFIED_STREAM_REQUIRED"|"PERMIT_EXPIRED_OR_INVALID")}
 impl Authority for LocalGuardRecoveryAuthority{
  fn can_read(&self,_:&Scope)->bool{false}
@@ -1505,6 +1509,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  if q["action"]=="buy"&&rank.is_none()&&fundamental_decision.is_none()&&maker.is_none()&&!unreviewed_inventory_reduction(c,bank,log,q)?{
   authority.clear_ready();atomic_json(&c.root.join("ordinary-entry-quarantine-deferred.json"),&json!({"at":iso(now()),"qid":qid,"reason":"unreviewed_new_exposure","physicalAttempted":false}))?;return Ok(())
  }
+ let fundamental_expires_at_ms=fundamental_decision.as_ref().map(|decision|decision.expires_at_ms());
  let prepared=if let Some(r)=&rank{authority.prepare_with_rank(bank,qid,request_spec.clone(),p.clone(),facts,r.decision.clone(),r.owner.clone())}else{authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision)};
  if let Err(error)=prepared{if rank.is_some()&&error.to_string()=="RANK_PHYSICAL_FACTS_EXPIRED"{let end=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,end);authority.clear_ready();retire_never_sent(bank,log,q)?;if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"preintent_rank_facts_expired","diagnosticOnly":true}));}return Ok(())}if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
@@ -1521,7 +1526,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
     // A proved no-HTTP rank clock expiry retires this exact key. Request or
     // owner changes and every unproved/unknown outcome remain fatal.
     let rank_expired=if let Some(r)=&rank{end>=r.decision.expires_at_ms()&&error.code=="RANK_PHYSICAL_FACTS_EXPIRED"&&serde_json::to_value(&r.spec)?==serde_json::to_value(&spec)?&&serde_json::to_value(&r.permit)?==serde_json::to_value(&permit)?&&r.owner.validate().is_ok()}else{false};
-    log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return if expected_ordinary_final_guard(&error.code)||rank_expired{Ok(())}else{Err(error.code.into())}
+    log.append_local_final_guard_no_http(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return if expected_ordinary_final_guard(&error.code)||rank_expired||expired_fundamental_final_guard(&error.code,end,fundamental_expires_at_ms){Ok(())}else{Err(error.code.into())}
    }
   }
   if let Ok((spec,permit,at,error))=log.pre_admission_originals(qid){
@@ -4410,6 +4415,15 @@ mod profitable_depth_control_tests{
 #[cfg(test)]
 mod local_final_guard_recovery_tests{
  use super::*;
+ #[test]fn original_fundamental_expiry_defers_only_a_forward_clock_miss(){
+  let code="FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED";
+  assert!(expired_fundamental_final_guard(code,1000,Some(1000)));
+  assert!(expired_fundamental_final_guard(code,1001,Some(1000)));
+  assert!(!expired_fundamental_final_guard(code,999,Some(1000)));
+  assert!(!expired_fundamental_final_guard(code,1001,None));
+  for other in ["FUNDAMENTAL_PHYSICAL_TAIL_CHANGED","FUNDAMENTAL_PHYSICAL_FROZEN_REQUEST_CHANGED","LIVE_BINARY_CHANGED","STOPPED_OR_OWNER_LOST"]{assert!(!expired_fundamental_final_guard(other,1001,Some(1000)));}
+  assert!(!expected_ordinary_final_guard(code));
+ }
  #[test]fn no_http_does_not_turn_fatal_owner_binary_or_stop_errors_into_deferrals(){for code in ["LIVE_CONTRACT_OR_BOOK_STALE","PERMIT_EXPIRED_OR_INVALID"]{assert!(expected_ordinary_final_guard(code));}for code in ["LIVE_BINARY_CHANGED","LIVE_OWNER_OR_ACTIVATION","STOPPED_OR_OWNER_LOST","pinned file IO error","COMPLETION_DURABILITY_UNCERTAIN"]{assert!(!expected_ordinary_final_guard(code));}}
  fn binding()->Value{json!({"intent":"original:17811","key":"original:17811","payload_hash":"f".repeat(64)})}
  fn state(unknown:bool)->Value{let b=binding();let mut s=json!({"state":{"schema_version":1,"active":null,"manual_review":false,"unknown":{},"intents":{},"keys":{}}});s["state"]["intents"]["original:17811"]=b.clone();s["state"]["keys"]["original:17811"]=b.clone();if unknown{s["state"]["unknown"]["original:17811"]=b;}s}
