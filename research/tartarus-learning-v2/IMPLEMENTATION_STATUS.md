@@ -1,10 +1,10 @@
-## Current qualification — October 21, 15:40 UTC
+## Current qualification - October21, 16:04 UTC
 
-Population037 is training from retained parents on two full fitting days, with separate October17–19 development selection. Its540-update checkpoint completed evaluation with−4.23%/−17.06% marked ROI, no profitable rotation, and nearly all100,000 paper capital spent. Founder comparison remains running; newer2,756-update weights have no completed score. Full competition-history execution replay and the requested4+4 qualification are not complete. Protected October21–25 remains unconsumed. No learned policy is deployed.
+The540-update learned policy completed full October17-19 development at-4.23%/-17.06% marked ROI; its matched founder is better at-4.04%/-2.69%. Both lose. The first-generation retention defect is fixed through explicit founder evaluation before optimization;21 relevant checks pass. Active frozen037 is unchanged and both islands saved their first trained member. A newer2,768-update checkpoint is in full-window CPU evaluation. [Exact comparison and retention behavior](founder-retention-20261021.md).
 
-An explicit64-transition PPO batch target is now checked for subsequent runs, so one remaining world need not optimize after just eight decisions. It preserves the full action space, virtual clocks, continuous wallets and daily-growth reward; active037 is unchanged, GPU admission for the new target is pending. [Exact current results and limitations](tail-training-batches-20261021.md).
+Full chronological execution history, calibrated execution assumptions and the requested4+4 qualification remain incomplete. ProtectedOctober21-25 is unconsumed. No learned model is deployed. Constant-transition PPO batches and initial-founder retention are checked source options for the next admitted configuration, not active037 behavior.
 
-Production uses the earlier R66 strategy and recovered from the build-caused disk outage. Verified cold-history archival leaves21.7GB free without changing financial state. [Current production evidence](disk-capacity-recovery-20261021.md). Older implementation observations below are dated history, not current qualification.
+Production R66 is healthy and its reference updater has resumed fresh generation commits. A verified partial sale realized115.75 against original FIFO, bringing cash to9,600.83 and fill records to420. This is not whole-account ROI or a completed-order claim. The full-universe replacement is built but not deployed. [Current production and ML evidence](current-state-20261021-1604.md). Older observations below are dated history.
 
 ---
 

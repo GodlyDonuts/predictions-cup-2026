@@ -1,0 +1,63 @@
+{
+  "observedUtc": "2026-10-21T15:52:03Z",
+  "launch": {
+    "observedUtc": "2026-10-21T15:49:30.660537+00:00",
+    "resolution": {
+      "outcome": "expired_uncommitted",
+      "requestSha256": "d66a14f9158c7adb08acd4c7494a2afb48284767e15bea23d4e92dadab1bc442",
+      "previousGenerationSha256": "affe4cf1e3e13962a109bcee2bd499dacbec858a26931a5e88843c0ac1237f55",
+      "committedGenerationSha256": "affe4cf1e3e13962a109bcee2bd499dacbec858a26931a5e88843c0ac1237f55",
+      "observedAtMs": 1792597770632,
+      "requestExpiresAtMs": 1792595464106,
+      "nativeViewWrittenAt": "2026-10-21T15:48:12.630Z",
+      "originalCohortPrefixBytes": 2549662,
+      "originalCohortPrefixSha256": "c54f6890d7692d0639b550062ed74bdfc747e89bda13f4494fca6bfdc2a3d85d",
+      "oldWorkerConfirmedDead": true,
+      "restoredWorkerPid": 1010157,
+      "restoredWorkerStartTicks": 56518875,
+      "sameBinaryAndBaseControlVerified": true,
+      "sameBankAndRunVerified": true,
+      "requestResent": false,
+      "accountRequests": 0,
+      "financialStateChanged": false
+    },
+    "applied": true,
+    "newConfig": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/config-r66-post-disk.json",
+    "newConfigSha256": "250aa5ea31b8f7f8933e15a435982c80fff45672c5293028c0f865bb57a85e15",
+    "updaterPid": 1010746,
+    "helperSourceCommit": "e485a5afcf95c87e307b0bf2d720d3ac6917360d",
+    "workerRestartedByRecovery": false
+  },
+  "updaterStatus": {
+    "atMs": 1792597854317,
+    "pid": 1010746,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 32,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "capturedAtMs": 1792597853997,
+    "openTargets": 0
+  },
+  "commits": 32,
+  "generationSha256": "db12060eb5af350ca5d27d8dc714838c53448d89cce96927ffe31187fb0d39f8",
+  "originalCohortHasMatchingGeneration": true,
+  "traderProgress": {
+    "actualFills": 409,
+    "actualOrders": 1664,
+    "at": "2026-10-21T15:51:06.922Z",
+    "completedReadScopes": 9,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1010157,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 24,
+    "terminalOrders": 1664
+  },
+  "workerRestarted": false,
+  "accountClientCreated": false,
+  "stopChanged": false,
+  "riskChanged": false
+}
