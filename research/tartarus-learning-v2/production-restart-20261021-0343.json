@@ -1,0 +1,70 @@
+{
+  "observedUtc": "2026-10-21T03:43:58.012790+00:00",
+  "humanAuthority": "Current direct instruction to resume production and accept greater contest risk",
+  "stop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-21T02:21:21.314Z",
+    "reason": "LIVE_STREAM_JOIN_FAILED"
+  },
+  "sdkSequence": 417353,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "sdkManualReview": false,
+  "preflightAt": "2026-10-21T03:43:05.071Z",
+  "openOrders": 0,
+  "riskCapsChanged": false,
+  "originalFiles": {
+    "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/manifest.json": {
+      "bytes": 16090,
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    },
+    "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/head.json": {
+      "bytes": 254,
+      "sha256": "96b52bb01dbe351be9f1e73d84e0b0a3356130a840ce7e1a9a281334c7337d47"
+    },
+    "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/events.jsonl": {
+      "bytes": 2432168051,
+      "sha256": "abd859dd7d434b41f53107c3543578762de496107fe492fad4b5a9cc284001d6"
+    },
+    "/home/archon/apps/moloch/shared/live-production-v1/bank-all-markets-v1/report.json": {
+      "bytes": 49880727,
+      "sha256": "331441a7f376f3dd5d8cfda0fc35b3fa555750b42c009348794f8002eed4704b"
+    },
+    "/home/archon/apps/moloch/shared/live-production-v1/dispatch.ndjson": {
+      "bytes": 26929543,
+      "sha256": "de174cc3738860b57617ea9b13cff07889764d3e54855b76286184cb598ad74b"
+    },
+    "/home/archon/apps/moloch/shared/moloch-live-tartarus-r57-g12-20261019.json": {
+      "bytes": 26684,
+      "sha256": "bed178634e699f969a344bb3c1aa3a595c37ef40db1198ee9935a87cce00467a"
+    },
+    "/home/archon/apps/moloch/releases/tartarus-r57-120bdb492c5f/moloch-live-runtime": {
+      "bytes": 18730152,
+      "sha256": "120bdb492c5f87651a3333dbcb28c73fceb025c4ac034db44bb481e476333658"
+    }
+  },
+  "pid": 975912,
+  "alive": true,
+  "serviceMainPid": "975912",
+  "command": "/home/archon/apps/moloch/releases/tartarus-r57-120bdb492c5f/moloch-live-runtime run /home/archon/apps/moloch/shared/moloch-live-tartarus-r57-g12-20261019.json ",
+  "startTicks": "52387674",
+  "progress": {
+    "actualFills": 396,
+    "actualOrders": 1660,
+    "at": "2026-10-21T02:20:23.363Z",
+    "completedReadScopes": 22,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 968525,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 37,
+    "terminalOrders": 1660
+  },
+  "stopPresent": false,
+  "freshTradingVerified": false,
+  "newFillsVerified": false,
+  "classification": "verified_checked_production_restart_restoration_not_fresh_trading",
+  "cashSUSQies": "403.36",
+  "noNewOrderClaim": true
+}

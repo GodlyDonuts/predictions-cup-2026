@@ -1,0 +1,27 @@
+{
+  "classification": "original_pretest_book_receipt_vs_source_age_diagnostic_not_new_freshness_authority",
+  "sourceCompleteSha256": "75a3763314d7225110ecf10098b82178d37a3fa2e1727f1c00e90b128579f171",
+  "origins": {
+    "original_official_sig_realtime_frame": {
+      "books": 312027,
+      "medianMs": 578,
+      "p95Ms": 1082,
+      "olderThan10s": 0,
+      "olderThan60s": 0,
+      "maximumMs": 5735
+    },
+    "original_official_sig_rest_book_receipt": {
+      "books": 8069,
+      "medianMs": 124,
+      "p95Ms": 196,
+      "olderThan10s": 0,
+      "olderThan60s": 0,
+      "maximumMs": 1917
+    }
+  },
+  "sourceTimestampsNotRewritten": true,
+  "active033Changed": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0
+}

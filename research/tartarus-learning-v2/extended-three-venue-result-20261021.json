@@ -1,0 +1,84 @@
+{
+  "observedUtc": "2026-10-21T03:19:57.183045+00:00",
+  "classification": "extended_partial_original_three_venue_replay_not_model_ROI_or_admission",
+  "sourceCommit": "7291bc4f5132a58870e72fdb9657d4feadba9f11",
+  "parentDatasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "sourceCaptureNormalizationSha256": "75a3763314d7225110ecf10098b82178d37a3fa2e1727f1c00e90b128579f171",
+  "datasetManifestSha256": "84923a7b7576429fbf59deb640a801c2b7ea2cf4b5d8c56140f41be7f2cf83e6",
+  "cacheManifestSha256": "df6d11e965f46c8a86af73ee4747baba68a026a5eeb1851c646108f3301199d3",
+  "cacheDatabaseBytes": 21429116928,
+  "observationCounts": {
+    "fit/SIG/gap": 17607,
+    "fit/SIG/book": 1993932,
+    "search/SIG/gap": 12327,
+    "search/SIG/book": 3389054,
+    "search/Kalshi/reference": 3577294,
+    "search/Kalshi/reference_gap": 30834,
+    "search/Polymarket/reference": 5947570,
+    "search/Polymarket/reference_gap": 121608
+  },
+  "sourceRowsConsumed": {
+    "parent/observation": 14764405,
+    "extension/observation": 325821,
+    "parent/trade": 71506,
+    "extension/trade": 8341
+  },
+  "calendarRolesMs": {
+    "fit": [
+      1792049104423,
+      1792195200000
+    ],
+    "search": [
+      1792195200000,
+      1792540421333
+    ]
+  },
+  "sourceCoverage": {
+    "fit/SIG": {
+      "rows": 1993932,
+      "firstAvailableMs": 1792049116175,
+      "lastAvailableMs": 1792193246370,
+      "completeSourceCoverage": false
+    },
+    "search/SIG": {
+      "rows": 3389054,
+      "firstAvailableMs": 1792196235173,
+      "lastAvailableMs": 1792540421332,
+      "completeSourceCoverage": false
+    },
+    "search/Kalshi": {
+      "rows": 3577294,
+      "firstAvailableMs": 1792302906304,
+      "lastAvailableMs": 1792533259071,
+      "completeSourceCoverage": false
+    },
+    "search/Polymarket": {
+      "rows": 5947570,
+      "firstAvailableMs": 1792362930904,
+      "lastAvailableMs": 1792533419094,
+      "completeSourceCoverage": false
+    },
+    "fit/Kalshi": {
+      "rows": 0,
+      "firstAvailableMs": null,
+      "lastAvailableMs": null,
+      "completeSourceCoverage": false
+    },
+    "fit/Polymarket": {
+      "rows": 0,
+      "firstAvailableMs": null,
+      "lastAvailableMs": null,
+      "completeSourceCoverage": false
+    }
+  },
+  "tradeRows": 79847,
+  "repeatedTradeReportsSuppressed": 0,
+  "originalObservationBytesPreserved": true,
+  "mergeSeconds": 304.81746769999154,
+  "cacheSeconds": 382.9866253999935,
+  "active033Changed": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "accountRequests": 0,
+  "trainingAdmitted": false
+}
