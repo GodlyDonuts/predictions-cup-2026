@@ -20,16 +20,18 @@ def tensors(observation,device):
     return out
 
 
-def calibrate(environment,model,rounds=12):
+def calibrate(environment,model,rounds=12,*,inference_mode='actions_only'):
     """Measure the complete local actor pipeline without consuming policy RNG.
 
     Current observation shape only: not remote-hardware or maximum-context
     calibration. Replay source parsing and API network latency are separate.
     """
     if type(rounds)is not int or rounds<1:raise ValueError('POSITIVE_CALIBRATION_ROUNDS')
+    if inference_mode not in('actions_only','full_statistics'):raise ValueError('EXPLICIT_CALIBRATION_INFERENCE_MODE')
     from .state_encoding import matching
     matching(environment,model)
     device=next(model.parameters()).device
+    method=model.step_actions_only if inference_mode=='actions_only'else model.step
     hidden=model.initial_state(1);reset=torch.tensor([True],device=device);measurements=[];shapes=[]
     devices=[device.index if device.index is not None else torch.cuda.current_device()]if device.type=='cuda'else[]
     with torch.random.fork_rng(devices=devices),torch.no_grad():
@@ -37,7 +39,8 @@ def calibrate(environment,model,rounds=12):
             if device.type=='cuda':torch.cuda.synchronize()
             started=time.perf_counter()
             inputs=tensors(environment.observe(),device)
-            output=model.step(**inputs,hidden=hidden,reset=reset,deterministic=False)
+            # Training-only critic/entropy work is not live actor latency.
+            output=method(**inputs,hidden=hidden,reset=reset,deterministic=False)
             # Match the live one-world stream's actual host conversion. A
             # forward result left on CUDA is not yet a dispatchable action.
             if getattr(model,'acting_validation','strict')=='consolidated_v1':
@@ -52,6 +55,7 @@ def calibrate(environment,model,rounds=12):
     return {'decision_latency_ms':max(1,math.ceil(samples[math.ceil(.95*len(samples))-1])),
             'measured_ms':measurements,'device':str(device),
             'assumption':'frozen_local_p95_complete_actor_pipeline_v2',
+            'inference_mode':inference_mode,
             'timing_scope':['observation_construction','tensor_preparation_and_transfer','stochastic_forward','action_host_conversion'],
             'observation_shapes':shapes,'warmup_rounds':3,'policy_rng_preserved':True,
             'shape_coverage':'current_observation_only_not_maximum_or_remote_hardware'}
