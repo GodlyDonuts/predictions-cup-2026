@@ -5,7 +5,7 @@
 //! `exit_refresh_needed` before expired-exit hints, and `assess` before ordinary
 //! priority/preflight and after fresh preflight.
 //! Sequence: `bind` -> `physical_decision` -> prepare frozen authority and its
-//! preliminary authorization -> ORIGINAL tagged intent+attempt -> `check_bound`
+//! preliminary authorization -> ORIGINAL tagged intent+attempt -> `validate_appended_intent`
 //! against the actual Session/log -> SDK, whose physical callback validates the
 //! token's frozen data, original files and time. Compare `native_head()` with the
 //! actual Session head while preparing authority. Add `durable_tag(qid)` as
@@ -843,7 +843,7 @@ impl LoadedSettings{
 /// ProductionAuthority must call BOTH methods on its own frozen prepared data.
 pub struct PhysicalDecision{
     marketable_reviewed_buy:bool,qid:u64,planned_quantity:u64,native_head:Value,quote_sha:String,ledger_snapshot:Arc<crate::ledger_snapshot::Snapshot>,scope_sha:String,
-    spec_sha:String,permit_sha:String,review_sha:String,trust_sha:String,
+    spec_sha:String,permit_sha:String,review_sha:String,trust_sha:String,dispatch_before:Value,intent_tag:Value,
     contract_market:String,contract_id:String,contract_tournament:String,contract_root_sha:String,
     minted:u64,expires:u64,sidecar:FilePin,marker:FilePin,sidecar_sequence:u64,sidecar_tail:String,
     authority:FilePin,ordinary_file:File,ordinary_path:PathBuf,ordinary_identity:Value,
@@ -857,6 +857,42 @@ impl PhysicalDecision{
     pub fn planned_quantity(&self)->u64{self.planned_quantity}
     pub fn expires_at_ms(&self)->u64{self.expires}
     pub fn review_sha256(&self)->&str{&self.review_sha}
+    /// Reuse the full pre-intent cohort proof only across our exact two durable
+    /// dispatch appends. No Session, review or other dispatch mutation is allowed.
+    /// Time is deliberately checked by the existing SDK callback, which can
+    /// positively prove a local expiry never reached HTTP after an attempt row.
+    pub fn validate_appended_intent(&self,bank:&Session,log:&DispatchLog,spec:&RequestSpec)->Result<()>{
+        need(self.ledger_snapshot.validate_current(bank)&&bank.durable_head()==self.native_head&&digest(spec)?==self.spec_sha,"FUNDAMENTAL_APPEND_NATIVE_OR_REQUEST_CHANGED")?;
+        self._owner.descriptor_identity()?;self.sidecar.validate_metadata()?;self.marker.validate_metadata()?;self.authority.validate_metadata()?;
+        path_pin(&self.ordinary_path,&self.ordinary_identity)?;
+        let before=&self.dispatch_before;let after=log.descriptor_identity()?;
+        let seq=before["sequence"].as_u64().ok_or("FUNDAMENTAL_APPEND_SEQUENCE")?;
+        let offset=before["bytes"].as_u64().ok_or("FUNDAMENTAL_APPEND_BYTES")?;
+        let end=after["bytes"].as_u64().ok_or("FUNDAMENTAL_APPEND_BYTES")?;
+        need(after["device"]==before["device"]&&after["inode"]==before["inode"]&&after["sequence"].as_u64()==seq.checked_add(2)
+            &&end>offset&&end-offset<=262144,"FUNDAMENTAL_APPEND_EXACT_TWO_ROWS_REQUIRED")?;
+        let mut bytes=vec![0;usize::try_from(end-offset)?];
+        #[cfg(unix)]{use std::os::unix::fs::FileExt;self.ordinary_file.read_exact_at(&mut bytes,offset)?;}
+        #[cfg(not(unix))]{return Err("FUNDAMENTAL_DESCRIPTOR_UNSUPPORTED".into())}
+        let lines=bytes.strip_suffix(b"\n").ok_or("FUNDAMENTAL_APPEND_TORN_TAIL")?.split(|b|*b==b'\n').collect::<Vec<_>>();
+        need(lines.len()==2,"FUNDAMENTAL_APPEND_EXACT_TWO_ROWS_REQUIRED")?;
+        let mut previous=before["previous"].clone();let mut events=Vec::with_capacity(2);
+        for (i,line) in lines.into_iter().enumerate(){
+            let mut row:Value=serde_json::from_slice(line)?;let claimed=row.as_object_mut().ok_or("FUNDAMENTAL_APPEND_ROW")?.remove("hash").ok_or("FUNDAMENTAL_APPEND_HASH")?;
+            need(row["sequence"]==seq+i as u64+1&&row["previous"]==previous&&claimed==digest(&row)?,"FUNDAMENTAL_APPEND_CHAIN_CHANGED")?;
+            previous=claimed;events.push(row["event"].clone());
+        }
+        let intent=log.intents.get(&self.qid).ok_or("FUNDAMENTAL_APPEND_INTENT_REQUIRED")?;
+        let attempt=log.original_attempt(self.qid).ok_or("FUNDAMENTAL_APPEND_ATTEMPT_REQUIRED")?;
+        need(events[0]==*intent&&events[1]==*attempt&&intent["kind"]=="intent"&&attempt["kind"]=="attempt"
+            &&intent["qid"]==self.qid&&attempt["qid"]==self.qid&&intent["fundamental"]==self.intent_tag
+            &&digest(&intent["quote"])?==self.quote_sha&&digest(&serde_json::from_value::<RequestSpec>(intent["spec"].clone())?)?==self.spec_sha
+            &&digest(&serde_json::from_value::<Permit>(intent["permit"].clone())?)?==self.permit_sha
+            &&previous==after["previous"]&&log.descriptor_identity()?==after,"FUNDAMENTAL_APPEND_ORIGINAL_INTENT_CHANGED")?;
+        need(log.attempted.contains(&self.qid)&&!log.acknowledgments.contains_key(&self.qid)&&!log.closed.contains(&self.qid)
+            &&!log.proved_no_network(self.qid)&&!log.exposure_resolved(self.qid)
+            &&log.attempted.iter().all(|id|*id==self.qid||log.acknowledgments.contains_key(id)||log.proved_no_network(*id)||log.exposure_resolved(*id)),"FUNDAMENTAL_APPEND_ATTEMPT_CHANGED")
+    }
     pub fn validate_contract(&self,receipt:&Receipt)->Result<()>{
         need(receipt.status==200&&receipt.endpoint==format!("/markets/{}/nodes?tournamentId={}",self.contract_market,self.contract_tournament)
             &&receipt.data["market_id"]==self.contract_market&&receipt.data["root"]["node_type"]=="contract"
@@ -874,7 +910,7 @@ impl PhysicalDecision{
         self.time(now)?;need(digest(scope)?==self.scope_sha&&digest(spec)?==self.spec_sha&&digest(permit)?==self.permit_sha,"FUNDAMENTAL_PHYSICAL_FROZEN_REQUEST_CHANGED")?;
         self.sidecar.validate()?;self.marker.validate()?;self.authority.validate()?;
         // The same original dispatch inode may append OUR intent/attempt after
-        // mint. Its growing head is checked by actual Cohorts.check_bound after
+        // mint. Its exact suffix is checked by validate_appended_intent after
         // those appends, not falsely frozen here before they exist.
         need(identity(&self.ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
         path_pin(&self.ordinary_path,&self.ordinary_identity)?;
@@ -1261,10 +1297,11 @@ impl Cohorts{
         Ok(Some(proof))
     }
     /// Mint after durable bind and before the original intent/attempt. After
-    /// those original appends the worker MUST re-run check_bound, then the SDK
+    /// those original appends the worker MUST validate_appended_intent, then the SDK
     /// performs its existing account/unknown/rate/physical authorization gates.
     pub fn physical_decision(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,permit:&Permit,authority:&ReviewAuthority,now:u64)->Result<PhysicalDecision>{
         authority.validate()?;self.check_bound(bank,log,scope,qid,spec,authority.trusted(),now)?;
+        need(log.never_attempted(qid)&&!log.intents.contains_key(&qid),"FUNDAMENTAL_PHYSICAL_UNUSED_INTENT_REQUIRED")?;
         let (ex,c)=self.cohorts.iter().find(|(_,c)|c.binding(qid).is_some()).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
         let r=&self.policies[ex];let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;
         let n=request_quantity(spec)?;let price=amount(q["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
@@ -1289,6 +1326,7 @@ impl Cohorts{
         let ledger_snapshot=crate::ledger_snapshot::snapshot(bank)?;
         need(ledger_snapshot.validate_current(bank),"FUNDAMENTAL_PHYSICAL_NATIVE_HEAD_CHANGED")?;
         Ok(PhysicalDecision{marketable_reviewed_buy:q["action"]=="buy"&&execution_for_quote(r,&q)?==ExecutionMode::BoundedLimitMayRest,qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_snapshot,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
+            dispatch_before:log.descriptor_identity()?,intent_tag:self.durable_tag(qid).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?,
             contract_market:r.market_id.clone(),contract_id:r.contract_id.clone(),contract_tournament:r.tournament_id.clone(),contract_root_sha:r.official_contract_root_sha256.clone(),
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,sidecar_sequence:self.sequence,sidecar_tail:self.previous.clone(),authority:authority.pin.duplicate()?,ordinary_file,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
     }

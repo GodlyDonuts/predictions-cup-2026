@@ -877,6 +877,42 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
     }
     #[test]fn expired_exit_read_hint_is_not_permanently_blocked_by_inactive_quote_gate(){let mut f=F::new();f.fill_entry(false);let(q,at)=f.age_exit(NOW+61003,"0.300000","0.320000");assert!(!f.store.as_ref().unwrap().exit_refresh_needed(&f.bank,&f.log,&f.scope,"101",&f.trust,at).unwrap());assert!(matches!(f.assess(&q,NOW+600001),Decision::Hold{..}),"old native quote is inactive, even at deadline");assert!(f.store.as_ref().unwrap().exit_refresh_needed(&f.bank,&f.log,&f.scope,"101",&f.trust,NOW+600001).unwrap(),"deadline still enables bounded source refresh before final quote assessment");}
     #[test]fn opaque_token_mints_before_attempt_and_survives_only_its_original_tagged_append(){let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let p=f.permit(&q,NOW);let a=f.authority();let store=f.store.as_ref().unwrap();let token=store.physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();assert_eq!(token.native_head(),&f.bank.durable_head());assert_eq!(token.review_sha256(),review_sha256(&f.review).unwrap());let report=f.bank.engine().report().unwrap();token.validate_frozen(&q,&report,id,NOW).unwrap();token.authorize(&f.scope,&spec,&p,NOW).unwrap();f.log_intent(&q,&spec);f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW).unwrap();token.authorize(&f.scope,&spec,&p,NOW).unwrap();assert!(f.log.require_resolved_attempts().is_err(),"the policy token never resolves or retries an attempted write");}
+    fn append_token_fixture(f:&mut F)->(Value,RequestSpec,Permit,PhysicalDecision){
+        let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let p=f.permit(&q,NOW);let a=f.authority();
+        let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();
+        f.log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":spec,"permit":p,"fundamental":f.store.as_ref().unwrap().durable_tag(id)})).unwrap();
+        f.log.append(json!({"kind":"attempt","qid":id})).unwrap();token.validate_appended_intent(&f.bank,&f.log,&spec).unwrap();(q,spec,p,token)
+    }
+    #[test]fn append_proof_accepts_exact_original_pair_without_global_cohort_rescan(){
+        let mut f=F::new();let(q,spec,p,token)=append_token_fixture(&mut f);token.validate_appended_intent(&f.bank,&f.log,&spec).unwrap();
+        token.authorize(&f.scope,&spec,&p,NOW).unwrap();assert!(f.log.require_resolved_attempts().is_err());
+        assert!(token.authorize(&f.scope,&spec,&p,token.expires_at_ms()).is_err(),"append verification never extends book time");
+        assert_eq!(f.log.original_attempt(q["id"].as_u64().unwrap()).unwrap()["kind"],"attempt");
+    }
+    #[test]fn append_proof_rejects_missing_attempt_and_extra_dispatch_row(){
+        let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let p=f.permit(&q,NOW);let a=f.authority();
+        let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();
+        assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err());
+        f.log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":spec,"permit":p,"fundamental":f.store.as_ref().unwrap().durable_tag(id)})).unwrap();
+        assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err());
+        f.log.append(json!({"kind":"attempt","qid":id})).unwrap();token.validate_appended_intent(&f.bank,&f.log,&spec).unwrap();
+        f.log.append(json!({"kind":"error","qid":id,"error":"synthetic"})).unwrap();assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err());
+    }
+    #[test]fn append_proof_rejects_changed_native_head(){
+        let mut f=F::new();let(_,spec,_,token)=append_token_fixture(&mut f);f.book(NOW+1,"0.04","0.06");assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err());
+    }
+    #[test]fn append_proof_rejects_mutated_durable_tag_quote_spec_and_permit(){
+        for field in ["fundamental","quote","spec","permit"]{let mut f=F::new();let(q,spec,_,token)=append_token_fixture(&mut f);let id=q["id"].as_u64().unwrap();
+            f.log.intents.get_mut(&id).unwrap()[field]=json!({});assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err(),"{field}");}
+        let mut f=F::new();let(_,mut spec,_,token)=append_token_fixture(&mut f);spec.body_json=Some("{}".into());assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err());
+    }
+    #[test]fn append_proof_rejects_original_suffix_tampering_and_sidecar_mutation(){
+        let mut f=F::new();let(_,spec,_,token)=append_token_fixture(&mut f);let path=f.root.join("dispatch.ndjson");let mut raw=std::fs::read(&path).unwrap();let pos=raw.windows(6).position(|x|x==b"intent").unwrap();raw[pos]=b'I';std::fs::write(path,raw).unwrap();assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err());
+        let mut f=F::new();let(_,spec,_,token)=append_token_fixture(&mut f);std::fs::write(f.root.join("fundamental.ndjson"),b"{}\n").unwrap();assert!(token.validate_appended_intent(&f.bank,&f.log,&spec).is_err());
+    }
+    #[test]fn append_proof_cannot_be_reminted_for_attempted_intent(){
+        let mut f=F::new();let(q,spec,p,_)=append_token_fixture(&mut f);let a=f.authority();assert!(f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,q["id"].as_u64().unwrap(),&spec,&p,&a,NOW).is_err());
+    }
     #[test]fn opaque_token_rejects_changed_frozen_economics_scope_permit_and_raw_body(){let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let p=f.permit(&q,NOW);let a=f.authority();let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();let mut report=f.bank.engine().report().unwrap();report["cash"]=json!("999.000000");assert!(token.validate_frozen(&q,&report,id,NOW).is_err());let mut q2=q.clone();q2["quantity"]=json!(1);assert!(token.validate_frozen(&q2,&f.bank.engine().report().unwrap(),id,NOW).is_err());let mut p2=p.clone();p2.maximum_quantity+=1;assert!(token.authorize(&f.scope,&spec,&p2,NOW).is_err());let mut s2=spec.clone();s2.body_json=Some("{}".into());assert!(token.authorize(&f.scope,&s2,&p,NOW).is_err());let mut scope=f.scope.clone();scope.tournament_slug="other".into();assert!(token.authorize(&scope,&spec,&p,NOW).is_err());}
     #[test]fn opaque_token_expires_at_original_official_book_clock_not_permit_only(){let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let p=f.permit(&q,NOW);let a=f.authority();let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();assert!(token.expires_at_ms()<p.expires_at_ms);token.authorize(&f.scope,&spec,&p,token.expires_at_ms()-1).unwrap();assert!(token.authorize(&f.scope,&spec,&p,token.expires_at_ms()).is_err());assert!(token.authorize(&f.scope,&spec,&p,NOW-1).is_err());}
     #[test]fn opaque_token_rejects_same_inode_sidecar_prefix_edit_and_trust_file_mutation(){let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let p=f.permit(&q,NOW);let a=f.authority();let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();let path=f.root.join("fundamental.ndjson");let mut bytes=std::fs::read(&path).unwrap();let pos=bytes.iter().position(|b|*b==b't').unwrap();bytes[pos]=b'z';std::fs::write(&path,&bytes).unwrap();assert!(token.authorize(&f.scope,&spec,&p,NOW).is_err());let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();let p=f.permit(&q,NOW);let a=f.authority();let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();std::fs::write(f.root.join("review-authority.json"),b"{}").unwrap();assert!(token.authorize(&f.scope,&spec,&p,NOW).is_err());}

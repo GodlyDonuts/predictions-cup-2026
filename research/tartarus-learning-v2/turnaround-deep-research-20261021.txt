@@ -9,11 +9,11 @@ Repository access was successful. I inspected the requested published main commi
 
 My decision is: keep Rust as the sole live account/execution/ledger authority, add only a limited Python shadow/offline strategy layer, and do not undertake a broad rewrite. The highest-value work is not language migration. It is, in order: remove the known decision-path latency pathology; finish safe V3 recurring-cohort activation; then test an event-driven, edge-gated, immediately executable turnover strategy across all markets. The current Rust stack contains hard-won properties—exact FIFO accounting, unknown-write reconciliation, durable idempotency, stream recovery, one-account rate ownership and replay—that a rewrite would have to recreate before it could improve a single economic decision. Recent R71/R72 failures also show how expensive apparently small lifecycle mistakes can be.
 
-The new target of at least one distinct exchange-confirmed filled order per minute is mechanically possible under the API budget, but it is not presently demonstrated to be economically feasible. Current official documentation says the budget is account-wide at 100 reads and 30 writes/minute, shared across API keys; production's self-imposed 24-write/minute pacing is therefore conservative rather than an exchange rule. 
+The new target of at least one distinct exchange-confirmed filled order per minute is mechanically possible under the API budget, but it is not presently demonstrated to be economically feasible. Current official documentation says the budget is account-wide at 100 reads and 30 writes/minute, shared across API keys; production's self-imposed 24-write/minute pacing is therefore conservative rather than an exchange rule.
 1
  The problem is fill probability. The repository's best actual passive-order calibration found that only 41 of 891 ordinary BUY orders obtained any fill, about 4.60%. At that historical unconditional rate, 24 fresh placements/minute would imply only about 1.10 filled orders/minute in expectation, consuming essentially the entire production write allowance; reserving even six of those writes for cancellation, recovery and risk management lowers the naïve expectation to about 0.83/minute. Worse, the covered short-horizon markouts on those ordinary fills were negative. A passive-quote-only plan therefore cannot robustly deliver one profitable fill/minute.
 
-The alternative is not “cross more spreads until the counter says 60.” SIG is peer-to-peer: execution requires compatible liquidity, and self-trade prevention prevents your own resting orders from satisfying your incoming order. Selling an unowned side is simply the complementary economic position, not free short leverage; the competition is cash-only. 
+The alternative is not “cross more spreads until the counter says 60.” SIG is peer-to-peer: execution requires compatible liquidity, and self-trade prevention prevents your own resting orders from satisfying your incoming order. Selling an unowned side is simply the complementary economic position, not free short leverage; the competition is cash-only.
 1
  The cadence target should consequently be a capacity constraint on positive-edge opportunities, not an objective that lowers the edge threshold. When there is no positive conservative expected edge, the correct filled-order rate is zero.
 
@@ -95,69 +95,69 @@ SIG operation audit and exact strategy surface
 
 The official Scalar API page itself is reachable, but its detailed interactive schema was not fully extractable with the research browser. I therefore cross-checked the current SIG changelog and public trading/settlement documentation against the pinned repository's typed transport client and its earlier October 1 primary-schema audit. Claims below distinguish those evidence levels rather than pretending the entire current Scalar schema was machine-readable.
 
-Current SIG documentation is unambiguous on the account budget: 100 reads and 30 writes/minute per account, shared by all keys. Creating more keys does not add capacity. The bulk price endpoint can accept up to 100 exchange IDs in one request. 
+Current SIG documentation is unambiguous on the account budget: 100 reads and 30 writes/minute per account, shared by all keys. Creating more keys does not add capacity. The bulk price endpoint can accept up to 100 exchange IDs in one request.
 1
- Temporary transaction conflicts can return 503 with Retry-After, for which SIG explicitly instructs waiting and backing off. 
+ Temporary transaction conflicts can return 503 with Retry-After, for which SIG explicitly instructs waiting and backing off.
 2
 
 Operation	What is actually verified	Implementation consequence
-Single buy/sell order	The pinned Rust client supports yes/no × buy/sell, integer positive quantity, a price, future expirationDate, tournament ID and idempotency key. It enforces 0.005 ticks between 0.005 and 0.995. SIG's public trading guide documents market and limit orders, with unmatched limits resting until match or cancellation. 
+Single buy/sell order	The pinned Rust client supports yes/no × buy/sell, integer positive quantity, a price, future expirationDate, tournament ID and idempotency key. It enforces 0.005 ticks between 0.005 and 0.995. SIG's public trading guide documents market and limit orders, with unmatched limits resting until match or cancellation.
 3
 	Use marketable limits for API automation unless the current Scalar schema is manually verified for a distinct API market-order shape.
-Selling / “shorting”	SIG explicitly allows selling shares not held. Selling YES at (p) is economically buying NO at (1-p); opposite-side purchases automatically cancel existing shares pairwise and produce 1 SUSQie per pair. Accounts remain cash-only with no margin or leverage. 
+Selling / “shorting”	SIG explicitly allows selling shares not held. Selling YES at (p) is economically buying NO at (1-p); opposite-side purchases automatically cancel existing shares pairwise and produce 1 SUSQie per pair. Accounts remain cash-only with no margin or leverage.
 1
 	No borrow/short-locate strategy exists. Treat the side transformation correctly in inventory and ML action spaces.
-Cancel	Public portfolio docs expose cancellation of open orders; current changelog documents faster cancel-all and safe continuation after a 503. 
+Cancel	Public portfolio docs expose cancellation of open orders; current changelog documents faster cancel-all and safe continuation after a 503.
 4
 	Cancellation consumes scarce write capacity. Risk exits/cancels outrank new passive quote churn.
 Amend / queue-preserving replace	Not verified in the inspected SIG participant surface or pinned typed client. The Oct 1 API audit found no participant amend primitive.	Model “replace” as cancel + new order unless current Scalar schema is manually shown otherwise. Do not assume queue preservation.
 IOC / FOK / post-only	Not verified for participant single orders. The October 1 schema audit explicitly found no participant IOC/FOK/post-only fields.	A short expiration can limit resting risk, but it is not an IOC substitute.
-Batch order placement	Current changelog confirms batch orders exist by stating single and batch orders can return ORDER_STATUS_UNKNOWN; the Oct 1 schema audit found up to 50 placements in one best-effort write request. 
+Batch order placement	Current changelog confirms batch orders exist by stating single and batch orders can return ORDER_STATUS_UNKNOWN; the Oct 1 schema audit found up to 50 placements in one best-effort write request.
 5
 	Useful for write efficiency only after economic candidates exist. It is dangerous as a “spray 50 quotes” cadence hack because partial success and cancellation burden remain.
-Multi-leg	Current SIG changelog explicitly confirms POST /api/v1/orders/multi-leg; if status is unknown, an identical retry with the same idempotency key is safe. 
+Multi-leg	Current SIG changelog explicitly confirms POST /api/v1/orders/multi-leg; if status is unknown, an identical retry with the same idempotency key is safe.
 2
  The pinned client implements a conservative buy-only 2–3-leg allOrNone subset, while the Oct 1 schema review recorded platform support for up to 10 legs.	Platform capability is broader than current production authority. Do not enable package execution merely because the endpoint exists; current code deliberately requires separate package reservation/authority.
-Idempotent retry	Order idempotency protects against duplicate placement for at least 24h; completed stored responses persist 48h; expired old keys are rejected instead of reused. 
+Idempotent retry	Order idempotency protects against duplicate placement for at least 24h; completed stored responses persist 48h; expired old keys are rejected instead of reused.
 2
 	Preserve the current fail-closed same-key reconciliation design. Never invent a new key after an ambiguous response.
-Bulk prices	Official current limit is 100 exchange IDs/call. Repository validation treats returned bestBid, bestAsk, latest price and spread as display/BBO fields and explicitly does not treat them as executable-depth evidence. 
+Bulk prices	Official current limit is 100 exchange IDs/call. Repository validation treats returned bestBid, bestAsk, latest price and spread as display/BBO fields and explicitly does not treat them as executable-depth evidence.
 6
 	Excellent 3-call universe screening for 237 markets; not sufficient to size taker trades. Full/versioned book is required before dispatch.
-Realtime market data	SIG restored a tournament-wide tournament:{tournament_id}:markets channel on Oct 4; it carries changed markets with the same versioned books/revisions as per-market channels. The underlying tournament updates are batched on approximately one-second boundaries. 
+Realtime market data	SIG restored a tournament-wide tournament:{tournament_id}:markets channel on Oct 4; it carries changed markets with the same versioned books/revisions as per-market channels. The underlying tournament updates are batched on approximately one-second boundaries.
 7
 	This is not microsecond HFT. Maintain a local universe from the stream and spend REST reads on recovery/final authority, not sequential discovery.
-Positions / orders / fills / settlements	The pinned typed client exposes account, positions, orders, owned order/fills, portfolio fills, P&L and settlements. Current SIG changelog specifically documents corrections in GET /api/v1/portfolio/settlements. 
+Positions / orders / fills / settlements	The pinned typed client exposes account, positions, orders, owned order/fills, portfolio fills, P&L and settlements. Current SIG changelog specifically documents corrections in GET /api/v1/portfolio/settlements.
 2
 	These remain authoritative for reconciliation.
 Relationships / collateral reads	The pinned client maps GET /relationships, relationship graph/constraints and GET /portfolio/collateral.	Valuable research inputs, but a readable collateral state is not proof of a participant-initiated collateral-conversion operation.
-Mint / merge / split / convert / redeem	No explicit participant write operation of these kinds was verified in the current public docs or pinned participant transport. SIG automatically nets opposite shares, and settlement pays/refunds positions. 
+Mint / merge / split / convert / redeem	No explicit participant write operation of these kinds was verified in the current public docs or pinned participant transport. SIG automatically nets opposite shares, and settlement pays/refunds positions.
 3
 	Do not base an implementation on generic prediction-market “complete-set mint/merge” terminology. The feasible primitive here is trading/netting, not an assumed hidden conversion API.
-Settlement	Winning shares pay 1, losing shares 0; cancelled/N/A markets refund refundable cost. Final competition standings wait for every market to settle. 
+Settlement	Winning shares pay 1, losing shares 0; cancelled/N/A markets refund refundable cost. Final competition standings wait for every market to settle.
 8
 	Cross-market “guarantees” must explicitly model N/A/cancellation and each contract's actual settlement rule.
 Strategy feasibility on this exact venue
 
-Inventory-aware passive market making: technically feasible, economically unproven, cadence-poor in its current form. SIG permits resting both sides while preventing self-trading. 
+Inventory-aware passive market making: technically feasible, economically unproven, cadence-poor in its current form. SIG permits resting both sides while preventing self-trading.
 3
  But historical Moloch ordinary passive orders had very low fill incidence and the sparse executable post-fill marks were negative. Do not reactivate a broad maker simply because 60 fills/hour is desired. A maker quote belongs only where expected spread capture exceeds fill-conditioned adverse movement, likely unwind cost, inventory carry and the shadow value of a write.
 
 Inventory liquidation: immediately feasible and probably the best source of near-term genuine SELL legs, but not automatically profitable. The new human-verified 993 YES sale is concrete evidence that at least one sizable inventory exit could cross at positive FIFO realized gross. The preceding three exits lost a combined 105.925, so liquidation quality varies sharply. The strategy should rank owned inventory by marginal expected benefit of exiting now, not by age alone and not by a blanket “only sell above FIFO” rule.
 
-Fast external-reference dislocation trading: the best near-term alpha candidate, but only after semantic certification. Kalshi's API exposes primary/secondary rules and market expiration/settlement metadata, enabling much stronger matching than names alone. 
+Fast external-reference dislocation trading: the best near-term alpha candidate, but only after semantic certification. Kalshi's API exposes primary/secondary rules and market expiration/settlement metadata, enabling much stronger matching than names alone.
 9
- Polymarket's own documentation describes its 0–1 outcome shares and $1 winning outcome, but that still does not prove that any given Polymarket question settles identically to a SIG contract. 
+ Polymarket's own documentation describes its 0–1 outcome shares and $1 winning outcome, but that still does not prove that any given Polymarket question settles identically to a SIG contract.
 10
  The external venue should therefore be treated as information only when all of outcome definition, resolver/source, date boundary, cancellation/N/A behavior, geography/candidate identity and relevant runoff rules have been explicitly mapped.
 
-Complement/complete-set conversion: ordinary same-market “YES + NO < 1” is not a separate hidden conversion strategy here. SIG already defines YES and NO as complements and automatically nets opposite holdings. 
+Complement/complete-set conversion: ordinary same-market “YES + NO < 1” is not a separate hidden conversion strategy here. SIG already defines YES and NO as complements and automatically nets opposite holdings.
 3
  The inspected participant API does not expose an explicit mint/merge/redeem operation. Any apparent complement edge must exist in actual peer depth after this matching algebra, not in a synthetic API feature.
 
 Cross-market relationships: potentially useful, but older research overstated its implementation readiness. The October 15 paper's relationship/collateral thesis was directionally interesting, because the repository really does contain relationship and collateral-read machinery. But a relationship metadata endpoint is not itself a settlement-floor certificate, and a collateral GET is not a participant mint/borrow operation. The near-term valid use is to screen for logically related contracts, verify every payoff state and then trade only if ordinary/multi-leg execution can lock a positive executable payoff. Treat the old “package arbitrage” proposal as dated hypothesis, not a currently implementable free-money path.
 
-Traditional HFT claims are impossible here. Market updates are approximately second-batched, account writes are 30/minute, production intentionally uses 24/minute, and liquidity is peer-to-peer. 
+Traditional HFT claims are impossible here. Market updates are approximately second-batched, account writes are 30/minute, production intentionally uses 24/minute, and liquidity is peer-to-peer.
 6
  A 60–120 second worker is far too slow; a 200-microsecond worker is unnecessary. The useful target is sub-second local decision processing after a received versioned batch, followed by only the minimum authoritative exchange reads/writes.
 
@@ -340,7 +340,7 @@ Report at 1s, 5s, 30s and 120s where data exists. A strategy that realizes 60 fi
 
 Kill conditions
 
-New exposure should fail closed immediately on the existing categories: stale/gapped stream, unresolved/unknown order acceptance, account mismatch, missing fresh book, semantic mapping mismatch or rate-budget stress. SIG's current guidance specifically calls for respecting Retry-After and retrying ambiguous orders with the same idempotency key rather than creating duplicate operations. 
+New exposure should fail closed immediately on the existing categories: stale/gapped stream, unresolved/unknown order acceptance, account mismatch, missing fresh book, semantic mapping mismatch or rate-budget stress. SIG's current guidance specifically calls for respecting Retry-After and retrying ambiguous orders with the same idempotency key rather than creating duplicate operations.
 2
 
 Economic family-level kill conditions for the initial experiment should include:
@@ -676,7 +676,7 @@ Later, not today: redesign SameSideTopUps.maximum_entries and the 128-entry hot 
 
 Twenty-four-hour research program
 
-The first research block should build a complete opportunity census from the live/captured 237-market SIG universe and the exact-matched external feeds. Measure every fresh candidate, including candidates that are not traded. Without this denominator, “we filled X orders” says nothing about missed edge or adverse selection. The current realtime architecture supports maintaining tournament-wide books without spending one REST call per market update. 
+The first research block should build a complete opportunity census from the live/captured 237-market SIG universe and the exact-matched external feeds. Measure every fresh candidate, including candidates that are not traded. Without this denominator, “we filled X orders” says nothing about missed edge or adverse selection. The current realtime architecture supports maintaining tournament-wide books without spending one REST call per market update.
 7
 
 Next, replay the historical 1,502 actual placed-order sample through the current simulator and stratify fills by aggressiveness, market, time, price level, queue/depth proxy and subsequent executable markout. The calibration packet already establishes that most ordinary orders did not fill and that the 26 reviewed fully filled orders were marketable, so passive and taker-like observations must remain separate.
@@ -715,7 +715,7 @@ capital-minutes
 maximum inventory
 
 
-The relationship research lane should specifically revisit the strong claims in the October 15 paper. Query the official relationship graph and each market's settlement source, enumerate every outcome state including cancellation/N/A, and only then calculate a lower-bound package payoff. No trade should be classified as “arbitrage” merely because two election titles appear exhaustive. The competition explicitly refunds N/A/cancelled positions at refundable cost rather than enforcing a binary winning side in that state. 
+The relationship research lane should specifically revisit the strong claims in the October 15 paper. Query the official relationship graph and each market's settlement source, enumerate every outcome state including cancellation/N/A, and only then calculate a lower-bound package payoff. No trade should be classified as “arbitrage” merely because two election titles appear exhaustive. The competition explicitly refunds N/A/cancelled positions at refundable cost rather than enforcing a binary winning side in that state.
 8
 
 The ML lane should run the static baselines and causal ablations above without touching the protected final window. Do not launch more generations simply because the RTX 5070 Ti is idle. The existing research already shows later training can produce a worse candidate and that infrastructure parallelism can make evaluation slower.
@@ -732,10 +732,10 @@ Replay integrity: current original fills, cash, costs, receipts and financial pr
 Single-release discipline: combine qualified hot-path changes into one controlled deployment instead of another sequence of short-lived releases.
 What not to do
 
-Do not chase 60 fills/hour by crossing negative expected spread, reducing every trade to one-share cadence farming, batch-spraying dozens of passive orders, self-trading, spoofing, wash-like cycling or manufacturing marks. SIG explicitly prohibits unfair/manipulative activity and its matching logic prevents self-trades in any case. 
+Do not chase 60 fills/hour by crossing negative expected spread, reducing every trade to one-share cadence farming, batch-spraying dozens of passive orders, self-trading, spoofing, wash-like cycling or manufacturing marks. SIG explicitly prohibits unfair/manipulative activity and its matching logic prevents self-trades in any case.
 1
 
-Do not add another official-account client, API key strategy or process intended to multiply rate capacity. The limits are account-wide. 
+Do not add another official-account client, API key strategy or process intended to multiply rate capacity. The limits are account-wide.
 6
 
 Do not rewrite or truncate the original financial state. The current system's 2.56GB replay cost is painful, but preserving authoritative historical state is more important than shortening startup.
@@ -752,7 +752,7 @@ Uncertainties and primary sources
 
 The largest unresolved uncertainty is current actual SIG depth and positive-edge candidate arrival rate. Public documentation establishes mechanics but cannot establish that 60 economically worthwhile counterparties/hour are available now. Old crawled public market pages are not valid evidence of current depth. The requested shadow census is the minimum honest measurement.
 
-A second uncertainty is the current Scalar schema for participant batch limits, single-order time-in-force variants and any operation added after the October 1 schema audit. The current changelog proves single, batch and multi-leg order families exist, but I could not fully parse the interactive Scalar operation schemas through the research browser. 
+A second uncertainty is the current Scalar schema for participant batch limits, single-order time-in-force variants and any operation added after the October 1 schema audit. The current changelog proves single, batch and multi-leg order families exist, but I could not fully parse the interactive Scalar operation schemas through the research browser.
 5
  I therefore treat “50 orders/batch,” “up to 10 multi-leg legs,” and absence of participant IOC/FOK/post-only/amend as October 1 primary-doc evidence still reflected in the repository, not as newly re-proven October 21 schema facts.
 
@@ -778,7 +778,7 @@ https://docs.kalshi.com/
 
 https://docs.polymarket.com/
 
-The current official SIG sources establish the governing strategic constraint: the competition is cash-only, account API capacity is shared at 100 reads/30 writes per minute, trading is peer-to-peer, the final objective is final settled SUSQie balance rather than fill count, and every market settles under its own rules. 
+The current official SIG sources establish the governing strategic constraint: the competition is cash-only, account API capacity is shared at 100 reads/30 writes per minute, trading is peer-to-peer, the final objective is final settled SUSQie balance rather than fill count, and every market settles under its own rules.
 1
 
 Bottom line: the turnaround should not be “more architecture” or “more PPO.” It should be V3 recurrence + a genuinely fast current-head execution path + a brutally simple edge-gated executable strategy, measured in distinct fills, completed economic cycles, realized FIFO/cycle margin and adverse markout. One filled order/minute is a plausible throughput target only if the shadow opportunity census shows enough positive executable edge; under the historical passive fill hazard alone it is barely mechanically achievable and economically unsupported. The Rust executor should stay. Python should be used to discover and falsify edge without becoming a second account owner.

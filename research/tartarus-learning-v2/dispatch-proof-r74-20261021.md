@@ -1,0 +1,15 @@
+# Remove duplicate validation from the physical order path
+
+R72 entry20449, 1077NO BUY10,000, expired before HTTP at21:37:44UTC. [The original SDK positive no-admission proof](dispatch-expiry-q20449-20261021.json) is retained; this key cannot be reused. Its post-intent whole-cohort validation took3.756seconds. A later original acknowledgment20468 succeeded with a9.919-second book age, including1.765seconds of post-intent validation. [Retained later trace](dispatch-ack-q20468-20261021.json).
+
+R74 reuses the full eligibility proof already minted in the opaque `PhysicalDecision`, only while the same actual Session/native head and review files remain unchanged. It reads and verifies exactly the two newly appended original dispatch rows, their chain/sequence/inode, full original quote, typed request, permit and ownership tag. The original SDK callback still enforces book/source/permit time, account reconciliation and admission. No clock is extended, no unknown attempt is retried and no financial ledger is reset.
+
+The build also includes R73's indexed order snapshot lookup. It retains the deployed native engine and existing transport libraries, avoiding a native-engine migration. Unrelated local rank/native changes are excluded.
+
+Six new checks cover the exact permitted append, missing/extra rows, changed Session head, changed tag/quote/spec/permit, tampered original suffix/sidecar and remint after an attempt. The first test fixture moved its address-bound Session on return; that fixture was corrected to borrow the original Session before creating the token. Production guards were not relaxed to make it pass. Original result and corrected results are retained by the ARM64 build.
+
+At this document's initial publication, qualification and installation remain pending. A component optimization does not prove one filled order per minute or positive returns. Deployment must be followed by actual current-process dispatch timing and exchange receipt/FIFO evidence.
+
+Separate observed limitation: q20449 is a repeat-entry binding (original entry19215). Current no-HTTP recovery retires its native reservation, but the top-up policy's retirement path accepts only never-attempted reservations. That can keep1077's policy pending even after a positive SDK no-HTTP result. This release does not change that recovery format; a narrowly verified recovery extension remains necessary. It must retain the old intent and original SDK proof and authorize a fresh decision, never retry20449.
+
+[Reproducible build](tools/build-dispatch-proof-r74-20261021.py), [single-worker installer](tools/deploy-dispatch-proof-r74-20261021.py).
