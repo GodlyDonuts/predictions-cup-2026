@@ -64,3 +64,13 @@ R60 remains sole PID994490 and is still restoring its original 2.49GB journal; t
 CPU profiling identified repeated active-order scans through a20,033-record retired prefix while only3 of20,040 native orders remain unretired. A derived-prefix optimization preserves every record and passes125 ARM64 checks; its full original-journal financial-parity replay and release build are still running offline. It has not been deployed, and no live speed gain is claimed.
 
 The [fit-only opportunity census](fit-opportunity-census-20261021.json) examined2,542,717 SIG book records, of which2,542,103 were valid within the declared clock/depth rules. It found327 exchange-sides across190 contracts with a positive hindsight one-share entry/exit spread over3 seconds to1 hour. These are overlapping perfect-hindsight opportunities, not a causal portfolio or achievable ROI. No development/independent data, GPU, account client or execution was used. This establishes available price movement, not model skill. Population034's completed members remain loss-making or idle; member3 continues and all checkpoints are retained.
+
+### Corrective installation at 10:57 UTC
+
+R60 did not return to trading. It exited10:50:05 after restoring history because its startup control used old fundamental settings rather than the exact already committed live overlay (`RELOAD_REBASE_NONBINARY_CONTROL_CHANGED`). This deployment error is corrected by retaining the exact active overlay and changing only its executable identity.
+
+Checked source25420da8 and binary153a4347eac54946053601d3e28d5e253b05392cb5aeb767933936107a7b7766 are installed as sole worker996893. The native retired-prefix optimization passes125 checks and full original743,614-event replay with the same sealed financial report,20,040 orders and396 fills. All20 prior native bridges are preserved, with one explicit21st bridge. The complete original2.49GB journal, FIFO, physical account queue, financial caps, windows and rate budget remain. The original active generation is preserved; reference updater996896 waits for this exact worker. [Installation proof](production-active-overlay-prefix-installed-20261021.json).
+
+At10:53:13/15 the official receipts report94,562.96 marked positions plus403.36cash, totaling**94,966.32**:173.32 above the08:53 baseline and2,033.68 below the97,000 target. This mark change is not a new realized trading profit. Counts remain396fills/1660acknowledged and terminal orders. The worker is restoring and no new physical trade is verified. The deadline remains10:58:40UTC.
+
+Population034 continues; the [checkpoint-preserving cooperative handoff](cooperative-continuation-20261021.md) waits for its complete generation. No independent profitable learned model is deployed.

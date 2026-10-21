@@ -1,0 +1,42 @@
+{
+  "observedUtc": "2026-10-21T10:57:08.168918+00:00",
+  "sourceCommit": "25420da8fe3d59ee9691606371b676d7f75662be",
+  "binarySha256": "153a4347eac54946053601d3e28d5e253b05392cb5aeb767933936107a7b7766",
+  "controlSha256": "47f968adfd991c44f225c81035812278144e255b6138a710f9a06087fbcecd2f",
+  "nativeEngineIdentity": "de9c7e870a4b1b9d113a07d10456b9f2c480565599a9a226f59557e2be654eec",
+  "originalPrefix": {
+    "bytes": 2492994478,
+    "sha256": "014a4178cfc9c7c90e622ae6a4bcdaf174d0437b4fbb1d591a5ce62b30ea9588"
+  },
+  "originalReportHash": "ca50cd60e7a69e0415122a454d07b21347d962ceae329c2d4bfdc1c5b55bf375",
+  "originalFills": 396,
+  "acknowledgedOrders": 1660,
+  "terminalOrders": 1660,
+  "all20PriorBridgesPreserved": true,
+  "newBridgeCount": 21,
+  "exactCommittedActiveOverlayPreserved": true,
+  "financialCapsLimiterAndWindowsChanged": false,
+  "originalFifoAndHistoryPreserved": true,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "ordersSubmittedByDeployment": 0,
+  "phase": "restoring_original_ledger",
+  "freshTradingVerified": false,
+  "pid": 996893,
+  "startTicks": "54988218",
+  "referenceUpdaterPid": 996896,
+  "actualExecutableAndArgumentsVerified": true,
+  "fileOnlyObserverPid": 996911,
+  "latestOfficialAccountObservation": {
+    "cashReceivedAt": "2026-10-21T10:57:11.992Z",
+    "cash": 403.36,
+    "availableAdvance": 0,
+    "positionsReceivedAt": "2026-10-21T10:57:10.129Z",
+    "positionsSummary": {
+      "totalCostBasis": 95016.8,
+      "totalMarketValue": 94562.32,
+      "totalUnrealizedPnl": -454.46
+    },
+    "sourcePreflightFileSha256": "1a08ab79006454f2340c6d7cb4586863b6237017841177695f7462ed89091180"
+  }
+}
