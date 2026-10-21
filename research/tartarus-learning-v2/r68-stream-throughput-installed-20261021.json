@@ -1,0 +1,72 @@
+{
+  "schema": "r68_transport_recovery_v1",
+  "build": {
+    "builtAt": "2026-10-21T17:32:04.178706+00:00",
+    "binarySha256": "9fd14df514bdd343fcedc9f14ba40565d2bf9ff853e521f6a00da6af3c9eb5ba",
+    "bytes": 18799992,
+    "engineIdentity": "de9c7e870a4b1b9d113a07d10456b9f2c480565599a9a226f59557e2be654eec",
+    "financialEngineUnchanged": true,
+    "SDKUnchanged": true,
+    "sourceDelta": {
+      "moloch/native/src/realtime.rs": "5daa93017c5d862d3ffef3770d078149455e5357f3cf3d83b1434b3e198fe74b",
+      "moloch/native/src/realtime_queue.rs": "1b7805e7335be0e0b0c417ddd89c889dcf22139401755cfd9ea67bc637b458a1",
+      "moloch/live-runtime/src/stream_connect_retry.rs": "ec1cc3133aa97693005de1574d10dd2a8422f945900695860b328bd8681b8351",
+      "moloch/live-runtime/src/stream_token_retry.rs": "095f4b1d30146901f73d90726c99b8db700dbac2e18eca490ab0cabe35243787",
+      "moloch/live-runtime/tests/stream_connect_retry.rs": "0da906a3c3827e97b1d81ab0647597209fb3bad97ef2911b5f8a26d407a364a1",
+      "moloch/live-runtime/tests/stream_token_retry.rs": "f03e9d46d2122b90a569b4934ca493b21d78809def22f38d010c94dc39d6bf13"
+    },
+    "deployed": false
+  },
+  "deployment": {
+    "observedUtc": "2026-10-21T17:35:25.986861+00:00",
+    "sourceCommit": "a9f230317e5a591e93e74f662f2c5dba9fb044b6",
+    "binarySha256": "9fd14df514bdd343fcedc9f14ba40565d2bf9ff853e521f6a00da6af3c9eb5ba",
+    "originalFills": 425,
+    "cash": "14174.280000",
+    "ownedCost": "81849.380000",
+    "realized": "443.745000",
+    "originalNativeHead": {
+      "hash": "229f750fc3032b31ffe173a811126cf2912355e5213c8087d534b7443618d764",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "401352ca272dfa99d2e1c12a8cd261c35fdcb567cc2f9946bdafd9d7492aa6ec",
+      "sequence": 771074
+    },
+    "bridgeSha256": "43371c3f0405218b640eb9ec65647aca3a9a743c6ba78e082eafc56387ef2e3a",
+    "originalDispatchSha256": "4de8f36ac2e83d0320dd6e7ce6a99800fe9efda351d1b796db59505ea22cf120",
+    "knownOpenOrders": [
+      20213,
+      20215
+    ],
+    "originalFinancialStatePreserved": true,
+    "financialEngineUnchanged": true,
+    "SDKUnchanged": true,
+    "financialCapsLimiterAndWindowsChanged": false,
+    "streamAttemptsPreserved": true,
+    "orderRetry": false,
+    "freshTradingVerified": false,
+    "originalFinancialPrefixBytes": 2545241286,
+    "originalFinancialPrefixSha256": "6ae9aba06bc0182155ae7f3004384d2df07dd66f639ba33bae18c51b8500968e",
+    "incident": "/home/archon/apps/moloch/shared/incidents/r68-stream-throughput-20261021T173525Z",
+    "controlSha256": "ab83474a6374a127a1d2d3b98c9ccdc6d091a0b171de6751740dd7ea9933c0be",
+    "pid": 1018590,
+    "startTicks": 57378000,
+    "referenceUpdaterPid": 1018593,
+    "phase": "restoring_original_ledger",
+    "actualExecutableAndArgumentsVerified": true
+  },
+  "qualification": {
+    "realtimeTestsPassed": 30,
+    "connectRetryTestsPassed": 12,
+    "tokenRetryTestsPassed": 8,
+    "sourceFilesCompared": 289,
+    "onlySixTransportPathsChanged": true,
+    "canonicalSourcePins": {
+      "moloch/native/src/realtime.rs": "5ea7c929d2eb911a7636e0f1b6ff3e1a1efaba52ac335011293bc2822fa845c8",
+      "moloch/native/src/realtime_queue.rs": "1b7805e7335be0e0b0c417ddd89c889dcf22139401755cfd9ea67bc637b458a1",
+      "moloch/live-runtime/src/stream_connect_retry.rs": "cbeea66b874f83f66f72bd63ba93ff8d0c0c0eb71fd06cd5f39f51871a64f491",
+      "moloch/live-runtime/src/stream_token_retry.rs": "05a5b09f916f7994c6742ea715425f5d2f00a97a483341dcaccdee362c4c1574",
+      "moloch/live-runtime/tests/stream_connect_retry.rs": "8d035a75aa0c64112801726bdc0a65c1cfcdec4a7b01f5f5e9890bbe98175b60",
+      "moloch/live-runtime/tests/stream_token_retry.rs": "ca94999707a120a6f84c436516d25595f25561891580bbaf418b4904db056452"
+    }
+  }
+}

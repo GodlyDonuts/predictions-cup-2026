@@ -1,4 +1,4 @@
-# Tartarus implementation status — October21,17:29UTC
+# Tartarus implementation status — October21,17:37UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
@@ -27,4 +27,4 @@ Three venues provide information; execution is SIG-only. Requests, receipts, vir
 
 Current detailed development is2 fitting days plus2 development days. Full competition execution history and the requested4+4 evaluation chronology remain incomplete. ProtectedOctober21–25 has not been consumed. No learned model is deployed or independently profitable.
 
-Production is separate: R67 realized113.21 SUSQies on a verified partial sale before a stream-reconnect stop. The transport repair is qualifying. [Current production state](../../docs/CURRENT_STATE.md), [sale proof](r67-first-sale-20261021.json).
+Production is separate: R67 realized113.21 SUSQies on a verified partial sale before a stream-reconnect stop. R68 transport repair is installed and restoring the original ledger; fresh trading remains unverified. [Current production state](../../docs/CURRENT_STATE.md), [sale proof](r67-first-sale-20261021.json).

@@ -1,14 +1,14 @@
 # Current Moloch and Tartarus state
 
-Observed October21,17:29UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October21,17:37UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
 R67 PID1014772 recovered at17:11:58 with healthy realtime data and the original420 fills preserved. It then produced five new fills on order54128846/native20213:5,110 NO shares of exchange851 sold at0.895. Exact official receipts and FIFO recomputation establish4,573.45 proceeds,4,460.24 released cost and113.21 realized gross. Remaining433 shares of that original5,543-share order were not terminal at the sale audit.
 
-At17:19:05.600 the worker stopped on `STREAM_CONNECT_ATTEMPTS_EXHAUSTED`, after repeated `STREAM_QUEUE_FULL`. The last17:18:56 progress had425 fills,1668 acknowledgments and1666 terminal orders. Known nonterminal orders remain authoritative and must be reconciled by the continuing worker. The stream-throughput replacement is being qualified; it is not yet deployed.
+At17:19:05.600 the worker stopped on `STREAM_CONNECT_ATTEMPTS_EXHAUSTED`, after repeated `STREAM_QUEUE_FULL`. The last17:18:56 progress had425 fills,1668 acknowledgments and1666 terminal orders. Known nonterminal orders remain authoritative and must be reconciled by the continuing worker. R68 was installed at17:35:25 as sole PID1018590/startTicks57378000 with executable9fd14df514bd and controlab83474a6374 verified. It is restoring the original ledger; fresh R68 trading is not yet verified. A finite file-only observer checks recovery without creating another account client.
 
-The repair increases native ingress from64 to1024 messages with a64MiB encoded-payload budget and preserves FIFO. Recovery retains the existing rolling attempt/token/account budgets and waits for the next admission instead of permanently stopping when the reconnect window is full. Protocol errors, unknown order acceptance and durable corruption retain their existing handling. Financial-engine identity and accounting are unchanged.
+The repair increases native ingress from64 to1024 messages with a64MiB encoded-payload budget and preserves FIFO. Recovery retains the existing rolling attempt/token/account budgets and waits for the next admission instead of permanently stopping when the reconnect window is full. Protocol errors, unknown order acceptance and durable corruption retain their existing handling. Financial-engine identity and accounting are unchanged. All289 source files were compared against the deployed R67 source; only the six intended transport paths differ.30 realtime,12 connect-retry and8 token-retry checks pass. [Build, source pins and actual installation](../research/tartarus-learning-v2/r68-stream-throughput-installed-20261021.json).
 
 Last reconciled native financial state:
 
