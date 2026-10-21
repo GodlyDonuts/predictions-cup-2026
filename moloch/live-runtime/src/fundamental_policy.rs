@@ -1170,7 +1170,7 @@ impl Cohorts{
         self.check(bank,log)?;if self.rank_paused(exchange){return Ok(None)} log.require_resolved_attempts()?;
         let Some(c)=self.cohorts.get(exchange).filter(|c|c.existing.is_some()||(c.entry.is_some()&&bank.engine().managed_inventory_planning_excludes(exchange)))else{return Ok(None)};
         if c.existing.is_none()&&c.pending_entry(log){return Ok(None)}
-        if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(None)}
+        if self.owned(bank,exchange,c)?==0||c.exits.keys().any(|id|physical_pending(bank,log,*id)){return Ok(None)}
         let r=&self.policies[exchange];need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_EXISTING_SCOPE")?;
         let reason=if liquidation_due(r,c,now){"reviewed_holding_deadline"}
             else if !trusted.contains(&digest(r)?)||!current(r,now){return Ok(None)}
@@ -1560,7 +1560,7 @@ impl Cohorts{
         self.check(bank,log)?;if self.rank_paused(exchange){return Ok(false)} let Some(r)=self.policies.get(exchange)else{return Ok(true)};
         let Some(c)=self.cohorts.get(exchange)else{return Ok(false)};
         if self.owned(bank,exchange,c)?==0||c.pending_entry(log)
-            ||c.exits.keys().any(|id|log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(false)}
+            ||c.exits.keys().any(|id|physical_pending(bank,log,*id)){return Ok(false)}
         need(scope.tournament_id==r.tournament_id&&scope.exchanges.get(exchange)==Some(&r.market_id),"FUNDAMENTAL_SCOPE_CHANGED")?;
         if liquidation_due(r,c,now){return Ok(true)}
         if !trusted.contains(&digest(r)?)||!current(r,now){return Ok(false)}
@@ -1734,7 +1734,7 @@ impl Cohorts{
              }
             if c.existing.is_some()&&q.get("reviewedInventoryExit").is_none(){return Ok(hold("reviewed_existing_exit_reservation_required"))}
             need(n==native,"FUNDAMENTAL_EXIT_MUST_MATCH_NATIVE_QUANTITY")?;
-            if c.pending_entry(log)||c.exits.keys().any(|id|*id!=qid&&log.attempted.contains(id)&&!log.closed.contains(id)){return Ok(hold("prior_owned_order_reconciliation_required"))}
+            if c.pending_entry(log)||c.exits.keys().any(|id|*id!=qid&&physical_pending(bank,log,*id)){return Ok(hold("prior_owned_order_reconciliation_required"))}
             need(n<=owned,"FUNDAMENTAL_UNCOVERED_EXIT")?;
             if let Some(mode)=q["reviewedInventoryExit"].get("executionMode"){
                 need(mode=="passiveValueLimit","FUNDAMENTAL_PASSIVE_EXIT_MODE")?;

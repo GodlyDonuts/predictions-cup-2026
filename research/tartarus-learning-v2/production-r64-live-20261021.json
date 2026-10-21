@@ -1,0 +1,23 @@
+{
+  "observedUtc": "2026-10-21T05:25:27.783606-08:00",
+  "pid": 1002282,
+  "startTicks": 55750445,
+  "binarySha256": "493fdfbb1c334f309091758cb139d784a2128156aeaa021a545a7e02f4200e6c",
+  "controlSha256": "30fb7f0ed3357f4fa455a0c64fbec54584d6e871fde1fa3cec376f1c1d8724cd",
+  "progress": {
+    "actualFills": 397,
+    "actualOrders": 1661,
+    "at": "2026-10-21T13:24:28.143Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1002282,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 24,
+    "terminalOrders": 1661
+  },
+  "stopPresent": false,
+  "accountRequests": 0,
+  "profitabilityEstablished": false
+}

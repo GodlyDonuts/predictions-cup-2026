@@ -1,0 +1,149 @@
+{
+  "observedUtc": "2026-10-21T05:33:08.335532-08:00",
+  "originalSourcePrefixes": {
+    "fundamental.ndjson": {
+      "prefixBytes": 2440587,
+      "sha256": "98b9978d6997f5301a9190d0e9d9f2e81dd5493dbfa2edfb1382bfdb66b5400e"
+    },
+    "dispatch.ndjson": {
+      "prefixBytes": 27046692,
+      "sha256": "0bd12f45040795b9f92d156bbbf43d1a50249cad1c2c41d2cb3f3e257693c3ec"
+    }
+  },
+  "blockedExitBindings": [
+    {
+      "qid": 17137,
+      "exchangeId": "851",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 17811,
+      "exchangeId": "885",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "local_final_guard_no_http"
+      ]
+    },
+    {
+      "qid": 18533,
+      "exchangeId": "1068",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "expired_exposure_reconciled"
+      ]
+    },
+    {
+      "qid": 18577,
+      "exchangeId": "865",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 19057,
+      "exchangeId": "1043",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 19549,
+      "exchangeId": "1044",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 19553,
+      "exchangeId": "1077",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 20049,
+      "exchangeId": "1042",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 20050,
+      "exchangeId": "1051",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 20051,
+      "exchangeId": "1067",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 20052,
+      "exchangeId": "872",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 20058,
+      "exchangeId": "977",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    },
+    {
+      "qid": 20060,
+      "exchangeId": "993",
+      "events": [
+        "intent",
+        "attempt",
+        "error",
+        "aborted_before_admission"
+      ]
+    }
+  ],
+  "liveWorkerPid": 1002282,
+  "accountRequests": 0,
+  "financialStateChanged": false,
+  "notes": "The old check conflates proved no-network/reconciled attempts with unresolved physical orders. 1042 remains expired and1068 separately rank-paused; fixing this predicate does not grant eligibility."
+}
