@@ -1,4 +1,4 @@
-# Tartarus implementation status — October21,17:37UTC
+# Tartarus implementation status — October21,18:03UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
@@ -17,6 +17,8 @@ The queued source includes:
 
 [Target-selection implementation and model audit](family-target-query-20261021.md), [founder retention](founder-retention-20261021.md).
 
+Optional process-based evolution evaluation is checked on sourcee0d83619 but disabled.22 unique focused checks cover behavior, clocks, finance and isolation. In four interleaved CPU passes over a five-minute development slice, all observations/actions/complete results matched, but child processes took154.12s median versus116.24s locally (32.6% slower). This measured result does not justify changing active037 or queued040. No optimization or independent test was run. [Benchmark and exact limits](process-evaluation-benchmark-20261021.json).
+
 ## Results and limits
 
 The2,768-update checkpoint completed the full October17–19 development window at-4.3489075% nominal/-4.93724% stressed marked ROI. Its minimum daily-growth reward remains worse than the matched founder. The first island's final2,773-update checkpoint is a different checkpoint and its final evaluation is pending. [Later-checkpoint result](population-037-later-result-20261021.json).
@@ -27,4 +29,4 @@ Three venues provide information; execution is SIG-only. Requests, receipts, vir
 
 Current detailed development is2 fitting days plus2 development days. Full competition execution history and the requested4+4 evaluation chronology remain incomplete. ProtectedOctober21–25 has not been consumed. No learned model is deployed or independently profitable.
 
-Production is separate: R67 realized113.21 SUSQies on a verified partial sale before a stream-reconnect stop. R68 transport repair is installed and restoring the original ledger; fresh trading remains unverified. [Current production state](../../docs/CURRENT_STATE.md), [sale proof](r67-first-sale-20261021.json).
+Production is separate: R68 is verified trading/realtime healthy, with three new order acknowledgments and no new R68 fill yet. Two audited R67 sales realized+113.21 and−277.84, including the second sale reconciled after restart; combined−164.63. Cash16,896.10 and remaining attributed cost78,849.72 are not current marked equity. [Current production state](../../docs/CURRENT_STATE.md), [second-sale loss audit](r67-second-sale-reconciled-20261021.json).

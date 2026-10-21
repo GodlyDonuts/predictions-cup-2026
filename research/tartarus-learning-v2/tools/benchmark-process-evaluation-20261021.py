@@ -67,7 +67,8 @@ def main(job):
         planSha256=sha_file(job/'PLAN.json'),sourceManifestSha256=plan['sourceManifestSha256'],results=results,
         speedupIncludingProcessStartup=old/new,exactObservationActionAndEconomicResultParity=True,
         optimizerRun=False,independentTestUsed=False,productionChanged=False,
-        classification='interleaved_cpu_one_hour_development_diagnostic_alongside_original_gpu_training_not_fitness_or_roi')
+        diagnosticWindowMs=config['development_selection_episode_ms'],
+        classification='interleaved_cpu_development_diagnostic_alongside_original_gpu_training_not_fitness_or_roi')
     (job/'RESULT.json').write_text(json.dumps(result,indent=2),encoding='utf-8');print(json.dumps(result),flush=True)
 
 

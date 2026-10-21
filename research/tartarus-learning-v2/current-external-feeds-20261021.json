@@ -1,0 +1,44 @@
+{
+  "observedUtc": "2026-10-21T17:55:41.802972+00:00",
+  "classification": "existing_external_collector_status_not_SIG_execution_or_signal_quality",
+  "kalshi": {
+    "at": "2026-10-21T17:55:41.026Z",
+    "pid": 16232,
+    "state": "collecting",
+    "targetRequestsPerSecond": 20,
+    "observedStartsLastSecond": 20,
+    "observedStartsLastMinute": 1193,
+    "activeTickers": 237,
+    "successfullyCachedTickers": 237,
+    "oldestCachedReceiptAgeMs": 11906,
+    "throttles": 0,
+    "fatalCode": null
+  },
+  "polymarket": {
+    "at": "2026-10-21T17:55:41.226Z",
+    "pid": 3732,
+    "state": "running",
+    "configuredMaximumRps": 30,
+    "cachedBooks": 378,
+    "completeMarketCoverage": 189,
+    "sourceAgeMs": {
+      "minimum": 338,
+      "median": 8916,
+      "maximum": 60093
+    },
+    "receiptAgeMs": {
+      "minimum": 20,
+      "median": 3191,
+      "maximum": 6370
+    }
+  },
+  "polymarketWebsocket": {
+    "at": "2026-10-21T17:55:41.226Z",
+    "failed": false,
+    "outcomes": 378,
+    "stopped": false
+  },
+  "oldVpsPolymarketStatusIsNotActiveCollector": true,
+  "newAccountClients": 0,
+  "productionChanged": false
+}

@@ -1,0 +1,123 @@
+{
+  "observedUtc": "2026-10-21T17:58:07.405707+00:00",
+  "sourceCommit": "e0d836198d03dbec2621837fc991f928d692e97e",
+  "planSha256": "e30a5d416f7851b2ff53fc5b51a33f6ffad2ea25d3d1583320e19cb7e6f4ebd5",
+  "sourceManifestSha256": "53a1fcb540a6879288d5a48466f232a45805fb7b1f7308eac1ea93def8379a5c",
+  "results": [
+    {
+      "remote": false,
+      "wallSeconds": 117.5217612000124,
+      "observationSha256": "f2c5f4c67d282b909ea0c12719d9aef07b5539800b71c1a584f912d6721490f0",
+      "actionSha256": "7158a1debe8bb8f7e23611460785b2b62c956416c4aed77bfc0292d759abc708",
+      "resultSha256": "1dfe2eaf6e3b7fd1c98274fffd79257e1828c00733bf8de666b17ee44a5ed69f",
+      "decisions": [
+        1065,
+        299
+      ],
+      "fills": [
+        0,
+        0
+      ],
+      "boundsMs": [
+        [
+          1792308166175,
+          1792308466175
+        ],
+        [
+          1792308166175,
+          1792308466175
+        ]
+      ],
+      "weightsUnchanged": true
+    },
+    {
+      "remote": true,
+      "wallSeconds": 153.78345040000568,
+      "observationSha256": "f2c5f4c67d282b909ea0c12719d9aef07b5539800b71c1a584f912d6721490f0",
+      "actionSha256": "7158a1debe8bb8f7e23611460785b2b62c956416c4aed77bfc0292d759abc708",
+      "resultSha256": "1dfe2eaf6e3b7fd1c98274fffd79257e1828c00733bf8de666b17ee44a5ed69f",
+      "decisions": [
+        1065,
+        299
+      ],
+      "fills": [
+        0,
+        0
+      ],
+      "boundsMs": [
+        [
+          1792308166175,
+          1792308466175
+        ],
+        [
+          1792308166175,
+          1792308466175
+        ]
+      ],
+      "weightsUnchanged": true
+    },
+    {
+      "remote": true,
+      "wallSeconds": 154.45701280000503,
+      "observationSha256": "f2c5f4c67d282b909ea0c12719d9aef07b5539800b71c1a584f912d6721490f0",
+      "actionSha256": "7158a1debe8bb8f7e23611460785b2b62c956416c4aed77bfc0292d759abc708",
+      "resultSha256": "1dfe2eaf6e3b7fd1c98274fffd79257e1828c00733bf8de666b17ee44a5ed69f",
+      "decisions": [
+        1065,
+        299
+      ],
+      "fills": [
+        0,
+        0
+      ],
+      "boundsMs": [
+        [
+          1792308166175,
+          1792308466175
+        ],
+        [
+          1792308166175,
+          1792308466175
+        ]
+      ],
+      "weightsUnchanged": true
+    },
+    {
+      "remote": false,
+      "wallSeconds": 114.9670269999915,
+      "observationSha256": "f2c5f4c67d282b909ea0c12719d9aef07b5539800b71c1a584f912d6721490f0",
+      "actionSha256": "7158a1debe8bb8f7e23611460785b2b62c956416c4aed77bfc0292d759abc708",
+      "resultSha256": "1dfe2eaf6e3b7fd1c98274fffd79257e1828c00733bf8de666b17ee44a5ed69f",
+      "decisions": [
+        1065,
+        299
+      ],
+      "fills": [
+        0,
+        0
+      ],
+      "boundsMs": [
+        [
+          1792308166175,
+          1792308466175
+        ],
+        [
+          1792308166175,
+          1792308466175
+        ]
+      ],
+      "weightsUnchanged": true
+    }
+  ],
+  "speedupIncludingProcessStartup": 0.7542448703405524,
+  "exactObservationActionAndEconomicResultParity": true,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "classification": "interleaved_cpu_five_minute_development_diagnostic_alongside_original_gpu_training_not_fitness_or_roi",
+  "originalPrivateResultSha256": "d6ce06257629859fa05ebd30773f53cd055bc659edbf2b3fa435060d4740e1bb",
+  "originalPrivateLabelWasIncorrectlyOneHour": true,
+  "diagnosticWindowMs": 300000,
+  "activationDecision": "disabled_in_active037_and_queued040_no_measured_speed_benefit",
+  "relativeWallTimeIncrease": 0.32582936831706344
+}
