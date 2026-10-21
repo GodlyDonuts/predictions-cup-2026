@@ -68,14 +68,23 @@ def run(spec_path):
             raise ValueError('EXACT_EXISTING_ACTOR_CALIBRATION_REQUIRED')
         handle = TrainingProcess(spec['oldPid'], old, spec['oldConfig'],
                                  expected_creation=spec['oldCreation'])
-        status('waiting_for_completed_generation', trainerPid=handle.pid, cycle=spec['cycle'])
-        while boundary(old, spec['cycle']) is None:
-            if (job/'cancel').exists(): status('cancelled_before_handoff'); return
-            if not handle.alive(): raise ValueError('EXISTING_TRAINER_EXITED_WITHOUT_HANDOFF')
-            time.sleep(20)
-        plan = select_population(old, cycle=spec['cycle'], members=spec['template']['members'],
-                                 hidden_size=spec['template']['hidden_size'])
-        if plan is None: raise ValueError('COMPLETED_GENERATION_DISAPPEARED')
+        partial=spec.get('preservedPartialPopulation')
+        if partial is not None:
+            if sha_file(partial['path'])!=partial['sha256']:
+                raise ValueError('PRESERVED_PARTIAL_PLAN_CHANGED')
+            from .partial_population import verify
+            status('verifying_preserved_unfinished_population',trainerPid=handle.pid)
+            plan=verify(json.loads(Path(partial['path']).read_text()),old,
+                members=spec['template']['members'],hidden_size=spec['template']['hidden_size'])
+        else:
+            status('waiting_for_completed_generation', trainerPid=handle.pid, cycle=spec['cycle'])
+            while boundary(old, spec['cycle']) is None:
+                if (job/'cancel').exists(): status('cancelled_before_handoff'); return
+                if not handle.alive(): raise ValueError('EXISTING_TRAINER_EXITED_WITHOUT_HANDOFF')
+                time.sleep(20)
+            plan = select_population(old, cycle=spec['cycle'], members=spec['template']['members'],
+                                     hidden_size=spec['template']['hidden_size'])
+            if plan is None: raise ValueError('COMPLETED_GENERATION_DISAPPEARED')
         frozen(job/'population-plan.json', plan)
         config, removed = continuation_configuration(spec['template'], plan,
             managed_profile=spec.get('managedDataProfile'))
@@ -111,7 +120,8 @@ def run(spec_path):
         time.sleep(2)
         from .gpu_diagnostic_guard import require_idle_gpu
         require_idle_gpu('cuda', allow_verified_desktop=True)
-        status('selected_generation_preserved_launching_islands', parents=len(plan['parents']))
+        status('unfinished_population_weights_preserved_launching_islands'if partial is not None else
+               'selected_generation_preserved_launching_islands',parents=len(plan['parents']))
         command = [spec['python'], '-u', '-m', 'moloch.learning_actions.asynchronous_islands',
                    '--config', str(next_path), '--config-sha', sha_file(next_path),
                    '--output', str(new), '--calibration', str(next_calibration),

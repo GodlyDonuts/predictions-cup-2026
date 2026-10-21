@@ -53,13 +53,28 @@ class ContinuationTests(unittest.TestCase):
         template, plan = self.fixture(); template['mode'] = 'full_history'
         with self.assertRaises(ValueError): subject.continuation_configuration(template, plan)
 
+    def test_corrective_weights_are_not_reported_as_a_completed_generation(self):
+        from .partial_population import CLASSIFICATION
+        template,plan=self.fixture()
+        plan.update(classification=CLASSIFICATION,completedGeneration=False,
+                    activeSnapshotUpdates=11020,reason='missing historical feed corrected')
+        for parent in plan['parents']:parent['origin']='checked_unfinished_member_accepted_weights'
+        config,_=subject.continuation_configuration(template,plan)
+        self.assertNotIn('transferred_completed_cycle',config)
+        self.assertEqual(config['transferred_partial_snapshot_updates'],11020)
+        self.assertEqual(config['development_selection_ms'],template['development_selection_ms'])
+        self.assertEqual([p['sha256']for p in config['development_initial_checkpoints']],['0'*64,'1'*64])
+
+    def test_changed_partial_plan_never_stops_trainer(self):
+        self.run_wait_case(cancel=False,changed_partial=True)
+
     def test_cancelled_wait_never_stops_trainer(self):
         self.run_wait_case(cancel=True)
 
     def test_unexpected_trainer_exit_never_starts_replacement(self):
         self.run_wait_case(cancel=False)
 
-    def run_wait_case(self, *, cancel):
+    def run_wait_case(self, *, cancel,changed_partial=False):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory); old=root/'old';old.mkdir();job=root/'handoff';job.mkdir()
             template,_=self.fixture()
@@ -68,6 +83,7 @@ class ContinuationTests(unittest.TestCase):
             spec=dict(sourceRoot=str(root/'source'),sourceCommit='commit',sourceManifestSha256='sha',
                       oldRun=str(old),newRun=str(root/'new'),datasetManifestSha256='dataset',
                       calibrationSha256='sha',template=template,oldPid=1,oldConfig='old-config',oldCreation=2,cycle=0)
+            if changed_partial:spec['preservedPartialPopulation']={'path':str(job/'original-plan.json'),'sha256':'changed'}
             path=job/'spec.json';path.write_text(json.dumps(spec))
             if cancel:(job/'cancel').touch()
             handle=Mock(pid=1);handle.alive.return_value=False
@@ -78,7 +94,7 @@ class ContinuationTests(unittest.TestCase):
                  patch.object(subject.subprocess,'Popen') as start:
                 if cancel:subject.run(path)
                 else:
-                    with self.assertRaisesRegex(ValueError,'EXISTING_TRAINER_EXITED'):
+                    with self.assertRaisesRegex(ValueError,'PRESERVED_PARTIAL_PLAN_CHANGED'if changed_partial else'EXISTING_TRAINER_EXITED'):
                         subject.run(path)
                 handle.terminate_for_handoff.assert_not_called();start.assert_not_called()
                 handle.close.assert_called_once()
