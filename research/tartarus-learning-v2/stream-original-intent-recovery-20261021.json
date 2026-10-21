@@ -1,0 +1,54 @@
+{
+  "nativeStateChanged": false,
+  "networkRequests": 0,
+  "originalDispatchFileSha256": "addc3ac1715e2f03937f249ed38d8550250f04a7511fbfeea90dfb0542d178e4",
+  "otherHistoricalRecordsReclassified": false,
+  "qid": 20155,
+  "sameIntentRetryAuthorized": false,
+  "stopPreserved": true,
+  "stopSha256": "2b2635d1244e21fe94c469fef16ae6fd8da168f7c69125a2aee2a150ba8d3174",
+  "typedSdkProof": {
+    "attemptAtMs": 1792591806956,
+    "binding": {
+      "intent": "moloch-live-20261015-v1:20155",
+      "key": "moloch-live-20261015-v1:20155",
+      "payload_hash": "57405ce1323d69968d6b0cb41789b1382af40395da42b8c11bc28b1d64396fc0"
+    },
+    "kind": "sdk_stopped_v1_before_admit_no_http",
+    "originalError": {
+      "apiCode": null,
+      "code": "LIVE_VERIFIED_STREAM_REQUIRED",
+      "mayHaveExecuted": false,
+      "orderId": null,
+      "retryAfterMs": 0,
+      "status": null
+    },
+    "originalHead": {
+      "active": null,
+      "binding": {
+        "intent": "moloch-live-20261015-v1:20155",
+        "key": "moloch-live-20261015-v1:20155",
+        "payload_hash": "57405ce1323d69968d6b0cb41789b1382af40395da42b8c11bc28b1d64396fc0"
+      },
+      "globalUnknownCount": 0,
+      "lastClock": 1792591803623,
+      "manualReview": false,
+      "previous": "0e046886ab38c21c74f35f2f204ddaf1710f4da166286cdfd32e52c9559d8261",
+      "queueScope": "sig-midterm-shared-account",
+      "sequence": 424752
+    },
+    "originalRequestSha256": "0aa203d0989f897d621e5c4f3b89935d52415a9d155c9c17e12d3b22bde1bf49",
+    "permitSha256": "f2cae7dbaaf983ce6b3a58ff998c9cb7f02993dc35854a713a4e97b4472dfd67",
+    "queueDirectory": "/home/archon/apps/moloch/shared/live-production-v1/account-queue",
+    "queueDirectoryIdentity": {
+      "device": 66305,
+      "inode": 12355018
+    },
+    "queueScope": "sig-midterm-shared-account",
+    "schemaVersion": 1,
+    "scopeSha256": "eb720801f2031dbcf232b2af58d331d8b6399c1a2d095d7962111263822e328b",
+    "sdkRequestSha256": "0aa203d0989f897d621e5c4f3b89935d52415a9d155c9c17e12d3b22bde1bf49",
+    "sourceArchive": "ordinary-unadmitted-1bf5d3be20a5a430f71802e90269bfa36afc28fd6ad23642b8e6a598cf1fa7d0.json",
+    "sourceArchiveSha256": "9959b92eed0df4e9e2293b0fa22754b2335b7efcc52d9949939172f09b6ad6b5"
+  }
+}

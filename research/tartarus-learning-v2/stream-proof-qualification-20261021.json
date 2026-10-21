@@ -1,0 +1,12 @@
+{
+  "runtimeChangeCommit": "2f8ae8dae47a4eeaa1122605cb58a9eb83d330e7",
+  "recoveryToolCommit": "5d15d308ec429da78deba76db55b6f38b964c261",
+  "sdkPreAdmissionChecksPassed": 16,
+  "sdkFinalGuardChecksPassed": 11,
+  "workerRefreshChecksPassed": 23,
+  "workerFinalGuardChecksPassed": 2,
+  "releaseBuildSucceeded": true,
+  "candidateBase": "Exact R65 source; retained R55 SDK; narrow stream-loss proof and worker handling changes only",
+  "nativeEngineChanged": false,
+  "observerPid": 1005115
+}
