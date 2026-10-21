@@ -8,6 +8,7 @@ use moloch_live_runtime::reconciliation::{self,Reconciler};
 use moloch_live_runtime::fundamental_policy::{self as fundamental,Cohorts,ReviewAuthority};
 use moloch_live_runtime::stream_recovery::{StreamFailure,RecoveryBudget,RECOVERY_WINDOW_MS,RECOVERY_MAXIMUM_ATTEMPTS};
 #[path="realtime_book_catchup.rs"] mod realtime_book_catchup;
+#[path="seed_identity.rs"] mod seed_identity;
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -532,8 +533,7 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
   if acquired.is_some(){
    let seed=bank.live_account_seed().ok_or("TARTARUS_ORIGINAL_ACCOUNT_SEED")?;
    let origin=RetainedReceipt::from_recorded_digest(&c.root,seed["accountSnapshotHash"].as_str().ok_or("TARTARUS_ORIGINAL_ACCOUNT_SEED")?,ReceiptStore::Ordinary)?;let original=origin.receipt();
-   if original.status!=200||original.endpoint!=account.receipt().endpoint||original.data["id"]!=account.receipt().data["id"]||!original.data["id"].as_str().is_some_and(api::relationships::uuid)||original.received_at!=seed["observedAt"].as_str().ok_or("TARTARUS_ORIGINAL_ACCOUNT_SEED")?{return Err("TARTARUS_ORIGINAL_PROFILE_CHANGED".into())}
-   if let Some(record)=bank.engine().owner_capital_allocation_record(){if record["bankScope"]["profileId"]!=account.receipt().data["id"]{return Err("TARTARUS_ORIGINAL_PROFILE_CHANGED".into())}}
+   seed_identity::validate(original,account.receipt(),seed,&c.scope,bank.manifest_hash(),bank.engine().owner_capital_allocation_record().as_ref())?;
   }
   if observation{let(rows,stamp)=acquired.as_ref().ok_or("TARTARUS_OBSERVATION_ORIGINALS_REQUIRED")?;fatal=true;refresh_controls(c,authority,stream)?;fatal=false;if fs::read(control_path)?!=original_control{return Err("TARTARUS_CURRENT_CONTROL_REQUIRED".into())}if let Some(f)=f{f.authority.validate()?;}let mut value=snapshot_write_observation(c,original_control,bank,ordinary,&request,&request_sha,rows,f)?;moloch_live_runtime::account_realtime::validate(stamp,&stream.account_signal())?;snapshot_original_economics_observed(bank,&c.scope,rows,now(),true)?;value["acquisitionMode"]=json!("original_account_observation_four_v1");return Ok(Some(value))}
   let mut sources=vec![ts::SourceFile{label:"control",root:control_path.parent().ok_or("TARTARUS_CONTROL_PATH")?,relative:Path::new(control_path.file_name().ok_or("TARTARUS_CONTROL_PATH")?),sha256:&request.expected_control_sha256},ts::SourceFile{label:"snapshot-request",root:&c.root,relative:Path::new("tartarus-snapshot-request.json"),sha256:&request_sha}];

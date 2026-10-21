@@ -1,0 +1,16 @@
+{
+  "classification": "offline_regression_and_full_worker_typecheck_not_deployment",
+  "sourceModuleSha256": "6f145fde2d6ef5ae5bd670e517319042c76c964908ec2970cdbcea2443aeaec6",
+  "regressionTestsPassed": 2,
+  "fullWorkerTypecheckPassed": true,
+  "baselineDeployedSource": "d631142e7fd4621cd9e59b1a4dbeab0bbdfc1cbe",
+  "productionBinaryChanged": false,
+  "seedRewritten": false,
+  "ledgerReset": false,
+  "networkRequestsByTests": 0,
+  "qualificationLimits": [
+    "Regression includes mismatched profile/run/manifest/tournament/slug/cash/clock/endpoint/status and legacy profile-seed preservation.",
+    "Live four-read snapshot export has not yet succeeded with this candidate.",
+    "This repairs an export prerequisite; it does not establish positive edge or an approved rank campaign."
+  ]
+}

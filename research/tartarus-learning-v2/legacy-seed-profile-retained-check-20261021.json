@@ -1,0 +1,15 @@
+{
+  "observedUtc": "2026-10-21T02:15:04.932655+00:00",
+  "actualRetainedReceiptCompatibilityPassed": true,
+  "originalSeedReceiptSha256": "92016fd3b23725d33498c6be603ee32168cc3ad22c0b70af510dbfc0b59764fd",
+  "currentAccountReceiptSha256": "fefd73ad2e70bbf9bece838c2a9675c3e8cdbc2d9055cf1c144036dce020a747",
+  "currentAccountReceivedAt": "2026-10-21T02:13:04.253Z",
+  "moduleSha256": "6f145fde2d6ef5ae5bd670e517319042c76c964908ec2970cdbcea2443aeaec6",
+  "regressionTestsPassed": 2,
+  "fullWorkerTypecheckPassed": true,
+  "seedRewritten": false,
+  "ledgerReset": false,
+  "networkRequests": 0,
+  "executionAuthority": false,
+  "deployed": false
+}
