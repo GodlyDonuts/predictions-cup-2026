@@ -1,0 +1,60 @@
+{
+  "observedUtc": "2026-10-21T10:07:01.984163+00:00",
+  "sourceCommit": "b51f038a1a23a46ebec38a50b565ad62c9d710e5",
+  "binarySha256": "2bc2e8a3a49402f0bc2e99cb1528ba2b6715ec8749cd5e0583a26f998bc41bda",
+  "workerSourceSha256": "11ab8ee1f1577d6d4fd868d2f39f9ad40e356da75478d16cd2be0d832b6b7e99",
+  "controlSha256": "edfbc6fabaa7370d8830ca3a2008e36df1cc8acbaedcbf64c8810efa9d1b75ab",
+  "originals": {
+    "manifest": {
+      "bytes": 16090,
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    },
+    "head": {
+      "bytes": 254,
+      "sha256": "239360543573ecbf145781e76a0a49aa03772867685dec840475e5d71563a7e4"
+    },
+    "report": {
+      "bytes": 49927547,
+      "sha256": "ac3e28f96edac59f4f4e45b5f15a6e5f47bc53e9012537dfa6d646c3a2dd2d65"
+    },
+    "bridges": {
+      "bytes": 52389586,
+      "sha256": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c"
+    },
+    "control": {
+      "bytes": 26684,
+      "sha256": "c7d0be45ee0d2611aa43d0af49155169cf254790e31a0232e155772d74025d8b"
+    }
+  },
+  "prefixes": {
+    "financial": {
+      "bytes": 2492994478,
+      "sha256": "014a4178cfc9c7c90e622ae6a4bcdaf174d0437b4fbb1d591a5ce62b30ea9588"
+    },
+    "dispatch": {
+      "bytes": 26979223,
+      "sha256": "6d3c188c4eeb603e719dbeb84087c5f21718c37f77267870ae17ba49a1b78113"
+    }
+  },
+  "originalFills": 396,
+  "originalFifoAndFinancialHistoryPreserved": true,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "allAcknowledgedOrdersTerminal": true,
+  "nativeAndSdkLibrariesReusedUnchanged": true,
+  "all20EngineBridgesPreserved": true,
+  "all14OriginalG12ReviewsPreserved": true,
+  "riskLimitsDailyWindowsAndLimiterChanged": false,
+  "archivedExactPlannedStop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-21T10:05:58.376Z",
+    "reason": "LIVE_EXIT_REFRESH_CONTROL_OR_STOP"
+  },
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "pid": 994490,
+  "startTicks": "54687298",
+  "actualExecutableAndArgumentsVerified": true,
+  "originalFinancialPrefixesVerifiedAfterStart": true
+}
