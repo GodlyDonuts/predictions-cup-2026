@@ -1,0 +1,44 @@
+{
+  "observedUtc": "2026-10-21T18:56:45.202530+00:00",
+  "sourceCommit": "91cb79503632a383eedcf037e9e21b71d2927318",
+  "sourceComposition": "R69 checked source plus checked Session upgrade-history parsing repair",
+  "binarySha256": "80c6094916c766dea93138669662df7ad0f2479a186c4ee64c8c3e08db8a3884",
+  "originalFinancialPrefix": {
+    "bytes": 2552479691,
+    "sha256": "8e77e9572146ae228109e56a8d1bc7323a75af581bbc3ef71839e374b0cbf9ae"
+  },
+  "originalNativeHead": {
+    "hash": "954068719e24c103674ca12e8a763296740a6d55669d0b0f6e1da13e943210b6",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "eb1c32c342562a00fc5c4495cd1f1d70fdea1e74b3046eb55397fd55f9b53905",
+    "sequence": 773995
+  },
+  "originalReportHash": "6d2fad419eec2abe6335e3435c70d5152e15cb1a891339228c77d0222eb2c6e3",
+  "originalFills": 433,
+  "nativeEngineIdentity": "f78ad9e3359e982f7567550d2cf0d2788798dda7467f71383b2f9fb463694c9b",
+  "knownOpenOrders": [
+    20260
+  ],
+  "acknowledgedOrders": 1675,
+  "terminalOrders": 1674,
+  "allPriorEngineBridgesPreserved": true,
+  "originalFifoAndHistoryPreserved": true,
+  "exactActiveControlOverlayPreserved": true,
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "originalUnsentQid": 20264,
+  "sameIntentRetried": false,
+  "retainedExposureRequiresStartupVerification": [
+    18533
+  ],
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "incident": "/home/archon/apps/moloch/shared/incidents/r70-history-bound-20261021T185643Z",
+  "controlSha256": "bd54be2f1a9e56c0d1706abfb9ba600c6897bdaf76dac741112682627be0da8b",
+  "phase": "restoring_original_ledger",
+  "pid": 1022216,
+  "startTicks": 57865921,
+  "referenceUpdaterPid": 1022219,
+  "actualExecutableAndArgumentsVerified": true
+}

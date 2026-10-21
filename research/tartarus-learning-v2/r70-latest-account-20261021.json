@@ -1,0 +1,11 @@
+{
+  "observedUtc": "2026-10-21T18:56:58.757Z",
+  "cash": "17283.635",
+  "officialMarkedPositions": "77425.2",
+  "officialMarkedEquity": "94708.835",
+  "changeFrom100000": "-5291.165",
+  "markedRoiPct": "-5.291165",
+  "openOrders": 0,
+  "valuationBasis": "official portfolio marks, not guaranteed liquidation proceeds",
+  "accountRequestsByAudit": 0
+}

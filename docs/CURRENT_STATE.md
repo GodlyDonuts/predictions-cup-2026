@@ -1,10 +1,12 @@
 # Current Moloch and Tartarus state
 
-Observed October21,18:48UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October21,18:59UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
-Production is stopped. R69 was installed18:43:11 as PID1021520/startTicks57784596, binary8b903763c346 and controlebca4459c87a verified, then stopped18:43:28 with `UPGRADE_FILE_BOUND` before native replay/orders. Its152,404,846-byte preserved upgrade chain exceeded the128MiB parser bound; deployment omitted that size check. Financial head773995/all433 fills and the2,552,479,691-byte prefix are unchanged. R70 raises the engineering bound to256MiB, moves parsed approval entries instead of cloning them and verifies seals by reference. It is building/qualifying. The failed R69 approval remains preserved. [Initial installation observation](../research/tartarus-learning-v2/r69-throughput-installed-20261021.json).
+R70 is installed18:56:45 as sole PID1022216/startTicks57865921, binary80c6094916c7 and controlbd54be2f1a9e verified. At18:59:16 it remains active, STOP absent, replaying the original ledger; fresh trading/fill throughput is not yet verified. All433 original fills and the2,552,479,691-byte financial prefix remain preserved. [Installation](../research/tartarus-learning-v2/r70-history-bound-installed-20261021.json).
+
+R69 had stopped18:43:28 before native replay/orders because its152,404,846-byte upgrade chain exceeded a128MiB parser bound; deployment omitted that size check. R70 raises the engineering bound to256MiB, moves parsed entries and verifies seals by reference.131 native checks pass. The actual22-entry152MB chain passed in9.39s/1.63GiB peak; the final23-entry202MB chain passed in12.03s. All original approvals, including failed R69's, are preserved. Only Session parsing differs from R69's289-source build; all financial engine rules remain unchanged. [Exact qualification](../research/tartarus-learning-v2/r70-history-bound-qualified-20261021.json).
 
 R68 stopped18:22:52 when fundamental attempt20264 expired before SDK admission. Original SDK archives prove no HTTP was sent. The checked repair retires such attempts and continues only for genuine expiry; clock regression and actual uncertain acceptance retain their handling. File-only recovery appended the exact no-send proof, preserved STOP until installation and did not retry the order or alter finances. Historical reconciled exposure18533 still requires its original native startup verification. [Exact recovery](../research/tartarus-learning-v2/r68-expiry-recovery-20261021.json).
 
@@ -24,7 +26,7 @@ Last reconciled native financial state:
 | New-trading portion | 98.045 |
 | Unchanged inherited realized portion | 76.52 |
 
-The fresh18:37 official account observation reports77,625.58 marked position value plus17,283.635 cash =94,909.215, down5,090.785 or5.090785% from the100,000 start. These marks are not executable liquidation proceeds. Today UTC has37 fill receipts across8 distinct filled orders. The97,000 deadline was missed; no whole-account profit is established.
+The latest18:56:58 official observation reports77,425.20 marked position value plus17,283.635 cash =94,708.835, down5,291.165 or5.291165% from the100,000 start. These marks are not executable liquidation proceeds. Today UTC has37 fill receipts across8 distinct filled orders through the last reconciled ledger. The97,000 deadline was missed; no whole-account profit is established. [Latest official aggregates](../research/tartarus-learning-v2/r70-latest-account-20261021.json).
 
 There remains one official worker and shared limiter. Daily windows and original monetary caps are unchanged. Laptop training creates no account client.
 

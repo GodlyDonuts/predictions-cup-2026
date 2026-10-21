@@ -1,0 +1,31 @@
+{
+  "completedUtc": "2026-10-21T18:54:37.616122+00:00",
+  "sourceCommit": "91cb79503632a383eedcf037e9e21b71d2927318",
+  "binarySha256": "80c6094916c766dea93138669662df7ad0f2479a186c4ee64c8c3e08db8a3884",
+  "engineIdentity": "f78ad9e3359e982f7567550d2cf0d2788798dda7467f71383b2f9fb463694c9b",
+  "sessionSourceSha256": "fd13be8def0d23bc343ca773649f48a112e04896eccdf623572cc5022dbbcc7d",
+  "sourceChangesFromR69": [
+    "moloch/native/src/session.rs"
+  ],
+  "other288SourceFilesIdentical": true,
+  "nativeUnitTests": 131,
+  "original22Entry152MBChainPassed": true,
+  "measurement": {
+    "mode": "chain",
+    "exitCode": 0,
+    "wallSeconds": 9.387536914087832,
+    "peakChildRssKiB": 1706524
+  },
+  "measurementFallback": "GNU time unavailable; the same original-chain check passed using Python resource measurement",
+  "releaseCompilationSucceeded": true,
+  "cliLoads": true,
+  "financialEngineRulesChanged": false,
+  "productionChanged": false,
+  "finalOriginal23Entry202MBChainOutput": "\nrunning 1 test\n{\"allSealsAndBindingsVerified\":true,\"approvedEntries\":23,\"financialReplayStillRequired\":true,\"networkRequests\":0,\"originalBytes\":202491517,\"sha256\":\"e4e7add856971c49318dad96c9070defafe20b83de7565d4031ffb5d0b7b3017\",\"sourceMutated\":false}\ntest session::upgrade_capacity_tests::original_large_upgrade_chain_is_verified_without_mutation ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 12.03s\n\n",
+  "proposalMeasurement": {
+    "mode": "proposal",
+    "exitCode": 0,
+    "wallSeconds": 187.91990253690165,
+    "peakChildRssKiB": 4140064
+  }
+}

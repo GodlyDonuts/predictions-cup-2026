@@ -2,11 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state — October 21, 18:48 UTC
+## Current state — October 21, 18:59 UTC
 
-Production is stopped. R69 installed18:43:11 but stopped18:43:28 before native replay/orders: the preserved152.4MB upgrade history exceeded a128MiB parser ceiling. All433 fills/head773995 remain unchanged. R70 raises that engineering bound to256MiB and removes redundant history copies during validation; it is building/qualifying. R69's expiry repair, broader market capacity and direct order lookup remain in the replacement source. [Initial installation, superseded by this stop](research/tartarus-learning-v2/r69-throughput-installed-20261021.json), [checked source](research/tartarus-learning-v2/r69-source-qualified-20261021.json).
+R70 is installed as sole worker1022216 and is restoring the original433-fill ledger. It has passed R69's history-file startup failure; current-process trading is not yet verified. The release retains the pre-submission expiry repair, broader market capacity and direct order lookup, and removes redundant copies of the upgrade history. [Installation](research/tartarus-learning-v2/r70-history-bound-installed-20261021.json), [actual23-entry history check and source](research/tartarus-learning-v2/r70-history-bound-qualified-20261021.json).
 
-At18:37 official portfolio marks plus cash total94,909.215 SUSQies, down5.09% from100,000. Cash17,283.635; marked positions77,625.58. Today UTC has eight filled orders/37 partial fills. The latest R68 sale of433 NO shares realized+8.66; the preceding two audited R67 sales netted−164.63. Marks are not guaranteed liquidation proceeds. [Current account and exact sale audit](research/tartarus-learning-v2/r68-last-sale-20261021.json).
+At18:56:58 official portfolio marks plus cash total94,708.835 SUSQies, down5.29% from100,000. Cash17,283.635; marked positions77,425.20. Today UTC has eight filled orders/37 partial fills through the last reconciled ledger. The latest R68 sale of433 NO shares realized+8.66; the preceding two audited R67 sales netted−164.63. Marks are not guaranteed liquidation proceeds. [Latest account](research/tartarus-learning-v2/r70-latest-account-20261021.json), [exact sale audit](research/tartarus-learning-v2/r68-last-sale-20261021.json).
 
 GPU population037 is still running. The latest fully evaluated checkpoint is unprofitable. Continuation040 is queued with founder retention, family-specific market selection,64-transition PPO batches and an equivalent replay-copy optimization. No learned model is deployed; no independent positive ROI is established.
 
