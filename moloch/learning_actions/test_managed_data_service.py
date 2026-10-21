@@ -46,6 +46,24 @@ class ManagedDataTests(unittest.TestCase):
         self.assertIsNotNone(s.actor_ready);action(e,0,patience=1,clock=.5)
         self.assertIsNone(s.actor_ready);e.advance(1000);self.assertGreater(s.requests['SIG'],1)
 
+    def test_pending_actor_turn_wakes_at_readiness_without_another_receipt(self):
+        e=environment();e.budget=RateBudget(BudgetConfig(100,600,24,2500,'a'*64))
+        e.keys['Kalshi']=[];e.keys['Polymarket']=[]
+        s=ManagedDataService(e,{'profile':INTENT_PROFILE,'initially_enabled':True});e.advance(101)
+        self.assertEqual(action(e,4)['status'],'RATE_WAIT')
+        wait=action(e,0,patience=0,clock=.5);advance_alarm(e,101,wait)
+        self.assertEqual(e.now,701);self.assertTrue(s.waiting_actor)
+
+    def test_turn_arriving_during_inference_is_offered_before_interruptible_sleep(self):
+        e=environment();e.budget=RateBudget(BudgetConfig(100,600,24,2500,'a'*64))
+        s=ManagedDataService(e,{'profile':INTENT_PROFILE,'initially_enabled':True});e.advance(101)
+        action(e,4);e.advance(690);observed=e.observe();i=observed['entities'].index(('global',None))
+        e.advance(701);self.assertTrue(s.waiting_actor)
+        result=e.act_raw({'family':0,'market':i,'side':0,'price':1,'patience':0,
+                         'target_fraction':0.,'child_fraction':.5},observed)
+        self.assertTrue(result['actor_turn_pending']);advance_alarm(e,690,result)
+        self.assertEqual(e.now,701);self.assertTrue(s.waiting_actor)
+
     def test_raw_intent_repeated_rate_wait_schedules_the_next_offered_turn(self):
         e=environment();e.end=70000;e.budget=RateBudget(BudgetConfig(100,1,1,1,'a'*64))
         e.budget.admit('earlier',1,True);e.budget.complete('earlier',1)

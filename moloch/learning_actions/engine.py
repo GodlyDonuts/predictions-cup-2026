@@ -327,7 +327,7 @@ class ApiEpisode(PreparedEpisode):
         publish(self,{'revision':revision,'fields':{'cash':cash,'lots':lots,'orders':orders,'advance':advance}})
 
     def _event(self,at,kind,value):
-        if kind=='managed_market_data_poll':
+        if kind in('managed_market_data_poll','managed_market_data_poll_v2'):
             service=getattr(self,'managed_data_service',None)
             if service is not None:service.event(at,value)
             return

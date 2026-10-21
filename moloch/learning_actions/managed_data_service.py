@@ -10,6 +10,7 @@ import math
 PROFILE='model_pausable_book_reference_service_v1'
 INTENT_PROFILE='model_pausable_raw_intents_service_v2'
 EVENT='managed_market_data_poll'
+INTENT_EVENT='managed_market_data_poll_v2'
 
 
 def profile(value):
@@ -30,8 +31,11 @@ def specification(value):
 
 
 def advance_alarm(env,before,result):
+    if getattr(env,'managed_data_profile',None)==INTENT_PROFILE and result.get('actor_turn_pending',False):return
     if result.get('wake_on_observation',True):
-        target=min(env.end,max(before+1,env.decision_times(result.get('ready_ms'))))
+        deadline=(result.get('ready_ms')if getattr(env,'managed_data_profile',None)==INTENT_PROFILE
+                  else env.decision_times(result.get('ready_ms')))
+        target=min(env.end,max(before+1,deadline))
         env.advance_until_observable(target)
     else:
         target=result.get('ready_ms')
@@ -60,7 +64,8 @@ class ManagedDataService:
         old=self.pending[venue]
         if old is not None and old[0]<=at:return
         self.sequence+=1;self.pending[venue]=(at,self.sequence)
-        self.env.clock.schedule(at,25,EVENT,(venue,self.sequence))
+        kind=INTENT_EVENT if self.env.managed_data_profile==INTENT_PROFILE else EVENT
+        self.env.clock.schedule(at,25,kind,(venue,self.sequence))
 
     def remember(self,venue,key,row):
         new=key not in self.env.latest;result=self.original_remember(venue,key,row)
@@ -89,22 +94,30 @@ class ManagedDataService:
         result=self.original_dispatch(*args,**kwargs);self.foreground(result);return result
 
     def action(self,action,observation):
-        offered=self.waiting_actor
+        holding=self.waiting_actor
+        observed_offer=holding and any(kind=='data_service_control'and bool(observation['contracts'][i,1])
+            for i,(kind,_)in enumerate(observation['entities']))
         result=self.original_action(action,observation)
         family=int(action['family']);kind,key=observation['entities'][int(action['market'])]
         sig_attempt=(family in(1,2,3,4,7,8,9)or family==10 and kind=='read'and key[0]=='SIG')
         if self.env.managed_data_profile==INTENT_PROFILE:
-            if offered:
+            if holding and sig_attempt:
                 self.waiting_actor=False
-                if sig_attempt and result['status']in('RATE_WAIT','BUSY'):
+                if result['status']in('RATE_WAIT','BUSY'):
                     self.queue('SIG',self.actor_ready)
                 else:
                     self.actor_ready=None;self.queue('SIG',self.env.now)
+            elif observed_offer:
+                self.waiting_actor=False;self.actor_ready=None;self.queue('SIG',self.env.now)
             elif sig_attempt:
                 if result['status']not in('RATE_WAIT','BUSY'):self.actor_ready=None
             elif family==0 and not result.get('wake_on_observation',True):
                 # Explicit uninterruptible WAIT declines the pending turn.
-                self.actor_ready=None;self.queue('SIG',self.env.now)
+                self.actor_ready=None;self.waiting_actor=False;self.queue('SIG',self.env.now)
+            elif holding and family==0:
+                # This offer arrived while inference was running. An
+                # interruptible WAIT must expose it before sleeping again.
+                result={**result,'actor_turn_pending':True}
             # Local preparation, external reads and interruptible WAIT before
             # the offered turn do not abandon a pending foreground request.
             return result

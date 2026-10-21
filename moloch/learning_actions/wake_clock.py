@@ -9,7 +9,8 @@ from moloch.learning_v2.clock import EventClock
 
 OBSERVABLE=frozenset(('feed_receipt','api_receipt','api_account_receipt','api_expiry','api_read_receipt','api_trade_receipt','api_quote_receipt','api_order_page_receipt',
     'derived_book_receipt','derived_token_receipt','derived_token_expiry','derived_baseline_expiry',
-    'derived_account_receipt','derived_public_trade_receipt','historical_information_receipt'))
+    'derived_account_receipt','derived_public_trade_receipt','historical_information_receipt',
+    'managed_market_data_poll_v2'))
 
 
 class WakeClock(EventClock):
