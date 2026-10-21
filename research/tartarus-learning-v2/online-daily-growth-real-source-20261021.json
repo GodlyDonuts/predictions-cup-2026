@@ -1,0 +1,152 @@
+{
+  "observedUtc": "2026-10-21T02:49:16.976402+00:00",
+  "classification": "real_source_online_daily_reward_optimizer_capability_not_selection_or_ROI",
+  "sourceCommit": "df2bb138cb38d0233a7626367034097208505bc8",
+  "configurationSha256": "6fcbb742dc56e952f6c78848d68aef60654b9a66d62abe4a4a1050427ad63e3e",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "originalFounderSha256": "77b71c50c55a6351a0d5950f38ffc31a8db7b1a7409159f43d4b983ce33d3c26",
+  "parameters": 5272685,
+  "worlds": 2,
+  "worldBounds": [
+    [
+      1792049116175,
+      1792221916175
+    ],
+    [
+      1792049116175,
+      1792221916175
+    ]
+  ],
+  "rewardProfile": {
+    "mode": "human_complete_day_growth",
+    "episode_ms": 172800000,
+    "development_only": true
+  },
+  "decisions": 32,
+  "acceptedUpdates": 4,
+  "optimizerChangedWeights": true,
+  "updatesBeforeWholeHorizonCompletes": true,
+  "steps": [
+    {
+      "chunk": 0,
+      "updates": [
+        {
+          "epoch": 0,
+          "loss": -0.12377195396692393,
+          "pre_update_kl": 6.952771691715043e-15,
+          "post_update_kl": 0.0012895848007683647,
+          "policy_loss": 2.756866619713083e-08,
+          "value_loss": 9.15209521938111e-05,
+          "mean_entropy": 12.381774201168703,
+          "entropy_coefficient": 0.01,
+          "encoder_activation_checkpointing": true,
+          "behavior_guard": "tensor_versions_v1",
+          "accepted": true,
+          "recurrent_state_carried": true
+        }
+      ],
+      "virtualMs": [
+        1792049116255,
+        1792049116255
+      ],
+      "terminal": [
+        false,
+        false
+      ]
+    },
+    {
+      "chunk": 1,
+      "updates": [
+        {
+          "epoch": 0,
+          "loss": -0.12354770416654214,
+          "pre_update_kl": 4.5852210917018965e-14,
+          "post_update_kl": 0.00076997954337861,
+          "policy_loss": -3.252164260114654e-09,
+          "value_loss": 7.71612866226623e-06,
+          "mean_entropy": 12.355155897870901,
+          "entropy_coefficient": 0.01,
+          "encoder_activation_checkpointing": true,
+          "behavior_guard": "tensor_versions_v1",
+          "accepted": true,
+          "recurrent_state_carried": true
+        }
+      ],
+      "virtualMs": [
+        1792049116364,
+        1792049116335
+      ],
+      "terminal": [
+        false,
+        false
+      ]
+    },
+    {
+      "chunk": 2,
+      "updates": [
+        {
+          "epoch": 0,
+          "loss": -0.104452927806534,
+          "pre_update_kl": 9.3119956190435e-14,
+          "post_update_kl": 0.0001894203759775226,
+          "policy_loss": -1.9920623381408653e-07,
+          "value_loss": 1.3879598784113933e-06,
+          "mean_entropy": 10.445342258023938,
+          "entropy_coefficient": 0.01,
+          "encoder_activation_checkpointing": true,
+          "behavior_guard": "tensor_versions_v1",
+          "accepted": true,
+          "recurrent_state_carried": true
+        }
+      ],
+      "virtualMs": [
+        1792049117052,
+        1792049116415
+      ],
+      "terminal": [
+        false,
+        false
+      ]
+    },
+    {
+      "chunk": 3,
+      "updates": [
+        {
+          "epoch": 0,
+          "loss": -0.1187782433240876,
+          "pre_update_kl": 1.6861512186494565e-14,
+          "post_update_kl": 0.00015403124327806328,
+          "policy_loss": -1.7765449888962337e-08,
+          "value_loss": 2.6536895334286492e-06,
+          "mean_entropy": 11.877955240340441,
+          "entropy_coefficient": 0.01,
+          "encoder_activation_checkpointing": true,
+          "behavior_guard": "tensor_versions_v1",
+          "accepted": true,
+          "recurrent_state_carried": true
+        }
+      ],
+      "virtualMs": [
+        1792049117132,
+        1792049116495
+      ],
+      "terminal": [
+        false,
+        false
+      ]
+    }
+  ],
+  "checkpoint": {
+    "path": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\studies\\online-daily-growth-001\\experiment\\diagnostic-weights.pt",
+    "sha256": "701410462f4cd749201d2a9a7db8fcd443622e4b655bd0bcad58ac3daa924757"
+  },
+  "cudaPeakBytes": 411341824,
+  "cudaProcessFraction": 0.2,
+  "wallSeconds": 4.453571400001238,
+  "active032Changed": false,
+  "productionChanged": false,
+  "physicalAccountRequests": 0,
+  "independentTestUsed": false,
+  "selectionCompleted": false,
+  "positiveROIQualified": false
+}

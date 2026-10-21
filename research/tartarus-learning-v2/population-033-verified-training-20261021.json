@@ -1,0 +1,62 @@
+{
+  "observedUtc": "2026-10-21T02:55:13.347562+00:00",
+  "classification": "verified_actual_continuing_daily_growth_training_checkpoint_not_selection_or_ROI",
+  "actualCudaPid": 7108,
+  "actualCreationFiletime": "134370247764299402",
+  "retainedHandleConfirmedAlive": true,
+  "sourceCommit": "df2bb138cb38d0233a7626367034097208505bc8",
+  "configurationSha256": "ffb9d0af8c432afc96f69fb4901de2b90cd97c8193ea1c6483e82f5ee998602a",
+  "experimentSha256": "3564bb98a38744a3015360e90e2712df3796f1d84a5db0435db652698496cbbb",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "parameters": 5272685,
+  "checkpointSha256": "c17d9e3805b47cc6d17aa923fc43d758c27ab6f1dfb5d0e0d73066cc002141c1",
+  "checkpointUpdates": 4,
+  "checkpointDecisions": 256,
+  "verifiedImmutableCheckpoint": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\handoffs\\population-033-online-daily-growth\\verified-updates-000000004.pt",
+  "allParametersFinite": true,
+  "weightsChangedFromActualFounder": true,
+  "optimizerParameterStates": 32,
+  "optimizerStepMinimum": 4.0,
+  "optimizerStepMaximum": 4.0,
+  "trainingCreditAssignment": "online_undiscounted_bootstrap_with_exact_terminal_daily_reward",
+  "trainingRewardProfile": {
+    "development_only": true,
+    "episode_ms": 172800000,
+    "mode": "human_complete_day_growth"
+  },
+  "latestProgress": {
+    "event": "training_weight_snapshot",
+    "checkpoint": {
+      "path": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\runs\\raw-api-growth-development-033\\training-recovery\\slot-1.pt",
+      "sha256": "c17d9e3805b47cc6d17aa923fc43d758c27ab6f1dfb5d0e0d73066cc002141c1"
+    },
+    "episode_completed": false,
+    "financial_world_resume_supported": false,
+    "selection_or_profitability_result": false,
+    "rotating_recovery_copy": true,
+    "retention_slots": 2,
+    "wall_time_unix": 1792551244.1709218,
+    "total_decisions": 256,
+    "total_updates": 4,
+    "independent_test_used": false
+  },
+  "old032Reference": {
+    "observedUtc": "2026-10-21T02:52:51.793877+00:00",
+    "pid": 27732,
+    "creationFiletime": "134370197333411077",
+    "exitRequested": 42,
+    "originalCheckpointsAndPartialHistoryRetained": true,
+    "clonedReplayQuickCheck": "ok",
+    "retainedFrames": 8416,
+    "retainedBatches": 526,
+    "fullCohortCompleted": false,
+    "selectionCompleted": false,
+    "productionChanged": false
+  },
+  "originalHistoriesAndCheckpointsRetained": true,
+  "firstFullSelectionCompleted": false,
+  "independentlyPositiveROI": false,
+  "productionChanged": false,
+  "physicalAccountRequestsByTrainer": 0,
+  "independentTestUsed": false
+}
