@@ -1,0 +1,135 @@
+{
+  "observedUtc": "2026-10-21T19:42:08.153636+00:00",
+  "baseRelease": "R70 plus checked immutable report cache cbd84fcc",
+  "sourceChanges": [
+    {
+      "path": "moloch/live-runtime/src/fundamental_policy.rs",
+      "beforeSha256": "54d90f31937be780383a661c72d916f575bb65cd62a76f2dfb61e4f4ae4eb0ec",
+      "afterSha256": "9a4388a15f153ce6cad158fda77bb04dfba945a2123288626d4260adf2e0d17f"
+    },
+    {
+      "path": "moloch/live-runtime/tests/fundamental_policy.rs",
+      "beforeSha256": "6bcd3cd666fc56ab7a1ebff20bc91f526baafaab6ce7b6faf1541fb9cfa31a01",
+      "afterSha256": "cc907583f025661c531f517faaa08242b9bcf8c9127bd51710f2b98b4fc24454"
+    },
+    {
+      "path": "moloch/native/src/reviewed_fundamental_entry.rs",
+      "beforeSha256": "11dbe0adb9785341ff38a2059d54cc348ae7310f172bfe9793b038929c7599b5",
+      "afterSha256": "bccec114b30d8ce1926ab91da2cbe381741ae208b595a51e6f95cdd813689b57"
+    },
+    {
+      "path": "moloch/native/src/reviewed_inventory_exit.rs",
+      "beforeSha256": "6341c9492aba48fa7418d6aff9e4ce301ae11dac4d92a822f5e756ad2913bfbb",
+      "afterSha256": "18945338994344c2905fd167d0ecce0f7e888dd205e1949e45a420705179acfb"
+    }
+  ],
+  "checks": [
+    {
+      "name": "fundamental_policy",
+      "summary": "test result: ok. 137 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 74.31s",
+      "logSha256": "cbb7b52409fceb46b328ffac92d1169ccb67caa6f29cdd3473c106b653c860c0"
+    },
+    {
+      "name": "ledger_snapshot",
+      "summary": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s",
+      "logSha256": "9db0ae8bf80f726d06d84299aaff597062e98d2a0df5f56a5f71488e0e68db77"
+    },
+    {
+      "name": "alpha_proposal",
+      "summary": "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.97s",
+      "logSha256": "ee5f51235cf8f72a1c7131483716d814f930b907f36b162c6bae0de16cb16877"
+    },
+    {
+      "name": "native",
+      "summary": "test result: ok. 131 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 17.75s",
+      "logSha256": "48fef35061b6355d62ca4cdcca5a315ae0608dc100000e33f6cc9a24a8ff4a4d"
+    }
+  ],
+  "focusedChecksPassed": 159,
+  "recurringPartialAndFlatRoundTripPassed": true,
+  "originalCashFifoTagsPreserved": true,
+  "unknownOpenOrChangedPriorOrderRejected": true,
+  "productionChanged": false,
+  "releaseBuildPending": false,
+  "limitations": [
+    "Version3 is explicit opt-in; existing version1 and inherited version2 behavior remains.",
+    "Existing monetary, quantity and maximumEntries limits remain; this is not unlimited lifetime turnover.",
+    "Paper fixture profits do not establish production ROI."
+  ],
+  "totalChecksPassed": 290,
+  "release": {
+    "at": "2026-10-21T19:40:56.364971+00:00",
+    "binarySha256": "e5e1cdf14c3181b159b79d87ca5f7f12f4180ce272b5851f6a17fbc8c1abcdc7",
+    "cliLoads": true,
+    "productionChanged": false
+  },
+  "releaseSourceCommit": "90fbfd9f8ef6759eaf24357fcc848e04725eafaa",
+  "compositionFromR70": [
+    {
+      "path": "moloch/native/src/reviewed_inventory_exit.rs",
+      "beforeSha256": "6341c9492aba48fa7418d6aff9e4ce301ae11dac4d92a822f5e756ad2913bfbb",
+      "afterSha256": "18945338994344c2905fd167d0ecce0f7e888dd205e1949e45a420705179acfb"
+    },
+    {
+      "path": "moloch/native/src/reviewed_fundamental_entry.rs",
+      "beforeSha256": "11dbe0adb9785341ff38a2059d54cc348ae7310f172bfe9793b038929c7599b5",
+      "afterSha256": "bccec114b30d8ce1926ab91da2cbe381741ae208b595a51e6f95cdd813689b57"
+    },
+    {
+      "path": "moloch/live-runtime/src/alpha_proposal.rs",
+      "beforeSha256": "aaf28c1c45f91b5fedff3991aa1ffa7b1fa606dc825df91319b92e3a6ada694d",
+      "afterSha256": "874dff8ef59f4a6f0278fbe7bb53a1a25782a7e3f98a56548ec9451e1eb2eb68"
+    },
+    {
+      "path": "moloch/live-runtime/src/ledger_snapshot.rs",
+      "beforeSha256": "980efe21ebbe889b4e08802a014674c49e02fa67300cb783545fb726d52448cf",
+      "afterSha256": "1b08470f672211262bf133a06b0521c5af631d0813cb1861aaf917a1bd623bc1"
+    },
+    {
+      "path": "moloch/live-runtime/src/fundamental_policy.rs",
+      "beforeSha256": "4766307e4ffc24aac9deed6700aed7f922f84fa7e2e81d6cf8d13f08496c4f0d",
+      "afterSha256": "9a4388a15f153ce6cad158fda77bb04dfba945a2123288626d4260adf2e0d17f"
+    },
+    {
+      "path": "moloch/live-runtime/tests/alpha_proposal.rs",
+      "beforeSha256": "842417eea9b937887b4cb2f70ba3bb0e915dc590b6b612c367cd58a275c676de",
+      "afterSha256": "f1c6b38e0404770abebb203bf345e47da3f233b394af7efff51e8057a76199ee"
+    },
+    {
+      "path": "moloch/live-runtime/tests/ledger_snapshot.rs",
+      "beforeSha256": "4d254c82ce6518ef37919f1ee5455434f75754837ed0ef86d0721bdb435fe15f",
+      "afterSha256": "4f95a9bb7697f7ceeb72c5e83f189dd5056dbbbc308705035d94b21791dcabc5"
+    },
+    {
+      "path": "moloch/live-runtime/tests/fundamental_policy.rs",
+      "beforeSha256": "6bcd3cd666fc56ab7a1ebff20bc91f526baafaab6ce7b6faf1541fb9cfa31a01",
+      "afterSha256": "cc907583f025661c531f517faaa08242b9bcf8c9127bd51710f2b98b4fc24454"
+    }
+  ],
+  "totalSourceFiles": 289,
+  "unchangedSourceFiles": 281,
+  "stagingPreview": {
+    "controlPath": "/tmp/moloch-recurring-cohort-20261021/staging-preview/control.owner-reviewed.json",
+    "controlSha256": "c2545e3adca80671ebf7f32f29d8c2eef6151bd03511b2626142b7e4c4aca404",
+    "exchanges": [
+      "1043",
+      "1044",
+      "1051",
+      "1067",
+      "1077",
+      "851",
+      "865",
+      "872",
+      "885",
+      "966",
+      "977",
+      "993"
+    ],
+    "onlyChange": "sameSideTopUps.version 1 -> 3; authority/file hashes",
+    "monetaryCapsChanged": false,
+    "reviewClocksRenewed": false,
+    "forecastOrSourcesChanged": false,
+    "accountRequests": 0,
+    "reloadSubmitted": false
+  }
+}
