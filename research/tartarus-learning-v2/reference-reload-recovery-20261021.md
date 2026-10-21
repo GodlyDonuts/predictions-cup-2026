@@ -1,5 +1,7 @@
 # Continuous reference reload recovery — October 21
 
+**13:55:22 UTC installation:** The exact published updater is active as PID1003938 against the unchanged R65 configuration. All seven checks also pass on Linux ARM64. Worker1003895/startTicks56000591 was not restarted. The updater is waiting for that worker to finish restoring; a new reload commit is not yet verified. [Installation evidence](reference-recovery-installed-20261021.json).
+
 The reference updater stopped after an unknown reload response, even when a later owner view and the original cohort proved that the request expired without committing. Production could then retain expired forecasts indefinitely. R64 request `879f47bda778c4300ca72c2472ccf60eb2ebe2d08de5a745ee3329cf781d46d2` demonstrated this failure; [the original reconciliation proof](reference-expiry-reconciliation-20261021.json) preserves the request and original journal prefix.
 
 The updater now retains an unresolved request and reconciles using local evidence: its exact request and staged-control hashes, current process/start ticks/control/lease, bank/run identity, matching owner and native generation, and the original cohort prefix. It adopts a proven late commit exactly once. A non-commit requires both views after request expiry, the prior generation still current, and the requested generation absent from the cohort. The worker already revalidates expiry immediately before committing. The updater never resends the old request; after proof it captures new prices for a distinct new generation.

@@ -1,0 +1,18 @@
+{
+  "observedUtc": "2026-10-21T13:55:22.155988+00:00",
+  "sourceCommit": "dcaaec81ba2d1a76e846fd9816876e8d17a61ac8",
+  "scriptSha256": "c30af610216c51d7f8bba378f3fce8f6aac04b71102f7b79fee809a482fa2953",
+  "oldUpdaterPid": 1003898,
+  "newUpdaterPid": 1003938,
+  "workerPid": 1003895,
+  "workerStartTicks": 56000591,
+  "workerRestarted": false,
+  "configSha256": "ccb3d3e4ef1170ef19ffdffd98fdc244f9d7b1387d1a4f1d6573cdfc0118cbe5",
+  "configChanged": false,
+  "pendingResolvedBeforeSwap": true,
+  "phase": "waiting_for_current_worker",
+  "commits": 29,
+  "officialSigClientsCreated": 0,
+  "financialStateChanged": false,
+  "linuxChecksPassed": 7
+}
