@@ -796,6 +796,22 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         let mut r=f.review.clone();r.reviewed_at_ms=at+2;r.revoke_existing=true;f.install(r,at+2);
         assert!(f.store.as_ref().unwrap().exit_refresh_needed(&f.bank,&f.log,&f.scope,"101",&f.trust,at+2).unwrap());
     }
+    #[test]fn opaque_token_accepts_shared_original_report_but_rejects_changed_copies(){
+        let mut f=F::new();let(q,spec)=f.bind_entry();let id=q["id"].as_u64().unwrap();
+        let p=f.permit(&q,NOW);let a=f.authority();
+        let original=moloch_live_runtime::ledger_snapshot::snapshot(&f.bank).unwrap();
+        let token=f.store.as_ref().unwrap().physical_decision(&f.bank,&f.log,&f.scope,id,&spec,&p,&a,NOW).unwrap();
+        let shared=moloch_live_runtime::ledger_snapshot::snapshot(&f.bank).unwrap();
+        assert!(Arc::ptr_eq(&original,&shared));assert!(shared.validate_current(&f.bank));
+        for _ in 0..3{token.validate_frozen(&q,shared.value(),id,NOW).unwrap();}
+        let mut independent=shared.value().as_ref().clone();token.validate_frozen(&q,&independent,id,NOW).unwrap();
+        independent["cash"]=json!("999.000000");assert!(token.validate_frozen(&q,&independent,id,NOW).is_err());
+        let mut copied_arc=shared.value().clone();Arc::make_mut(&mut copied_arc)["cash"]=json!("999.000000");
+        assert!(!Arc::ptr_eq(shared.value(),&copied_arc));assert!(token.validate_frozen(&q,&copied_arc,id,NOW).is_err());
+        token.validate_frozen(&q,shared.value(),id,NOW).unwrap();
+        assert!(token.validate_frozen(&q,shared.value(),id,token.expires_at_ms()).is_err());
+        assert_eq!(f.bank.engine().report().unwrap(),*shared.value().as_ref());
+    }
     #[test]fn changed_review_value_requires_actual_current_executable_value(){
         let mut f=F::new();f.fill_entry(false);let(_,at)=f.age_exit(NOW+61003,"0.300000","0.320000");
         let mut r=f.review.clone();r.reviewed_at_ms=at+1;r.ordinary_probability="0.700000".into();set_deadline_cash(&mut r,"0.693000");f.install(r,at+1);

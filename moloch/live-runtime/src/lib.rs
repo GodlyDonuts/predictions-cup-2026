@@ -41,6 +41,7 @@ pub mod dispatch_window;
 
 pub mod scheduling;
 pub mod exit_refresh;
+pub mod exit_refresh_snapshot;
 pub mod stream_recovery;
 pub mod collateral_reconciliation;
 pub mod stream_connect_retry;

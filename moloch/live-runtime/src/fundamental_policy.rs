@@ -599,7 +599,7 @@ fn original_closed_rows(cache:&std::sync::Mutex<ClosedRowsCache>,ordinary_path:&
                 // Retain inode, size and nanosecond mtime/ctime fences here;
                 // rehashing all history on every decision starves dispatch.
                 // Misses and physical-plan validation still verify full bytes.
-                entry.pin.validate_metadata()?;
+                entry.pin.validate_cached_rows()?;
                 need(before==log.descriptor_identity()?,"FUNDAMENTAL_REARM_DISPATCH_CHANGED")?;
                 let pin=FilePin{file:entry.pin.file.try_clone()?,path:entry.pin.path.clone(),identity:entry.pin.identity.clone(),bytes:entry.pin.bytes,sha:entry.pin.sha.clone(),maximum:entry.pin.maximum,version:entry.pin.version.clone()};
                 pin.validate_metadata()?;return Ok((entry.rows.clone(),pin));
@@ -648,7 +648,7 @@ fn original_not_sent_rows(cache:&std::sync::Mutex<NotSentRowsCache>,ordinary_pat
         if retained.descriptor.as_ref()!=Some(&before){retained.entries.clear();retained.bytes=0;retained.descriptor=Some(before.clone());}
         if let Some(entry)=retained.entries.get(wanted){
             need(entry.pin.path==*ordinary_path&&entry.pin.identity==*ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
-            entry.pin.validate_metadata()?;
+            entry.pin.validate_cached_rows()?;
             need(before==log.descriptor_identity()?,"FUNDAMENTAL_ABANDON_DISPATCH_CHANGED")?;
             let pin=FilePin{file:entry.pin.file.try_clone()?,path:entry.pin.path.clone(),identity:entry.pin.identity.clone(),bytes:entry.pin.bytes,sha:entry.pin.sha.clone(),maximum:entry.pin.maximum,version:entry.pin.version.clone()};
             pin.validate_metadata()?;return Ok((entry.rows.clone(),pin))
@@ -744,6 +744,18 @@ impl FilePin{
         Self::from_held(File::open(path)?,path.into(),maximum,Some(expected))
     }
     fn validate_metadata(&self)->Result<()>{path_pin(&self.path,&self.identity)?;need(file_version(&self.file)?==self.version,"FUNDAMENTAL_PINNED_FILE_CHANGED")}
+    fn validate_cached_rows(&self)->Result<()>{
+        self.validate_metadata()?;
+        // Filesystem timestamps can coalesce two same-length writes within a
+        // clock tick. Do not treat a just-written file's metadata as a content
+        // witness. Settled files keep the existing descriptor/version cache.
+        let now=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_nanos();
+        let recent=[("mtime","mtimeNs"),("ctime","ctimeNs")].iter().any(|(sec,ns)|{
+            self.version[*sec].as_u64().zip(self.version[*ns].as_u64()).is_none_or(|(s,n)|
+                (u128::from(s)*1_000_000_000+u128::from(n)).saturating_add(1_000_000_000)>=now)
+        });
+        if recent{self.validate()?;}Ok(())
+    }
     fn validate(&self)->Result<()>{self.validate_metadata()?;
         need(self.file.metadata()?.len()==self.bytes&&bytes_sha(&read_file(&self.file,self.maximum)?)==self.sha,"FUNDAMENTAL_PINNED_FILE_CHANGED")?;self.validate_metadata()
     }
@@ -830,7 +842,7 @@ impl LoadedSettings{
 /// attempt nor retry authority. No public constructor, Clone or Deserialize.
 /// ProductionAuthority must call BOTH methods on its own frozen prepared data.
 pub struct PhysicalDecision{
-    marketable_reviewed_buy:bool,qid:u64,planned_quantity:u64,native_head:Value,quote_sha:String,ledger_sha:String,scope_sha:String,
+    marketable_reviewed_buy:bool,qid:u64,planned_quantity:u64,native_head:Value,quote_sha:String,ledger_snapshot:Arc<crate::ledger_snapshot::Snapshot>,scope_sha:String,
     spec_sha:String,permit_sha:String,review_sha:String,trust_sha:String,
     contract_market:String,contract_id:String,contract_tournament:String,contract_root_sha:String,
     minted:u64,expires:u64,sidecar:FilePin,marker:FilePin,sidecar_sequence:u64,sidecar_tail:String,
@@ -853,7 +865,10 @@ impl PhysicalDecision{
     }
     fn time(&self,now:u64)->Result<()>{need(now>=self.minted&&now<self.expires,"FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED")}
     pub fn validate_frozen(&self,quote:&Value,ledger:&Value,qid:u64,now:u64)->Result<()>{
-        self.time(now)?;need(qid==self.qid&&quote["id"]==qid&&digest(quote)?==self.quote_sha&&digest(ledger)?==self.ledger_sha,"FUNDAMENTAL_PHYSICAL_FROZEN_STATE_CHANGED")
+        // The original immutable report allocation was fully hashed when the
+        // Session/head-bound snapshot was created. Reusing it avoids another
+        // full serialization at every guard; independent values still hash.
+        self.time(now)?;need(qid==self.qid&&quote["id"]==qid&&digest(quote)?==self.quote_sha&&self.ledger_snapshot.matches_value(ledger)?,"FUNDAMENTAL_PHYSICAL_FROZEN_STATE_CHANGED")
     }
     pub fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,now:u64)->Result<()>{
         self.time(now)?;need(digest(scope)?==self.scope_sha&&digest(spec)?==self.spec_sha&&digest(permit)?==self.permit_sha,"FUNDAMENTAL_PHYSICAL_FROZEN_REQUEST_CHANGED")?;
@@ -1266,7 +1281,9 @@ impl Cohorts{
         }else{need(liquidation_due(r,c,now),"FUNDAMENTAL_DEADLINE_NOT_REACHED")?;}
         need(now>=self.clock&&expires>now,"FUNDAMENTAL_PHYSICAL_WINDOW_EMPTY")?;
         let ordinary_file=File::open(&self.ordinary_path)?;need(identity(&ordinary_file)?==self.ordinary_identity,"FUNDAMENTAL_ORIGINAL_DISPATCH_REQUIRED")?;
-        Ok(PhysicalDecision{marketable_reviewed_buy:q["action"]=="buy"&&execution_for_quote(r,&q)?==ExecutionMode::BoundedLimitMayRest,qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_sha:digest(&bank.engine().report()?)?,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
+        let ledger_snapshot=crate::ledger_snapshot::snapshot(bank)?;
+        need(ledger_snapshot.validate_current(bank),"FUNDAMENTAL_PHYSICAL_NATIVE_HEAD_CHANGED")?;
+        Ok(PhysicalDecision{marketable_reviewed_buy:q["action"]=="buy"&&execution_for_quote(r,&q)?==ExecutionMode::BoundedLimitMayRest,qid,planned_quantity:n,native_head:bank.durable_head(),quote_sha:digest(&q)?,ledger_snapshot,scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,review_sha:digest(r)?,trust_sha:digest(authority.trusted())?,minted:now,expires,
             contract_market:r.market_id.clone(),contract_id:r.contract_id.clone(),contract_tournament:r.tournament_id.clone(),contract_root_sha:r.official_contract_root_sha256.clone(),
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,sidecar_sequence:self.sequence,sidecar_tail:self.previous.clone(),authority:authority.pin.duplicate()?,ordinary_file,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
     }

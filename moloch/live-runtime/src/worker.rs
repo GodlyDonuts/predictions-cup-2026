@@ -1533,18 +1533,18 @@ fn refresh_safety(c:&Control,bank:&Session,log:&DispatchLog,authority:&Productio
  refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;
  let qid=q["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;let ex=q["exchangeId"].as_str().ok_or("LIVE_SCOPE")?;
  let side=match q["side"].as_str(){Some("YES")=>moloch_replay::Side::Yes,Some("NO")=>moloch_replay::Side::No,_=>return Err("LIVE_SIDE".into())};
- let records=bank.engine().order_records();let mut physical=false;let mut reserved=0u64;
+ let records=moloch_live_runtime::order_snapshot::snapshot(bank);let mut physical=false;let mut reserved=0u64;
  let actual_fills:std::collections::BTreeSet<_>=bank.engine().fills().iter().map(|f|f["orderId"].as_u64().ok_or("LIVE_ACTUAL_FILL_NATIVE_ID")).collect::<std::result::Result<_,_>>()?;
- for old in &records{let id=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if old["exchangeId"]!=ex||id==qid{continue}
+ for old in records.records(){let id=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if old["exchangeId"]!=ex||id==qid{continue}
   if refresh_physical_pending(log,id,bank.engine().live_order_bindings().contains_key(&id),actual_fills.contains(&id))?{physical=true;}
   if old["side"]==q["side"]&&old["action"]=="sell"&&old["retired"]==false&&old["expiresAt"].as_u64().ok_or("LIVE_EXPIRY")?>now(){
    reserved=reserved.checked_add(old["quantity"].as_u64().ok_or("LIVE_SIZE")?.checked_sub(old["filled"].as_u64().ok_or("LIVE_FILLED")?).ok_or("LIVE_FILLED")?).ok_or("LIVE_SIZE_OVERFLOW")?;
   }
  }
  // A missing native record for an ACK is integrity failure, never absent liability.
- for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){if !records.iter().any(|q|q["id"].as_u64()==Some(*id)){return Err("LIVE_ACK_QUOTE_MISSING".into())}}
- let lifecycle=json!({"manifest":bank.manifest_hash(),"policy":bank.engine().policy(),"economics":bank.engine().report()?,"fills":bank.engine().fills(),"dispatch":log.proof(0)});
- Ok(moloch_live_runtime::exit_refresh::Safety{never_attempted:log.never_attempted(qid),has_intent:log.intents.contains_key(&qid),unresolved_attempts:false,global_unknown,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity(ex,side),reserved_sell_quantity:reserved,same_exchange_pending_physical_order:physical,lifecycle_fingerprint:Sha256::digest(serde_json::to_vec(&lifecycle)?).into(),native_head_fingerprint:native_head(c)?})
+ for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){if !records.records().iter().any(|q|q["id"].as_u64()==Some(*id)){return Err("LIVE_ACK_QUOTE_MISSING".into())}}
+ let lifecycle_fingerprint=moloch_live_runtime::exit_refresh_snapshot::lifecycle(bank,log)?;
+ Ok(moloch_live_runtime::exit_refresh::Safety{never_attempted:log.never_attempted(qid),has_intent:log.intents.contains_key(&qid),unresolved_attempts:false,global_unknown,stop:false,stream_healthy:true,owned_quantity:bank.engine().wallet.quantity(ex,side),reserved_sell_quantity:reserved,same_exchange_pending_physical_order:physical,lifecycle_fingerprint,native_head_fingerprint:native_head(c)?})
 }
 fn refresh_deferred(c:&Control,stage:&str,error:&dyn std::fmt::Display)->Result<()>{atomic_json(&c.root.join("exit-refresh.json"),&json!({"at":iso(now()),"stage":stage,"code":error.to_string(),"expiryExtended":false,"writeAttempted":false}))}
 // A preparation hint only: final selection still binds the new quote to all
