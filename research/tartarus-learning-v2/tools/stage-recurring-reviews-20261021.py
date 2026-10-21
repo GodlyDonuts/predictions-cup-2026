@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import time
 from pathlib import Path
 
 def sha(raw):
@@ -30,6 +31,11 @@ def main():
         if review['exchangeId'] in selected:
             assert review['version'] == 2 and review.get('existingOrigin') is None
             assert review['sameSideTopUps']['version'] == 1
+            # This is a newly reviewed policy revision, not a new observation.
+            # Keep every source clock, expiry, horizon and forecast unchanged.
+            revision_at = time.time_ns() // 1_000_000
+            assert review['reviewedAtMs'] < revision_at < review['expiresAtMs']
+            review['reviewedAtMs'] = revision_at
             review['sameSideTopUps']['version'] = 3
             target = a.output / (review['exchangeId'] + '-review.json')
             data = json.dumps(review, separators=(',', ':')).encode()
@@ -51,8 +57,9 @@ def main():
     target = a.output / 'control.owner-reviewed.json'
     target.write_text(json.dumps(control, indent=2) + '\n', encoding='utf-8')
     result = dict(controlPath=str(target), controlSha256=sha(target.read_bytes()), exchanges=sorted(changed),
-        onlyChange='sameSideTopUps.version 1 -> 3; authority/file hashes', monetaryCapsChanged=False,
-        reviewClocksRenewed=False, forecastOrSourcesChanged=False, accountRequests=0, reloadSubmitted=False)
+        onlyChange='sameSideTopUps.version 1 -> 3; actual policy review time and authority/file hashes', monetaryCapsChanged=False,
+        sourceClocksAndExpiryUnchanged=True, policyReviewRevisionAdvanced=True,
+        forecastOrSourcesChanged=False, accountRequests=0, reloadSubmitted=False)
     (a.output / 'staged.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(result))
 

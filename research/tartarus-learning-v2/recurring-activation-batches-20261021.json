@@ -1,0 +1,180 @@
+[
+  {
+    "observedUtc": "2026-10-21T21:01:48.914885+00:00",
+    "workerPid": 1031505,
+    "binarySha256": "1cf47b2ae83388c6f4b3d9f3a69b5772ef5755255204ca4de6762fb850fb4d00",
+    "expectedGenerationSha256": "409b761f42cb82fe96fa7d958cebb6bca6e649e81b07f247af425638559a5304",
+    "observedGenerationSha256": "409b761f42cb82fe96fa7d958cebb6bca6e649e81b07f247af425638559a5304",
+    "recurringReviewsOptedIn": true,
+    "exchanges": [
+      "851",
+      "872"
+    ],
+    "staged": {
+      "controlPath": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/recurring-generation-1792616445217745736/control.owner-reviewed.json",
+      "controlSha256": "c47e1a393ba9a266bad7ac2bf12155e9567fa0bc04ab610c7ad674319a9cc49e",
+      "exchanges": [
+        "851",
+        "872"
+      ],
+      "onlyChange": "sameSideTopUps.version 1 -> 3; actual policy review time and authority/file hashes",
+      "monetaryCapsChanged": false,
+      "sourceClocksAndExpiryUnchanged": true,
+      "policyReviewRevisionAdvanced": true,
+      "forecastOrSourcesChanged": false,
+      "accountRequests": 0,
+      "reloadSubmitted": false
+    },
+    "reply": {
+      "response": {
+        "baseFinancialControlUnchanged": true,
+        "generationSha256": "409b761f42cb82fe96fa7d958cebb6bca6e649e81b07f247af425638559a5304",
+        "nativeHead": {
+          "hash": "3c7dd06c87218f6416613aaaeb89dd5250451abe2a64a8e6ab67437d9e8a56f6",
+          "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+          "previous": "74a4f8bf3b49a33376f08c596691d6b67fc6bf59e11e8f4eede8ea168bcd630f",
+          "sequence": 780878
+        },
+        "state": "committed"
+      }
+    },
+    "previousSidecarBytes": 3221998,
+    "previousSidecarSha256": "cda0bbb7204e2f15504307181e1abc42432a35c00ed73f611a8b90e18aeab84b",
+    "fullPreviousSidecarPreserved": true,
+    "monetaryCapsLimiterAndWindowsChanged": false,
+    "accountClientsCreated": 0,
+    "referenceUpdaterPid": 1035382
+  },
+  {
+    "observedUtc": "2026-10-21T21:03:56.896489+00:00",
+    "workerPid": 1031505,
+    "binarySha256": "1cf47b2ae83388c6f4b3d9f3a69b5772ef5755255204ca4de6762fb850fb4d00",
+    "expectedGenerationSha256": "c0eb2782c9299c3aaceeb1ae2366b2464a70224ba6e7f2c556878d6d71cd3864",
+    "observedGenerationSha256": "c0eb2782c9299c3aaceeb1ae2366b2464a70224ba6e7f2c556878d6d71cd3864",
+    "recurringReviewsOptedIn": true,
+    "exchanges": [
+      "1051"
+    ],
+    "staged": {
+      "controlPath": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/recurring-generation-1792616509397908204/control.owner-reviewed.json",
+      "controlSha256": "549a6684c833fccd0dbea009121b5d3905c7a5cd566242aed0dc5f57ac662333",
+      "exchanges": [
+        "1051"
+      ],
+      "onlyChange": "sameSideTopUps.version 1 -> 3; actual policy review time and authority/file hashes",
+      "monetaryCapsChanged": false,
+      "sourceClocksAndExpiryUnchanged": true,
+      "policyReviewRevisionAdvanced": true,
+      "forecastOrSourcesChanged": false,
+      "accountRequests": 0,
+      "reloadSubmitted": false
+    },
+    "reply": {
+      "response": {
+        "baseFinancialControlUnchanged": true,
+        "generationSha256": "c0eb2782c9299c3aaceeb1ae2366b2464a70224ba6e7f2c556878d6d71cd3864",
+        "nativeHead": {
+          "hash": "fb6c7ebaef3286b9d999c6f7ff8ead166e9706c432a04d39d1f5ea2e69b5c34c",
+          "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+          "previous": "9ba730e0cc2c0f375b825dc6d52cbf309ee7ea0ad6210c936de0386666ac2152",
+          "sequence": 781047
+        },
+        "state": "committed"
+      }
+    },
+    "previousSidecarBytes": 3267472,
+    "previousSidecarSha256": "d4d024906adef345cbd954d3d6241a0be52b027165c45d0bdcbf781462a1e3f2",
+    "fullPreviousSidecarPreserved": true,
+    "monetaryCapsLimiterAndWindowsChanged": false,
+    "accountClientsCreated": 0,
+    "referenceUpdaterPid": 1035416
+  },
+  {
+    "observedUtc": "2026-10-21T21:13:34.458625+00:00",
+    "workerPid": 1031505,
+    "binarySha256": "1cf47b2ae83388c6f4b3d9f3a69b5772ef5755255204ca4de6762fb850fb4d00",
+    "expectedGenerationSha256": "d1c0c00089a938586fa4d4ee2d58f5a637d3fe970879f4465933367ad1186b47",
+    "observedGenerationSha256": "d1c0c00089a938586fa4d4ee2d58f5a637d3fe970879f4465933367ad1186b47",
+    "recurringReviewsOptedIn": true,
+    "exchanges": [
+      "1043"
+    ],
+    "staged": {
+      "controlPath": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/recurring-generation-1792617061660268758/control.owner-reviewed.json",
+      "controlSha256": "03b2b9e8232522db087840e6979c02f511866115dd5cd0c5266b833599b24ee5",
+      "exchanges": [
+        "1043"
+      ],
+      "onlyChange": "sameSideTopUps.version 1 -> 3; actual policy review time and authority/file hashes",
+      "monetaryCapsChanged": false,
+      "sourceClocksAndExpiryUnchanged": true,
+      "policyReviewRevisionAdvanced": true,
+      "forecastOrSourcesChanged": false,
+      "accountRequests": 0,
+      "reloadSubmitted": false
+    },
+    "reply": {
+      "response": {
+        "baseFinancialControlUnchanged": true,
+        "generationSha256": "d1c0c00089a938586fa4d4ee2d58f5a637d3fe970879f4465933367ad1186b47",
+        "nativeHead": {
+          "hash": "b9188432940f9239200ea1f5b7224c451441b7cfd811c07ea6f7cf3a701486b8",
+          "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+          "previous": "2896c744ab419704ec60bb51c69cc4f316fcbd369c18674797e2e504e7f08470",
+          "sequence": 782248
+        },
+        "state": "committed"
+      }
+    },
+    "previousSidecarBytes": 3358416,
+    "previousSidecarSha256": "78463bf5550b362965ff563d8ac0b5564b64bb737401a81f6d933777eb57bcd6",
+    "fullPreviousSidecarPreserved": true,
+    "monetaryCapsLimiterAndWindowsChanged": false,
+    "accountClientsCreated": 0,
+    "referenceUpdaterPid": 1035954
+  },
+  {
+    "observedUtc": "2026-10-21T21:15:42.533175+00:00",
+    "workerPid": 1031505,
+    "binarySha256": "1cf47b2ae83388c6f4b3d9f3a69b5772ef5755255204ca4de6762fb850fb4d00",
+    "expectedGenerationSha256": "d75161e2d93e8ab5e3b0eb889229107e04c35013e6c4c49c686608eba4b2f02d",
+    "observedGenerationSha256": "d75161e2d93e8ab5e3b0eb889229107e04c35013e6c4c49c686608eba4b2f02d",
+    "recurringReviewsOptedIn": true,
+    "exchanges": [
+      "1044"
+    ],
+    "staged": {
+      "controlPath": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/recurring-generation-1792617214952334708/control.owner-reviewed.json",
+      "controlSha256": "04e818a5658a2f2854434ec3edfdbc9e62a2c0053cea82386cee1bb39724011e",
+      "exchanges": [
+        "1044"
+      ],
+      "onlyChange": "sameSideTopUps.version 1 -> 3; actual policy review time and authority/file hashes",
+      "monetaryCapsChanged": false,
+      "sourceClocksAndExpiryUnchanged": true,
+      "policyReviewRevisionAdvanced": true,
+      "forecastOrSourcesChanged": false,
+      "accountRequests": 0,
+      "reloadSubmitted": false
+    },
+    "reply": {
+      "response": {
+        "baseFinancialControlUnchanged": true,
+        "generationSha256": "d75161e2d93e8ab5e3b0eb889229107e04c35013e6c4c49c686608eba4b2f02d",
+        "nativeHead": {
+          "hash": "1564d0d1f8cccc668900d05267f21f6cfbd73958a8692786ca396d3a94e21ee5",
+          "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+          "previous": "2aa31e7688016bb294ae736f9922224e3436ecf36b6a20b3db116397b77c4b2b",
+          "sequence": 782497
+        },
+        "state": "committed"
+      }
+    },
+    "previousSidecarBytes": 3406845,
+    "previousSidecarSha256": "5a205a0cefd21bc8421657a6577ab8aab2db7ba18165191bd9b96a6ee628c9b7",
+    "fullPreviousSidecarPreserved": true,
+    "monetaryCapsLimiterAndWindowsChanged": false,
+    "accountClientsCreated": 0,
+    "referenceUpdaterPid": 1035984
+  }
+]

@@ -1,6 +1,8 @@
 # Current Moloch and Tartarus state
 
-Observed October 21, 20:41 UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October 21, 21:16 UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+
+The human now targets at least one distinct filled order/minute; this is not achieved. The21:08:58 original-receipt/FIFO audit records458fills,12distinct filled orders todayUTC,0new filled orders over5minutes and1over15minutes. R72's latest993YES sale reached4,189shares, realizing+221.355SUSQies. Reconciled cash27,660.060/ownedcost68,209.850 are not a new official valuation. Repeat acquisition is activated for851/872/1051/1043/1044, with seven remaining; the corrected offline review helper committed fresh12-market forecasts preserving all three activations without restarting the sole worker. R73's two-line cache fix is qualified, not deployed. [Current objective, evidence and remaining bottlenecks](../research/tartarus-learning-v2/filled-minute-20261021.md).
 
 ## Production
 

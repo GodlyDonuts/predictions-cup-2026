@@ -1,0 +1,10 @@
+{
+  "observedUtc": "2026-10-21T21:04:28.931189+00:00",
+  "workerSourceSha256": "85fa14cd49eeff7c910dec28674195cd523e5a99896cf0f8e9b455039f410b23",
+  "binarySha256": "a50c79969b9b0ef5088c02fdf864da855cce74bf5469dc3e5afdd895c439fba5",
+  "change": "existing_target_busy reuses current immutable order snapshot and indexed quote lookup",
+  "nativeAndRuntimeLibrariesUnchanged": true,
+  "deployed": false,
+  "testSummary": "48 passed; 0 failed; 185 filtered out; 12.25s",
+  "cliUsageVerified": true
+}

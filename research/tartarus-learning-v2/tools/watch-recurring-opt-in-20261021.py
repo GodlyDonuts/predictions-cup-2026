@@ -15,6 +15,8 @@ def run(release, config_path):
     start = time.monotonic()
     batches = []
     last_report = 0.0
+    unresolved = None
+    unsuccessful = 0
     while time.monotonic() - start < 2400:
         if (runtime / 'EXECUTION_STOP').exists() or (release / 'fresh-live.failed.json').exists():
             raise RuntimeError('Current worker stopped; no further activation attempted')
@@ -22,6 +24,19 @@ def run(release, config_path):
         if (release / 'fresh-live.public.json').exists():
             phase = 'waiting_for_quiet_fresh_reviews'
             pending = json.loads((reference / 'pending.json').read_bytes())
+            if unresolved is not None:
+                resolution_path = reference / ('reload-resolution-' + unresolved + '.json')
+                if pending.get('resolved') is not True or not resolution_path.exists():
+                    time.sleep(.25)
+                    continue
+                resolution = json.loads(resolution_path.read_bytes())
+                assert resolution['requestSha256'] == unresolved
+                assert resolution['outcome'] in ['committed', 'expired_uncommitted']
+                assert resolution['requestResent'] is False
+                if resolution['outcome'] == 'expired_uncommitted':
+                    unsuccessful += 1
+                    assert unsuccessful < 3, 'Three confirmed uncommitted attempts; inspect owner timing'
+                unresolved = None
             if pending.get('resolved') is True:
                 state = json.loads((reference / 'state.json').read_bytes())
                 control = json.loads(Path(state['controlPath']).read_bytes())
@@ -44,6 +59,12 @@ def run(release, config_path):
                         batches=batches, accountRequests=0)
                     (release / 'recurring-complete.public.json').write_text(json.dumps(proof, indent=2) + '\n')
                     return
+                # Fully closed V1 cohorts cannot start new entries or covered
+                # exits while waiting. Activate those first; other markets are
+                # changed individually to contain races with new exit orders.
+                positions = native['account']['positions']
+                flat = [ex for ex in selected if all(not lots for lots in positions.get(ex, {}).values())]
+                selected = flat if flat else sorted(selected)[:1]
         if selected:
             batch = release / ('recurring-batch-' + str(time.time_ns()))
             with batch.with_suffix('.log').open('x') as log:
@@ -53,10 +74,17 @@ def run(release, config_path):
             if result.returncode != 0:
                 raise RuntimeError('Activation failed; inspect ' + str(batch.with_suffix('.log')))
             proof = json.loads((release / 'recurring-opt-in.public.json').read_bytes())
-            assert proof['recurringReviewsOptedIn'] and set(proof['exchanges']) == set(selected)
+            assert set(proof['exchanges']) == set(selected)
             batch.with_suffix('.json').write_text(json.dumps(proof, indent=2) + '\n')
             batches.append(str(batch.with_suffix('.json')))
-            phase = 'confirmed_batch'
+            if proof['recurringReviewsOptedIn']:
+                unsuccessful = 0
+                phase = 'confirmed_batch'
+            else:
+                # No new request until the original updater proves this exact
+                # outcome from owner identity, current view and durable log.
+                unresolved = proof['expectedGenerationSha256']
+                phase = 'waiting_for_original_request_resolution'
         status = dict(at=datetime.datetime.now(datetime.timezone.utc).isoformat(), phase=phase,
             enabled=sorted(enabled), selected=sorted(selected), elapsedSeconds=int(time.monotonic() - start))
         if selected or time.monotonic() - last_report >= 5:

@@ -1,0 +1,19 @@
+{
+  "exchanges": [
+    "1067",
+    "865",
+    "872",
+    "993",
+    "885",
+    "1051",
+    "851",
+    "1043",
+    "1044",
+    "1077"
+  ],
+  "advancedPolicyRevision": true,
+  "allOtherReviewFieldsExactlyPreserved": true,
+  "typedNativeHelperAcceptedAll": true,
+  "accountRequests": 0,
+  "productionChanged": false
+}

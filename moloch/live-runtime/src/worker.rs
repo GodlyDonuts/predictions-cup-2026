@@ -1098,9 +1098,9 @@ fn install_human_market_breadth(c:&Control,control_path:&Path,bank:&mut Session)
  #[test]fn malformed_scope_or_inherited_accounting_is_rejected(){for (old,total,n) in [(12,11,237),(12,40,0),(12,40,4097)]{assert!(human_market_breadth_target(true,old,total,n).is_err());}}
 }
 fn existing_target_busy(bank:&Session,log:&DispatchLog,exchange:&str)->Result<bool>{
- log.require_resolved_attempts()?;let orders=bank.engine().order_records();
+ log.require_resolved_attempts()?;let snapshot=moloch_live_runtime::order_snapshot::snapshot(bank);let orders=snapshot.records();
  for id in log.acknowledgments.keys().filter(|id|!log.closed.contains(id)){
-  let q=orders.iter().find(|q|q["id"]==*id).ok_or("LIVE_ACK_QUOTE_MISSING")?;if q["exchangeId"]==exchange{return Ok(true)}
+  let q=snapshot.quote(*id).ok_or("LIVE_ACK_QUOTE_MISSING")?;if q["exchangeId"]==exchange{return Ok(true)}
  }
  Ok(orders.iter().any(|q|q["exchangeId"]==exchange&&q["retired"]==false&&(q.get("reviewedInventoryExit").is_some()||q.get("reviewedFundamentalEntry").is_some()||q["id"].as_u64().is_some_and(|id|bank.engine().is_package_order(id)||!log.never_attempted(id)))))
 }

@@ -6,7 +6,7 @@ incomplete. Fill receipts, filled orders and turnover are counted separately.
 from pathlib import Path
 from decimal import Decimal as N
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import argparse
 import hashlib
 import json
@@ -14,6 +14,34 @@ import json
 ROOT = Path('/home/archon/apps/moloch/shared/live-production-v1')
 BASELINE = ROOT.parent / 'incidents/r71-recurring-20261021T194753Z/report.json'
 OUT = Path('/tmp/moloch-recurring-cohort-20261021/r71-turnover.public.json')
+
+
+def filled_order_cadence(fills, observed):
+    """Count each physical order once, at its first execution, across all history.
+
+    Later partial receipts cannot manufacture a new trade in another minute.
+    These are observed executions, not an assertion of complete venue coverage.
+    """
+    first = {}
+    for fill in fills:
+        assert fill.get('counterfactual') is False
+        actual = fill['actualOrderId']
+        at = datetime.fromisoformat(fill['executedAt'].replace('Z', '+00:00'))
+        assert at.tzinfo is not None and at <= observed
+        first[actual] = min(first.get(actual, at), at)
+    windows = {}
+    for minutes in (1, 5, 15, 60):
+        start = observed - timedelta(minutes=minutes)
+        count = sum(start < at <= observed for at in first.values())
+        windows[str(minutes)] = dict(distinctFirstFilledOrders=count,
+            filledOrdersPerMinute=count / minutes, targetFilledOrders=minutes,
+            averageTargetMet=count >= minutes)
+    last = max(first.values()) if first else None
+    return dict(observedUtc=observed.isoformat(), targetFilledOrdersPerMinute=1,
+        counting='Each actual order once at first official execution; partial fills do not reset the clock',
+        windowsMinutes=windows, latestNewFilledOrderUtc=last.isoformat() if last else None,
+        secondsSinceNewFilledOrder=(observed - last).total_seconds() if last else None,
+        accountRequests=0, executionAuthority=False)
 
 
 def take(lots, quantity):
@@ -112,7 +140,8 @@ def audit(baseline, output):
     assert N(post['cash']) - N(pre['cash']) == total('cashDelta')
     assert N(post['realized']) - N(pre['realized']) == total('realizedNet')
     today = [f for f in after['fills'] if f.get('executedAt', '').startswith('2026-10-21')]
-    proof = dict(observedUtc=datetime.now(timezone.utc).isoformat(), baselineIncident=baseline.parent.name,
+    observed = datetime.now(timezone.utc)
+    proof = dict(observedUtc=observed.isoformat(), baselineIncident=baseline.parent.name,
         baselineReportSha256=hashlib.sha256(before_raw).hexdigest(),
         originalFillCount=count, currentFillCount=len(after['fills']), originalFillsUnchanged=True,
         remainingFifoExactlyMatches=True, allNewFillsMatchOriginalOfficialReceipts=True,
@@ -122,6 +151,7 @@ def audit(baseline, output):
         incrementalShares=total('shares'), incrementalDistinctFilledOrders=len(orders),
         officialReceiptFileHashes=receipt_hashes, utcDay='2026-10-21', dayFillReceipts=len(today),
         dayDistinctFilledOrders=len({f['actualOrderId'] for f in today}),
+        cadence=filled_order_cadence(after['fills'], observed),
         noAccountRequestsByAudit=True, wholeAccountProfitEstablished=False)
     output.write_text(json.dumps(proof, default=str, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({k: proof[k] for k in ['observedUtc', 'currentFillCount', 'incrementalRealizedNet',

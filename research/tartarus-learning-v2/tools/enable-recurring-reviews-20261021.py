@@ -12,6 +12,8 @@ import hashlib
 import json
 import os
 import signal
+import socket
+import struct
 import subprocess
 import time
 
@@ -30,6 +32,29 @@ def put(path, value):
         stream.flush()
         os.fsync(stream.fileno())
     os.replace(temporary, path)
+
+def connect_at_boundary(root, config, expected_status, timeout=240):
+    """Wait for the existing owner to poll, before starting request lifetime."""
+    status_path = root / 'fundamental-reload/status.json'
+    before = status_path.stat().st_mtime_ns
+    channel = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        channel.connect(str(root / 'fundamental-reload/owner.sock'))
+        pid, uid, _gid = struct.unpack('3i', channel.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+        assert pid == config['workerPid'] and uid == os.geteuid()
+        proc = Path('/proc') / str(pid)
+        assert int((proc / 'stat').read_text().rsplit(') ', 1)[1].split()[19]) == config['workerStartTicks']
+        deadline = time.monotonic() + timeout
+        while status_path.stat().st_mtime_ns == before:
+            assert time.monotonic() < deadline, 'Owner reload boundary timeout; no request sent'
+            assert proc.exists() and not (root / 'EXECUTION_STOP').exists()
+            time.sleep(.005)
+        assert json.loads(status_path.read_bytes()) == expected_status
+        assert not (root / 'EXECUTION_STOP').exists()
+        return channel
+    except BaseException:
+        channel.close()
+        raise
 
 def main(config_path, exchanges):
     deployment = json.loads((H / 'deployment.public.json').read_bytes())
@@ -75,23 +100,9 @@ def main(config_path, exchanges):
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             assert json.loads((F / 'pending.json').read_bytes()).get('resolved') is True
             assert json.loads((F / 'state.json').read_bytes()) == state
-            # The owner services reloads between source/dispatch phases. Avoid
-            # starting the 60-second request lifetime just after that boundary.
-            # Wait on its next completed scope; trading continues throughout.
-            progress_path = R / 'progress.json'
-            previous_progress = progress_path.read_bytes()
-            deadline = time.monotonic() + 240
-            while progress_path.read_bytes() == previous_progress:
-                assert time.monotonic() < deadline, 'No fresh worker progress within activation wait'
-                assert process.exists() and not (R / 'EXECUTION_STOP').exists()
-                time.sleep(.1)
-            progress = json.loads(progress_path.read_bytes())
-            assert progress['pid'] == config['workerPid'] and progress['phase'] == 'trading'
-            for item in control['fundamentalPolicy']['reviews']:
-                review = json.loads(Path(item['path']).read_bytes())
-                if review['exchangeId'] in selected:
-                    assert review['expiresAtMs'] > time.time_ns() // 1_000_000 + 120_000
-            stage = H / ('recurring-generation-' + str(time.time_ns()))
+            # Keep approved review generations in the durable shared tree,
+            # alongside ordinary forecast generations, rather than build /tmp.
+            stage = F / ('recurring-generation-' + str(time.time_ns()))
             subprocess.run(['python3', str(H / 'stage-recurring-reviews-20261021.py'),
                 '--base-control', state['controlPath'], '--base-sha256', state['controlSha256'],
                 '--output', str(stage), '--review-helper', config['reviewHelper'],
@@ -103,20 +114,34 @@ def main(config_path, exchanges):
             assert status['baseControlSha256'] == config['baseControlSha256']
             request = {k: status[k] for k in ['version', 'workerPid', 'workerStartTicks', 'ownerLease',
                 'baseControlSha256', 'bankManifestSha256', 'runId', 'previousGenerationSha256']}
-            now = time.time_ns() // 1_000_000
-            request.update(requestId='recurring-v3-' + str(now), controlPath=staged['controlPath'],
-                controlSha256=staged['controlSha256'], issuedAtMs=now, expiresAtMs=now + 60_000)
-            request_path = stage / 'request.json'
-            request_path.write_text(json.dumps(request, separators=(',', ':')), encoding='utf-8')
-            wanted = sha(request_path)
             old_sidecar = (R / 'fundamental.ndjson').read_bytes()
-            put(F / 'pending.json', dict(expectedGenerationSha256=wanted, previousGenerationSha256=state['generationSha256'],
-                expiresAtMs=request['expiresAtMs'], staged=staged, selected=sorted(selected)))
-            try:
-                reply = subprocess.run([config['binary'], 'fundamental-reload', config['baseControl'], str(request_path), wanted], capture_output=True, text=True, timeout=75)
-                reply_data = dict(exitCode=reply.returncode, stdout=reply.stdout[-3000:], stderr=reply.stderr[-1000:])
-            except subprocess.TimeoutExpired:
-                reply_data = dict(timedOut=True)
+            # The existing CLI's 65s response timer previously elapsed while
+            # waiting in the owner's socket queue. Its dead peer then failed
+            # /proc authentication. Keep this same-UID client alive, and mint
+            # the unchanged 60s request only at the owner's actual poll.
+            with connect_at_boundary(R, config, status) as channel:
+                now = time.time_ns() // 1_000_000
+                request.update(requestId='recurring-v3-' + str(now), controlPath=staged['controlPath'],
+                    controlSha256=staged['controlSha256'], issuedAtMs=now, expiresAtMs=now + 60_000)
+                request_path = stage / 'request.json'
+                raw = json.dumps(request, separators=(',', ':')).encode()
+                request_path.write_bytes(raw)
+                wanted = sha(request_path)
+                put(F / 'pending.json', dict(expectedGenerationSha256=wanted, previousGenerationSha256=state['generationSha256'],
+                    expiresAtMs=request['expiresAtMs'], staged=staged, selected=sorted(selected)))
+                channel.settimeout(75)
+                channel.sendall(struct.pack('!I', len(raw)) + raw)
+                try:
+                    response = b''
+                    while not response.endswith(b'\n'):
+                        part = channel.recv(4096)
+                        if not part:
+                            break
+                        response += part
+                        assert len(response) <= 65536
+                    reply_data = dict(response=json.loads(response))
+                except (TimeoutError, ValueError, OSError) as error:
+                    reply_data = dict(uncertain=True, reason=type(error).__name__)
             observed = json.loads((R / 'fundamental-reload/status.json').read_bytes())
             confirmed = observed['previousGenerationSha256'] == wanted
             current = (R / 'fundamental.ndjson').read_bytes()

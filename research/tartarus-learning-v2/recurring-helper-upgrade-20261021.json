@@ -1,0 +1,37 @@
+{
+  "observedUtc": "2026-10-21T21:10:27.803103+00:00",
+  "workerPid": 1031505,
+  "workerRestarted": false,
+  "helperSha256": "ce1bc47b929e10e090197f80540597ff6ffc68477f0de50db238d653168b4278",
+  "helperSourceSha256": "f8938daa6d556d58d14e322571c98bc3d56adfa03c7682d3b7949c376ec63bf0",
+  "oldHelperSha256": "3b617e9323a8d32595e23792045f87a72746f78e23618dac04fbdc025e1d0705",
+  "previousError": "FUNDAMENTAL_TOP_UP_POLICY",
+  "reviewsValidated": 14,
+  "allTypedReviewHashesUnchanged": true,
+  "configFieldsChanged": [
+    "reviewHelper",
+    "reviewHelperSha256"
+  ],
+  "updaterPid": 1035883,
+  "watcherPid": 1035884,
+  "accountRequests": 0,
+  "freshReferenceCommitVerified": true,
+  "financialStateModified": false,
+  "freshReferenceGenerationSha256": "6cb5a6adb69c09c0d3628bca1469cd6540add58e119502d8fb29f2f4a2680c7e",
+  "freshReferenceCommitCount": 47,
+  "recurringVersionsRetained": {
+    "966": 1,
+    "977": 1,
+    "1067": 1,
+    "865": 1,
+    "872": 3,
+    "993": 1,
+    "885": 1,
+    "1051": 3,
+    "851": 3,
+    "1043": 1,
+    "1044": 1,
+    "1077": 1
+  },
+  "verifiedUtc": "2026-10-21T21:13:07.075778+00:00"
+}

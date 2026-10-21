@@ -1,0 +1,24 @@
+{
+  "originalSealMatches": true,
+  "parseNs": 640304389,
+  "rawBytes": 50136632,
+  "rounds": [
+    {
+      "hashNs": 239290514,
+      "serializeNs": 167008481,
+      "valueCloneNs": 361281139
+    },
+    {
+      "hashNs": 242275418,
+      "serializeNs": 287486205,
+      "valueCloneNs": 280820989
+    },
+    {
+      "hashNs": 240035395,
+      "serializeNs": 146773592,
+      "valueCloneNs": 280284047
+    }
+  ],
+  "scope": "derived-report-serialization-only; no engine replay or account requests",
+  "sourceSha256": "5aff4e964c9b00d5f881230fcdd79026c240bc0e34ff36b064a7642d7a40c77d"
+}

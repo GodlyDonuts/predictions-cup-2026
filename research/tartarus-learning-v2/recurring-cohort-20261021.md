@@ -1,5 +1,7 @@
 # Repeated acquisition after a sale
 
+Update21:16UTC: version3 committed for851/872/1051/1043/1044; the first three survived the corrected reference updater's fresh12-market forecast generation. Seven refreshed cohorts remain in progress. Actual new purchases after opt-in are not yet verified. [Activation, helper repair and actual turnover](filled-minute-20261021.md).
+
 Observed October 21, 20:41 UTC. R72 carries the R71 recurring-acquisition implementation and is verified live after repairing subscription startup. The release passed 159 focused runtime and 131 native checks; the R72 worker fix passed five additional checks. A finite local coordinator opts fresh, quiet markets into version 3 through the existing worker, with original generation and journal verification. It does not restart the worker or construct an account client. [Fresh live proof](r72-fresh-live-20261021.json), [activation coordinator](tools/enable-recurring-reviews-20261021.py).
 
 ## The restriction
