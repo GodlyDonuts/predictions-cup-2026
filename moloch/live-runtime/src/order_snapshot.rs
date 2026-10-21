@@ -55,7 +55,15 @@ pub fn snapshot(bank:&Session)->Arc<Snapshot>{
  if cacheable{CURRENT.with(|slot|*slot.borrow_mut()=Some(rendered.clone()));}rendered
 }
 /// Same first-match semantics as the previous native rendering/find call.
-pub fn quote(bank:&Session,qid:u64)->Option<Value>{snapshot(bank).quote(qid).cloned()}
+pub fn quote(bank:&Session,qid:u64)->Option<Value>{
+ let key=Key::current(bank);
+ // Use a complete snapshot only when it already belongs to this exact head.
+ // A single lookup must not render every historic order after each book tick.
+ if let Some(hit)=CURRENT.with(|slot|slot.borrow().as_ref().filter(|s|s.key==key).cloned()){
+  return hit.quote(qid).cloned();
+ }
+ bank.engine().order_record(qid)
+}
 #[cfg(test)]mod tests{
  use super::*;use serde_json::json;
  #[test]fn string_bounds_match_original_json_escaping_in_keys_and_values(){
@@ -91,6 +99,8 @@ pub fn quote(bank:&Session,qid:u64)->Option<Value>{snapshot(bank).quote(qid).clo
   CURRENT.with(|slot|*slot.borrow_mut()=None);RENDERS.with(|n|n.set(0));
   let original=bank.engine().order_records();assert!(!original.is_empty());
   let before=bank.durable_head();let journal=std::fs::read(root.join("events.jsonl")).unwrap();
+  for q in &original{assert_eq!(quote(&bank,q["id"].as_u64().unwrap()).as_ref(),Some(q));}
+  assert!(quote(&bank,u64::MAX).is_none());assert_eq!(RENDERS.with(|n|n.get()),0);
   let first=snapshot(&bank);
   for q in &original{
    let current=snapshot(&bank);assert!(Arc::ptr_eq(&first,&current));
@@ -101,6 +111,8 @@ pub fn quote(bank:&Session,qid:u64)->Option<Value>{snapshot(bank).quote(qid).clo
   }
   assert_eq!(RENDERS.with(|n|n.get()),1);assert_eq!(bank.durable_head(),before);assert_eq!(std::fs::read(root.join("events.jsonl")).unwrap(),journal);
   let tick=json!({"type":"tick","receivedAt":iso(at+1)});bank.accept("ticks",1,&tick).unwrap();
+  for q in bank.engine().order_records(){assert_eq!(quote(&bank,q["id"].as_u64().unwrap()),Some(q));}
+  assert_eq!(RENDERS.with(|n|n.get()),1);
   let after=snapshot(&bank);assert!(!first.validate_current(&bank));assert!(!Arc::ptr_eq(&first,&after));assert_eq!(after.records(),bank.engine().order_records());assert_eq!(RENDERS.with(|n|n.get()),2);
   assert!(!bank.accept("ticks",1,&tick).unwrap());assert!(Arc::ptr_eq(&after,&snapshot(&bank)));
   let mut conflict=tick.clone();conflict["receivedAt"]=json!(iso(at+2));assert!(bank.accept("ticks",1,&conflict).is_err());assert!(Arc::ptr_eq(&after,&snapshot(&bank)));assert_eq!(RENDERS.with(|n|n.get()),2);

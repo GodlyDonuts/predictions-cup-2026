@@ -26,6 +26,8 @@ Cost is not current market value. These figures do not establish whole-account p
 
 There remains one official worker and shared limiter. Daily windows and original financial caps are unchanged. The separately built full-universe native capacity change is not deployed. Laptop training creates no account client.
 
+A combined release candidate now includes the published full-universe change, immutable review-map sharing and a direct single-order lookup.150 focused checks pass; the lookup avoids rendering the entire20,000-order history on cache misses. A synthetic component benchmark drops the second full-render sample's144.47ms/lookup to roughly0.068ms; complete worker speed has not been measured. Full current-ledger equivalence and the release build remain in progress. R68 stays active during qualification. [Scope and exact limits](../research/tartarus-learning-v2/single-order-lookup-20261021.md).
+
 The actual laptop external feeds are healthy:Kalshi237 tickers at1,193 REST admissions/minute, oldest receipt11.9s, no throttles; Polymarket378 outcome books/189 markets, configured30 REST admissions/s, receipt ages3.19s median/6.37s maximum. Both websocket feeds are receiving. A retired VPS Polymarket status file is not the live feed. These are observation freshness figures, not contract-equivalence or profit evidence. [Measured feed state](../research/tartarus-learning-v2/current-external-feeds-20261021.json).
 
 ## Learning

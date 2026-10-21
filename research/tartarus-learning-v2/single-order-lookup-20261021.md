@@ -1,0 +1,9 @@
+# Single-order lookup and combined production candidate
+
+A live R68 stack sample found time spent freeing a complete order snapshot. The current production report contains about50MB and more than20,000 historic orders. A lookup after a new bank event could rebuild that complete history to retrieve one order.
+
+`Engine::order_record` now renders the first matching native order directly, using exactly the same renderer as the complete report. The runtime reuses a complete snapshot when it already belongs to the current Session/head; otherwise it renders only the requested order. Attached reviews, fills, retirement, cancellation and queue fields remain present. A stale cached snapshot never supplies a current lookup. Original financial/journal state and the complete-report API are unchanged.
+
+The combined ARM64 candidate passes130 native tests,5 order-cache unit tests,6 genuine Session integration tests and9 market-capacity tests. In a synthetic20,000-order/47.38MB history, the second full-render sample averaged144.47ms per lookup; direct samples averaged0.06875ms and0.06726ms. The selected record and complete report hash are unchanged. The first full-render timing also includes encoded-size measurement and is reported separately. This is a component benchmark under concurrent VPS work, not a whole-worker speed or profit measurement. [Exact logs, numbers and source hashes](single-order-lookup-20261021.json).
+
+The combined release also retains R68's stream repair and integrates the already published immutable review-map sharing, full-universe capacity and removal of the four-lifetime observation quota. The retired-prefix optimization was already present in R68. Full copied current-ledger equivalence and the final combined release are still in progress. This candidate is not deployed; sole R68 continues trading. No new fill or positive ROI is established by these checks.

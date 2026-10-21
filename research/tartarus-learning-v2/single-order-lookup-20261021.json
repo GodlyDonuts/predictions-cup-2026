@@ -1,0 +1,73 @@
+{
+  "observedUtc": "2026-10-21T18:21:39.537326+00:00",
+  "sourceBaseCommit": "f9fa5432fb1641a9165305cf5c44a4cd9c3e7df0",
+  "classification": "checked_single_order_rendering_and_combined_candidate_not_deployed",
+  "tests": {
+    "native-order-tests": {
+      "passed": 130,
+      "failed": 0,
+      "ignored": 2,
+      "logSha256": "12ccc94c22900203b33e348c62457880138cf3c6aeb9164d7797d0fb5f6d2ea2"
+    },
+    "snapshot-unit-tests": {
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "logSha256": "251e4b1c86967e730ad22db6ecad1a3b4da025d2cfc700b9a8e94d06b4bb093a"
+    },
+    "snapshot-integration-tests": {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "logSha256": "2d52039c47aef47d334cac18d14bdcc679c4afec2056a7ea5a1b197a3c41a24a"
+    },
+    "capacity-tests": {
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "logSha256": "1c664f5ddfa93675e24b355a73e61f419578c22c2d7d48028c29bc012fbf364e"
+    }
+  },
+  "benchmark": {
+    "encodedOrderBytes": 47377785,
+    "endToEndWorkerSpeedMeasured": false,
+    "orders": 20000,
+    "reportHashUnchanged": true,
+    "samples": [
+      {
+        "direct": false,
+        "repetitions": 2,
+        "seconds": 0.403700877
+      },
+      {
+        "direct": true,
+        "repetitions": 128,
+        "seconds": 0.008799554
+      },
+      {
+        "direct": true,
+        "repetitions": 128,
+        "seconds": 0.008608762
+      },
+      {
+        "direct": false,
+        "repetitions": 2,
+        "seconds": 0.288946846
+      }
+    ],
+    "selectedOrderHash": "6d9980ae2623d76cf860fc26c1d69c282e3bea4f4ac589c1141bcc998fd46e4a",
+    "syntheticHistory": true
+  },
+  "benchmarkLimits": [
+    "Synthetic 20000-order history; not measured complete worker throughput.",
+    "First full-render sample includes one encoded-size measurement; second full-render sample excludes it.",
+    "VPS production and other compilation continue concurrently."
+  ],
+  "freshFullPrefixComparison": "running",
+  "productionChanged": false,
+  "productionPid": 1018590,
+  "newSourceFiles": {
+    "moloch/native/src/engine.rs": "a67160bb8da40c511a12a5d4fd845b9370d8826d2c33943bf87c643fa3bd0904",
+    "moloch/live-runtime/src/order_snapshot.rs": "29db0834fa34fa9d6da7545c05dec3d9ab0d4fe2c0e3d2cc79f27e10979e24ca"
+  }
+}

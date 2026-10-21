@@ -2015,12 +2015,20 @@ impl Engine {
         };
         Ok(Some((iso(from)?, iso(to)?)))
     }
-    pub fn order_records(&self) -> Vec<Value> {
-        self.orders.iter().map(|q|{let mut v=json!({"id":q.id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":q.quantity,"filled":q.filled,"price":money(q.limit),"createdAt":q.created,"activationAt":q.activation,"expiresAt":q.expires,"retired":q.retired,"participationCredit":q.credit,"barrier":q.barrier.map(|(sequence,end)|json!({"sequence":sequence.to_string(),"endAt":end}))});
+    fn render_order(&self, q: &Order) -> Value {
+        let mut v=json!({"id":q.id,"marketId":q.market,"exchangeId":q.exchange,"side":label(q.side),"action":if q.buy{"buy"}else{"sell"},"quantity":q.quantity,"filled":q.filled,"price":money(q.limit),"createdAt":q.created,"activationAt":q.activation,"expiresAt":q.expires,"retired":q.retired,"participationCredit":q.credit,"barrier":q.barrier.map(|(sequence,end)|json!({"sequence":sequence.to_string(),"endAt":end}))});
         if let Some(proof)=self.reviewed_inventory_exits.get(&q.id){v["reviewedInventoryExit"]=proof.clone();}
         if let Some(proof)=self.reviewed_fundamental_entries.get(&q.id){v["reviewedFundamentalEntry"]=proof.clone();}
         if let Some(proof)=self.reviewed_rank_campaigns.get(&q.id){v["reviewedRankCampaign"]=proof.clone();}
-        if let Some(at)=q.cancel{v["cancelEffectiveAt"]=json!(at)}if q.aon{v["executionStyle"]=json!("inventoryAON")}if q.age_reason{v["inventoryExitReason"]=json!("maximumAge")}if q.participation!=100{v["participationBps"]=json!(q.participation)}if q.through{v["throughFillCapacity"]=json!(true)}if q.conditional{v["fillModel"]=json!("conditionalFifo");v["touchAttributionBps"]=json!(q.touch_bps);v["queueAhead"]=json!((q.same+q.better).to_string());v["queueSame"]=json!(q.same.to_string());v["queueBetter"]=json!(q.better.to_string());v["queueVisibleSame"]=json!(q.visible_same.to_string());v["queueVisibleBetter"]=json!(q.visible_better.to_string());v["touchRemainder"]=json!(q.touch_remainder)}v}).collect()
+        if let Some(at)=q.cancel{v["cancelEffectiveAt"]=json!(at)}if q.aon{v["executionStyle"]=json!("inventoryAON")}if q.age_reason{v["inventoryExitReason"]=json!("maximumAge")}if q.participation!=100{v["participationBps"]=json!(q.participation)}if q.through{v["throughFillCapacity"]=json!(true)}if q.conditional{v["fillModel"]=json!("conditionalFifo");v["touchAttributionBps"]=json!(q.touch_bps);v["queueAhead"]=json!((q.same+q.better).to_string());v["queueSame"]=json!(q.same.to_string());v["queueBetter"]=json!(q.better.to_string());v["queueVisibleSame"]=json!(q.visible_same.to_string());v["queueVisibleBetter"]=json!(q.visible_better.to_string());v["touchRemainder"]=json!(q.touch_remainder)}v
+    }
+    /// Render only the first matching original order, including every attached
+    /// review and accounting field. No history or order state is changed.
+    pub fn order_record(&self, id: u64) -> Option<Value> {
+        self.orders.iter().find(|q| q.id == id).map(|q| self.render_order(q))
+    }
+    pub fn order_records(&self) -> Vec<Value> {
+        self.orders.iter().map(|q| self.render_order(q)).collect()
     }
 }
 
@@ -2034,6 +2042,22 @@ impl Engine {
  fn hold(e:&mut Engine,ex:&str,side:Side,n:u64){let id=format!("fixture-held-{ex}");e.wallet.reserve(&id,Reservation{exchange:ex.into(),side,quantity:n,limit:400000}).unwrap();e.wallet.buy_fill(&id,n).unwrap();}
  fn old_check(e:&Engine)->Result<()>{for(ex,side)in e.wallet.lots.keys(){let held=e.wallet.quantity(ex,*side);if held<e.pledge(ex,*side)+held.min(e.opposite_buys(ex,*side)){return Err("SHARE_PLEDGE")}}Ok(())}
  fn order(q:&Order,ex:&str,side:Side,buy:bool,n:u64,filled:u64)->Order{let mut out=q.clone();out.exchange=ex.into();out.side=side;out.buy=buy;out.quantity=n;out.filled=filled;out.retired=false;out}
+ #[test]fn single_order_preserves_first_match_all_review_fields_and_later_mutation(){
+  let(mut e,mut q)=fixture();q.id=7;q.cancel=Some(q.activation+1);q.aon=true;q.age_reason=true;q.participation=1234;q.through=true;q.conditional=true;q.barrier=Some((17,q.expires));
+  e.orders.push(q.clone());let mut duplicate=q.clone();duplicate.filled=3;e.orders.push(duplicate);
+  for map in [&mut e.reviewed_inventory_exits,&mut e.reviewed_fundamental_entries,&mut e.reviewed_rank_campaigns]{Arc::make_mut(map).insert(7,json!({"original":"proof","nested":[1,{"value":"kept"}]}));}
+  let before=e.order_records();let report=e.report().unwrap();assert_eq!(e.order_record(7),Some(before[0].clone()));assert_eq!(e.order_record(u64::MAX),None);assert_eq!(e.report().unwrap(),report);
+  let old=e.order_record(7).unwrap();e.orders[0].filled=2;e.orders[0].retired=true;Arc::make_mut(&mut e.reviewed_inventory_exits).get_mut(&7).unwrap()["original"]=json!("later");
+  let now=e.order_record(7).unwrap();assert_eq!(now,e.order_records()[0]);assert_eq!(old["filled"],0);assert_eq!(old["reviewedInventoryExit"]["original"],"proof");assert_eq!(now["filled"],2);assert_eq!(now["retired"],true);assert_eq!(now["reviewedInventoryExit"]["original"],"later");
+ }
+ #[test]#[ignore="finite offline diagnostic; no account client"]
+ fn single_order_large_history_benchmark(){
+  use std::time::Instant;
+  let(mut e,q)=fixture();for i in 0..20000{let mut old=q.clone();old.id=i+1;old.retired=true;e.orders.push(old);Arc::make_mut(&mut e.reviewed_inventory_exits).insert(i+1,json!({"originalSourceProof":"x".repeat(2048),"ordinal":i}));}
+  let id=19999;let expected=e.order_record(id).unwrap();let before=hash(&e.report().unwrap());let mut samples=Vec::new();let mut encoded=0;
+  for direct in [false,true,true,false]{let repetitions=if direct{128}else{2};let start=Instant::now();for _ in 0..repetitions{let got=if direct{e.order_record(id)}else{let all=e.order_records();if encoded==0{encoded=serde_json::to_vec(&all).unwrap().len();}all.into_iter().find(|v|v["id"]==id)};assert_eq!(got.as_ref(),Some(&expected));std::hint::black_box(got);}samples.push(json!({"direct":direct,"repetitions":repetitions,"seconds":start.elapsed().as_secs_f64()}));}
+  assert_eq!(hash(&e.report().unwrap()),before);println!("ORDER_LOOKUP_BENCHMARK {}",json!({"orders":20000,"encodedOrderBytes":encoded,"selectedOrderHash":hash(&expected),"reportHashUnchanged":true,"samples":samples,"syntheticHistory":true,"endToEndWorkerSpeedMeasured":false}));
+ }
  #[test]fn historical_review_proofs_share_on_clone_and_isolate_every_mutation(){
   let(mut original,_)=fixture();let value=json!({"proof":"x".repeat(1024*1024),"version":1});
   for map in [&mut original.reviewed_inventory_exits,&mut original.reviewed_fundamental_entries,&mut original.reviewed_rank_campaigns]{Arc::make_mut(map).insert(7,value.clone());}
