@@ -1,0 +1,17 @@
+{
+  "observedUtc": "2026-10-21T04:08:20.236364+00:00",
+  "sourceCommit": "02a3c9532393b541738fd5aa0f47035e4c1d8111",
+  "command": "python -m unittest moloch.learning_actions.test_actor_calibration moloch.learning_actions.test_actions moloch.learning_actions.test_batched moloch.learning_actions.test_evaluation_batch",
+  "passed": 35,
+  "skipped": 0,
+  "testWallSeconds": 9.976,
+  "covers": [
+    "all preparation/transfer/forward/host-conversion stages inside measured region",
+    "CPU policy RNG restored after stochastic calibration",
+    "actual weights/wallet/clock unchanged",
+    "live action-only mode distinct from full-statistics mode",
+    "serial and batched/evaluation action mechanics regressions"
+  ],
+  "productionChanged": false,
+  "independentTestUsed": false
+}

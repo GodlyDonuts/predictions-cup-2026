@@ -1,0 +1,35 @@
+{
+  "sourceCommit": "59d13e1dc8557d9919ae4377475930779e8e705d",
+  "auditSha256": "bee3a24d28a9959556bb8695eab5c58161af27439d86901d675eb822df0d20ab",
+  "audit": {
+    "format": "exact_full_replay_decoder_parity_v1",
+    "complete": true,
+    "cacheManifestSha256": "df6d11e965f46c8a86af73ee4747baba68a026a5eeb1851c646108f3301199d3",
+    "databaseSha256": "99417776dd503985d1c26bd94a89bc1a870b2f63a4666ffd8eeff36f7dcf124d",
+    "implementation": {
+      "version": "3.11.3",
+      "filesSha256": {
+        "__init__.py": "198ed4eeaa6df801c493b327403dc7b4fb5882c58a51d7942500bffe84ea1e37",
+        "orjson.cp312-win_amd64.pyd": "5c55a1bc258ed172a0373e1e1a057280c2be699cfdf1fe5cb98684404eee98c6"
+      },
+      "pythonVersion": "3.12.14"
+    },
+    "rows": {
+      "market": 15090226,
+      "flow": 79847
+    },
+    "allTypedDecodedRowsEqual": true,
+    "receiptBoundsMs": [
+      1792049104423,
+      1792540800000
+    ],
+    "wallSeconds": 595.9002389000088,
+    "productionChanged": false,
+    "independentTestUsed": false,
+    "physicalAccountRequests": 0,
+    "classification": "full_cache_parse_equivalence_not_training_speed_or_ROI"
+  },
+  "activeLearnerUnchanged": true,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

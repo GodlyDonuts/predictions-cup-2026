@@ -1,0 +1,140 @@
+{
+  "observedUtc": "2026-10-21T04:06:06.290703+00:00",
+  "classification": "actual_pretest_checkpoint_complete_actor_pipeline_local_CPU_timing_not_GPU_or_VPS_calibration",
+  "sourceCommit": "02a3c9532393b541738fd5aa0f47035e4c1d8111",
+  "checkpointSha256": "0440b08eb01fbdfa0fd1325c7c86c5cbdef7726acc5fa6e29a474178ae5df5b1",
+  "checkpointUpdates": 316,
+  "sourceExperimentSha256": "3564bb98a38744a3015360e90e2712df3796f1d84a5db0435db652698496cbbb",
+  "cases": [
+    {
+      "stage": "startup",
+      "virtualMs": 1792049116175,
+      "readAdmissions": 0,
+      "counterfactualFills": 0,
+      "measurement": {
+        "decision_latency_ms": 23,
+        "measured_ms": [
+          21.033700002590194,
+          21.256699998048134,
+          22.066700010327622,
+          21.256799998809583,
+          21.81949999067001,
+          22.42719999048859
+        ],
+        "device": "cpu",
+        "assumption": "frozen_local_p95_complete_actor_pipeline_v2",
+        "inference_mode": "actions_only",
+        "timing_scope": [
+          "observation_construction",
+          "tensor_preparation_and_transfer",
+          "stochastic_forward",
+          "action_host_conversion"
+        ],
+        "observation_shapes": [
+          [
+            1,
+            2798,
+            517
+          ],
+          [
+            1,
+            2798,
+            517
+          ],
+          [
+            1,
+            2798,
+            517
+          ],
+          [
+            1,
+            2798,
+            517
+          ],
+          [
+            1,
+            2798,
+            517
+          ],
+          [
+            1,
+            2798,
+            517
+          ]
+        ],
+        "warmup_rounds": 3,
+        "policy_rng_preserved": true,
+        "shape_coverage": "current_observation_only_not_maximum_or_remote_hardware"
+      },
+      "weightsWalletClockAndRngUnchanged": true
+    },
+    {
+      "stage": "after_one_simulated_minute_of_paid_data",
+      "virtualMs": 1792049176175,
+      "readAdmissions": 99,
+      "counterfactualFills": 0,
+      "measurement": {
+        "decision_latency_ms": 27,
+        "measured_ms": [
+          26.180499990005046,
+          26.61200000147801,
+          26.972999999998137,
+          24.730100005399436,
+          25.12260001094546,
+          25.265500007662922
+        ],
+        "device": "cpu",
+        "assumption": "frozen_local_p95_complete_actor_pipeline_v2",
+        "inference_mode": "actions_only",
+        "timing_scope": [
+          "observation_construction",
+          "tensor_preparation_and_transfer",
+          "stochastic_forward",
+          "action_host_conversion"
+        ],
+        "observation_shapes": [
+          [
+            1,
+            2928,
+            517
+          ],
+          [
+            1,
+            2928,
+            517
+          ],
+          [
+            1,
+            2928,
+            517
+          ],
+          [
+            1,
+            2928,
+            517
+          ],
+          [
+            1,
+            2928,
+            517
+          ],
+          [
+            1,
+            2928,
+            517
+          ]
+        ],
+        "warmup_rounds": 3,
+        "policy_rng_preserved": true,
+        "shape_coverage": "current_observation_only_not_maximum_or_remote_hardware"
+      },
+      "weightsWalletClockAndRngUnchanged": true
+    }
+  ],
+  "physicalAccountRequests": 0,
+  "optimizerRun": false,
+  "active033Changed": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "sourceCoverageOrExecutionCalibrated": false
+}
