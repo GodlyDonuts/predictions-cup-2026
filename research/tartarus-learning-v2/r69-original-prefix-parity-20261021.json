@@ -1,0 +1,17 @@
+{
+  "completedUtc": "2026-10-21T18:40:35.598584+00:00",
+  "boundary": {
+    "prefixBytes": 2552282178,
+    "prefixSha256": "f121880acadf2010decaea3d93344d970805097be04c7a578ae9568cbc72aab2",
+    "bankHead": {
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "sequence": 773617,
+      "previous": "237f01b9f5bbac55770123aca8f2326b5265c37e66aa6bb7bd8c0d3ebde0e324"
+    },
+    "bankReportHash": "c8f432700f2bdb0fef2a607d265f34c33cae3dbf0c90d0a92234213fdcb06eff"
+  },
+  "productionChanged": false,
+  "originalReportFills": 430,
+  "originalReportOrders": 20263,
+  "testOutput": "\nrunning 1 test\ntest session::staged_prefix_benchmark::original_frozen_prefix_staged_clone_benchmark has been running for over 60 seconds\n{\"actualFillCount\":430,\"baselineOuterClonePlusTransactionalNs\":[1745053302,1763543436,1788872018,1762304722,1784553025],\"candidateOuterClonePlusConsumingNs\":[63627179,63635851,63647243,63847537,67229647],\"engineIdentity\":\"14c5802b072b435443ec463cbb25781e0d961594ec3f6099bdd5e08e89c2f6df\",\"eventOrderSha256\":\"50234b70daf9862b6ee24a43bbe32562dacb0c7c9a988c754174f9d1d1efc4ad\",\"eventsPerRound\":64,\"finalStateSha256\":\"a55a7fdc75dcdd008d790499713aa383e39797316b3bc9a787389ee015f5e5df\",\"financialParity\":true,\"limitations\":[\"In-memory Session staging component only; excludes fsync/report serialization/HTTP/full-cycle timing.\",\"Both strategies use the same original starting Engine and original 64-event order.\",\"Reduced-priority CPU sharing and cache noise remain; no production throughput/latency guarantee.\"],\"mode\":\"original_prefix_unpublished_staging_memory_only\",\"networkRequests\":0,\"orderCount\":20263,\"originalReportHash\":\"c8f432700f2bdb0fef2a607d265f34c33cae3dbf0c90d0a92234213fdcb06eff\",\"prefixBytes\":2552282178,\"prefixSequence\":773617,\"prefixSha256\":\"f121880acadf2010decaea3d93344d970805097be04c7a578ae9568cbc72aab2\",\"replayWallNs\":1155990355767,\"rounds\":5,\"schemaVersion\":1,\"sourceMutated\":false,\"startingStateSha256\":\"f426dc50fb47cfc07b55aed0a6f10182c4ea2dd87630d4aad970e81e5df232d4\"}\ntest session::staged_prefix_benchmark::original_frozen_prefix_staged_clone_benchmark ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 131 filtered out; finished in 1210.82s\n\n"
+}

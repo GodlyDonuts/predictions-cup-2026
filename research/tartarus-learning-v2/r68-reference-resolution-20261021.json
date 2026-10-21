@@ -1,0 +1,20 @@
+{
+  "outcome": "expired_uncommitted_stopped_owner",
+  "requestSha256": "228844cf91ec981ec4fa97e11f3a30f4b9fd3e29f4ead3bf48b106be18ea1cda",
+  "previousGenerationSha256": "cca8a681e637afb4548a3cfc6c86573905b742d53c072b40eca59fc9ea137197",
+  "committedGenerationSha256": "cca8a681e637afb4548a3cfc6c86573905b742d53c072b40eca59fc9ea137197",
+  "observedAtMs": 1792608150217,
+  "workerPid": 1018590,
+  "workerStartTicks": 57378000,
+  "originalCohortPrefixBytes": 2908546,
+  "originalCohortPrefixSha256": "82235309c6dc2bbf1ee348b4b20dc0f5448d48a065aed38087dd2f8c20271018",
+  "originalPendingSha256": "ed1d1c7b202dc99f901cfe14960accdb5c92d34b0eb96747da4739cf0fff9bfe",
+  "originalStateSha256": "36a38408081db0e0aad5dc546cde398ad36580d82701a63155331a3d58f0bf50",
+  "requestExpired": true,
+  "originalWorkerConfirmedDead": true,
+  "exclusiveOwnerAndUpdaterLocksHeld": true,
+  "originalRequestRetained": true,
+  "requestResent": false,
+  "accountRequests": 0,
+  "financialStateChanged": false
+}

@@ -1,32 +1,34 @@
 # Current Moloch and Tartarus state
 
-Observed October21,18:03UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October21,18:43UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
-R67 PID1014772 recovered at17:11:58 with healthy realtime data and the original420 fills preserved. It then produced five new fills on order54128846/native20213:5,110 NO shares of exchange851 sold at0.895. Exact official receipts and FIFO recomputation establish4,573.45 proceeds,4,460.24 released cost and113.21 realized gross. Remaining433 shares of that original5,543-share order were not terminal at the sale audit.
+R69 was installed18:43:11 as sole PID1021520/startTicks57784596, binary8b903763c346 and controlebca4459c87a verified. It is restoring the original ledger; fresh current-process trading/fills remain unverified. All433 original fills, the2,552,479,691-byte financial prefix and every original engine bridge are preserved. [Actual installation](../research/tartarus-learning-v2/r69-throughput-installed-20261021.json).
 
-At17:19:05.600 R67 stopped after repeated stream queue overflow. R68 was installed at17:35:25 as sole PID1018590/startTicks57378000 with executable9fd14df514bd and controlab83474a6374 verified. Recovery is complete:17:56:30 and18:02:26 progress prove current-process trading with healthy realtime data. All425 previous fills and the original2.545GB financial prefix are preserved. Both older orders20213/20215 are terminal. At18:02:26 there are430 fills,1671 acknowledgments and1668 terminal orders: three new R68 acknowledgments, no confirmed new R68 fills. [Fresh verification](../research/tartarus-learning-v2/r68-fresh-live-20261021.json).
+R68 stopped18:22:52 when fundamental attempt20264 expired before SDK admission. Original SDK archives prove no HTTP was sent. The checked repair retires such attempts and continues only for genuine expiry; clock regression and actual uncertain acceptance retain their handling. File-only recovery appended the exact no-send proof, preserved STOP until installation and did not retry the order or alter finances. Historical reconciled exposure18533 still requires its original native startup verification. [Exact recovery](../research/tartarus-learning-v2/r68-expiry-recovery-20261021.json).
 
-R68 also reconciled R67 order54136675/native20215, executed17:18:54 before the old shutdown:6,521 exchange872 YES shares sold across five fills at0.41–0.42. Exact original receipts and FIFO verify2,721.82 proceeds against2,999.66 released cost, a277.84 realized loss. It is not a new R68 execution. The two audited R67 sales therefore net−164.63. [Loss and original attribution](../research/tartarus-learning-v2/r67-second-sale-reconciled-20261021.json).
+R68 additionally sold433 exchange851 NO shares at0.895 on order54228551, executed18:17:32 and reconciled18:21. Original receipts and exact FIFO establish387.535 proceeds,378.875 released cost and8.66 realized gross. All430 preceding fills and remaining FIFO lots match. Earlier R67 sales realized+113.21 and−277.84, net−164.63. [Latest sale/account audit](../research/tartarus-learning-v2/r68-last-sale-20261021.json), [earlier loss](../research/tartarus-learning-v2/r67-second-sale-reconciled-20261021.json).
 
-The repair increases native ingress from64 to1024 messages with a64MiB encoded-payload budget and preserves FIFO. Recovery retains the existing rolling attempt/token/account budgets and waits for the next admission instead of permanently stopping when the reconnect window is full. Protocol errors, unknown order acceptance and durable corruption retain their existing handling. Financial-engine identity and accounting are unchanged. All289 source files were compared against the deployed R67 source; only the six intended transport paths differ.30 realtime,12 connect-retry and8 token-retry checks pass. [Build, source pins and actual installation](../research/tartarus-learning-v2/r68-stream-throughput-installed-20261021.json).
+R69 keeps the R68 stream repairs, adds shared immutable review maps and direct single-order lookup, and expands the native market capacity to the complete237-exchange scope. It also removes a four-lifetime research-observation quota; that quota did not limit trades.130 native,5 lookup-unit,6 Session-lookup,9 capacity,17 SDK proof and228 worker checks pass. A copied773617-event prefix exactly reproduces the original sealed financial report,430 fills and20263 orders; startup additionally validates the final433-fill boundary. Ten explicit source paths differ from deployed R68 among289 source files. [Exact source composition](../research/tartarus-learning-v2/r69-source-qualified-20261021.json), [original-prefix result](../research/tartarus-learning-v2/r69-original-prefix-parity-20261021.json).
+
+The reference updater's expired request228844cf was bound to the confirmed-dead R68 process and absent from the original committed cohort journal. Its metadata was resolved under exclusive owner/updater locks, preserving the request and active generation38; no account request, forecast adoption or financial mutation occurred. Updater1021523 now follows R69. [Resolution evidence](../research/tartarus-learning-v2/r68-reference-resolution-20261021.json).
 
 Last reconciled native financial state:
 
 | Measure | SUSQies |
 |---|---:|
-| Cash | 16,896.10 |
-| Remaining attributed position cost | 78,849.72 |
-| Total attributed realized gross | 165.905 |
-| New-trading portion | 89.385 |
+| Cash | 17,283.635 |
+| Remaining attributed position cost | 78,470.845 |
+| Total attributed realized gross | 174.565 |
+| New-trading portion | 98.045 |
 | Unchanged inherited realized portion | 76.52 |
 
-Cost is not current market value. These figures do not establish whole-account profit or achievement of the missed97,000 deadline. [Sale audit](../research/tartarus-learning-v2/r67-first-sale-20261021.json), [R67 fresh-recovery proof](../research/tartarus-learning-v2/r67-fresh-live-20261021.json).
+The fresh18:37 official account observation reports77,625.58 marked position value plus17,283.635 cash =94,909.215, down5,090.785 or5.090785% from the100,000 start. These marks are not executable liquidation proceeds. Today UTC has37 fill receipts across8 distinct filled orders. The97,000 deadline was missed; no whole-account profit is established.
 
-There remains one official worker and shared limiter. Daily windows and original financial caps are unchanged. The separately built full-universe native capacity change is not deployed. Laptop training creates no account client.
+There remains one official worker and shared limiter. Daily windows and original monetary caps are unchanged. Laptop training creates no account client.
 
-A combined release candidate now includes the published full-universe change, immutable review-map sharing and a direct single-order lookup.150 focused checks pass; the lookup avoids rendering the entire20,000-order history on cache misses. A synthetic component benchmark drops the second full-render sample's144.47ms/lookup to roughly0.068ms; complete worker speed has not been measured. Full current-ledger equivalence and the release build remain in progress. R68 stays active during qualification. [Scope and exact limits](../research/tartarus-learning-v2/single-order-lookup-20261021.md).
+The individual-order lookup avoids rendering the entire20,000-order history on cache misses. A synthetic component benchmark drops the second full-render sample's144.47ms/lookup to roughly0.068ms; complete worker speed and increased fill throughput have not yet been measured. [Scope and exact limits](../research/tartarus-learning-v2/single-order-lookup-20261021.md).
 
 The actual laptop external feeds are healthy:Kalshi237 tickers at1,193 REST admissions/minute, oldest receipt11.9s, no throttles; Polymarket378 outcome books/189 markets, configured30 REST admissions/s, receipt ages3.19s median/6.37s maximum. Both websocket feeds are receiving. A retired VPS Polymarket status file is not the live feed. These are observation freshness figures, not contract-equivalence or profit evidence. [Measured feed state](../research/tartarus-learning-v2/current-external-feeds-20261021.json).
 

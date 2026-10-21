@@ -2,11 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state — October 21, 18:03 UTC
+## Current state — October 21, 18:43 UTC
 
-Production R68 is verified trading with healthy realtime data as sole worker1018590. At18:02:26 it had430 reconciled fills,1671 acknowledged orders and1668 terminal orders. Three new R68 acknowledgments have no confirmed fills yet. Its transport repair preserves the financial engine, original ledger, account limiter and daily windows. [Fresh runtime proof](research/tartarus-learning-v2/r68-fresh-live-20261021.json).
+Production R69 is installed as sole worker1021520 and is restoring the original ledger. Fresh current-process trading is not yet verified. It fixes a proved pre-submission expiry shutdown, removes the twelve-fresh-market ceiling, shares immutable review history and retrieves individual orders without rendering the entire history. All433 original fills and original holdings/FIFO are preserved. [Installation](research/tartarus-learning-v2/r69-throughput-installed-20261021.json), [checked source](research/tartarus-learning-v2/r69-source-qualified-20261021.json).
 
-R67's two verified sales realized+113.21 and−277.84 SUSQies against original FIFO, a combined−164.63. R68 reconciled the second sale after recovery; it executed before the old shutdown. Cash is16,896.10 and remaining attributed position cost78,849.72; cost is not current equity. [First sale](research/tartarus-learning-v2/r67-first-sale-20261021.json), [second sale and loss audit](research/tartarus-learning-v2/r67-second-sale-reconciled-20261021.json).
+At18:37 official portfolio marks plus cash total94,909.215 SUSQies, down5.09% from100,000. Cash17,283.635; marked positions77,625.58. Today UTC has eight filled orders/37 partial fills. The latest R68 sale of433 NO shares realized+8.66; the preceding two audited R67 sales netted−164.63. Marks are not guaranteed liquidation proceeds. [Current account and exact sale audit](research/tartarus-learning-v2/r68-last-sale-20261021.json).
 
 GPU population037 is still running. The latest fully evaluated checkpoint is unprofitable. Continuation040 is queued with founder retention, family-specific market selection,64-transition PPO batches and an equivalent replay-copy optimization. No learned model is deployed; no independent positive ROI is established.
 

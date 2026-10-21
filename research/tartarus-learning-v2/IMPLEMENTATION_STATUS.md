@@ -1,4 +1,4 @@
-# Tartarus implementation status — October21,18:03UTC
+# Tartarus implementation status — October21,18:43UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
@@ -29,4 +29,4 @@ Three venues provide information; execution is SIG-only. Requests, receipts, vir
 
 Current detailed development is2 fitting days plus2 development days. Full competition execution history and the requested4+4 evaluation chronology remain incomplete. ProtectedOctober21–25 has not been consumed. No learned model is deployed or independently profitable.
 
-Production is separate: R68 is verified trading/realtime healthy, with three new order acknowledgments and no new R68 fill yet. Two audited R67 sales realized+113.21 and−277.84, including the second sale reconciled after restart; combined−164.63. Cash16,896.10 and remaining attributed cost78,849.72 are not current marked equity. [Current production state](../../docs/CURRENT_STATE.md), [second-sale loss audit](r67-second-sale-reconciled-20261021.json).
+Production is separate: R69 is installed as sole1021520, restoring the original433-fill ledger; current-process trading is not yet verified. The checked release fixes pre-admission expiry recovery, removes the artificial twelve-fresh-market ceiling and speeds order lookup/review-map cloning. At18:37 official marked equity is94,909.215, down5.09% from initial. The latest R68 sale realized+8.66; earlier R67 sales net−164.63. [Current production state](../../docs/CURRENT_STATE.md), [latest sale/account audit](r68-last-sale-20261021.json).

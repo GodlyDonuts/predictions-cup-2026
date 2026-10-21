@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-21T18:35:50.829Z",
+  "dispatchHead": {
+    "bytes": 27196945,
+    "device": 66305,
+    "inode": 12353650,
+    "previous": "731e2df81270d2721d23d9a6b5d3733215e6cda28b150665dddfbfc09a767268",
+    "schemaVersion": 1,
+    "sequence": 26947
+  },
+  "financialStateChanged": false,
+  "networkRequests": 0,
+  "recoveredOriginalQids": [
+    20264
+  ],
+  "retainedExposureQidsRequireStartupVerification": [
+    18533
+  ],
+  "sameIntentRetryAuthorized": false,
+  "sdkArchiveReverified": true,
+  "stopPreserved": true
+}
