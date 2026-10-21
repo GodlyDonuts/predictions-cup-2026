@@ -1,0 +1,18 @@
+{
+  "observedUtc": "2026-10-21T12:13:27.812100+00:00",
+  "workerPid": 998119,
+  "originalRequestSha256": "919bfb80df61d3497730ea3687a34bce657cff108b448fd75301502264ce2a99",
+  "priorGenerationSha256": "c02bb9a894c042786d81a08e95e75fea0d41f2df4c8832fa3e825f8dbeaa5e8e",
+  "nativeHead": {
+    "hash": "95ee3a5fb451d1ccdbb11800f9217e258a3e838d7ffceab888af4fd19d5f5c0a",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "9b07c94bd0f767f3e1c4402bd51931154d5f51e400dfb4ad8cc2c96b79df0ff8",
+    "sequence": 749437
+  },
+  "newGenerationSha256": "919bfb80df61d3497730ea3687a34bce657cff108b448fd75301502264ce2a99",
+  "newControlSha256": "b57498f5f8ba807970e1461fd1636c59146b89adcc29bce5b7c50f6e27bf3ffd",
+  "commits": 26,
+  "newReloadRequestSent": false,
+  "officialSigRequests": 0,
+  "financialStateChanged": false
+}

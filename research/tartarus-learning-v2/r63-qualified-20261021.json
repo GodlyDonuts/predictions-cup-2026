@@ -1,0 +1,21 @@
+{
+  "binarySha256": "9a03cb1eb0d48daacb632620b7c825760f56e0dceea8d5f6bd5d2b779de0e114",
+  "nativeReusedFromR61": true,
+  "productionChanged": false,
+  "observedUtc": "2026-10-21T12:12:28.458752+00:00",
+  "runtimeChangeCommit": "9ad3d00722193e9149fe4a3548bdd4c1e91057b1",
+  "authorityTestsPassed": 30,
+  "sourceDelta": [
+    {
+      "path": "moloch/live-runtime/src/authority.rs",
+      "oldNormalizedSha256": "788473f29529b36b4e1381d4598d2ba9d274a9358d6cd92e44f72e402a5cb99c",
+      "newNormalizedSha256": "730a068a250a52bc25c5b13a72455041034950625a24cad53ff43ef4dce22f70"
+    }
+  ],
+  "contractMetadataMaximumAgeMs": 20000,
+  "executableBookMaximumAgeMs": 10000,
+  "originalNativeAndProductionSdkReused": true,
+  "freshProfitabilityEstablished": false,
+  "nativeRlibSha256": "89e4d644ac4f8de37add9350d1fd801a5a5b91e5cccd86d2698f78c00c6365cb",
+  "sdkRlibSha256": "7889a086aed9d483fdf5f8cd6399d74f16997bed9bace1f3aa6435c6cdf4bdea"
+}
