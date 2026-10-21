@@ -1,0 +1,166 @@
+{
+  "observedUtc": "2026-10-21T12:07:42.738829+00:00",
+  "pid": 998119,
+  "startTicks": 55231743,
+  "binarySha256": "204a4746dff3a2157eab6c8a76dcf0c74a8498025abf2f1e544ecee788ff69a8",
+  "runtimeChangeCommit": "00a5f9674f34a01b98561c96b9919e3ba4916fcf",
+  "nativeEngineUnchanged": true,
+  "progress": {
+    "actualFills": 396,
+    "actualOrders": 1660,
+    "at": "2026-10-21T12:07:01.744Z",
+    "completedReadScopes": 3,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 998119,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 25,
+    "terminalOrders": 1660
+  },
+  "dispatchAdmission": {
+    "allowed": true,
+    "at": "2026-10-21T12:07:31.635Z",
+    "collateralBlocked": false,
+    "packageBlocked": false,
+    "pid": 998119,
+    "reconciliationBlocked": false
+  },
+  "referenceUpdater": {
+    "atMs": 1792584119226,
+    "pid": 998122,
+    "phase": "reload_outcome_requires_reconciliation",
+    "commits": 25,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "exitCode": 1
+  },
+  "nativeHead": {
+    "hash": "64c753a224cfa89631aea255714439f6ffa9e4f3b2c2be07498796692989233a",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "d56a105e60ed72a2e5bfae2f88ae3cbb62a1ba089b0307ea96fe0bdf4058995a",
+    "sequence": 748683
+  },
+  "nativeStateWrittenAt": "2026-10-21T12:07:07.325Z",
+  "officialValueObservations": {
+    "cash": {
+      "receivedAt": "2026-10-21T12:06:50.841Z",
+      "requestStartedAt": "2026-10-21T12:06:50.465Z",
+      "receiptSha256": "baa3313deb9a01bca83357e7fa7a01d47452ae7ee96de830cbcab394926850ea",
+      "originalReceiptFileSha256": "01026262d635e904f07284300dac473a825d2e23e4e2464869cc77df6949851a",
+      "value": {
+        "balance": 403.36,
+        "availableAdvance": 0,
+        "buyingPower": 403.36
+      }
+    },
+    "positions": {
+      "receivedAt": "2026-10-21T12:06:49.014Z",
+      "requestStartedAt": "2026-10-21T12:06:48.520Z",
+      "receiptSha256": "c9527386b07a25a3cea36b492331fb8217e3956d37e52898aa2b9d9ff6e1a489",
+      "originalReceiptFileSha256": "c6d0a33f3776ede578f7c5277f9fc0c2b63d3b569b1a86ffbd9405fad0292727",
+      "value": {
+        "totalCostBasis": 95016.8,
+        "totalMarketValue": 94693.09,
+        "totalUnrealizedPnl": -323.66
+      }
+    }
+  },
+  "latestTrace": {
+    "diagnosticOnly": true,
+    "outcome": "transport_error",
+    "summary": {
+      "bookAgeAtAckMs": null,
+      "earliestRecordedMs": 1792584166360,
+      "fillObservationDelayMs": null,
+      "latestRecordedMs": 1792584181153,
+      "outsideRecordedSpansMs": 7695,
+      "recordedSpanUnionMs": 7098
+    },
+    "trace": {
+      "ackReceivedAtMs": null,
+      "bookReceivedAtMs": 1792584172350,
+      "candidateCreatedAtMs": 1792584159817,
+      "diagnosticOnly": true,
+      "fillAppliedAtMs": null,
+      "fillExecutedAtMs": null,
+      "fillObservedAtMs": null,
+      "finishedAtMs": 1792584181153,
+      "nativeQid": 20052,
+      "permitExpiresAtMs": 1792584191340,
+      "permitIssuedAtMs": 1792584176340,
+      "runId": "moloch-live-20261015-v1",
+      "spans": [
+        {
+          "endMs": 1792584166694,
+          "stage": "preflightRead",
+          "startMs": 1792584166360
+        },
+        {
+          "endMs": 1792584169617,
+          "stage": "preflightRead",
+          "startMs": 1792584169220
+        },
+        {
+          "endMs": 1792584167780,
+          "stage": "preflightRead",
+          "startMs": 1792584167311
+        },
+        {
+          "endMs": 1792584168598,
+          "stage": "preflightRead",
+          "startMs": 1792584168397
+        },
+        {
+          "endMs": 1792584170524,
+          "stage": "preflightRead",
+          "startMs": 1792584170231
+        },
+        {
+          "endMs": 1792584171397,
+          "stage": "preflightRead",
+          "startMs": 1792584171144
+        },
+        {
+          "endMs": 1792584172350,
+          "stage": "preflightRead",
+          "startMs": 1792584172012
+        },
+        {
+          "endMs": 1792584179305,
+          "stage": "policyAndRisk",
+          "startMs": 1792584176340
+        },
+        {
+          "endMs": 1792584179311,
+          "stage": "originalAttemptRecord",
+          "startMs": 1792584179309
+        },
+        {
+          "endMs": 1792584180974,
+          "stage": "postIntentOwnership",
+          "startMs": 1792584179311
+        },
+        {
+          "endMs": 1792584180974,
+          "stage": "intentDurability",
+          "startMs": 1792584179305
+        },
+        {
+          "endMs": 1792584181153,
+          "stage": "transportCall",
+          "startMs": 1792584180974
+        }
+      ],
+      "startedAtMs": 1792584176340,
+      "version": 1
+    }
+  },
+  "newFills": 0,
+  "newAcknowledgedOrders": 0,
+  "newAccountRequestsByAudit": 0,
+  "productionModifiedByAudit": false,
+  "profitabilityEstablished": false
+}

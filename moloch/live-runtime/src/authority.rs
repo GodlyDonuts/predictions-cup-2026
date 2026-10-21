@@ -248,7 +248,13 @@ impl ProductionAuthority {
   let reserved=decimal_units(f.ledger["reservedCash"].as_str().ok_or("LIVE_LEDGER")?)?;let cost=decimal_units(f.ledger["ownedCost"].as_str().ok_or("LIVE_LEDGER")?)?;let cash=decimal_units(f.ledger["cash"].as_str().ok_or("LIVE_LEDGER")?)?;
   if reserved>cash||reserved+cost>decimal_units(&self.activation.maximum_committed)?||f.market_cost>decimal_units(&self.activation.maximum_market_cost)?{return Err("LIVE_CAPITAL_LIMIT".into())}
   if spec.method!="POST"||spec.endpoint!="/orders"{return Err("LIVE_OPERATION_NOT_ALLOWED".into())}
-  for r in [&f.snapshots.market,&f.snapshots.contract,&f.snapshots.book]{if !fresh(r,now,10000){return Err("LIVE_CONTRACT_OR_BOOK_STALE".into())}}
+  // Market eligibility and the resolution tree use the same twenty-second
+  // horizon as account facts. Executable liquidity keeps its separate ten-
+  // second request, receipt and exchange-source clocks. Serial preflight and
+  // exact ownership validation must not age unchanged metadata out before a
+  // still-current book can reach the original account queue.
+  for r in [&f.snapshots.market,&f.snapshots.contract]{if !fresh(r,now,20000){return Err("LIVE_CONTRACT_OR_BOOK_STALE".into())}}
+  if !fresh(&f.snapshots.book,now,10000){return Err("LIVE_CONTRACT_OR_BOOK_STALE".into())}
   if f.snapshots.market.data["id"]!=market||f.snapshots.market.data["status"]!="open"||f.snapshots.market.data["contexts"][0]["status"]!="open"||f.snapshots.market.data["isComposite"]!=false||f.snapshots.market.data["isMultiOutcome"]!=false||f.snapshots.contract.data["market_id"]!=market||f.snapshots.contract.data["root"].is_null(){return Err("LIVE_CONTRACT_NOT_SUPPORTED".into())}
   let body=spec.body.as_ref().ok_or("LIVE_ORDER_BODY")?;let n=body["quantity"].as_u64().ok_or("LIVE_ORDER_QUANTITY")?;let price=decimal_units(&body["price"].to_string())?;
   let expiry=clock(body["expirationDate"].as_str().ok_or("LIVE_EXPIRY")?).ok_or("LIVE_EXPIRY")?;
@@ -336,6 +342,39 @@ impl Authority for SharedAuthority {
   (root,auth,bank,scope,spec,permit,facts,now)
  }
  #[test]fn real_live_bank_and_fresh_funded_passive_intent_authorize(){let (root,a,b,s,r,p,f,n)=fixture();a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();a.authorize(&s,&r,&p,true,n).unwrap();drop(b);drop(a);fs::remove_dir_all(root).unwrap();}
+ #[test]fn contract_metadata_has_separate_twenty_second_horizon(){
+  let(root,a,b,s,r,p,mut f,n)=fixture();
+  for fact in [&mut f.market,&mut f.contract]{fact.request_started_at=crate::daily_windows::iso(n-20000).unwrap();fact.received_at=crate::daily_windows::iso(n-19000).unwrap();}
+  a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();
+  a.authorize(&s,&r,&p,false,n).unwrap();a.authorize(&s,&r,&p,true,n).unwrap();
+  drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+ }
+ #[test]fn metadata_does_not_extend_executable_book_or_source_age(){
+  for case in ["market","contract","book_request","book_receipt","book_source"]{
+   let(root,a,b,s,r,p,mut f,n)=fixture();
+   match case{
+    "market"=>f.market.request_started_at=crate::daily_windows::iso(n-20001).unwrap(),
+    "contract"=>f.contract.received_at=crate::daily_windows::iso(n-20001).unwrap(),
+    "book_request"=>f.book.request_started_at=crate::daily_windows::iso(n-10001).unwrap(),
+    "book_receipt"=>f.book.received_at=crate::daily_windows::iso(n-10001).unwrap(),
+    _=>f.book.data["contexts"][0]["orderbook"]["exchanges"][0]["asOf"]["at"]=json!(crate::daily_windows::iso(n-10001).unwrap()),
+   }
+   a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();
+   for network in [false,true]{assert_eq!(a.authorize(&s,&r,&p,network,n).unwrap_err().code,if case=="book_source"{"LIVE_BOOK_STALE"}else{"LIVE_CONTRACT_OR_BOOK_STALE"},"{case}");}
+   drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+  }
+ }
+ #[test]fn metadata_age_change_does_not_allow_closed_or_foreign_contract(){
+  for case in ["market_closed","context_closed","foreign_market","missing_root"]{
+   let(root,a,b,s,r,p,mut f,n)=fixture();
+   f.market.request_started_at=crate::daily_windows::iso(n-12000).unwrap();
+   f.market.received_at=crate::daily_windows::iso(n-11000).unwrap();
+   match case{"market_closed"=>f.market.data["status"]=json!("closed"),"context_closed"=>f.market.data["contexts"][0]["status"]=json!("closed"),"foreign_market"=>f.contract.data["market_id"]=json!("other"),_=>f.contract.data["root"]=Value::Null}
+   a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();
+   assert_eq!(a.authorize(&s,&r,&p,true,n).unwrap_err().code,"LIVE_CONTRACT_NOT_SUPPORTED","{case}");
+   drop(b);drop(a);fs::remove_dir_all(root).unwrap();
+  }
+ }
  #[test]fn stale_cash_foreign_holdings_and_foreign_orders_cannot_authorize(){for case in 0..4{let (root,a,b,s,r,p,mut f,n)=fixture();match case{0=>f.account.request_started_at="2026-10-12T00:00:00Z".into(),1=>f.positions.data["positions"]=json!([{"exchangeId":"101","quantity":1}]),2=>f.open_orders.data["data"]=json!([{"id":99}]),_=>f.cash_balance.data=json!({"balance":0,"availableAdvance":0,"buyingPower":0})}a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();assert!(a.authorize(&s,&r,&p,true,n).is_err());drop(b);drop(a);fs::remove_dir_all(root).unwrap();}}
  #[test]fn changed_control_binary_stop_and_altered_payload_fail_closed(){for case in 0..4{let (root,a,b,s,mut r,p,f,n)=fixture();a.prepare(&b,p.intent_id.parse().unwrap(),r.clone(),p.clone(),f).unwrap();match case{0=>fs::write(root.join("control"),b"changed").unwrap(),1=>fs::write(root.join("binary"),b"changed").unwrap(),2=>fs::write(root.join("STOP"),b"stop").unwrap(),_=>r.body.as_mut().unwrap()["quantity"]=json!(2)}assert!(a.authorize(&s,&r,&p,true,n).is_err());drop(b);drop(a);fs::remove_dir_all(root).unwrap();}}
  #[test]fn stream_failure_between_preparation_and_network_is_fenced(){

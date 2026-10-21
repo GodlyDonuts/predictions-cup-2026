@@ -1,0 +1,125 @@
+{
+  "sourceCommit": "4e6196909d124bf5e794dd61eef323a0cc6bdd80",
+  "sourceManifestSha256": "a07c7eaf93065e0751b89b9ab2e39dfc05d5feac4924ecf83f643dcca27cdd6a",
+  "oldTrainerPid": 23524,
+  "newRun": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\runs\\raw-api-growth-development-035-history-cooperative",
+  "managedDataProfile": "model_pausable_history_reference_service_v3",
+  "calibrationSha256": "43359df2e0c671e62cbbaf925c21704c89cbe4291ad3ed06d86a87afa26aa1db",
+  "decisionLatencyMs": 84,
+  "oldTrainerChanged": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "status": {
+    "phase": "waiting_for_completed_generation",
+    "observedUtc": "2026-10-21T12:08:21.270375+00:00",
+    "productionChanged": false,
+    "independentTestUsed": false,
+    "trainerPid": 23524,
+    "cycle": 0
+  },
+  "supervisorPid": 5500,
+  "launcherPid": 21284,
+  "priorWatcherCancelled": "cancelled_before_handoff",
+  "active034Changed": false,
+  "selectedWeightsPreserved": true,
+  "oldScoresReused": false,
+  "newGpuTrainingStarted": false,
+  "actorCalibration": {
+    "decision_latency_ms": 84,
+    "measured_ms": [
+      28.7287999963155,
+      26.513200005865656,
+      30.041999998502433,
+      27.213800000026822,
+      26.469300006283447,
+      34.77070000371896,
+      83.4923000074923,
+      28.171499987365678,
+      27.811599997221492,
+      26.2049000011757,
+      27.183600002899766,
+      27.09319999848958
+    ],
+    "device": "cpu",
+    "assumption": "frozen_local_p95_complete_actor_pipeline_v2",
+    "inference_mode": "actions_only",
+    "timing_scope": [
+      "observation_construction",
+      "tensor_preparation_and_transfer",
+      "stochastic_forward",
+      "action_host_conversion"
+    ],
+    "observation_shapes": [
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ],
+      [
+        1,
+        3422,
+        517
+      ]
+    ],
+    "warmup_rounds": 3,
+    "policy_rng_preserved": true,
+    "shape_coverage": "current_observation_only_not_maximum_or_remote_hardware",
+    "managed_data_profile": "model_pausable_history_reference_service_v3",
+    "source_checkpoint_sha256": "314336f82573527be990cfd646f8413bac66677b2f7bf20d1fc7576ce39904ed",
+    "fit_sample_at_ms": 1792050326175,
+    "original_latency_floor_ms": 28,
+    "measured_p95_ms": 84,
+    "independent_test_used": false,
+    "production_authority": false
+  }
+}
