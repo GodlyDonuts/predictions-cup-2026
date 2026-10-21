@@ -49,6 +49,9 @@ class Experiment:
         batch=config.get('batched_evaluation',False);heads=config.get('batched_evaluation_action_heads',False)
         if type(batch)is not bool or type(heads)is not bool or(heads and not batch):
             raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_REQUIRE_BATCH_EVALUATION')
+        process_evaluation=config.get('process_evaluation_worlds',False)
+        if type(process_evaluation)is not bool or(process_evaluation and not batch):
+            raise ValueError('PROCESS_EVALUATION_REQUIRES_EXPLICIT_BATCH_EVALUATION')
         self.config=config;self.output=Path(output)
         from .realtime import refresh_profile
         effective_refresh=refresh_profile(config.get('sig_realtime_refresh_mode'))
@@ -536,49 +539,53 @@ class Experiment:
         if type(batch_mode)is not bool:raise ValueError('EXPLICIT_BATCHED_EVALUATION_PROFILE')
         batch_heads=self.config.get('batched_evaluation_action_heads',False)
         if type(batch_heads)is not bool or(batch_heads and not batch_mode):raise ValueError('BATCH_ACTION_HEADS_REQUIRE_BATCH_EVALUATION')
-        if batch_mode:
-            from .evaluation_batch import EvaluationBatch
-            envs=[self.world(role,a,b,finalist,s)for a,b,s in descriptors]
-            ledgers=[GrowthLedger(env,development=self.development,
-                development_daily_growth=self.config.get('development_selection_daily_growth',False),
-                historical_last_mark=self.config.get('development_last_observed_marks',False),
-                maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for env in envs]
-            calibration=self.stream(model,envs[0]).calibration
-            batch=EvaluationBatch(envs,model,[self.seed+90000+i for i in range(len(envs))],calibration=calibration,
-                                  batch_action_heads=batch_heads,actions_only=self.config.get('evaluation_actions_only',False))
-            while any(env.now<env.end for env in envs):
-                batch.run_chunk(self.config.get('compute_chunk_decisions',32))
-        cases=[]
-        for seed_offset,(case_start,case_end,stress)in enumerate(descriptors):
+        if self.config.get('process_evaluation_worlds',False) and role=='evolution':
+            from .process_evaluation import run as evaluate_processes
+            cases=evaluate_processes(self,model,descriptors,batch_heads=batch_heads)
+        else:
             if batch_mode:
-                from types import SimpleNamespace
-                env=envs[seed_offset];ledger=ledgers[seed_offset]
-                stream=SimpleNamespace(decisions=batch.decisions[seed_offset],action_counts=batch.action_counts[seed_offset],
-                    status_counts=batch.status_counts[seed_offset],entity_counts=batch.entity_counts[seed_offset])
-            else:
-                seed_neural(self.seed+90000+seed_offset)
-                env=self.world(role,case_start,case_end,finalist,stress);stream=self.stream(model,env)
-                ledger=GrowthLedger(env,development=self.development,
+                from .evaluation_batch import EvaluationBatch
+                envs=[self.world(role,a,b,finalist,s)for a,b,s in descriptors]
+                ledgers=[GrowthLedger(env,development=self.development,
                     development_daily_growth=self.config.get('development_selection_daily_growth',False),
                     historical_last_mark=self.config.get('development_last_observed_marks',False),
-                    maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
-                while env.now<case_end:
-                    stream.run_chunk(self.config.get('compute_chunk_decisions',32),deterministic=False)
-                # Evaluation has no optimizer/dense reward labels. Require
-                # start, actual daily boundaries and terminal wealth only.
-                # A legitimate early passive fill may precede this role's
-                # first recorded book; a compute chunk is not an economic
-                # valuation boundary and must not reject that legal path.
-            result=ledger.finish();cases.append({**result,'stress':stress,'start_ms':case_start,'end_ms':case_end,
-                'selection_seed':self.seed+90000+seed_offset,'decisions':stream.decisions,
-                'passive_execution':None if env.passive is None else {
-                    'mode':env.passive.mode,'source_volume':env.passive.source_volume,
-                    'intercepted_volume':env.passive.intercepted_volume,'calibrated':False},
-                'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
-                'entity_counts':dict(stream.entity_counts)})
-            cases[-1]['valuation_observation_schedule']='start_daily_boundaries_and_terminal'
-            cases[-1]['evaluation_compute_mode']='batch_encoding_case_local_rng'if batch_mode else'serial'
-            if batch_heads:cases[-1]['evaluation_compute_mode']='batch_encoding_and_action_heads_case_local_generators'
+                    maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for env in envs]
+                calibration=self.stream(model,envs[0]).calibration
+                batch=EvaluationBatch(envs,model,[self.seed+90000+i for i in range(len(envs))],calibration=calibration,
+                                      batch_action_heads=batch_heads,actions_only=self.config.get('evaluation_actions_only',False))
+                while any(env.now<env.end for env in envs):
+                    batch.run_chunk(self.config.get('compute_chunk_decisions',32))
+            cases=[]
+            for seed_offset,(case_start,case_end,stress)in enumerate(descriptors):
+                if batch_mode:
+                    from types import SimpleNamespace
+                    env=envs[seed_offset];ledger=ledgers[seed_offset]
+                    stream=SimpleNamespace(decisions=batch.decisions[seed_offset],action_counts=batch.action_counts[seed_offset],
+                        status_counts=batch.status_counts[seed_offset],entity_counts=batch.entity_counts[seed_offset])
+                else:
+                    seed_neural(self.seed+90000+seed_offset)
+                    env=self.world(role,case_start,case_end,finalist,stress);stream=self.stream(model,env)
+                    ledger=GrowthLedger(env,development=self.development,
+                        development_daily_growth=self.config.get('development_selection_daily_growth',False),
+                        historical_last_mark=self.config.get('development_last_observed_marks',False),
+                        maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
+                    while env.now<case_end:
+                        stream.run_chunk(self.config.get('compute_chunk_decisions',32),deterministic=False)
+                    # Evaluation has no optimizer/dense reward labels. Require
+                    # start, actual daily boundaries and terminal wealth only.
+                    # A legitimate early passive fill may precede this role's
+                    # first recorded book; a compute chunk is not an economic
+                    # valuation boundary and must not reject that legal path.
+                result=ledger.finish();cases.append({**result,'stress':stress,'start_ms':case_start,'end_ms':case_end,
+                    'selection_seed':self.seed+90000+seed_offset,'decisions':stream.decisions,
+                    'passive_execution':None if env.passive is None else {
+                        'mode':env.passive.mode,'source_volume':env.passive.source_volume,
+                        'intercepted_volume':env.passive.intercepted_volume,'calibrated':False},
+                    'family_counts':dict(stream.action_counts),'status_counts':dict(stream.status_counts),
+                    'entity_counts':dict(stream.entity_counts)})
+                cases[-1]['valuation_observation_schedule']='start_daily_boundaries_and_terminal'
+                cases[-1]['evaluation_compute_mode']='batch_encoding_case_local_rng'if batch_mode else'serial'
+                if batch_heads:cases[-1]['evaluation_compute_mode']='batch_encoding_and_action_heads_case_local_generators'
         if role=='test'and self.data_use.overlaps(start,end,ignore_test=True):
             raise ValueError('TEST_CALENDAR_CONCURRENTLY_USED_FOR_OPTIMIZATION')
         return {'role':'development_selection'if self.development else role,

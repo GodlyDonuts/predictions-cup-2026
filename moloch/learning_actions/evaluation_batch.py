@@ -10,8 +10,22 @@ from .behavior_guard import identity
 from .neural_sessions import neural_section
 
 
+def advance_case(env,action,observation,latency):
+    """Original evaluation transition, with no intermediate wealth labels."""
+    before=env.now
+    env.advance(min(env.end,before+latency))
+    result=({'status':'HORIZON_REACHED_NO_DISPATCH'}if env.now>=env.end else env.act_raw(action,observation))
+    if result['status']=='ALARM':
+        from .managed_data_service import advance_alarm
+        advance_alarm(env,before,result)
+    return {'at_ms':before,'next_ms':env.now,'status':result['status'],'terminal':env.now>=env.end}
+
+
 class EvaluationBatch:
-    def __init__(self,envs,model,seeds,*,calibration,batch_action_heads=False,actions_only=False):
+    def __init__(self,envs,model,seeds,*,calibration,batch_action_heads=False,actions_only=False,world_backend=None):
+        self.world_backend=world_backend
+        if world_backend is not None and world_backend.mode!='evaluation':
+            raise ValueError('EVALUATION_REQUIRES_EVALUATION_COHORT')
         if type(actions_only)is not bool:raise ValueError('EXPLICIT_EVALUATION_STATISTICS_PROFILE')
         self.actions_only=actions_only
         if type(batch_action_heads)is not bool:raise ValueError('EXPLICIT_BATCH_ACTION_HEADS_PROFILE')
@@ -41,8 +55,11 @@ class EvaluationBatch:
     def step(self,*,deterministic=False):
         live=[i for i,e in enumerate(self.envs)if e.now<e.end]
         if not live:self.last_rows=[];return 0
-        for i in live:self.envs[i].advance(self.envs[i].now)
-        observed=[self.envs[i].observe()for i in live]
+        worlds=[self.envs[i]for i in live]
+        if self.world_backend is None:
+            for env in worlds:env.advance(env.now)
+            observed=[env.observe()for env in worlds]
+        else:observed=self.world_backend.prepare(worlds,[True]*len(worlds))
         with neural_section():
             prepared=inputs(observed,self.device)
             indices=torch.tensor(live,device=self.device)
@@ -80,17 +97,14 @@ class EvaluationBatch:
                     self.hidden=self.hidden.index_copy(0,indices,h)
             finally:self.set_rng(global_rng)
         self.last_rows=[]
+        transitions=(None if self.world_backend is None else
+                     self.world_backend.evaluation_transitions(worlds,actions,self.latency))
         for j,i in enumerate(live):
-            env=self.envs[i];before=env.now;action=actions[j];obs=observed[j]
-            env.advance(min(env.end,before+self.latency))
-            result=({'status':'HORIZON_REACHED_NO_DISPATCH'}if env.now>=env.end else env.act_raw(action,obs))
-            if result['status']=='ALARM':
-                from .managed_data_service import advance_alarm
-                advance_alarm(env,before,result)
+            env=self.envs[i];action=actions[j];obs=observed[j]
+            result=(advance_case(env,action,obs,self.latency)if transitions is None else transitions[j])
             self.decisions[i]+=1;self.action_counts[i][int(action['family'])]+=1
             self.status_counts[i][result['status']]+=1;self.entity_counts[i][obs['entities'][int(action['market'])][0]]+=1
-            self.last_rows.append({'case':i,'at_ms':before,'next_ms':env.now,'action':action,
-                                   'status':result['status'],'terminal':env.now>=env.end})
+            self.last_rows.append({'case':i,'action':action,**{k:result[k]for k in('at_ms','next_ms','status','terminal')}})
         return len(live)
 
     def run_chunk(self,decisions=128,*,deterministic=False):

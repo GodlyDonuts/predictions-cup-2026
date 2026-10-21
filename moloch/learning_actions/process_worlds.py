@@ -1,4 +1,4 @@
-"""Spawned CPU-only simulated TRAIN worlds; the parent alone owns the model.
+"""Spawned CPU-only training/evolution worlds; the parent alone owns the model.
 
 No account transport, automatic retry, world restart, altered virtual clock or
 asynchronous PPO. Every batch waits for its original independent transitions.
@@ -36,11 +36,13 @@ def metadata(env):
             'profiles':{key:getattr(env,key)for key in PROFILES if hasattr(env,key)}}
 
 
-def _worker(pipe,factory,args):
+def _worker(pipe,factory,args,mode):
     owner=None
     try:
         env,ledger,owner=factory(*args)
-        if env.role!='train':raise ValueError('PROCESS_WORLD_MUST_BE_TRAIN_ROLE')
+        if mode=='train' and env.role!='train':raise ValueError('PROCESS_WORLD_MUST_BE_TRAIN_ROLE')
+        if mode=='evaluation' and env.role not in('train','evolution'):
+            raise ValueError('PROCESS_EVALUATION_CANNOT_OPEN_INDEPENDENT_TEST')
         import torch
         if torch.cuda.is_initialized():raise ValueError('SOURCE_WORKER_MUST_NOT_OWN_CUDA')
         pipe.send(('ok',{'pid':os.getpid(),'cudaInitialized':False,'state':metadata(env)}))
@@ -54,13 +56,24 @@ def _worker(pipe,factory,args):
                 if payload:env.advance(env.now)
                 prepared=env.observe();epoch+=1
                 result={'observation':prepared,'epoch':epoch,'state':metadata(env)}
-            elif command=='transition':
+            elif command in('transition','evaluation_transition'):
+                if (command=='transition')!=(mode=='train'):
+                    raise ValueError('PROCESS_WORLD_TRANSITION_MODE_MISMATCH')
                 number,action,latency=payload
                 if prepared is None or number!=epoch:raise ValueError('EXACT_PREPARED_PROCESS_WORLD_REQUIRED')
                 if type(latency)is not int or latency<=0:raise ValueError('MEASURED_NONZERO_ACTOR_COST_REQUIRED')
-                from .world_step import transition
-                result=transition(env,ledger,action,prepared,latency)
+                if mode=='train':
+                    from .world_step import transition
+                    result=transition(env,ledger,action,prepared,latency)
+                else:
+                    from .evaluation_batch import advance_case
+                    result=advance_case(env,action,prepared,latency)
                 prepared=None;result['state']=metadata(env)
+            elif command=='evaluation_finish':
+                if mode!='evaluation' or prepared is not None:
+                    raise ValueError('EXACT_EVALUATION_FINISH_REQUIRED')
+                if ledger.reward_sum!=0.:raise ValueError('EVALUATION_MUST_NOT_ADD_INTERMEDIATE_MARKS')
+                result={'final':ledger.finish(),'state':metadata(env)}
             elif command=='discard_padding':
                 if prepared is None or env.now<env.end:raise ValueError('ONLY_FINISHED_WORLD_PADDING')
                 prepared=None;result={'state':metadata(env)}
@@ -105,7 +118,9 @@ class WorldView:
 
 
 class ProcessCohort:
-    def __init__(self,factories):
+    def __init__(self,factories,*,mode='train'):
+        if mode not in('train','evaluation'):raise ValueError('EXPLICIT_PROCESS_COHORT_MODE')
+        self.mode=mode
         if not factories:raise ValueError('NONEMPTY_PROCESS_WORLD_COHORT')
         self.handles=[];self.closed=False;self.failed=False;self.worlds=[];self.identities=[]
         context=mp.get_context('spawn')
@@ -113,7 +128,7 @@ class ProcessCohort:
             # Start every independent worker before receiving source setup.
             for factory,args in factories:
                 parent,child=context.Pipe()
-                process=context.Process(target=_worker,args=(child,factory,args),daemon=True)
+                process=context.Process(target=_worker,args=(child,factory,args,mode),daemon=True)
                 process.start();child.close();self.handles.append((process,parent))
             for index in range(len(self.handles)):
                 ready=self.receive(index)
@@ -165,11 +180,16 @@ class ProcessCohort:
         return [row['observation']for row in rows]
 
     def transitions(self,worlds,active,actions,latency):
+        if self.mode!='train':raise ValueError('TRAIN_TRANSITIONS_REQUIRE_TRAIN_COHORT')
         commands=[('transition',(w.epoch,a,latency))if live else('discard_padding',None)
                   for w,live,a in zip(worlds,active,actions)]
         rows=self.exchange(worlds,commands)
         return [row if live else {'reward':0.,'terminal':True,'elapsed_ms':0,'final':None}
                 for row,live in zip(rows,active)]
+
+    def evaluation_transitions(self,worlds,actions,latency):
+        if self.mode!='evaluation':raise ValueError('EVALUATION_TRANSITIONS_REQUIRE_EVALUATION_COHORT')
+        return self.exchange(worlds,[('evaluation_transition',(w.epoch,a,latency))for w,a in zip(worlds,actions)])
 
     def close(self):
         if self.closed:return
