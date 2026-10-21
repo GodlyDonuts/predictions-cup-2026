@@ -1897,6 +1897,9 @@ fn commit_existing_reservation(bank:&mut Session,event:&Value)->Result<Option<Va
  let candidates:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["id"].as_u64().is_some_and(|n|n>before)&&q["retired"]==false&&q["exchangeId"]==event["exchangeId"]&&q["action"]=="sell"&&q["reviewedInventoryExit"]["originSha256"]==event["originSha256"]&&q["reviewedInventoryExit"]["reviewSha256"]==event["reviewSha256"]).collect();
  if candidates.len()!=1{return Err("LIVE_EXISTING_NATIVE_RESERVATION_NOT_UNIQUE".into())}Ok(candidates.into_iter().next())
 }
+// Bound public source commits across this expiring seven-read packet, as on
+// the rank lane. Account/control health checks still run on every SDK wait;
+// every original receipt and physical freshness/depth gate remains required.
 fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::ExistingExitHint,prior_window:u64,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();refresh_controls(c,authority,stream)?;log.require_resolved_attempts()?;f.authority.validate()?;
  let retry=passive_reserved_exit(bank,log,&c.scope,ex,now())?;
@@ -1910,17 +1913,17 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  }
  refresh_controls(c,authority,stream)?;
  if let Some(original)=retry{
-  let Some((facts,until))=passive_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_PASSIVE_RESERVATION_OR_PACKET_INELIGIBLE")};
+  let Some((facts,until))=passive_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_PASSIVE_RESERVATION_OR_PACKET_INELIGIBLE")};
   return submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,facts,until)
  }
  if hint.reason=="reviewed_inventory_book_refresh"{
   let target=json!({"marketId":market,"exchangeId":ex});
-  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{last_stream_service:None,frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe},|bank,at|{
+  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe},|bank,at|{
    Ok(f.cohorts.existing_exit_hint(bank,log,&c.scope,ex,f.authority.trusted(),at)?.is_some())
   })?;
   if !eligible{return existing_exit_deferred(c,ex,"book_prefilter","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")}
  }
- let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{last_stream_service:None,frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe})?;
+ let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
  let Some(facts_until)=existing_facts_until(&facts,now())?else{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if existing_target_busy(bank,log,ex)?{return existing_exit_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
@@ -4410,5 +4413,29 @@ mod local_final_guard_recovery_tests{
   reconstructed.extend(d["overrides"].as_object().unwrap().clone());let reconstructed=Value::Object(reconstructed);
   assert_eq!(reconstructed,current);assert_eq!(d["reconstructedSha256"],hash(&reconstructed));assert!(d["overrides"].get("same").is_none());
   assert!(rank_evaluation_delta(&Value::Null,&current).is_err());
+ }
+}
+
+#[cfg(test)]mod reviewed_exit_packet_latency_tests{
+ use super::*;
+ fn packet(frames:usize,http_ms:u64)->(SnapshotSet,u64){
+  let mut at=100_000u64;let mut serviced=None;
+  let rows:Vec<Receipt>=(0..7).map(|_|{
+   if serviced.is_none_or(|last|preflight_stream_service_due(frames,Duration::from_millis(at-last))){at+=4500;serviced=Some(at);}
+   at+=600;let start=at;at+=http_ms;
+   Receipt{endpoint:"original-fixture".into(),status:200,request_started_at:iso(start),received_at:iso(at),data:json!({})}
+  }).collect();let [account,positions,open_orders,cash_balance,market,contract,book]:[Receipt;7]=rows.try_into().ok().unwrap();
+  (SnapshotSet{account,positions,open_orders,cash_balance,market,contract,book},at)
+ }
+ #[test]fn bounded_service_keeps_original_seven_read_exit_packet_fresh(){
+  let(old,old_at)=packet(MAX_REALTIME_FRAMES_PER_DRAIN,300);assert!(existing_facts_until(&old,old_at).unwrap().is_none());
+  let(fresh,at)=packet(RANK_REALTIME_FRAMES_PER_SERVICE,300);assert!(existing_facts_until(&fresh,at).unwrap().is_some());
+  assert_eq!(moloch_live_runtime::daily_windows::clock(&fresh.account.received_at).unwrap()-moloch_live_runtime::daily_windows::clock(&fresh.account.request_started_at).unwrap(),300);
+  let first=moloch_live_runtime::daily_windows::clock(&fresh.account.request_started_at).unwrap();assert_eq!(at-first,5700);
+ }
+ #[test]fn bounded_service_does_not_extend_original_receipt_expiry(){
+  let(facts,at)=packet(RANK_REALTIME_FRAMES_PER_SERVICE,300);let until=existing_facts_until(&facts,at).unwrap().unwrap();
+  assert!(existing_facts_until(&facts,until).unwrap().is_none());
+  let(slow,end)=packet(RANK_REALTIME_FRAMES_PER_SERVICE,3500);assert!(existing_facts_until(&slow,end).unwrap().is_none());
  }
 }

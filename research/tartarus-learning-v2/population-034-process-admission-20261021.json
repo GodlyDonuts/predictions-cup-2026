@@ -1,0 +1,61 @@
+{
+  "classification": "short_process_GPU_allocation_and_update_not_full_reward_history_or_ROI",
+  "configurationSha256": "c2446aa0e99ec79efaac50cbc54963146a64bb6fd8a91001ecdd2c8b3af538ed",
+  "dataset_manifest_sha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "device": "cuda:0",
+  "effectiveCudaMemoryFraction": 0.8,
+  "exactObservationActionsHiddenRewardsAndReceipts": true,
+  "identical_wallets_orders_fills_and_clocks": true,
+  "on_policy_guard_changed_after_optimizer_step": true,
+  "sourceManifestSha256": "bf527b432ffec3184c648cf2b312fc622f630ddd87c15ac4d9b9bbb137eb40f9",
+  "sourceWorkerCount": 8,
+  "sourceWorkersCPUOnly": true,
+  "cuda_peak_allocated_bytes": 1883366912,
+  "localCollectionSeconds": 2.3235683999955654,
+  "processCollectionSeconds": 1.5174585999920964,
+  "processStartupSeconds": 73.97650900000008,
+  "optimizerSeconds": 2.7928338999918196,
+  "ppo": [
+    {
+      "accepted": true,
+      "behavior_guard": "tensor_versions_v1",
+      "encoder_activation_checkpointing": true,
+      "entropy_coefficient": 0.01,
+      "epoch": 0,
+      "loss": -0.13292726759125262,
+      "mean_entropy": 13.29921398187463,
+      "policy_loss": 2.6519717408191035e-08,
+      "post_update_kl": 1.9995648417054507e-06,
+      "pre_update_kl": 9.425966951415177e-14,
+      "recurrent_state_carried": true,
+      "value_loss": 0.00012969141555254542
+    }
+  ],
+  "fullDayRewardQualification": false,
+  "http_requests": 0,
+  "independent_test_used": false,
+  "production_changed": false,
+  "sourceCommit": "91ab753962353a05fdf87cc650c5b56c9f926884",
+  "handoffVerifiedUtc": "2026-10-21T06:52:48.609837+00:00",
+  "run": "raw-api-growth-development-034",
+  "oldTrainerIntentionallyStoppedAfterPreservation": true,
+  "allFourParentsPreserved": true,
+  "oldScoresReused": false,
+  "oldFinancialWorldsResumed": false,
+  "waitLogitShifts": [
+    null,
+    [
+      6,
+      0
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      4,
+      0
+    ]
+  ],
+  "scope": "GPU capacity and continuing-training admission; no independent ROI"
+}

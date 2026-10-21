@@ -1,0 +1,13 @@
+# Population034: process replay admitted on the actual GPU
+
+The corrective handoff completed at06:52:48UTC on October21. Checked source91ab753962353a05fdf87cc650c5b56c9f926884 passed an actual eight-world CUDA capacity/update probe using eight persistent CPU source workers. Every observation, selected action, hidden state, reward, receipt, financial state and simulated clock matched the serial comparison exactly. PPO accepted its diagnostic update and its on-policy version guard changed. Peak diagnostic allocation was1,883,366,912bytes. This short probe qualifies allocation and mechanics, not full-day returns.
+
+All four old neural parents were preserved before the exact old GPU process was intentionally stopped. The final preservation captured run counters5560updates/108968decisions; these are aggregate run counters, not one checkpoint's Adam step count. Member0 was evaluated, member1 was unfinished, and members2/3 were queued founders. Old trajectories and weights remain retained. No unfinished-world fitness or old financial state was resumed. New optimizer moments and evaluation scores start fresh.
+
+The old learner was active but advancing virtual time very slowly:100chunks/1584decisions in48.843wall seconds advanced its remaining worlds by only9.857/9.504simulated seconds. Waiting for that unfinished generation was an engineering choice, not a human requirement. The old completion watcher was explicitly cancelled before this transfer.
+
+Population034 now runs the same original chronological three-venue cache, human daily-growth reward and full API action support. Parent0 retains its clock; parents1–3 receive explicit WAIT-logit perturbations[6,0],[2,0],[4,0] to explore longer wake intervals. These change stochastic probabilities, not legal action or timing bounds. The corrected V3 refresh protocol requires paid book refetch. Process replay overlaps source work while the parent alone owns the GPU. The first fresh verification observed31accepted training updates and1984decisions; full two-day qualification and new selection remain pending.
+
+Independent October21–25 data remains excluded. No model was deployed, and no positive independently tested ROI is established. This ML handoff changed no production financial state. The later production exit-latency investigation is a separate task and its current market data must not enter this learner.
+
+[Actual admission evidence](population-034-process-admission-20261021.json). Prior31CPU/integration/clock/preservation checks and the idle-GPU admission guard pass. Full requested competition history, complete nonoverlapping four-day development and independent windows, mapping/fill/valuation qualification and profitable independent results remain unfinished.

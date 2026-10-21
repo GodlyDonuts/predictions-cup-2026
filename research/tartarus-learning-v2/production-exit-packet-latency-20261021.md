@@ -1,0 +1,11 @@
+# Production exit packet starvation — October21
+
+At06:55UTC the sole checked R57 worker979680 was trading/realtime healthy with396fills/1660orders, all1660terminal. Its current reviewed exit repeatedly deferred with ORIGINAL_PACKET_STALE. The unrelated status.json still described the old dead975912; current-process progress is authoritative for operational health.
+
+Original worker receipts show a seven-read packet beginning06:56:06.980UTC and ending06:56:39.083UTC:32.103s. Individual HTTP calls in that packet took0.198–0.390s. The earliest account receipt's unchanged20s freshness expires before physical review. Repeated public stream admission between and during SDK reads contributes synchronous durable work; the observed receipt gaps establish the timing problem, not a complete CPU profiler attribution.
+
+The focused change applies the existing rank lane's bounded source-service scheduler to the three reviewed-existing-exit reader instances: passive reservation revalidation, reviewed book prefilter, and complete original preflight. One leading public frame is admitted; later public admission shares the original20s completion gate. Private account stream invalidation, STOP/control checks, shared SDK admission/pacing and every original receipt remain required. No frames are dropped; delayed source processing resumes through the existing outer loop. This changes neither price/quantity decisions nor risk limits.
+
+Two new deterministic seven-receipt timing regressions reproduce rejection with4.5s synchronous source work between reads and acceptance under bounded service. Exact original receipt expiry and a genuinely slow packet still reject. Focused ARM64 checks pass:2new latency checks,10rank-worker,46reviewed-existing-worker,28preflight (overlapping filters), plus the startup regression. Release build/production installation are pending.
+
+This is an execution reliability correction, not a prediction of profitable turnover. Current native state still records403.36cash and396fills. Most capital is already held. Rank status independently remains RANK_CAMPAIGN_NOT_OWNER_APPROVED; old campaign expiry is not extended or reinterpreted. No aggressive new portfolio campaign is activated by this patch. Experimental ML remains undeployed and no positive independent ROI is claimed.

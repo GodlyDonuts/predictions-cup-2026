@@ -1,3 +1,5 @@
+**Update October21 06:58UTC:** Eight-world CUDA process admission passed; population034 is now training with all four retained parents and fresh fitness. The old033/full-generation watcher discussion below is dated history. See [actual admission and corrective handoff](population-034-process-admission-20261021.md).
+
 # CPU process source worlds — October21 06:16UTC
 
 The optional online-training backend is implemented and checked on main eaf72ddc. It removes serial host-world advancement while keeping the model, CUDA RNG and synchronous on-policy optimizer in the parent. It is not yet admitted to033/034. The repeated recorded-data source probe measured4.3657x faster source advancement with four workers; this is not whole-training speed or profitability.
