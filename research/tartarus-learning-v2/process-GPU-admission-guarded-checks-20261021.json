@@ -1,0 +1,17 @@
+{
+  "observedUtc": "2026-10-21T06:46:02.592973+00:00",
+  "testsPassed": 31,
+  "failed": 0,
+  "skipped": 0,
+  "wallSeconds": 33.713,
+  "device": "cpu",
+  "sourceCanonicalLFSha256": {
+    "continue_population.py": "336e99413a7811dadbc3eb1963c3c2d3471513ddcc6b1f99c9d36643f97010b6",
+    "test_population_handoff.py": "cfa05216b7028a0dc6805cc54c4e3ecd6f1d6e0d494b83536778060d62d1824d"
+  },
+  "actualCUDAAdmissionEstablished": false,
+  "guardRunsOnlyAfterExactOldTrainerStopped": true,
+  "unrelatedActiveGPUOwnerStillBlocksProbe": true,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

@@ -136,6 +136,9 @@ def run(spec_path):
         for steps in spec['capacityChunks']:
             if cancel.exists():status('cancelled_after_saved_generation');return
             config=next_configuration(spec['template'],plan,compute_steps=steps)
+            if config.get('process_source_worlds')is True:
+                from .gpu_diagnostic_guard import require_idle_gpu
+                require_idle_gpu('cuda',allow_verified_desktop=True)
             config_path=job/('capacity-%d-config.json'%steps);frozen(config_path,config)
             output=job/('capacity-%d'%steps);log=job/('capacity-%d.log'%steps)
             module=('moloch.learning_actions.process_capacity'if config.get('process_source_worlds')is True

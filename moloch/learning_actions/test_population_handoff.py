@@ -156,6 +156,7 @@ class PopulationHandoffTests(unittest.TestCase):
             with patch('moloch.learning_actions.continue_population.TrainingProcess',Handle),\
                  patch('moloch.learning_actions.continue_population.boundary',return_value={'cycle':0}),\
                  patch('moloch.learning_actions.continue_population.select_population',return_value=plan),\
+                 patch('moloch.learning_actions.gpu_diagnostic_guard.require_idle_gpu',return_value=None),\
                  patch('moloch.learning_actions.continue_population.subprocess.run',side_effect=probe),\
                  patch('moloch.learning_actions.continue_population.subprocess.Popen',side_effect=AssertionError('must not launch')):
                 with self.assertRaisesRegex(ValueError,'ACTUAL_PROCESS_BACKEND'):
