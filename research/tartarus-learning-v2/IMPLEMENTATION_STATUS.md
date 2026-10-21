@@ -1,8 +1,8 @@
-# Tartarus implementation status — October21,19:49UTC
+# Tartarus implementation status — October21,20:14UTC
 
 This is the current summary. [All previous implementation notes are preserved](IMPLEMENTATION_STATUS_HISTORY_20261021.md).
 
-R71 is installed as sole1028075 and restoring all452original fills/2.564GB history. Repeat acquisition and immutable report cache passed290checks; fresh current-process trading and version3 review opt-in remain pending. The latest official19:48account mark is94,678.645(-5.32%). Prior R70 increased actual trading but its latest three filled sales realized-105.925combined. [Installation](r71-recurring-installed-20261021.json), [implementation and limits](recurring-cohort-20261021.md).
+R71 stopped at 20:06:41 UTC after original-ledger restoration with `LIVE_STREAM_JOIN_FAILED`; it did not reach fresh trading. The old worker discarded the specific startup cause. Source inspection found that public market broadcasts may legally arrive between market and private-account JOIN acknowledgments, while the worker required its first message to be the combined JOIN. R72 buffers those messages until both channels join, records typed failure reasons and retries transient subscription failures through the existing persisted connection budget. Five focused checks and the optimized replacement build pass; installation is next. Native engine, original452fills and financial state are unchanged. Repeat-entry version3 opt-in is still pending. [Repair and evidence](stream-join-r72-20261021.md).
 
 ## Running and queued work
 

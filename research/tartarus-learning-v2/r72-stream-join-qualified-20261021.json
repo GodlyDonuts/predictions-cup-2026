@@ -1,0 +1,28 @@
+{
+  "qualification": {
+    "observedUtc": "2026-10-21T20:14:37.345304+00:00",
+    "binarySha256": "1cf47b2ae83388c6f4b3d9f3a69b5772ef5755255204ca4de6762fb850fb4d00",
+    "workerSourceSha256": "22924ef79b54fa484da1ec313ac4638979027753031bd89174be97a45c9415b6",
+    "joinSourceSha256": "c311bd21ffeebccd51fc33d2293df5ffbb5b05fd173c423714a25e74d0cede8d",
+    "testsPassed": 5,
+    "cliLoads": true,
+    "nativeLibrarySha256": "fb56b89e5a6af2788baf4d858fcca02e675f0752a3cabf355aac791b767ba287",
+    "runtimeLibrarySha256": "85aa59961b09e53ae4ce000581a1d9f5f1d85aaa387e7000435410e6295be4f7",
+    "nativeEngineChanged": false,
+    "accountClientsCreated": 0,
+    "productionChanged": false
+  },
+  "startupFailure": {
+    "at": "2026-10-21T20:06:45.255018+00:00",
+    "pid": 1028075,
+    "alive": false,
+    "stop": true,
+    "elapsedSeconds": 1246,
+    "progress": null,
+    "stopEvidence": {
+      "action": "no automatic write retry or activation renewal",
+      "at": "2026-10-21T20:06:41.093Z",
+      "reason": "LIVE_STREAM_JOIN_FAILED"
+    }
+  }
+}

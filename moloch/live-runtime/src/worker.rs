@@ -9,6 +9,7 @@ use moloch_live_runtime::fundamental_policy::{self as fundamental,Cohorts,Review
 use moloch_live_runtime::stream_recovery::{StreamFailure,RecoveryBudget,RECOVERY_WINDOW_MS,RECOVERY_MAXIMUM_ATTEMPTS};
 #[path="realtime_book_catchup.rs"] mod realtime_book_catchup;
 #[path="seed_identity.rs"] mod seed_identity;
+#[path="stream_join.rs"] mod stream_join;
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -2741,10 +2742,17 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  // Only the native connection boundary produces this retryable type. HTTP,
  // credentials, JOIN and durable source errors retain their original types.
  let stream=if c.account_realtime{Realtime::connect_with_account(auth,&c.scope.tournament_id,moloch_live_runtime::account_realtime::options(&c.scope,&c.root)?)}else{Realtime::connect(auth,&c.scope.tournament_id)}.map_err(moloch_live_runtime::stream_connect_retry::ConnectionFailure::from_connect_error)?;
- let joined_at=match stream.incoming.recv_timeout(Duration::from_secs(12)){
-  Ok(Incoming::Joined{received_at})=>received_at,
-  _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
- };Ok((stream,joined_at))
+ let joined=match stream_join::wait(|duration|stream.incoming.recv_timeout(duration),Duration::from_secs(12)){
+  Ok(joined)=>joined,
+  Err(failure)=>{atomic_json(&c.root.join("stream-join.json"),&json!({"at":iso(now()),"state":"failed","reason":failure.reason(),"bufferedFrames":failure.buffered,"orderRetried":false}))?;return Err(failure.into())}
+ };
+ // Market messages can precede the private-account JOIN acknowledgment. Keep
+ // their original clocks and admit them only after BOTH channels are joined.
+ require_stream(&stream)?;
+ let buffered=joined.pending.len();
+ for item in joined.pending{if let Incoming::Broadcast{event,payload,received_at}=item{accept_source_events(bank,&source.broadcast(&event,&payload,&received_at)?)?;}}
+ atomic_json(&c.root.join("stream-join.json"),&json!({"at":iso(now()),"state":"joined","joinedAt":joined.received_at,"bufferedFrames":buffered,"orderRetried":false}))?;
+ Ok((stream,joined.received_at))
 }
 fn account_reconciliation_due(stream:&Realtime)->bool{stream.account_signal().is_some_and(|s|s.requires_reconciliation())}
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
@@ -2810,8 +2818,8 @@ fn connect_with_budget(t:&mut Transport,c:&Control,bank:&mut Session,log:&Dispat
   match connect_stream(t,c,bank,source){
    Ok(joined)=>return Ok(joined),
    Err(error)=>{
-    // Token HTTP failures remain a distinct type; never classify Auth/JOIN,
-    // source admission, arbitrary error text or financial requests as retries.
+    // Token, socket connection and subscription failures have distinct typed
+    // boundaries. Source admission, arbitrary text and financial errors do not retry.
     if let Some(failure)=error.downcast_ref::<TokenFailure>(){
      let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
      token_not_before=stream_token_retry::after_token_failure(budget,now(),Some(auth),failure)?;
@@ -2820,6 +2828,11 @@ fn connect_with_budget(t:&mut Transport,c:&Control,bank:&mut Session,log:&Dispat
      let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
      let until=stream_connect_retry::after_connect_failure(budget,now(),Some(auth),*failure)?;
      atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"connection_retry_wait","reason":failure.reason(),"notBefore":iso(until),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
+    }else if let Some(failure)=error.downcast_ref::<stream_join::JoinFailure>(){
+     if !failure.retryable(){return Err(error)}
+     let auth=load(&marker)?["atMs"].as_u64().ok_or("LIVE_AUTH_MINT_MARKER")?;
+     let until=stream_connect_retry::next_attempt(budget,now(),Some(auth))?;
+     atomic_json(&c.root.join("stream-recovery.json"),&json!({"at":iso(now()),"stage":"join_retry_wait","reason":failure.reason(),"bufferedFrames":failure.buffered,"notBefore":iso(until),"attempts":budget.attempts(),"orderRetried":false,"coverageResetToHealthy":false}))?;
     }else{return Err(error)}
    }
   }

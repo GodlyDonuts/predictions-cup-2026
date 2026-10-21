@@ -1,10 +1,10 @@
 # Current Moloch and Tartarus state
 
-Observed October21,19:49UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
+Observed October21,20:14UTC. This page replaces repeated historical headlines; [the previous document is preserved in full](CURRENT_STATE_HISTORY_20261021.md).
 
 ## Production
 
-R71 is installed since19:47:55 as sole PID1028075/startTicks58172940, binarye5e1cdf14c31, controlf1252cdd3018 and native3197be50815d. At19:49 the process is alive, STOP absent, and original ledger replay is advancing. Fresh R71 trading and explicit version3 review opt-in are NOT yet verified. All452original fills, the complete2,563,923,761-byte financial prefix and24engine approvals are preserved. One acknowledged order20292 remains for startup reconciliation. The replacement followed a planned clean stop; SDK active/unknown were clear. [Exact installation](../research/tartarus-learning-v2/r71-recurring-installed-20261021.json).
+R71 stopped at 20:06:41 UTC after original-ledger restoration with `LIVE_STREAM_JOIN_FAILED`; it did not reach fresh trading. The old worker discarded the specific startup cause. Source inspection found that public market broadcasts may legally arrive between market and private-account JOIN acknowledgments, while the worker required its first message to be the combined JOIN. R72 buffers those messages until both channels join, records typed failure reasons and retries transient subscription failures through the existing persisted connection budget. Five focused checks and the optimized replacement build pass; installation is next. Native engine, original452fills and financial state are unchanged. Repeat-entry version3 opt-in is still pending. [Repair and evidence](../research/tartarus-learning-v2/stream-join-r72-20261021.md).
 
 The deployed source adds explicit version3 repeat acquisition after partial/full exits and the checked immutable report cache.159runtime and131native checks pass; only8of289release source files differ from R70. The12currently refreshed non-inherited cohorts still need version3 opt-in through the existing private reload channel after fresh restoration/reference refresh. Legacy behavior, original cash/FIFO and financial controls remain unchanged. [Implementation and limits](../research/tartarus-learning-v2/recurring-cohort-20261021.md), [release composition](../research/tartarus-learning-v2/r71-recurring-release-20261021.json).
 
@@ -30,7 +30,7 @@ Last reconciled native financial state,19:30:20UTC:
 | New-trading portion | -7.880 |
 | Unchanged inherited realized portion | 76.52 |
 
-The latest18:56:58 official observation reports77,425.20 marked position value plus17,283.635 cash =94,708.835, down5,291.165 or5.291165% from the100,000 start. These marks are not executable liquidation proceeds. Today UTC has37 fill receipts across8 distinct filled orders through the last reconciled ledger. The97,000 deadline was missed; no whole-account profit is established. [Latest official aggregates](../research/tartarus-learning-v2/r70-latest-account-20261021.json).
+The earlier18:56:58 official observation reports77,425.20 marked position value plus17,283.635 cash =94,708.835, down5,291.165 or5.291165% from the100,000 start. These marks are not executable liquidation proceeds. At that earlier boundary, today UTC had37 fill receipts across8 distinct filled orders; the later R70 audit above supersedes this count. The97,000 deadline was missed; no whole-account profit is established. [Latest official aggregates](../research/tartarus-learning-v2/r70-latest-account-20261021.json).
 
 There remains one official worker and shared limiter. Daily windows and original monetary caps are unchanged. Laptop training creates no account client.
 
