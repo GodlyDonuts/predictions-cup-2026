@@ -1,0 +1,11 @@
+# Cooperative evolution continuation — October 21
+
+At10:44UTC, current GPU trainer23524 remains active in population034; three members have completed evaluation and the fourth is training. No profitable independent model is established.
+
+Checked source `be4888a5ff7f96b40d0626f9044a195e784637ec` adds a single local handoff supervisor. It waits for the complete cycle marker, including evolution replacements and retained champions, verifies each selected checkpoint and optimizer, saves their immutable identities, then stops only the retained OS handle for that simulated trainer. It launches the existing cooperative-island runner in a new035 directory. All034 results and checkpoints remain. The supervisor is actually waiting;035 learning has not started.
+
+Two island threads share one GPU owner and serialized neural compute, while their source replay waits can overlap. Each island retains full episodes, evaluation, negative-reward selection, champion retention and configured migration. There remain four members, two islands, eight worlds per active member, the original human reward and exact current fit/development bounds. This is the existing partial-history development study, not a qualified full-history or independent test. The previously measured28ms single-policy actor cost is inherited explicitly; no new shared-load timing or speedup is claimed.
+
+One-time inherited WAIT/family/price logit mutations are removed from the continuation configuration. They already affected the retained policies and must not be reapplied to every descendant at every handoff. This does not mask actions, impose a decision limit, change learned weights or alter the reward. Fresh-founder defaults remain irrelevant because every slot inherits a selected checkpoint.
+
+The new continuation has four passing focused checks: parent hashes/fit bounds retained, mutation profiles not reapplied, full-history template rejected for this development-only path, and cancellation/unexpected trainer exit cannot stop or replace an unrelated process. The cooperative runner previously passed its CPU source/optimizer/RNG checks. Actual035 two-island GPU learning, speed and profitability still require observation after handoff. A failed launch is recorded without an automatic destructive retry. Production trading, account clients and independent-test data are untouched.

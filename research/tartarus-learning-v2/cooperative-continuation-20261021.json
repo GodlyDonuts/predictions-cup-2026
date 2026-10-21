@@ -1,0 +1,12 @@
+{
+  "observedUtc": "2026-10-21T10:44:27.706486+00:00",
+  "phase": "waiting_for_completed_generation",
+  "watcherLauncherPid": 14000,
+  "oldTrainerPid": 23524,
+  "sourceCommit": "be4888a5ff7f96b40d0626f9044a195e784637ec",
+  "sourceManifestSha256": "214d07eaf98df3a22a96841d28b8b1eed99a0b079115d4036cd612cf7ee4e0ec",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "newLearningVerified": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}
