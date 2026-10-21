@@ -1,0 +1,168 @@
+{
+  "observedUtc": "2026-10-21T05:43:47.918024+00:00",
+  "sourceCommit": "3660e0e2e76ec15ef2eac9c22c0a06384005a3a2",
+  "receiptWindowMs": [
+    1792527356549,
+    1792527955090
+  ],
+  "cacheManifestSha256": "df6d11e965f46c8a86af73ee4747baba68a026a5eeb1851c646108f3301199d3",
+  "bookConstructionMicrobenchmark": [
+    {
+      "shared": false,
+      "rows": 10000,
+      "sameClockObjectReuses": 0,
+      "wallSeconds": 0.4357419000007212
+    },
+    {
+      "shared": true,
+      "rows": 10000,
+      "sameClockObjectReuses": 10000,
+      "wallSeconds": 0.2473729000048479
+    },
+    {
+      "shared": true,
+      "rows": 10000,
+      "sameClockObjectReuses": 10000,
+      "wallSeconds": 0.24692289999802597
+    },
+    {
+      "shared": false,
+      "rows": 10000,
+      "sameClockObjectReuses": 0,
+      "wallSeconds": 0.44519250000303145
+    }
+  ],
+  "cases": [
+    {
+      "shared": false,
+      "wallSeconds": 11.00441839999985,
+      "atMs": 1792527955090,
+      "financialSha256": "1a5c74b47bab681a8ff671319069771439a0bbda63916dee039fe67ec8d868d5",
+      "observationSha256": "a912990eb7a763992fa3b8ed1eca0e8ca825f6360fb302073859b6ce84913207",
+      "paidRequests": {
+        "SIG": 995,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "derivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "cash": 100000000000,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "shared": false,
+      "wallSeconds": 4.902775599999586,
+      "atMs": 1792527955090,
+      "financialSha256": "1a5c74b47bab681a8ff671319069771439a0bbda63916dee039fe67ec8d868d5",
+      "observationSha256": "a912990eb7a763992fa3b8ed1eca0e8ca825f6360fb302073859b6ce84913207",
+      "paidRequests": {
+        "SIG": 995,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "derivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "cash": 100000000000,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "shared": true,
+      "wallSeconds": 4.605348299999605,
+      "atMs": 1792527955090,
+      "financialSha256": "1a5c74b47bab681a8ff671319069771439a0bbda63916dee039fe67ec8d868d5",
+      "observationSha256": "a912990eb7a763992fa3b8ed1eca0e8ca825f6360fb302073859b6ce84913207",
+      "paidRequests": {
+        "SIG": 995,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "derivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "cash": 100000000000,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "shared": true,
+      "wallSeconds": 4.640992900007404,
+      "atMs": 1792527955090,
+      "financialSha256": "1a5c74b47bab681a8ff671319069771439a0bbda63916dee039fe67ec8d868d5",
+      "observationSha256": "a912990eb7a763992fa3b8ed1eca0e8ca825f6360fb302073859b6ce84913207",
+      "paidRequests": {
+        "SIG": 995,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "derivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "cash": 100000000000,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "shared": false,
+      "wallSeconds": 5.041784300003201,
+      "atMs": 1792527955090,
+      "financialSha256": "1a5c74b47bab681a8ff671319069771439a0bbda63916dee039fe67ec8d868d5",
+      "observationSha256": "a912990eb7a763992fa3b8ed1eca0e8ca825f6360fb302073859b6ce84913207",
+      "paidRequests": {
+        "SIG": 995,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "derivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "cash": 100000000000,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "shared": true,
+      "wallSeconds": 4.654869100006181,
+      "atMs": 1792527955090,
+      "financialSha256": "1a5c74b47bab681a8ff671319069771439a0bbda63916dee039fe67ec8d868d5",
+      "observationSha256": "a912990eb7a763992fa3b8ed1eca0e8ca825f6360fb302073859b6ce84913207",
+      "paidRequests": {
+        "SIG": 995,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "derivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "cash": 100000000000,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "shared": false,
+      "wallSeconds": 4.95756569999503,
+      "atMs": 1792527955090,
+      "financialSha256": "1a5c74b47bab681a8ff671319069771439a0bbda63916dee039fe67ec8d868d5",
+      "observationSha256": "a912990eb7a763992fa3b8ed1eca0e8ca825f6360fb302073859b6ce84913207",
+      "paidRequests": {
+        "SIG": 995,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "derivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "cash": 100000000000,
+      "orders": 0,
+      "fills": 0
+    }
+  ],
+  "bookConstructionMedianSpeedRatio": 1.782200860291815,
+  "sourceAdvanceMedianSpeedRatio": 1.0682122999988042,
+  "firstSourceCaseIsUnmeasuredWarmup": true,
+  "exactFinalObservationFinancialAndPaidReadParity": true,
+  "classification": "actual_source_data_only_advance_and_book_construction_not_whole_training_speed_or_ROI",
+  "modelInference": false,
+  "optimizerRun": false,
+  "active033Changed": false,
+  "queued034Changed": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "physicalAccountRequests": 0
+}

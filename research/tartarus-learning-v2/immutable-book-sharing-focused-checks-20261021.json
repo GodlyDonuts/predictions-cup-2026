@@ -1,0 +1,20 @@
+{
+  "observedUtc": "2026-10-21T05:45:40.664482+00:00",
+  "sourceCommit": "3660e0e2e76ec15ef2eac9c22c0a06384005a3a2",
+  "modules": [
+    "test_book_pool",
+    "test_disk_tape",
+    "test_liquidity_snapshot",
+    "test_snapshot_clock",
+    "test_token_refresh",
+    "test_execution_receipts"
+  ],
+  "testsPassed": 56,
+  "failed": 0,
+  "skipped": 0,
+  "wallSeconds": 5.674,
+  "device": "cpu",
+  "physicalAccountRequests": 0,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

@@ -8,7 +8,7 @@ The goal remains incomplete. The previous continuation produced checked source a
 | SIG-only economic execution | Existing exact ledger, API actions, complementary liquidity, receipts, FIFO, quantity/price/expiry domains and shared simulated budget | Passive execution, counterfactual response and real deployment pacing still need qualification; simulation performance is conditional |
 | Human growth reward | Active033 uses complete consecutive two-day episodes and the daily log-growth/consistency/evidence formula in collection and replay | Event independence is conservatively grouped, and no positive independently qualified score exists |
 | Chronological training/evolution/test | Active fit October15 07:25–17 at that time; selection October17–19; protected independent October21–25 | Current development windows are not the full requested competition-history/four-day evolution/four-day test design; the independent period is unfinished |
-| Sustained training and evolution | Actual sole GPU7108 runs033 with verified continuing daily-growth updates; its later immutable checked checkpoint has16064 decisions/316 Adam steps and5,272,685 finite parameters | Full033 selection/evolution and independently positive outcomes remain unproven; old032 checkpoints and unfinished replay were retained |
+| Sustained training and evolution | Actual sole GPU7108 runs033 with verified continuing daily-growth updates; its first member completed570 updates, and member1 now has631 total logged updates/24731 decisions | Full033 selection/evolution and independently positive outcomes remain unproven; old032 checkpoints and unfinished replay were retained |
 | Independently demonstrated positive ROI | No such evidence | Previous030 two-day selection was negative; protected data remains unconsumed, and no experiment is admitted to production |
 | Preserve production financial state | This continuation edits learning code and private read-only source exports, performs simulated/fixture checks and keeps the original active learner unchanged | No production financial mutation or activation is authorized by these experiment artifacts |
 
@@ -32,3 +32,8 @@ The data repair completed all21 SIG capture segments00000–00020, all ending be
 ## October21 05:30UTC update
 
 570-update same-CPU comparison improved nominal/stressed marked ROI to -2.350%/+.124%, but both daily rewards remain negative; independent profit is not demonstrated. Real paid three-venue history inputs were observed; semantic/publication-time qualification remains incomplete. SIG portfolio tournament valuation versus replay midpoint is explicitly unverified. Missing older depth/four-day evolution/full raw-topic parity remain gaps. V3 probe passed; corrected034 is queued, no new training activation yet. [Exact current state](current-learning-20261021-0535.md).
+
+
+## October21 05:45UTC continuation — progress
+
+Actual profiling, immutable-book reuse,56 passing checks and repeated retained-source parity are complete. Warm data-only source advancement measured6.8% faster, not whole-training speed. Active033 remains frozen/live, corrected034 queue unchanged; the larger sequential host-world bottleneck remains. Full predecode-once, original-history coverage/calendar and independent ROI are not complete. [Measured scope and next bottleneck](immutable-book-sharing-20261021.md).
