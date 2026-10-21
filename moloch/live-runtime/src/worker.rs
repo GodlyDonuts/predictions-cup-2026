@@ -388,7 +388,7 @@ fn snapshot_immutable_source(path:&Path,bytes:&[u8])->Result<()>{
 }
 fn snapshot_request_ready(root:&Path,state:&mut SnapshotRequestState,physical_busy:bool)->Result<Option<(String,SnapshotRequest)>>{
  use std::{io::Read,os::unix::fs::MetadataExt};
- if state.attempts>=4{return Ok(None)}let path=root.join("tartarus-snapshot-request.json");let m=match fs::symlink_metadata(&path){Ok(m)=>m,Err(e)if e.kind()==std::io::ErrorKind::NotFound=>return Ok(None),Err(e)=>return Err(e.into())};
+ let path=root.join("tartarus-snapshot-request.json");let m=match fs::symlink_metadata(&path){Ok(m)=>m,Err(e)if e.kind()==std::io::ErrorKind::NotFound=>return Ok(None),Err(e)=>return Err(e.into())};
  let version=snapshot_file_version(&m);if state.last_version.as_ref()==Some(&version){return Ok(None)}state.last_version=Some(version.clone());
  if !m.is_file()||m.file_type().is_symlink()||m.nlink()!=1||m.uid()!=fs::metadata(root)?.uid()||m.mode()&0o077!=0||m.len()>4096{state.attempts+=1;return Err("TARTARUS_PRIVATE_REQUEST_BOUND".into())}
  let mut raw=Vec::new();fs::File::open(&path)?.take(4097).read_to_end(&mut raw)?;
@@ -401,7 +401,9 @@ fn snapshot_request_ready(root:&Path,state:&mut SnapshotRequestState,physical_bu
  let sha=format!("{:x}",Sha256::digest(&raw));state.last_request_sha256=Some(sha.clone());if !state.seen.insert(sha.clone()){return Ok(None)}
  let attempts=root.join("tartarus-snapshot-attempts");private_dir(&attempts)?;
  let marker=attempts.join(format!("{sha}.json"));if marker.exists(){return Ok(None)}
- if fs::read_dir(&attempts)?.take(4).count()>=4{return Err("TARTARUS_TOTAL_REQUEST_LIMIT".into())}
+ // Each explicit private request remains once-only across restarts. The
+ // account limiter controls reads; four historical requests must not disable
+ // all future portfolio observations for the rest of the competition.
  state.attempts+=1;let mut proof=serde_json::to_vec(&json!({"at":iso(now()),"requestSha256":sha,"researchOnly":true,"executionAuthority":false,"attemptedOnce":true}))?;proof.push(b'\n');snapshot_private_new(&marker,&proof)?;
  if request.acquisition_mode.is_some(){let ids=root.join("tartarus-original-account-request-ids");private_dir(&ids)?;let id=ids.join(format!("{}.json",request.id));if id.exists(){return Ok(None)}snapshot_private_new(&id,&proof)?;}
  Ok(Some((sha,request)))
@@ -574,7 +576,16 @@ fn service_tartarus_snapshot(c:&Control,control_path:&Path,original_control:&[u8
   let t=Temp::new();let v=request_value("audit-one");put(&t.0,&v);let raw=fs::read(t.0.join("tartarus-snapshot-request.json")).unwrap();let mut state=SnapshotRequestState::default();let(sha,r)=snapshot_request(&t.0,&mut state).unwrap().unwrap();assert_eq!(sha,format!("{:x}",Sha256::digest(&raw)));assert_eq!(r.id,"audit-one");assert_eq!(state.attempts,1);assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(snapshot_request(&t.0,&mut SnapshotRequestState::default()).unwrap().is_none());assert_eq!(fs::read(t.0.join("tartarus-snapshot-request.json")).unwrap(),raw);assert_eq!(fs::read_dir(t.0.join("tartarus-snapshot-attempts")).unwrap().count(),1);
  }
  #[test]fn permission_claim_or_path_id_never_authorizes_research_export(){for(change,value)in [("executionAuthority",json!(true)),("researchOnly",json!(false)),("id",json!("../escape"))]{let t=Temp::new();let mut v=request_value("audit");v[change]=value;put(&t.0,&v);let mut state=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(!t.0.join("tartarus-snapshots").exists());assert!(!t.0.join("EXECUTION_STOP").exists());}}
- #[test]fn changed_requests_cannot_grow_unbounded_disk_attempts(){let t=Temp::new();let mut state=SnapshotRequestState::default();for i in 0..5{let path=t.0.join("tartarus-snapshot-request.json");if path.exists(){fs::remove_file(&path).unwrap();}put(&t.0,&request_value(&format!("audit-{i}")));assert_eq!(snapshot_request(&t.0,&mut state).unwrap().is_some(),i<4);}assert_eq!(state.attempts,4);assert_eq!(fs::read_dir(t.0.join("tartarus-snapshot-attempts")).unwrap().count(),4);}
+ #[test]fn future_explicit_requests_survive_four_prior_attempts_without_repeating_history(){
+  let t=Temp::new();let mut state=SnapshotRequestState::default();let path=t.0.join("tartarus-snapshot-request.json");
+  // Match the production publisher's atomic replacement. Unlink/create can
+  // reuse an inode and its timestamp on filesystems with coarse clocks.
+  let replace=|v:&Value|{let pending=t.0.join("request.pending");snapshot_private_new(&pending,&serde_json::to_vec(v).unwrap()).unwrap();fs::rename(pending,&path).unwrap();};
+  for i in 0..6{replace(&request_value(&format!("audit-{i}")));assert!(snapshot_request(&t.0,&mut state).unwrap().is_some(),"request {i}");assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());}
+  assert_eq!(state.attempts,6);assert_eq!(fs::read_dir(t.0.join("tartarus-snapshot-attempts")).unwrap().count(),6);
+  let mut restarted=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut restarted).unwrap().is_none());replace(&request_value("audit-0"));assert!(snapshot_request(&t.0,&mut restarted).unwrap().is_none());
+  replace(&request_value("audit-6"));assert!(snapshot_request(&t.0,&mut restarted).unwrap().is_some());assert_eq!(fs::read_dir(t.0.join("tartarus-snapshot-attempts")).unwrap().count(),7);
+ }
  #[test]fn oversized_or_public_request_is_diagnostic_once_without_source_read(){use std::os::unix::fs::PermissionsExt;let t=Temp::new();let p=t.0.join("tartarus-snapshot-request.json");snapshot_private_new(&p,&vec![b'x';4097]).unwrap();let mut state=SnapshotRequestState::default();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(snapshot_request(&t.0,&mut state).unwrap().is_none());assert!(state.last_request_sha256.is_none());fs::remove_file(&p).unwrap();put(&t.0,&request_value("private"));fs::set_permissions(&p,fs::Permissions::from_mode(0o644)).unwrap();assert!(snapshot_request(&t.0,&mut state).is_err());assert!(!t.0.join("tartarus-snapshot-attempts").exists());}
  #[test]fn cache_keeps_exact_original_clocks_only_for_successful_matching_surfaces(){let t=Temp::new();private_dir(&t.0.join("receipts")).unwrap();SNAPSHOT_RECEIPTS.with(|v|*v.borrow_mut()=None);let r=Receipt{endpoint:"/account?tournamentId=fixture".into(),status:200,request_started_at:iso(1000),received_at:iso(1001),data:json!({"balance":42})};record_receipt(&t.0,&r).unwrap();let mut bad=r.clone();bad.status=503;bad.received_at=iso(2000);record_receipt(&t.0,&bad).unwrap();let mut other=r.clone();other.endpoint="/markets/1/orderbook".into();record_receipt(&t.0,&other).unwrap();SNAPSHOT_RECEIPTS.with(|cache|{let c=cache.borrow();let c=c.as_ref().unwrap();assert_eq!(serde_json::to_value(c.rows[0].as_ref().unwrap()).unwrap(),serde_json::to_value(&r).unwrap());assert!(c.rows[1..].iter().all(Option::is_none));});let bytes=fs::read(t.0.join("receipts").join(format!("{}.json",feedback::digest(&r).unwrap()))).unwrap();assert_eq!(serde_json::from_slice::<Value>(&bytes).unwrap(),serde_json::to_value(r).unwrap());}
  #[test]fn hash_named_generation_source_is_create_new_or_exact_not_overwritten(){let t=Temp::new();let p=t.0.join("original.json");snapshot_immutable_source(&p,b"original bytes").unwrap();snapshot_immutable_source(&p,b"original bytes").unwrap();assert!(snapshot_immutable_source(&p,b"different bytes").is_err());assert_eq!(fs::read(p).unwrap(),b"original bytes");}

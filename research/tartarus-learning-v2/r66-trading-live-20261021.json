@@ -1,0 +1,23 @@
+{
+  "observedUtc": "2026-10-21T15:01:25.455707+00:00",
+  "pid": 1005097,
+  "progress": {
+    "at": "2026-10-21T14:56:37.860Z",
+    "phase": "trading",
+    "realtimeHealthy": true,
+    "actualFills": 400,
+    "actualOrders": 1664,
+    "terminalOrders": 1663
+  },
+  "stopPresent": false,
+  "referenceUpdater": {
+    "atMs": 1792594872664,
+    "pid": 1005100,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 31,
+    "officialSigClientCreated": false
+  },
+  "additionalAccountRequests": 0,
+  "financialControlsChanged": false,
+  "independentProfitabilityEstablished": false
+}

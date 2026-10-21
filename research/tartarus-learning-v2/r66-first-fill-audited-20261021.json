@@ -1,0 +1,107 @@
+{
+  "observedUtc": "2026-10-21T14:56:36.893931+00:00",
+  "executingRelease": "R66",
+  "workerPid": 1005097,
+  "actualBinarySha256": "7b6ba68644b3e3749dbd78d73d1fefebb3b2c9cf1649fd8deeb660413c0b9ace",
+  "nativeFills": [
+    {
+      "action": "buy",
+      "actualOrderId": "53909789",
+      "at": "2026-10-21T14:53:15.849Z",
+      "counterfactual": false,
+      "exchangeId": "966",
+      "executedAt": "2026-10-21T14:52:40.870Z",
+      "fee": "0.000000",
+      "marketId": "277",
+      "orderId": 20159,
+      "price": "0.920000",
+      "quantity": 695,
+      "receiptHash": "bfa85c3385f92e982396c569cb73761aef09ac1c76daca6fa98092702282b25b",
+      "side": "YES",
+      "sourceId": "224362056"
+    }
+  ],
+  "officialOrderReceipt": {
+    "data": {
+      "action": "buy",
+      "all": {
+        "collateralRepayment": 0,
+        "collateralSavings": 0,
+        "componentId": null,
+        "effectiveEntryCost": 639.4,
+        "fullNotionalCost": 639.4,
+        "guaranteedPayoutFloorAfter": 0,
+        "netBuyingPowerImpact": 639.4,
+        "outstandingAdvanceAfter": 0,
+        "redemptionCredit": 0,
+        "relationshipIds": []
+      },
+      "exchangeId": "966",
+      "fillPrice": 0.92,
+      "open": false,
+      "orderId": 53909789,
+      "price": 0.92,
+      "quantity": 695,
+      "quantityTraded": 695,
+      "remainingQuantity": 0,
+      "side": "yes",
+      "terminalReasonCode": null,
+      "totalCost": 639.4
+    },
+    "endpoint": "/orders",
+    "receivedAt": "2026-10-21T14:52:41.060Z",
+    "requestStartedAt": "2026-10-21T14:52:40.590Z",
+    "status": 200
+  },
+  "officialFillReceipt": {
+    "nativeReceiptHash": "bfa85c3385f92e982396c569cb73761aef09ac1c76daca6fa98092702282b25b",
+    "fileSha256": "b4d572b6790067470857e757cc03fde6d82061abc323cb22d18abcf72b9e6cfe",
+    "endpoint": "/orders/53909789/fills?limit=200",
+    "receivedAt": "2026-10-21T14:53:15.836Z",
+    "fills": [
+      {
+        "filledAt": "2026-10-21T14:52:40.870Z",
+        "id": 224362056,
+        "price": 0.92,
+        "quantity": 695,
+        "side": "yes"
+      }
+    ]
+  },
+  "dispatchEvidence": {
+    "intent": {
+      "sequence": 26790,
+      "hash": "00cd3abfd6e55b398814690a553dd466e36a14eeec4bea051c41d4cab2faf8c5"
+    },
+    "attempt": {
+      "sequence": 26791,
+      "hash": "afd8458801ceb8fd5605dbeeef9cd27066eae93fb83342ed0a3cd33694b61641"
+    },
+    "ack": {
+      "sequence": 26792,
+      "hash": "7aacc8d70f4b083a720c2c587581b511f3b44ae6146603a418750e86401f0694"
+    },
+    "closed": {
+      "sequence": 26793,
+      "hash": "9f5081a5d8bfc2a66d53af4076ae8db8f46760575ead2a7c18f7acbfd57ceadf"
+    }
+  },
+  "original399FillPrefixUnchanged": true,
+  "originalReportHash": "6bf4ffa07f93420823bfbfdaa0ff439be6a39ad19e55770e10d075feb9297cfb",
+  "endingReportHash": "59f72478daf359fb3ad4219d7b03f827ac23ba3cd9c75f1eb5c78713b3b32b97",
+  "actualFills": 400,
+  "cashBefore": "798.650000",
+  "cashAfter": "159.250000",
+  "purchaseCost": "639.400000",
+  "remainingFifoCost": "95579.110000",
+  "realizedGrossDelta": "0",
+  "totalAttributedRealizedGross": "158.445000",
+  "inheritedRealizedUnchanged": true,
+  "newTradingRealized": "81.925000",
+  "reason": "reviewed_fundamental_entry",
+  "progressAt": "2026-10-21T14:54:32.983Z",
+  "realtimeHealthyAtObservation": false,
+  "stopPresent": false,
+  "wholeAccountProfitabilityEstablished": false,
+  "additionalAccountRequests": 0
+}

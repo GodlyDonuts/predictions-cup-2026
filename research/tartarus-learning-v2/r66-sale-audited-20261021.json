@@ -1,0 +1,411 @@
+{
+  "observedUtc": "2026-10-21T15:00:32.000727+00:00",
+  "executingRelease": "R66",
+  "workerPid": 1005097,
+  "nativeFills": [
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:57:07.068Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:56:35.134Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 150,
+      "receiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "side": "YES",
+      "sourceId": "224385533"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:57:09.268Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:56:35.134Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 2654,
+      "receiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "side": "YES",
+      "sourceId": "224385528"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:57:11.463Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:56:35.134Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 591,
+      "receiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "side": "YES",
+      "sourceId": "224385523"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:57:13.722Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:56:35.134Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 473,
+      "receiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "side": "YES",
+      "sourceId": "224385517"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:57:16.092Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:56:35.134Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 500,
+      "receiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "side": "YES",
+      "sourceId": "224385512"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:57:18.426Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:56:43.861Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 553,
+      "receiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "side": "YES",
+      "sourceId": "224386400"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:57:20.766Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:56:58.287Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 543,
+      "receiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "side": "YES",
+      "sourceId": "224387922"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T14:58:19.090Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:57:26.196Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 160,
+      "receiptHash": "f03b14fd26ad6a1dc2cb686edaf3e8658e12374e82a095f1b776f4a2bdc9cd15",
+      "side": "YES",
+      "sourceId": "224390956"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53915477",
+      "at": "2026-10-21T15:00:04.471Z",
+      "counterfactual": false,
+      "exchangeId": "1044",
+      "executedAt": "2026-10-21T14:58:42.553Z",
+      "fee": "0.000000",
+      "marketId": "355",
+      "orderId": 20160,
+      "price": "0.845000",
+      "quantity": 10,
+      "receiptHash": "4db55f1a623efbb82fc7bdf21afe3b4dc44636c12eb194f271e8230675a00979",
+      "side": "YES",
+      "sourceId": "224397545"
+    }
+  ],
+  "officialOrderReceipt": {
+    "data": {
+      "action": "sell",
+      "all": {
+        "collateralRepayment": 0,
+        "collateralSavings": 0,
+        "componentId": null,
+        "effectiveEntryCost": 3690.96,
+        "fullNotionalCost": 3690.96,
+        "guaranteedPayoutFloorAfter": 0,
+        "netBuyingPowerImpact": -3690.96,
+        "outstandingAdvanceAfter": 0,
+        "redemptionCredit": 0,
+        "relationshipIds": []
+      },
+      "exchangeId": "1044",
+      "fillPrice": 0.845,
+      "open": true,
+      "orderId": 53915477,
+      "price": 0.845,
+      "quantity": 10000,
+      "quantityTraded": 4368,
+      "remainingQuantity": 5632,
+      "side": "yes",
+      "terminalReasonCode": null,
+      "totalCost": 3690.96
+    },
+    "endpoint": "/orders",
+    "receivedAt": "2026-10-21T14:56:35.412Z",
+    "requestStartedAt": "2026-10-21T14:56:34.892Z",
+    "status": 200
+  },
+  "officialFillReceipts": [
+    {
+      "nativeReceiptHash": "4db55f1a623efbb82fc7bdf21afe3b4dc44636c12eb194f271e8230675a00979",
+      "fileSha256": "cd91ce68d74905383ffa1fab148a4c52bea5f91ed5538f4e6b0d7a9216b80534",
+      "endpoint": "/orders/53915477/fills?limit=200",
+      "receivedAt": "2026-10-21T14:59:42.886Z",
+      "fills": [
+        {
+          "filledAt": "2026-10-21T14:58:42.553Z",
+          "id": 224397545,
+          "price": 0.845,
+          "quantity": 10,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:57:26.196Z",
+          "id": 224390956,
+          "price": 0.845,
+          "quantity": 160,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:58.287Z",
+          "id": 224387922,
+          "price": 0.845,
+          "quantity": 543,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:43.861Z",
+          "id": 224386400,
+          "price": 0.845,
+          "quantity": 553,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385533,
+          "price": 0.845,
+          "quantity": 150,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385528,
+          "price": 0.845,
+          "quantity": 2654,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385523,
+          "price": 0.845,
+          "quantity": 591,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385517,
+          "price": 0.845,
+          "quantity": 473,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385512,
+          "price": 0.845,
+          "quantity": 500,
+          "side": "yes"
+        }
+      ]
+    },
+    {
+      "nativeReceiptHash": "bd1b9ae01cc9b4fe6181aabd0efde0a32054179291ba7ed97527832232b5965f",
+      "fileSha256": "f49f7ac4e6219abe3e6c71bf1732bea91fe0fc8cb3b7191f02d46e0ae108e53f",
+      "endpoint": "/orders/53915477/fills?limit=200",
+      "receivedAt": "2026-10-21T14:57:07.063Z",
+      "fills": [
+        {
+          "filledAt": "2026-10-21T14:56:58.287Z",
+          "id": 224387922,
+          "price": 0.845,
+          "quantity": 543,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:43.861Z",
+          "id": 224386400,
+          "price": 0.845,
+          "quantity": 553,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385533,
+          "price": 0.845,
+          "quantity": 150,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385528,
+          "price": 0.845,
+          "quantity": 2654,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385523,
+          "price": 0.845,
+          "quantity": 591,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385517,
+          "price": 0.845,
+          "quantity": 473,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385512,
+          "price": 0.845,
+          "quantity": 500,
+          "side": "yes"
+        }
+      ]
+    },
+    {
+      "nativeReceiptHash": "f03b14fd26ad6a1dc2cb686edaf3e8658e12374e82a095f1b776f4a2bdc9cd15",
+      "fileSha256": "99944c5a6b57da246aab9f11a6c31451dbadc0a570ccaabb0c3b7f32296670be",
+      "endpoint": "/orders/53915477/fills?limit=200",
+      "receivedAt": "2026-10-21T14:58:00.857Z",
+      "fills": [
+        {
+          "filledAt": "2026-10-21T14:57:26.196Z",
+          "id": 224390956,
+          "price": 0.845,
+          "quantity": 160,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:58.287Z",
+          "id": 224387922,
+          "price": 0.845,
+          "quantity": 543,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:43.861Z",
+          "id": 224386400,
+          "price": 0.845,
+          "quantity": 553,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385533,
+          "price": 0.845,
+          "quantity": 150,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385528,
+          "price": 0.845,
+          "quantity": 2654,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385523,
+          "price": 0.845,
+          "quantity": 591,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385517,
+          "price": 0.845,
+          "quantity": 473,
+          "side": "yes"
+        },
+        {
+          "filledAt": "2026-10-21T14:56:35.134Z",
+          "id": 224385512,
+          "price": 0.845,
+          "quantity": 500,
+          "side": "yes"
+        }
+      ]
+    }
+  ],
+  "dispatchEvidence": {
+    "intent": {
+      "sequence": 26799,
+      "hash": "972673d067936557c9094ee78369ce95e8dd80a6fbddf8e8bf221d510d4783e3"
+    },
+    "attempt": {
+      "sequence": 26800,
+      "hash": "11e5b222737a6a6fb9df6e0e9f83d1ce9dc63dcbebfee84130f9bf077774a2a8"
+    },
+    "ack": {
+      "sequence": 26801,
+      "hash": "66bfbbbaaefc28cf4ef9a9241928b0f7877deb348cec28474fe6285dada53eb4"
+    }
+  },
+  "original400FillPrefixUnchanged": true,
+  "originalReportHash": "59f72478daf359fb3ad4219d7b03f827ac23ba3cd9c75f1eb5c78713b3b32b97",
+  "endingReportHash": "9668f6d5d78e6488ef62698e02a4dcc284285f9cae2b2f624e0ad71d3c886eda",
+  "actualFills": 409,
+  "sharesSold": 5634,
+  "admittedQuantity": 10000,
+  "unfilledRemainder": 4366,
+  "terminalConfirmed": false,
+  "cashBefore": "159.250000",
+  "cashAfter": "4919.980000",
+  "proceeds": "4760.730000",
+  "fifoCostReleased": "4704.390000",
+  "realizedGrossDelta": "56.340000",
+  "remainingFifoCost": "90874.720000",
+  "totalAttributedRealizedGross": "214.785000",
+  "newTradingRealized": "138.265000",
+  "inheritedRealizedUnchanged": true,
+  "reason": "reviewed_fundamental_exit",
+  "wholeAccountProfitabilityEstablished": false,
+  "additionalAccountRequests": 0
+}
