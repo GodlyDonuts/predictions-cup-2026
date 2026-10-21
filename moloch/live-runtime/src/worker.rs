@@ -2672,7 +2672,15 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   submit_order(t,c,bank,log,authority,&current,facts,maker,if fundamental_managed{fundamental.as_deref_mut()}else{None})?;return Ok(())
  }Ok(())
 }
+// Invalidate durably BEFORE a socket can enqueue frames. Large restored banks
+// may take longer than the bounded incoming queue can absorb. The local gap
+// clock is intentionally earlier than JOIN; no subscription or healthy coverage
+// is asserted, and fresh REST/tape reconciliation is still required.
+fn invalidate_before_stream_connect(bank:&mut Session,source:&mut RestSource)->Result<()>{
+ let at=iso(now());let events=source.subscribed(&at)?;accept_source_events(bank,&events)
+}
 fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut RestSource)->Result<(Realtime,String)>{
+ invalidate_before_stream_connect(bank,source)?;
  let marker=c.root.join("stream-auth-admission.json");let at=now();
  if marker.exists()&&load(&marker)?["atMs"].as_u64().is_none_or(|old|at<old+60000){return Err("LIVE_AUTH_MINT_BACKOFF".into())}
  atomic_json(&marker,&json!({"atMs":at}))?;
@@ -2685,7 +2693,7 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
  // credentials, JOIN and durable source errors retain their original types.
  let stream=if c.account_realtime{Realtime::connect_with_account(auth,&c.scope.tournament_id,moloch_live_runtime::account_realtime::options(&c.scope,&c.root)?)}else{Realtime::connect(auth,&c.scope.tournament_id)}.map_err(moloch_live_runtime::stream_connect_retry::ConnectionFailure::from_connect_error)?;
  let joined_at=match stream.incoming.recv_timeout(Duration::from_secs(12)){
-  Ok(Incoming::Joined{received_at})=>{accept_source_events(bank,&source.subscribed(&received_at)?)?;received_at}
+  Ok(Incoming::Joined{received_at})=>received_at,
   _=>return Err("LIVE_STREAM_JOIN_FAILED".into())
  };Ok((stream,joined_at))
 }
@@ -3189,6 +3197,21 @@ pub fn main()->Result<()>{
   let owner=Arc::new(ExclusiveLock::acquire(&c.owner_lock).unwrap());let mut cohorts=Cohorts::initialize(&c.root,bank,log,owner).unwrap();cohorts.install(reviewed,bank,log,at).unwrap();
   let authority_bytes=serde_json::to_vec(&json!({"version":1,"trustedReviewSha256":trusted})).unwrap();let authority_path=c.root.join("review-authority.json");fs::write(&authority_path,&authority_bytes).unwrap();
   FundamentalRuntime{cohorts,authority:ReviewAuthority::load(&authority_path,&format!("{:x}",Sha256::digest(&authority_bytes))).unwrap()}
+ }
+ #[test]fn stream_connect_invalidates_before_socket_and_preserves_financial_state(){
+  let(_root,_c,mut bank,_log,mut source,_q,_book)=fixture();
+  let before=bank.engine().report().unwrap();let head=bank.durable_head();
+  invalidate_before_stream_connect(&mut bank,&mut source).unwrap();
+  assert_ne!(bank.durable_head(),head);
+  let after=bank.engine().report().unwrap();
+  for key in ["cash","realized","fees","ownedCost","positions","fills"]{assert!(before.get(key).is_some(),"{key}");assert_eq!(before.get(key),after.get(key),"{key}");}
+  assert!(bank.engine().required_exchanges().contains("101"));
+  // Invalidation is conservative even if connection subsequently fails. It
+  // cannot turn old books into synchronized coverage or submit an order.
+  let first=bank.durable_head();
+  invalidate_before_stream_connect(&mut bank,&mut source).unwrap();
+  assert_ne!(bank.durable_head(),first);
+  assert!(bank.engine().fills().is_empty());
  }
  #[test]fn fundamental_preintent_catches_actual_bind_refusal_before_dispatch(){
   use std::cell::Cell;

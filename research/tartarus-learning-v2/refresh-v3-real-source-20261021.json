@@ -1,0 +1,139 @@
+{
+  "observedUtc": "2026-10-21T05:01:55.569810+00:00",
+  "classification": "real_source_refresh_baseline_fence_not_full_raw_topic_parity_or_ROI",
+  "sourceCommit": "eb437d5c270858d71d187b1f4d6c3d12af8eb573",
+  "datasetManifestSha256": "84923a7b7576429fbf59deb640a801c2b7ea2cf4b5d8c56140f41be7f2cf83e6",
+  "cacheManifestSha256": "df6d11e965f46c8a86af73ee4747baba68a026a5eeb1851c646108f3301199d3",
+  "receiptWindowMs": [
+    1792527356549,
+    1792527955090
+  ],
+  "cases": [
+    {
+      "mode": "reconnect_on_token_receipt_v1",
+      "beforeRefresh": {
+        "atMs": 1792527657048,
+        "syncedBaselines": 168,
+        "actorBookCaches": 237,
+        "validActorBooks": 168,
+        "connection": 1,
+        "tokenMints": 1,
+        "readAdmissions": 4096,
+        "observationSha256": "2b097af68f4c2f510204dca6442f271d5b38cbb31e3c8f4e152339cc452be83d",
+        "financialSha256": "f97ce87f636043d7b9383d348915b89295622727cf1bf37d349ce58421594e78"
+      },
+      "afterRefresh": {
+        "atMs": 1792527657648,
+        "syncedBaselines": 0,
+        "actorBookCaches": 237,
+        "validActorBooks": 0,
+        "connection": 2,
+        "tokenMints": 2,
+        "readAdmissions": 4096,
+        "observationSha256": "bd976b2080ceda8b6d46fa2eabec6cd8e0f80070ed9f42c112c76ed90739885a",
+        "financialSha256": "f5c5a601d924cd75e97cbd48b9a9e8e3b27e31ffbf98e4393cb5510b93bc1ff3"
+      },
+      "finalSourceExchanges": 237,
+      "originalDerivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "managedPaidRequests": {
+        "SIG": 994,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "tokenMintWrites": 2,
+      "cashUnchanged": true,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "mode": "preserve_active_channel_on_token_refresh_v2",
+      "beforeRefresh": {
+        "atMs": 1792527657048,
+        "syncedBaselines": 168,
+        "actorBookCaches": 237,
+        "validActorBooks": 168,
+        "connection": 1,
+        "tokenMints": 1,
+        "readAdmissions": 4096,
+        "observationSha256": "2b097af68f4c2f510204dca6442f271d5b38cbb31e3c8f4e152339cc452be83d",
+        "financialSha256": "f97ce87f636043d7b9383d348915b89295622727cf1bf37d349ce58421594e78"
+      },
+      "afterRefresh": {
+        "atMs": 1792527657648,
+        "syncedBaselines": 167,
+        "actorBookCaches": 237,
+        "validActorBooks": 167,
+        "connection": 1,
+        "tokenMints": 2,
+        "readAdmissions": 4096,
+        "observationSha256": "7d349d3c50bf039e9c17d47b6dc4a6cc81f86e1cca523b86e971b88a170d15bb",
+        "financialSha256": "f5c5a601d924cd75e97cbd48b9a9e8e3b27e31ffbf98e4393cb5510b93bc1ff3"
+      },
+      "finalSourceExchanges": 237,
+      "originalDerivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "managedPaidRequests": {
+        "SIG": 994,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "tokenMintWrites": 2,
+      "cashUnchanged": true,
+      "orders": 0,
+      "fills": 0
+    },
+    {
+      "mode": "preserve_channel_require_refetch_on_token_refresh_v3",
+      "beforeRefresh": {
+        "atMs": 1792527657048,
+        "syncedBaselines": 168,
+        "actorBookCaches": 237,
+        "validActorBooks": 168,
+        "connection": 1,
+        "tokenMints": 1,
+        "readAdmissions": 4096,
+        "observationSha256": "2b097af68f4c2f510204dca6442f271d5b38cbb31e3c8f4e152339cc452be83d",
+        "financialSha256": "f97ce87f636043d7b9383d348915b89295622727cf1bf37d349ce58421594e78"
+      },
+      "afterRefresh": {
+        "atMs": 1792527657648,
+        "syncedBaselines": 0,
+        "actorBookCaches": 237,
+        "validActorBooks": 0,
+        "connection": 1,
+        "tokenMints": 2,
+        "readAdmissions": 4096,
+        "observationSha256": "bd976b2080ceda8b6d46fa2eabec6cd8e0f80070ed9f42c112c76ed90739885a",
+        "financialSha256": "f5c5a601d924cd75e97cbd48b9a9e8e3b27e31ffbf98e4393cb5510b93bc1ff3"
+      },
+      "finalSourceExchanges": 237,
+      "originalDerivedBookDeliveries": 14197,
+      "originalTradeDeliveries": 272,
+      "managedPaidRequests": {
+        "SIG": 994,
+        "Kalshi": 11971,
+        "Polymarket": 17605
+      },
+      "tokenMintWrites": 2,
+      "cashUnchanged": true,
+      "orders": 0,
+      "fills": 0
+    }
+  ],
+  "samePreRefreshActorAndFinancialBytes": true,
+  "sameEconomicStateAndPaidRequestCounts": true,
+  "liveChannelNotRejoinedOnHealthyAuthRefresh": true,
+  "existingPeriodicBaselineExpiryUnchanged": true,
+  "sourceClocksAndPricesNotRewritten": true,
+  "wallSeconds": 20.846426100004464,
+  "modelInference": false,
+  "optimizerRun": false,
+  "active033Changed": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "physicalAccountRequests": 0,
+  "trainingAdmitted": false,
+  "mandatoryV3RefetchPreserved": true,
+  "earlierV2BaselineInterpretationIncorrect": true
+}

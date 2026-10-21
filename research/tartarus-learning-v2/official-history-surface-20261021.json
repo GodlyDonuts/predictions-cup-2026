@@ -1,0 +1,31 @@
+{
+  "observedUtc": "2026-10-21T05:20:41.515380+00:00",
+  "sourceUrl": "https://sig.thesuper.market/api/v1/docs",
+  "htmlSha256": "9009ea15d43ff1da01490d88996e342e58ae4e81ca4520c07dd7bc871d2e7c55",
+  "allDocumentedGetPathsReviewed": 59,
+  "currentBookEndpoints": {
+    "/markets/{id}/orderbook": [
+      "tournamentId",
+      "depth"
+    ],
+    "/exchanges/{id}/orderbook": [
+      "depth",
+      "tournamentId"
+    ]
+  },
+  "documentedPriceAndTradeHistory": [
+    "/exchanges/{id}/price-history",
+    "/exchanges/{id}/trades"
+  ],
+  "historicalBookEndpointFound": false,
+  "portfolioPositionField": "currentPrice",
+  "documentedPortfolioPriceMeaning": "tournament valuation price",
+  "nonzeroMissingValuationDocumentedStatus": 409,
+  "midpointEqualityWithTournamentValuationVerified": false,
+  "marketCreationAvailableToParticipantKeys": false,
+  "publicDocsFetches": 1,
+  "physicalAccountRequests": 0,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "classification": "published_API_surface_review_not_proof_of_undocumented_endpoint_absence"
+}

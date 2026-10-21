@@ -1,0 +1,25 @@
+{
+  "observedUtc": "2026-10-21T05:28:57.573534+00:00",
+  "classification": "queued_corrected_v3_after_completed_generation_not_new_training",
+  "sourceCommit": "eb437d5c270858d71d187b1f4d6c3d12af8eb573",
+  "watcherPid": 21864,
+  "wrapperPid": 16620,
+  "status": {
+    "phase": "waiting_for_completed_generation",
+    "observedUtc": "2026-10-21T05:03:54.155748+00:00",
+    "productionChanged": false,
+    "independentTestUsed": false,
+    "trainerPid": 7108,
+    "cycle": 0
+  },
+  "supersedesCancelledWatcherPid": 2124,
+  "earlierV2Activated": false,
+  "refreshProfile": "preserve_channel_require_refetch_on_token_refresh_v3",
+  "parentCacheDecoderAdmissionSha256": "485c0b2551162d0d6d48947f3fb0854a97965915be590012489d38cb1252d1f5",
+  "allFourMemberResultsRequired": true,
+  "freshOptimizerAndFitness": true,
+  "originalHistoricalWindowsUnchanged": true,
+  "sourceDatasetUnchanged": true,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

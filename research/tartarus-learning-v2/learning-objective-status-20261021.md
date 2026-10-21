@@ -27,3 +27,8 @@ The data repair completed all21 SIG capture segments00000–00020, all ending be
 ## October21 04:27 continuation
 
 [Completed80-update development comparison and queued verified-generation upgrade](current-learning-20261021-0427.md). Candidate full48h marked ROI improves to -6.39%/-0.91% from founder -13.59%/-10.35%, but remains negative/unqualified. Later444-update full-window comparison is running. Original-cache exact parser parity is complete;034 is queued after full033 generation, not running. Full history/calendar/source qualification and independently positive ROI remain incomplete.
+
+
+## October21 05:35UTC update
+
+570-update same-CPU comparison improved nominal/stressed marked ROI to -2.350%/+.124%, but both daily rewards remain negative; independent profit is not demonstrated. Real paid three-venue history inputs were observed; semantic/publication-time qualification remains incomplete. SIG portfolio tournament valuation versus replay midpoint is explicitly unverified. Missing older depth/four-day evolution/full raw-topic parity remain gaps. V3 probe passed; corrected034 is queued, no new training activation yet. [Exact current state](current-learning-20261021-0535.md).
