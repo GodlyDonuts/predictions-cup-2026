@@ -781,7 +781,7 @@ fn recover_unadmitted(c:&Control)->Result<()>{
 /// account nor send an order. The proof factory verifies the original SDK and
 /// dispatch chains and the externally pinned approval before this is created.
 struct LocalGuardRecoveryAuthority{scope:Value,binding:Value}
-fn expected_ordinary_final_guard(code:&str)->bool{matches!(code,"LIVE_CONTRACT_OR_BOOK_STALE"|"LIVE_ACCOUNT_STALE"|"PERMIT_EXPIRED_OR_INVALID")}
+fn expected_ordinary_final_guard(code:&str)->bool{matches!(code,"LIVE_CONTRACT_OR_BOOK_STALE"|"LIVE_ACCOUNT_STALE"|"LIVE_VERIFIED_STREAM_REQUIRED"|"PERMIT_EXPIRED_OR_INVALID")}
 impl Authority for LocalGuardRecoveryAuthority{
  fn can_read(&self,_:&Scope)->bool{false}
  fn authorize(&self,scope:&Scope,spec:&RequestSpec,permit:&Permit,network:bool,at:u64)->api::Result<()>{ReadOnlyAuthority.authorize(scope,spec,permit,network,at)}
@@ -1114,7 +1114,7 @@ fn mixed_reviewed_preflight(exits:&[fundamental::ExistingExitHint],entries:&[fun
   assert!(mixed_reviewed_preflight(&[],&[],None).is_none());assert_eq!(mixed_reviewed_preflight(&[exit("refreshed_value_exit")],&[],None).unwrap(),(true,0,"865:YES:sell".into()));
  }
  #[test]fn only_exact_expected_local_expiry_codes_continue_after_opaque_sdk_proof(){
-  for code in ["LIVE_ACCOUNT_STALE","LIVE_CONTRACT_OR_BOOK_STALE","PERMIT_EXPIRED_OR_INVALID"]{assert!(expected_ordinary_final_guard(code));}
+  for code in ["LIVE_ACCOUNT_STALE","LIVE_CONTRACT_OR_BOOK_STALE","LIVE_VERIFIED_STREAM_REQUIRED","PERMIT_EXPIRED_OR_INVALID"]{assert!(expected_ordinary_final_guard(code));}
   for code in ["OFFICIAL_REQUEST_REJECTED","BODY_UNCONFIRMED","CONNECTION_UNCONFIRMED","LIVE_CASH_MISMATCH"]{assert!(!expected_ordinary_final_guard(code));}
  }
 }

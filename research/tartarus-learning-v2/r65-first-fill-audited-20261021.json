@@ -1,0 +1,130 @@
+{
+  "observedUtc": "2026-10-21T06:17:38.358803-08:00",
+  "executingRelease": "R65",
+  "workerPid": 1003895,
+  "nativeFills": [
+    {
+      "action": "sell",
+      "actualOrderId": "53835415",
+      "at": "2026-10-21T14:06:58.267Z",
+      "counterfactual": false,
+      "exchangeId": "1042",
+      "executedAt": "2026-10-21T14:06:27.983Z",
+      "fee": "0.000000",
+      "marketId": "353",
+      "orderId": 20151,
+      "price": "0.910000",
+      "quantity": 52,
+      "receiptHash": "1221f591fc9ab3679f1d4070e0d621eb03ee8f79645ed7a28e2890c26ef35b84",
+      "side": "YES",
+      "sourceId": "224058258"
+    },
+    {
+      "action": "sell",
+      "actualOrderId": "53835415",
+      "at": "2026-10-21T14:07:00.412Z",
+      "counterfactual": false,
+      "exchangeId": "1042",
+      "executedAt": "2026-10-21T14:06:27.983Z",
+      "fee": "0.000000",
+      "marketId": "353",
+      "orderId": 20151,
+      "price": "0.910000",
+      "quantity": 378,
+      "receiptHash": "1221f591fc9ab3679f1d4070e0d621eb03ee8f79645ed7a28e2890c26ef35b84",
+      "side": "YES",
+      "sourceId": "224058252"
+    }
+  ],
+  "officialOrderReceipt": {
+    "data": {
+      "action": "sell",
+      "all": {
+        "collateralRepayment": 0,
+        "collateralSavings": 0,
+        "componentId": null,
+        "effectiveEntryCost": 391.3,
+        "fullNotionalCost": 391.3,
+        "guaranteedPayoutFloorAfter": 0,
+        "netBuyingPowerImpact": -391.3,
+        "outstandingAdvanceAfter": 0,
+        "redemptionCredit": 0,
+        "relationshipIds": []
+      },
+      "exchangeId": "1042",
+      "fillPrice": 0.91,
+      "open": false,
+      "orderId": 53835415,
+      "price": 0.91,
+      "quantity": 430,
+      "quantityTraded": 430,
+      "remainingQuantity": 0,
+      "side": "yes",
+      "terminalReasonCode": null,
+      "totalCost": 391.3
+    },
+    "endpoint": "/orders",
+    "receivedAt": "2026-10-21T14:06:28.235Z",
+    "requestStartedAt": "2026-10-21T14:06:27.771Z",
+    "status": 200
+  },
+  "officialFillReceipt": {
+    "nativeReceiptHash": "1221f591fc9ab3679f1d4070e0d621eb03ee8f79645ed7a28e2890c26ef35b84",
+    "fileSha256": "ea7b2938f359cea8829b080b525453006167d451edbb33b15c5ca93bdc1173eb",
+    "endpoint": "/orders/53835415/fills?limit=200",
+    "receivedAt": "2026-10-21T14:06:58.263Z",
+    "fills": [
+      {
+        "filledAt": "2026-10-21T14:06:27.983Z",
+        "id": 224058258,
+        "price": 0.91,
+        "quantity": 52,
+        "side": "yes"
+      },
+      {
+        "filledAt": "2026-10-21T14:06:27.983Z",
+        "id": 224058252,
+        "price": 0.91,
+        "quantity": 378,
+        "side": "yes"
+      }
+    ]
+  },
+  "dispatchEvidence": {
+    "intent": {
+      "sequence": 26778,
+      "hash": "d81a0772e7e3f0118bf384678a8e206ef60e9cebc93289fec532330adcb25863"
+    },
+    "attempt": {
+      "sequence": 26779,
+      "hash": "1d864845ab51b06a7a211953d59d156ede759ded963b3427cf379ce9e3b0d4ba"
+    },
+    "ack": {
+      "sequence": 26780,
+      "hash": "04d217ef0111c5791222fa41c3c0935a1b7fb963a83431b7b6c6fd7e51745237"
+    },
+    "closed": {
+      "sequence": 26781,
+      "hash": "f06380e68060f0edd3f930b0ed8f355b8f3dc4d97637c6181f7ae2be82efe9a3"
+    }
+  },
+  "originalFillPrefixUnchanged": true,
+  "originalReportHash": "dc7812280c4ebe1ddbb101c65f3a1c83e9453373b14c10dfcee356257aa08eae",
+  "endingReportHash": "6bf4ffa07f93420823bfbfdaa0ff439be6a39ad19e55770e10d075feb9297cfb",
+  "actualFills": 399,
+  "cashBefore": "407.350000",
+  "cashAfter": "798.650000",
+  "proceeds": "391.300000",
+  "fifoCostReleased": "395.600000",
+  "realizedGrossDelta": "-4.300000",
+  "inheritedRealizedUnchanged": true,
+  "newTradingRealized": "81.925000",
+  "reason": "reviewed_holding_deadline",
+  "wholeAccountProfitabilityEstablished": false,
+  "additionalAccountRequests": 0,
+  "subsequentStop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-21T14:10:10.545Z",
+    "reason": "LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"
+  }
+}

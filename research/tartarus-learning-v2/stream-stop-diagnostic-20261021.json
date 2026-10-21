@@ -1,0 +1,50 @@
+{
+  "observedUtc": "2026-10-21T06:17:38.358803-08:00",
+  "qid": 20155,
+  "exchangeId": "1077",
+  "action": "sell",
+  "side": "NO",
+  "quantity": 9,
+  "price": "0.880000",
+  "originalError": {
+    "at": "2026-10-21T14:10:08.764Z",
+    "error": {
+      "apiCode": null,
+      "code": "LIVE_VERIFIED_STREAM_REQUIRED",
+      "mayHaveExecuted": false,
+      "orderId": null,
+      "retryAfterMs": 0,
+      "status": null
+    },
+    "kind": "error",
+    "qid": 20155
+  },
+  "dispatchEvidence": {
+    "intent": {
+      "sequence": 26784,
+      "hash": "66710edf5754ac4e5e9da765b3b346828443b3a6a1e9fcd93444e6c2e2f345da"
+    },
+    "attempt": {
+      "sequence": 26785,
+      "hash": "e21f8477537f0767123d1a9bea73c3c55796e2cdfafc17b5a3b0c4c6959fc9b4"
+    },
+    "error": {
+      "sequence": 26786,
+      "hash": "4105bbbbd4a4945c83d3b3efa248976cdc8de60c7ece4120a2b7f52b34a27392"
+    }
+  },
+  "sdkManifestFileSha256": "db28c6dc8e42f128d15e6d1db33072fa8368ac903f24144fd9319d733568037a",
+  "sdkCheckpointFileSha256": "b4bc4ec862e5f5b4f851887e3aeb429ed3860127f4e27cd93ee0628eec7397eb",
+  "sdkJournalFileSha256": "c55a53235887ced6e9f6e3b182c162feb19d312231bd590f477a93cc0656490e",
+  "lastSequence": 424752,
+  "lastClock": 1792591803623,
+  "attemptAt": 1792591806956,
+  "active": null,
+  "unknownCount": 0,
+  "manualReview": false,
+  "keyFound": false,
+  "intentFound": false,
+  "typedRecoveryPending": true,
+  "sameIntentRetryAuthorized": false,
+  "additionalAccountRequests": 0
+}

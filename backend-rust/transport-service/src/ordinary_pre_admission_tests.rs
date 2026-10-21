@@ -17,6 +17,24 @@ impl Authority for StaleAccountGuard{
  fn owns_order(&self,_:&str)->bool{false}
  fn authorize(&self,_:&Scope,_:&RequestSpec,_:&Permit,_:bool,_:u64)->Result<()>{Err(fail("LIVE_ACCOUNT_STALE"))}
 }
+struct StreamLostGuard;
+impl Authority for StreamLostGuard{
+ fn can_read(&self,_:&Scope)->bool{true}
+ fn owns_order(&self,_:&str)->bool{false}
+ fn authorize(&self,_:&Scope,_:&RequestSpec,_:&Permit,_:bool,_:u64)->Result<()>{Err(fail("LIVE_VERIFIED_STREAM_REQUIRED"))}
+}
+#[test]fn genuine_stream_loss_before_admission_preserves_original_no_http_proof(){
+ let dir=temp();let clock=Arc::new(AtomicU64::new(1000));let mut t=Transport::new_for_mock(config(&dir),Box::new(DisabledCredentials),Box::new(TestClock(clock.clone())),Box::new(StreamLostGuard),"http://127.0.0.1:9/api/v1".into()).unwrap();t.admission_state().unwrap();clock.store(2001,Ordering::SeqCst);
+ let mut per=permit();per.expires_at_ms=9999;let b=spec().body.unwrap();let error=t.place(Order{idempotency_key:"fixture:3411".into(),exchange_id:"1009".into(),side:"no".into(),action:"buy".into(),quantity:5196,price:"0.620000".into(),expiration_date:b["expirationDate"].as_str().unwrap().into(),tournament_id:scope().tournament_id},per.clone()).err().unwrap();
+ assert_eq!(error.code,"LIVE_VERIFIED_STREAM_REQUIRED");assert!(!error.may_have_executed);assert_eq!(t.admission_summary().unwrap().state.last_clock,1000);assert!(t.admission_lookup_intent("fixture:3411").unwrap().binding.is_none());
+ let proof=t.verify_current_ordinary_pre_admission(&spec(),&per,2000,&error).unwrap();proof.validate_binding(&spec(),&per,2000,&error).unwrap();let retained=proof.evidence().clone();drop(t);
+ assert_eq!(verify_retained_ordinary_pre_admission(&config(&dir),&spec(),&per,2000,&error,&retained).unwrap().evidence(),&retained);
+ for i in 0..5{let mut changed=error.clone();match i{0=>changed.may_have_executed=true,1=>changed.status=Some(503),2=>changed.api_code=Some("INTERNAL_ERROR".into()),3=>changed.order_id=Some("1".into()),_=>changed.retry_after_ms=1};assert!(verify_frozen_ordinary_pre_admission(&config(&dir),&spec(),&per,2000,&changed).is_err());}
+ // The code alone is not evidence: a newer source clock disqualifies recovery.
+ {let mut q=admission::AccountAdmission::open(&dir,&config(&dir).account_scope,"later-controller").unwrap();q.command(json!({"op":"status","scope":config(&dir).account_scope,"now":3000})).unwrap();}
+ assert!(verify_frozen_ordinary_pre_admission(&config(&dir),&spec(),&per,2000,&error).is_err());
+ assert!(verify_retained_ordinary_pre_admission(&config(&dir),&spec(),&per,2000,&error,&retained).is_ok());fs::remove_dir_all(dir).unwrap();
+}
 #[test]fn genuine_stale_account_rejection_before_admission_retains_exact_no_http_proof(){
  let dir=temp();let clock=Arc::new(AtomicU64::new(1000));let mut t=Transport::new_for_mock(config(&dir),Box::new(DisabledCredentials),Box::new(TestClock(clock.clone())),Box::new(StaleAccountGuard),"http://127.0.0.1:9/api/v1".into()).unwrap();t.admission_state().unwrap();clock.store(2001,Ordering::SeqCst);
  let mut per=permit();per.expires_at_ms=9999;let b=spec().body.unwrap();let error=t.place(Order{idempotency_key:"fixture:3411".into(),exchange_id:"1009".into(),side:"no".into(),action:"buy".into(),quantity:5196,price:"0.620000".into(),expiration_date:b["expirationDate"].as_str().unwrap().into(),tournament_id:scope().tournament_id},per.clone()).err().unwrap();
