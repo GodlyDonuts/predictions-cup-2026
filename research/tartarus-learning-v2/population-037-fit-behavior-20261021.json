@@ -1,0 +1,147 @@
+{
+  "observedUtc": "2026-10-21T16:31:18.964331+00:00",
+  "sourceCommit": "6809ad9595bca487bb06609749dae6be5238515a",
+  "originalResultSha256": "2bcadba1b2c2c01bd67209ee07f69755d3e95aac5f1ae2d3935e81e6d0378feb",
+  "planSha256": "56010d55c89b966c5e06a8daf568a2f514e8089d563a07ccfb41c0cacab56dc3",
+  "classification": "one_hour_fitting_role_behavior_diagnostic_not_fitness",
+  "policies": {
+    "candidate": {
+      "checkpointSha256": "0f64dd1b011cc42ed63444eba68ee46f5b88be02822d545f6ee10b5d76432f96",
+      "boundsMs": [
+        1792050316175,
+        1792053916175
+      ],
+      "decisions": 78,
+      "counters": {
+        "observations": 78,
+        "observed_contract_rows": 18486,
+        "delivered_SIG_book_rows": 0,
+        "delivered_Kalshi_reference_rows": 0,
+        "delivered_Polymarket_reference_rows": 0,
+        "order_action_attempts": 14,
+        "sell_action_attempts": 7,
+        "sell_exceeds_delivered_holding": 7,
+        "sell_with_positive_delivered_holding": 0,
+        "sell_exact_delivered_holding": 0,
+        "uninterruptible_alarms": 5,
+        "alarms_past_episode_end": 13,
+        "canonicalization_calls": 9,
+        "canonical_sell_calls": 5,
+        "sell_calls_converted_to_complement_buy": 5
+      },
+      "immediateStatuses": {
+        "1:BUSY": 1,
+        "5:BUILDER_UPDATED": 3,
+        "10:BUSY": 8,
+        "6:BUILDER_UPDATED": 4,
+        "0:ALARM": 39,
+        "4:BUSY": 3,
+        "9:BUSY": 2,
+        "8:BUSY": 1,
+        "5:QUOTE_SELECTION_UPDATED": 2,
+        "10:IN_FLIGHT": 2,
+        "2:BUSY": 2,
+        "8:IN_FLIGHT": 1,
+        "11:DATA_SERVICE_PAUSED": 1,
+        "9:IN_FLIGHT": 1,
+        "4:IN_FLIGHT": 2,
+        "3:BUSY": 2,
+        "1:IN_FLIGHT": 1,
+        "7:IN_FLIGHT": 1,
+        "2:IN_FLIGHT": 1,
+        "3:IN_FLIGHT": 1
+      },
+      "requestedQuantities": {
+        "count": 14,
+        "minimum": 3,
+        "median": 193,
+        "p95": 344747484,
+        "maximum": 344747484
+      },
+      "requestedAlarmDelayMs": {
+        "count": 39,
+        "minimum": 10,
+        "median": 523225,
+        "p95": 966170951,
+        "maximum": 2758115589
+      },
+      "actualFillActions": {
+        "BUY_NO": 12
+      }
+    },
+    "founder": {
+      "checkpointSha256": "2a551324b30fe3afd46edde7b34813096a9a0e465de6300d2957de171475fc73",
+      "boundsMs": [
+        1792050316175,
+        1792053916175
+      ],
+      "decisions": 970,
+      "counters": {
+        "observations": 970,
+        "observed_contract_rows": 229890,
+        "delivered_SIG_book_rows": 2449,
+        "delivered_Kalshi_reference_rows": 0,
+        "delivered_Polymarket_reference_rows": 0,
+        "order_action_attempts": 61,
+        "sell_action_attempts": 30,
+        "sell_exceeds_delivered_holding": 30,
+        "sell_with_positive_delivered_holding": 0,
+        "sell_exact_delivered_holding": 0,
+        "uninterruptible_alarms": 37,
+        "alarms_past_episode_end": 201,
+        "canonicalization_calls": 8,
+        "canonical_sell_calls": 6,
+        "sell_calls_converted_to_complement_buy": 6
+      },
+      "immediateStatuses": {
+        "1:BUSY": 20,
+        "5:BUILDER_UPDATED": 10,
+        "10:BUSY": 32,
+        "6:BUILDER_UPDATED": 16,
+        "0:ALARM": 813,
+        "4:BUSY": 13,
+        "9:BUSY": 3,
+        "8:BUSY": 7,
+        "7:BUSY": 15,
+        "9:IN_FLIGHT": 2,
+        "10:IN_FLIGHT": 4,
+        "2:RATE_WAIT": 2,
+        "7:RATE_WAIT": 2,
+        "10:RATE_WAIT": 3,
+        "11:STREAM_DISCONNECTED": 1,
+        "4:RATE_WAIT": 1,
+        "1:RATE_WAIT": 1,
+        "8:RATE_WAIT": 1,
+        "4:IN_FLIGHT": 3,
+        "2:IN_FLIGHT": 3,
+        "8:IN_FLIGHT": 3,
+        "3:BUSY": 5,
+        "2:BUSY": 9,
+        "3:IN_FLIGHT": 1
+      },
+      "requestedQuantities": {
+        "count": 61,
+        "minimum": 1,
+        "median": 15099,
+        "p95": 213927605,
+        "maximum": 1674360182
+      },
+      "requestedAlarmDelayMs": {
+        "count": 813,
+        "minimum": 5,
+        "median": 30959,
+        "p95": 36800602,
+        "maximum": 10622514661
+      },
+      "actualFillActions": {
+        "BUY_NO": 7
+      }
+    }
+  },
+  "trajectoryModified": false,
+  "optimizerRun": false,
+  "independentTestUsed": false,
+  "productionChanged": false,
+  "referenceCounterLimitation": "Prefix counters omit delivered historical reference tokens; zero does not mean no external information.",
+  "canonicalCallsAreAttemptsNotCommittedOrders": true
+}

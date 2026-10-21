@@ -1,0 +1,103 @@
+{
+  "observedUtc": "2026-10-21T16:23:47.085097+00:00",
+  "sourceCommit": "f93450a212067182cf35af5576ee3dae1f2131cb",
+  "originalResultSha256": "3ae19dae115db1d96f3ef69e85d11ea59b8e800c08328daaee1660656afc79c3",
+  "planSha256": "d4a9e33c0a44933fb6a995f9351f26e1e9c9d430c8bfbc617d9896872dbfa8b9",
+  "checkpointSha256": "0f64dd1b011cc42ed63444eba68ee46f5b88be02822d545f6ee10b5d76432f96",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "originalExperimentSha256": "678af7728f4619b7eaf55c72875479cc712bc13489bf0f5ad10b01d5c30ddacc",
+  "trainingUpdates": 2768,
+  "trainingDecisions": 36694,
+  "frozenActorCostMs": 84,
+  "device": "cpu",
+  "role": "development_selection",
+  "cases": [
+    {
+      "reward": -0.07160397980730099,
+      "G": -0.07160397980730099,
+      "D": 2,
+      "N": 0,
+      "marked_roi": -0.04348907499999999,
+      "daily_log_returns": [
+        -0.05514649792429428,
+        0.010683429607732541
+      ],
+      "sample_daily_std": 0.04654878816291517,
+      "realized_fifo_micros": 0,
+      "fill_count": 63,
+      "fees_micros": 0,
+      "stress": false,
+      "start_ms": 1792221916175,
+      "end_ms": 1792394716175,
+      "decisions": 1974,
+      "family_counts": {
+        "10": 133,
+        "0": 1567,
+        "1": 61,
+        "4": 13,
+        "5": 42,
+        "6": 37,
+        "8": 27,
+        "3": 27,
+        "2": 38,
+        "7": 23,
+        "9": 6
+      },
+      "status_counts": {
+        "BUSY": 240,
+        "ALARM": 1567,
+        "IN_FLIGHT": 57,
+        "QUOTE_SELECTION_UPDATED": 3,
+        "RATE_WAIT": 31,
+        "BUILDER_UPDATED": 76
+      },
+      "eligible": false
+    },
+    {
+      "reward": -0.053977105470802186,
+      "G": -0.053977105470802186,
+      "D": 2,
+      "N": 0,
+      "marked_roi": -0.04937239999999998,
+      "daily_log_returns": [
+        -0.04442355046879894,
+        -0.006209330460785981
+      ],
+      "sample_daily_std": 0.02702153410542061,
+      "realized_fifo_micros": 0,
+      "fill_count": 23,
+      "fees_micros": 0,
+      "stress": true,
+      "start_ms": 1792221916175,
+      "end_ms": 1792394716175,
+      "decisions": 1168,
+      "family_counts": {
+        "0": 866,
+        "4": 22,
+        "10": 92,
+        "2": 24,
+        "5": 21,
+        "1": 41,
+        "6": 31,
+        "7": 15,
+        "8": 20,
+        "3": 17,
+        "9": 19
+      },
+      "status_counts": {
+        "ALARM": 866,
+        "BUSY": 172,
+        "IN_FLIGHT": 37,
+        "QUOTE_SELECTION_UPDATED": 6,
+        "BUILDER_UPDATED": 46,
+        "RATE_WAIT": 41
+      },
+      "eligible": false
+    }
+  ],
+  "worstHumanReward": -0.07160397980730099,
+  "founderWorstReward": -0.06033673496954075,
+  "founderStillBetter": true,
+  "independentTestUsed": false,
+  "productionChanged": false
+}

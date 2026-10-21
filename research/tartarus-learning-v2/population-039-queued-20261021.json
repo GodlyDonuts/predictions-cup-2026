@@ -1,0 +1,25 @@
+{
+  "observedUtc": "2026-10-21T16:49:07.095260+00:00",
+  "sourceCommit": "f40442ff0a0b6100777d835b5e05c73740627e30",
+  "sourceManifestSha256": "7a0940f0ee16ef28ee7128405f284cf530e55a93e6d1635c259d796789e56f79",
+  "specSha256": "18ccbc7949eecd109694df385c69e88c5f78c0efc358cdab1d71b3b62e95ce1f",
+  "oldPid": 18116,
+  "oldCreation": 134370609294086694,
+  "supersededWatcherConfirmedCancelled": true,
+  "oldTrainingStopped": false,
+  "productionChanged": false,
+  "independentTestUsed": false,
+  "targetQueryProfile": "family_target_query_v1",
+  "status": {
+    "phase": "waiting_for_all_first_generation_boundaries",
+    "observedUtc": "2026-10-21T16:46:57.140185+00:00",
+    "productionChanged": false,
+    "independentTestUsed": false,
+    "trainerPid": 18116
+  },
+  "watcherPid": 10548,
+  "previousWatcherPid": 19100,
+  "newRunLaunched": false,
+  "testsPassed": 32,
+  "profileAddsTrainableParameters": 3072
+}
