@@ -11,11 +11,14 @@ from math import log1p
 
 LEGACY_REFRESH='reconnect_on_token_receipt_v1'
 CONTINUOUS_REFRESH='preserve_active_channel_on_token_refresh_v2'
+# V2 is retained to reproduce its experiment, not as protocol qualification:
+# official SIG documentation requires REST refetch even on a healthy refresh.
+RECONCILE_REFRESH='preserve_channel_require_refetch_on_token_refresh_v3'
 
 
 def refresh_profile(value):
-    if value is None:return CONTINUOUS_REFRESH
-    if type(value)is not str or value not in(LEGACY_REFRESH,CONTINUOUS_REFRESH):
+    if value is None:return RECONCILE_REFRESH
+    if type(value)is not str or value not in(LEGACY_REFRESH,CONTINUOUS_REFRESH,RECONCILE_REFRESH):
         raise ValueError('EXPLICIT_REALTIME_REFRESH_PROFILE_REQUIRED')
     return value
 
@@ -77,21 +80,22 @@ class DerivedStream:
         if kind=='derived_token_receipt':
             rid,revision=value;env.budget.complete(rid,at)
             if revision!=self.control_revision:return True
-            # Refreshing auth on a still-open channel is not a reconnect. A
-            # genuine closure/expiry still requires rejoin and a paid baseline.
-            preserve=(self.refresh_mode==CONTINUOUS_REFRESH and self.enabled and at<self.expires_at)
+            # A healthy auth refresh preserves the channel and valid pending
+            # receipts. SIG nevertheless requires refetching REST baselines.
+            preserve=(self.refresh_mode!=LEGACY_REFRESH and self.enabled and at<self.expires_at)
             if not preserve:
                 self.connection+=1;self.private_pending=False
                 self.private_fills.clear();self.private_orders.clear();self.private_fill_cursor=len(env.api_fills)
                 self.invalidate()
-            else:env.observation_revision+=1
+            elif self.refresh_mode==RECONCILE_REFRESH:self.invalidate()
+            else:env.observation_revision+=1  # Explicit historical V2 behavior.
             self.enabled=True;self.expires_at=at+self.token_lifetime_ms;self.token_revision+=1
-            expiry=(self.connection,self.token_revision,self.expires_at)if self.refresh_mode==CONTINUOUS_REFRESH else self.connection
+            expiry=(self.connection,self.token_revision,self.expires_at)if self.refresh_mode!=LEGACY_REFRESH else self.connection
             env.clock.schedule(self.expires_at,30,'derived_token_expiry',expiry)
             return True
         if kind=='derived_token_expiry':
             expected=((self.connection,self.token_revision,self.expires_at)
-                      if self.refresh_mode==CONTINUOUS_REFRESH else self.connection)
+                      if self.refresh_mode!=LEGACY_REFRESH else self.connection)
             if value==expected:self.enabled=False;self.private_pending=False;self.invalidate()
             return True
         if kind=='derived_private_publish':

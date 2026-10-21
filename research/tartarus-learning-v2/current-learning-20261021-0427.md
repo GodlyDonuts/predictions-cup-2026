@@ -1,3 +1,5 @@
+**Correction, October21 04:56UTC:** V2 incorrectly preserved book baselines after healthy token refresh. Official SIG documentation requires a REST refetch. Its queued034 handoff was cancelled before activation; active033/production never used it. [Correction and V3 status](refresh-protocol-correction-20261021.md). The dated results below remain historical evidence.
+
 # Tartarus: completed learning comparison and next cohort — October 21, 04:27 UTC
 
 The previous goal turn completed exhaustive parsing parity and corrected actor timing. This continuation obtains a completed trained-versus-founder development outcome, starts a later-checkpoint comparison, completes the original-cache parity audit, and queues a verified-generation upgrade. The full goal remains incomplete. No production financial state changed.

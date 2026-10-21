@@ -1,3 +1,5 @@
+**Correction, October21 04:56UTC:** V2 incorrectly preserved book baselines after healthy token refresh. Official SIG documentation requires a REST refetch. Its queued034 handoff was cancelled before activation; active033/production never used it. [Correction and V3 status](refresh-protocol-correction-20261021.md). The dated results below remain historical evidence.
+
 # Tartarus learning — October 21, 03:56 UTC
 
 The previous goal turn made concrete progress by publishing the expanded replay and real-source protocol evidence. This continuation adds a checked optional parsing optimization, verifies a real later training checkpoint, and obtains the first completed full-window baseline outcome. The full objective remains incomplete. This ML continuation changes no production financial state.

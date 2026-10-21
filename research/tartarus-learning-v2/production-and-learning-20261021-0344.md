@@ -1,3 +1,5 @@
+**Correction, October21 04:56UTC:** V2 incorrectly preserved book baselines after healthy token refresh. Official SIG documentation requires a REST refetch. Its queued034 handoff was cancelled before activation; active033/production never used it. [Correction and V3 status](refresh-protocol-correction-20261021.md). The dated results below remain historical evidence.
+
 # Production recovery and current risk — October 21, 03:44 UTC
 
 The human explicitly requested substantially greater contest activity and accepted greater risk. The fresh check found the sole R57 worker968525 had stopped at02:21:21UTC with LIVE_STREAM_JOIN_FAILED. Its02:20 progress was stale; 396fills/1660orders must not be presented as current-process trading.

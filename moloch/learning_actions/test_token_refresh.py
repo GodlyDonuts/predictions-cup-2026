@@ -1,7 +1,7 @@
 import copy,tempfile,unittest
 from pathlib import Path
 from .test_actions import environment
-from .realtime import DerivedStream,CONTINUOUS_REFRESH,LEGACY_REFRESH,refresh_profile
+from .realtime import DerivedStream,CONTINUOUS_REFRESH,LEGACY_REFRESH,RECONCILE_REFRESH,refresh_profile
 
 
 class TokenRefreshTests(unittest.TestCase):
@@ -10,8 +10,8 @@ class TokenRefreshTests(unittest.TestCase):
         e.keys['SIG'].append(('realtime_token',));e.request_observation('SIG',('realtime_token',));e.advance(101)
         e.request_observation('SIG',('book','x'));e.advance(201);return e
 
-    def test_timely_paid_refresh_preserves_channel_baseline_and_queued_data(self):
-        e=self.connected();s=e.realtime;connection=s.connection;baseline=dict(s.synced);old_expiry=s.expires_at
+    def test_explicit_historical_v2_preserves_baseline_and_queued_data(self):
+        e=self.connected(CONTINUOUS_REFRESH);s=e.realtime;connection=s.connection;baseline=dict(s.synced);old_expiry=s.expires_at
         actor=e.actor_books['x'];s.private_pending=True;s.private_fills=[{'known':'fill'}];s.private_orders=[{'known':'order'}]
         e.advance(700);revision=e.observation_revision
         self.assertEqual(e.request_observation('SIG',('realtime_token',))['status'],'IN_FLIGHT');e.advance(801)
@@ -24,6 +24,23 @@ class TokenRefreshTests(unittest.TestCase):
         e.clock.schedule(old_expiry+1,30,'derived_book_receipt',(connection,'x',copy.deepcopy(actor)))
         e.advance(old_expiry+2);self.assertTrue(s.enabled);self.assertGreater(s.deliveries,0)
         e.advance(s.expires_at);self.assertFalse(s.enabled);self.assertTrue(e.actor_books['x'].invalidated)
+
+    def test_documented_refresh_preserves_channel_and_receipts_but_requires_paid_refetch(self):
+        e=self.connected();s=e.realtime;connection=s.connection;old_expiry=s.expires_at
+        self.assertTrue(s.synced);self.assertFalse(e.actor_books['x'].invalidated)
+        s.private_pending=True;s.private_fills=[{'pending':'fill'}];s.private_orders=[{'pending':'order'}]
+        e.advance(700);self.assertEqual(s.mint()['status'],'IN_FLIGHT');e.advance(800)
+        self.assertEqual(s.connection,connection);self.assertTrue(s.enabled);self.assertFalse(s.synced)
+        self.assertTrue(e.actor_books['x'].invalidated);self.assertTrue(s.private_pending)
+        self.assertEqual(s.private_fills,[{'pending':'fill'}]);self.assertEqual(s.private_orders,[{'pending':'order'}])
+        self.assertEqual(len(e.budget.writes),2);self.assertEqual(len(e.budget.reads),1)
+        # A queued full-book packet does not silently satisfy the mandatory
+        # refresh reconciliation. Nor can the old token's timer close V3.
+        e.clock.schedule(old_expiry+1,30,'derived_book_receipt',(connection,'x',copy.deepcopy(e.actor_books['x'])))
+        e.advance(old_expiry+2);self.assertTrue(s.enabled);self.assertTrue(e.actor_books['x'].invalidated)
+        self.assertEqual(e.request_observation('SIG',('book','x'))['status'],'IN_FLIGHT')
+        e.advance(e.busy_until);self.assertFalse(e.actor_books['x'].invalidated)
+        self.assertEqual(len(e.budget.reads),2);self.assertEqual(s.synced['x'],e.now)
 
     def test_expired_or_disconnected_channel_still_needs_paid_baseline(self):
         for disconnect in (False,True):
@@ -90,7 +107,7 @@ class TokenRefreshTests(unittest.TestCase):
         self.assertGreater(s.connection,connection);self.assertFalse(s.synced);self.assertTrue(e.actor_books['x'].invalidated)
 
     def test_default_and_invalid_profile_configuration(self):
-        self.assertEqual(refresh_profile(None),CONTINUOUS_REFRESH)
+        self.assertEqual(refresh_profile(None),RECONCILE_REFRESH)
         for value in ('unknown',0,False,{},[]):
             with self.assertRaises(ValueError):refresh_profile(value)
         from .experiment import Experiment

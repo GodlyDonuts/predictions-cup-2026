@@ -1,0 +1,19 @@
+{
+  "sourceTests": [
+    "test_token_refresh",
+    "test_realtime",
+    "test_execution_receipts",
+    "test_managed_data_service",
+    "test_snapshot_clock",
+    "test_episode_tape"
+  ],
+  "passed": 63,
+  "skipped": 0,
+  "seconds": 8.024,
+  "newDefault": "preserve_channel_require_refetch_on_token_refresh_v3",
+  "old034Phase": "cancelled_before_handoff",
+  "old034Created": false,
+  "active033Changed": false,
+  "productionChanged": false,
+  "independentTestUsed": false
+}

@@ -1,3 +1,5 @@
+**Correction, October21 04:56UTC:** V2 incorrectly preserved book baselines after healthy token refresh. Official SIG documentation requires a REST refetch. Its queued034 handoff was cancelled before activation; active033/production never used it. [Correction and V3 status](refresh-protocol-correction-20261021.md). The dated results below remain historical evidence.
+
 # Tartarus ML: full decoder parity and actor timing — October 21, 04:08 UTC
 
 The previous goal turn made concrete progress through the optional replay parser, later real checkpoint verification and completed founder comparison. This continuation completed the exhaustive decoder qualification and corrected missing actor-preparation time. The full learning objective remains incomplete; independently demonstrated positive ROI is absent. No production financial state changed in this ML continuation.
