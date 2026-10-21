@@ -18,6 +18,7 @@ from .policy import ApiPolicy
 from .stream import Stream,calibrate
 from .training import collect_chunk,update,save_checkpoint,load_checkpoint
 from .economics import GrowthLedger
+from .training_reward import horizon as training_horizon,ledger as training_ledger
 from .selection import frozen,IndependentTest,DataUse
 
 
@@ -86,6 +87,7 @@ class Experiment:
             spec=json.loads(Path(config['specification']).read_text())
             self.gap=spec['maximum_venue_gap_ms']
             self.train_bounds=self.split.bounds('train');self.evolution_bounds=self.split.bounds('evolution')
+        training_horizon(config,self.train_bounds,development=self.development)
         self.dataset_sha=self.original.manifest_sha256
         from .development_calendars import calendars
         calendars(*self.evolution_bounds,(config.get('population_search')or{}).get('development_selection_blocks',1),
@@ -142,6 +144,10 @@ class Experiment:
             'full_history_experiment':not self.development,'independent_test_used':False,
             'actual_split':{'competition_start_ms':self.split.competition_start_ms,'cutoff_ms':self.split.cutoff_ms},
             'actual_train_bounds_ms':list(self.train_bounds),'actual_evolution_bounds_ms':list(self.evolution_bounds),
+            'training_reward_profile':{
+                'mode':'human_complete_day_growth'if(not self.development or config.get('development_training_daily_growth',False))else 'short_development_log_wealth_proxy',
+                'episode_ms':training_horizon(config,self.train_bounds,development=self.development),
+                'development_only':self.development},
             'independent_test_source_claim':not self.development and independent_test_claim(self.original.manifest,self.split)}
         from .public_history_prefix import enabled,query_bounds,MODE
         self.public_history_prefix=enabled(config)
@@ -352,19 +358,10 @@ class Experiment:
     def train_episode(self,model,optimizer):
         if self.config.get('closed_episode_return_replay',False)or self.config.get('training_worlds',1)>1:return self.train_parallel(model,optimizer)
         a,b=self.train_bounds
-        if self.development:
-            length=min(self.config.get('development_episode_ms',120000),b-a)
-            start=self.rng.randrange(a,b-length+1);end=start+length
-        else:
-            # At least two complete days are needed for the supplied sample
-            # standard deviation. The calendar window is shared across markets.
-            length=self.config.get('training_days',2)*DAY
-            if length<2*DAY or length>b-a:raise ValueError('FULL_DAILY_TRAINING_HISTORY_REQUIRED')
-            start=self.rng.randrange(a,b-length+1);end=start+length
+        length=training_horizon(self.config,self.train_bounds,development=self.development)
+        start=self.rng.randrange(a,b-length+1);end=start+length
         env=self.world('train',start,end);stream=self.stream(model,env,True)
-        ledger=GrowthLedger(env,development=self.development,
-            historical_last_mark=self.config.get('development_last_observed_marks',False),
-            maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
+        ledger=training_ledger(env,self.config,development=self.development)
         final=None;reports=[]
         while env.now<end:
             chunk=collect_chunk(stream,self.config.get('compute_chunk_decisions',32),reward_ledger=ledger)
@@ -391,14 +388,10 @@ class Experiment:
         minimum=1 if self.config.get('closed_episode_return_replay',False)else 2
         if type(count)is not int or count<minimum:raise ValueError('AT_LEAST_TWO_INDEPENDENT_TRAINING_WORLDS')
         a,b=self.train_bounds
-        length=(min(self.config.get('development_episode_ms',120000),b-a)if self.development
-                else self.config.get('training_days',2)*DAY)
-        if length>b-a or (not self.development and length<2*DAY):raise ValueError('COMPLETE_TRAINING_CALENDAR_REQUIRED')
+        length=training_horizon(self.config,self.train_bounds,development=self.development)
         starts=[self.rng.randrange(a,b-length+1)for _ in range(count)]
         envs=[self.world('train',start,start+length)for start in starts]
-        ledgers=[GrowthLedger(e,development=self.development,
-            historical_last_mark=self.config.get('development_last_observed_marks',False),
-            maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))for e in envs]
+        ledgers=[training_ledger(e,self.config,development=self.development)for e in envs]
         if self.calibration is None:
             self.calibration=calibrate(envs[0],model)
             frozen(self.output/'compute-calibration.json',self.calibration)
@@ -458,9 +451,7 @@ class Experiment:
             manifest_sha=writer.seal()
         finally:writer.close()
         reader=EpisodeReader(path,manifest_sha)
-        def ledger_factory(env):return GrowthLedger(env,development=self.development,
-            historical_last_mark=self.config.get('development_last_observed_marks',False),
-            maximum_mark_age_ms=self.config.get('maximum_mark_age_ms',120000))
+        def ledger_factory(env):return training_ledger(env,self.config,development=self.development)
         def progress(rows,attempted):
             self.log({'event':'closed_episode_optimizer_progress','attempted_updates':attempted,
                 'provisional_updates':rows,'cohort_commit_pending':True})
