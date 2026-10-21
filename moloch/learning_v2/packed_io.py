@@ -25,7 +25,7 @@ def ipc_unpack(tree):
     return torch.from_numpy(tree)
 
 
-def transfer(tree,device):
+def transfer(tree,device,*,reuse_whole_allocations=False):
     groups={};layout={}
     def collect(node,path=()):
         if isinstance(node,dict):
@@ -39,7 +39,8 @@ def transfer(tree,device):
         # Fused observation assembly already owns a complete contiguous CPU
         # allocation in this exact traversal order. Reuse it for the upload;
         # arbitrary tensors retain the original concatenating/copying path.
-        packed=_whole_cpu_allocation(values)if torch.device(device).type!='cpu'else None
+        packed=(_whole_cpu_allocation(values)if reuse_whole_allocations
+                and torch.device(device).type!='cpu'else None)
         packed=(torch.cat(values)if packed is None else packed).to(device);offset=0;views=[]
         for value in values:views.append(packed[offset:offset+value.numel()]);offset+=value.numel()
         moved[dtype]=views

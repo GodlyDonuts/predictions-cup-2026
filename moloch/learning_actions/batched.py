@@ -20,7 +20,7 @@ def inputs(observations,device):
     out=assemble(observations)if large else padded(observations)
     if torch.device(device).type!='cpu':
         from moloch.learning_v2.packed_io import transfer
-        return transfer(out,device)
+        return transfer(out,device,reuse_whole_allocations=large)
     return out
 
 
