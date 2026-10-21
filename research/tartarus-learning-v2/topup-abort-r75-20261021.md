@@ -1,0 +1,15 @@
+# Recover repeat entries positively proved never sent
+
+R72 bound repeat-entry q20449 on exchange1077, then the SDK rejected it before network admission. The original SDK archive and dispatch chain prove that no HTTP was sent. Native recovery retired its reservation, but the cohort policy accepted only never-attempted repeat-entry retirement. That left a pending binding capable of blocking fresh entries and covered exits. [Original order evidence](dispatch-expiry-q20449-20261021.json).
+
+R75 adds the narrowly scoped `abandon_top_up_proved_no_network` policy event. Preparation requires the exact original request, permit, binding/tag, dispatch record, SDK archive, committed zero-network native retirement, and fresh account cash/positions/open orders. Reopening requires SDK proof hydration from the original archive. The old intent remains immutable and cannot be resent or acknowledged. A later eligible decision receives a new native order ID.
+
+The runtime retains the original native engine, fills, FIFO, cash, reservation accounting, limiter and execution deadlines. It reuses the existing held-file metadata cache for verified SDK archives; recovering a repeat entry does not introduce a full dispatch-log parse on every later quote. An actual uncertain submission remains unresolved.
+
+Two new integration tests cover partial and flat cohorts, durable reopen, a fresh distinct reservation, unchanged financial history, and refusal of altered archives, unhydrated evidence, wrong positions and open orders. The first success fixture attempted its fresh reservation before native planning write spacing elapsed. The fixture now advances its evaluation clock while keeping a fresh book; production rate checks are unchanged. The original failure log remains on the build host.
+
+145 cohort and233 worker tests pass. The optimized ARM64 binary loads, and all changed source bytes match this revision after Git line-ending normalization. [Exact build evidence](r75-topup-abort-qualified-20261021.json). **R75 is not deployed.** R74 worker1038328 is restoring its original ledger; the prepared installer requires verified fresh trading before another replacement. At least one distinct first-filled order/minute remains an unmet target, and neither this repair nor passing tests demonstrates profitability.
+
+[Build](tools/build-topup-abort-r75-20261021.py), [single-worker replacement](tools/deploy-topup-abort-r75-20261021.py), [file-only restoration verification](tools/observe-topup-abort-r75-20261021.py).
+
+At22:17UTC a file-only count found no active cohort at the16-entry limit (largest count7). Those bounds may constrain sustained future turnover, but they do not explain today's current lack of fills. Counting bindings is not counting fills; first execution per physical order remains the cadence measure.

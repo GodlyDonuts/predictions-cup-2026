@@ -502,7 +502,7 @@ impl AbandonPlan{
         need(now>=self.minted&&now<self.until&&bank.durable_head()==self.head&&crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned()==self.report_sha
             &&log.descriptor_identity()?==self.dispatch&&queue_view(transport)?==self.queue&&digest(transport.scope())?==self.scope_sha
             &&bytes_sha(transport.account_scope().as_bytes())==self.account_sha,"FUNDAMENTAL_ABANDON_PLAN_CHANGED")?;
-        let physical=if self.event["kind"]=="rearm_closed_zero"{log.attempted.contains(&self.qid())&&log.closed.contains(&self.qid())&&bank.engine().live_order_bindings().get(&self.qid()).is_some_and(|id|self.event["closedZeroEvidence"]["actualId"]==*id)}else if self.event["kind"]=="abandon_proved_no_network"{log.proved_no_network(self.qid())&&log.attempted.contains(&self.qid())&&!log.acknowledgments.contains_key(&self.qid())&&!log.closed.contains(&self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())}else{log.never_attempted(self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())};
+        let physical=if self.event["kind"]=="rearm_closed_zero"{log.attempted.contains(&self.qid())&&log.closed.contains(&self.qid())&&bank.engine().live_order_bindings().get(&self.qid()).is_some_and(|id|self.event["closedZeroEvidence"]["actualId"]==*id)}else if matches!(self.event["kind"].as_str(),Some("abandon_proved_no_network"|"abandon_top_up_proved_no_network")){log.proved_no_network(self.qid())&&log.attempted.contains(&self.qid())&&!log.acknowledgments.contains_key(&self.qid())&&!log.closed.contains(&self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())}else{log.never_attempted(self.qid())&&!bank.engine().live_order_bindings().contains_key(&self.qid())};
         need(physical&&!bank.engine().fills().iter().any(|f|f["orderId"]==self.qid()),"FUNDAMENTAL_ABANDON_PHYSICAL_EVENT")
     }
 }
@@ -933,7 +933,7 @@ impl Cohorts{
             out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});
         }
         for(ex,c)in &self.cohorts{if self.rank_paused(ex){continue}if c.existing.is_none()&&!c.exits.is_empty()&&!self.policies[ex].same_side_top_ups.as_ref().is_some_and(|p|p.version==3){continue}for b in c.top_ups.values(){
-            if !c.retired_top_ups.contains_key(&b.qid)&&log.never_attempted(b.qid)&&!bank.engine().live_order_bindings().contains_key(&b.qid)
+            if !c.retired_top_ups.contains_key(&b.qid)&&(log.never_attempted(b.qid)||(log.proved_no_network(b.qid)&&log.aborted_records().contains_key(&b.qid)))&&!bank.engine().live_order_bindings().contains_key(&b.qid)
                 &&!bank.engine().fills().iter().any(|f|f["orderId"]==b.qid){out.push(AbandonHint{exchange_id:ex.clone(),qid:b.qid,binding_sha256:digest(b)?});}
         }}Ok(out)
     }
@@ -952,7 +952,7 @@ impl Cohorts{
         let(mut not_sents,ordinary)=self.original_not_sent_records(log,&[hint.qid].into())?;let not_sent=not_sents.remove(&hint.qid).ok_or("FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED")?;
         let proved_abort=log.proved_no_network(hint.qid);
         let sdk_archive=if proved_abort{
-            need(!top_up&&log.intents.get(&hint.qid).is_some_and(|v|v.get("fundamental")==self.durable_tag(hint.qid).as_ref()),"FUNDAMENTAL_ABORT_ORIGINAL_TAG")?;
+            need(log.intents.get(&hint.qid).is_some_and(|v|v.get("fundamental")==self.durable_tag(hint.qid).as_ref()),"FUNDAMENTAL_ABORT_ORIGINAL_TAG")?;
             let(spec,permit,attempt,error)=log.pre_admission_originals(hint.qid)?;
             need(digest(&spec)?==b.spec_sha256&&not_sent["event"]==log.aborted_records()[&hint.qid],"FUNDAMENTAL_ABORT_ORIGINAL_REQUEST")?;
             for key in ["id","marketId","exchangeId","side","action","quantity","price"]{need(log.intents[&hint.qid]["quote"][key]==b.quote[key]&&q[key]==b.quote[key],"FUNDAMENTAL_ABORT_ORIGINAL_QUOTE")?;}
@@ -976,7 +976,7 @@ impl Cohorts{
         need(owned==0||position_seen,"FUNDAMENTAL_TOP_UP_POSITION_MISSING")?;
         for row in f.open_orders.data["data"].as_array().ok_or("FUNDAMENTAL_ABANDON_ORDERS")?{need(row["exchangeId"].as_str().is_some_and(|ex|ex!=hint.exchange_id),"FUNDAMENTAL_ABANDON_OPEN_ORDER")?;}
         need(baal_transport_service::relationships::parse_buying_power(&f.cash_balance.data,scope)?.gross_cash_units==Some(crate::authority::reconciled_expected_cash(bank)?),"FUNDAMENTAL_ABANDON_CASH")?;
-        let plan=AbandonPlan{event:json!({"kind":if proved_abort{"abandon_proved_no_network"}else if top_up{"abandon_top_up_never_sent"}else{"abandon_never_sent"},"exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"originalNotSent":not_sent,"committedRetirement":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
+        let plan=AbandonPlan{event:json!({"kind":if proved_abort{if top_up{"abandon_top_up_proved_no_network"}else{"abandon_proved_no_network"}}else if top_up{"abandon_top_up_never_sent"}else{"abandon_never_sent"},"exchangeId":hint.exchange_id,"qid":hint.qid,"cohortSha256":digest(c)?,"originalSide":b.quote["side"],"originalBindingSha256":digest(b)?,"originalNotSent":not_sent,"committedRetirement":{"id":source_id,"sequence":sequence,"sha256":sha,"event":event},"factsSha256":digest(&receipts)?}),
             head:bank.durable_head(),report_sha:crate::ledger_snapshot::snapshot(bank)?.sha256().to_owned(),dispatch:log.descriptor_identity()?,queue,scope_sha:digest(scope)?,account_sha:bytes_sha(transport.account_scope().as_bytes()),minted:now,until,
             sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary,sdk_archive,_owner:self._owner.clone()};
         plan.validate(bank,log,transport,now)?;Ok(plan)
@@ -1433,7 +1433,7 @@ impl Cohorts{
                     &&c.entry.is_none()&&c.top_ups.is_empty()&&c.exits.is_empty()&&c.existing.as_ref().is_some_and(|o|r.existing_origin.as_ref()==Some(&o.approval)),"FUNDAMENTAL_EXISTING_ORIGIN_EVENT")?;
                 self.policies.insert(ex.clone(),r);self.cohorts.insert(ex,c);
             },
-            Some("abandon_top_up_never_sent")=>{
+            Some("abandon_top_up_never_sent"|"abandon_top_up_proved_no_network")=>{
                 let ex=event["exchangeId"].as_str().ok_or("FUNDAMENTAL_EXCHANGE")?;let id=event["qid"].as_u64().ok_or("FUNDAMENTAL_QID")?;let c=self.cohorts.get(ex).ok_or("FUNDAMENTAL_NO_COHORT")?;
                 let b=c.top_ups.get(&id).ok_or("FUNDAMENTAL_TOP_UP_BINDING")?;
                 need(((c.existing.is_none()&&(c.exits.is_empty()||b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]["version"]==3))||(c.existing.is_some()&&b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]["version"]==2))&&!c.retired_top_ups.contains_key(&id)&&event["cohortSha256"]==digest(c)?&&event["originalBindingSha256"]==digest(b)?
@@ -1518,12 +1518,23 @@ impl Cohorts{
                 &&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(if a.closed_zero.is_some(){request_quantity(&b.spec)?}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?}),"FUNDAMENTAL_ABANDONED_NATIVE_CHANGED")?;
             if let Some(original)=log.intents.get(id){let spec:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&spec)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(*id).as_ref(),"FUNDAMENTAL_ABANDONED_ORIGINAL_CHANGED")?;}
         }
-        let retired:BTreeSet<_>=self.cohorts.values().flat_map(|c|c.retired_top_ups.keys().copied()).collect();
+        let retired:BTreeSet<_>=self.cohorts.values().flat_map(|c|c.retired_top_ups.iter().filter(|(_,p)|p.not_sent["event"]["kind"]!="aborted_before_admission").map(|(id,_)|*id)).collect();
         let records=if retired.is_empty(){BTreeMap::new()}else{self.original_not_sent_records(log,&retired)?.0};
         for(ex,c)in &self.cohorts{
             need(c.entry.is_some()!=c.existing.is_some(),"FUNDAMENTAL_ORIGIN_VARIANT")?;
             for(id,p)in &c.retired_top_ups{
-                need(c.top_ups.contains_key(id)&&records.get(id)==Some(&p.not_sent)&&log.never_attempted(*id)&&!bank.engine().live_order_bindings().contains_key(id)
+                // Reuse the same archive hydration and immutable-file cache as
+                // an aborted first entry; do not rescan the entire dispatch
+                // history on every quote after a positively proved no-HTTP top-up.
+                let original=&p.not_sent["event"];
+                let no_network=if original["kind"]=="aborted_before_admission"{
+                    need(log.proved_no_network(*id)&&log.attempted.contains(id)&&log.aborted_records().get(id)==Some(original)
+                        &&!log.acknowledgments.contains_key(id)&&!log.closed.contains(id)&&!log.recovered.contains_key(id)&&!log.cancel_attempted(*id),"FUNDAMENTAL_TOP_UP_ABORT_PROOF_REQUIRED")?;
+                    let mut pins=self.aborted_archives.lock().map_err(|_|"FUNDAMENTAL_ABORT_ARCHIVE_LOCK")?;
+                    if !pins.contains_key(id){pins.insert(*id,aborted_archive(log,*id)?);}
+                    pins.get(id).ok_or("FUNDAMENTAL_ABORT_ARCHIVE_REQUIRED")?.validate_metadata()?;true
+                }else{records.get(id)==Some(&p.not_sent)&&log.never_attempted(*id)};
+                need(c.top_ups.contains_key(id)&&no_network&&!bank.engine().live_order_bindings().contains_key(id)
                     &&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_TOP_UP_ABANDON_PHYSICAL")?;
                 let e=&p.retirement["event"];let source=p.retirement["id"].as_str().ok_or("FUNDAMENTAL_ADOPTION_REF")?;let seq=p.retirement["sequence"].as_u64().ok_or("FUNDAMENTAL_ADOPTION_REF")?;
                 need(bank.committed_source_hash(source,seq)==p.retirement["sha256"].as_str()&&p.retirement["sha256"]==digest(e)?&&e["type"]=="unsubmitted_intent_retired"

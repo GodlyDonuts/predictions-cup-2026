@@ -40,6 +40,25 @@ class Cadence(unittest.TestCase):
         with self.assertRaises(AssertionError):
             audit.filled_order_cadence([row], now)
 
+    def test_burst_cannot_satisfy_sustained_minute_cadence(self):
+        now = datetime(2026, 10, 21, 21, 10, tzinfo=timezone.utc)
+        rows = [self.fill(str(i), '2026-10-21T21:09:59Z') for i in range(5)]
+        window = audit.filled_order_cadence(rows, now)['windowsMinutes']['5']
+        self.assertTrue(window['averageTargetMet'])
+        self.assertFalse(window['rollingMinuteCadenceMet'])
+        self.assertEqual(window['completedUtcMinutesWithNoNewFilledOrder'], 4)
+        self.assertEqual(window['maximumGapWithinWindowSeconds'], 299)
+
+    def test_even_first_fills_satisfy_cadence_but_empty_history_does_not(self):
+        now = datetime(2026, 10, 21, 21, 10, tzinfo=timezone.utc)
+        rows = [self.fill(str(i), f'2026-10-21T21:0{i}:30Z') for i in range(5, 10)]
+        window = audit.filled_order_cadence(rows, now)['windowsMinutes']['5']
+        self.assertTrue(window['rollingMinuteCadenceMet'])
+        self.assertEqual(window['completedUtcMinutesWithNoNewFilledOrder'], 0)
+        self.assertEqual(window['maximumGapWithinWindowSeconds'], 60)
+        empty = audit.filled_order_cadence([], now)['windowsMinutes']['1']
+        self.assertFalse(empty['rollingMinuteCadenceMet'])
+
 
 if __name__ == '__main__':
     unittest.main()

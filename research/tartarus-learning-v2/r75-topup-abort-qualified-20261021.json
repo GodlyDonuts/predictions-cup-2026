@@ -1,0 +1,24 @@
+{
+  "observedUtc": "2026-10-21T22:21:52.421801+00:00",
+  "binarySha256": "3f49481b05f5c9e3f4418e1aa2443ba1e481756df0fbdd502ae8cac31e5fb4ba",
+  "runtimeLibrarySha256": "15eb9572bda8f5980b39347755b685bf3e1428ad58926887265384558e6ef90c",
+  "sourceSha256": {
+    "moloch/live-runtime/src/fundamental_policy.rs": "dd765ae5d0c0590b65fa56bd3c969c32ffcc85d6c09a56fbcaaacc7c7937c69d",
+    "moloch/live-runtime/tests/fundamental_policy.rs": "db947680fbe1c748f906ff043d823f2cd0bb38ed76a9bd1aaaaf3c7ec282eac4",
+    "moloch/live-runtime/src/worker.rs": "bcaffff15f64edb4952ae3fc0a99199aa7c1a4cf01deed72a8a3c1d06fd62f03"
+  },
+  "tests": [
+    "test result: ok. 145 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 38.28s",
+    "test result: ok. 233 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.28s"
+  ],
+  "nativeEngineChanged": false,
+  "productionChanged": false,
+  "cliLoads": true,
+  "accountClientsCreated": 0,
+  "nativeLibrarySha256": "fb56b89e5a6af2788baf4d858fcca02e675f0752a3cabf355aac791b767ba287",
+  "buildDriverSha256": "228ba93b50c50ac1061c78877303ce4ab25b1ec7eeac7e0809a91b363e72a653",
+  "changedSourceFromR74": [
+    "moloch/live-runtime/src/fundamental_policy.rs",
+    "moloch/live-runtime/tests/fundamental_policy.rs"
+  ]
+}

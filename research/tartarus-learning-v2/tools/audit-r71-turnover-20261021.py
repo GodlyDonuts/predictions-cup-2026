@@ -32,10 +32,21 @@ def filled_order_cadence(fills, observed):
     windows = {}
     for minutes in (1, 5, 15, 60):
         start = observed - timedelta(minutes=minutes)
-        count = sum(start < at <= observed for at in first.values())
+        executions = sorted(at for at in first.values() if start < at <= observed)
+        count = len(executions)
+        anchors = [start, *executions, observed]
+        maximum_gap = max((b-a).total_seconds() for a, b in zip(anchors, anchors[1:]))
+        completed_end = observed.replace(second=0, microsecond=0)
+        complete_counts = [sum(completed_end-timedelta(minutes=i+1) <= at
+                               < completed_end-timedelta(minutes=i) for at in first.values())
+                           for i in range(minutes)]
         windows[str(minutes)] = dict(distinctFirstFilledOrders=count,
             filledOrdersPerMinute=count / minutes, targetFilledOrders=minutes,
-            averageTargetMet=count >= minutes)
+            averageTargetMet=count >= minutes, maximumGapWithinWindowSeconds=maximum_gap,
+            completedUtcMinutesObserved=minutes,
+            completedUtcMinutesWithNoNewFilledOrder=sum(n == 0 for n in complete_counts),
+            rollingMinuteCadenceMet=count >= minutes and maximum_gap <= 60
+                and bool(executions) and (observed-executions[-1]).total_seconds() < 60)
     last = max(first.values()) if first else None
     return dict(observedUtc=observed.isoformat(), targetFilledOrdersPerMinute=1,
         counting='Each actual order once at first official execution; partial fills do not reset the clock',

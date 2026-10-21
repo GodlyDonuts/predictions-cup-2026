@@ -423,6 +423,47 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         }
     }
 
+    #[cfg(target_os="linux")]
+    fn aborted_top_up_fixture(sold:u64)->(F,baal_transport_service::Transport,baal_transport_service::Config,Value,moloch_live_runtime::authority::CancelSnapshotSet,Value,Value,moloch_live_runtime::authority::SnapshotSet){
+        use baal_transport_service::{Transport,DisabledCredentials,SystemClock,ReadOnlyAuthority};
+        let(mut f,t,facts,_,_)=recurring_after_exit(sold,true);let facts=recurring_packet(&mut f,facts,NOW+21000);let a=f.authority();
+        let hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+21025).unwrap().remove(0);
+        let plan=f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&hint,&facts,&a,NOW+21025).unwrap().unwrap();let event=plan.event().clone();drop(plan);drop(a);f.event(event);
+        let q=f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q["reviewedFundamentalEntry"]["sameSideTopUp"]["version"]==3).unwrap();let id=q["id"].as_u64().unwrap();let spec=f.spec(&q);
+        f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW+24026).unwrap();
+        let(config,evidence)=prove_pre_admission_abort_at(&mut f,&q,true,NOW+24027);f.retire_drafts(NOW+24031);
+        let raw=std::fs::read_to_string(f.root.join("bank/events.jsonl")).unwrap();let retirement=raw.lines().map(|l|serde_json::from_str::<Value>(l).unwrap()["event"].clone()).find(|e|e["type"]=="unsubmitted_intent_retired"&&e["orderId"]==id).unwrap();
+        let t=Transport::new_for_mock(config.clone(),Box::new(DisabledCredentials),Box::new(SystemClock),Box::new(ReadOnlyAuthority),"http://127.0.0.1:9/api/v1".into()).unwrap();
+        let future=facts.clone();let mut facts=moloch_live_runtime::authority::CancelSnapshotSet{account:facts.account,positions:facts.positions,open_orders:facts.open_orders,cash_balance:facts.cash_balance};
+        for(i,r)in [&mut facts.account,&mut facts.positions,&mut facts.open_orders,&mut facts.cash_balance].into_iter().enumerate(){r.request_started_at=iso(NOW+24040+i as u64*2);r.received_at=iso(NOW+24041+i as u64*2);}
+        (f,t,config,evidence,facts,retirement,q,future)
+    }
+    #[cfg(target_os="linux")]
+    #[test]fn proved_no_http_top_up_releases_only_policy_pending_for_partial_and_flat_cohorts(){
+        for sold in [1,2]{let(mut f,t,config,evidence,facts,retirement,q,next_facts)=aborted_top_up_fixture(sold);let id=q["id"].as_u64().unwrap();let tag=f.store.as_ref().unwrap().durable_tag(id);let report=f.bank.engine().report().unwrap();let head=f.bank.durable_head();
+            assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+24050).unwrap().is_empty());
+            let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+24050).unwrap().into_iter().find(|h|h.qid==id).unwrap();let reference=&retirement["sourceRef"];
+            let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,reference["id"].as_str().unwrap(),reference["sequence"].as_u64().unwrap(),&retirement,NOW+24050).unwrap();
+            f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+24050).unwrap();f.reopen();assert_eq!(f.bank.engine().report().unwrap(),report);assert_eq!(f.bank.durable_head(),head);assert_eq!(f.store.as_ref().unwrap().durable_tag(id),tag);
+            assert_eq!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+24051).unwrap().len(),1);assert!(f.log.proved_no_network(id)&&f.log.attempted.contains(&id)&&!f.log.closed.contains(&id)&&!f.log.acknowledgments.contains_key(&id));
+            assert!(f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&f.spec(&q),&f.trust,NOW+24051).is_err());assert!(f.store.as_ref().unwrap().validate_acknowledgment(id,&F::base(&q,"actual_order_ack",NOW+24052,"999")).is_err());
+            f.store.take();f.log=dispatch::DispatchLog::open(&f.root.join("dispatch.ndjson")).unwrap();assert!(Cohorts::open(&f.root,&f.bank,&f.log,f.owner.clone()).is_err());
+            let(spec,p,at,error)=f.log.pre_admission_originals(id).unwrap();let proof=baal_transport_service::verify_retained_ordinary_pre_admission(&config,&spec,&p,at,&error,&evidence).unwrap();f.log.verify_aborted_before_admission(id,&proof).unwrap();f.reopen();
+            assert_eq!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+24053).unwrap().len(),1);assert_eq!(f.bank.engine().report().unwrap(),report);
+            // Respect native planning write spacing after the fresh book creates and retires a draft.
+            let next_facts=recurring_packet(&mut f,next_facts,NOW+27000);let a=f.authority();let next_hint=f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+30026).unwrap().remove(0);
+            let next=f.store.as_ref().unwrap().prepare_entry(&f.bank,&f.log,&t,&f.scope,&next_hint,&next_facts,&a,NOW+30026).unwrap().unwrap();let event=next.event().clone();drop(next);drop(a);let fills=f.bank.engine().fills().to_vec();let cash=f.bank.engine().wallet.cash;f.event(event);
+            let fresh=f.bank.engine().order_records().into_iter().find(|q|q["retired"]==false&&q["reviewedFundamentalEntry"]["sameSideTopUp"]["version"]==3).unwrap();assert_ne!(fresh["id"],id);assert_eq!(f.bank.engine().fills(),fills.as_slice());assert_eq!(f.bank.engine().wallet.cash,cash);
+        }
+    }
+    #[cfg(target_os="linux")]
+    #[test]fn proved_no_http_top_up_retirement_rejects_wrong_position_open_order_archive_and_unhydrated_log(){
+        for case in ["position","open","archive","unhydrated"]{let(mut f,t,config,evidence,mut facts,retirement,q,_next_facts)=aborted_top_up_fixture(1);let id=q["id"].as_u64().unwrap();let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+24050).unwrap().into_iter().find(|h|h.qid==id).unwrap();
+            match case{"position"=>facts.positions.data["positions"]=json!([{"exchangeId":"101","quantity":0}]),"open"=>facts.open_orders.data["data"]=json!([{"id":"999","exchangeId":"101"}]),"archive"=>{std::fs::write(config.queue_dir.join(evidence["sourceArchive"].as_str().unwrap()),b"{}").unwrap();},_=>{f.log=dispatch::DispatchLog::open(&f.root.join("dispatch.ndjson")).unwrap();}}
+            let reference=&retirement["sourceRef"];assert!(f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,reference["id"].as_str().unwrap(),reference["sequence"].as_u64().unwrap(),&retirement,NOW+24050).is_err(),"{case}");
+        }
+    }
+
     fn entry_fixture()->(F,baal_transport_service::Transport,moloch_live_runtime::authority::SnapshotSet){
         entry_fixture_quantity(2)
     }
