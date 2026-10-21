@@ -1,0 +1,24 @@
+{
+  "sourceChanges": {
+    "engine.rs": {
+      "baseSha256": "d8b881c0bae5dd8c844444ce0e2712f3ce53455cc378edf67c007890e5025ed9",
+      "candidateSha256": "948cc1af4c20be0a88750f621fb71226e23bab8cda547baa1205db8d3fdfaee5"
+    },
+    "reviewed_inventory_exit.rs": {
+      "baseSha256": "6f4ca552a931fed9b41e406fb801c40919a96218dd1533e2c3240c2a2009b368",
+      "candidateSha256": "6341c9492aba48fa7418d6aff9e4ce301ae11dac4d92a822f5e756ad2913bfbb"
+    },
+    "reviewed_fundamental_entry.rs": {
+      "baseSha256": "2f049eecc91ca12a522aff972faef20c9a41cd09f922eab8d29f5d062f689e14",
+      "candidateSha256": "11dbe0adb9785341ff38a2059d54cc348ae7310f172bfe9793b038929c7599b5"
+    },
+    "reviewed_rank_campaign.rs": {
+      "baseSha256": "95af8c90b9419d0c5b66400ddddbca93ac9ea80f37cc14a3da6802f093bc8b58",
+      "candidateSha256": "82f390a82867fd62545bb15f7f4cf113c837b06a26a16fe19a456f64e8f0304f"
+    }
+  },
+  "nativeArm64ChecksPassed": 126,
+  "fullOriginalPrefixReplay": "running, not yet qualified",
+  "productionDeployed": false,
+  "productionModified": false
+}

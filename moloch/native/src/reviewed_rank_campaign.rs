@@ -160,7 +160,7 @@ impl Engine {
   let a=&c["action"];let ex=id(&a["exchangeId"])?;need(self.books.get(&ex).is_some_and(|b|e["bankScope"]["tournamentId"]==b.tournament),"RANK_TOURNAMENT")?;let buy=a["action"]=="BUY";let side=if a["side"]=="YES"{Side::Yes}else{Side::No};let limit=price(dec(&a["limitPrice"])?)?;let n=a["quantity"].as_u64().ok_or("RANK_QUANTITY")?;let qid=self.prior_orders+self.orders.len()as u64+1;let b=self.books.get(&ex).ok_or("RANK_BOOK")?;let(same,better)=Self::visible(b,side,buy,limit);
   if buy{self.wallet.reserve(&qid.to_string(),Reservation{exchange:ex.clone(),side,quantity:n,limit})?;}
   self.orders.push(Order{id:qid,market:id(&a["marketId"])?,exchange:ex,tournament:string(&e["bankScope"]["tournamentId"])?,side,buy,quantity:n,filled:0,limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same,better,visible_same:same,visible_better:better,touch_remainder:0,aon:false,age_reason:false,through:false,participation:100,conditional:false,touch_bps:0});
-  self.reviewed_rank_campaigns.insert(qid,json!({"objective":"declared_first_place_rank_risk","campaignSha256":e["campaignSha256"],"originSha256":e["originSha256"],"action":a,"evaluation":score,"reviewCurrentUntilMs":c["validUntilMs"]}));self.writes.push(at);self.count("reviewedRankCampaignReservations");Ok(())
+  std::sync::Arc::make_mut(&mut self.reviewed_rank_campaigns).insert(qid,json!({"objective":"declared_first_place_rank_risk","campaignSha256":e["campaignSha256"],"originSha256":e["originSha256"],"action":a,"evaluation":score,"reviewCurrentUntilMs":c["validUntilMs"]}));self.writes.push(at);self.count("reviewedRankCampaignReservations");Ok(())
  }
 }
 

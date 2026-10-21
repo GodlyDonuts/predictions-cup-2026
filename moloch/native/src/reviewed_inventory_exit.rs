@@ -135,13 +135,13 @@ impl Engine {
         if self.writes.len()>=self.policy.writes||self.writes.last().is_some_and(|t|at-*t<self.policy.write_gap){return Err("REVIEWED_EXIT_WRITE_BUDGET")}
         let qid=self.prior_orders+self.orders.len() as u64+1;let (same,better)=Self::visible(b,side,false,limit);
         self.orders.push(Order{id:qid,market,exchange:ex,tournament,side,buy:false,quantity:n,filled:0,limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same,better,visible_same:same,visible_better:better,touch_remainder:0,aon:false,age_reason:false,through:false,participation:100,conditional:false,touch_bps:0});
-        self.reviewed_inventory_exits.insert(qid,json!({"originSha256":e["originSha256"],"reviewSha256":e["reviewSha256"],"reason":e["reason"],"bookSha256":e["bookSha256"],"adoptionReceiptHash":e["adoptionReceiptHash"]}));
-        if passive{let record=self.reviewed_inventory_exits.get_mut(&qid).ok_or("REVIEWED_PASSIVE_EXIT_RECORD")?;
+        std::sync::Arc::make_mut(&mut self.reviewed_inventory_exits).insert(qid,json!({"originSha256":e["originSha256"],"reviewSha256":e["reviewSha256"],"reason":e["reason"],"bookSha256":e["bookSha256"],"adoptionReceiptHash":e["adoptionReceiptHash"]}));
+        if passive{let record=std::sync::Arc::make_mut(&mut self.reviewed_inventory_exits).get_mut(&qid).ok_or("REVIEWED_PASSIVE_EXIT_RECORD")?;
             for key in ["executionMode","maximumPassiveQuantity","modelSha256","sourceSha256"]{record[key]=e[key].clone();}
             if fifo{for key in ["pricingObjective","pricingBasis","minimumNetSalePrice","forecastExpectedPayout"]{record[key]=e[key].clone();}}
             else{record["minimumNetValue"]=json!(money(payout));}
         }
-        if cohort{let record=self.reviewed_inventory_exits.get_mut(&qid).ok_or("REVIEWED_COHORT_RECORD")?;record.as_object_mut().unwrap().remove("adoptionReceiptHash");record["originKind"]=json!(if e["cohortOrigin"]["version"]==2{"reviewed_inherited_cohort"}else{"original_entry_cohort"});record["cohortOriginSha256"]=json!(hash(&e["cohortOrigin"]));}
+        if cohort{let record=std::sync::Arc::make_mut(&mut self.reviewed_inventory_exits).get_mut(&qid).ok_or("REVIEWED_COHORT_RECORD")?;record.as_object_mut().unwrap().remove("adoptionReceiptHash");record["originKind"]=json!(if e["cohortOrigin"]["version"]==2{"reviewed_inherited_cohort"}else{"original_entry_cohort"});record["cohortOriginSha256"]=json!(hash(&e["cohortOrigin"]));}
         self.writes.push(at);self.count("reviewedInventoryExitReservations");Ok(())
     }
 }

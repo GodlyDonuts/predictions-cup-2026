@@ -142,9 +142,9 @@ impl Engine{
   let qid=self.prior_orders+self.orders.len()as u64+1;let(same,better)=Self::visible(b,side,true,limit);
   self.wallet.reserve(&qid.to_string(),Reservation{exchange:ex.clone(),side,quantity:n,limit})?;
   self.orders.push(Order{id:qid,market,exchange:ex,tournament,side,buy:true,quantity:n,filled:0,limit,created:at,activation:at+self.policy.latency,expires,cancel:None,retired:false,credit:0,barrier:None,same,better,visible_same:same,visible_better:better,touch_remainder:0,aon:false,age_reason:false,through:false,participation:100,conditional:false,touch_bps:0});
-  self.reviewed_fundamental_entries.insert(qid,json!({"originSha256":e["originSha256"],"reviewSha256":e["reviewSha256"],"bookSha256":e["bookSha256"],"reviewMaximumQuantity":maximum,"reviewMaximumPrincipal":money(dec(&e["reviewMaximumPrincipal"])?),"expectedPayout":money(payout),"marginPerShare":money(margin),"reviewCurrentUntilMs":review_until,"reservedQuantity":n,"grossLimitPrincipal":money(limit*n as i128)}));
-  if top_up.is_some(){self.reviewed_fundamental_entries.get_mut(&qid).ok_or("REVIEWED_ENTRY_TOP_UP_METADATA")?["sameSideTopUp"]=e["sameSideTopUp"].clone();}
-  if extended{let metadata=self.reviewed_fundamental_entries.get_mut(&qid).ok_or("REVIEWED_ENTRY_EXECUTION_METADATA")?;
+  std::sync::Arc::make_mut(&mut self.reviewed_fundamental_entries).insert(qid,json!({"originSha256":e["originSha256"],"reviewSha256":e["reviewSha256"],"bookSha256":e["bookSha256"],"reviewMaximumQuantity":maximum,"reviewMaximumPrincipal":money(dec(&e["reviewMaximumPrincipal"])?),"expectedPayout":money(payout),"marginPerShare":money(margin),"reviewCurrentUntilMs":review_until,"reservedQuantity":n,"grossLimitPrincipal":money(limit*n as i128)}));
+  if top_up.is_some(){std::sync::Arc::make_mut(&mut self.reviewed_fundamental_entries).get_mut(&qid).ok_or("REVIEWED_ENTRY_TOP_UP_METADATA")?["sameSideTopUp"]=e["sameSideTopUp"].clone();}
+  if extended{let metadata=std::sync::Arc::make_mut(&mut self.reviewed_fundamental_entries).get_mut(&qid).ok_or("REVIEWED_ENTRY_EXECUTION_METADATA")?;
    metadata["executionMode"]=json!(mode);metadata["modelSha256"]=e["modelSha256"].clone();metadata["sourceSha256"]=e["sourceSha256"].clone();metadata["acquisitionCeiling"]=json!(money(ceiling.ok_or("REVIEWED_ENTRY_EXECUTION_METADATA")?));
    metadata["actionSpec"]=json!({"marketId":e["marketId"],"exchangeId":e["exchangeId"],"tournamentId":e["bankScope"]["tournamentId"],"side":label(side),"action":"buy","quantity":n,"limitPrice":money(limit)});
   }

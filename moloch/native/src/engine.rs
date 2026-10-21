@@ -457,9 +457,9 @@ pub struct Engine {
     daily_entry_windows: Option<Value>,
     live_packages: BTreeMap<String, packages::LivePackage>,
     package_orders: BTreeMap<u64,String>,
-    reviewed_inventory_exits: BTreeMap<u64,Value>,
-    reviewed_fundamental_entries: BTreeMap<u64,Value>,
-    reviewed_rank_campaigns: BTreeMap<u64,Value>,
+    reviewed_inventory_exits: Arc<BTreeMap<u64,Value>>,
+    reviewed_fundamental_entries: Arc<BTreeMap<u64,Value>>,
+    reviewed_rank_campaigns: Arc<BTreeMap<u64,Value>>,
     ordinary_entry_exclusions: Option<Value>,
     profitable_depth_mode: Option<Value>,
     managed_inventory_planning: Option<Value>,
@@ -757,9 +757,9 @@ impl Engine {
             daily_entry_windows: None,
             live_packages: BTreeMap::new(),
             package_orders: BTreeMap::new(),
-            reviewed_inventory_exits: BTreeMap::new(),
-            reviewed_fundamental_entries: BTreeMap::new(),
-            reviewed_rank_campaigns: BTreeMap::new(),
+            reviewed_inventory_exits: Arc::new(BTreeMap::new()),
+            reviewed_fundamental_entries: Arc::new(BTreeMap::new()),
+            reviewed_rank_campaigns: Arc::new(BTreeMap::new()),
             ordinary_entry_exclusions: None,
             profitable_depth_mode: None,
             managed_inventory_planning: None,
@@ -1901,9 +1901,9 @@ impl Engine {
         let unresolved = self.orders.iter().filter(|q| !q.retired).count();
         let pnl = self.wallet.cash + liquidation - self.wallet.initial;
         let mut report = json!({"bot":"Moloch","runtime":"rust","at":self.last_string,"policyHash":hash(&self.policy.raw),"events":self.events,"cash":money(self.wallet.cash),"realized":money(self.wallet.realized),"fees":money(self.wallet.fees),"ownedCost":money(self.wallet.owned_cost()),"reservedCash":money(self.wallet.reserved()?),"netLiquidationPnl":if known{json!(money(pnl))}else{Value::Null},"positions":self.wallet.positions(),"fills":self.fills.len(),"orders":self.prior_orders+self.orders.len() as u64,"activeOrders":self.orders.iter().filter(|q|!q.retired&&self.last.is_some_and(|t|q.end()>t/1_000_000)).count(),"unresolvedOrders":unresolved,"executionMode":if self.live_mode{"live"}else{"paper"},"fillModel":if self.live_mode{"actualAccountFills"}else if self.policy.conditional{"conditionalFifo"}else{"strictThrough"},"conditionalQueueFills":self.fills.iter().filter(|f|f["conditionalQueueFill"]==true).count(),"profitSignalEligible":!self.policy.conditional&&!self.fills.iter().any(|f|f["conditionalQueueFill"]==true||f["throughCapacityFill"]==true||f["executionStyle"]=="inventoryAON")&&unresolved==0&&known&&self.wallet.realized>0&&pnl>0,"counts":self.counts,"continuation":self.baseline,"contestOrders":if self.live_mode{self.live_orders.len()}else{0},"networkRequests":0,"profitabilityEstablished":false});
-        if !self.reviewed_inventory_exits.is_empty(){report["reviewedInventoryExitReservations"]=json!(self.reviewed_inventory_exits);}
-        if !self.reviewed_fundamental_entries.is_empty(){report["reviewedFundamentalEntryReservations"]=json!(self.reviewed_fundamental_entries);}
-        if !self.reviewed_rank_campaigns.is_empty(){report["reviewedRankCampaignReservations"]=json!(self.reviewed_rank_campaigns);}
+        if !self.reviewed_inventory_exits.is_empty(){report["reviewedInventoryExitReservations"]=json!(self.reviewed_inventory_exits.as_ref());}
+        if !self.reviewed_fundamental_entries.is_empty(){report["reviewedFundamentalEntryReservations"]=json!(self.reviewed_fundamental_entries.as_ref());}
+        if !self.reviewed_rank_campaigns.is_empty(){report["reviewedRankCampaignReservations"]=json!(self.reviewed_rank_campaigns.as_ref());}
         if let Some(record)=&self.profitable_depth_mode{report["profitableDepthMode"]=record.clone();}
         if let Some(record)=&self.managed_inventory_planning{report["managedInventoryPlanning"]=record.clone();}
         if let Some(record)=&self.ordinary_entry_exclusions{report["ordinaryEntryExclusions"]=record.clone();}
@@ -2034,6 +2034,15 @@ impl Engine {
  fn hold(e:&mut Engine,ex:&str,side:Side,n:u64){let id=format!("fixture-held-{ex}");e.wallet.reserve(&id,Reservation{exchange:ex.into(),side,quantity:n,limit:400000}).unwrap();e.wallet.buy_fill(&id,n).unwrap();}
  fn old_check(e:&Engine)->Result<()>{for(ex,side)in e.wallet.lots.keys(){let held=e.wallet.quantity(ex,*side);if held<e.pledge(ex,*side)+held.min(e.opposite_buys(ex,*side)){return Err("SHARE_PLEDGE")}}Ok(())}
  fn order(q:&Order,ex:&str,side:Side,buy:bool,n:u64,filled:u64)->Order{let mut out=q.clone();out.exchange=ex.into();out.side=side;out.buy=buy;out.quantity=n;out.filled=filled;out.retired=false;out}
+ #[test]fn historical_review_proofs_share_on_clone_and_isolate_every_mutation(){
+  let(mut original,_)=fixture();let value=json!({"proof":"x".repeat(1024*1024),"version":1});
+  for map in [&mut original.reviewed_inventory_exits,&mut original.reviewed_fundamental_entries,&mut original.reviewed_rank_campaigns]{Arc::make_mut(map).insert(7,value.clone());}
+  let before=original.report().unwrap();let mut next=original.clone();
+  assert!(Arc::ptr_eq(&original.reviewed_inventory_exits,&next.reviewed_inventory_exits));assert!(Arc::ptr_eq(&original.reviewed_fundamental_entries,&next.reviewed_fundamental_entries));assert!(Arc::ptr_eq(&original.reviewed_rank_campaigns,&next.reviewed_rank_campaigns));
+  for map in [&mut next.reviewed_inventory_exits,&mut next.reviewed_fundamental_entries,&mut next.reviewed_rank_campaigns]{Arc::make_mut(map).get_mut(&7).unwrap()["version"]=json!(2);Arc::make_mut(map).insert(8,json!({"new":true}));}
+  assert_eq!(original.report().unwrap(),before);assert_ne!(next.report().unwrap(),before);
+  assert!(!Arc::ptr_eq(&original.reviewed_inventory_exits,&next.reviewed_inventory_exits));assert_eq!(original.reviewed_rank_campaigns[&7]["version"],1);assert_eq!(next.reviewed_rank_campaigns[&7]["version"],2);
+ }
  #[test]fn retired_prefix_keeps_every_record_and_all_live_share_pledges(){
   let(mut e,q)=fixture();hold(&mut e,"101",Side::Yes,10);
   for i in 0..20000{let mut old=q.clone();old.id=i+1;old.retired=true;e.orders.push(old);}
