@@ -1,0 +1,58 @@
+{
+  "observedUtc": "2026-10-21T05:31:33.927911+00:00",
+  "sourceCommit": "2535fd760e92e76d54228b3f4d139c81c5d0d79a",
+  "binarySha256": "f889b34762e594685ac1c759d0a0cea1487a2994febd053644a95f58995b86cb",
+  "controlSha256": "c52ef26d64478e2ca2159679119922609fa553174c6daeab4cf98b9ca751e4ba",
+  "originals": {
+    "manifest": {
+      "bytes": 16090,
+      "sha256": "d74b52eb107ea97388c106505d36fce14700b082723c9f7bfa229f2aedafef9e"
+    },
+    "head": {
+      "bytes": 254,
+      "sha256": "6a5768a0a05d1d2b0447d9618085280da684024be32bcc7aa48870b61c735049"
+    },
+    "report": {
+      "bytes": 49880727,
+      "sha256": "6986ef7a4112eb41ddcf372792af6014f8c9066482b38f943fa7ba80d329f873"
+    },
+    "bridges": {
+      "bytes": 52389586,
+      "sha256": "94656a9127e2565c0425912deab8b5a7038869e80dc0136f7d155d3edafc189c"
+    },
+    "control": {
+      "bytes": 26684,
+      "sha256": "bed178634e699f969a344bb3c1aa3a595c37ef40db1198ee9935a87cce00467a"
+    }
+  },
+  "prefixes": {
+    "financial": {
+      "bytes": 2432267668,
+      "sha256": "89008a5207b2219c3c8b9fd031ae4b341c6a732b11e144131185c53c8974dcee"
+    },
+    "dispatch": {
+      "bytes": 26929543,
+      "sha256": "de174cc3738860b57617ea9b13cff07889764d3e54855b76286184cb598ad74b"
+    }
+  },
+  "originalFills": 396,
+  "originalFifoAndFinancialHistoryPreserved": true,
+  "sdkUnknown": 0,
+  "sdkActive": null,
+  "allAcknowledgedOrdersTerminal": true,
+  "nativeAndSdkLibrariesReusedUnchanged": true,
+  "all20EngineBridgesPreserved": true,
+  "all14OriginalG12ReviewsPreserved": true,
+  "riskLimitsDailyWindowsAndLimiterChanged": false,
+  "archivedExactStop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-21T04:26:19.298Z",
+    "reason": "STREAM_QUEUE_FULL"
+  },
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "pid": 979680,
+  "startTicks": "53034794",
+  "actualExecutableAndArgumentsVerified": true
+}
