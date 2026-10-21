@@ -76,6 +76,8 @@ class ManagedDataService:
         if self.in_background:return
         if result['status']in('RATE_WAIT','BUSY'):
             self.actor_ready=max(self.env.now+1,result['ready_ms'])
+            if self.env.managed_data_profile==INTENT_PROFILE and not self.waiting_actor:
+                self.queue('SIG',self.actor_ready)
         elif result['status']=='IN_FLIGHT':self.actor_ready=None
 
     def request(self,venue,key,**kwargs):
@@ -87,9 +89,25 @@ class ManagedDataService:
         result=self.original_dispatch(*args,**kwargs);self.foreground(result);return result
 
     def action(self,action,observation):
+        offered=self.waiting_actor
         result=self.original_action(action,observation)
         family=int(action['family']);kind,key=observation['entities'][int(action['market'])]
         sig_attempt=(family in(1,2,3,4,7,8,9)or family==10 and kind=='read'and key[0]=='SIG')
+        if self.env.managed_data_profile==INTENT_PROFILE:
+            if offered:
+                self.waiting_actor=False
+                if sig_attempt and result['status']in('RATE_WAIT','BUSY'):
+                    self.queue('SIG',self.actor_ready)
+                else:
+                    self.actor_ready=None;self.queue('SIG',self.env.now)
+            elif sig_attempt:
+                if result['status']not in('RATE_WAIT','BUSY'):self.actor_ready=None
+            elif family==0 and not result.get('wake_on_observation',True):
+                # Explicit uninterruptible WAIT declines the pending turn.
+                self.actor_ready=None;self.queue('SIG',self.env.now)
+            # Local preparation, external reads and interruptible WAIT before
+            # the offered turn do not abandon a pending foreground request.
+            return result
         if not sig_attempt or result['status']not in('RATE_WAIT','BUSY'):self.actor_ready=None
         if self.waiting_actor and self.actor_ready is None:
             self.actor_ready=None;self.waiting_actor=False;self.queue('SIG',self.env.now)

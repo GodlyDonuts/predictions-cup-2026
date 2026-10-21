@@ -32,10 +32,30 @@ class ManagedDataTests(unittest.TestCase):
         a={'family':1,'market':i,'side':0,'price':90,'patience':0,'target_fraction':0.,'child_fraction':0.}
         e.advance(12);self.assertEqual(e.act_raw(a,o)['status'],'BUSY')
         self.assertEqual(len(e.budget.reads),1);self.assertFalse(e.budget.writes)
+        action(e,5,'contract');self.assertEqual(s.actor_ready,101)
+        waiting=action(e,0,patience=0,clock=.5)
+        advance_alarm(e,12,waiting);self.assertEqual(e.now,101);self.assertEqual(s.actor_ready,101)
         e.advance(701);self.assertTrue(s.waiting_actor);self.assertEqual(s.requests['SIG'],1)
         o=e.observe();a['market']=o['entities'].index(('contract','x'));e.advance(712)
         self.assertEqual(e.act_raw(a,o)['status'],'IN_FLIGHT');self.assertEqual(len(e.budget.writes),1)
         e.advance(e.busy_until);self.assertEqual(len(e.api_fills),1);self.assertEqual(s.requests['SIG'],1)
+
+    def test_raw_intent_strict_wait_declines_priority_and_keeps_data_running(self):
+        e=environment();s=ManagedDataService(e,{'profile':INTENT_PROFILE,'initially_enabled':True})
+        e.advance(1);e.dispatch('CANCEL_ALL',None,idempotency_key='pending')
+        self.assertIsNotNone(s.actor_ready);action(e,0,patience=1,clock=.5)
+        self.assertIsNone(s.actor_ready);e.advance(1000);self.assertGreater(s.requests['SIG'],1)
+
+    def test_raw_intent_repeated_rate_wait_schedules_the_next_offered_turn(self):
+        e=environment();e.end=70000;e.budget=RateBudget(BudgetConfig(100,1,1,1,'a'*64))
+        e.budget.admit('earlier',1,True);e.budget.complete('earlier',1)
+        s=ManagedDataService(e,{'profile':INTENT_PROFILE,'initially_enabled':True});e.advance(3)
+        self.assertEqual(e.dispatch('CANCEL_ALL',None,idempotency_key='busy')['status'],'BUSY')
+        e.advance(103);self.assertTrue(s.waiting_actor)
+        self.assertEqual(action(e,4)['status'],'RATE_WAIT');self.assertFalse(s.waiting_actor)
+        self.assertEqual(s.pending['SIG'][0],60002)
+        e.advance(60002);self.assertTrue(s.waiting_actor)
+        self.assertEqual(action(e,4)['status'],'IN_FLIGHT');self.assertEqual(len(e.budget.writes),1)
 
     def test_ready_only_profile_remains_masked_while_raw_intents_preserve_stops(self):
         old=environment();install(old);old.advance(1);o=old.observe();i=o['entities'].index(('contract','x'))
