@@ -1,7 +1,7 @@
-"""Offline R75 qualification against the unchanged deployed native engine.
+"""Offline R77 qualification against the unchanged deployed native engine.
 
-Prepare source by copying the R74 source tree and overlaying only the two
-fundamental_policy source/test files. No production files or API are touched.
+Prepare from R76 with the closed-row reader, its focused fixture and the two
+selected worker snapshot changes. No production files or API are touched.
 """
 from pathlib import Path
 import argparse

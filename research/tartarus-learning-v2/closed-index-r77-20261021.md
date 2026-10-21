@@ -28,4 +28,8 @@ The finite exit census has observed profitable bid depth for parts of 993 and 10
 
 The prepared replacement drains the original worker, preserves original FIFO/fills, dispatch history, known open orders and unknown-acceptance handling, and starts one successor with the same native engine, monetary limits and account limiter. The previous replacement needed about 21 minutes to restore history; this cost is material. [Deployment](tools/deploy-closed-index-r77-20261021.py), [finite verification](tools/observe-closed-index-r77-20261021.py).
 
-R77 is qualified but not yet claimed live in this report. Verify the actual executable, complete original financial prefix, fresh trading and real first-filled-order cadence after replacement. Neither tests, invested principal nor ACKs establish profitability or completion.
+R77 was installed at 23:36:29 UTC as sole worker 1053198, updater 1053201, with executable and arguments verified. It is restoring the original ledger. There were no open or unknown orders at the replacement boundary. [Installation evidence](r77-deployment-20261021.json). Fresh trading is not yet claimed in this report. Verify the actual executable, complete original financial prefix, fresh trading and real first-filled-order cadence after replacement. Neither tests, invested principal nor ACKs establish profitability or completion.
+
+## Partial exit observation
+
+The R76 census was interrupted by the planned replacement before its full 60-minute duration. Its retained prefix has 92 accepted samples. Both 993 and 1044 had 25 current profitable-bid nominations between 23:06 and 23:35, without a new sale; zero accepted nominations showed an ask-relative pricing miss. Repeated depth is not additive turnover. [Partial observation evidence](r76-exit-census-partial-20261021.json). An exit-priority scheduler is being qualified separately while R77 restores; it is not deployed.

@@ -1,0 +1,181 @@
+{
+  "partialWindow": true,
+  "workerPid": 1041499,
+  "counts": {
+    "966": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 13,
+        "stale_book": 74
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    },
+    "977": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 10,
+        "stale_book": 73,
+        "missing_book": 9
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    },
+    "865": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 10,
+        "stale_book": 72,
+        "existing_order": 40,
+        "missing_book": 1
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    },
+    "993": {
+      "samples": 92,
+      "current": 25,
+      "profitableBid": 92,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 10,
+        "stale_book": 63
+      },
+      "first": "2026-10-21T23:06:55.748000+00:00",
+      "last": "2026-10-21T23:33:46.081000+00:00",
+      "limits": [
+        [
+          9911,
+          "0.760",
+          "0.76"
+        ]
+      ]
+    },
+    "885": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 10,
+        "stale_book": 63
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    },
+    "1051": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 10,
+        "stale_book": 61,
+        "missing_book": 1
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    },
+    "851": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "flat": 92
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    },
+    "1043": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 10,
+        "stale_book": 57,
+        "existing_order": 31
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    },
+    "1044": {
+      "samples": 92,
+      "current": 25,
+      "profitableBid": 92,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 4,
+        "stale_book": 63,
+        "existing_order": 2
+      },
+      "first": "2026-10-21T23:07:12.206000+00:00",
+      "last": "2026-10-21T23:35:09.420000+00:00",
+      "limits": [
+        [
+          470,
+          "0.845",
+          "0.845"
+        ],
+        [
+          470,
+          "0.850",
+          "0.85"
+        ]
+      ]
+    },
+    "1077": {
+      "samples": 92,
+      "current": 0,
+      "profitableBid": 0,
+      "miss": 0,
+      "reasons": {
+        "review_not_current": 11,
+        "stale_book": 58,
+        "existing_order": 2
+      },
+      "first": null,
+      "last": null,
+      "limits": []
+    }
+  },
+  "observationCount": 110,
+  "latest": {
+    "observedUtc": "2026-10-21T23:35:27.786872+00:00",
+    "pid": 1041499,
+    "phase": "observing",
+    "elapsedObservationSeconds": 1793.866,
+    "targetSeconds": 3600,
+    "samples": 92,
+    "observationFailures": 18,
+    "marketsWithCurrentProfitableBids": [
+      "1044",
+      "993"
+    ],
+    "marketsWithAskRelativeMiss": [],
+    "accountRequests": 0,
+    "executionAuthority": false,
+    "repeatedDepthIsNotSummedAsTurnover": true,
+    "filledOrdersClaimed": 0
+  },
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "quotesAreNotFills": true
+}

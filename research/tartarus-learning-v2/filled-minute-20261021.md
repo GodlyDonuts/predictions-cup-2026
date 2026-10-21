@@ -1,6 +1,6 @@
 # One filled order per minute: execution objective and current gap
 
-R76 remains the sole live worker while R77 is prepared. The replacement removes repeated closed-order history scans: median reader work fell from 14.8446 to 1.0228 seconds with identical original rows, a 93.11% component improvement. Full build and 379 integration/worker checks pass; whole-worker speed and fill-rate improvement are not yet established. [Change and exact qualification](closed-index-r77-20261021.md).
+R77 was installed at 23:36:29 UTC as sole worker 1053198 and is restoring the original ledger. Its executable and arguments are verified; fresh trading is not yet established. Original 492 fills, the complete 2,611,761,156-byte financial prefix and native engine are preserved. The replacement removes repeated closed-order history scans: median reader work fell from 14.8446 to 1.0228 seconds with identical original rows, a 93.11% component improvement. Full build and 379 integration/worker checks pass; whole-worker speed and fill-rate improvement are not yet established. [Change and exact qualification](closed-index-r77-20261021.md).
 
 At 23:25 UTC, original receipts establish **18 distinct first-filled orders today, two in 15 minutes and five in 60 minutes**. The one-trade-per-minute target remains unmet. Three new R76 buy orders filled; partial receipts count only once. Cash is 895.22 and remaining original cost is 94,974.69. Attributed realized net remains 289.995, including 76.52 inherited. [Receipts and FIFO](r76-turnover-later-20261021.json).
 
