@@ -10,6 +10,19 @@ from .preserve_superseded_queue import archive_batch
 
 
 class ColdArchiveTests(unittest.TestCase):
+    def test_cli_uses_canonical_guard_class_even_when_loaded_under_another_name(self):
+        import contextlib
+        import io
+        import runpy
+        import warnings
+        from unittest.mock import patch
+        with warnings.catch_warnings(), patch('moloch.learning_actions.archive_cold_queue.run', return_value={}) as run:
+            warnings.simplefilter('ignore', RuntimeWarning)
+            entry=runpy.run_module('moloch.learning_actions.archive_cold_queue',run_name='__entrypoint_alias__')
+            with contextlib.redirect_stdout(io.StringIO()):
+                entry['main'](['--output',str(self.root/'unused'),'--pid','12','--binary-sha256','a'*64])
+            run.assert_called_once_with(self.root/'unused',12,'a'*64)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve(); self.queue = self.root/'queue'; self.queue.mkdir()

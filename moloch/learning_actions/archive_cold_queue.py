@@ -162,10 +162,17 @@ def run(output, pid, binary_sha256, *, target_free_bytes=20*GIB, maximum_batches
         return result
 
 
-if __name__ == '__main__':
+def main(argv=None):
+    # `python -m` loads this file as __main__. Use the canonical module's run
+    # so its guard has the exact class identity required by the archive core.
+    from .archive_cold_queue import run as canonical_run
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--pid', type=int, required=True)
     parser.add_argument('--binary-sha256', required=True)
-    args = parser.parse_args()
-    print(json.dumps(run(args.output, args.pid, args.binary_sha256)), flush=True)
+    args = parser.parse_args(argv)
+    print(json.dumps(canonical_run(args.output, args.pid, args.binary_sha256)), flush=True)
+
+
+if __name__ == '__main__':
+    main()
