@@ -49,3 +49,26 @@ impl F{
  let e=f.event(at);f.put(&e).unwrap();let mut expected=current;expected["maximumMarkets"]=json!(12);assert_eq!(f.b().engine().policy(),&expected);assert_eq!(f.b().engine().policy()["entryStopAt"],iso(end));
 }
 #[test]fn paper_and_standalone_seed_cannot_inherit_unproved_capacity(){let mut f=F::new(false);let e=f.event(0);let mut paper=Engine::new(&f.policy).unwrap();let before=paper.report().unwrap();assert!(paper.advance(&e).is_err());assert_eq!(paper.report().unwrap(),before);f.put(&e).unwrap();assert!(matches!(Engine::from_seed_state(&f.b().engine().report().unwrap()),Err("SEED_LIVE_MARKET_CAPACITY_REQUIRE_REPLAY")));}
+
+fn full_scope_event(f:&F,at:i64)->Value{
+ let mut e=f.event(at);let old=f.b().engine().fresh_market_limit();let total=f.b().engine().policy()["maximumMarkets"].as_u64().unwrap() as usize;
+ e["authorizationId"]=json!("human_moloch_full_universe_20261021");e["freshMarketLimit"]=json!(old+f.scope.len()-total);e["effectiveMaximumMarkets"]=json!(f.scope.len());e
+}
+#[test]fn full_scope_releases_thirteenth_market_and_replays_original_twelve_market_history(){
+ let mut f=F::new(true);let old=f.event(0);f.put(&old).unwrap();
+ for i in 0..13{f.book(200+i,1000+i as i64*2500);}assert_eq!(f.fresh_orders().len(),12);assert!(!f.fresh_orders().contains("212"));
+ let before=f.b().engine().report().unwrap();let orders=f.b().engine().order_records();let policy=f.b().engine().policy().clone();
+ let e=full_scope_event(&f,32000);f.put(&e).unwrap();let after=f.b().engine().report().unwrap();
+ for key in ["cash","reservedCash","ownedCost","fees","realized","newTradingRealized","inheritedRealizedGross","openingInventoryCost"]{assert_eq!(after[key],before[key],"{key}");}
+ assert_eq!(f.b().engine().order_records(),orders);let mut expected=policy;expected["maximumMarkets"]=json!(41);assert_eq!(f.b().engine().policy(),&expected);assert_eq!(f.b().engine().fresh_market_limit(),13);
+ f.book(212,33500);assert!(f.fresh_orders().contains("212"));assert_eq!(f.fresh_orders().len(),13);
+ let report=f.b().engine().report().unwrap();let head=f.b().durable_head();f.bank.take();let restored=Session::open_live(&f.root.join("bank"),&f.policy,&f.seed).unwrap();assert_eq!(restored.engine().report().unwrap(),report);assert_eq!(restored.durable_head(),head);assert_eq!(restored.engine().fresh_market_limit(),13);
+}
+#[test]fn full_scope_without_inherited_inventory_uses_exact_scope_size(){let mut f=F::new(false);let e=full_scope_event(&f,0);f.put(&e).unwrap();assert_eq!(f.b().engine().fresh_market_limit(),41);assert_eq!(f.b().engine().policy()["maximumMarkets"],41);assert_eq!(f.b().engine().wallet.cash,40_000_000_000);assert!(f.b().engine().order_records().is_empty());}
+#[test]fn full_scope_cannot_set_arbitrary_quota_or_rewrite_previous_capacity(){
+ for case in ["partial","larger","previous_record","previous_limit","foreign","duplicate","authority"]{
+  let mut f=F::new(true);let original=f.event(0);f.put(&original).unwrap();let mut e=full_scope_event(&f,1);
+  match case{"partial"=>{e["freshMarketLimit"]=json!(12);e["effectiveMaximumMarkets"]=json!(40)},"larger"=>{e["freshMarketLimit"]=json!(14);e["effectiveMaximumMarkets"]=json!(42)},"previous_record"=>e["expectedPreviousCapacitySha256"]=json!("c".repeat(64)),"previous_limit"=>e["expectedPreviousFreshMarketLimit"]=json!(11),"foreign"=>e["scopeExchangeIds"]=json!((200..241).map(|n|n.to_string()).collect::<Vec<_>>()),"duplicate"=>e["scopeExchangeIds"][1]=e["scopeExchangeIds"][0].clone(),_=>e["authorizationId"]=json!("unapproved")}
+  let report=f.b().engine().report().unwrap();let head=f.b().durable_head();assert!(f.put(&e).is_err(),"{case}");assert_eq!(f.b().engine().report().unwrap(),report,"{case}");assert_eq!(f.b().durable_head(),head,"{case}");
+ }
+}

@@ -1053,13 +1053,28 @@ fn service_fundamental_reload(channel:Option<&moloch_live_runtime::fundamental_r
  atomic_json(&c.root.join("fundamental-reload/status.json"),&channel.status(base,bank,f.cohorts.generation_sha())?)?;
  let _=pending.reply(&json!({"state":"committed","generationSha256":f.cohorts.generation_sha(),"nativeHead":bank.durable_head(),"baseFinancialControlUnchanged":true}));Ok(())
 }
+fn human_market_breadth_target(all_markets:bool,old:usize,maximum:u64,scope_len:usize)->Result<Option<(u64,u64)>>{
+ if !all_markets{return Ok(None)}
+ let effective=u64::try_from(scope_len)?;let old=u64::try_from(old)?;
+ if effective==0||effective>4096||old>maximum{return Err("LIVE_BREADTH_MARKET_LIMIT".into())}
+ if maximum>=effective{return Ok(None)}
+ let fresh=old.checked_add(effective-maximum).ok_or("LIVE_BREADTH_MARKET_LIMIT")?;
+ Ok(Some((fresh,effective)))
+}
 fn install_human_market_breadth(c:&Control,control_path:&Path,bank:&mut Session)->Result<()>{
- if !c.all_markets||bank.engine().fresh_market_limit()>=12{return Ok(())}
+ if !c.all_markets{return Ok(())}
  let policy=bank.engine().policy();
+ let old=bank.engine().fresh_market_limit();let maximum=policy["maximumMarkets"].as_u64().ok_or("LIVE_BREADTH_MARKET_LIMIT")?;
+ let Some((fresh,effective))=human_market_breadth_target(c.all_markets,old,maximum,c.scope.exchanges.len())? else{return Ok(())};
  if (policy["maximumCommitted"]!=c.activation.maximum_committed&&!(c.owner_capital_allocation.is_some()&&!owner_capital_ready(c,bank)?&&policy["maximumCommitted"]==c.policy["maximumCommitted"]))||policy["maximumMarketCost"]!=c.activation.maximum_market_cost||policy["quantity"].as_u64()!=Some(u64::from(c.activation.maximum_quantity)){return Err("LIVE_BREADTH_MONETARY_CAP_MISMATCH".into())}
- let old=bank.engine().fresh_market_limit();let maximum=policy["maximumMarkets"].as_u64().ok_or("LIVE_BREADTH_MARKET_LIMIT")?;let effective=maximum.checked_add(12u64.checked_sub(old as u64).ok_or("LIVE_BREADTH_MARKET_LIMIT")?).ok_or("LIVE_BREADTH_MARKET_LIMIT")?;
- let at=now();let event=json!({"type":"live_market_capacity_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":c.activation.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":c.scope.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?),"expectedPolicySha256":hash(&policy),"expectedPreviousFreshMarketLimit":old,"expectedPreviousMaximumMarkets":maximum,"freshMarketLimit":12,"effectiveMaximumMarkets":effective,"scopeExchangeIds":c.scope.exchanges.keys().collect::<Vec<_>>(),"controlSha256":format!("{:x}",Sha256::digest(fs::read(control_path)?)),"authorizationId":"human_moloch_breadth_20261016","expectedPreviousCapacitySha256":bank.engine().live_market_capacity_record().map(|v|v["sha256"].clone()).unwrap_or(Value::Null)});
+ let at=now();let event=json!({"type":"live_market_capacity_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":c.activation.run_id,"bankManifestHash":bank.manifest_hash(),"tournamentId":c.scope.tournament_id},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report()?),"expectedPolicySha256":hash(&policy),"expectedPreviousFreshMarketLimit":old,"expectedPreviousMaximumMarkets":maximum,"freshMarketLimit":fresh,"effectiveMaximumMarkets":effective,"scopeExchangeIds":c.scope.exchanges.keys().collect::<Vec<_>>(),"controlSha256":format!("{:x}",Sha256::digest(fs::read(control_path)?)),"authorizationId":"human_moloch_full_universe_20261021","expectedPreviousCapacitySha256":bank.engine().live_market_capacity_record().map(|v|v["sha256"].clone()).unwrap_or(Value::Null)});
  accept(bank,&event)?;let _=atomic_json(&c.root.join("ordinary-market-breadth.json"),&json!({"at":iso(now()),"record":bank.engine().live_market_capacity_record(),"monetaryCapsChanged":false,"additionalDiscoveryReadSlots":0}));Ok(())
+}
+#[cfg(test)]mod human_market_breadth_tests{
+ use super::*;
+ #[test]fn scope_replaces_twelve_market_ceiling_without_double_counting_inherited(){assert_eq!(human_market_breadth_target(true,12,40,237).unwrap(),Some((209,237)));assert_eq!(human_market_breadth_target(true,3,31,237).unwrap(),Some((209,237)));assert_eq!(human_market_breadth_target(true,3,3,237).unwrap(),Some((237,237)));}
+ #[test]fn already_applied_or_disabled_breadth_is_unchanged(){assert_eq!(human_market_breadth_target(true,209,237,237).unwrap(),None);assert_eq!(human_market_breadth_target(true,209,237,236).unwrap(),None);assert_eq!(human_market_breadth_target(false,12,40,237).unwrap(),None);}
+ #[test]fn malformed_scope_or_inherited_accounting_is_rejected(){for (old,total,n) in [(12,11,237),(12,40,0),(12,40,4097)]{assert!(human_market_breadth_target(true,old,total,n).is_err());}}
 }
 fn existing_target_busy(bank:&Session,log:&DispatchLog,exchange:&str)->Result<bool>{
  log.require_resolved_attempts()?;let orders=bank.engine().order_records();

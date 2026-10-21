@@ -1,0 +1,30 @@
+{
+  "preparedUtc": "2026-10-21T14:44:17.681753+00:00",
+  "sourceRoot": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\handoffs\\population-037-snapshot-service\\checked-source",
+  "sourceCommit": "7da3921b6d27953329a5244959038759fd755d3c",
+  "originalExperimentSha256": "678af7728f4619b7eaf55c72875479cc712bc13489bf0f5ad10b01d5c30ddacc",
+  "datasetManifestSha256": "533255d8f1718f24cfaf72cadcbd0e116febfed92cf073aec85dcfdf6b25bd3c",
+  "actorCalibrationSha256": "98d905bedf20583dd2a5aa34145834bc30c7e84a62692d73ae60a050fdf40b1b",
+  "candidate": {
+    "path": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\studies\\037-early-full-window-001\\candidate.pt",
+    "sha256": "4df256531fb37d4249da0b9399c0ff6db8638a7a84de09f2f11e6990598bd5cd",
+    "updates": 540,
+    "decisions": 18853,
+    "finiteParameters": 5272685
+  },
+  "founder": {
+    "path": "C:\\Users\\csram\\AppData\\Local\\Moloch\\learning-v2\\studies\\037-early-full-window-001\\founder.pt",
+    "sha256": "2a551324b30fe3afd46edde7b34813096a9a0e465de6300d2957de171475fc73",
+    "finiteParameters": 5272685
+  },
+  "device": "cpu",
+  "selectionBoundsMs": [
+    1792221916175,
+    1792394716175
+  ],
+  "optimizerRun": false,
+  "active037Modified": false,
+  "productionModified": false,
+  "independentTestUsed": false,
+  "modelOutputsBitEquivalentToGPU": false
+}

@@ -7,7 +7,8 @@ impl Engine{
  pub fn fresh_market_limit(&self)->usize{self.inherited.as_ref().map_or(self.policy.markets,|i|i.fresh_market_limit)}
  pub fn live_market_capacity_record(&self)->Option<Value>{self.live_market_capacity.clone()}
  pub(super) fn apply_live_market_capacity(&mut self,e:&Value,at:i64)->Result<()>{
-  if !self.live_mode||e["source"]!="moloch_live_dispatcher"||e["authorizationId"]!="human_moloch_breadth_20261016"{return Err("LIVE_CAPACITY_AUTHORITY")}
+  let full_universe=e["authorizationId"]=="human_moloch_full_universe_20261021";
+  if !self.live_mode||e["source"]!="moloch_live_dispatcher"||(!full_universe&&e["authorizationId"]!="human_moloch_breadth_20261016"){return Err("LIVE_CAPACITY_AUTHORITY")}
   if ms(&e["processedAt"])?!=at||ms(&e["receivedAt"])? >at{return Err("LIVE_CAPACITY_CLOCK")}
   let scope=&e["bankScope"];let fields=scope.as_object().ok_or("LIVE_CAPACITY_SCOPE")?;
   let tournament=scope["tournamentId"].as_str().filter(|s|!s.is_empty()).ok_or("LIVE_CAPACITY_SCOPE")?;
@@ -16,10 +17,14 @@ impl Engine{
   if sha(&e["expectedPolicySha256"])?!=hash(&self.policy.raw){return Err("LIVE_CAPACITY_POLICY_CHANGED")}
   let previous=self.fresh_market_limit();let maximum=self.policy.markets;
   if e["expectedPreviousFreshMarketLimit"].as_u64()!=Some(previous as u64)||e["expectedPreviousMaximumMarkets"].as_u64()!=Some(maximum as u64){return Err("LIVE_CAPACITY_PREVIOUS")}
-  let fresh=e["freshMarketLimit"].as_u64().filter(|n|*n>previous as u64&&*n<=12).ok_or("LIVE_CAPACITY_LIMIT")? as usize;
+  // Retain the exact historical twelve-market event during replay. The new
+  // human mandate removes that quota only for the entire checked live scope.
+  let limit=if full_universe{4096}else{12};
+  let fresh=e["freshMarketLimit"].as_u64().filter(|n|*n>previous as u64&&*n<=limit).ok_or("LIVE_CAPACITY_LIMIT")? as usize;
   let effective=maximum.checked_add(fresh-previous).filter(|n|*n<=4096).ok_or("LIVE_CAPACITY_LIMIT")?;
   if e["effectiveMaximumMarkets"].as_u64()!=Some(effective as u64){return Err("LIVE_CAPACITY_TOTAL")}
   let ids=e["scopeExchangeIds"].as_array().filter(|a|a.len()>=effective&&a.len()<=4096).ok_or("LIVE_CAPACITY_SCOPE_CAPACITY")?;
+  if full_universe&&effective!=ids.len(){return Err("LIVE_CAPACITY_FULL_SCOPE")}
   let mut allowed=BTreeSet::new();let mut last:Option<String>=None;
   for raw in ids{let ex=id(raw)?;if raw.as_str()!=Some(ex.as_str())||last.as_ref().is_some_and(|x|x>=&ex){return Err("LIVE_CAPACITY_SCOPE_IDS")};last=Some(ex.clone());allowed.insert(ex);}
   if self.books.values().any(|b|b.tournament!=tournament||!allowed.contains(&b.exchange))||self.orders.iter().any(|q|q.tournament!=tournament||!allowed.contains(&q.exchange))||self.wallet.lots.iter().any(|((ex,_),lots)|!lots.is_empty()&&!allowed.contains(ex)){return Err("LIVE_CAPACITY_SCOPE_CHANGED")}
