@@ -761,7 +761,7 @@ fn recover_unadmitted(c:&Control)->Result<()>{
  let pre_transport=incident["reason"]=="FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND";
  if !pre_transport&&incident["reason"]!="LIVE_WRITE_NOT_CONFIRMED_NO_RETRY"{return Err("LIVE_UNADMITTED_INCIDENT_STOP_REQUIRED".into())}
  let mut log=DispatchLog::open(&c.root.join("dispatch.ndjson"))?;reverify_aborted_records(c,&mut log)?;
- let pending:Vec<_>=log.attempted.iter().filter(|qid|!log.acknowledgments.contains_key(qid)&&!log.proved_no_network(**qid)).copied().collect();let mut recovered=Vec::new();
+ let pending:Vec<_>=log.attempted.iter().filter(|qid|!log.acknowledgments.contains_key(qid)&&!log.proved_no_network(**qid)&&!log.exposure_records().contains_key(qid)).copied().collect();let mut recovered=Vec::new();
  if pre_transport{
   // A real stopped exception occurred between record_original_attempt and
   // Transport.place. Record the diagnosis at recovery time, not as a forged
@@ -785,8 +785,13 @@ fn recover_unadmitted(c:&Control)->Result<()>{
   if permit.run_id!=c.activation.run_id||spec.body.as_ref().is_none_or(|b|b["tournamentId"]!=c.scope.tournament_id){return Err("LIVE_UNADMITTED_ORIGINAL_SCOPE".into())}
   let proof=api::verify_frozen_ordinary_pre_admission(&proof_config(c),&spec,&permit,at,&error)?;
   log.append_aborted_before_admission(qid,&proof,&iso(now()))?;recovered.push(qid);
- }log.require_resolved_attempts()?;if fs::read(&stop)?!=stopped{return Err("LIVE_UNADMITTED_STOP_CHANGED".into())}
- atomic_json(&c.root.join("pre-admission-recovery.json"),&json!({"at":iso(now()),"recoveredOriginalQids":recovered,"sdkArchiveReverified":true,"dispatchHead":log.descriptor_identity()?,"networkRequests":0,"stopPreserved":stop.exists(),"sameIntentRetryAuthorized":false,"financialStateChanged":false}))?;Ok(())
+ }
+ // Older reconciled exposures are not unsent orders. Their original proofs
+ // remain unverified here; normal startup restores them against the native
+ // ledger before any dispatch. This operation only records exact no-send proof.
+ if log.attempted.iter().any(|qid|!log.acknowledgments.contains_key(qid)&&!log.proved_no_network(*qid)&&!log.exposure_records().contains_key(qid)){return Err("LIVE_UNADMITTED_UNRESOLVED_ATTEMPT".into())}
+ if fs::read(&stop)?!=stopped{return Err("LIVE_UNADMITTED_STOP_CHANGED".into())}
+ atomic_json(&c.root.join("pre-admission-recovery.json"),&json!({"at":iso(now()),"recoveredOriginalQids":recovered,"sdkArchiveReverified":true,"dispatchHead":log.descriptor_identity()?,"networkRequests":0,"stopPreserved":stop.exists(),"sameIntentRetryAuthorized":false,"financialStateChanged":false,"retainedExposureQidsRequireStartupVerification":log.exposure_records().keys().copied().collect::<Vec<_>>()}))?;Ok(())
 }
 /// File-only, exact-incident reconciliation. This authority can neither read an
 /// account nor send an order. The proof factory verifies the original SDK and
@@ -1530,7 +1535,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
    }
   }
   if let Ok((spec,permit,at,error))=log.pre_admission_originals(qid){
-   if let Ok(proof)=t.verify_current_ordinary_pre_admission(&spec,&permit,at,&error){log.append_aborted_before_admission(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return Ok(())}
+   if let Ok(proof)=t.verify_current_ordinary_pre_admission(&spec,&permit,at,&error){log.append_aborted_before_admission(qid,&proof,&iso(now()))?;authority.clear_ready();retire_proved_unadmitted(bank,log,qid)?;return if error.code!="FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED"||expired_fundamental_final_guard(&error.code,end,fundamental_expires_at_ms){Ok(())}else{Err(error.code.into())}}
   }
   return Err("LIVE_WRITE_NOT_CONFIRMED_NO_RETRY".into())}};
  let ack_start=now();let _=trace.record(Stage::TransportCall,transport_start,ack_start);trace.ack_received_at_ms=moloch_live_runtime::daily_windows::clock(&ack.received_at).ok();if let(Ok(start),Ok(end))=(moloch_live_runtime::daily_windows::clock(&ack.request_started_at),moloch_live_runtime::daily_windows::clock(&ack.received_at)){let _=trace.record(Stage::RecordedRequestService,start,end);}

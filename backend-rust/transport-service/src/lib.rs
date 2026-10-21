@@ -589,7 +589,7 @@ impl OrdinaryPreAdmissionProof{
 fn unadmitted_context(config:&Config,spec:&RequestSpec,p:&Permit,at:u64,error:&TransportError)->Result<Value>{
  need(config.queue_dir.is_absolute()&&!config.account_scope.is_empty()&&at>0&&at<=SystemClock.now_ms()&&p.owner=="Codex"&&!p.run_id.is_empty()&&!p.intent_id.is_empty()
   &&!error.may_have_executed&&error.status.is_none()&&error.order_id.is_none()&&error.api_code.is_none()&&error.retry_after_ms==0
-  &&matches!(error.code.as_str(),"PERMIT_EXPIRED_OR_INVALID"|"LIVE_CONTRACT_OR_BOOK_STALE"|"LIVE_ACCOUNT_STALE"|"LIVE_VERIFIED_STREAM_REQUIRED"|"RANK_PHYSICAL_FACTS_EXPIRED"|"FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND"),"UNADMITTED_ORIGINAL_ERROR_OR_PERMIT")?;
+  &&matches!(error.code.as_str(),"PERMIT_EXPIRED_OR_INVALID"|"LIVE_CONTRACT_OR_BOOK_STALE"|"LIVE_ACCOUNT_STALE"|"LIVE_VERIFIED_STREAM_REQUIRED"|"RANK_PHYSICAL_FACTS_EXPIRED"|"FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED"|"FUNDAMENTAL_ABANDON_DISPATCH_ROW_BOUND"),"UNADMITTED_ORIGINAL_ERROR_OR_PERMIT")?;
  need(spec.method=="POST"&&spec.endpoint=="/orders","UNADMITTED_ORDINARY_ONLY")?;let b=spec.body.as_ref().ok_or_else(||fail("UNADMITTED_BODY"))?;
  need(b.as_object().is_some_and(|m|m.len()==8)&&b["tournamentId"]==config.scope.tournament_id&&b["exchangeId"].as_str().is_some_and(|e|config.scope.exchanges.contains_key(e))
   &&matches!(b["side"].as_str(),Some("yes"|"no"))&&matches!(b["action"].as_str(),Some("buy"|"sell")),"UNADMITTED_ORDER_SCOPE")?;
