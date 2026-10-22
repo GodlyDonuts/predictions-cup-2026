@@ -1,0 +1,169 @@
+{
+  "observedUtc": "2026-10-22T03:35:40.466056+00:00",
+  "nativeQid": 20745,
+  "events": [
+    {
+      "at": "2026-10-22T03:33:12.039Z",
+      "fundamental": {
+        "bankManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "bindingSha256": "77eb61111cdea58fd1429d37d8f30bcaf0e882403700537ab2750650924d5526",
+        "entryQid": 19215,
+        "qid": 20745,
+        "runId": "moloch-live-20261015-v1",
+        "version": 1
+      },
+      "fundamentalOwnershipOnly": false,
+      "kind": "intent",
+      "maker": null,
+      "permit": {
+        "expiresAtMs": 1792640005382,
+        "intentId": "20745",
+        "maximumCost": "8800.000000",
+        "maximumQuantity": 10000,
+        "owner": "Codex",
+        "runId": "moloch-live-20261015-v1"
+      },
+      "qid": 20745,
+      "quote": {
+        "action": "sell",
+        "activationAt": 1792639977697,
+        "barrier": null,
+        "createdAt": 1792639974697,
+        "exchangeId": "1077",
+        "expiresAt": 1792640573427,
+        "filled": 0,
+        "id": 20745,
+        "marketId": "388",
+        "participationCredit": 0,
+        "price": "0.880000",
+        "quantity": 10000,
+        "retired": false,
+        "reviewedInventoryExit": {
+          "bookSha256": "e80415bba68f3a37dc810f1627319ab2bb2606152180d669de016a72a5ef4126",
+          "cohortOriginSha256": "bd9c09c718e547e78e245d26253fbc559a07f5fb3ec472601fb775bee2ab3de2",
+          "executionMode": "passiveValueLimit",
+          "forecastExpectedPayout": "0.973665",
+          "maximumPassiveQuantity": 10000,
+          "minimumNetSalePrice": "0.880000",
+          "modelSha256": "abfdad874c2888f8bba3e77f1bc65fd6a92015c7ea69f34312bb4929bfb19cf7",
+          "originKind": "original_entry_cohort",
+          "originSha256": "2b4f11467d9ad5700ba5af9ee45d636d3dec085806d89b9462171e90e13a0e2b",
+          "pricingBasis": {
+            "bankHead": {
+              "hash": "4d2292ce7ad7ba3f480cba0fb005e79bc09e84c41c075d7ac7a67a27c800c325",
+              "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+              "previous": "f99ce07cc93ab3e67143ae2b8208370c8ece58d6fd061f9c86b18e3ac108f1e5",
+              "sequence": 812486
+            },
+            "bookSha256": "e80415bba68f3a37dc810f1627319ab2bb2606152180d669de016a72a5ef4126",
+            "fifoCostSha256": "1457f1437cfe1193ecdd5a839955b2448173624b6532323f77c2d24b2749dd0e",
+            "forecastExpectedPayout": "0.973665",
+            "maximumFifoUnitCost": "0.875000",
+            "minimumNetSalePrice": "0.880000",
+            "positionsSha256": "aff52f711edc62ac56f484ecf7c6a15925b4342f164a4af9b93c116be19afaf7",
+            "pricingObjective": {
+              "kind": "fifoProfitTurnover",
+              "minimumNetGain": "0.005000"
+            },
+            "pricingPolicy": "improveAskOneTickFifoFloor",
+            "quantity": 10000
+          },
+          "pricingObjective": {
+            "kind": "fifoProfitTurnover",
+            "minimumNetGain": "0.005000"
+          },
+          "reason": "reviewed_fifo_profit_turnover",
+          "reviewSha256": "ced44068a0f6d5bccfc0596c63d7ec331e49e6486ae8541a293701002f15ee66",
+          "sourceSha256": "7b9608341cb7fed468e64abf7c3640889e73676c8d860d54e970b821fc7920b9"
+        },
+        "side": "NO"
+      },
+      "rankCampaign": null,
+      "spec": {
+        "body": {
+          "action": "sell",
+          "exchangeId": "1077",
+          "expirationDate": "2026-10-22T03:42:53.427Z",
+          "idempotencyKey": "moloch-live-20261015-v1:20745",
+          "price": 0.88,
+          "quantity": 10000,
+          "side": "no",
+          "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+        },
+        "bodyJson": "{\"action\":\"sell\",\"exchangeId\":\"1077\",\"expirationDate\":\"2026-10-22T03:42:53.427Z\",\"idempotencyKey\":\"moloch-live-20261015-v1:20745\",\"price\":0.880000,\"quantity\":10000,\"side\":\"no\",\"tournamentId\":\"bda92870-621e-47b0-bc3c-3602c5c26f55\"}",
+        "endpoint": "/orders",
+        "method": "POST"
+      }
+    },
+    {
+      "at": "2026-10-22T03:33:12.047Z",
+      "captureAtMs": 1792639992047,
+      "dispatchBefore": {
+        "chain": "ae619a2dce8398c65cd628a93081620cd6b2ad0c102abf2e9ea02c31eb8bd481",
+        "networkAttempts": 0,
+        "qid": 20745,
+        "sequence": 27536
+      },
+      "evidenceVersion": 1,
+      "kind": "attempt",
+      "modelAlgorithmSha256": "d979b47cc2840a4e5c499fecdc7481df929cca4fa9e9c4503038fcbee1df3d47",
+      "modelConfigSha256": null,
+      "nativeHead": {
+        "hash": "3386d8e101cfafbc5443c0bffbf4040629d20ee833857247460d87c4cb872519",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "265b2ed3d4188a80da92a240480e9958f0c8dca4a49d903b78bbe4f3f338d8d3",
+        "sequence": 812489
+      },
+      "originalQuoteSha256": "3233b0027bdc713e6d6c25720ef8a2787e00d7d8d9fb39215867e6eb5355c7d3",
+      "qid": 20745,
+      "sourceFrontier": {
+        "moloch-live": {
+          "originalPreparedEventSha256": "35196fc746fd34d93417846373f3a19a224f54cb73d7e4cee212689ab68e6ccc",
+          "sequence": 812479
+        },
+        "moloch-package": {
+          "originalPreparedEventSha256": null,
+          "sequence": 0
+        }
+      }
+    },
+    {
+      "kind": "ack",
+      "qid": 20745,
+      "receipt": {
+        "data": {
+          "action": "sell",
+          "all": {
+            "collateralRepayment": 0,
+            "collateralSavings": 0,
+            "componentId": null,
+            "effectiveEntryCost": 0,
+            "fullNotionalCost": 0,
+            "guaranteedPayoutFloorAfter": 0,
+            "netBuyingPowerImpact": 0,
+            "outstandingAdvanceAfter": 0,
+            "redemptionCredit": 0,
+            "relationshipIds": []
+          },
+          "exchangeId": "1077",
+          "fillPrice": null,
+          "open": true,
+          "orderId": 55124428,
+          "price": 0.88,
+          "quantity": 10000,
+          "quantityTraded": 0,
+          "remainingQuantity": -10000,
+          "side": "no",
+          "terminalReasonCode": null,
+          "totalCost": 0
+        },
+        "endpoint": "/orders",
+        "receivedAt": "2026-10-22T03:33:12.790Z",
+        "requestStartedAt": "2026-10-22T03:33:12.300Z",
+        "status": 200
+      }
+    }
+  ],
+  "fillClaimed": false,
+  "targetMet": false
+}

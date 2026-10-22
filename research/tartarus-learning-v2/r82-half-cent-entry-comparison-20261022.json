@@ -1,0 +1,423 @@
+{
+  "observedAtMs": 1792640835326,
+  "nativeViewWrittenAt": "2026-10-22T03:45:51.020Z",
+  "rows": [
+    {
+      "exchangeId": "1042",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.930500000000",
+        "bestAsk": "0.93",
+        "proposedQuantity": 430,
+        "proposedCost": "399.90",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.935500000000",
+        "bestAsk": "0.93",
+        "proposedQuantity": 430,
+        "proposedCost": "399.90",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "1068",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.970100000000",
+        "bestAsk": "0.91",
+        "proposedQuantity": 2939,
+        "proposedCost": "2674.49",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.975100000000",
+        "bestAsk": "0.91",
+        "proposedQuantity": 2939,
+        "proposedCost": "2674.49",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "966",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.922655000000",
+        "bestAsk": "0.925",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book",
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.927655000000",
+        "bestAsk": "0.925",
+        "proposedQuantity": 540,
+        "proposedCost": "499.500",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "977",
+      "side": "NO",
+      "old": {
+        "entryCeiling": "0.945450000000",
+        "bestAsk": "0.93",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.950450000000",
+        "bestAsk": "0.93",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "1067",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.227650000000",
+        "bestAsk": "0.315",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.232650000000",
+        "bestAsk": "0.315",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "865",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.902770000000",
+        "bestAsk": "0.88",
+        "proposedQuantity": 1975,
+        "proposedCost": "1739.470",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.907770000000",
+        "bestAsk": "0.88",
+        "proposedQuantity": 1975,
+        "proposedCost": "1739.470",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "872",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.224500000000",
+        "bestAsk": "0.35",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book",
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.229500000000",
+        "bestAsk": "0.35",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book",
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "993",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.669500000000",
+        "bestAsk": "0.765",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book",
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.674500000000",
+        "bestAsk": "0.765",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book",
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "885",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.579500000000",
+        "bestAsk": "0.655",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book",
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.584500000000",
+        "bestAsk": "0.655",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book",
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "1051",
+      "side": "NO",
+      "old": {
+        "entryCeiling": "0.854900000000",
+        "bestAsk": "0.875",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.859900000000",
+        "bestAsk": "0.875",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "851",
+      "side": "NO",
+      "old": {
+        "entryCeiling": "0.858500000000",
+        "bestAsk": "0.905",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.863500000000",
+        "bestAsk": "0.905",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "price_above_conditional_ceiling",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "1043",
+      "side": "NO",
+      "old": {
+        "entryCeiling": "0.866150000000",
+        "bestAsk": "0.835",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.871150000000",
+        "bestAsk": "0.835",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "1044",
+      "side": "YES",
+      "old": {
+        "entryCeiling": "0.866150000000",
+        "bestAsk": "0.85",
+        "proposedQuantity": 462,
+        "proposedCost": "392.70",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.871150000000",
+        "bestAsk": "0.85",
+        "proposedQuantity": 462,
+        "proposedCost": "392.70",
+        "conditionalCandidate": false,
+        "reasons": [
+          "stale_book"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    },
+    {
+      "exchangeId": "1077",
+      "side": "NO",
+      "old": {
+        "entryCeiling": "0.963665000000",
+        "bestAsk": "0.855",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "halfCent": {
+        "entryCeiling": "0.968665000000",
+        "bestAsk": "0.855",
+        "proposedQuantity": 0,
+        "proposedCost": "0",
+        "conditionalCandidate": false,
+        "reasons": [
+          "review_not_current",
+          "source_not_current",
+          "stale_book",
+          "no_size_after_depth_and_capital",
+          "conditional_gain_below_0.5"
+        ]
+      },
+      "knownOpenIgnoredForProspectiveComparison": true
+    }
+  ],
+  "accountRequests": 0,
+  "executionAuthority": false
+}

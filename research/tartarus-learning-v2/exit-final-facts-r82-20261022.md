@@ -11,3 +11,8 @@ Original prices, quantities, costs, expiry/activation clocks, review/source dead
 All240 worker checks pass. The added regression uses actual native passive and executable SELL reservations: an expired planning book cannot authorize them, seven genuinely newer receipts permit the same covered reservation, and original quote/FIFO/dispatch remain intact. Original capability expiry still rejects authorization. The optimized binary loads. [Qualification](r82-exit-final-facts-qualified-20261022.json), [reproducible build](tools/build-exit-final-facts-r82-20261022.py).
 
 R82 was installed03:10:43UTC as sole worker1062136, updater1062139, and is restoring the original ledger. R81 drained with no open orders or unknown submissions. All504 original fills and the complete2,665,626,172-byte financial prefix were preserved; native engine and upgrade chain are unchanged. Fresh trading and actual fill-rate improvement are not yet verified. File-only observers will measure first-filled orders after readiness. [Installation](r82-deployment-20261022.json), [observers](r82-observers-20261022.json).
+
+
+## Live result
+
+Fresh trading was verified03:31:23UTC with all504 prior fills and the full financial prefix unchanged. The completed15-minute window contains one physical sell,2,000YES865 at0.875, realizing10SUSQies. Original FIFO and receipts reconcile; one trade/minute remains unmet. [Window](r82-cadence-window-20261022.json), [audit](r82-turnover-window-20261022.json), [next measured scheduling correction](local-retirement-sweep-r83-20261022.md).

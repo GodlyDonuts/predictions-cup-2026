@@ -1,0 +1,20 @@
+{
+  "observedUtc": "2026-10-22T03:45:48.993112+00:00",
+  "pid": 1062136,
+  "samples": 12,
+  "multiplePassSweeps": 0,
+  "maximumPasses": 1,
+  "journalChangedSweeps": 12,
+  "latest": {
+    "at": "2026-10-22T03:45:48.294Z",
+    "diagnosticOnly": true,
+    "dispatchJournalChanged": true,
+    "distinctCursors": 1,
+    "passes": 1,
+    "physicalPermissionsReused": false,
+    "pid": 1062136,
+    "sameAccountWorker": true
+  },
+  "accountRequests": 0,
+  "fillsNotInferredFromSweeps": true
+}

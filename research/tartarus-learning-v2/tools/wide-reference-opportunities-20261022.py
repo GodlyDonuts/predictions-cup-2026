@@ -44,7 +44,7 @@ def capture(config_path, repo, now):
         rows.append({**{k: r[k] for k in ('exchangeId', 'marketId', 'contractId',
             'kalshiTicker', 'yesBid', 'yesAsk', 'referenceRecordSha256',
             'metadataRecordSha256', 'officialContractRootSha256')},
-            'receivedAt': q['receivedAt'], 'alreadyManaged': r['exchangeId'] in config['exchanges']})
+            'receivedAt': q['receivedAt'], 'activeReferenceTarget': r['exchangeId'] in config['exchanges']})
     return {'capturedAtMs': now, 'registryMarkets': len(old), 'rows': rows,
         'unavailable': checked['unavailable'], 'officialSigRequests': 0,
         'executionAuthority': False, 'settlementEquivalenceClaimed': False}
@@ -92,7 +92,7 @@ def compare(reference, books, now):
     return {'observedUtc': datetime.fromtimestamp(now/1000,timezone.utc).isoformat(),
         'referenceCapturedAtMs': reference['capturedAtMs'], 'mappedReferences': len(rows),
         'currentPairedBooks': len(current), 'conditionalNominations': len(nominations),
-        'additionalNominations': sum(not r['alreadyManaged'] for r in nominations),
+        'additionalNominations': sum(not r['activeReferenceTarget'] for r in nominations),
         'reasonCounts': dict(Counter(s for r in rows for s in r['reasons'])), 'rows': rows,
         'officialSigRequests': 0, 'executionAuthority': False, 'settlementEquivalenceClaimed': False,
         'accountEligibilityVerified': False, 'calibratedProbabilityClaimed': False,

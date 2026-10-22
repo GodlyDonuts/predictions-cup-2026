@@ -1173,15 +1173,50 @@ fn mixed_reviewed_preflight(exits:&[fundamental::ExistingExitHint],entries:&[fun
   for code in ["OFFICIAL_REQUEST_REJECTED","BODY_UNCONFIRMED","CONNECTION_UNCONFIRMED","LIVE_CASH_MISMATCH"]{assert!(!expected_ordinary_final_guard(code));}
  }
 }
-/// Continue read-only candidate selection without another complete source scope.
-/// A cursor cycle, no selection, lost permission or ANY dispatch-log change
-/// ends this sweep. This does not authorize/retry an order or reuse a packet.
+/// Selection may continue after exact local, never-attempted retirements. Read
+/// only the appended tail and verify its chain against both held descriptors;
+/// an intent, attempt, ACK, cancellation, closure or any other event ends the
+/// sweep. This is a scheduling decision, never an order permission or retry.
+fn local_retirement_sweep_continuation(root:&Path,log:&DispatchLog,before:&Value)->Result<bool>{
+ use std::io::{Read,Seek,SeekFrom};
+ log.require_resolved_attempts()?;
+ let after=log.descriptor_identity()?;if &after==before{return Ok(true)}
+ for key in ["schemaVersion","device","inode"]{if before[key]!=after[key]{return Err("LIVE_SWEEP_DISPATCH_IDENTITY_CHANGED".into())}}
+ let start=before["bytes"].as_u64().ok_or("LIVE_SWEEP_DISPATCH_OFFSET")?;
+ let end=after["bytes"].as_u64().ok_or("LIVE_SWEEP_DISPATCH_OFFSET")?;
+ let Some(length)=end.checked_sub(start)else{return Err("LIVE_SWEEP_DISPATCH_TRUNCATED".into())};
+ // A large local cleanup simply yields to the next normal scope.
+ if length==0||length>262144{return Ok(false)}
+ let mut file=fs::File::open(root.join("dispatch.ndjson"))?;
+ #[cfg(unix)]{use std::os::unix::fs::MetadataExt;let m=file.metadata()?;
+  if m.dev()!=after["device"].as_u64().ok_or("LIVE_SWEEP_DEVICE")?||m.ino()!=after["inode"].as_u64().ok_or("LIVE_SWEEP_INODE")?||m.len()!=end{return Err("LIVE_SWEEP_DISPATCH_PATH_CHANGED".into())}
+ }
+ #[cfg(not(unix))]{return Err("LIVE_SWEEP_UNSUPPORTED".into())}
+ file.seek(SeekFrom::Start(start))?;let mut bytes=vec![0;usize::try_from(length)?];file.read_exact(&mut bytes)?;
+ if bytes.last()!=Some(&b'\n'){return Err("LIVE_SWEEP_DISPATCH_TORN_TAIL".into())}
+ let mut sequence=before["sequence"].as_u64().ok_or("LIVE_SWEEP_SEQUENCE")?;
+ let mut previous=before["previous"].as_str().ok_or("LIVE_SWEEP_PREVIOUS")?.to_owned();
+ let mut selection_only=true;
+ for line in std::str::from_utf8(&bytes)?.lines(){
+  let mut row:Value=serde_json::from_str(line)?;
+  let claimed=row.as_object_mut().ok_or("LIVE_SWEEP_ROW")?.remove("hash").ok_or("LIVE_SWEEP_HASH")?;
+  if row["sequence"]!=sequence.checked_add(1).ok_or("LIVE_SWEEP_RANGE")?||row["previous"]!=previous||claimed!=hash(&row){return Err("LIVE_SWEEP_DISPATCH_CHAIN".into())}
+  let event=&row["event"];let id=event["qid"].as_u64().ok_or("LIVE_SWEEP_QID")?;
+  selection_only&=event["kind"]=="not_sent"&&log.never_attempted(id)&&!log.intents.contains_key(&id)&&!log.cancel_attempted(id)
+   &&event["proof"]==json!({"qid":id,"chain":previous,"sequence":sequence,"networkAttempts":0});
+  sequence+=1;previous=claimed.as_str().ok_or("LIVE_SWEEP_HASH")?.to_owned();
+ }
+ if after["sequence"]!=sequence||after["previous"]!=previous||log.descriptor_identity()?!=after||file.metadata()?.len()!=end{return Err("LIVE_SWEEP_DISPATCH_CHANGED_DURING_READ".into())}
+ Ok(selection_only)
+}
+/// A cursor cycle, no selection, lost permission or a non-local dispatch change
+/// ends this sweep. Each candidate reacquires its own current execution facts.
 struct OrdinaryCandidateSweep{seen:std::collections::BTreeSet<String>,previous:Option<String>,passes:usize}
 impl OrdinaryCandidateSweep{
  fn new(previous:Option<String>)->Self{let seen=previous.iter().cloned().collect();Self{seen,previous,passes:0}}
- fn after(&mut self,current:Option<&str>,permitted:bool,dispatch_unchanged:bool)->bool{
+ fn after(&mut self,current:Option<&str>,permitted:bool,selection_only:bool)->bool{
   self.passes+=1;
-  if !permitted||!dispatch_unchanged||current==self.previous.as_deref(){return false}
+  if !permitted||!selection_only||current==self.previous.as_deref(){return false}
   let Some(key)=current else{return false};
   if !self.seen.insert(key.to_owned()){return false}
   self.previous=Some(key.to_owned());true
@@ -1189,6 +1224,30 @@ impl OrdinaryCandidateSweep{
 }
 #[cfg(test)]mod ordinary_candidate_sweep_tests{
  use super::*;
+ struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
+ fn fixture()->(Temp,DispatchLog){let root=Temp(std::env::temp_dir().join(format!("sweep-local-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())));fs::create_dir(&root.0).unwrap();let log=DispatchLog::open(&root.0.join("dispatch.ndjson")).unwrap();(root,log)}
+ #[test]fn original_chained_never_sent_retirements_continue_without_mutating_journal(){
+  let(root,mut log)=fixture();let before=log.descriptor_identity().unwrap();assert!(local_retirement_sweep_continuation(&root.0,&log,&before).unwrap());
+  for id in [1,2,3]{let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof})).unwrap();}
+  let bytes=fs::read(root.0.join("dispatch.ndjson")).unwrap();assert!(local_retirement_sweep_continuation(&root.0,&log,&before).unwrap());assert_eq!(bytes,fs::read(root.0.join("dispatch.ndjson")).unwrap());
+  let mut sweep=OrdinaryCandidateSweep::new(Some("101:YES:buy".into()));assert!(sweep.after(Some("102:YES:sell"),true,true));assert!(!sweep.after(Some("101:YES:buy"),true,true));
+ }
+ #[test]fn intent_attempt_ack_cancel_and_closure_never_extend_candidate_sweep(){
+  let(root,mut log)=fixture();
+  for event in [json!({"kind":"intent","qid":1}),json!({"kind":"attempt","qid":1}),json!({"kind":"ack","qid":1,"receipt":{"orderId":99}}),json!({"kind":"cancel_attempt","qid":1}),json!({"kind":"cancel_ack","qid":1}),json!({"kind":"closed","qid":1})]{
+   let before=log.descriptor_identity().unwrap();log.append(event).unwrap();assert!(!local_retirement_sweep_continuation(&root.0,&log,&before).unwrap_or(false));
+  }
+ }
+ #[test]fn claimed_local_retirement_with_wrong_proof_or_an_intent_does_not_continue(){
+  for mode in ["wrong-proof","intent"]{let(root,mut log)=fixture();if mode=="intent"{log.append(json!({"kind":"intent","qid":1})).unwrap();}
+   let before=log.descriptor_identity().unwrap();let mut proof=log.proof(1);if mode=="wrong-proof"{proof["chain"]=json!("0".repeat(63));}
+   log.append(json!({"kind":"not_sent","qid":1,"proof":proof})).unwrap();assert!(!local_retirement_sweep_continuation(&root.0,&log,&before).unwrap());
+  }
+ }
+ #[test]fn replaced_dispatch_path_cannot_claim_selection_only_tail(){
+  let(root,mut log)=fixture();let before=log.descriptor_identity().unwrap();let proof=log.proof(1);log.append(json!({"kind":"not_sent","qid":1,"proof":proof})).unwrap();
+  let p=root.0.join("dispatch.ndjson");let bytes=fs::read(&p).unwrap();fs::rename(&p,root.0.join("original.ndjson")).unwrap();fs::write(p,bytes).unwrap();assert!(local_retirement_sweep_continuation(&root.0,&log,&before).unwrap_err().to_string().contains("PATH_CHANGED"));
+ }
  #[test]fn rejected_reads_continue_until_first_physical_journal_change(){
   let mut s=OrdinaryCandidateSweep::new(Some("851:YES:buy".into()));
   assert!(s.after(Some("865:YES:buy"),true,true));assert!(s.after(Some("885:YES:buy"),true,true));
@@ -3125,8 +3184,10 @@ pub fn main()->Result<()>{
     // Cheap rejected read nominations must not each pay for a complete source,
     // package/rank and report cycle. Each next candidate still obtains its own
     // fresh packet through the same Transport/limiter. Stop on any dispatch-log
-    // mutation (including intent/cancel/error without ACK), not just a fill.
-    let sweep_dispatch=log.descriptor_identity()?;
+    // non-local mutation (including intent/cancel/error without ACK), not just
+    // a fill. Exact never-attempted local retirements can continue selection.
+    let initial_sweep_dispatch=log.descriptor_identity()?;
+    let mut sweep_dispatch=initial_sweep_dispatch.clone();
     let mut candidate_sweep=OrdinaryCandidateSweep::new(preflight_cursor.clone());
     loop{
     refresh_controls(&c,&authority,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
@@ -3139,14 +3200,15 @@ pub fn main()->Result<()>{
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
-    if candidate_sweep.passes>0&&log.descriptor_identity()?!=sweep_dispatch{break}
+    if candidate_sweep.passes>0&&!local_retirement_sweep_continuation(&c.root,&log,&sweep_dispatch)?{break}
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     let _=atomic_json(&c.root.join("dispatch-admission.json"),&json!({"at":iso(now()),"pid":std::process::id(),"allowed":permit_new,"packageBlocked":package_blocked,"collateralBlocked":collateral_blocked,"reconciliationBlocked":reconciled.blocks_new_submissions}));
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&windows,maker_review.as_ref(),fundamental.as_mut())?;
-    let unchanged=log.descriptor_identity()?==sweep_dispatch;
-    if !candidate_sweep.after(preflight_cursor.as_deref(),permit_new,unchanged){break}
+    let selection_only=local_retirement_sweep_continuation(&c.root,&log,&sweep_dispatch)?;
+    if !candidate_sweep.after(preflight_cursor.as_deref(),permit_new,selection_only){break}
+    sweep_dispatch=log.descriptor_identity()?;
     }
-    let _=atomic_json(&c.root.join("ordinary-candidate-sweep.json"),&json!({"at":iso(now()),"pid":std::process::id(),"passes":candidate_sweep.passes,"distinctCursors":candidate_sweep.seen.len(),"dispatchJournalChanged":log.descriptor_identity()?!=sweep_dispatch,"sameAccountWorker":true,"physicalPermissionsReused":false,"diagnosticOnly":true}));
+    let _=atomic_json(&c.root.join("ordinary-candidate-sweep.json"),&json!({"at":iso(now()),"pid":std::process::id(),"passes":candidate_sweep.passes,"distinctCursors":candidate_sweep.seen.len(),"dispatchJournalChanged":log.descriptor_identity()?!=initial_sweep_dispatch,"sameAccountWorker":true,"physicalPermissionsReused":false,"diagnosticOnly":true}));
     if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      paper5_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,paper5_runtime.as_ref(),&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut paper5_last_opportunity,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
     }

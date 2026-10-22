@@ -1,0 +1,18 @@
+{
+  "observedUtc": "2026-10-22T03:48:25.674931+00:00",
+  "pid": 1062136,
+  "phase": "observing",
+  "elapsedObservationSeconds": 1014.058,
+  "targetSeconds": 3600,
+  "samples": 56,
+  "observationFailures": 7,
+  "marketsWithCurrentProfitableBids": [
+    "1051",
+    "993"
+  ],
+  "marketsWithAskRelativeMiss": [],
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "repeatedDepthIsNotSummedAsTurnover": true,
+  "filledOrdersClaimed": 0
+}

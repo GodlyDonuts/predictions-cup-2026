@@ -1,0 +1,100 @@
+{
+  "diagnosticOnly": true,
+  "outcome": "owned_ack_applied",
+  "summary": {
+    "bookAgeAtAckMs": 5486,
+    "earliestRecordedMs": 1792639980549,
+    "fillObservationDelayMs": null,
+    "latestRecordedMs": 1792639994877,
+    "outsideRecordedSpansMs": 7200,
+    "recordedSpanUnionMs": 7128
+  },
+  "trace": {
+    "ackReceivedAtMs": 1792639992790,
+    "bookReceivedAtMs": 1792639987304,
+    "candidateCreatedAtMs": 1792639974697,
+    "diagnosticOnly": true,
+    "fillAppliedAtMs": null,
+    "fillExecutedAtMs": null,
+    "fillObservedAtMs": null,
+    "finishedAtMs": 1792639994877,
+    "nativeQid": 20745,
+    "permitExpiresAtMs": 1792640005382,
+    "permitIssuedAtMs": 1792639990382,
+    "runId": "moloch-live-20261015-v1",
+    "spans": [
+      {
+        "endMs": 1792639980929,
+        "stage": "preflightRead",
+        "startMs": 1792639980549
+      },
+      {
+        "endMs": 1792639984232,
+        "stage": "preflightRead",
+        "startMs": 1792639983787
+      },
+      {
+        "endMs": 1792639982163,
+        "stage": "preflightRead",
+        "startMs": 1792639981552
+      },
+      {
+        "endMs": 1792639983166,
+        "stage": "preflightRead",
+        "startMs": 1792639982782
+      },
+      {
+        "endMs": 1792639985024,
+        "stage": "preflightRead",
+        "startMs": 1792639984855
+      },
+      {
+        "endMs": 1792639985951,
+        "stage": "preflightRead",
+        "startMs": 1792639985647
+      },
+      {
+        "endMs": 1792639987304,
+        "stage": "preflightRead",
+        "startMs": 1792639986964
+      },
+      {
+        "endMs": 1792639992039,
+        "stage": "policyAndRisk",
+        "startMs": 1792639990382
+      },
+      {
+        "endMs": 1792639992053,
+        "stage": "originalAttemptRecord",
+        "startMs": 1792639992047
+      },
+      {
+        "endMs": 1792639992054,
+        "stage": "postIntentOwnership",
+        "startMs": 1792639992053
+      },
+      {
+        "endMs": 1792639992054,
+        "stage": "intentDurability",
+        "startMs": 1792639992039
+      },
+      {
+        "endMs": 1792639992790,
+        "stage": "transportCall",
+        "startMs": 1792639992054
+      },
+      {
+        "endMs": 1792639992790,
+        "stage": "recordedRequestService",
+        "startMs": 1792639992300
+      },
+      {
+        "endMs": 1792639994877,
+        "stage": "nativeAckApply",
+        "startMs": 1792639992790
+      }
+    ],
+    "startedAtMs": 1792639990382,
+    "version": 1
+  }
+}

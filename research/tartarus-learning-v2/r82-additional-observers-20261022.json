@@ -1,0 +1,38 @@
+{
+  "observedUtc": "2026-10-22T03:32:58.595182+00:00",
+  "jobs": [
+    {
+      "pid": 1062270,
+      "command": [
+        "python3",
+        "/tmp/moloch-candidate-sweep-r79-20261022/observe-sweeps.py",
+        "--runtime",
+        "/home/archon/apps/moloch/shared/live-production-v1",
+        "--pid",
+        "1062136",
+        "--seconds",
+        "900",
+        "--output",
+        "/tmp/moloch-exit-final-facts-r82-20261022/sweeps.json"
+      ]
+    },
+    {
+      "pid": 1062271,
+      "command": [
+        "python3",
+        "/tmp/moloch-closed-index-r77-20261021/measure.py",
+        "--runtime",
+        "/home/archon/apps/moloch/shared/live-production-v1",
+        "--pid",
+        "1062136",
+        "--start-ticks",
+        "60829776",
+        "--seconds",
+        "900",
+        "--output",
+        "/tmp/moloch-exit-final-facts-r82-20261022/scope.json"
+      ]
+    }
+  ],
+  "accountRequests": 0
+}

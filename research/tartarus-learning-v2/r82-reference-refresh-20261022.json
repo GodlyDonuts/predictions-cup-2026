@@ -1,0 +1,118 @@
+{
+  "observedUtc": "2026-10-22T03:35:40.468989+00:00",
+  "state": {
+    "generationSha256": "b5ec84c209de6755c2099027026f31cc0d4a97ce9a4ed1c2eaddc293f6eb3582",
+    "controlPath": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/generation-1792639884975059474/control.owner-reviewed.json",
+    "controlSha256": "fb32b015a3f57ade700e0d1ee29900f6aef8b42e8bac0e6da26c51abc31520a2",
+    "commits": 88,
+    "index": 124,
+    "lastResolvedReloadRequestSha256": "912b0d207090065dc16d324a854615c2634b1b56258380365925bc8c745846c7"
+  },
+  "reviews": [
+    {
+      "exchangeId": "1068",
+      "side": "YES",
+      "reviewedAtMs": 1792276251063,
+      "expiresAtMs": 1792358159119,
+      "ordinaryProbability": "0.990000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "966",
+      "side": "YES",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640777951,
+      "ordinaryProbability": "0.961500",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "977",
+      "side": "NO",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640779363,
+      "ordinaryProbability": "0.985000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "1067",
+      "side": "YES",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640773478,
+      "ordinaryProbability": "0.245000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "865",
+      "side": "YES",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640778069,
+      "ordinaryProbability": "0.941000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "872",
+      "side": "YES",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640779213,
+      "ordinaryProbability": "0.335000",
+      "maximumPrincipal": "3000.000000"
+    },
+    {
+      "exchangeId": "993",
+      "side": "YES",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640780077,
+      "ordinaryProbability": "0.755000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "885",
+      "side": "YES",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640780672,
+      "ordinaryProbability": "0.655000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "1051",
+      "side": "NO",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640780034,
+      "ordinaryProbability": "0.961000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "851",
+      "side": "NO",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640776751,
+      "ordinaryProbability": "0.965500",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "1043",
+      "side": "NO",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640776083,
+      "ordinaryProbability": "0.885000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "1044",
+      "side": "YES",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640781630,
+      "ordinaryProbability": "0.885000",
+      "maximumPrincipal": "10000.000000"
+    },
+    {
+      "exchangeId": "1077",
+      "side": "NO",
+      "reviewedAtMs": 1792639885053,
+      "expiresAtMs": 1792640779614,
+      "ordinaryProbability": "0.983500",
+      "maximumPrincipal": "10000.000000"
+    }
+  ],
+  "accountRequests": 0
+}
