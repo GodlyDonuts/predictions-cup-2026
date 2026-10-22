@@ -1,0 +1,15 @@
+{
+  "observedUtc": "2026-10-22T09:25:04.539212+00:00",
+  "filesystem": "ext4",
+  "device": "/dev/nvme0n1p1",
+  "blockCount": 62123192,
+  "blockSize": 4096,
+  "previousAdministratorReservedBlocks": 3106159,
+  "administratorReservedBlocksAfter": 621231,
+  "administratorReservedPercentAfter": 1,
+  "administratorReserveRetained": true,
+  "freeBytes": 13569990656,
+  "financialHistoryDeleted": false,
+  "workerRestarted": false,
+  "financialPolicyOrRateLimitsChanged": false
+}
