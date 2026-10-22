@@ -98,6 +98,15 @@ class ResearchBookTests(unittest.TestCase):
         _, _, result = self.fixture([raw_row(), obs.canonical(x) + b'\n'])
         self.assertEqual(result['observations'], {})
 
+    def test_stale_or_invalid_native_fallback_does_not_trigger_repeated_research(self):
+        root, compiled, _ = self.fixture([])
+        fresh = obs.row_books(raw_row(), MAPPING, 'cup', obs.clock(AT))['101']
+        for bad in [dict(fresh, sourceAt='2026-10-22T16:59:49Z'), dict(fresh, invalid=True)]:
+            compiled['originalBooks'] = [bad]
+            self.assertEqual(obs.load(root, compiled, REGISTRY)[0], {})
+        compiled['originalBooks'] = [fresh]
+        self.assertEqual(obs.load(root, compiled, REGISTRY)[0], {'101': fresh})
+
 
 if __name__ == '__main__':
     unittest.main()

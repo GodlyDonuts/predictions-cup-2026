@@ -155,6 +155,12 @@ def load(inputs, compiled, registry):
     assert x['nativeReportSha256'] == compiled['reportSha256'] and x['nativeViewSha256'] == compiled['viewSha256']
     assert x['maximumObservationAgeMs'] == MAX_AGE_MS
     assert all(x[k] is False for k in ('completeTradeHistoryClaimed', 'nativeAdmissionClaimed', 'atomicAccountAndBookSnapshotClaimed', 'executionAuthority'))
+    # An old native cache entry must not keep winning the research screen and
+    # consuming physical refresh packets after current raw evidence disappears.
+    # Preserve the original compiled portfolio; select only observed fresh books.
+    books = {ex: b for ex, b in books.items() if not b.get('invalid', False)
+        and all(0 <= x['capturedAtMs'] - clock(b[k]) <= MAX_AGE_MS
+                for k in ('sourceAt', 'receivedAt'))}
     mapping = {r['exchangeId']: r['marketId'] for r in registry}
     sources, parsed = {}, {}
     for ex, item in x['observations'].items():
