@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,18:15UTC
+## Latest state: October22,18:22UTC
+
+Both agent-selected West Virginia NO sales are independently reconciled:16438 total shares,708.165 proceeds and **-1182.205 realized net** versus original FIFO basis. Cash is7821.57 at the matched post-sale capture. The research-only observation window now retains60-second original books, recovering124 raw research books where the earlier capture had zero. Exact clocks remain; physical execution checks and the sole worker are unchanged. Twelve focused checks pass. Fresh redeployment research is running; no positive ROI or one-fill/minute claim. [Sale and provenance evidence](research/tartarus-learning-v2/agent-wv-exit-and-research-window-20261022.json).
+
+### Earlier18:15UTC review
 
 Subsequent18:16 original-receipt audit verifies the full10000-share NO986 sale:457.73 proceeds, zero fees and **-692.27 realized net** against1150 original FIFO basis. Eleven fill receipts represent one order. [Fill/FIFO evidence](research/tartarus-learning-v2/agent-first-sale-audit-20261022.json). The earlier unfilled observation below is superseded.
 
