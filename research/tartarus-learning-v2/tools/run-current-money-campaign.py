@@ -63,7 +63,8 @@ def run(a):
         raw = (owner/'nomination.json').read_bytes()
         old = json.loads(raw)
         qid = completion(a.runtime, view, hashlib.sha256(raw).hexdigest())
-        if int(time.time()*1000) < old['validUntilMs'] and qid is None:
+        stale_unused = old['account']['actualFillsSha256'] != view['account']['actualFillsSha256'] and not any(q.get('reviewedRankCampaign') for q in view['activeNativeOrders'])
+        if int(time.time()*1000) < old['validUntilMs'] and qid is None and not stale_unused:
             time.sleep(5)
             continue
         output = a.output/f'cycle-{completed+1:04d}'
@@ -89,6 +90,8 @@ def run(a):
                     '--source-commit', a.source_commit]
             if qid is not None:
                 args += ['--completed-qid', str(qid)]
+            elif stale_unused:
+                args += ['--supersede-filled-account']
             subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=True)
         completed += 1
         print(json.dumps(dict(at=datetime.now(timezone.utc).isoformat(),
