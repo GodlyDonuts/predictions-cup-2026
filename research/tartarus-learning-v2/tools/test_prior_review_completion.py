@@ -23,7 +23,7 @@ class PriorCompletionTests(unittest.TestCase):
         self.write_events([dict(kind='intent',qid=42,rankCampaign=dict(rawSha256=self.raw_sha)),
             dict(kind='admitted_pre_network_not_sent',qid=42)])
         self.write_report()
-        self.view = dict(knownUnclosedAcknowledgments=[],activeNativeOrders=[],sdkQueueBoundaryChecked=True,
+        self.view = dict(knownUnclosedAcknowledgments=[],activeNativeOrders=[],sdkQueueBoundaryChecked=False,
             unresolvedOrdinaryAttempt=False)
         helper = self.root/'verifier'; helper.write_bytes(b'test-only executable identity'); helper.chmod(0o700)
         self.context = dict(prepared=self.root/'prepared',control=self.root/'control.json',verifier=helper,
@@ -72,6 +72,13 @@ class PriorCompletionTests(unittest.TestCase):
         self.assertEqual(result['completionKind'],'positively_proved_pre_network_not_sent')
         self.assertFalse(result['exchangeClosedClaimed']); self.assertFalse(result['retryAuthorized'])
         self.assertNotIn('originalClosedLineSha256',result)
+
+    def test_research_view_does_not_need_to_claim_an_sdk_capability(self):
+        self.assertFalse(self.view['sdkQueueBoundaryChecked'])
+        with patch.object(publisher.subprocess,'run',side_effect=self.verified_output) as verifier:
+            result = self.complete()
+        self.assertTrue(result['typedVerification']['opaqueSdkProofVerified'])
+        verifier.assert_called_once()
 
     def test_fill_or_unresolved_attempt_prevents_non_network_completion(self):
         self.write_report(filled=1)

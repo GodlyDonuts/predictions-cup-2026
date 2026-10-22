@@ -1,5 +1,6 @@
 """One preselected, fresh TN money review; never a repeat or an account client."""
 from pathlib import Path
+import argparse
 import json
 import os
 import subprocess
@@ -8,13 +9,14 @@ import time
 
 ROOT = Path('/tmp/moloch-generation-pins-r103-20261022')
 COMPLETION = Path('/tmp/moloch-review-completion-010-20261022')
-RELEASE = Path('/home/archon/apps/moloch/releases/review-completion-010')
+RELEASE = Path('/home/archon/apps/moloch/releases/review-completion-011')
 TOOLS = Path('/tmp/moloch-upgrade-bound-r100-20261022/money-tools')
 
 
-def main():
+def main(run_number):
     os.umask(0o077); os.nice(15); Path('/proc/self/oom_score_adj').write_text('1000')
-    run = ROOT/'tennessee-owner-008'; run.mkdir(mode=0o700)
+    assert 0 <= run_number <= 999999
+    run = ROOT/('tennessee-owner-' + format(run_number,'03d')); run.mkdir(mode=0o700)
     def record(value):
         (run/'result.public.json').write_text(json.dumps(value,indent=2)+'\n')
         print(json.dumps(value),flush=True)
@@ -41,11 +43,11 @@ def main():
     if result.returncode:
         record(dict(state='funded_positive_review_declined',ordersSubmittedByController=0)); return
     deadline = time.monotonic()+120
-    while not (COMPLETION/'approved-source-commit.txt').exists():
+    while not (COMPLETION/'approved-source-commit-011.txt').exists():
         if time.monotonic() >= deadline:
             record(dict(state='checked_source_publication_missing',ordersSubmittedByController=0)); return
         time.sleep(1)
-    source = (COMPLETION/'approved-source-commit.txt').read_text().strip()
+    source = (COMPLETION/'approved-source-commit-011.txt').read_text().strip()
     deployment = json.loads((ROOT/'deployment.public.json').read_bytes())
     qualification = json.loads((COMPLETION/'qualified.public.json').read_bytes())
     summary = json.loads((prepared/'prepared.public.json').read_bytes())
@@ -64,4 +66,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--run-number',type=int,required=True)
+    main(parser.parse_args().run_number)

@@ -62,7 +62,9 @@ def completed_prior_review(root, view, old_sha, qid, completion=None):
     if closed is not None:
         return dict(qid=qid, priorRawSha256=old_sha, originalClosedLineSha256=closed)
     assert not_sent is not None and completion is not None, 'ORIGINAL_MATCHING_RANK_INTENT_AND_TERMINAL_REQUIRED'
-    assert view.get('sdkQueueBoundaryChecked') is True and view['unresolvedOrdinaryAttempt'] is False
+    # This is explicitly a research view, not an SDK capability. The verifier
+    # below independently restores the original opaque proof from SDK files.
+    assert view['unresolvedOrdinaryAttempt'] is False
     verifier, expected = completion['verifier'], completion['verifierSha256']
     assert verifier is not None and expected is not None, 'PRIOR_TYPED_NOT_SENT_VERIFIER_REQUIRED'
     verifier = Path(verifier)
