@@ -2,13 +2,18 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state — October 21, 23:36 UTC
+## Current state — October 22, 00:06 UTC
 
-R77 was installed at 23:36:29 UTC as sole worker 1053198 and is restoring the original ledger. Its executable and arguments are verified; fresh trading is not yet established. Original 492 fills, the complete 2,611,761,156-byte financial prefix and native engine are preserved. The replacement removes repeated closed-order history scans: median reader work fell from 14.8446 to 1.0228 seconds with identical original rows, a 93.11% component improvement. Full build and 379 integration/worker checks pass; whole-worker speed and fill-rate improvement are not yet established. [Change and exact qualification](research/tartarus-learning-v2/closed-index-r77-20261021.md).
+R78 was installed on October 22 at 00:06:08 UTC as sole worker **1055406**, updater 1055409. It is restoring the original ledger; fresh R78 trading is not yet established. The executable and arguments match checked source `06a4b3d447657d87b87aa6384d508f05597d65fc`. Original 492 fill receipts, the complete 2,612,655,396-byte financial prefix and native engine are preserved; there were no open or unknown orders at replacement. [Installation](research/tartarus-learning-v2/r78-deployment-20261022.json).
 
-At 23:25 UTC, original receipts establish **18 distinct first-filled orders today, two in 15 minutes and five in 60 minutes**. The one-trade-per-minute target remains unmet. Three new R76 buy orders filled; partial receipts count only once. Cash is 895.22 and remaining original cost is 94,974.69. Attributed realized net remains 289.995, including 76.52 inherited. [Receipts and FIFO](research/tartarus-learning-v2/r76-turnover-later-20261021.json).
+R78 prioritizes current executable FIFO-profit exits and removes the early passive-hint branch that could prevent ready orders and stale-book refreshes from reaching their shared queue. Prices, quantities and accounting are unchanged. The build passed 10 FIFO, 146 integration and 235 worker checks. R77's preceding history-index change reduced its isolated reader benchmark by 93.11%; neither result proves a fill-rate or ROI improvement. [Scheduling correction](research/tartarus-learning-v2/exit-priority-r78-20261021.md), [history-reader evidence](research/tartarus-learning-v2/closed-index-r77-20261021.md).
 
-Separate official account receipts at 23:26:10–12 show marked equity **94,398.90 SUSQies, down 5.6011%** from 100,000. This is neither an atomic snapshot nor executable liquidation value. Most capital is deployed; sustained turnover now depends on exits. [Account evidence](research/tartarus-learning-v2/r76-latest-account-20261021.json).
+**The one-distinct-filled-order-per-minute objective remains unmet.** The October 21 23:59 receipt audit counted zero first-filled orders in 15 minutes and three in 60 minutes; October 21's total was 18. Cash was 895.22, original remaining position cost 94,974.69, and attributed realized net 289.995 including 76.52 inherited. These are not current equity. [Receipt/FIFO audit](research/tartarus-learning-v2/r77-turnover-20261021.json).
+
+The latest retained separate official account receipts, October 21 at 23:26:10–12, gave marked equity **94,398.90 SUSQies, −5.6011%** from 100,000. These historical marks are not executable liquidation. [Account evidence](research/tartarus-learning-v2/r76-latest-account-20261021.json).
+
+R77 resumed verified trading at 23:58 UTC, but a disconnected SSH relay initially left its reviewed signals expired. A dedicated keepalive relay restored capture of all 12 markets; generation `3ff7385013e6` committed with current original sources. The same updater now waits for R78 startup. The finite R77 timing/exit windows were interrupted by the planned replacement and are partial observations, not completed experiments. [R77 live verification](research/tartarus-learning-v2/r77-fresh-live-20261021.json), [relay recovery](research/tartarus-learning-v2/r77-relay-recovery-20261022.json), [partial scope timing](research/tartarus-learning-v2/r77-scope-progress-partial-20261022.json).
+
 
 
 

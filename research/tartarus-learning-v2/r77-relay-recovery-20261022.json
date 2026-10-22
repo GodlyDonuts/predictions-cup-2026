@@ -1,0 +1,109 @@
+{
+  "observedUtc": "2026-10-22T00:04:30.693806+00:00",
+  "workerPid": 1053198,
+  "referenceUpdaterPid": 1053201,
+  "relayBind": "127.0.0.1:18964",
+  "captureEndpointReachable": true,
+  "dedicatedSshKeepaliveSeconds": 20,
+  "committedGeneration": "3ff7385013e6bf152861cee11a360dd3a3cbab009cee9e087135bd485a31ca70",
+  "updater": {
+    "atMs": 1792627466602,
+    "pid": 1053201,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 71,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "capturedAtMs": 1792627466325,
+    "openTargets": 0
+  },
+  "reviews": [
+    {
+      "exchangeId": "966",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628241207,
+      "remainingMs": 770515,
+      "current": true
+    },
+    {
+      "exchangeId": "977",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628242315,
+      "remainingMs": 771623,
+      "current": true
+    },
+    {
+      "exchangeId": "1067",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628236773,
+      "remainingMs": 766081,
+      "current": true
+    },
+    {
+      "exchangeId": "865",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628241915,
+      "remainingMs": 771223,
+      "current": true
+    },
+    {
+      "exchangeId": "872",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628243219,
+      "remainingMs": 772527,
+      "current": true
+    },
+    {
+      "exchangeId": "993",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628244167,
+      "remainingMs": 773475,
+      "current": true
+    },
+    {
+      "exchangeId": "885",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628244475,
+      "remainingMs": 773783,
+      "current": true
+    },
+    {
+      "exchangeId": "1051",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628243183,
+      "remainingMs": 772491,
+      "current": true
+    },
+    {
+      "exchangeId": "851",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628240805,
+      "remainingMs": 770113,
+      "current": true
+    },
+    {
+      "exchangeId": "1043",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628239051,
+      "remainingMs": 768359,
+      "current": true
+    },
+    {
+      "exchangeId": "1044",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628245283,
+      "remainingMs": 774591,
+      "current": true
+    },
+    {
+      "exchangeId": "1077",
+      "reviewedAtMs": 1792627346698,
+      "expiresAtMs": 1792628242510,
+      "remainingMs": 771818,
+      "current": true
+    }
+  ],
+  "officialAccountClientsCreated": 0,
+  "productionWorkerRestartedForRepair": false
+}

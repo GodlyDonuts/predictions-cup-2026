@@ -1,0 +1,38 @@
+{
+  "observedUtc": "2026-10-21T23:58:10.945778+00:00",
+  "pid": 1053198,
+  "binarySha256": "c1afb6bf248e2b31c48b1025326b186c859a6113f330b4da802ab83a029f668c",
+  "progress": {
+    "actualFills": 492,
+    "actualOrders": 1697,
+    "at": "2026-10-21T23:58:01.981Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1053198,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 24,
+    "terminalOrders": 1697
+  },
+  "fullOriginalPrefixVerified": true,
+  "originalFinancialPrefix": {
+    "bytes": 2611761156,
+    "sha256": "79014ea7aa50cdf3d6a440053c8e9c4b068ff43a4e8a2452519ea7feb879365e"
+  },
+  "originalFillCount": 492,
+  "originalFillsUnchanged": true,
+  "currentFillCount": 492,
+  "nativeUpgradeChainUnchanged": true,
+  "reportSha256": "c36cffd4bfdb955d9c726defc3f9611644ae4c1875cf51db378cbf5dbac14adc",
+  "financial": {
+    "cash": "895.220000",
+    "ownedCost": "94974.690000",
+    "realized": "289.995000",
+    "newTradingRealized": "213.475000",
+    "inheritedRealizedGross": "76.520000"
+  },
+  "accountRequestsByObserver": 0,
+  "filledMinuteTargetVerified": false,
+  "wholeAccountProfitEstablished": false
+}

@@ -1,6 +1,6 @@
 # R78: execute profitable exits and stop passive hints starving ready orders
 
-R78 is qualified; it is not deployed. R77 is restoring the original ledger. The one-distinct-filled-order-per-minute objective remains unmet.
+R78 was installed October 22 at 00:06:08 UTC as sole worker 1055406 and is restoring the original ledger. Fresh R78 trading is not yet established. [Exact installation](r78-deployment-20261022.json). The one-distinct-filled-order-per-minute objective remains unmet.
 
 The partial R76 observation retained 92 consistent samples. Exchanges 993 and 1044 each had 25 samples with current reviews, original FIFO basis, no observed occupying order and displayed bids meeting their existing profit price. No new sale occurred during that observed window. Quotes and repeated depth are not fills or additive profit. [Original partial observation](r76-exit-census-partial-20261021.json).
 
@@ -11,3 +11,9 @@ R78 classifies an existing FIFO-profit quote as marketable only when its unchang
 The change does not alter forecast probabilities, profit floors, quantities, fees, monetary limits, original costs, account pacing, or native accounting. A read-only hint cannot claim a fill, profit, complete depth coverage or future marketability. Scope completion gaps and distinct first-filled orders must be measured separately after deployment.
 
 The new FIFO test checks marketable, non-marketable, below-cost and stale-book cases without changing the native financial state. Scheduler checks cover rotation among executable exits, actual deadline priority, and inclusion of ready orders and stale refreshes despite passive hints. All 10 FIFO, 146 fundamental integration and 235 worker checks passed. The final optimized ARM64 binary loads, hashes to `4c86b9026621653a49aa2eec07df52946fdd2f691619698f7db4d9239bdfa134`, and uses the unchanged native library. Its exact source hashes match the staged main change. [Final qualification](r78-exit-priority-qualified-20261021.json). No production result is claimed from these tests.
+
+## Feed connection and partial predecessor measurement
+
+R77 was verified live at October 21 23:58 UTC with its full original financial prefix and all 492 receipts unchanged. Its reference updater initially could not reach the laptop capture service because the SSH relay had disconnected. A dedicated loopback relay with 20-second keepalives restored the feed; all 12 original-source reviews were current and generation `3ff7385013e6bf152861cee11a360dd3a3cbab009cee9e087135bd485a31ca70` committed. One initial account-packet staleness deferral resolved on the existing retry; no source-age or account-age rule was relaxed. The source relay must remain available independently of the interactive administration session. [Recovery evidence](r77-relay-recovery-20261022.json).
+
+The pre-replacement timing and exit windows are partial; they were interrupted intentionally before their target durations. Scope-completion gaps are not fill frequency and include reload work. No new confirmed first fill or new realized gain was established during the brief R77 window. [Scope observations](r77-scope-progress-partial-20261022.json), [exit observations](r77-exit-census-partial-20261022.json), [receipt audit](r77-turnover-20261021.json).
