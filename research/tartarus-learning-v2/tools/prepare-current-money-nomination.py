@@ -21,6 +21,7 @@ def run(a):
     from moloch.tartarus.categorical_money_bound import ordinary_money_bounds
     from moloch.tartarus.native_snapshot import _ns
     from moloch.tartarus.party_scenarios import canonical
+    from moloch.tartarus.current_portfolio import compile_current
     a.output.mkdir(mode=0o700, parents=True, exist_ok=False)
     originals = a.output / 'originals'
     originals.mkdir(mode=0o700)
@@ -33,6 +34,11 @@ def run(a):
     byex = {r['exchangeId']: r for r in rows}
     assert compiled['financial'] is not None and not compiled['unavailableReasons']
     assert compiled['viewSha256'] == sha256((a.inputs / 'native-view.original.json').read_bytes()).hexdigest()
+    report_raw = (a.inputs / 'report.original.json').read_bytes()
+    rebuilt = compile_current(report_raw, (a.inputs / 'native-view.original.json').read_bytes(),
+        expected_report_sha256=compiled['reportSha256'], expected_view_sha256=compiled['viewSha256'],
+        registry=rows, conditional_future_legs=compiled['financial']['conditionalFutureLegs'])
+    assert rebuilt == compiled, 'DERIVED_PORTFOLIO_CHANGED_FROM_MATCHED_ORIGINALS'
     assert model['currentPriceInputsAtIssue'] and not model['datedResearchOverride']
     assert 0 < a.horizon_ms <= 900000 and model['issuedAtMs'] <= a.decision_ms
     until = model['inputCutoffMs'] + a.horizon_ms
@@ -42,16 +48,43 @@ def run(a):
     candidates = load(a.candidates)['candidates']
     chosen = next(c for c in candidates if all(c['leg'][k] == v for k, v in
         [('ex', a.exchange), ('side', a.side), ('action', a.action)]))
-    leg = chosen['leg']
+    leg = dict(chosen['leg'])
     books = {b['exchangeId']: b for b in compiled['originalBooks']}
     assert a.exchange in books, 'ORIGINAL_CURRENT_NATIVE_TARGET_BOOK_REQUIRED'
-    checked = audit(fin, rows, books, model['model'], model['fields'], [leg], assumptions=ASSUMPTIONS)
     assert amount(a.minimum_expected_money) > 0
-    assert all(m['expectedChangeMicrosNumerator'] >= amount(a.minimum_expected_money) * 1000000
-               for m in checked['models']), 'ALL_MODEL_MONEY_FLOOR'
-    interval = ordinary_money_bounds(rows, model['marginals'], model['profiles'],
-        model['model']['diagnostics'], [leg])
-    assert interval['ordinaryMinimumExpectedChangeMicros'] >= amount(a.minimum_expected_money), 'EXACT_ORDINARY_MONEY_FLOOR'
+    tolerance = amount(getattr(a, 'price_tolerance', '0.000000'))
+    assert 0 <= tolerance < 1000000, 'EXPLICIT_BINARY_PRICE_TOLERANCE'
+    original_leg = dict(leg)
+    # Use observed valid levels, not an invented tick size. The limit is a
+    # worst-case funding/valuation price, never a claim about the actual fill.
+    key = ('asks' if a.side == 'YES' else 'bids') if a.action == 'BUY' else ('bids' if a.side == 'YES' else 'asks')
+    prices = {amount(level['price']) if a.side == 'YES' else 1000000 - amount(level['price'])
+              for level in books[a.exchange][key]}
+    prices.add(leg['price'])
+    prices = sorted((p for p in prices if 0 < p < 1000000 and
+        (leg['price'] <= p <= leg['price'] + tolerance if a.action == 'BUY'
+         else leg['price'] - tolerance <= p <= leg['price'])), reverse=a.action == 'BUY')
+    for price in prices:
+        proposed = dict(original_leg, price=price)
+        if a.action == 'BUY':
+            market = sum(lot['quantity'] * amount(lot['price']) for lots in fin['positions'].get(a.exchange, {}).values() for lot in lots)
+            proposed['quantity'] = min(original_leg['quantity'],
+                (amount(fin['cash']) - amount(fin['reservedCash'])) // price,
+                (amount(fin['maximumCommitted']) - amount(fin['ownedCost']) - amount(fin['reservedCash'])) // price,
+                (amount(fin['maximumMarketCost']) - market) // price)
+        if proposed['quantity'] <= 0:
+            continue
+        try:
+            checked = audit(fin, rows, books, model['model'], model['fields'], [proposed], assumptions=ASSUMPTIONS)
+            interval = ordinary_money_bounds(rows, model['marginals'], model['profiles'], model['model']['diagnostics'], [proposed])
+        except ValueError:
+            continue
+        if (all(m['expectedChangeMicrosNumerator'] >= amount(a.minimum_expected_money) * 1000000 for m in checked['models'])
+                and interval['ordinaryMinimumExpectedChangeMicros'] >= amount(a.minimum_expected_money)):
+            leg = proposed
+            break
+    else:
+        raise ValueError('NO_INDEPENDENTLY_POSITIVE_FUNDED_PRICE_WITHIN_REVIEW')
     held = {byex[ex]['contractId'] for ex in fin['positions']}
     retained = held | {byex[a.exchange]['contractId']}
     projection = project(model['model']['scenarios'], model['model']['probabilityModels'], model['fields'],
@@ -109,6 +142,9 @@ def run(a):
         side=a.side, action=a.action, quantity=n, limitPrice=money(p), validUntilMs=until,
         weakestDeclaredExpectedChange=min(m['expectedChangeMicrosNumerator'] / 1e12 for m in checked['models']),
         ordinaryMinimumExpectedChange=interval['ordinaryMinimumExpectedChange'], scenarios=len(projection['scenarios']),
+        originalHypothesisQuantity=original_leg['quantity'], originalHypothesisPrice=money(original_leg['price']),
+        requestedPriceTolerance=getattr(a, 'price_tolerance', '0.000000'),
+        limitIsConservativeFundingAndValuationPrice=True, actualFillPriceClaimed=False,
         probabilityModels=len(projection['probabilityModels']), completeHeldMarkets=len(fin['positions']),
         sourceClocksRenewed=False, approvalPublished=False, submitted=False, executionAuthority=False)
     (a.output / 'prepared.public.json').write_text(json.dumps(result, indent=2) + '\n')
@@ -125,4 +161,5 @@ if __name__ == '__main__':
     p.add_argument('--decision-ms', type=int, required=True)
     p.add_argument('--horizon-ms', type=int, required=True)
     p.add_argument('--minimum-expected-money', required=True)
+    p.add_argument('--price-tolerance', default='0.000000')
     run(p.parse_args())
