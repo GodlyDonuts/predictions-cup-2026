@@ -35,3 +35,15 @@ A running old worker or accepted generation does not establish R91 fills,
 profitability or sustained one-filled-order/minute cadence. The pre-replacement
 hour had one newly filled order and59empty UTC minutes; partial receipts from an
 older order cannot create another new trade in the cadence report.
+
+
+The retained pre-replacement report is50,973,797bytes. Its order history takes
+approximately28.58MB; the report body21.60MB field
+reviewedRankCampaignReservations dominates its22.18MB body. The largest retired
+order alone renders1.95MB. Source cursors number only7 and render188bytes, so
+cursor growth is not the measured cause. These are Python compact-JSON field
+sizes, not a Rust latency benchmark. The profile is read-only and uses the
+retained immutable replacement snapshot. Original financial history must remain;
+a future optimization should remove repeated rendering/copying of historical
+proofs from hot processing, rather than erase the evidence. No additional
+production change is made by this profile. See[r91-derived-report-shape-20261022.json](r91-derived-report-shape-20261022.json).

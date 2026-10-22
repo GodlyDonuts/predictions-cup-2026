@@ -1,0 +1,163 @@
+{
+  "observedUtc": "2026-10-22T11:39:12.270719+00:00",
+  "originalReportSha256": "cd33a4ee3b9ca9aa2df0731cbd36aa45d3ab182f673ae9db7752a9fcf3430062",
+  "originalSealedReportHash": "7a7e3cd6350fdcd7da2de2826a0e32a5dea3b91a3dec95a481d62b8c90c13f28",
+  "originalBytes": 50973797,
+  "snapshotAt": "2026-10-22T11:33:38.371Z",
+  "pythonParseSeconds": 0.7241831639548764,
+  "topLevelPythonCompactBytes": {
+    "contestOrders": 4,
+    "fills": 206668,
+    "hash": 66,
+    "manifestHash": 66,
+    "orders": 28581881,
+    "previous": 66,
+    "report": 22184739,
+    "sequence": 6,
+    "sourceCursors": 188
+  },
+  "reportFieldsPythonCompactBytes": {
+    "reviewedRankCampaignReservations": 21603597,
+    "reviewedInventoryExitReservations": 340212,
+    "reviewedFundamentalEntryReservations": 208813,
+    "inheritedInventory": 13858,
+    "positions": 7702,
+    "ownerCapitalAllocation": 2895,
+    "liveMarketCapacity": 2272,
+    "ownerMandateRevision": 1418,
+    "managedInventoryPlanning": 848,
+    "ordinaryEntryExclusions": 775,
+    "profitableDepthMode": 538,
+    "counts": 478,
+    "dailyEntryWindows": 319,
+    "policyHash": 66,
+    "at": 26,
+    "fillModel": 20,
+    "cash": 14,
+    "openingInventoryCost": 14,
+    "ownedCost": 14,
+    "reservedCash": 13,
+    "newTradingRealized": 12,
+    "realized": 12,
+    "inheritedRealizedGross": 11,
+    "fees": 10,
+    "bot": 8,
+    "events": 6,
+    "executionMode": 6,
+    "runtime": 6,
+    "orders": 5,
+    "profitSignalEligible": 5,
+    "profitabilityEstablished": 5,
+    "contestOrders": 4,
+    "continuation": 4,
+    "netLiquidationPnl": 4,
+    "fills": 3,
+    "activeOrders": 1,
+    "conditionalQueueFills": 1,
+    "networkRequests": 1,
+    "unresolvedOrders": 1
+  },
+  "largestOrders": [
+    {
+      "id": 19128,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1946086
+    },
+    {
+      "id": 19596,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1899106
+    },
+    {
+      "id": 19042,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1823105
+    },
+    {
+      "id": 19588,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1780498
+    },
+    {
+      "id": 19571,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1774544
+    },
+    {
+      "id": 19188,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1774232
+    },
+    {
+      "id": 19556,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1773333
+    },
+    {
+      "id": 19565,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1773333
+    },
+    {
+      "id": 19616,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1767557
+    },
+    {
+      "id": 19645,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1767529
+    },
+    {
+      "id": 19504,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1766621
+    },
+    {
+      "id": 19649,
+      "exchangeId": "1068",
+      "retired": true,
+      "pythonCompactBytes": 1760940
+    },
+    {
+      "id": 20797,
+      "exchangeId": "865",
+      "retired": true,
+      "pythonCompactBytes": 5922
+    },
+    {
+      "id": 20550,
+      "exchangeId": "1044",
+      "retired": true,
+      "pythonCompactBytes": 4764
+    },
+    {
+      "id": 20525,
+      "exchangeId": "1044",
+      "retired": true,
+      "pythonCompactBytes": 4526
+    }
+  ],
+  "originalOrderCount": 21560,
+  "originalFillCount": 576,
+  "sourceCursorCount": 7,
+  "networkRequests": 0,
+  "originalMutated": false,
+  "financialAuthority": false,
+  "limitations": [
+    "Field sizes use Python compact JSON, not a Rust serialization benchmark.",
+    "Retained snapshot; parse timing depends on shared CPU/cache.",
+    "No production latency, throughput, fill or ROI claim."
+  ]
+}
