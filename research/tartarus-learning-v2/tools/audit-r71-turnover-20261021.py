@@ -6,7 +6,7 @@ incomplete. Fill receipts, filled orders and turnover are counted separately.
 from pathlib import Path
 from decimal import Decimal as N
 from copy import deepcopy
-from datetime import datetime, timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
 import argparse
 import hashlib
 import json
@@ -68,7 +68,7 @@ def take(lots, quantity):
     return cost
 
 
-def audit(baseline, output):
+def audit(baseline, output, utc_day=None):
     before_raw = baseline.read_bytes()
     before = json.loads(before_raw)
     raw = (ROOT / 'bank-all-markets-v1/report.json').read_bytes()
@@ -150,8 +150,11 @@ def audit(baseline, output):
     assert N(post['ownedCost']) - N(pre['ownedCost']) == total('ownedCostDelta')
     assert N(post['cash']) - N(pre['cash']) == total('cashDelta')
     assert N(post['realized']) - N(pre['realized']) == total('realizedNet')
-    today = [f for f in after['fills'] if f.get('executedAt', '').startswith('2026-10-21')]
     observed = datetime.now(timezone.utc)
+    utc_day = observed.date() if utc_day is None else utc_day
+    today = [f for f in after['fills'] if
+             datetime.fromisoformat(f['executedAt'].replace('Z', '+00:00'))
+             .astimezone(timezone.utc).date() == utc_day]
     proof = dict(observedUtc=observed.isoformat(), baselineIncident=baseline.parent.name,
         baselineReportSha256=hashlib.sha256(before_raw).hexdigest(),
         originalFillCount=count, currentFillCount=len(after['fills']), originalFillsUnchanged=True,
@@ -160,7 +163,7 @@ def audit(baseline, output):
         financial={k: post[k] for k in ['cash', 'ownedCost', 'realized', 'newTradingRealized', 'inheritedRealizedGross']},
         incrementalRealizedNet=total('realizedNet'), incrementalTurnover=total('notional'),
         incrementalShares=total('shares'), incrementalDistinctFilledOrders=len(orders),
-        officialReceiptFileHashes=receipt_hashes, utcDay='2026-10-21', dayFillReceipts=len(today),
+        officialReceiptFileHashes=receipt_hashes, utcDay=utc_day.isoformat(), dayFillReceipts=len(today),
         dayDistinctFilledOrders=len({f['actualOrderId'] for f in today}),
         cadence=filled_order_cadence(after['fills'], observed),
         noAccountRequestsByAudit=True, wholeAccountProfitEstablished=False)
@@ -173,5 +176,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--baseline', type=Path, default=BASELINE)
     parser.add_argument('--output', type=Path, default=OUT)
+    parser.add_argument('--utc-day', type=date.fromisoformat,
+                        help='Daily UTC bucket, YYYY-MM-DD; defaults to the observation day')
     args = parser.parse_args()
-    audit(args.baseline, args.output)
+    audit(args.baseline, args.output, args.utc_day)

@@ -1,6 +1,6 @@
 # R78: execute profitable exits and stop passive hints starving ready orders
 
-R78 was installed October 22 at 00:06:08 UTC as sole worker 1055406 and is restoring the original ledger. Fresh R78 trading is not yet established. [Exact installation](r78-deployment-20261022.json). The one-distinct-filled-order-per-minute objective remains unmet.
+R78 was installed October 22 at 00:06:08 UTC as sole worker 1055406 and resumed verified trading at 00:26:03.530. The complete original journal prefix and all 492 earlier receipts verified unchanged. Its first new execution bought 150 NO1077 shares at 0.850 at 00:27:25.022; the 00:30:40 audit verified the original receipt and FIFO. This is one filled order, not new realized profit. The one-distinct-filled-order-per-minute objective remains unmet. [Installation](r78-deployment-20261022.json), [fresh verification](r78-fresh-live-20261022.json), [receipt audit](r78-turnover-20261022.json).
 
 The partial R76 observation retained 92 consistent samples. Exchanges 993 and 1044 each had 25 samples with current reviews, original FIFO basis, no observed occupying order and displayed bids meeting their existing profit price. No new sale occurred during that observed window. Quotes and repeated depth are not fills or additive profit. [Original partial observation](r76-exit-census-partial-20261021.json).
 
