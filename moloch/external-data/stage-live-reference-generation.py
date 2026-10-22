@@ -31,6 +31,7 @@ def main():
     control = json.loads(original)
     modes = {}
     margins = {}
+    quantities = {}
     mode_raw = b''
     if a.execution_modes_policy or a.execution_modes_sha256:
         if not a.execution_modes_policy or not a.execution_modes_sha256:
@@ -43,6 +44,10 @@ def main():
             raise ValueError('EXECUTION_MODES_POLICY_FORMAT')
         modes = mode_policy['exchanges']
         margins = mode_policy.get('entryMargins', {})
+        quantities = mode_policy.get('quantityCeilings', {})
+        if (not isinstance(quantities, dict) or not set(quantities) <= set(modes)
+                or any(type(n) is not int or not 1 <= n <= 1_000_000 for n in quantities.values())):
+            raise ValueError('EXECUTION_QUANTITY_POLICY_SCOPE_OR_VALUE')
         if not isinstance(margins, dict) or not set(margins) <= set(modes):
             raise ValueError('EXECUTION_MARGIN_POLICY_SCOPE')
         for value in margins.values():
@@ -108,6 +113,12 @@ def main():
             forecast['entryMarginOwnerPolicySha256'] = a.execution_modes_sha256
             forecast['entryMarginPerShare'] = margins[r['exchangeId']]
             r['marginPerShare'] = margins[r['exchangeId']]
+        if r['exchangeId'] in quantities:
+            forecast['quantityCeilingOwnerPolicySha256'] = a.execution_modes_sha256
+            forecast['maximumTotalQuantity'] = quantities[r['exchangeId']]
+            # A cohort position ceiling is separate from the native physical
+            # order size and the unchanged principal/cash budgets.
+            r['maximumQuantity'] = quantities[r['exchangeId']]
         fraw = json.dumps(forecast, separators=(',', ':')).encode()
         fp = a.output / (r['exchangeId'] + '-forecast.json')
         fp.write_bytes(fraw)

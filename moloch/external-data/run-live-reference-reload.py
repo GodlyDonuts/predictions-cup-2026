@@ -140,6 +140,17 @@ def execution_margins_policy(config):
     return margins
 
 
+def execution_quantities_policy(config):
+    modes = execution_modes_policy(config)
+    if not config.get('executionModesPolicy'):
+        return {}
+    values = json.loads(Path(config['executionModesPolicy']).read_bytes()).get('quantityCeilings', {})
+    if (not isinstance(values, dict) or not set(values) <= set(modes)
+            or any(type(n) is not int or not 1 <= n <= 1_000_000 for n in values.values())):
+        raise ValueError('EXECUTION_QUANTITY_POLICY_SCOPE_OR_VALUE')
+    return values
+
+
 def protected_order_exchanges(view):
     # A reserved quote already pins its review before any HTTP acknowledgment.
     # Repricing it during physical preparation can repeatedly invalidate the
@@ -147,7 +158,7 @@ def protected_order_exchanges(view):
     return {q['exchangeId'] for q in view['activeNativeOrders'] if not q.get('retired', False)}
 
 
-def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False, execution_modes=None, entry_margins=None):
+def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False, execution_modes=None, entry_margins=None, quantity_ceilings=None):
     inputs = {r['exchangeId']: r for r in capture['rows']}
     selected = []
     for file in current_control['fundamentalPolicy']['reviews']:
@@ -164,6 +175,10 @@ def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_ope
             continue
         margin = (entry_margins or {}).get(ex)
         if margin and Decimal(review['marginPerShare']) != Decimal(margin):
+            selected.append(ex)
+            continue
+        quantity = (quantity_ceilings or {}).get(ex)
+        if quantity is not None and review['maximumQuantity'] != quantity:
             selected.append(ex)
             continue
         old = Decimal(review['ordinaryProbability'])
@@ -274,6 +289,7 @@ def main():
     c = json.loads(a.config.read_bytes())
     modes = execution_modes_policy(c)
     margins = execution_margins_policy(c)
+    quantities = execution_quantities_policy(c)
     os.umask(0o077)
     out = Path(c['outputRoot'])
     out.mkdir(parents=True, exist_ok=True)
@@ -335,7 +351,8 @@ def main():
             open_exchanges = protected_order_exchanges(view)
             current_control = json.loads(Path(state['controlPath']).read_bytes())
             selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000,
-                refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c), entry_margins=execution_margins_policy(c))
+                refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c), entry_margins=execution_margins_policy(c),
+                quantity_ceilings=execution_quantities_policy(c))
             if not selected:
                 report('fresh_reference_no_price_tick_change', capturedAtMs=capture['capturedAtMs'], openTargets=len(open_exchanges),
                        supplementalUnavailable=capture.get('supplementalUnavailable', []))

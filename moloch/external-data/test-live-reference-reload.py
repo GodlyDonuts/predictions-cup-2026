@@ -145,6 +145,30 @@ class RefreshTests(unittest.TestCase):
             for value in ['0.000000','-0.001000','NaN','garbage','0.0000001','0.001',1]:
                 with self.assertRaises(ValueError):refresh.execution_margins_policy(config({'1067':value}))
 
+    def test_quantity_policy_is_pinned_scoped_and_not_a_cash_budget(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'policy.json'
+            def config(values):
+                p.write_text(json.dumps({'version':1,'exchanges':{'1067':['boundedLimitMayRest']},'quantityCeilings':values}))
+                return {'executionModesPolicy':str(p),'executionModesPolicySha256':refresh.sha(p),'exchanges':['1067']}
+            self.assertEqual(refresh.execution_quantities_policy(config({'1067':1000000})),{'1067':1000000})
+            for values in [{'other':100}, {'1067':True}, {'1067':0}, {'1067':1000001}, {'1067':'10000'}]:
+                with self.assertRaises(ValueError):refresh.execution_quantities_policy(config(values))
+            c=config({'1067':1000000});p.write_text('{}')
+            with self.assertRaisesRegex(ValueError,'PIN'):refresh.execution_quantities_policy(c)
+
+    def test_quantity_revision_preserves_open_quote_and_unchanged_principal(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'review.json';r=self.review();r.update(maximumQuantity=10000,maximumPrincipal='10000.000000');p.write_text(json.dumps(r))
+            original=p.read_bytes();control={'fundamentalPolicy':{'reviews':[{'path':str(p)}]}};capture={'rows':[{'exchangeId':'1067','yesMidpoint':'.5001'}]}
+            desired={'1067':1000000}
+            self.assertEqual(refresh.changed_scopes(capture,control,set(),1000,quantity_ceilings=desired),['1067'])
+            self.assertEqual(refresh.changed_scopes(capture,control,{'1067'},1000,quantity_ceilings=desired),[])
+            self.assertEqual(p.read_bytes(),original)
+            r['maximumQuantity']=1000000;p.write_text(json.dumps(r))
+            self.assertEqual(refresh.changed_scopes(capture,control,set(),1000,quantity_ceilings=desired),[])
+            self.assertEqual(json.loads(p.read_bytes())['maximumPrincipal'],'10000.000000')
+
     def test_margin_revision_waits_for_free_target_and_changes_actual_acquisition_tick(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'review.json';r=self.review();r['marginPerShare']='0.005000';p.write_text(json.dumps(r))
