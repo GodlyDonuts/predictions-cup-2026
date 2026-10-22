@@ -1173,6 +1173,39 @@ fn mixed_reviewed_preflight(exits:&[fundamental::ExistingExitHint],entries:&[fun
   for code in ["OFFICIAL_REQUEST_REJECTED","BODY_UNCONFIRMED","CONNECTION_UNCONFIRMED","LIVE_CASH_MISMATCH"]{assert!(!expected_ordinary_final_guard(code));}
  }
 }
+/// Continue read-only candidate selection without another complete source scope.
+/// A cursor cycle, no selection, lost permission or ANY dispatch-log change
+/// ends this sweep. This does not authorize/retry an order or reuse a packet.
+struct OrdinaryCandidateSweep{seen:std::collections::BTreeSet<String>,previous:Option<String>,passes:usize}
+impl OrdinaryCandidateSweep{
+ fn new(previous:Option<String>)->Self{let seen=previous.iter().cloned().collect();Self{seen,previous,passes:0}}
+ fn after(&mut self,current:Option<&str>,permitted:bool,dispatch_unchanged:bool)->bool{
+  self.passes+=1;
+  if !permitted||!dispatch_unchanged||current==self.previous.as_deref(){return false}
+  let Some(key)=current else{return false};
+  if !self.seen.insert(key.to_owned()){return false}
+  self.previous=Some(key.to_owned());true
+ }
+}
+#[cfg(test)]mod ordinary_candidate_sweep_tests{
+ use super::*;
+ #[test]fn rejected_reads_continue_until_first_physical_journal_change(){
+  let mut s=OrdinaryCandidateSweep::new(Some("851:YES:buy".into()));
+  assert!(s.after(Some("865:YES:buy"),true,true));assert!(s.after(Some("885:YES:buy"),true,true));
+  assert!(!s.after(Some("993:YES:sell"),true,false));assert_eq!(s.passes,3);
+ }
+ #[test]fn a_candidate_cycle_or_no_selection_ends_the_sweep(){
+  let mut s=OrdinaryCandidateSweep::new(Some("993:YES:sell".into()));
+  assert!(s.after(Some("1044:YES:sell"),true,true));assert!(!s.after(Some("993:YES:sell"),true,true));
+  let mut s=OrdinaryCandidateSweep::new(None);assert!(!s.after(None,true,true));
+  let mut s=OrdinaryCandidateSweep::new(Some("993:YES:sell".into()));assert!(!s.after(Some("993:YES:sell"),true,true));
+ }
+ #[test]fn expired_permission_and_attempts_without_ack_never_continue(){
+  for(permitted,unchanged)in [(false,true),(false,false),(true,false)]{
+   let mut s=OrdinaryCandidateSweep::new(None);assert!(!s.after(Some("993:YES:sell"),permitted,unchanged));
+  }
+ }
+}
 fn existing_exit_read_hints(bank:&Session,log:&DispatchLog,scope:&Scope,f:&FundamentalRuntime,at:u64)->Result<Vec<fundamental::ExistingExitHint>>{
  let mut exchanges=std::collections::BTreeSet::new();let mut reserved=std::collections::BTreeSet::new();
  for ex in f.cohorts.managed_exchanges(){
@@ -3082,15 +3115,31 @@ pub fn main()->Result<()>{
     if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      rank_opportunity(&mut t,&c,&mut bank,&mut log,&packages,lease.as_ref(),&authority,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe,fundamental.as_mut())?;
     }
-    // Optional reload/package/rank work can consume the reconciliation window.
-    // Refresh at the dispatch boundary instead of silently starving every scope.
+    // Cheap rejected read nominations must not each pay for a complete source,
+    // package/rank and report cycle. Each next candidate still obtains its own
+    // fresh packet through the same Transport/limiter. Stop on any dispatch-log
+    // mutation (including intent/cancel/error without ACK), not just a fill.
+    let sweep_dispatch=log.descriptor_identity()?;
+    let mut candidate_sweep=OrdinaryCandidateSweep::new(preflight_cursor.clone());
+    loop{
+    refresh_controls(&c,&authority,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)?;
+    ensure_entry_window(&c,&mut bank,&authority)?;
+    // Do not hold up a pending reviewed-source refresh while scanning candidates.
+    if candidate_sweep.passes>0{service_fundamental_reload(reload_channel.as_ref(),&c,&path,&original_control_bytes,&mut t,&mut bank,&mut log,&packages,&authority,lease.as_ref(),fundamental.as_mut(),stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;}
+    // Recompute permission after each candidate's paced reads; no prior account
+    // reconciliation or physical permit is extended by this scheduling loop.
     if !package_blocked&&!collateral_blocked&&(account_reconciliation_due(stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?)||reconciliation_schedule.due(now(),pending_version(&log))?.is_some()){
      reconciled=reconcile(&mut t,&c,&mut bank,&mut log,&mut reconciliation_cache,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe)?;
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
+    if candidate_sweep.passes>0&&log.descriptor_identity()?!=sweep_dispatch{break}
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     let _=atomic_json(&c.root.join("dispatch-admission.json"),&json!({"at":iso(now()),"pid":std::process::id(),"allowed":permit_new,"packageBlocked":package_blocked,"collateralBlocked":collateral_blocked,"reconciliationBlocked":reconciled.blocks_new_submissions}));
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&windows,maker_review.as_ref(),fundamental.as_mut())?;
+    let unchanged=log.descriptor_identity()?==sweep_dispatch;
+    if !candidate_sweep.after(preflight_cursor.as_deref(),permit_new,unchanged){break}
+    }
+    let _=atomic_json(&c.root.join("ordinary-candidate-sweep.json"),&json!({"at":iso(now()),"pid":std::process::id(),"passes":candidate_sweep.passes,"distinctCursors":candidate_sweep.seen.len(),"dispatchJournalChanged":log.descriptor_identity()?!=sweep_dispatch,"sameAccountWorker":true,"physicalPermissionsReused":false,"diagnosticOnly":true}));
     if owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?{
      paper5_opportunity(&mut t,&c,&mut bank,&mut log,&authority,&mut packages,paper5_runtime.as_ref(),&mut source_state,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&mut windows,&mut paper5_last_opportunity,&fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default())?;
     }
