@@ -1,0 +1,15 @@
+{
+  "label": "full-universe-money",
+  "status": "exact_sequence_checked",
+  "books": 41,
+  "legs": 27,
+  "solverStatus": 0,
+  "reason": null,
+  "nativeProjectionAvailable": true,
+  "nativeProjectionUnavailable": null,
+  "weakestDeclaredExpectedChange": 5625.098609,
+  "targetObjectiveImproved": false,
+  "elapsedSeconds": 4.3869713669409975,
+  "sourceClocksRenewed": false,
+  "executionAuthority": false
+}

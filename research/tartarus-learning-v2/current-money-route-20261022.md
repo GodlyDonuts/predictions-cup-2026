@@ -1,0 +1,25 @@
+# Incremental money opportunities and the minute target
+
+Production remains R85, worker1069937. At07:16:34UTC it reported healthy trading,573 execution receipts,1746 acknowledged/1746 terminal orders and no active `EXECUTION_STOP`. The one-distinct-first-filled-order/minute target remains unmet. A running worker and an order acknowledgment do not establish a fill.
+
+The new [matched portfolio capture](r88-capture.json) retains18 held markets,24,905.215 native cash,71,616.54 original FIFO cost,zero native cash reservation and two known physical orders at its07:08 boundary. It is research evidence, conditional on no further fills of those known orders. It does not claim a physically reconciled allocation boundary or rewrite cost basis. The existing worker and limiter remain the only official-account client.
+
+Current checked compilers/reference/audit modules and139 exact contract records were transferred into a new private research directory. A finite capture from the existing public cache retained237 quote records with original body hashes and request/receipt clocks. The [issued reference matrix](r88-reference-issue.json) has387 scenarios,five probability models and three incomplete opposing-field hypotheses. Current price inputs passed the30-second issue check; two expired original opinions remain dated historical stress. No expired trading review was renewed. One categorical conflict is widened to ignorance. These price-based hypotheses are uncalibrated; source publication times and resolver equivalence remain unresolved.
+
+The [fresh public leaderboard observation](r88-public-field-20261022.json) reports leader markedPnL982,378.88 and4725 trades at07:09:19UTC. Initial100,000 plus markedPnL is an explicitly assumed planning threshold, not observed rival cash or terminal wealth.
+
+## Search results
+
+The [18-book held-market monetary search](r88-current-held-money.json) found a10-leg hypothetical sequence with weakest declared incremental terminal expectation+1764.038228SUSQies across all five models. The [41-book broader monetary search](r88-full-universe-money.json) found27 legs and+5625.098609. The broader input combines current native held-market books with explicitly dated future-liquidity hypotheses; it does not claim those old prices are currently executable. Both sequences preserve full original holdings/FIFO, funding, physical quantity/market caps, all models/fields and lossless native projections. Neither improves the one-step first-place score. These are model sensitivities, not realized profit or an ROI forecast.
+
+This exposes a concrete selection restriction: the production rank route requires immediate or contingent improvement against a distant first-place threshold. It can reject positive incremental expected money because the portfolio remains far below that threshold.
+
+## Combined R88 candidate
+
+The new explicit objective `declared_positive_expected_money` permits a direct, owner-reviewed BUY or SELL without asserting an immediate first-place improvement. It requires `minimumTargetGainPpm=0`, a strictly positive `risk.minimumExpectedMoney`, and expected money at least that floor under **every** supplied probability model. Omitting an adverse model from `modelPairs` is rejected. Prerequisite/contingent plans are not accepted through this objective. The old rank objective and its positive target-gain requirement remain intact.
+
+Native admission still recomputes the exact full-account scenario/FIFO result and existing partial-fill downside limits. The current account, debt, cash, original attributed cost, contract identity, ownership, live depth, source clocks, hard expiry, durable intent and physical capability checks remain authoritative. The model does not become calibrated because this criterion accepts it.
+
+R88 also combines the qualified R86/R87 final-packet/report scheduling and original cohort-event offset index with the previously unfinished rank allocation/borrowed-view optimizations. The native checks passed140/0. The initial runtime compile exposed four current-main semantic dependencies absent from the older isolated source snapshot; its source closure was corrected before resuming runtime/worker qualification. This is an **offline candidate**, not a deployed upgrade or established speedup. Production is still R85 until an exact checked handover and fresh evidence establish otherwise.
+
+Individual first-order opportunities are audited separately from aggregate sequences; no hypothetical future sale proceeds are credited. Dated depth must be replaced by actual physical facts before execution. Current source issuance, a complete qualification, exact owner review, one-worker handover and a fresh fill/minute measurement remain required. No minute-cadence or whole-account profit completion is claimed.

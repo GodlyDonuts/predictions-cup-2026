@@ -121,7 +121,11 @@ fn capture_checked(bank:&Session,b:&Boundary<'_>,at:i64,allow_proved:bool)->Resu
  need(pending.iter().all(|q|!o.attempted.contains(q)&&b.ordinary.never_attempted(*q)&&!bank.engine().live_order_bindings().contains_key(q)),"COLLATERAL_UNSUBMITTED_PROOF")?;
  need(ordinary==b.ordinary.descriptor_identity()?&&packages==b.packages.descriptor_identity()?,"COLLATERAL_DISPATCH_CHANGED")?;
  let seed=bank.live_account_seed().ok_or("COLLATERAL_LIVE_BANK")?;
- let captured=json!({"root":root,"scope":b.transport.scope(),"accountScope":b.transport.account_scope(),"runId":seed["runId"],"manifestHash":bank.manifest_hash(),"reportHash":hash(&bank.engine().report()?)?,"nativeHead":bank.durable_head(),"ordinaryDescriptor":ordinary,"packageDescriptor":packages,"ordinarySha256":o.sha256,"packageSha256":p.sha256,"originalAckReceiptHashes":o.acks.union(&p.acks).collect::<Vec<_>>(),"queue":queue,"leaseDescriptor":lease,"ownerLeaseSha256":raw_hash(&lease_bytes),"unsubmitted":pending});
+ // Allocation repeatedly inspects the same immutable whole bank at one held
+ // Session/head. Reuse its complete original report digest; ordinary collateral
+ // retains its existing full-render path. No journal or source checks are skipped.
+ let report_hash=if allow_proved{let snapshot=moloch_live_runtime::ledger_snapshot::snapshot(bank)?;need(snapshot.validate_current(bank),"CAPITAL_REPORT_HEAD_CHANGED")?;snapshot.sha256().to_owned()}else{hash(&bank.engine().report()?)?};
+ let captured=json!({"root":root,"scope":b.transport.scope(),"accountScope":b.transport.account_scope(),"runId":seed["runId"],"manifestHash":bank.manifest_hash(),"reportHash":report_hash,"nativeHead":bank.durable_head(),"ordinaryDescriptor":ordinary,"packageDescriptor":packages,"ordinarySha256":o.sha256,"packageSha256":p.sha256,"originalAckReceiptHashes":o.acks.union(&p.acks).collect::<Vec<_>>(),"queue":queue,"leaseDescriptor":lease,"ownerLeaseSha256":raw_hash(&lease_bytes),"unsubmitted":pending});
  if allow_proved{let mut c=captured;c["provedNoNetworkOrderIds"]=json!(allocation_aborted);if !allocation_expired.is_empty(){c["expiredExposureOrderIds"]=json!(allocation_expired);}Ok(c)}else{Ok(captured)}
 }
 fn receipt_clocks(r:&Receipt,at:i64)->Result<()> {let start=clock(&r.request_started_at)?;let end=clock(&r.received_at)?;need(r.status==200&&start>=0&&start<=end&&end<=at,"COLLATERAL_RECEIPT_CLOCK_OR_STATUS")}

@@ -1,0 +1,26 @@
+{
+  "capturedAt": "2026-10-22T07:08:45.697735+00:00",
+  "status": "conditional_research_input_known_orders",
+  "nativeSequence": 830683,
+  "viewWrittenAt": "2026-10-22T07:08:40.783Z",
+  "cash": "24905.215000",
+  "ownedCost": "71616.540000",
+  "reservedCash": "0.000000",
+  "heldMarkets": 18,
+  "fillCount": 573,
+  "knownPhysicalOrders": 2,
+  "reviewCount": 15,
+  "generationSha256": "cc65a30e145faa40f027c7c684611c60eb1cfe1cf960d7d511b1c71cf21586cf",
+  "sourceCommit": "ac64187152a0094249be6b9a0f674004ae9c3244",
+  "originalFileSha256": {
+    "report.original.json": "ce1432d19c5a30c3c9b5bdb055c4835bf451da7bf6298437cd4d62bdf4e5c509",
+    "native-view.original.json": "cd2750902e1f9f1736665b5e84bbef05e5cbb6b5a9b3487e8e71d167a1f51983",
+    "active-fourteen-reviews.private.json": "2d1c3ea01d2387d19e04dd197cd77a0ba49fc6ae7052e78a1933b5521520dafa",
+    "compiled-current.private.json": "6f99bda4f7ea27f5ad356a20466564559336e55b2a7bb718b687b05b20dfda10"
+  },
+  "newAccountClients": 0,
+  "networkRequests": 0,
+  "approvalPublished": false,
+  "sourceClocksRenewed": false,
+  "executionAuthority": false
+}

@@ -1,7 +1,11 @@
 //! Tartarus v1: one owner-reviewed physical BUY or SELL, not positive alpha.
 //!
 //! Frozen campaign JSON schema: schemaVersion=1, objective=
-//! declared_first_place_rank_risk; campaignStage=direct|rotation_prerequisite|acquisition_prerequisite;
+//! declared_first_place_rank_risk or declared_positive_expected_money;
+//! the latter requires direct stage, zero minimumTargetGainPpm and positive
+//! risk.minimumExpectedMoney under EVERY supplied probability model. It does
+//! not assert a leaderboard improvement. Other funding/physical checks remain.
+//! campaignStage=direct|rotation_prerequisite|acquisition_prerequisite;
 //! reviewedAtMs/validUntilMs; sources[{sha256,observedAtMs,maximumAgeMs,
 //! assumptionLabel}]; account{positionsSha256,cash,reservedCash,
 //! actualFillsSha256,modeledTerminalDebt,liabilityAssumption}; complete
@@ -48,7 +52,7 @@ pub struct Original<'a>{pub sha256:&'a str,pub bytes:&'a [u8]}
 impl Reviewed{
  pub fn load(bytes:&[u8],expected_raw_sha:&str,approved:&BTreeSet<String>,originals:&[Original<'_>],at:u64)->Result<Self>{
   need(bytes.len()<=MAX_CAMPAIGN&&rawhash(bytes)==expected_raw_sha&&approved.contains(expected_raw_sha),"RANK_REVIEW_NOT_APPROVED")?;
-  let c:Value=serde_json::from_slice(bytes)?;need(c["schemaVersion"]==1&&c["objective"]=="declared_first_place_rank_risk","RANK_REVIEW_SCHEMA")?;
+  let c:Value=serde_json::from_slice(bytes)?;need(c["schemaVersion"]==1&&matches!(c["objective"].as_str(),Some("declared_first_place_rank_risk"|"declared_positive_expected_money")),"RANK_REVIEW_SCHEMA")?;
   let sources=c["sources"].as_array().filter(|v|!v.is_empty()&&v.len()<=64).ok_or("RANK_SOURCES")?;
   need(originals.len()==sources.len()&&originals.iter().map(|v|v.bytes.len()).sum::<usize>()<=16*1024*1024,"RANK_ORIGINAL_SOURCE_BOUND")?;
   let mut until=c["validUntilMs"].as_u64().ok_or("RANK_REVIEW_CLOCK")?;let mut seen=BTreeSet::new();

@@ -1,0 +1,15 @@
+{
+  "label": "full-universe-positive-rank",
+  "status": "exact_sequence_checked",
+  "books": 41,
+  "legs": 52,
+  "solverStatus": 0,
+  "reason": null,
+  "nativeProjectionAvailable": true,
+  "nativeProjectionUnavailable": null,
+  "weakestDeclaredExpectedChange": 89.849,
+  "targetObjectiveImproved": false,
+  "elapsedSeconds": 17.03295334102586,
+  "sourceClocksRenewed": false,
+  "executionAuthority": false
+}

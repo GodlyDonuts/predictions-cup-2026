@@ -92,3 +92,4 @@ pub mod ledger_snapshot;
 pub mod tartarus_snapshot;
 
 pub mod rank_campaign;
+extern crate self as moloch_live_runtime;

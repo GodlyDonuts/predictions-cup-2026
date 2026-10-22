@@ -1,0 +1,15 @@
+{
+  "label": "current-held-money",
+  "status": "exact_sequence_checked",
+  "books": 18,
+  "legs": 10,
+  "solverStatus": 0,
+  "reason": null,
+  "nativeProjectionAvailable": true,
+  "nativeProjectionUnavailable": null,
+  "weakestDeclaredExpectedChange": 1764.038228,
+  "targetObjectiveImproved": false,
+  "elapsedSeconds": 1.187474878039211,
+  "sourceClocksRenewed": false,
+  "executionAuthority": false
+}

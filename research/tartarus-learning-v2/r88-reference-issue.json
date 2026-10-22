@@ -1,0 +1,34 @@
+{
+  "inputCutoffMs": 1792653017049,
+  "issuedAtMs": 1792653025152,
+  "currentInputsAtIssue": false,
+  "datedResearchOverride": false,
+  "currentPriceInputsAtIssue": true,
+  "historicalReviewEnvelopes": true,
+  "expiredOriginalReviewCount": 2,
+  "directionalPartyEnvelopeVariant": true,
+  "activeReviewCount": 13,
+  "retainedOriginalReviewCount": 15,
+  "cacheMarketCount": 237,
+  "quoteIgnoranceExchanges": [],
+  "categoricalPriceConflicts": [
+    {
+      "electionDate": "2026-11-03",
+      "officeLevel": "Federal",
+      "raceId": "64515",
+      "raceName": "U.S. House New York District 17",
+      "stageId": "99824",
+      "usState": "NY"
+    }
+  ],
+  "quoteCacheRawSha256": "6b44f426ff50f82c6daf0109d85d840dae655aadd0c5edea760d3e3e169e6c93",
+  "originalControlSha256": "980f081a0c70d9f2519a9c587bc7e6336cafd1701d6417b36339ce9a8576de28",
+  "sourceCodeSha256": "48156c6474d34da0ee6ae6bb8d0fad1e6c942e10a0a48927f56650f9a138e17d",
+  "originalClocksRenewed": false,
+  "executionAuthority": false,
+  "limitations": "Numerical terminal hypotheses, not a fitted forecast or positive alpha certificate. Missing source publication times stay unknown. Independent rare events may be absent; exceptional legal outcomes and rival future actions are not exhaustive.",
+  "scenarios": 387,
+  "models": 5,
+  "fields": 3,
+  "elapsedSeconds": 0.9400015360442922
+}

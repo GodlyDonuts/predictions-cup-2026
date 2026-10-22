@@ -161,19 +161,21 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  // Commit/retire it before expiring account facts, rather than afterward.
  final_reads.service_before_read(bank,source)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;
  let(facts,collateral)=match rank_snapshots(c,bank,source,&market,Some(&original),&mut final_reads){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
- accept_fresh_book(bank,c,&target,&facts.book,source)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;let current=quote(bank,qid)?;
+ bank.with_deferred_report(|bank|{
+ let final_book_receipt=moloch_live_runtime::daily_windows::clock(&facts.book.received_at)?;let post_reads_start=now();accept_fresh_book(bank,c,&target,&facts.book,source)?;let post_book=now();rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;let post_retirement=now();let current=quote(bank,qid)?;
  if current!=original||!log.never_attempted(qid){return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_CHANGED")}
  pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
  let(order,spec,permit)=physical_order(c,&current)?;
- let ownership=if managed.contains(&ex){let f=fundamental.as_deref_mut().ok_or("RANK_COHORT_RUNTIME_REQUIRED")?;
+ let ownership_start=now();let ownership=if managed.contains(&ex){let f=fundamental.as_deref_mut().ok_or("RANK_COHORT_RUNTIME_REQUIRED")?;
   Some(f.cohorts.bind_rank_trade(bank,log,&c.scope,&review,qid,&spec,&permit,now(),review.valid_until_ms().min(permit.expires_at_ms))?)
  }else{None};
- let decision={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
+ let ownership_end=now();let decision={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
   match if let Some(o)=ownership{moloch_live_runtime::rank_campaign::mint_managed(bank,&b,&review,qid,&facts,&retained,&spec,&permit,now(),o)}else{moloch_live_runtime::rank_campaign::mint(bank,&b,&review,qid,&facts,&retained,&spec,&permit,now())}{Ok(d)=>d,Err(e)if e.to_string().starts_with("RANK_")=>{retire_never_sent(bank,log,&current)?;return rank_deferred(c,"physical_review",&e.to_string())},Err(e)=>return Err(e)}
  };
- let decision=Arc::new(decision);let evaluation=decision.clone();let rank=RankDispatch{order,spec,permit,decision:decision.clone(),owner:pins,raw_sha:review.raw_sha256().into(),campaign_sha:review.campaign_sha256().into()};
+ let mint_end=now();let decision=Arc::new(decision);let evaluation=decision.clone();let rank=RankDispatch{order,spec,permit,decision:decision.clone(),owner:pins,raw_sha:review.raw_sha256().into(),campaign_sha:review.campaign_sha256().into()};
  submit_order_with_rank(t,c,bank,log,authority,&current,facts,None,if managed.contains(&ex){fundamental.as_deref_mut()}else{None},Some(rank))?;
- atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid)&&!log.proved_no_network(qid),"evaluation":evaluation.evaluation(),"profitabilityEstablished":false}))?;Ok(())
+ atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else if rank_can_resume(bank,log,&current)&&!log.intents.contains_key(&qid){"awaiting_fresh_facts"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid)&&!log.proved_no_network(qid),"evaluation":evaluation.evaluation(),"diagnosticPreparationTimings":{"postReadNativeBookMs":post_book.saturating_sub(post_reads_start),"postReadDraftRetirementMs":post_retirement.saturating_sub(post_book),"cohortOwnershipMs":ownership_end.saturating_sub(ownership_start),"nativeRankMintMs":mint_end.saturating_sub(ownership_end),"finalBookReceiptToSubmitStartMs":mint_end.saturating_sub(final_book_receipt)},"profitabilityEstablished":false}))?;Ok(())
+ })
 }
 fn rank_waits_for_known_orders(log:&DispatchLog)->Result<bool>{
  log.require_resolved_attempts()?;Ok(log.acknowledgments.keys().any(|qid|!log.closed.contains(qid)))
@@ -1643,11 +1645,15 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  let fundamental_expires_at_ms=fundamental_decision.as_ref().map(|decision|decision.expires_at_ms());
  let fundamental_append_proof=fundamental_decision.clone();
  let prepared=if let Some(r)=&rank{authority.prepare_with_rank(bank,qid,request_spec.clone(),p.clone(),facts,r.decision.clone(),r.owner.clone())}else{authority.prepare_with_policies(bank,qid,request_spec.clone(),p.clone(),facts,maker.as_ref().map(|(decision,_)|decision.clone()),fundamental_decision)};
- if let Err(error)=prepared{if rank.is_some()&&error.to_string()=="RANK_PHYSICAL_FACTS_EXPIRED"{let end=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,end);authority.clear_ready();retire_never_sent(bank,log,q)?;if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"preintent_rank_facts_expired","diagnosticOnly":true}));}return Ok(())}if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
+ // A clock miss BEFORE any durable intent is a fresh-read deferral of the
+ // SAME still-unused native reservation, not a retry/replacement of a request.
+ // Its original hard expiry/review stay fixed; any intent, attempt, ACK, fill,
+ // cancellation or other failed policy keeps the existing fail-closed path.
+ if let Err(error)=prepared{if rank.is_some()&&error.to_string()=="RANK_PHYSICAL_FACTS_EXPIRED"{let end=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,end);authority.clear_ready();if !rank_can_resume(bank,log,q)||log.intents.contains_key(&qid){return Err("RANK_FRESH_FACTS_REQUIRE_UNUSED_QUOTE".into())}if let Ok(summary)=trace.finish(end){let _=atomic_json(&c.root.join("decision-trace-latest.json"),&json!({"trace":trace,"summary":summary,"outcome":"preintent_rank_facts_expired_refresh_required","diagnosticOnly":true}));}return Ok(())}if defer_account_preintent(c,bank,log,authority,qid,false,error.as_ref())?{return Ok(())}return Err(error)}
  if let Err(e)=authority.authorize(&c.scope,&request_spec,&p,false,now()){authority.clear_ready();atomic_json(&c.root.join("deferred.json"),&json!({"at":iso(now()),"qid":qid,"code":e.code}))?;return Ok(())}
  if log.intents.contains_key(&qid)||!log.never_attempted(qid){return Err("LIVE_EXISTING_UNRESOLVED_INTENT".into())}
  let durability_start=now();let _=trace.record(Stage::PolicyAndRisk,trace_start,durability_start);
- log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"fundamentalOwnershipOnly":rank.as_ref().is_some_and(|r|r.decision.allows_managed_inventory()),"rankCampaign":rank.as_ref().map(|r|->Result<Value>{Ok(json!({"objective":"declared_first_place_rank_risk","rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluationEvidence":rank_evaluation_delta(&q["reviewedRankCampaign"]["evaluation"],r.decision.evaluation())?}))}).transpose()?}))?;
+ log.append(json!({"kind":"intent","qid":qid,"quote":q,"spec":request_spec,"permit":p,"at":iso(now()),"maker":maker.as_ref().map(|(decision,_)|decision.proof()),"fundamental":fundamental.as_ref().and_then(|f|f.cohorts.durable_tag(qid)),"fundamentalOwnershipOnly":rank.as_ref().is_some_and(|r|r.decision.allows_managed_inventory()),"rankCampaign":rank.as_ref().map(|r|->Result<Value>{Ok(json!({"objective":q["reviewedRankCampaign"]["objective"],"rawSha256":r.raw_sha,"campaignSha256":r.campaign_sha,"evaluationEvidence":rank_evaluation_delta(&q["reviewedRankCampaign"]["evaluation"],r.decision.evaluation())?}))}).transpose()?}))?;
  let original_attempt_start=now();record_original_attempt(bank,log,qid,if fundamental.is_some()||rank.is_some(){None}else{c.execution_model.as_ref()},original_attempt_start)?;
  let ownership_start=now();let _=trace.record(Stage::OriginalAttemptRecord,original_attempt_start,ownership_start);
  if let Some(f)=fundamental.as_ref(){if let Some(r)=&rank{f.authority.validate()?;r.decision.validate_intent_ownership_tag(f.cohorts.durable_tag(qid).as_ref(),&log.intents.get(&qid).ok_or("RANK_DURABLE_INTENT_REQUIRED")?["fundamental"])?;}else{fundamental_append_proof.as_ref().ok_or("FUNDAMENTAL_APPEND_PROOF_REQUIRED")?.validate_appended_intent(bank,log,&request_spec)?;}}
@@ -3321,6 +3327,14 @@ pub fn main()->Result<()>{
  struct Temp(PathBuf);impl Drop for Temp{fn drop(&mut self){let _=fs::remove_dir_all(&self.0);}}
  const T:&str="11111111-1111-4111-8111-111111111111";
  fn fixture()->(Temp,Control,Session,DispatchLog,Value,Receipt){fixture_with_hedge(false)}
+ #[test]fn rank_clock_refresh_hint_refuses_any_intent_attempt_or_extended_expiry(){
+  let(_root,_c,bank,mut log,q,_book)=fixture();let head=bank.durable_head();let id=q["id"].as_u64().unwrap();let mut hint=q.clone();hint["reviewedRankCampaign"]=json!({"softwareResumeHintOnly":true});
+  // A shape hint is not an opaque physical decision or owner capability.
+  assert!(rank_can_resume(&bank,&log,&hint));let mut changed=hint.clone();changed["filled"]=json!(1);assert!(!rank_can_resume(&bank,&log,&changed));
+  log.intents.insert(id,json!({"syntheticExistingIntent":true}));assert!(!rank_can_resume(&bank,&log,&hint));log.intents.remove(&id);
+  log.attempted.insert(id);assert!(!rank_can_resume(&bank,&log,&hint));log.attempted.remove(&id);
+  assert!(rank_activation(&hint,&hint,hint["expiresAt"].as_u64().unwrap()).is_err());assert_eq!(bank.durable_head(),head);
+ }
  fn fixture_with_hedge(retain:bool)->(Temp,Control,Session,DispatchLog,Value,Receipt){
   let at=now();let root=Temp(std::env::temp_dir().join(format!("ordinary-side-edge-{}-{}",std::process::id(),SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos())));private_dir(&root.0).unwrap();
   let policy=json!({"quantity":2,"entryStopAt":iso(at+600000),"retainProfitableHedge":retain,"maximumHedgeOvershoot":1});let seed=json!({"runId":"side-edge-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at-5000)});
