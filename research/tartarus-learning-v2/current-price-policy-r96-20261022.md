@@ -1,0 +1,13 @@
+# Current-price decision policy: retained historical stress is not a veto
+
+R94 remains the same live worker and binary. The one-filled-order/minute target is unmet. This change is to the file-only owner-review controller; it creates no account client and changes no native executable, financial cap, FIFO attribution, account limiter or activation window.
+
+The former controller required each direct action to improve expected terminal money under three current receipt-price/dependence models AND two envelopes widened by historical owner opinions. On identical retained inputs, the five-model policy admitted no direct action; using the three current-price models admitted two sales. One retained example was SELL10000 YES885 at0.645, with39.36 conditional expected-money improvement under the weakest of the three selected models and40.00 under the separate ordinary interval calculation. Its original0.705 FIFO basis would realize a600.00 basis loss if filled at0.645. That loss must remain attributed; the modeled improvement is versus holding at current assumptions, not realized profit.
+
+The new `--decision-profile-policy current-prices` option explicitly selects the lower/upper common-party price sensitivities and midpoint-independent model. The complete original five-model file, historical sources and original observation/expiry clocks remain retained. Historical opinions remain stress evidence. The default is still `all-declared`; a controller must select the new policy explicitly. Prepared-review metadata and actual campaign model IDs must match that selection before publication.
+
+A separate capture correction accepts a recent, internally matched sealed report/view after the live writer advances. It still verifies the original seals, exact paired head, cash, positions, reserved money, fills and FIFO cost. A substituted or mismatched pair, stale/future view, or tampered seal is rejected. This is research capture only: the sole existing worker still obtains fresh official facts and checks its actual account and ownership before any order.
+
+Four profile-policy tests, four capture regressions and six existing portfolio-compiler tests pass locally and on the VPS. A complete three-model retained review prepared successfully with82 projected scenarios and18 held markets; it was not published or executed. A first fresh preparation found no candidate at that instant. The retained result is not a current price guarantee. [Qualification](r96-current-price-policy-qualification-20261022.json).
+
+The production controller transition is pending checked publication. No one-trade/minute cadence or positive realized ROI is claimed.

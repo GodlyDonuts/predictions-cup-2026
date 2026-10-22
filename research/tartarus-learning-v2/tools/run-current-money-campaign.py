@@ -1,6 +1,6 @@
 """Finite owner-directed model-review loop; only the existing worker trades.
 
-The explicit publish flag selects the checked, declared five-model monetary
+The explicit publish flag selects the explicitly selected declared-model monetary
 policy under the human's existing Moloch authority. These are uncalibrated
 model assumptions, not proven alpha. No account API, second worker, implicit
 expiry renewal, risk increase or replacement of an unresolved order.
@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import subprocess
 import time
+from money_profile_policy import POLICIES, verify_summary
 
 
 def completion(root, view, raw_sha):
@@ -80,7 +81,8 @@ def run(a):
                                reference=a.reference, deployment=a.deployment,
                                field=a.field, output=output).items():
             args += ['--'+key, str(value)]
-        args += ['--horizon-ms', '180000', '--wait-seconds', '60']
+        args += ['--horizon-ms', '180000', '--wait-seconds', '60',
+                 '--decision-profile-policy', a.decision_profile_policy]
         with (a.output/f'attempt-{attempts:04d}.log').open('x') as log:
             outcome=subprocess.run(args, stdout=log, stderr=subprocess.STDOUT)
             if outcome.returncode:
@@ -99,7 +101,8 @@ def run(a):
             prepared = output/'prepared'
             summary = json.loads((prepared/'prepared.public.json').read_bytes())
             assert summary['objective'] == 'declared_positive_expected_money'
-            assert summary['probabilityModels'] == 5 and not summary['actualFillPriceClaimed']
+            verify_summary(summary, json.loads((prepared/'nomination.json').read_bytes()), a.decision_profile_policy)
+            assert not summary['actualFillPriceClaimed']
             assert summary['weakestDeclaredExpectedChange'] > 0
             assert float(summary['ordinaryMinimumExpectedChange']) > 0
             args = ['python3', str(a.tools/'publish-current-money-review.py'),
@@ -131,6 +134,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('source', 'tools', 'runtime', 'reference', 'deployment', 'field', 'output'):
         p.add_argument('--'+name, type=Path, required=True)
+    p.add_argument('--decision-profile-policy', choices=POLICIES, default='all-declared')
     p.add_argument('--source-commit', required=True)
     p.add_argument('--cycles', type=int, default=12)
     p.add_argument('--minutes', type=int, default=120)

@@ -155,7 +155,9 @@ def run(a):
         originalHypothesisQuantity=original_leg['quantity'], originalHypothesisPrice=money(original_leg['price']),
         requestedPriceTolerance=getattr(a, 'price_tolerance', '0.000000'),
         limitIsConservativeFundingAndValuationPrice=True, actualFillPriceClaimed=False,
-        probabilityModels=len(projection['probabilityModels']), completeHeldMarkets=len(fin['positions']),
+        probabilityModels=len(projection['probabilityModels']),
+        decisionProfilePolicy=model.get('decisionProfileSelection', {}).get('policy', 'all-declared'),
+        decisionProfileIds=[m['id'] for m in projection['probabilityModels']], completeHeldMarkets=len(fin['positions']),
         sourceClocksRenewed=False, approvalPublished=False, submitted=False, executionAuthority=False)
     (a.output / 'prepared.public.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result))

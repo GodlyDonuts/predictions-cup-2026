@@ -17,6 +17,22 @@ def digest(raw):
     return sha256(raw).hexdigest()
 
 
+def read_research_pair(root, bank, registry, at):
+    from moloch.tartarus.current_portfolio import compile_current
+    view_raw = (root / 'tartarus-current-native-state.json').read_bytes()
+    view = json.loads(view_raw)
+    age = (at - datetime.fromisoformat(view['writtenAt'].replace('Z', '+00:00'))).total_seconds()
+    if not 0 <= age < 90:
+        raise ValueError('CURRENT_RESEARCH_VIEW_AGE')
+    report_raw = (bank / 'report.json').read_bytes()
+    # This retained pair must agree with ITSELF, not a subsequently advancing
+    # writer head. The compiler verifies seals, exact heads, cash, FIFO and fills.
+    compiled = compile_current(report_raw, view_raw,
+        expected_report_sha256=digest(report_raw), expected_view_sha256=digest(view_raw),
+        registry=registry, conditional_future_legs=128)
+    return view_raw, report_raw, compiled
+
+
 def run(args):
     os.umask(0o077)
     sys.path.insert(0, str(args.source))
@@ -37,23 +53,15 @@ def run(args):
         try:
             assert (process / "stat").read_text().rsplit(")", 1)[1].split()[19] == process_start, "WORKER_BINARY_CHANGED"
             assert not (root / "EXECUTION_STOP").exists(), "EXECUTION_STOP_PRESENT"
-            view_raw = (root / "tartarus-current-native-state.json").read_bytes()
+            view_raw, report_raw, compiled = read_research_pair(root, bank, registry, datetime.now(timezone.utc))
             view = json.loads(view_raw)
-            head_raw = (bank / "head.json").read_bytes()
-            head = json.loads(head_raw)
-            assert all(view["nativeHead"][k] == head[k] for k in ("sequence", "previous")), "waiting_for_matching_head"
-            age = (datetime.now(timezone.utc) - datetime.fromisoformat(view["writtenAt"].replace("Z", "+00:00"))).total_seconds()
-            assert 0 <= age < 90, "waiting_for_current_view"
-            report_raw = (bank / "report.json").read_bytes()
-            # Atomic source files can advance while this historical pair is
-            # decoded. Require their OWN exact sealed head/account binding,
-            # not that a live worker stop advancing after the bytes were read.
-            # This grants no current allocation or physical permission.
-            compiled = compile_current(report_raw, view_raw,
-                expected_report_sha256=digest(report_raw), expected_view_sha256=digest(view_raw),
-                registry=registry, conditional_future_legs=128)
             assert compiled["financial"] is not None, compiled["unavailableReasons"]
             break
+        except ValueError as error:
+            if str(error) not in ('MATCHED_NATIVE_BOUNDARY_REQUIRED', 'CURRENT_FINANCIAL_BINDING', 'CURRENT_RESEARCH_VIEW_AGE'):
+                raise
+            last = str(error)
+            time.sleep(0.15)
         except (AssertionError, FileNotFoundError, json.JSONDecodeError) as error:
             last = str(error)
             if last in ("WORKER_BINARY_CHANGED", "EXECUTION_STOP_PRESENT"):

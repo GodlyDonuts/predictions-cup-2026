@@ -13,6 +13,7 @@ from pathlib import Path
 import time
 from types import SimpleNamespace
 import urllib.request
+from money_profile_policy import select, POLICIES
 
 
 def module(name, path):
@@ -55,6 +56,9 @@ def run(a):
         reviewProjectionSha256=sha256(review_raw).hexdigest(), sourceClocksRenewed=False, newVenueRequests=0)) + '\n')
     builder = module('current_money_reference', a.source / 'research/tartarus-20261017/current-reference-model.py')
     reference = builder.build(inputs, a.source / 'originals', a.field, directional=True, historical_review_envelopes=True)
+    parent_raw = (json.dumps(reference, indent=2) + '\n').encode()
+    (inputs / 'issued-reference-model-all-declared.private.json').write_bytes(parent_raw)
+    reference = select(reference, parent_raw, getattr(a, 'decision_profile_policy', 'all-declared'))
     (inputs / 'issued-reference-model.private.json').write_text(json.dumps(reference, indent=2) + '\n')
     scanner = module('current_money_scan', a.tools / 'scan-current-money-opportunities.py')
     candidates_path = inputs / 'direct-opportunities.public.json'
@@ -83,6 +87,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('source', 'tools', 'runtime', 'reference', 'deployment', 'field', 'output'):
         p.add_argument('--' + name, type=Path, required=True)
+    p.add_argument('--decision-profile-policy', choices=POLICIES, default='all-declared')
     p.add_argument('--wait-seconds', type=int, default=2700)
     p.add_argument('--minimum-expected-money', default='0.010000')
     p.add_argument('--price-tolerance', default='0.010000')

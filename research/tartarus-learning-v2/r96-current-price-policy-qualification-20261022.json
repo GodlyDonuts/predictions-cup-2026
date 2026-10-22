@@ -1,0 +1,52 @@
+{
+  "recordedUtc": "2026-10-22T15:50:14.342765+00:00",
+  "sourceHashes": {
+    "money_profile_policy.py": "30b9ff89b41c269eb8161e718e3847e05890ccb19d8e675da47b637aefd2f0dc",
+    "prepare-live-money-research.py": "ec996f5a7bae73438ec6a25c89096f85f4c0677c9078f818396384c075b421b7",
+    "prepare-current-money-nomination.py": "f616a6d0febd00f90aef1717496d6d32799f3ccb84de71b20f48b13499c52b33",
+    "run-current-money-campaign.py": "f2d8da86131196c647bcca31416700bd936c88d0bcbb6c359c3de2fece131cd7",
+    "capture-current-rank-inputs.py": "7a2464759f101517c36f8dedce246380d4cdfa1e33d65c64da123ac1e8d65e7a",
+    "test_money_profile_policy.py": "6b1ea77a1de0e23af66a84783ce65a631b50e7692d2fdeac1de831520c9285c9",
+    "test_capture_current_pair.py": "389eb1da2f72f3ed70103a4106de2a62619a522187b1b8751a36daa5742eef31"
+  },
+  "checks": {
+    "decisionProfileTests": 4,
+    "matchedPairTests": 4,
+    "existingPortfolioCompilerTests": 6,
+    "failed": 0
+  },
+  "retainedPositivePreparedReview": {
+    "rawSha256": "7c92590f50c843ca7fe9dc3f6d1f4eeb7f3b98c7edf2e2df0678eed3149640ab",
+    "objective": "declared_positive_expected_money",
+    "exchangeId": "885",
+    "side": "YES",
+    "action": "SELL",
+    "quantity": 10000,
+    "limitPrice": "0.645000",
+    "validUntilMs": 1792684216693,
+    "weakestDeclaredExpectedChange": 39.36,
+    "ordinaryMinimumExpectedChange": "40.000000",
+    "scenarios": 82,
+    "originalHypothesisQuantity": 10000,
+    "originalHypothesisPrice": "0.645000",
+    "requestedPriceTolerance": "0.010000",
+    "limitIsConservativeFundingAndValuationPrice": true,
+    "actualFillPriceClaimed": false,
+    "probabilityModels": 3,
+    "decisionProfilePolicy": "current-prices",
+    "decisionProfileIds": [
+      "price_lower_common",
+      "price_upper_common",
+      "price_midpoint_independent"
+    ],
+    "completeHeldMarkets": 18,
+    "sourceClocksRenewed": false,
+    "approvalPublished": false,
+    "submitted": false,
+    "executionAuthority": false
+  },
+  "retainedReviewPublished": false,
+  "workerRestarted": false,
+  "newAccountClients": 0,
+  "productionPolicyChanged": false
+}
