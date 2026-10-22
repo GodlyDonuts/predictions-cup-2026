@@ -61,22 +61,25 @@ def stop():
     assert datetime.fromisoformat(current['at'].replace('Z','+00:00')).timestamp()*1000 >= proof['reviewUntilMs']
     assert not (R.parent/'EXECUTION_STOP').exists()
     config=F/'config-r89.json';u=1083699;proc=Path('/proc',str(u))
-    assert str(config).encode() in (proc/'cmdline').read_bytes()
-    deadline=time.monotonic()+180
-    while True:
-        assert time.monotonic()<deadline, 'No quiet data-updater boundary'
-        if json.loads((F/'pending.json').read_bytes()).get('resolved') is True:
-            os.kill(u,signal.SIGSTOP)
-            quiet=json.loads((F/'pending.json').read_bytes()).get('resolved') is True
-            quiet=quiet and not subprocess.run(['ps','-o','pid=','--ppid',str(u)],capture_output=True,text=True).stdout.strip()
-            if quiet:break
-            os.kill(u,signal.SIGCONT)
-        time.sleep(.1)
-    os.kill(u,signal.SIGTERM);os.kill(u,signal.SIGCONT)
-    deadline=time.monotonic()+10
-    while proc.exists():
-        assert time.monotonic()<deadline
-        time.sleep(.1)
+    if proc.exists():
+        assert str(config).encode() in (proc/'cmdline').read_bytes()
+        deadline=time.monotonic()+180
+        while True:
+            assert time.monotonic()<deadline, 'No quiet data-updater boundary'
+            if json.loads((F/'pending.json').read_bytes()).get('resolved') is True:
+                os.kill(u,signal.SIGSTOP)
+                quiet=json.loads((F/'pending.json').read_bytes()).get('resolved') is True
+                quiet=quiet and not subprocess.run(['ps','-o','pid=','--ppid',str(u)],capture_output=True,text=True).stdout.strip()
+                if quiet:break
+                os.kill(u,signal.SIGCONT)
+            time.sleep(.1)
+        os.kill(u,signal.SIGTERM);os.kill(u,signal.SIGCONT)
+        deadline=time.monotonic()+10
+        while proc.exists():
+            assert time.monotonic()<deadline
+            time.sleep(.1)
+    else:
+        assert json.loads((F/'pending.json').read_bytes()).get('resolved') is True, 'Dead updater has unresolved proposal'
     with (F/'updater.lock').open('a')as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         assert json.loads((F/'pending.json').read_bytes()).get('resolved') is True
