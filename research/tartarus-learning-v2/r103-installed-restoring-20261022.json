@@ -1,0 +1,94 @@
+{
+  "deployment": {
+    "observedUtc": "2026-10-22T22:46:36.588891+00:00",
+    "sourceCommit": "ea1c4deceb9e24df9399b065d3a7d00589a3cb27",
+    "binarySha256": "c2492607666f1be9435bfc710839e7a15cd9ce9d00f59f708e4f0ae1c8240d59",
+    "controlSha256": "48906b2e709f040909dd526036970d212f87fc3dc5dd4298ba254a0dda76a20e",
+    "originalFills": 716,
+    "originalReportHash": "e3193c5bd861666ba8d4bacbd75ad99127e3cb56ce49dba634883f722c39307f",
+    "originalFinancialPrefix": {
+      "bytes": 2985911186,
+      "sha256": "4fff864bee1b15d99dad73301cc8d43edba7887600509ed1e3ab6bab31d5f862"
+    },
+    "originalNativeHead": {
+      "hash": "9a3f2f60745881a27a64e3d6713600796544d24ec1514bc296378ca4b6966020",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "3d4252e041a2e1703358f234353559074115dd13bc3887fbf9f778a02234e543",
+      "sequence": 914374
+    },
+    "bridgeSha256": "8c5460e09298ac1963d6304710be00010122ae59748d5aeab8bf89ca37a02e8a",
+    "incident": "/home/archon/apps/moloch/shared/incidents/r103-generation-pins-20261022T224617Z",
+    "nativeEngineUnchanged": true,
+    "originalFinancialStatePreserved": true,
+    "knownOpenOrders": [
+      23196
+    ],
+    "monetaryCapsLimiterAndWindowsChanged": false,
+    "accountClientsCreated": 0,
+    "ordersSubmittedByDeployment": 0,
+    "freshTradingVerified": false,
+    "phase": "restoring_original_ledger",
+    "engineIdentity": "613e5b5acc399b6f72d1f93a438181310ae6fcafa698fd93bbb7d99c72592f55",
+    "allPriorEngineBridgesPreserved": true,
+    "newBridgeSha256": "8c5460e09298ac1963d6304710be00010122ae59748d5aeab8bf89ca37a02e8a",
+    "pid": 1136150,
+    "startTicks": 67885059,
+    "referenceUpdaterPid": 1136153,
+    "actualExecutableAndArgumentsVerified": true
+  },
+  "observations": [
+    {
+      "observedUtc": "2026-10-22T22:47:57.489865+00:00",
+      "pid": 1136150,
+      "processAlive": true,
+      "currentPidProgress": false,
+      "stopPresent": false,
+      "newAccountClients": 0,
+      "processIo": {
+        "rchar": "957932078",
+        "wchar": "64336183",
+        "syscr": "42994",
+        "syscw": "205",
+        "read_bytes": "344391680",
+        "write_bytes": "64606208",
+        "cancelled_write_bytes": "0"
+      }
+    },
+    {
+      "observedUtc": "2026-10-22T22:51:57.505384+00:00",
+      "pid": 1136150,
+      "processAlive": true,
+      "currentPidProgress": false,
+      "stopPresent": false,
+      "newAccountClients": 0,
+      "processIo": {
+        "rchar": "1758732846",
+        "wchar": "64336215",
+        "syscr": "140748",
+        "syscw": "207",
+        "read_bytes": "1137238016",
+        "write_bytes": "64606208",
+        "cancelled_write_bytes": "0"
+      }
+    }
+  ],
+  "observationLogPrefixSha256": "489f8cda12d07af50d1ae9ccdaeef320efe323f68362eea9ac48b3854bc80ecd",
+  "observationLogPrefixBytes": 5828,
+  "observerPid": 1136166,
+  "observerAlive": true,
+  "observerSourceSha256": "c36c078b1595ac3d800608649b01d3dccc98b809bc0c077ce78ec0fdc5089d9a",
+  "sourceHelperAlive": true,
+  "sourceHelperStatus": {
+    "atMs": 1792709516850,
+    "pid": 1136153,
+    "phase": "waiting_for_current_worker",
+    "commits": 239,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false
+  },
+  "preflightLog": "Read-only preflight complete; no orders submitted\n",
+  "observerSourceLfSha256": "c8d5a19ae396d2157300ef196c1738fe28ad09d0391d1ce29ea4a64432733a0b",
+  "observerSourceSha256Encoding": "exact transferred script bytes; CRLF newlines"
+}

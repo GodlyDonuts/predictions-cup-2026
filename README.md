@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,22:44UTC
+## Latest state: October22,22:50UTC
+
+R103 is installed as sole worker1136150 and is restoring the original ledger. All716 original fills, the2,985,911,186-byte financial prefix and native engine were retained; read-only preflight passed. Source helper1136153 keeps the original four-scope configuration and waits for current-worker progress. A finite file-only observer confirms the exact process is alive with advancing reads; fresh trading, end-to-end latency and profit are not yet verified. [Installation and observation](research/tartarus-learning-v2/r103-installed-restoring-20261022.json), [measured component improvement](research/tartarus-learning-v2/r103-generation-pins-20261022.md).
+
+### Earlier22:44UTC qualification
 
 R103 is qualified and not yet deployed: source validation on the actual retained production files fell from~360ms to151ms per call, and one duplicate cohort-history check is removed. All430 functional checks/release CLI pass. The candidate includes R102's diagnostic relocation. R101 remains live; the latest original receipt audit has716fills/14distinct filled orders since restoration, incremental realized-114.840, cash3175.630. [Measured change, limits and qualification](research/tartarus-learning-v2/r103-generation-pins-20261022.md).
 
