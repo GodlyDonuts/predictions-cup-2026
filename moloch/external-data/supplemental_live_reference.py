@@ -5,6 +5,7 @@ Metadata expires on its original clock; unavailable supplements do not suppress
 the ordinary capture's unrelated scopes.
 """
 import base64
+from datetime import datetime, timezone
 import gzip
 import hashlib
 import importlib.util
@@ -34,7 +35,9 @@ def append(config, capture, now, cache=None):
             or len(seed['rows']) != len(wanted)
             or wanted & {x['exchangeId'] for x in capture['rows']}):
         raise ValueError('SUPPLEMENT_EXACT_SCOPE')
-    result = dict(capture, rows=list(capture['rows']), supplementalUnavailable=[])
+    result = dict(capture, capturedAtMs=now,
+                  capturedAt=datetime.fromtimestamp(now/1000, timezone.utc).isoformat(),
+                  rows=list(capture['rows']), supplementalUnavailable=[])
     if cache is None:
         try:
             with urllib.request.urlopen(settings['rankCacheUrl'], timeout=20) as response:

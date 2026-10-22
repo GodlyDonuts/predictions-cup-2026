@@ -1,5 +1,6 @@
 """Replace only the source updater at a resolved boundary; never the worker."""
 import hashlib
+import argparse
 import json
 import os
 from pathlib import Path
@@ -15,6 +16,15 @@ NEW_CONFIG = ROOT/'config-agent-maker-r101-ri-005.json'
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--old-pid', type=int, required=True)
+    parser.add_argument('--old-config', type=Path, required=True)
+    parser.add_argument('--new-config', type=Path, required=True)
+    parser.add_argument('--release', type=Path, required=True)
+    args = parser.parse_args()
+    global OLD_PID, OLD_CONFIG, NEW_CONFIG, RELEASE
+    OLD_PID, OLD_CONFIG, NEW_CONFIG, RELEASE = args.old_pid, args.old_config, args.new_config, args.release
+    assert OLD_PID > 1 and all(x.is_absolute() for x in (OLD_CONFIG, NEW_CONFIG, RELEASE))
     os.umask(0o077)
     proof_path = RELEASE/'deployment.public.json'
     assert not proof_path.exists()

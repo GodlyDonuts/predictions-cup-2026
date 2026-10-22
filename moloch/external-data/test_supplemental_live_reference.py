@@ -47,6 +47,8 @@ class SupplementalReferenceTests(unittest.TestCase):
         self.assertEqual(r['quoteObservedAtMs'], self.now-1000)
         self.assertEqual(r['mapping']['metadataReceivedAt'], '2026-10-18T07:00:01Z')
         self.assertEqual(r['yesMidpoint'], '0.2550')
+        self.assertEqual(result['capturedAtMs'], self.now)
+        self.assertLessEqual(r['quoteObservedAtMs'], result['capturedAtMs'])
         self.assertFalse(r['sourceClocksRenewed'])
         self.assertEqual(self.base['rows'], [dict(exchangeId='983')])
 
