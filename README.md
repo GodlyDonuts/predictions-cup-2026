@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,17:51UTC
+## Latest state: October22,18:15UTC
+
+R100 is independently verified live with healthy realtime and all660 original fills and the original financial prefix retained. The human now directs agent discretion: both automatic review and reference publishers are stopped; legacy worker strategies remain enabled. One exact agent-selected sale of10000 held NO986 shares at a minimum0.04 is published for the sole worker to reconcile and execute. No new fill or profit is established, and one filled order/minute remains unmet. [Review and live evidence](research/tartarus-learning-v2/agent-discretionary-first-review-20261022.json), [current state](docs/CURRENT_STATE.md).
+
+### Earlier17:51UTC installation
 
 R100 is installed as sole worker1124953 and restoring the original ledger; fresh trading and one actual filled order/minute are not yet verified. All660 original fills, the full financial prefix and prior approvals remain.575 Rust checks pass. Expanded file-only book discovery and a60-second monetary review controller wait for recovery, with a separate original-receipt cadence observer. [Installation](research/tartarus-learning-v2/r100-installed-restoring-20261022.json), [current evidence](docs/CURRENT_STATE.md), [changes and limits](research/tartarus-learning-v2/upgrade-bound-r100-20261022.md).
 

@@ -1,0 +1,97 @@
+{
+  "live": {
+    "observedUtc": "2026-10-22T18:11:33.102479+00:00",
+    "pid": 1124953,
+    "binarySha256": "88b64707a45b89150303137a0e998ba0a216242e1719d8a4f893d525aab291a7",
+    "originalFinancialPrefixVerified": true,
+    "originalFillRowsPreserved": 660,
+    "realtimeHealthy": true,
+    "stopAbsent": true,
+    "freshTradingVerified": true,
+    "filledOrderPerMinuteEstablished": false,
+    "accountRequestsByObserver": 0,
+    "newBridgeSha256Verified": "8c5460e09298ac1963d6304710be00010122ae59748d5aeab8bf89ca37a02e8a",
+    "allPriorEngineBridgesPreserved": true
+  },
+  "handover": {
+    "humanInstruction": "Instead of having a trading bot, you will be the trading bot.",
+    "stoppedAutomaticReviewControllerPid": 1124982,
+    "automaticReviewControllerStopped": true,
+    "officialWorkerPid": 1124953,
+    "officialWorkerRestarted": false,
+    "workerRecoveryStillRequired": true,
+    "ordersSubmittedByHandoff": 0,
+    "holdingsLiquidatedByHandoff": false,
+    "ordinaryWorkerAutomationDisabled": false,
+    "stoppedAutomaticReferenceUpdaterPid": 1124956,
+    "automaticReferenceUpdaterStopped": true,
+    "referencePendingResolved": true,
+    "retainedReferenceStateSha256": "22683ccf13b368184c9d5c1c7b4d6fdac40cea9de4fe6cafb65210f9a25f002f",
+    "retainedOwnerLedgerUnchanged": true
+  },
+  "selected": {
+    "rawSha256": "6268d04ceb12743317816783281912b8a23218e0b6cdd4ff59573bc6ad322955",
+    "objective": "declared_positive_expected_money",
+    "exchangeId": "986",
+    "side": "NO",
+    "action": "SELL",
+    "quantity": 10000,
+    "limitPrice": "0.040000",
+    "validUntilMs": 1792693048596,
+    "weakestDeclaredExpectedChange": 159.09,
+    "ordinaryMinimumExpectedChange": "160.000000",
+    "scenarios": 96,
+    "originalHypothesisQuantity": 10000,
+    "originalHypothesisPrice": "0.040000",
+    "requestedPriceTolerance": "0.000000",
+    "limitIsConservativeFundingAndValuationPrice": true,
+    "actualFillPriceClaimed": false,
+    "probabilityModels": 3,
+    "decisionProfilePolicy": "current-prices",
+    "decisionProfileIds": [
+      "price_lower_common",
+      "price_upper_common",
+      "price_midpoint_independent"
+    ],
+    "completeHeldMarkets": 21,
+    "sourceClocksRenewed": false,
+    "approvalPublished": false,
+    "submitted": false,
+    "executionAuthority": false
+  },
+  "published": {
+    "state": "exact_execution_owner_review_published",
+    "rawSha256": "6268d04ceb12743317816783281912b8a23218e0b6cdd4ff59573bc6ad322955",
+    "approvalSha256": "e45f14b74fa858a6cbccf11acad05b11584a70c998dbd131d5c60e4d6c8dfe42",
+    "approvedAtMs": 1792692916243,
+    "validUntilMs": 1792693048596,
+    "expectedWorkerPid": 1124953,
+    "sourceCommit": "b7e31a26e5aa1fe89d0674d9354e07c83143d9fb",
+    "knownPhysicalOrdersStillRequireReconciliation": [],
+    "completedPriorReview": null,
+    "expiredUnusedPriorReview": {
+      "priorRawSha256": "393f88743b884c232a3486c594110b9b4d5b7b8b14c6b56ac2cb4d200938f4c3",
+      "expiryObservedByWorkerAt": "2026-10-22T18:14:37.885Z",
+      "originalStatusSha256": "030b60d0268ec31674cef5caf2527e204750eb7be20b1e10e6448b6058c11729",
+      "originalDispatchSha256": "72803ee441d3380aedf1214473febbc3c7e9e544739904ea2ce1695870a0d483",
+      "originalIntentAbsent": true,
+      "sourceClocksRenewed": false
+    },
+    "currentReservationProjection": {
+      "capturedReservedCash": "0.000000",
+      "expectedReservedCash": "0.000000",
+      "quoteIds": [
+        22106,
+        22107,
+        22108
+      ],
+      "actualCashCredited": "0.000000",
+      "executionAuthority": false
+    },
+    "sourceClocksRenewed": false,
+    "historicalOwnerFilesArchived": true,
+    "accountClientsCreated": 0,
+    "ordersSubmittedByPublisher": 0,
+    "officialWorkerMayActAfterIndependentChecks": true
+  }
+}
