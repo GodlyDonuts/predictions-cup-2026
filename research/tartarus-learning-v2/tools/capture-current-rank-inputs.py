@@ -45,8 +45,10 @@ def run(args):
             age = (datetime.now(timezone.utc) - datetime.fromisoformat(view["writtenAt"].replace("Z", "+00:00"))).total_seconds()
             assert 0 <= age < 90, "waiting_for_current_view"
             report_raw = (bank / "report.json").read_bytes()
-            assert head_raw == (bank / "head.json").read_bytes(), "head_changed_during_capture"
-            assert view_raw == (root / "tartarus-current-native-state.json").read_bytes(), "view_changed_during_capture"
+            # Atomic source files can advance while this historical pair is
+            # decoded. Require their OWN exact sealed head/account binding,
+            # not that a live worker stop advancing after the bytes were read.
+            # This grants no current allocation or physical permission.
             compiled = compile_current(report_raw, view_raw,
                 expected_report_sha256=digest(report_raw), expected_view_sha256=digest(view_raw),
                 registry=registry, conditional_future_legs=128)

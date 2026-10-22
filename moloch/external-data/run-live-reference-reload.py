@@ -334,6 +334,10 @@ def main():
             else:
                 phase = response.get('state', '')
                 if phase.startswith(('rejected_', 'deferred_')) and observed['previousGenerationSha256'] == state['generationSha256']:
+                    if response.get('reason') == 'FUNDAMENTAL_GENERATION_TARGET_OPEN':
+                        # This runtime cannot revise a bound open target. Do
+                        # not repeatedly occupy its reload boundary trying it.
+                        refresh_open_once = False
                     report('deferred', exchanges=selected, reason=response.get('reason', phase)); pending = None
                 else:
                     report('reload_outcome_requires_reconciliation', exitCode=reply_code)

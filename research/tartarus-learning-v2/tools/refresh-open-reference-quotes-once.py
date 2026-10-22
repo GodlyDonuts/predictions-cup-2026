@@ -61,13 +61,15 @@ def run(a):
             stream.flush()
             os.fsync(stream.fileno())
     with a.log.open('x') as log:
-        child = subprocess.Popen(['python3', '-u', str(a.script), '--config', str(a.output_config),
-            '--refresh-open-targets-once'], stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        command = ['python3', '-u', str(a.script), '--config', str(a.output_config)]
+        if not a.normal:
+            command.append('--refresh-open-targets-once')
+        child = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
     assert Path('/proc', str(config['workerPid'])).exists() and not (root / 'EXECUTION_STOP').exists()
     result = dict(observedUtc=datetime.now(timezone.utc).isoformat(), updaterPid=child.pid,
         previousUpdaterPid=a.previous_updater_pid, workerPid=config['workerPid'],
         workerRestarted=False, financialLimitsChanged=False, sourceClocksRenewed=False,
-        accountClientsCreated=0, ordersSubmittedByUpdater=0, refreshedKnownOpenTargetsOnce=True,
+        accountClientsCreated=0, ordersSubmittedByUpdater=0, refreshedKnownOpenTargetsOnce=not a.normal,
         sourceCommit=a.source_commit, updaterScriptSha256=digest(a.script), freshGenerationCommitted=False)
     with a.proof.open('x') as stream:
         stream.write(json.dumps(result, indent=2) + '\n')
@@ -80,4 +82,5 @@ if __name__ == '__main__':
         p.add_argument('--' + name, type=Path, required=True)
     p.add_argument('--previous-updater-pid', type=int, required=True)
     p.add_argument('--source-commit', required=True)
+    p.add_argument('--normal', action='store_true', help='Resume ordinary data refresh without the one-shot open-target pass.')
     run(p.parse_args())
