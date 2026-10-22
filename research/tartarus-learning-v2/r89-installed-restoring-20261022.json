@@ -1,0 +1,45 @@
+{
+  "observedUtc": "2026-10-22T09:13:00.791029+00:00",
+  "sourceCommit": "332c891a953b29bee77faffb913ec05a87a8be2a",
+  "binarySha256": "50d78b94bf46f030aaa407961a1d2e4b2c21276aeb3d25192ce1e7dded5cba22",
+  "controlSha256": "831525561942912432d74d24a886e8dd498696f9d242f9436cedf841ed55ec00",
+  "originalFills": 575,
+  "originalReportHash": "d6c9ff01c312271591949a3b6faac06cc67481d6a433ca86c6b3b18b6409405e",
+  "originalFinancialPrefix": {
+    "bytes": 2761111173,
+    "sha256": "aa8fda13428b06c98fa8854ad62b835785fe59b432a7d1c73bf8e9a88b6c635b"
+  },
+  "originalNativeHead": {
+    "hash": "8608a93e604fd9f646974faab00826664ebd92ad8c107d311a5e724133493110",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "d58c37ded054e35c0107d8efd6831ecdbab56e45a9151cb57caa93fdd96cb542",
+    "sequence": 841708
+  },
+  "bridgeSha256": "81fc2135d2dd4da39a2b7b60f6b4ac644df8fee3c084b3b75abff150eb01927b",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r89-money-priority-20261022T091050Z",
+  "nativeEngineUnchanged": true,
+  "originalFinancialStatePreserved": true,
+  "knownOpenOrders": [],
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "engineIdentity": "468ac8fb382a51bfb001e1496199569a9cb02fc710bf90523c9c10cdd107bd22",
+  "allPriorEngineBridgesPreserved": true,
+  "newBridgeSha256": "81fc2135d2dd4da39a2b7b60f6b4ac644df8fee3c084b3b75abff150eb01927b",
+  "pid": 1083696,
+  "startTicks": 63003478,
+  "referenceUpdaterPid": 1083699,
+  "actualExecutableAndArgumentsVerified": true,
+  "diskRecovery": {
+    "removedReproducibleTestExecutables": 13,
+    "removedReproducibleCargoMetadataAndOldExecutables": 507,
+    "removedReproducibleOldLibraries": 45,
+    "incompleteDuplicateArchiveRemoved": true,
+    "financialHistoriesDeleted": false,
+    "qualifiedCurrentDependenciesPreserved": true,
+    "freeBytesAtObservation": 3391778816,
+    "installerResumedOnlyAfterExactArchivedBoundaryAndCompletedPreflightVerified": true
+  }
+}
