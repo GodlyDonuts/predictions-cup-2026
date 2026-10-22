@@ -1,0 +1,27 @@
+{
+  "observedUtc": "2026-10-22T05:59:19.267980+00:00",
+  "changedSourcePaths": [
+    "moloch/live-runtime/src/cohort_event_index.rs",
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "sourceHashes": {
+    "moloch/live-runtime/src/worker.rs": {
+      "before": "7b71171cb09fd50a528294ddee18a1db4640cfa1ba736634daf9d5c8f8bf648c",
+      "after": "9d7d60ed1f537d91347215656b76e3e473521a1681bd0785ec6c6b1094bdc1f9"
+    },
+    "moloch/live-runtime/src/cohort_event_index.rs": {
+      "before": null,
+      "after": "ff1bef70e259c021d00d88fc548a6518d27f6ff12b2c9e3015244ef352b2225a"
+    }
+  },
+  "binarySha256": "ead777a0da550d69956d3d6865b27f2cd06d9808aaf2a0e9d5817d09583d8a9b",
+  "nativeLibrarySha256": "fe5d80b746b1acfa3817cedacc8216675053c692acf48272b7b2ab4da1173330",
+  "runtimeLibrarySha256": "fc6dca1a4d83b5f630191bef6fdba368d74d697e3cae3a10083adc6ac92f2df2",
+  "checks": {
+    "worker-tests": "test result: ok. 249 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 54.54s"
+  },
+  "cliLoads": true,
+  "productionChanged": false,
+  "accountClientsCreated": 0,
+  "measuredEndToEndSpeedup": false
+}

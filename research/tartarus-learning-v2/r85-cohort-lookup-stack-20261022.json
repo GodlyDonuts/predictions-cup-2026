@@ -1,0 +1,26 @@
+{
+  "extractedUtc": "2026-10-22T06:11:00.359152+00:00",
+  "sampleSavedAtApproximateUtc": "2026-10-22T05:40:32.178178+00:00",
+  "pid": 1069937,
+  "attachmentSeconds": 0.475,
+  "argumentsSuppressed": true,
+  "detached": true,
+  "frames": [
+    "#0  0x0000ffff8986510c in _int_malloc (av=..., bytes=...) at ./malloc/malloc.c:3914",
+    "#1  0x0000ffff89866540 in __GI___libc_malloc (bytes=...) at ./malloc/malloc.c:3336",
+    "#2  0x0000aaaaae83040c in <serde_json::de::MapAccess<serde_json::read::SliceRead> as serde_core::de::MapAccess>::next_key_seed::<core::marker::PhantomData<alloc::string::String>> ()",
+    "#3  0x0000aaaaae8269a0 in <&mut serde_json::de::Deserializer<serde_json::read::SliceRead> as serde_core::de::Deserializer>::deserialize_any::<<serde_json::value::Value as serde_core::de::Deserialize>::deserialize::ValueVisitor> ()",
+    "#4  0x0000aaaaae826400 in <&mut serde_json::de::Deserializer<serde_json::read::SliceRead> as serde_core::de::Deserializer>::deserialize_any::<<serde_json::value::Value as serde_core::de::Deserialize>::deserialize::ValueVisitor> ()",
+    "#5  0x0000aaaaae826a0c in <&mut serde_json::de::Deserializer<serde_json::read::SliceRead> as serde_core::de::Deserializer>::deserialize_any::<<serde_json::value::Value as serde_core::de::Deserialize>::deserialize::ValueVisitor> ()",
+    "#6  0x0000aaaaae826958 in <&mut serde_json::de::Deserializer<serde_json::read::SliceRead> as serde_core::de::Deserializer>::deserialize_any::<<serde_json::value::Value as serde_core::de::Deserialize>::deserialize::ValueVisitor> ()",
+    "#7  0x0000aaaaae826958 in <&mut serde_json::de::Deserializer<serde_json::read::SliceRead> as serde_core::de::Deserializer>::deserialize_any::<<serde_json::value::Value as serde_core::de::Deserialize>::deserialize::ValueVisitor> ()",
+    "#8  0x0000aaaaae78aba0 in serde_json::de::from_trait::<serde_json::read::SliceRead, serde_json::value::Value> ()",
+    "#9  0x0000aaaaae8a0bb0 in main::worker::committed_cohort_event ()",
+    "#10 0x0000aaaaae8c1408 in main::worker::refresh_fundamental_cohort ()",
+    "#11 0x0000aaaaae8f0618 in main::worker::dispatch ()",
+    "#12 0x0000aaaaae83efb8 in main::worker::main::{closure#2}::{closure#8} ()",
+    "#13 0x0000aaaaae85779c in main::worker::main::{closure#2} ()"
+  ],
+  "interpretation": "One stack sampled whole-journal JSON parsing in committed_cohort_event during cohort refresh; no total runtime cost fraction inferred",
+  "accountRequests": 0
+}

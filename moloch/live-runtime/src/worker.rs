@@ -2146,7 +2146,9 @@ fn fundamental_entry_deferred(c:&Control,exchange:&str,stage:&str,reason:&str)->
 /// Locate original prepared bytes in the already validated Session journal.
 /// Source membership, rather than a reconstructed event or elapsed timeout,
 /// is the authority for the later sidecar-only lifecycle transition.
-fn committed_cohort_event(bank:&Session,path:&Path,qid:u64,kind:&str)->Result<(String,u64,Value)>{
+#[path="cohort_event_index.rs"]mod cohort_event_index;
+fn committed_cohort_event(bank:&Session,path:&Path,qid:u64,kind:&str)->Result<(String,u64,Value)>{cohort_event_index::locate(bank,path,qid,kind)}
+fn committed_cohort_event_uncached(bank:&Session,path:&Path,qid:u64,kind:&str)->Result<(String,u64,Value)>{
  use std::io::{Read,BufRead,BufReader};
  let metadata=fs::symlink_metadata(path)?;if !metadata.is_file()||metadata.file_type().is_symlink(){return Err("LIVE_COHORT_ORIGINAL_JOURNAL_REQUIRED".into())}
  let mut reader=BufReader::new(fs::File::open(path)?);let mut line=Vec::new();
@@ -3634,6 +3636,15 @@ pub fn main()->Result<()>{
   let(root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);let mut reached=false;
   let result:Result<()>=final_packet_then(&c,&mut bank,&mut source,"201",Some(&q),&mut reads,|_,_,facts,reads|{reached=true;assert_eq!(original_read_order(&facts),json!(reads.returned));Err("SYNTHETIC_CALLBACK_FAILURE".into())});assert_eq!(result.unwrap_err().to_string(),"SYNTHETIC_CALLBACK_FAILURE");assert!(reached);assert_eq!(load(&root.0.join("bank/report.json")).unwrap()["sequence"],bank.durable_head()["sequence"]);assert!(log.intents.is_empty()&&log.attempted.is_empty());
  }
+ #[test]fn cohort_index_reuses_original_offsets_and_only_scans_new_tail(){
+  let(root,_c,mut bank,mut log,_source,_q,_book)=fixture();let qs:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).collect();assert!(qs.len()>=2);let path=root.0.join("bank/events.jsonl");
+  for q in &qs[..2]{retire_never_sent(&mut bank,&mut log,q).unwrap();}
+  let id=|q:&Value|q["id"].as_u64().unwrap();let late=committed_cohort_event(&bank,&path,id(&qs[1]),"unsubmitted_intent_retired").unwrap();let indexed=cohort_event_index::stats();
+  assert_eq!(committed_cohort_event(&bank,&path,id(&qs[0]),"unsubmitted_intent_retired").unwrap(),committed_cohort_event_uncached(&bank,&path,id(&qs[0]),"unsubmitted_intent_retired").unwrap());assert_eq!(cohort_event_index::stats(),indexed);
+  accept(&mut bank,&json!({"type":"tick","receivedAt":iso(now())})).unwrap();let before=cohort_event_index::stats();assert_eq!(committed_cohort_event(&bank,&path,id(&qs[1]),"unsubmitted_intent_retired").unwrap(),late);assert_eq!(cohort_event_index::stats(),before);
+  assert!(committed_cohort_event(&bank,&path,u64::MAX,"actual_order_terminal").is_err());let after=cohort_event_index::stats();assert!(after.0>before.0);assert_eq!(after.1-before.1,1);
+  assert!(committed_cohort_event(&bank,&path,u64::MAX,"actual_order_terminal").is_err());assert_eq!(cohort_event_index::stats(),after);
+ }
  #[test]fn stable_native_buy_completes_exact_seven_original_receipts_despite_head_progress(){
   let(_root,c,mut bank,log,mut source,q,book)=fixture();let head=bank.durable_head();let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);
   let(current,facts)=ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).unwrap().expect("benign source progress must not veto every entry");
@@ -4254,6 +4265,12 @@ pub fn main()->Result<()>{
  #[test]fn reviewed_read_only_book_screen_can_decline_without_account_reads_and_preserves_unknown_guard(){
   for allow in [true,false]{let(_root,mut bank,_log,c,mut source,q)=prefilter_fixture();let mut r=PrefilterReads{at:now(),allow,book_price:300000,endpoints:vec![],guards:0,book_reads:0};let mut evaluated=false;
    assert!(!reviewed_book_prefilter(&c,&mut bank,&mut source,&q,&mut r,|bank,at|{evaluated=true;let current=quote(bank,q["id"].as_u64().unwrap())?;let s=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&[current],at,None)?;assert_eq!(s.assessments[0].decision.reason,"sell_floor_above_current_ask");Ok(false)}).unwrap());assert_eq!(evaluated,allow);assert_eq!(r.endpoints.len(),usize::from(allow));}
+ }
+ #[test]fn cohort_index_rejects_changed_original_bytes_truncation_and_replaced_file(){
+  for mode in 0..3{let(root,mut bank,mut log,_,_,_)=fixture();let q=bank.engine().order_records().into_iter().find(|q|q["retired"]==false).unwrap();let id=q["id"].as_u64().unwrap();retire_never_sent(&mut bank,&mut log,&q).unwrap();let path=root.0.join("bank/events.jsonl");committed_cohort_event(&bank,&path,id,"unsubmitted_intent_retired").unwrap();let report=bank.engine().report().unwrap();
+   match mode{0=>{let mut raw=fs::read(&path).unwrap();let last=raw.len()-2;raw[last]=b' ';fs::write(&path,raw).unwrap();},1=>{let file=fs::OpenOptions::new().write(true).open(&path).unwrap();file.set_len(file.metadata().unwrap().len()-1).unwrap();},_=>{let old=path.with_extension("original");fs::rename(&path,&old).unwrap();fs::copy(&old,&path).unwrap();}}
+   assert!(committed_cohort_event(&bank,&path,id,"unsubmitted_intent_retired").is_err());assert_eq!(bank.engine().report().unwrap(),report);
+  }
  }
  #[test]fn cohort_retirement_lookup_requires_exact_original_session_membership_after_restart(){
   let(root,mut bank,mut log,_,policy,seed)=fixture();let q=bank.engine().order_records().into_iter().find(|q|q["retired"]==false).unwrap();let qid=q["id"].as_u64().unwrap();

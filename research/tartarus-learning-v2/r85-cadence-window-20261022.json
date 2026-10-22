@@ -1,0 +1,1063 @@
+{
+  "observedUtc": "2026-10-22T05:56:35.764572+00:00",
+  "pid": 1069937,
+  "elapsedSeconds": 902.6223582120147,
+  "samples": 16,
+  "latest": {
+    "observedUtc": "2026-10-22T05:56:35.424929+00:00",
+    "cadence": {
+      "observedUtc": "2026-10-22T05:56:35.424929+00:00",
+      "targetFilledOrdersPerMinute": 1,
+      "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+      "windowsMinutes": {
+        "1": {
+          "distinctFirstFilledOrders": 0,
+          "filledOrdersPerMinute": 0.0,
+          "targetFilledOrders": 1,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 60.0,
+          "completedUtcMinutesObserved": 1,
+          "completedUtcMinutesWithNoNewFilledOrder": 1,
+          "rollingMinuteCadenceMet": false
+        },
+        "5": {
+          "distinctFirstFilledOrders": 0,
+          "filledOrdersPerMinute": 0.0,
+          "targetFilledOrders": 5,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 300.0,
+          "completedUtcMinutesObserved": 5,
+          "completedUtcMinutesWithNoNewFilledOrder": 5,
+          "rollingMinuteCadenceMet": false
+        },
+        "15": {
+          "distinctFirstFilledOrders": 1,
+          "filledOrdersPerMinute": 0.06666666666666667,
+          "targetFilledOrders": 15,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 514.587071,
+          "completedUtcMinutesObserved": 15,
+          "completedUtcMinutesWithNoNewFilledOrder": 14,
+          "rollingMinuteCadenceMet": false
+        },
+        "60": {
+          "distinctFirstFilledOrders": 1,
+          "filledOrdersPerMinute": 0.016666666666666666,
+          "targetFilledOrders": 60,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 3214.587071,
+          "completedUtcMinutesObserved": 60,
+          "completedUtcMinutesWithNoNewFilledOrder": 59,
+          "rollingMinuteCadenceMet": false
+        }
+      },
+      "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+      "secondsSinceNewFilledOrder": 385.412929,
+      "accountRequests": 0,
+      "executionAuthority": false
+    },
+    "financial": {
+      "cash": "17844.215000",
+      "ownedCost": "78386.155000",
+      "realized": "650.455000",
+      "newTradingRealized": "573.935000",
+      "inheritedRealizedGross": "76.520000"
+    },
+    "source": "audit-015.json"
+  },
+  "accountRequests": 0,
+  "observations": [
+    {
+      "observedUtc": "2026-10-22T05:41:35.683695+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:41:35.683695+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3018.812695,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3018.812695,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-000.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:42:38.466504+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:42:38.466504+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3081.595504,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3081.595504,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-001.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:43:41.174342+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:43:41.174342+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3144.303342,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3144.303342,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-002.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:44:43.899554+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:44:43.899554+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3207.028554,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3207.028554,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-003.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:45:46.623232+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:45:46.623232+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3269.752232,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3269.752232,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-004.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:46:49.286593+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:46:49.286593+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3332.415593,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3332.415593,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-005.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:47:51.959096+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:47:51.959096+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3395.088096,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3395.088096,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-006.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:48:54.617470+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:48:54.617470+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3457.74647,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3457.74647,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-007.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:49:57.293457+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:49:57.293457+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 900.0,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 15,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3520.422457,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T04:51:16.871000+00:00",
+        "secondsSinceNewFilledOrder": 3520.422457,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "14787.975000",
+        "ownedCost": "81399.705000",
+        "realized": "607.765000",
+        "newTradingRealized": "531.245000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-008.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:51:00.287744+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:51:00.287744+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 1.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": true,
+            "maximumGapWithinWindowSeconds": 50.275744,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 0,
+            "rollingMinuteCadenceMet": true
+          },
+          "5": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.2,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 249.724256,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 4,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.06666666666666667,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 849.724256,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 14,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 2,
+            "filledOrdersPerMinute": 0.03333333333333333,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3533.141,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 58,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+        "secondsSinceNewFilledOrder": 50.275744,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "17844.215000",
+        "ownedCost": "78386.155000",
+        "realized": "650.455000",
+        "newTradingRealized": "573.935000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-009.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:52:03.057885+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:52:03.057885+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.2,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 186.954115,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 4,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.06666666666666667,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 786.954115,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 14,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3486.954115,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+        "secondsSinceNewFilledOrder": 113.045885,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "17844.215000",
+        "ownedCost": "78386.155000",
+        "realized": "650.455000",
+        "newTradingRealized": "573.935000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-010.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:53:05.723835+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:53:05.723835+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.2,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 175.711835,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 4,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.06666666666666667,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 724.288165,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 14,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3424.288165,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+        "secondsSinceNewFilledOrder": 175.711835,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "17844.215000",
+        "ownedCost": "78386.155000",
+        "realized": "650.455000",
+        "newTradingRealized": "573.935000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-011.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:54:08.361326+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:54:08.361326+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.2,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 238.349326,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 4,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.06666666666666667,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 661.650674,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 14,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3361.650674,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+        "secondsSinceNewFilledOrder": 238.349326,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "17844.215000",
+        "ownedCost": "78386.155000",
+        "realized": "650.455000",
+        "newTradingRealized": "573.935000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-012.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:55:11.299564+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:55:11.299564+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 4,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.06666666666666667,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 598.712436,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 14,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3298.712436,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+        "secondsSinceNewFilledOrder": 301.287564,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "17844.215000",
+        "ownedCost": "78386.155000",
+        "realized": "650.455000",
+        "newTradingRealized": "573.935000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-013.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:56:13.973653+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:56:13.973653+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.06666666666666667,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 536.038347,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 14,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3236.038347,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+        "secondsSinceNewFilledOrder": 363.961653,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "17844.215000",
+        "ownedCost": "78386.155000",
+        "realized": "650.455000",
+        "newTradingRealized": "573.935000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-014.json"
+    },
+    {
+      "observedUtc": "2026-10-22T05:56:35.424929+00:00",
+      "cadence": {
+        "observedUtc": "2026-10-22T05:56:35.424929+00:00",
+        "targetFilledOrdersPerMinute": 1,
+        "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+        "windowsMinutes": {
+          "1": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 1,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 60.0,
+            "completedUtcMinutesObserved": 1,
+            "completedUtcMinutesWithNoNewFilledOrder": 1,
+            "rollingMinuteCadenceMet": false
+          },
+          "5": {
+            "distinctFirstFilledOrders": 0,
+            "filledOrdersPerMinute": 0.0,
+            "targetFilledOrders": 5,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 300.0,
+            "completedUtcMinutesObserved": 5,
+            "completedUtcMinutesWithNoNewFilledOrder": 5,
+            "rollingMinuteCadenceMet": false
+          },
+          "15": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.06666666666666667,
+            "targetFilledOrders": 15,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 514.587071,
+            "completedUtcMinutesObserved": 15,
+            "completedUtcMinutesWithNoNewFilledOrder": 14,
+            "rollingMinuteCadenceMet": false
+          },
+          "60": {
+            "distinctFirstFilledOrders": 1,
+            "filledOrdersPerMinute": 0.016666666666666666,
+            "targetFilledOrders": 60,
+            "averageTargetMet": false,
+            "maximumGapWithinWindowSeconds": 3214.587071,
+            "completedUtcMinutesObserved": 60,
+            "completedUtcMinutesWithNoNewFilledOrder": 59,
+            "rollingMinuteCadenceMet": false
+          }
+        },
+        "latestNewFilledOrderUtc": "2026-10-22T05:50:10.012000+00:00",
+        "secondsSinceNewFilledOrder": 385.412929,
+        "accountRequests": 0,
+        "executionAuthority": false
+      },
+      "financial": {
+        "cash": "17844.215000",
+        "ownedCost": "78386.155000",
+        "realized": "650.455000",
+        "newTradingRealized": "573.935000",
+        "inheritedRealizedGross": "76.520000"
+      },
+      "source": "audit-015.json"
+    }
+  ]
+}

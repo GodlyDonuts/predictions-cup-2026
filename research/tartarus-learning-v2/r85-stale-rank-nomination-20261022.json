@@ -1,0 +1,25 @@
+{
+  "observedUtc": "2026-10-22T06:12:36.640307+00:00",
+  "nominationSha256": "34e6a860d0be4be2929609b316b34ccddcea6eab74ccd147d4eeea58f22fe5ab",
+  "nominationReviewedUtc": "2026-10-19T07:06:21.326000+00:00",
+  "nominationValidUntilUtc": "2026-10-19T09:44:32.081000+00:00",
+  "nominationCash": "158.360000",
+  "ownerApprovalSha256": "c370a5574f6bc78f1ed4b1763e713c1b280ef09402b60b4e09a8f2fe678a38f8",
+  "ownerApprovalValidUntilUtc": [
+    "2026-10-19T09:44:32.081000+00:00"
+  ],
+  "latestRankStatus": {
+    "at": "2026-10-22T06:10:36.157Z",
+    "physicalAttempted": false,
+    "profitabilityEstablished": false,
+    "reason": "RANK_CAMPAIGN_NOT_OWNER_APPROVED",
+    "stage": "owner_review",
+    "state": "deferred"
+  },
+  "datedCompletedWindowCash": "17844.215000",
+  "datedCompletedWindowObservedUtc": "2026-10-22T05:56:35.424929+00:00",
+  "expired": true,
+  "nominationOrApprovalRenewed": false,
+  "accountRequests": 0,
+  "productionChanged": false
+}
