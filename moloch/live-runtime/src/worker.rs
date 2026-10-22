@@ -2244,6 +2244,16 @@ fn preflight_read(bank:&mut Session,source:&mut RestSource,reads:&mut impl Ordin
  // identity/clocks reach the existing validation/application unchanged.
  reads.read_serviced(bank,source,endpoint)
 }
+/// Preserve the original per-read hooks and all durable source/head writes.
+/// The callback consumes these exact receipts before the full derived report is
+/// built; original intent/attempt durability and SDK authorization stay inside
+/// the callback. On every return the Session publishes its committed prefix.
+fn final_packet_then<T,R:OrdinaryPreflightReads>(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut R,finish:impl FnOnce(&mut Session,&mut RestSource,SnapshotSet,&mut R)->Result<T>)->Result<T>{
+ bank.with_deferred_report(|bank|{
+  let facts=snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep))?;
+  finish(bank,source,facts,reads)
+ })
+}
 fn preflight_snapshots(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut impl OrdinaryPreflightReads)->Result<SnapshotSet>{
  // Keep each admitted source event/head durable while collecting the exact
  // seven paced receipts. Build the full historical report once before return.
@@ -2523,16 +2533,16 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // Activation and native write pacing intentionally consume time. Obtain a
  // FINAL genuine seven-receipt packet after that wait instead of dispatching
  // against the earlier planning packet. Keep the exact funded qid and price.
- let final_facts=match preflight_snapshots(c,bank,source,market,Some(q),&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe}){
-  Ok(facts)=>facts,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED"),Err(e)=>return Err(e)
- };
+ let result=final_packet_then(c,bank,source,market,Some(q),&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe},|bank,source,final_facts,reads|{
  accept_fresh_book(bank,c,&target,&final_facts.book,source)?;
  let current=quote(bank,id)?;
  if current!=*q||current["retired"]!=false{return fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED")}
  if !f.eligible(bank,log,&c.scope,id,now())?{return fundamental_entry_deferred(c,ex,"value","CURRENT_REVIEWED_ENTRY_INELIGIBLE")}
  // Native clipped the actual funded quantity. submit_order binds that exact
  // genuine quote/slice, never the read hint or an invented quantity.
- submit_order(t,c,bank,log,authority,&current,final_facts,None,Some(f))
+ submit_order(reads.t,c,bank,log,authority,&current,final_facts,None,Some(f))
+ });
+ match result{Err(e)if e.is::<PreflightQuoteInvalidated>()=>fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED"),other=>other}
 }
 /// Release only local, never-dispatched reservations. The selector protects
 /// held inventory, pending mates, reviewed managers and all package scopes.
@@ -3608,6 +3618,22 @@ pub fn main()->Result<()>{
   }
  }
  fn original_read_order(f:&SnapshotSet)->Value{serde_json::to_value([&f.account,&f.positions,&f.open_orders,&f.cash_balance,&f.market,&f.contract,&f.book]).unwrap()}
+ #[test]fn final_packet_callback_sees_durable_current_head_before_full_projection(){
+  let(root,c,mut bank,log,mut source,q,book)=fixture();let report_path=root.0.join("bank/report.json");let old=fs::read(&report_path).unwrap();let head=bank.durable_head();let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);let mut reached=false;
+  let result=final_packet_then(&c,&mut bank,&mut source,"201",Some(&q),&mut reads,|bank,_source,facts,reads|{
+   reached=true;assert_eq!(reads.calls,7);assert_eq!(original_read_order(&facts),json!(reads.returned));assert_eq!(fs::read(&report_path)?,old);assert_ne!(bank.durable_head(),head);
+   let original_head=load(&root.0.join("bank/head.json"))?;assert_eq!(original_head,bank.durable_head());assert_eq!(quote(bank,q["id"].as_u64().unwrap())?,q);Ok(17)
+  }).unwrap();
+  assert_eq!(result,17);assert!(reached);assert_ne!(fs::read(&report_path).unwrap(),old);assert_eq!(load(&report_path).unwrap()["sequence"],bank.durable_head()["sequence"]);assert_eq!(reads.trace,["service","get"].repeat(7));for k in ["cash","ownedCost","realized","fills"]{assert_eq!(bank.engine().report().unwrap()[k],before[k]);}assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn final_packet_changed_quote_never_reaches_callback_and_committed_prefix_is_published(){
+  let(root,c,mut bank,log,mut source,_q,book)=fixture();let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="101"&&q["retired"]==false&&q["side"]=="NO").unwrap();let mut reads=Reads::new(book);reads.invalidate_at=Some(1);let mut reached=false;
+  let result:Result<()>=final_packet_then(&c,&mut bank,&mut source,"201",Some(&q),&mut reads,|_,_,_,_|{reached=true;Ok(())});assert!(result.err().unwrap().is::<PreflightQuoteInvalidated>());assert!(!reached&&reads.endpoints.is_empty());assert_eq!(load(&root.0.join("bank/report.json")).unwrap()["sequence"],bank.durable_head()["sequence"]);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn final_packet_callback_error_keeps_original_receipts_and_publishes_committed_prefix(){
+  let(root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);let mut reached=false;
+  let result:Result<()>=final_packet_then(&c,&mut bank,&mut source,"201",Some(&q),&mut reads,|_,_,facts,reads|{reached=true;assert_eq!(original_read_order(&facts),json!(reads.returned));Err("SYNTHETIC_CALLBACK_FAILURE".into())});assert_eq!(result.unwrap_err().to_string(),"SYNTHETIC_CALLBACK_FAILURE");assert!(reached);assert_eq!(load(&root.0.join("bank/report.json")).unwrap()["sequence"],bank.durable_head()["sequence"]);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
  #[test]fn stable_native_buy_completes_exact_seven_original_receipts_despite_head_progress(){
   let(_root,c,mut bank,log,mut source,q,book)=fixture();let head=bank.durable_head();let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);
   let(current,facts)=ordinary_preflight(&c,&mut bank,&log,&mut source,&q,&mut reads).unwrap().expect("benign source progress must not veto every entry");

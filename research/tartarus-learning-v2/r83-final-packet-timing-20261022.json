@@ -1,0 +1,127 @@
+{
+  "observedUtc": "2026-10-22T05:31:05.373054+00:00",
+  "sourceTraceSha256": "3586b07c4e8eba54cce1a5f78b09b7cf7243697dec73cedf8b3e7e16f595880b",
+  "sourceTrace": {
+    "diagnosticOnly": true,
+    "outcome": "transport_error",
+    "summary": {
+      "bookAgeAtAckMs": null,
+      "earliestRecordedMs": 1792644984003,
+      "fillObservationDelayMs": null,
+      "latestRecordedMs": 1792645000011,
+      "outsideRecordedSpansMs": 9400,
+      "recordedSpanUnionMs": 6608
+    },
+    "trace": {
+      "ackReceivedAtMs": null,
+      "bookReceivedAtMs": 1792644990129,
+      "candidateCreatedAtMs": 1792644976884,
+      "diagnosticOnly": true,
+      "fillAppliedAtMs": null,
+      "fillExecutedAtMs": null,
+      "fillObservedAtMs": null,
+      "finishedAtMs": 1792645000011,
+      "nativeQid": 20937,
+      "permitExpiresAtMs": 1792645010661,
+      "permitIssuedAtMs": 1792644995661,
+      "runId": "moloch-live-20261015-v1",
+      "spans": [
+        {
+          "endMs": 1792644984357,
+          "stage": "preflightRead",
+          "startMs": 1792644984003
+        },
+        {
+          "endMs": 1792644987325,
+          "stage": "preflightRead",
+          "startMs": 1792644986987
+        },
+        {
+          "endMs": 1792644985423,
+          "stage": "preflightRead",
+          "startMs": 1792644985004
+        },
+        {
+          "endMs": 1792644986347,
+          "stage": "preflightRead",
+          "startMs": 1792644986067
+        },
+        {
+          "endMs": 1792644988214,
+          "stage": "preflightRead",
+          "startMs": 1792644987979
+        },
+        {
+          "endMs": 1792644989148,
+          "stage": "preflightRead",
+          "startMs": 1792644988850
+        },
+        {
+          "endMs": 1792644990129,
+          "stage": "preflightRead",
+          "startMs": 1792644989795
+        },
+        {
+          "endMs": 1792644999162,
+          "stage": "policyAndRisk",
+          "startMs": 1792644995661
+        },
+        {
+          "endMs": 1792644999539,
+          "stage": "originalAttemptRecord",
+          "startMs": 1792644999179
+        },
+        {
+          "endMs": 1792644999540,
+          "stage": "postIntentOwnership",
+          "startMs": 1792644999539
+        },
+        {
+          "endMs": 1792644999540,
+          "stage": "intentDurability",
+          "startMs": 1792644999162
+        },
+        {
+          "endMs": 1792645000011,
+          "stage": "transportCall",
+          "startMs": 1792644999540
+        }
+      ],
+      "startedAtMs": 1792644995661,
+      "version": 1
+    }
+  },
+  "nativeQid": 20937,
+  "exchangeId": "1075",
+  "policyBookAgeMs": 10000,
+  "bookReceiptToPreparationMs": 5532,
+  "preparationSpanMs": 3501,
+  "bookReceiptToTransportStartMs": 9411,
+  "bookReceiptToTransportCompletionMs": 9882,
+  "receiptIsNotExchangeObservationClock": true,
+  "actualPhysicalExpiryNotReconstructed": true,
+  "sdkVerifiedOutcome": "local_final_guard_no_http",
+  "candidateModes": [
+    {
+      "conditional_forecast_surplus": 732200000,
+      "immediate_acquisition_quantity": 0,
+      "limit_price": 895000,
+      "mode": "JoinBid",
+      "quantity": 10000,
+      "visible_acquisition_notional": 0,
+      "visible_liquidation_notional": 8927275000
+    },
+    {
+      "conditional_forecast_surplus": 632200000,
+      "immediate_acquisition_quantity": 10000,
+      "limit_price": 905000,
+      "mode": "BoundedLimitMayRest",
+      "quantity": 10000,
+      "visible_acquisition_notional": 9029255000,
+      "visible_liquidation_notional": 8927275000
+    }
+  ],
+  "conditionalForecastIsNotRealizedProfit": true,
+  "accountRequests": 0,
+  "productionChanged": false
+}

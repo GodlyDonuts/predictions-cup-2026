@@ -1,0 +1,13 @@
+# R86 candidate: remove report publication from the final entry packet
+
+R85 is the installed worker. Its original financial history is still being restored; a fresh filled-minute result is pending. R86 is an offline candidate, with no production change or measured speedup.
+
+The retained R83 trace for Delaware intent20937 shows a final book receipt at04:56:30.129, preparation starting35.661, transport starting39.540 and finishing40.011. That is5,532ms from the book receipt to preparation and9,882ms to transport completion. The SDK independently proves local rejection before HTTP because the physical token expired. The trace does not attribute the entire gap to report construction; source handling and other work also occur there. The receipt clock is not the exchange observation clock or proof of the token's exact expiry. [Preserved trace and candidate depth](r83-final-packet-timing-20261022.json).
+
+R84/R85 defers repeated full report construction while fetching source and preflight packets, but still publishes the final report when the packet returns. R86 moves that derived-report publication past the final entry's submission result. The native source events, head, logical intent, original attempt and SDK queue remain synchronous. Every final receipt, quote identity, eligibility check, price, quantity, deadline and SDK authorization is retained. The callback receives the original serviced read context; it does not create a transport or reuse a physical permit.
+
+The scope publishes the report for its committed prefix on return, including after a semantic error. Panic and uncertain I/O retain the existing poisoned-session behavior. A report file can be older than the current head within the scope; production authority reads the current held engine and durable head rather than treating that derived file as fresh.
+
+Three added worker checks prove the continuation sees seven exact serviced receipts and a durable current head before report publication, quote invalidation prevents the continuation, and a continuation error still publishes the committed prefix. All247 worker checks pass. Release binary `3b1f3fe95a094404e3cb5c9bf896e64cde0dc608f4e2ec22cf990def1dede37c` is qualified and its CLI loads. [Exact source and library evidence](r86-final-packet-qualified-20261022.json). Native and runtime libraries are unchanged from R85; deployment would not require another engine-upgrade approval.
+
+The candidate has not been deployed. R85's live processing time, physical-token deferrals and actual fills must establish whether another replacement is justified. No shorter source age, relaxed execution clock, new account client, changed risk budget or whole-account profit is claimed.
