@@ -1,0 +1,121 @@
+{
+  "observedUtc": "2026-10-22T02:15:28.757415+00:00",
+  "pid": 1057647,
+  "elapsedSeconds": 900.4045219559921,
+  "completionReason": "duration_complete",
+  "completedWindow": true,
+  "samples": [
+    {
+      "at": "2026-10-22T01:56:05.394Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 0,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:01:40.167Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 13,
+      "passes": 13,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:02:31.012Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:03:27.154Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:04:19.756Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:05:15.414Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:06:22.738Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:07:52.535Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:09:46.579Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:11:55.477Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:14:44.726Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1057647,
+      "sameAccountWorker": true
+    }
+  ],
+  "accountRequests": 0,
+  "fillsNotInferredFromSweeps": true
+}

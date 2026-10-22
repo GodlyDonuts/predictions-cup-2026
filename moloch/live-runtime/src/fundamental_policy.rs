@@ -1369,7 +1369,7 @@ impl Cohorts{
     /// those original appends the worker MUST validate_appended_intent, then the SDK
     /// performs its existing account/unknown/rate/physical authorization gates.
     pub fn physical_decision(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,permit:&Permit,authority:&ReviewAuthority,now:u64)->Result<PhysicalDecision>{
-        authority.validate()?;self.check_bound(bank,log,scope,qid,spec,authority.trusted(),now)?;
+        authority.validate()?;let exit_decision=self.check_bound_decision(bank,log,scope,qid,spec,authority.trusted(),now)?;
         need(log.never_attempted(qid)&&!log.intents.contains_key(&qid),"FUNDAMENTAL_PHYSICAL_UNUSED_INTENT_REQUIRED")?;
         let (ex,c)=self.cohorts.iter().find(|(_,c)|c.binding(qid).is_some()).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
         let r=&self.policies[ex];let q=crate::order_snapshot::quote(bank,qid).ok_or("FUNDAMENTAL_QUOTE")?;
@@ -1382,9 +1382,9 @@ impl Cohorts{
         let mut expires=q["expiresAt"].as_u64().ok_or("FUNDAMENTAL_EXPIRATION")?.min(permit.expires_at_ms)
             .min(book.observed_ms.checked_add(age).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?)
             .min(book.source.received_ms.checked_add(age).and_then(|n|n.checked_add(1)).ok_or("FUNDAMENTAL_CLOCK_RANGE")?);
-        let deadline_exit=if c.is_entry(qid){false}else{
-            matches!(self.assess(bank,log,scope,qid,authority.trusted(),now)?,Decision::Exit{reason,..}if reason=="reviewed_holding_deadline")
-        };
+        // This exact immutable bank/log/cohort was assessed at the same clock
+        // by check_bound_decision. Reuse that result within this call only.
+        let deadline_exit=matches!(exit_decision,Some(Decision::Exit{ref reason,..})if reason=="reviewed_holding_deadline");
         if !deadline_exit{
             expires=expires.min(r.expires_at_ms);
             if c.is_entry(qid)||!terminal_hold(r){expires=expires.min(r.hold_until_ms);}
@@ -2005,11 +2005,16 @@ impl Cohorts{
     /// Policy-only physical gate. An existing attempt grants NO retry authority.
     /// The SDK/original dispatch retain unknown-acceptance and rate controls.
     pub fn check_bound(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<()>{
-        self.check(bank,log)?;
+        self.check_bound_decision(bank,log,scope,qid,spec,trusted,now).map(|_|())
+    }
+    // A SELL assessment already checks complete cohort/dispatch integrity.
+    // Return its result to the same mint call; never cache across observations.
+    fn check_bound_decision(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec,trusted:&BTreeSet<String>,now:u64)->Result<Option<Decision>>{
         need(!log.proved_no_network(qid)&&!log.exposure_resolved(qid)&&!self.cohorts.values().any(|c|c.retired_top_ups.contains_key(&qid)),"FUNDAMENTAL_ABORTED_INTENT_CANNOT_RETRY")?;
         let(ex,c)=self.cohorts.iter().find(|(_,c)|c.binding(qid).is_some()).ok_or("FUNDAMENTAL_DURABLE_BINDING_REQUIRED")?;
         let b=c.binding(qid).unwrap();need(digest(spec)?==b.spec_sha256,"FUNDAMENTAL_PHYSICAL_REQUEST_CHANGED")?;
         if c.is_entry(qid){
+            self.check(bank,log)?;
             let r=&self.policies[ex];need(trusted.contains(&digest(r)?)&&digest(r)?==b.review_sha256&&current(r,now)&&!r.revoke_existing&&now<c.hold_until_ms,"FUNDAMENTAL_PHYSICAL_REVIEW_CHANGED")?;
             if c.top_ups.contains_key(&qid){let proof=self.top_up_state(bank,log,ex,Some(qid),false)?.ok_or("FUNDAMENTAL_TOP_UP_PHYSICAL_OWNERSHIP")?;
                 need(b.quote["reviewedFundamentalEntry"]["sameSideTopUp"]==proof,"FUNDAMENTAL_TOP_UP_NATIVE_PROOF_CHANGED")?;
@@ -2029,8 +2034,12 @@ impl Cohorts{
             let book=books.get(ex).ok_or("FUNDAMENTAL_PHYSICAL_BOOK_STALE")?;let asks=if r.side=="YES"{&book.yes_asks}else{&book.no_asks};let price=amount(b.quote["price"].as_str().ok_or("FUNDAMENTAL_PRICE")?)?;
             let execution=execution_for_quote(r,&q)?;if execution!=ExecutionMode::JoinBid{need(planned==q["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?,"FUNDAMENTAL_EXECUTION_WHOLE_NATIVE_REQUEST")?;}
             need(price<=structure(r)?&&(execution==ExecutionMode::BoundedLimitMayRest||asks.first().is_some_and(|l|price<l.price)),"FUNDAMENTAL_PHYSICAL_ENTRY_EDGE")?;
-        }else{need(matches!(self.assess(bank,log,scope,qid,trusted,now)?,Decision::Exit{..}),"FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE")?;}
-        Ok(())
+        }else{
+            let decision=self.assess(bank,log,scope,qid,trusted,now)?;
+            need(matches!(decision,Decision::Exit{..}),"FUNDAMENTAL_PHYSICAL_EXIT_NOT_ELIGIBLE")?;
+            return Ok(Some(decision))
+        }
+        Ok(None)
     }
 }
 fn request_quantity(s:&RequestSpec)->Result<u64>{s.body.as_ref().and_then(|b|b["quantity"].as_u64()).filter(|n|*n>0).ok_or("FUNDAMENTAL_PHYSICAL_QUANTITY".into())}

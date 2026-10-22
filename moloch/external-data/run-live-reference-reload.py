@@ -65,6 +65,16 @@ def executable_ticks(review, midpoint):
     return entry, exit_tick
 
 
+REVIEW_REFRESH_LEAD_MS = 300_000
+
+
+def review_current_until(review):
+    # Match the worker's review/source clocks. A quiet price still needs a
+    # newly captured review before its earliest original source expires.
+    return min([review['expiresAtMs']] + [
+        s['observedAtMs'] + s['maximumAgeMs'] + 1 for s in review.get('sources', [])])
+
+
 def changed_scopes(capture, current_control, open_exchanges, now):
     inputs = {r['exchangeId']: r for r in capture['rows']}
     selected = []
@@ -76,7 +86,7 @@ def changed_scopes(capture, current_control, open_exchanges, now):
         old = Decimal(review['ordinaryProbability'])
         old_midpoint = old if review['side'] == 'YES' else 1 - old
         new_midpoint = Decimal(inputs[ex]['yesMidpoint'])
-        if review['expiresAtMs'] - now <= 120_000 or executable_ticks(review, old_midpoint) != executable_ticks(review, new_midpoint):
+        if review_current_until(review) - now <= REVIEW_REFRESH_LEAD_MS or executable_ticks(review, old_midpoint) != executable_ticks(review, new_midpoint):
             selected.append(ex)
     return selected
 

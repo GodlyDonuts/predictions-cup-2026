@@ -183,7 +183,7 @@ impl FundamentalRuntime{
  fn eligible(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,at:u64)->Result<bool>{
   self.authority.validate()?;
   if !self.cohorts.manages(quote(bank,qid)?["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?){return Ok(true)}
-  let n=self.cohorts.planned_entry_quantity(bank,log,scope,qid,self.authority.trusted(),at)?;
+  let n=if quote(bank,qid)?["action"]=="buy"{self.cohorts.planned_entry_quantity(bank,log,scope,qid,self.authority.trusted(),at)?}else{None};
   let decision=if let Some(n)=n{self.cohorts.assess_quantity(bank,log,scope,qid,n,self.authority.trusted(),at)?}else{self.cohorts.assess(bank,log,scope,qid,self.authority.trusted(),at)?};
   Ok(matches!(decision,fundamental::Decision::Entry{..}|fundamental::Decision::Exit{..}))
  }
@@ -1561,7 +1561,7 @@ fn submit_order_with_rank(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  let fundamental_decision=if rank.is_some(){None}else if let Some(f)=fundamental.as_mut(){
   f.authority.validate()?;
   if !f.eligible(bank,log,&c.scope,qid,now())?{authority.clear_ready();return Ok(())}
-  let n=f.cohorts.planned_entry_quantity(bank,log,&c.scope,qid,f.authority.trusted(),now())?.unwrap_or(u64::from(order.quantity));
+  let n=if q["action"]=="buy"{f.cohorts.planned_entry_quantity(bank,log,&c.scope,qid,f.authority.trusted(),now())?.unwrap_or(u64::from(order.quantity))}else{u64::from(order.quantity)};
   order.quantity=u32::try_from(n)?;request_spec=spec(&order)?;p.maximum_quantity=order.quantity;p.maximum_cost=money(decimal_units(&order.price)?.checked_mul(i128::from(n)).ok_or("LIVE_COST_OVERFLOW")?);
   let decision=match fundamental_preintent(f,bank,log,&c.scope,q,n,&request_spec,&p,now,||recovery_queue_clear(&t.admission_state()?))?{
    FundamentalPreintent::Ready(decision)=>decision,
@@ -2070,7 +2070,9 @@ fn submit_existing_reservation(t:&mut Transport,c:&Control,bank:&mut Session,log
  // Same sole Transport and original global queue. The capability and physical
  // authority retain all original unknown, receipt, source and depth guards.
  if queue_has_unknown(t)?{return existing_exit_deferred(c,ex,"queue","GLOBAL_UNKNOWN_ACCEPTANCE")}
- let current=quote(bank,qid)?;if !f.eligible(bank,log,&c.scope,qid,now())?{return existing_exit_deferred(c,ex,"value","CURRENT_REVIEWED_EXIT_INELIGIBLE")}
+ // submit_order performs the current eligibility check immediately before
+ // binding. Do not audit the same unchanged cohort a second time here.
+ let current=quote(bank,qid)?;
  submit_order(t,c,bank,log,authority,&current,facts,None,Some(f))
 }
 fn expected_fundamental_entry_denial(reason:&str)->bool{
@@ -4426,7 +4428,10 @@ pub fn main()->Result<()>{
  fn genuine_reviewed_entry_event(temp:&Temp)->(Session,DispatchLog,Value,Value,Value){
   let(mut bank,mut log,policy,seed)=setup(&temp.0,1);for q in bank.engine().order_records(){retire_for_package(&mut bank,&mut log,&q).unwrap();}
   let at=now();let book=bank.engine().live_package_books().into_iter().find(|b|b["exchangeId"]=="101").unwrap();
-  let event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":seed["runId"],"bankManifestHash":bank.manifest_hash(),"tournamentId":"cup"},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report().unwrap()),"marketId":"101","exchangeId":"101","side":"YES","originSha256":"a".repeat(64),"reviewSha256":"b".repeat(64),"bookSha256":hash(&book),"reviewCurrentUntilMs":at+55_000,"reviewMaximumQuantity":2,"reviewMaximumPrincipal":"1.000000","expectedPayout":"0.600000","marginPerShare":"0.010000","limitPrice":"0.400000","expiresAt":iso(at+50_000)});
+  // Keep this fixture inside its original setup-relative entry deadline even
+  // when shared-host work delays construction; production windows are unchanged.
+  let expires=(at+50_000).min(moloch_live_runtime::daily_windows::clock(policy["entryStopAt"].as_str().unwrap()).unwrap()-1);
+  let event=json!({"type":"reviewed_fundamental_entry_reserved_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),"processedAt":iso(at),"bankScope":{"runId":seed["runId"],"bankManifestHash":bank.manifest_hash(),"tournamentId":"cup"},"bankHead":bank.durable_head(),"expectedReportSha256":hash(&bank.engine().report().unwrap()),"marketId":"101","exchangeId":"101","side":"YES","originSha256":"a".repeat(64),"reviewSha256":"b".repeat(64),"bookSha256":hash(&book),"reviewCurrentUntilMs":at+55_000,"reviewMaximumQuantity":2,"reviewMaximumPrincipal":"1.000000","expectedPayout":"0.600000","marginPerShare":"0.010000","limitPrice":"0.400000","expiresAt":iso(expires)});
   (bank,log,event,policy,seed)
  }
  fn genuine_reviewed_entry_reservation(temp:&Temp)->(Session,DispatchLog,Value,Value,Value){

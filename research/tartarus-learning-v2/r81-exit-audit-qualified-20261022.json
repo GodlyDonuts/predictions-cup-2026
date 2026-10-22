@@ -1,0 +1,24 @@
+{
+  "observedUtc": "2026-10-22T02:28:07.526851+00:00",
+  "binarySha256": "fe8280811298d3ed7292618ca1cc10c40fefda4a5fc260d27ef4c50edcc8f4e8",
+  "runtimeLibrarySha256": "95211bc67bf59a27dfa5f0394d4c186be52b2da0369234dc139009724798b5e1",
+  "nativeLibrarySha256": "fb56b89e5a6af2788baf4d858fcca02e675f0752a3cabf355aac791b767ba287",
+  "cliLoads": true,
+  "sourceSha256": {
+    "moloch/live-runtime/src/fundamental_policy.rs": "398899019eba56e78cc0e45bb2f62a54c63e660bb160ba5fb568227e430ffb76",
+    "moloch/live-runtime/tests/fundamental_fifo_profit_exits.rs": "10f41242bcded3853c1e8b0f4d75ea28c9c44c050d1431ff66df7af585098727",
+    "moloch/live-runtime/src/worker.rs": "95bea07e67a374cf9aa1a2be376787e9c6542f11e5cff3f03f97e5710701d34e"
+  },
+  "tests": [
+    "test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.69s",
+    "test result: ok. 146 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 118.09s",
+    "test result: ok. 239 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 82.20s"
+  ],
+  "nativeEngineChanged": false,
+  "accountClientsCreated": 0,
+  "productionChanged": false,
+  "fixtureOnlyCorrection": "Use original fixture entry deadline as expiration upper bound; prior load-sensitive failures preserved",
+  "referenceUpdaterSha256": "34db00db3c1b6187ad99955251702d836ef8562ed9b60c347106bfe712c81489",
+  "referenceUpdaterTestsPassed": 8,
+  "referenceRefreshLeadMs": 300000
+}

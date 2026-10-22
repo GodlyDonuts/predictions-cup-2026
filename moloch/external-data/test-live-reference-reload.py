@@ -103,8 +103,24 @@ class RefreshTests(unittest.TestCase):
             control = {'fundamentalPolicy': {'reviews': [{'path': str(p)}]}}
             capture = {'rows': [{'exchangeId': '1067', 'yesMidpoint': '.5001'}]}
             self.assertEqual(refresh.changed_scopes(capture, control, set(), 1000), [])
+            self.assertEqual(refresh.changed_scopes(capture, control, set(), 599_999), [])
+            self.assertEqual(refresh.changed_scopes(capture, control, set(), 600_000), ['1067'])
             self.assertEqual(refresh.changed_scopes(capture, control, set(), 780_000), ['1067'])
             self.assertEqual(refresh.changed_scopes(capture, control, {'1067'}, 780_000), [])
+
+    def test_earliest_original_source_clock_drives_refresh_without_extending_it(self):
+        review = self.review()
+        review['sources'] = [{'observedAtMs': 100_000, 'maximumAgeMs': 350_000},
+                             {'observedAtMs': 100_000, 'maximumAgeMs': 900_000}]
+        self.assertEqual(refresh.review_current_until(review), 450_001)
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'review.json'; original = json.dumps(review); p.write_text(original)
+            control = {'fundamentalPolicy': {'reviews': [{'path': str(p)}]}}
+            capture = {'rows': [{'exchangeId': '1067', 'yesMidpoint': '.5000'}]}
+            self.assertEqual(refresh.changed_scopes(capture, control, set(), 150_000), [])
+            self.assertEqual(refresh.changed_scopes(capture, control, set(), 150_001), ['1067'])
+            self.assertEqual(refresh.changed_scopes(capture, control, {'1067'}, 150_001), [])
+            self.assertEqual(p.read_text(), original)
 
 
 if __name__ == '__main__':
