@@ -2,7 +2,13 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,20:17UTC
+## Latest state: October22,21:09UTC
+
+R101 restored and is trading as sole worker1131806. The original692 fill rows remain intact. A subsequent original-receipt/FIFO audit verifies708 rows and11 distinct filled orders since restoration,7596.600 turnover and **-114.840 realized net**. Cash7630.345 and inventory cost86681.780 are accounting fields, not current wealth or positive ROI. [Restored operation](research/tartarus-learning-v2/r101-fresh-live-20261022.json), [actual subsequent fills](research/tartarus-learning-v2/r101-post-restore-turnover-20261022.json).
+
+The proposed new1076YES cohort was rejected before commit: the account already holds6161 original YES shares at0.90, so the proposed flat-cohort assumption was wrong. No new cohort was installed and no request was resent; future management must preserve those original lots. Existing reference maintenance resumed as1132370. [Exact rejection and holdings](research/tartarus-learning-v2/r101-ri-policy-rejected-20261022.json). [Current venue mechanics](research/tartarus-learning-v2/venue-capital-mechanics-20261022.md): cash-only, opposite-outcome netting, no documented borrowing facility.
+
+### Earlier20:17UTC installation
 
 R101 is installed as sole worker1131806 and is restoring the original ledger; fresh trading is not yet verified. Binary40404168cabb/source8f960c57 contain both qualified latency fixes, with the native engine and all financial history retained. A finite file-only observer1131816 verifies the exact process. The stopped bank has692 fill rows: the extra pre-upgrade fill sold25 Idaho NO859 at0.88 for22, zero fee and zero realized gain. Cash33.745; original660 rows and remaining FIFO match official receipts. No R101 speed, new fill or profit is claimed. [Installation](research/tartarus-learning-v2/r101-installed-restoring-20261022.json), [original-receipt audit](research/tartarus-learning-v2/r101-pre-upgrade-turnover-audit-20261022.json), [restoration observation](research/tartarus-learning-v2/r101-restoration-observed-20261022.json).
 

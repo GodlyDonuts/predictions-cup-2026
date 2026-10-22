@@ -1,0 +1,63 @@
+{
+  "workerPid": 1131806,
+  "workerRestarted": false,
+  "requestResent": false,
+  "resolution": {
+    "outcome": "expired_uncommitted",
+    "requestSha256": "4ccaac84a3f24c555d2ea8b66c42cf21230ead8e18b87ad06fd96eaa395cddf6",
+    "previousGenerationSha256": "fb924acb3478a122b4d3db940d0d34cd8d3a5be354945abb3dae10d57b048ce7",
+    "committedGenerationSha256": "fb924acb3478a122b4d3db940d0d34cd8d3a5be354945abb3dae10d57b048ce7",
+    "observedAtMs": 1792703175436,
+    "requestExpiresAtMs": 1792703140916,
+    "nativeViewWrittenAt": "2026-10-22T21:06:14.537Z",
+    "originalCohortPrefixBytes": 14388809,
+    "originalCohortPrefixSha256": "ddfbed08cfc15995e904947bd69d18ddef5999d385a5bd63f0c5f5302af4621b",
+    "requestResent": false,
+    "accountRequests": 0,
+    "financialStateChanged": false
+  },
+  "originalReply": {
+    "reason": "FUNDAMENTAL_GENERATION_NEW_SCOPE_NOT_FLAT",
+    "state": "rejected_before_commit"
+  },
+  "referenceUpdaterPid": 1132370,
+  "observationAt": "2026-10-22T21:09:04.592Z",
+  "originalExisting1076Lots": {
+    "NO": [],
+    "YES": [
+      {
+        "price": "0.900000",
+        "quantity": 6091
+      },
+      {
+        "price": "0.900000",
+        "quantity": 10
+      },
+      {
+        "price": "0.900000",
+        "quantity": 10
+      },
+      {
+        "price": "0.900000",
+        "quantity": 10
+      },
+      {
+        "price": "0.900000",
+        "quantity": 10
+      },
+      {
+        "price": "0.900000",
+        "quantity": 10
+      },
+      {
+        "price": "0.900000",
+        "quantity": 10
+      },
+      {
+        "price": "0.900000",
+        "quantity": 10
+      }
+    ]
+  },
+  "note": "New cohort not installed; existing historical FIFO must be explicitly reconciled and managed, not relabeled as a new flat cohort."
+}
