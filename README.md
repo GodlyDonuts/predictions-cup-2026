@@ -2,7 +2,13 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,19:02UTC
+## Latest state: October22,19:49UTC
+
+The two selected standing maker policies (NO1077 and NO983) now have scoped reference maintenance. Deployed helper `1e34028f`, PID1129150, protects native reservations before acknowledgment; 14 checks pass on the VPS. Original worker1124953 continues without restart. Broad nomination/review controllers remain stopped. Current native reservations are not proof of exchange acceptance: some passive submissions still defer because their physical evidence window is nearly exhausted. Last worker progress reports691 fill rows, with no new filled order or profit established. [Deployment and live observations](research/tartarus-learning-v2/agent-maker-refresh-live-20261022.json).
+
+A file-only scan of4508 retained recorder rows finds no positive five-minute gross taker round trip for the selected1077/983 quantities or9489 NO1074;8788 NO859 has one hindsight observation worth3.88 before fees. This does not simulate passive fills, establish strategy ROI, or rule out spread capture. [Original depth diagnostic](research/tartarus-learning-v2/agent-intraday-quote-paths-20261022.json).
+
+### Earlier19:02UTC reallocation
 
 The Florida-to-Rhode-Island reallocation is fully reconciled:10000 Florida Senate Republican YES sold for8500 (-33.50 realized versus original FIFO), followed by9489 Rhode Island governor Republican NO bought for8576.385, zero fees. Cash11.745; all691 fill rows/FIFO match originals. Same R100 worker remains live. The partial-funding allocation screen and original future-book attribution are corrected; no cap or worker changes. Profitability and one-fill/minute remain unproved. [Actual audit](research/tartarus-learning-v2/agent-florida-ri-rotation-complete-20261022.json), [research-agent report and winning gap](research/tartarus-learning-v2/agent-allocation-and-win-gap-20261022.md).
 

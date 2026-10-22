@@ -1,0 +1,160 @@
+{
+  "observedUtc": "2026-10-22T19:34:57.489856+00:00",
+  "workerPid": 1124953,
+  "sources": [
+    {
+      "path": "/home/archon/apps/moloch/shared/live-production-v1/breadth-1124953-1792692652186.jsonl",
+      "originalCompletePrefixBytes": 134174649,
+      "prefixSha256": "34a7264c73bc18b646ccdfb9a964c5fb769c88b36a893f40bb2934a049fe77cb",
+      "validatedRows": 1135
+    },
+    {
+      "path": "/home/archon/apps/moloch/shared/live-production-v1/breadth-1124953-1792692652186-part-0001.jsonl",
+      "originalCompletePrefixBytes": 134106764,
+      "prefixSha256": "d8b2cd885e65c9fa32a3cb3b044c318ba52ff55293096b982c4e6d71837f59b8",
+      "validatedRows": 1251
+    },
+    {
+      "path": "/home/archon/apps/moloch/shared/live-production-v1/breadth-1124953-1792692652186-part-0002.jsonl",
+      "originalCompletePrefixBytes": 134113023,
+      "prefixSha256": "2d5a1f3c0d04441b7a1398fa2f0342c8f2ffa385def421afd83ede7dd3df3e82",
+      "validatedRows": 1211
+    },
+    {
+      "path": "/home/archon/apps/moloch/shared/live-production-v1/breadth-1124953-1792692652186-part-0003.jsonl",
+      "originalCompletePrefixBytes": 100473895,
+      "prefixSha256": "9d945e53268a265da015e348fff60a594a0fa078399998d1be9acc7ada206783",
+      "validatedRows": 911
+    }
+  ],
+  "originalRowsValidated": 4508,
+  "recorderChainGaps": 3,
+  "originalViewSha256": "0bc23a68444c5d6c39d5917fb29d78176f360598052ac46bb2d1296f22ea429f",
+  "maximumSourceDeliveryAgeMs": 60000,
+  "targets": [
+    {
+      "exchangeId": "1077",
+      "side": "NO",
+      "quantity": 10000,
+      "samples": 1189,
+      "diagnostics": [
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 1000,
+          "maximumHoldingWindowMs": 300000
+        },
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 10000,
+          "maximumHoldingWindowMs": 300000
+        },
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 60000,
+          "maximumHoldingWindowMs": 300000
+        }
+      ]
+    },
+    {
+      "exchangeId": "983",
+      "side": "NO",
+      "quantity": 1949,
+      "samples": 1005,
+      "diagnostics": [
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 1000,
+          "maximumHoldingWindowMs": 300000
+        },
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 10000,
+          "maximumHoldingWindowMs": 300000
+        },
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 60000,
+          "maximumHoldingWindowMs": 300000
+        }
+      ]
+    },
+    {
+      "exchangeId": "859",
+      "side": "NO",
+      "quantity": 8788,
+      "samples": 860,
+      "diagnostics": [
+        {
+          "maximumGrossSurplusMicros": 3880000,
+          "candidateObservations": 1,
+          "minimumQuoteSeparationMs": 1000,
+          "maximumHoldingWindowMs": 300000,
+          "entryReceivedAtMs": 1792693427078,
+          "exitReceivedAtMs": 1792693700648,
+          "entryAskCostMicros": 7725665000,
+          "exitBidProceedsMicros": 7729545000
+        },
+        {
+          "maximumGrossSurplusMicros": 3880000,
+          "candidateObservations": 1,
+          "minimumQuoteSeparationMs": 10000,
+          "maximumHoldingWindowMs": 300000,
+          "entryReceivedAtMs": 1792693427078,
+          "exitReceivedAtMs": 1792693700648,
+          "entryAskCostMicros": 7725665000,
+          "exitBidProceedsMicros": 7729545000
+        },
+        {
+          "maximumGrossSurplusMicros": 3880000,
+          "candidateObservations": 1,
+          "minimumQuoteSeparationMs": 60000,
+          "maximumHoldingWindowMs": 300000,
+          "entryReceivedAtMs": 1792693427078,
+          "exitReceivedAtMs": 1792693700648,
+          "entryAskCostMicros": 7725665000,
+          "exitBidProceedsMicros": 7729545000
+        }
+      ]
+    },
+    {
+      "exchangeId": "1074",
+      "side": "NO",
+      "quantity": 9489,
+      "samples": 786,
+      "diagnostics": [
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 1000,
+          "maximumHoldingWindowMs": 300000
+        },
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 10000,
+          "maximumHoldingWindowMs": 300000
+        },
+        {
+          "maximumGrossSurplusMicros": 0,
+          "candidateObservations": 0,
+          "minimumQuoteSeparationMs": 60000,
+          "maximumHoldingWindowMs": 300000
+        }
+      ]
+    }
+  ],
+  "hindsightSelection": true,
+  "independentOpportunitiesClaimed": false,
+  "feesIncluded": false,
+  "passiveFillsOrMarketImpactModeled": false,
+  "workerProcessingLatencyReconstructed": false,
+  "strategyRoiClaimed": false,
+  "newAccountClients": 0,
+  "executionAuthority": false
+}

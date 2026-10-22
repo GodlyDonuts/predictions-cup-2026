@@ -1,0 +1,116 @@
+{
+  "observedUtc": "2026-10-22T19:49:08Z",
+  "helperReplacement": {
+    "observedUtc": "2026-10-22T19:48:03Z",
+    "oldPid": 1128881,
+    "oldStartTicks": "66717455",
+    "oldExitConfirmed": true,
+    "newPid": 1129150,
+    "sourceCommit": "1e34028f2f076da9016621d0e4889dfb160d4133",
+    "updaterSha256": "ab72e460827fcd8540bcd18b0eaab2b4b3ed772a54524460ece6f0fc25b4a147",
+    "testsPassed": 14,
+    "nativeReservedQuotesProtectedBeforeAck": true,
+    "originalPendingResolvedBeforeReplacement": true,
+    "workerRestarted": false,
+    "workerPid": 1124953,
+    "newAccountClients": 0,
+    "monetaryCapsChanged": false,
+    "exchanges": [
+      "1077",
+      "983"
+    ]
+  },
+  "helperStatus": {
+    "atMs": 1792698482059,
+    "pid": 1129150,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 216,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "capturedAtMs": 1792698481920,
+    "openTargets": 3
+  },
+  "workerProgress": {
+    "actualFills": 691,
+    "actualOrders": 1842,
+    "at": "2026-10-22T19:46:04.262Z",
+    "completedReadScopes": 2,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1124953,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 35,
+    "terminalOrders": 1841
+  },
+  "workerAlive": true,
+  "helperAlive": true,
+  "stopPresent": false,
+  "account": {
+    "cash": "11.745000",
+    "reservedCash": "0.000000",
+    "fillCount": 691
+  },
+  "nativeWrittenAt": "2026-10-22T19:48:59.398Z",
+  "generationSha256": "54099ab0f7eb8446068ec031da88a42eb48ced2713da78cd29936b731e09ab5d",
+  "knownUnclosedAcknowledgments": [
+    22505
+  ],
+  "activeQuotes": [
+    {
+      "id": 22505,
+      "exchangeId": "1048",
+      "action": "sell",
+      "side": "NO",
+      "quantity": 93,
+      "price": "0.690000",
+      "filled": 0,
+      "activationAt": 1792698196751,
+      "expiresAt": 1792698793751
+    },
+    {
+      "id": 22512,
+      "exchangeId": "983",
+      "action": "sell",
+      "side": "NO",
+      "quantity": 1949,
+      "price": "0.650000",
+      "filled": 0,
+      "activationAt": 1792698315842,
+      "expiresAt": 1792698896175
+    },
+    {
+      "id": 22524,
+      "exchangeId": "1077",
+      "action": "sell",
+      "side": "NO",
+      "quantity": 10000,
+      "price": "0.880000",
+      "filled": 0,
+      "activationAt": 1792698492214,
+      "expiresAt": 1792699087655
+    },
+    {
+      "id": 22527,
+      "exchangeId": "948",
+      "action": "sell",
+      "side": "NO",
+      "quantity": 442,
+      "price": "0.885000",
+      "filled": 0,
+      "activationAt": 1792698528217,
+      "expiresAt": 1792698538217
+    }
+  ],
+  "lastPreintentDeferral": {
+    "at": "2026-10-22T19:48:29.467Z",
+    "physicalAttempted": false,
+    "qid": 22524,
+    "reason": "physical_window_shorter_than_dispatch_budget",
+    "requiresAuthoritativeRefresh": true
+  },
+  "newFilledOrdersClaimed": false,
+  "positiveRoiClaimed": false
+}
