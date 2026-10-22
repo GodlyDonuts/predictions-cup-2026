@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+import subprocess
+import sys
 
 import review_generation_window as window
 
@@ -91,6 +93,34 @@ class ReviewGenerationTests(unittest.TestCase):
                     self.fail('concurrent publication entered')
         with window.publication_boundary(self.root):
             pass
+
+    @unittest.skipUnless(os.name == 'posix', 'Actual inherited POSIX descriptor')
+    def test_checked_child_can_borrow_the_same_held_descriptor_without_unlocking_parent(self):
+        code = ('import sys; from pathlib import Path; import review_generation_window as w; '
+            'boundary=w.publication_boundary(Path(sys.argv[1]),inherited_fd=int(sys.argv[2])); '
+            'boundary.__enter__(); boundary.__exit__(None,None,None); print("shared-held-descriptor")')
+        with window.publication_boundary(self.root) as fd:
+            result = subprocess.run([sys.executable,'-c',code,str(self.root),str(fd)],
+                cwd=Path(__file__).parent,pass_fds=(fd,),capture_output=True,text=True)
+            self.assertEqual(result.returncode,0,result.stderr)
+            self.assertIn('shared-held-descriptor',result.stdout)
+            with self.assertRaises(window.PublicationBusy):
+                with window.publication_boundary(self.root): pass
+        with window.publication_boundary(self.root): pass
+
+    @unittest.skipUnless(os.name == 'posix', 'Actual descriptor identity')
+    def test_unrelated_descriptor_cannot_replace_the_publication_lock(self):
+        other = self.root/'unrelated'; other.write_bytes(b''); other.chmod(0o600)
+        with window.publication_boundary(self.root):
+            with other.open('rb') as handle:
+                with self.assertRaisesRegex(AssertionError,'SOURCE_PUBLICATION_DESCRIPTOR_CHANGED'):
+                    with window.publication_boundary(self.root,inherited_fd=handle.fileno()): pass
+
+    @unittest.skipUnless(os.name == 'posix', 'Actual timed lock contention')
+    def test_waiting_for_a_busy_boundary_is_bounded(self):
+        with window.publication_boundary(self.root):
+            with self.assertRaises(window.PublicationBusy):
+                with window.publication_boundary(self.root,wait_seconds=.01): pass
 
 
 if __name__ == '__main__':

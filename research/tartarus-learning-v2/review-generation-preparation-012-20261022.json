@@ -1,0 +1,14 @@
+{
+  "observedAt": "2026-10-22T23:49:00.521719+00:00",
+  "checks": 22,
+  "allPassed": true,
+  "release": "/home/archon/apps/moloch/releases/review-completion-012",
+  "workerRestarted": false,
+  "sourceUpdaterRestarted": false,
+  "files": {
+    "publish-current-money-review.py": "9c81ce382d8a9e25dbfe145f3ce6b06a6e223dcc84c11828545313650987a677",
+    "review_generation_window.py": "21bc03629fc74df8e0e0d891e89898abb4075e99a526fcc04cc777c4d012103d",
+    "money-reservation-projection.py": "9e3105dc68145949166eaa51f8a7fce530c6b9d656399cf97db1d50e78f6e73a",
+    "verify-prior-not-sent-review": "3a15e73d54c71736f676e4c43cf55f96a896e3e92600a2ea4d69489cbcf69312"
+  }
+}

@@ -124,7 +124,7 @@ def expired_unused_review(root, view, old_sha, until):
 def run(a):
     # The source updater uses this same local boundary before issuing a reload.
     # It is not an account lock and grants no order or source-clock authority.
-    with publication_boundary(a.runtime):
+    with publication_boundary(a.runtime,inherited_fd=getattr(a,'generation_publication_lock_fd',None)):
         raw = (a.prepared / 'nomination.json').read_bytes()
         assert digest(raw) == a.expected_raw_sha256, 'EXACT_REVIEWED_NOMINATION'
         review = json.loads(raw)
@@ -275,6 +275,8 @@ if __name__ == '__main__':
     p.add_argument('--expected-raw-sha256', required=True)
     p.add_argument('--source-commit', required=True)
     p.add_argument('--completed-qid', type=int)
+    p.add_argument('--generation-publication-lock-fd',type=int,
+        help='Inherited descriptor for the same real source-publication lock; path/inode, owner and actual exclusive lock are verified.')
     p.add_argument('--prior-not-sent-verifier',type=Path)
     p.add_argument('--prior-not-sent-verifier-sha256',
         help='Exact checked file-only SDK verifier hash; required when the completed predecessor never reached the network.')

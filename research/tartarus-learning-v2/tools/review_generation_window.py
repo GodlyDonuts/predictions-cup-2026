@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import time
 
 try:
     import fcntl
@@ -19,20 +20,28 @@ class PublicationBusy(RuntimeError):
 
 
 @contextmanager
-def publication_boundary(root):
+def publication_boundary(root, inherited_fd=None, wait_seconds=0):
     if fcntl is None:
         raise RuntimeError('SOURCE_PUBLICATION_LOCK_REQUIRES_POSIX')
     parent = Path(root) / 'rank-campaign-owner'
     assert parent.is_dir() and not parent.is_symlink(), 'SOURCE_PUBLICATION_OWNER_DIRECTORY'
-    fd = os.open(parent / 'generation-publication.lock', os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    path = parent / 'generation-publication.lock'
+    fd = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600) if inherited_fd is None else os.dup(inherited_fd)
     try:
         info = os.fstat(fd)
         assert stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1 and info.st_mode & 0o077 == 0
-        try:
-            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as error:
-            raise PublicationBusy('SOURCE_GENERATION_PUBLICATION_BUSY') from error
-        yield
+        current = path.lstat()
+        assert stat.S_ISREG(current.st_mode) and (info.st_dev,info.st_ino)==(current.st_dev,current.st_ino), 'SOURCE_PUBLICATION_DESCRIPTOR_CHANGED'
+        deadline = time.monotonic()+wait_seconds
+        while True:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError as error:
+                if time.monotonic() >= deadline:
+                    raise PublicationBusy('SOURCE_GENERATION_PUBLICATION_BUSY') from error
+                time.sleep(min(.05,max(0,deadline-time.monotonic())))
+        yield fd
     finally:
         os.close(fd)
 
