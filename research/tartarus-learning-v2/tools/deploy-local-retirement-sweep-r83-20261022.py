@@ -91,7 +91,20 @@ def install():
     assert system('show', 'moloch-live.service', '-p', 'MainPID', '--value') == '0'
     stop_raw = (R / 'EXECUTION_STOP').read_bytes()
     stopped = json.loads(stop_raw)
-    assert stopped['reason'] in ['planned_R83_local_retirement_sweep_replacement', 'LIVE_EXECUTION_STOP', 'LIVE_EXIT_REFRESH_CONTROL_OR_STOP', 'LIVE_PROFITABLE_DEPTH_CONTROL_OR_STOP', 'LIVE_STREAM_RECOVERY_CONTROL_OR_STOP', 'LIVE_READ_RECOVERY_CONTROL_OR_STOP']
+    if stopped['reason'] == 'STOPPED_OR_OWNER_LOST':
+        # The SDK reports this when the operator's STOP closes read admission.
+        # Admit it only for this exact recorded planned shutdown; the original
+        # queue, unknown outcomes and exclusive owner locks are checked below.
+        planned = json.loads((L/'planned-stop.original.json').read_bytes())
+        proof = json.loads((L/'stopped.public.json').read_bytes())
+        assert planned['reason'] == 'planned_R83_local_retirement_sweep_replacement'
+        assert planned['sourceCommit'] == source and planned['previousPid'] == OLD_PID and planned['previousStartTicks'] == OLD_TICKS
+        assert proof['previousPid'] == OLD_PID and proof['stop'] == stopped
+        clock = lambda value: datetime.fromisoformat(value.replace('Z', '+00:00'))
+        assert 0 <= (clock(stopped['at'])-clock(planned['at'])).total_seconds() <= 300
+        assert clock(stopped['at']) <= clock(proof['observedUtc'])
+    else:
+        assert stopped['reason'] in ['planned_R83_local_retirement_sweep_replacement', 'LIVE_EXECUTION_STOP', 'LIVE_EXIT_REFRESH_CONTROL_OR_STOP', 'LIVE_PROFITABLE_DEPTH_CONTROL_OR_STOP', 'LIVE_STREAM_RECOVERY_CONTROL_OR_STOP', 'LIVE_READ_RECOVERY_CONTROL_OR_STOP']
     assert not (R.parent / 'EXECUTION_STOP').exists()
     state_raw, pending_raw = (F / 'state.json').read_bytes(), (F / 'pending.json').read_bytes()
     state = json.loads(state_raw); assert json.loads(pending_raw).get('resolved') is True
