@@ -1,0 +1,86 @@
+{
+  "observedUtc": "2026-10-22T01:25:59.024872+00:00",
+  "pid": 1056637,
+  "sourceCommit": "ee5c96aae49f17dbbfa065f395ceddae38caed54",
+  "accountRequests": 0,
+  "separateSnapshotsNotAtomic": true,
+  "financialPolicyChanged": false,
+  "originalHistoricalQuotes": [
+    {
+      "id": 14338,
+      "exchangeId": "865",
+      "marketId": "176",
+      "side": "YES",
+      "action": "sell",
+      "createdAt": 1792221629400,
+      "expiresAt": 1792221642400,
+      "retired": true,
+      "inventoryExitReason": "maximumAge",
+      "quantity": 2250,
+      "price": "0.860000"
+    },
+    {
+      "id": 14340,
+      "exchangeId": "1051",
+      "marketId": "362",
+      "side": "NO",
+      "action": "sell",
+      "createdAt": 1792221636420,
+      "expiresAt": 1792221649420,
+      "retired": true,
+      "inventoryExitReason": "maximumAge",
+      "quantity": 3190,
+      "price": "0.860000"
+    }
+  ],
+  "diagnostics": {
+    "progress.json": {
+      "actualFills": 495,
+      "actualOrders": 1700,
+      "at": "2026-10-22T01:25:35.519Z",
+      "completedReadScopes": 6,
+      "maximumRealtimeFramesPerDrain": 64,
+      "phase": "trading",
+      "pid": 1056637,
+      "profitabilityEstablished": false,
+      "realtimeHealthy": true,
+      "selectedReadScopes": 24,
+      "terminalOrders": 1700
+    },
+    "ordinary-candidate-sweep.json": {
+      "at": "2026-10-22T01:25:35.502Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    "exit-refresh-nominee.json": {
+      "at": "2026-10-22T01:25:24.629Z",
+      "exchangeId": "1051",
+      "expiryExtended": false,
+      "physicalAttempted": false,
+      "qid": 14340,
+      "reason": "maximumAge",
+      "side": "NO"
+    },
+    "exit-refresh.json": {
+      "at": "2026-10-22T01:25:35.257Z",
+      "code": "EXIT_REFRESH_NO_FRESH_CANDIDATE",
+      "expiryExtended": false,
+      "stage": "candidate_ineligible",
+      "writeAttempted": false
+    },
+    "fundamental-hint-selection.json": {
+      "at": "2026-10-22T01:25:24.616Z",
+      "diagnosticOnly": true,
+      "elapsedMs": 590,
+      "hints": 10,
+      "managedScopes": 14,
+      "pid": 1056637
+    }
+  },
+  "interpretation": "Historical maximumAge nominations for managed cohorts can preempt the separate current reviewed exit queue; no execution or profit is inferred from read-only census bids."
+}

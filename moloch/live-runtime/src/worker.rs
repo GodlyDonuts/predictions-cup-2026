@@ -1835,11 +1835,14 @@ fn refresh_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchL
  submit_order(t,c,bank,log,authority,plan.quote(),facts,None,fundamental)
 }
 fn profit_hint_scope_allowed(q:&Value,managed:&std::collections::BTreeSet<String>,protected:&std::collections::BTreeSet<String>)->bool{
- // This extra conservative exclusion is profit-only; preserve the original
- // age path's separate native/package/review authority checks.
- if q["inventoryExitReason"]=="maximumAge"{return true}
  let Some(ex)=q["exchangeId"].as_str()else{return false};
- !protected.contains(ex)&&!managed.contains(ex)
+ // Managed inventory uses its current reviewed exit nominations, including
+ // deadlines/revocation. An obsolete native age quote must not repeatedly
+ // preempt those nominations and then fail to create a reviewed reservation.
+ if managed.contains(ex){return false}
+ // Unmanaged age exits keep their original separate package/authority checks.
+ if q["inventoryExitReason"]=="maximumAge"{return true}
+ !protected.contains(ex)
 }
 fn profit_refresh_protected(scope:&Scope,packages:&Value)->Result<std::collections::BTreeSet<String>>{
  let mut protected=std::collections::BTreeSet::new();
@@ -3671,12 +3674,25 @@ pub fn main()->Result<()>{
   let lease=json!({"phase":"unknown","probabilistic":{"qualificationSha256":"a".repeat(64)},"legs":[{"exchangeId":"1012"}]});
   let protected=profit_refresh_protected(&scope,&json!([lease.clone()])).unwrap();assert_eq!(protected.len(),2,"unexposed held component cannot be inferred absent");
   let mut q=expired_hint_quote(1,"1013");q.as_object_mut().unwrap().remove("inventoryExitReason");assert!(!profit_hint_scope_allowed(&q,&Default::default(),&protected));
-  q["inventoryExitReason"]=json!("maximumAge");assert!(profit_hint_scope_allowed(&q,&["1013".into()].into(),&protected),"extra profit exclusion does not alter original maximum-age checks");
+  q["inventoryExitReason"]=json!("maximumAge");assert!(profit_hint_scope_allowed(&q,&Default::default(),&protected),"unmanaged age exits retain their original separate checks");assert!(!profit_hint_scope_allowed(&q,&["1013".into()].into(),&protected),"managed age history uses current reviewed exit nominations");
   for field in ["released","no_execution"]{let mut ended=lease.clone();if field=="released"{ended["protectionReleased"]=json!(true)}else{ended["phase"]=json!("no_execution")};assert!(profit_refresh_protected(&scope,&json!([ended])).unwrap().is_empty());}
  }
  #[test]fn profit_history_cannot_mask_a_current_due_risk_hint(){
   let age=expired_hint_quote(1,"1012");let mut profit=age.clone();profit["id"]=json!(2);profit.as_object_mut().unwrap().remove("inventoryExitReason");
   let(hints,_)=prepare_expired_exit_hints(&[age,profit],20000,|_|true,|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),||Ok(false),|_,u|Ok(hint_safety(u))).unwrap();assert_eq!(hints.len(),2);assert_eq!(hints["1012:NO:sell"].1.kind(),moloch_live_runtime::exit_refresh::ReadKind::MaximumAge);
+ }
+ #[test]fn historical_managed_age_quote_cannot_occupy_the_legacy_priority_lane(){
+  let old=expired_hint_quote(14338,"865");let managed=["865".to_owned()].into();let calls=std::cell::Cell::new(0);
+  let(hints,unknown)=prepare_expired_exit_hints(std::slice::from_ref(&old),20000,
+   |_|profit_hint_scope_allowed(&old,&managed,&Default::default()),|_,_|Ok(300),|_|Ok(true),|_,_|Ok(true),
+   ||{calls.set(calls.get()+1);Ok(false)},|_,u|Ok(hint_safety(u))).unwrap();
+  assert!(hints.is_empty()&&!unknown);assert_eq!(calls.get(),0,"obsolete managed history does not consume queue/packet work");
+  let current=|reason:&str|fundamental::ExistingExitHint{exchange_id:"865".into(),market_id:"245".into(),contract_id:"246".into(),side:"NO".into(),reason:reason.into()};
+  for reason in ["reviewed_holding_deadline","reviewed_source_revocation","reviewed_fifo_crosses_bid"]{
+   let(priority,fair)=partition_reviewed_hints(vec![current(reason)]);assert_eq!(priority.len(),1);assert!(fair.is_empty());
+  }
+  let(priority,fair)=partition_reviewed_hints(vec![current("reviewed_inventory_book_refresh")]);assert!(priority.is_empty());
+  assert!(matches!(shared_preflight_rotation(&fair,&[],&[],None).unwrap().0,SharedPreflight::ExistingRead(0)));
  }
  #[test]fn covered_profit_preempts_speculation_but_never_a_risk_exit_even_out_of_order(){
   let entries=vec![fundamental::EntryHint{exchange_id:"966".into(),market_id:"277".into(),contract_id:"278".into(),side:"YES".into(),review_sha256:"a".repeat(64)}];let profit_keys=vec!["948:NO:sell:profit".into()];

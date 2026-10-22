@@ -1,0 +1,16 @@
+{
+  "observedUtc": "2026-10-22T01:30:04.781617+00:00",
+  "binarySha256": "94fc09256728e09aed80f78775220446222641fdcdd820f55858fbe3f0572721",
+  "workerSha256": "da5bcd0cb7e600e1bb33adf381f1cdcd4d1f65f74de5fcfd93c868c989559714",
+  "cliLoads": true,
+  "runtimeLibrarySha256": "6e18bd3e8d8fdbbac135e0fecb068e2e87f0a8c71aecb12fd0843df15551501a",
+  "nativeLibrarySha256": "fb56b89e5a6af2788baf4d858fcca02e675f0752a3cabf355aac791b767ba287",
+  "workerTests": [
+    "test result: ok. 239 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 43.69s"
+  ],
+  "onlyWorkerSourceChanged": true,
+  "nativeEngineChanged": false,
+  "productionChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmitted": 0
+}
