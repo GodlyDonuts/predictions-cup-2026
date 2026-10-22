@@ -1,0 +1,45 @@
+{
+  "sourceHashes": {
+    "moloch/external-data/run-live-reference-reload.py": "12517aff6e69d3b8c231d12916ddad84e53acb0380ca95a912f9f49b9f2913ae",
+    "moloch/external-data/test-live-reference-reload.py": "e57cd2f5a071b7cf344da641a0855320dcf65fe7e0def65ae0215f10c319a65e",
+    "research/tartarus-learning-v2/tools/review_generation_window.py": "4503b05c525f41e8aa2cf7694106801963135612ac5c3f1df485d4714fdaf0cd",
+    "research/tartarus-learning-v2/tools/test_review_generation_window.py": "45013ec49614f4935e419a5651237c8d85eb339739e5bd133e2960e3f63fbe55",
+    "research/tartarus-learning-v2/tools/publish-current-money-review.py": "f484e894a2ce7c956dead9649350688b50f92d1bfeba9eb8b0838c05057a6d77",
+    "research/tartarus-learning-v2/tools/money-reservation-projection.py": "9e3105dc68145949166eaa51f8a7fce530c6b9d656399cf97db1d50e78f6e73a",
+    "research/tartarus-learning-v2/tools/test_publisher_generation_gate.py": "cec9dc51a96fa02fbfd47a6e14ad3dc7d970a63f7f52f93ca8c94d96025c8db1"
+  },
+  "checks": {
+    "window": {
+      "exitCode": 0,
+      "resultLogSha256": "19351db13368da2487e6dd53e71a8b9f3a8ddd3c02c4748ab0edfdc1a7010412"
+    },
+    "source": {
+      "exitCode": 0,
+      "resultLogSha256": "491591edf4400eceefb9dec79a6ab9d5501f4d5249d52f25d26d58d3581f3295"
+    },
+    "publisher-cli": {
+      "exitCode": 0,
+      "resultLogSha256": "cff9e7985f5ef83f9ea42b4cb331e753f2690a43a4ba15a51fc5f49c3ca3cba6"
+    },
+    "publisher-gate": {
+      "exitCode": 0,
+      "resultLogSha256": "155e2067033622463dc6771bd1c54b91a5a4776b9822ff19d0f628d06604be7d"
+    }
+  },
+  "deployed": false,
+  "accountClients": 0,
+  "workerReplaced": false,
+  "liveReadOnlyProbe": {
+    "observedAt": "2026-10-22T23:01:18.447641+00:00",
+    "existingExpiredReviewHoldsSource": false,
+    "oldManagedReviewPublicationDeclinedReason": "SOURCE_GENERATION_WORKER_CHANGED",
+    "cooperativeLockReleased": true,
+    "newAccountClients": 0,
+    "ownerApprovalsWritten": 0
+  },
+  "testSummaries": {
+    "window": "ged_or_future_review_does_not_hold (test_review_generation_window.ReviewGenerationTests.test_unmanaged_or_future_review_does_not_hold) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.016s\n\nOK\n",
+    "source": "..................\n----------------------------------------------------------------------\nRan 18 tests in 0.044s\n\nOK\n",
+    "publisher-gate": "_reach_approval_writes (test_publisher_generation_gate.PublisherGateTests.test_unresolved_source_request_cannot_reach_approval_writes) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.011s\n\nOK\n"
+  }
+}

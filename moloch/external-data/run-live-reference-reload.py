@@ -5,6 +5,7 @@ used. Restarts, STOP changes, financial control changes and order retries are no
 implemented here. A changed worker or another generation writer requires review.
 """
 import argparse
+from contextlib import nullcontext
 import fcntl
 import gzip
 import hashlib
@@ -23,6 +24,20 @@ from datetime import datetime
 
 def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def review_window_policy(config):
+    setting = config.get('reviewGenerationWindow')
+    if setting is None:
+        return None
+    path = Path(setting['modulePath'])
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != setting['moduleSha256']:
+        raise ValueError('REVIEW_GENERATION_WINDOW_MODULE_CHANGED')
+    spec = importlib.util.spec_from_file_location('review_generation_window', path)
+    module = importlib.util.module_from_spec(spec)
+    exec(compile(raw, str(path), 'exec'), module.__dict__)
+    return module
 
 
 def capture_values(config):
@@ -287,6 +302,7 @@ def main():
     a = parser.parse_args()
     refresh_open_once = a.refresh_open_targets_once
     c = json.loads(a.config.read_bytes())
+    review_window = review_window_policy(c)
     modes = execution_modes_policy(c)
     margins = execution_margins_policy(c)
     quantities = execution_quantities_policy(c)
@@ -310,6 +326,7 @@ def main():
     def report(phase, **fields):
         value = {'atMs': time.time_ns() // 1_000_000, 'pid': os.getpid(), 'phase': phase,
             'commits': state['commits'], 'officialSigClientCreated': False, 'stopChanged': False,
+            'ownerReviewPublicationCoordinated': review_window is not None,
             'financialControlChanged': False, 'mlFitOrSelectionUse': False, **fields}
         put(out / 'status.json', value)
         print(json.dumps(value), flush=True)
@@ -343,13 +360,16 @@ def main():
                 report('external_generation_changed'); return
             if sha(state['controlPath']) != state['controlSha256']:
                 report('active_review_file_changed'); return
+            current_control = json.loads(Path(state['controlPath']).read_bytes())
+            hold = review_window.active_managed_review(root, current_control, state['generationSha256'], time.time_ns() // 1_000_000) if review_window else None
+            if hold:
+                report('waiting_for_reviewed_order', **hold); time.sleep(5); continue
             capture = capture_values(c)
             # The original refresh changed review hashes even when all actual
             # order-price ticks were identical. That consumed account reads and
             # displaced pending plans without new economic information.
             view = json.loads((root / 'tartarus-current-native-state.json').read_bytes())
             open_exchanges = protected_order_exchanges(view)
-            current_control = json.loads(Path(state['controlPath']).read_bytes())
             selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000,
                 refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c), entry_margins=execution_margins_policy(c),
                 quantity_ceilings=execution_quantities_policy(c))
@@ -382,38 +402,42 @@ def main():
             # invalidating peer authentication and consuming the whole request
             # lifetime before the worker even read it. No request is issued or
             # renewed while waiting for this exact owner's poll boundary.
-            with connect_at_boundary(root, c, current) as channel:
-                now = time.time_ns() // 1_000_000
-                request = {k: current[k] for k in ('version', 'workerPid', 'workerStartTicks', 'ownerLease',
-                    'baseControlSha256', 'bankManifestSha256', 'runId', 'previousGenerationSha256')}
-                request.update(requestId='live-reference-' + stamp, controlPath=staged['controlPath'],
-                    controlSha256=staged['controlSha256'], issuedAtMs=now, expiresAtMs=now + 60_000)
-                request_path = generation / 'request.json'
-                raw_request = json.dumps(request, separators=(',', ':')).encode()
-                request_path.write_bytes(raw_request)
-                wanted = sha(request_path)
-                pending = {'expectedGenerationSha256': wanted, 'previousGenerationSha256': state['generationSha256'],
-                    'expiresAtMs': request['expiresAtMs'], 'staged': staged, 'selected': selected,
-                    'refreshOpenTargetsOnce': refresh_open_once}
-                put(out / 'pending.json', pending)
-                response, reply_code = {}, 1
-                try:
-                    channel.settimeout(75)
-                    channel.sendall(struct.pack('!I', len(raw_request)) + raw_request)
-                    body = b''
-                    while not body.endswith(b'\n'):
-                        part = channel.recv(4096)
-                        if not part:
-                            break
-                        body += part
-                        if len(body) > 65536:
-                            raise ValueError('OWNER_REPLY_BOUND')
-                    response = json.loads(body)
-                    reply_code = 0
-                except (OSError, ValueError) as error:
-                    # A send/receive timeout never implies nonacceptance.
-                    # Preserve pending; existing exact file proofs decide it.
-                    report('reload_reply_uncertain', reason=type(error).__name__)
+            with (review_window.publication_boundary(root) if review_window else nullcontext()):
+                hold = review_window.active_managed_review(root, current_control, state['generationSha256'], time.time_ns() // 1_000_000) if review_window else None
+                if hold:
+                    report('waiting_for_reviewed_order', **hold); time.sleep(5); continue
+                with connect_at_boundary(root, c, current) as channel:
+                    now = time.time_ns() // 1_000_000
+                    request = {k: current[k] for k in ('version', 'workerPid', 'workerStartTicks', 'ownerLease',
+                        'baseControlSha256', 'bankManifestSha256', 'runId', 'previousGenerationSha256')}
+                    request.update(requestId='live-reference-' + stamp, controlPath=staged['controlPath'],
+                        controlSha256=staged['controlSha256'], issuedAtMs=now, expiresAtMs=now + 60_000)
+                    request_path = generation / 'request.json'
+                    raw_request = json.dumps(request, separators=(',', ':')).encode()
+                    request_path.write_bytes(raw_request)
+                    wanted = sha(request_path)
+                    pending = {'expectedGenerationSha256': wanted, 'previousGenerationSha256': state['generationSha256'],
+                        'expiresAtMs': request['expiresAtMs'], 'staged': staged, 'selected': selected,
+                        'refreshOpenTargetsOnce': refresh_open_once}
+                    put(out / 'pending.json', pending)
+                    response, reply_code = {}, 1
+                    try:
+                        channel.settimeout(75)
+                        channel.sendall(struct.pack('!I', len(raw_request)) + raw_request)
+                        body = b''
+                        while not body.endswith(b'\n'):
+                            part = channel.recv(4096)
+                            if not part:
+                                break
+                            body += part
+                            if len(body) > 65536:
+                                raise ValueError('OWNER_REPLY_BOUND')
+                        response = json.loads(body)
+                        reply_code = 0
+                    except (OSError, ValueError) as error:
+                        # A send/receive timeout never implies nonacceptance.
+                        # Preserve pending; existing exact file proofs decide it.
+                        report('reload_reply_uncertain', reason=type(error).__name__)
             observed = json.loads((root / 'fundamental-reload/status.json').read_bytes())
             if observed['previousGenerationSha256'] == wanted:
                 state.update(generationSha256=wanted, controlPath=staged['controlPath'],
@@ -438,6 +462,8 @@ def main():
                 put(state_path, state)
                 put(out / 'pending.json', {'resolved': True, 'generationSha256': state['generationSha256']})
         except Exception as e:
+            if review_window and isinstance(e, review_window.PublicationBusy):
+                report('owner_review_publication_busy'); time.sleep(1); continue
             report('error', reason=str(e)[-700:], unresolvedRequest=pending is not None)
             if pending is not None and not isinstance(e, subprocess.TimeoutExpired):
                 return

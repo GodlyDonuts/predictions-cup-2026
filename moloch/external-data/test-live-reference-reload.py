@@ -17,6 +17,19 @@ D = refresh.Decimal
 
 
 class RefreshTests(unittest.TestCase):
+    def test_review_window_module_must_match_pinned_bytes_before_execution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'window.py'
+            path.write_text("raise AssertionError('UNVERIFIED_MODULE_EXECUTED')\n")
+            with self.assertRaisesRegex(ValueError, 'REVIEW_GENERATION_WINDOW_MODULE_CHANGED'):
+                refresh.review_window_policy(dict(reviewGenerationWindow=dict(modulePath=str(path), moduleSha256='0'*64)))
+            path.write_text('MARKER = 42\n')
+            module = refresh.review_window_policy(dict(reviewGenerationWindow=dict(modulePath=str(path), moduleSha256=refresh.sha(path))))
+            self.assertEqual(module.MARKER, 42)
+
+    def test_legacy_source_configuration_has_no_implicit_review_window(self):
+        self.assertIsNone(refresh.review_window_policy({}))
+
     def recovery(self, root, generation='previous'):
         previous='a'*64;out=root/'updater';out.mkdir();g=out/'generation';g.mkdir();control=g/'control.json';control.write_text('{}')
         config={'workerPid':42,'workerStartTicks':123,'baseControlSha256':'b'*64,

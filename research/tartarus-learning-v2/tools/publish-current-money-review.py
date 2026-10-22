@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import time
+from review_generation_window import publication_boundary, require_current_generation
 
 
 # Load the checked sibling without changing the public research module path.
@@ -82,6 +83,17 @@ def expired_unused_review(root, view, old_sha, until):
 
 
 def run(a):
+    # The source updater uses this same local boundary before issuing a reload.
+    # It is not an account lock and grants no order or source-clock authority.
+    with publication_boundary(a.runtime):
+        raw = (a.prepared / 'nomination.json').read_bytes()
+        assert digest(raw) == a.expected_raw_sha256, 'EXACT_REVIEWED_NOMINATION'
+        review = json.loads(raw)
+        require_current_generation(a.runtime, getattr(a, 'source_reference_root', None), review, a.expected_pid)
+        return _run(a)
+
+
+def _run(a):
     os.umask(0o077)
     assert len(a.source_commit) == 40 and all(c in '0123456789abcdef' for c in a.source_commit), 'CHECKED_SOURCE_COMMIT'
     root = a.runtime.resolve(strict=True)
@@ -218,6 +230,8 @@ if __name__ == '__main__':
     p.add_argument('--expected-raw-sha256', required=True)
     p.add_argument('--source-commit', required=True)
     p.add_argument('--completed-qid', type=int)
+    p.add_argument('--source-reference-root', type=Path,
+        help='Existing source updater root; required for a managed review so unresolved reloads and changed generations are rejected before publication.')
     p.add_argument('--allow-conditional-rotation', action='store_true',
         help='Explicitly select a conditional positive-money funding SELL; later orders require actual fills and fresh reviews.')
     p.add_argument('--conditional-support-proof', type=Path,
