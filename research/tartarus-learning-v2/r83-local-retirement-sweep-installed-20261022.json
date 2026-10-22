@@ -1,0 +1,35 @@
+{
+  "observedUtc": "2026-10-22T03:55:45.645367+00:00",
+  "sourceCommit": "427d200c2cf99f21fee06d9a346efd580cd40dc8",
+  "binarySha256": "45e9522b528c9552deda1f92e5b35e17268c76fabed56e5a71c00640b09b51ef",
+  "controlSha256": "d050ef1f2352a21314495fcc4ba1118cf86a6867239c02d932e70ae5b55d0cff",
+  "originalFills": 520,
+  "originalReportHash": "107c8270a7c0ccac198a345e7e052fdcaba0629cd2851da5ea9b482788b2781b",
+  "originalFinancialPrefix": {
+    "bytes": 2678758545,
+    "sha256": "b74c28aa9eea76612012587a01e36e9ef3204097d3749d7f8e40096b3609d0af"
+  },
+  "originalNativeHead": {
+    "hash": "ec5e0194d125b73f5838342494290bb92a075a3be40058d8797a76cab7b676c1",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "05c80b813eee913ad003b4eb69c4d148d35fda38a4dac01facced662f3bc09c4",
+    "sequence": 815837
+  },
+  "bridgeSha256": "93d1c5194b9e85c92cc43fec761ae85d59aea8419a01435795e74f05eda435d3",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r83-local-retirement-sweep-20261022T035529Z",
+  "nativeEngineUnchanged": true,
+  "originalFinancialStatePreserved": true,
+  "knownOpenOrders": [
+    20768,
+    20773
+  ],
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "pid": 1063142,
+  "startTicks": 61099963,
+  "referenceUpdaterPid": 1063145,
+  "actualExecutableAndArgumentsVerified": true
+}
