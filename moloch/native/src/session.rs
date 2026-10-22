@@ -141,7 +141,9 @@ pub fn engine_identity() -> String {
 struct UpgradeChain { entries: Vec<Value>, checked: usize }
 // Keep every original approval and prefix check as the live lineage grows.
 const MAX_UPGRADE_ENTRIES:usize=32;
-const MAX_UPGRADE_BYTES:u64=256*1024*1024;
+// The retained approval chain is already252.6MB; the next exact50.5MB report
+// would exceed256MiB. Preserve every original approval in this bounded envelope.
+const MAX_UPGRADE_BYTES:u64=384*1024*1024;
 fn digest_text(value:&Value)->bool{value.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit()))}
 fn verify_value_ref(value:&Value)->Result<()>{
     let object=value.as_object().ok_or("UPGRADE_OBJECT")?;
@@ -220,6 +222,13 @@ pub struct Session {
     cursors: BTreeMap<String, u64>,
     facts: BTreeMap<String, Value>,
     poisoned: bool,
+    report_deferred: bool,
+    #[cfg(test)]
+    projection_builds: std::cell::Cell<usize>,
+}
+struct ReportProjectionScope<'a>{bank:&'a mut Session}
+impl Drop for ReportProjectionScope<'_>{
+    fn drop(&mut self){self.bank.report_deferred=false;if std::thread::panicking(){self.bank.poisoned=true;}}
 }
 /// Admission bounds include duplicates. Bytes bound serialized raw inputs and,
 /// separately, the final journal append; existing engine/history memory is not
@@ -376,6 +385,9 @@ impl Session {
             cursors,
             facts,
             poisoned: false,
+            report_deferred: false,
+            #[cfg(test)]
+            projection_builds: std::cell::Cell::new(0),
         };
         session.publish_head()?;
         session.publish_report()?;
@@ -421,12 +433,26 @@ impl Session {
         )
     }
     fn publish_report(&self) -> Result<()> {
-        atomic_json(
-            &self.root.join("report.json"),
-            &sealed(
-                json!({"manifestHash":self.manifest["hash"],"sequence":self.chain.sequence,"previous":self.chain.previous,"report":self.engine.report()?,"orders":self.engine.order_records(),"fills":self.engine.fills(),"sourceCursors":self.cursors,"contestOrders":self.engine.live_order_bindings().len()}),
-            ),
-        )
+        if self.report_deferred{return Ok(())}
+        #[cfg(test)]self.projection_builds.set(self.projection_builds.get()+1);
+        let report=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":self.chain.sequence,"previous":self.chain.previous,"report":self.engine.report()?,"orders":self.engine.order_records(),"fills":self.engine.fills(),"sourceCursors":self.cursors,"contestOrders":self.engine.live_order_bindings().len()}));
+        atomic_json(&self.root.join("report.json"),&report)
+    }
+    /// Every original event, native financial audit, journal fsync and head
+    /// fsync remains synchronous. Build and publish the replaceable full report
+    /// once when this bounded closure returns, including after a semantic error.
+    /// Derived-report errors then poison the session; they never erase the
+    /// committed serial prefix. No caller may use the old report as fresh state.
+    /// This is a durable serial prefix, not a transaction or write capability.
+    /// Panic/I/O uncertainty poisons the Session; no nested deferral is allowed.
+    pub fn with_deferred_report<T>(&mut self,f:impl FnOnce(&mut Session)->Result<T>)->Result<T>{
+        if self.poisoned{return Err("PAPER_SESSION_POISONED".into())}
+        if self.report_deferred{return Err("PAPER_REPORT_SCOPE_ALREADY_ACTIVE".into())}
+        self.report_deferred=true;let mut scope=ReportProjectionScope{bank:self};
+        let result=f(&mut *scope.bank);scope.bank.report_deferred=false;
+        if scope.bank.poisoned{return match result{Err(e)=>Err(e),Ok(_)=>Err("PAPER_SESSION_POISONED".into())}}
+        if let Err(e)=scope.bank.publish_report(){scope.bank.poisoned=true;return Err(e)}
+        result
     }
     /// Exact original prepared-event digest from committed retained references.
     pub fn committed_source_hash(&self,source_id:&str,sequence:u64)->Option<&str>{self.refs.get(&(source_id.to_owned(),sequence)).map(String::as_str)}
@@ -615,15 +641,20 @@ impl Session {
             staged_refs.insert(key,digest);staged_cursors.insert(source_id.to_owned(),sequence);staged_events.push(event);accepted.push(true);
         }
         let Some(next)=next else{return Ok(BatchOutcome{accepted,appended_rows:0,encoded_journal_bytes:0})};
-        // Render/hash all fallible candidate projections BEFORE the first write.
+        // Ordinary admission renders the full projection before I/O. A bounded
+        // deferred scope instead publishes its full final projection on return;
+        // every intermediate engine transition still passed apply and audit.
         let head=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":chain.sequence,"previous":chain.previous}));
         let mut cursors=self.cursors.clone();cursors.extend(staged_cursors.clone());
-        let report=sealed(json!({"manifestHash":self.manifest["hash"],"sequence":chain.sequence,"previous":chain.previous,"report":next.report()?,"orders":next.order_records(),"fills":next.fills(),"sourceCursors":cursors,"contestOrders":next.live_order_bindings().len()}));
-        serde_json::to_writer(std::io::sink(),&head)?;serde_json::to_writer(std::io::sink(),&report)?;
+        let report=if self.report_deferred{None}else{
+            #[cfg(test)]self.projection_builds.set(self.projection_builds.get()+1);
+            Some(sealed(json!({"manifestHash":self.manifest["hash"],"sequence":chain.sequence,"previous":chain.previous,"report":next.report()?,"orders":next.order_records(),"fills":next.fills(),"sourceCursors":cursors,"contestOrders":next.live_order_bindings().len()})))
+        };
+        serde_json::to_writer(std::io::sink(),&head)?;if let Some(report)=&report{serde_json::to_writer(std::io::sink(),report)?;}
         self.poisoned=true;
         self.file.write_all(&rows)?;self.file.sync_all()?;
         atomic_json(&self.root.join("head.json"),&head)?;
-        atomic_json(&self.root.join("report.json"),&report)?;
+        if let Some(report)=&report{atomic_json(&self.root.join("report.json"),report)?;}
         self.engine=next;self.chain=chain;self.refs.extend(staged_refs);self.cursors.extend(staged_cursors);
         for event in &staged_events{Self::remember(event,&mut self.facts)}
         self.poisoned=false;
@@ -678,7 +709,7 @@ mod tests {
             fn write(&mut self, bytes:&[u8])->std::io::Result<usize>{self.calls+=1;self.bytes.extend_from_slice(bytes);Ok(bytes.len())}
             fn flush(&mut self)->std::io::Result<()>{self.flushes+=1;Ok(())}
         }
-        let value=json!({"escaped":"line\n\"\\\u{0001}","unicode":"é🦎","numbers":[-0.0,1.25e-7,10000000],"orders":(0..4000).map(|n|json!({"id":n,"price":"0.123456","side":"NO","retired":true})).collect::<Vec<_>>()});
+        let value=json!({"escaped":"line\n\"\\\u{0001}","unicode":"Ã©ðŸ¦Ž","numbers":[-0.0,1.25e-7,10000000],"orders":(0..4000).map(|n|json!({"id":n,"price":"0.123456","side":"NO","retired":true})).collect::<Vec<_>>()});
         let mut old=Count::default();serde_json::to_writer(&mut old,&value).unwrap();old.write_all(b"\n").unwrap();
         let mut new=Count::default();write_json_buffered(&mut new,&value).unwrap();
         assert_eq!(new.bytes,old.bytes);assert_eq!(new.flushes,1);
@@ -769,6 +800,53 @@ mod tests {
             }
             assert!(Session::open(&root, None, &json!({})).is_err());
         }
+    }
+    #[test]
+    fn deferred_projection_keeps_every_serial_row_and_syncs_full_report_at_scope_end(){
+        let t=Temp::new();let root=t.0.join("bank");let mut s=Session::open(&root,None,&json!({})).unwrap();let old=fs::read(root.join("report.json")).unwrap();let input=events();
+        let builds=s.projection_builds.get();
+        s.with_deferred_report(|bank|{
+            bank.accept("fixture",1,&input[0])?;assert_eq!(fs::read(root.join("report.json"))?,old);
+            bank.accept_batch(&[BatchEntry{source_id:"fixture",sequence:2,event:&input[1]}])?;
+            assert_eq!(fs::read(root.join("report.json"))?,old);assert_eq!(verified(&root.join("head.json"))?["sequence"],2);
+            assert!(bank.committed_source_hash("fixture",1).is_some());assert!(bank.committed_source_hash("fixture",2).is_some());assert_eq!(bank.projection_builds.get(),builds);Ok(())
+        }).unwrap();
+        assert_eq!(s.projection_builds.get(),builds+1);
+        let report=verified(&root.join("report.json")).unwrap();assert_eq!(report["sequence"],2);assert_eq!(report["report"],s.engine.report().unwrap());assert_eq!(report["orders"],json!(s.engine.order_records()));assert_eq!(report["fills"],json!(s.engine.fills()));assert!(!s.poisoned&&!s.report_deferred);
+        drop(s);let reopened=Session::open(&root,None,&json!({})).unwrap();assert_eq!(reopened.engine.report().unwrap(),report["report"]);
+    }
+    #[test]
+    fn deferred_read_sequence_matches_serial_journal_fills_costs_and_full_projection(){
+        let t=Temp::new();let serial=t.0.join("serial");let deferred=t.0.join("deferred");
+        let policy=json!({"quantity":1,"feePerShare":"0.000100"});
+        let mut a=Session::open(&serial,None,&policy).unwrap();let mut b=Session::open(&deferred,None,&policy).unwrap();let input=events();
+        let builds=b.projection_builds.get();
+        for(i,e)in input.iter().enumerate(){a.accept("fixture",i as u64+1,e).unwrap();}
+        b.with_deferred_report(|bank|{for(i,e)in input.iter().enumerate(){bank.accept_batch(&[BatchEntry{source_id:"fixture",sequence:i as u64+1,event:e}])?;}Ok(())}).unwrap();
+        assert_eq!(b.projection_builds.get(),builds+1);
+        assert_eq!(a.engine.report().unwrap()["realized"],"0.004800");
+        assert_eq!(a.engine.report().unwrap(),b.engine.report().unwrap());assert_eq!(a.engine.fills(),b.engine.fills());
+        assert_eq!(a.engine.wallet.positions(),b.engine.wallet.positions());
+        for name in ["events.jsonl","head.json","report.json"]{assert_eq!(fs::read(serial.join(name)).unwrap(),fs::read(deferred.join(name)).unwrap(),"{name}");}
+    }
+    #[test]
+    fn deferred_semantic_error_keeps_its_committed_prefix_and_nested_scope_refuses(){
+        let t=Temp::new();let root=t.0.join("bank");let mut s=Session::open(&root,None,&json!({})).unwrap();let input=events();
+        let result:Result<()>=s.with_deferred_report(|bank|{bank.accept("fixture",1,&input[0])?;assert!(bank.with_deferred_report(|_|Ok(())).is_err());Err("synthetic post-prefix failure".into())});
+        assert!(result.is_err());assert!(!s.poisoned&&!s.report_deferred);assert_eq!(verified(&root.join("report.json")).unwrap()["sequence"],1);s.accept("fixture",2,&input[1]).unwrap();
+    }
+    #[test]
+    fn deferred_panic_poison_is_recoverable_only_from_the_original_journal(){
+        let t=Temp::new();let root=t.0.join("bank");let mut s=Session::open(&root,None,&json!({})).unwrap();let old=fs::read(root.join("report.json")).unwrap();let input=events();
+        let panic=std::panic::catch_unwind(std::panic::AssertUnwindSafe(||{let _:Result<()>=s.with_deferred_report(|bank|{bank.accept("fixture",1,&input[0])?;panic!("synthetic scope unwind")});}));
+        assert!(panic.is_err());assert!(s.poisoned&&!s.report_deferred);assert_eq!(fs::read(root.join("report.json")).unwrap(),old);assert!(s.accept("fixture",2,&input[1]).is_err());let expected=s.engine.report().unwrap();drop(s);
+        let reopened=Session::open(&root,None,&json!({})).unwrap();assert_eq!(reopened.engine.report().unwrap(),expected);assert_eq!(verified(&root.join("report.json")).unwrap()["sequence"],1);
+    }
+    #[test]
+    fn deferred_report_io_failure_never_clears_poison_or_rewrites_committed_source(){
+        let t=Temp::new();let root=t.0.join("bank");let mut s=Session::open(&root,None,&json!({})).unwrap();let input=events();fs::rename(root.join("report.json"),root.join("original-report.json")).unwrap();fs::create_dir(root.join("report.json")).unwrap();
+        assert!(s.with_deferred_report(|bank|{bank.accept("fixture",1,&input[0])?;Ok(())}).is_err());assert!(s.poisoned&&!s.report_deferred);assert!(s.committed_source_hash("fixture",1).is_some());assert!(s.accept("fixture",2,&input[1]).is_err());
+        let original=fs::read(root.join("events.jsonl")).unwrap();drop(s);fs::remove_dir(root.join("report.json")).unwrap();let reopened=Session::open(&root,None,&json!({})).unwrap();assert_eq!(fs::read(root.join("events.jsonl")).unwrap(),original);assert_eq!(verified(&root.join("report.json")).unwrap()["sequence"],1);assert!(!reopened.poisoned);
     }
     #[test]
     fn lost_projection_is_rebuilt_and_changed_policy_rejected() {

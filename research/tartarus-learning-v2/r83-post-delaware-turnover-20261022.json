@@ -1,0 +1,113 @@
+{
+  "observedUtc": "2026-10-22T04:50:25.862859+00:00",
+  "reportAt": "2026-10-22T04:50:19.677Z",
+  "originalFillCount": 452,
+  "currentFillCount": 534,
+  "originalFillsUnchanged": true,
+  "remainingFifoExactlyMatches": true,
+  "allNewFillsMatchOriginalOfficialReceipts": true,
+  "financial": {
+    "cash": "14147.655000",
+    "ownedCost": "82036.345000",
+    "realized": "604.085000",
+    "newTradingRealized": "527.565000",
+    "inheritedRealizedGross": "76.520000"
+  },
+  "reportSha256": "df10310f89bb321063cd78424dae2e02552c5878da66cf86ed9614cb088cf4a2",
+  "officialReceiptFileHashes": {
+    "89f61eeb1f77086e221fdcc0e3e5e0319043bf3d6f65f19368aad68e7b102603": "81f21e158ced2c395e06f7cd78a0af1d875e8cfa020ee4ae054b84136b9d3337",
+    "fb1355ac337f2b2bd9f028307cc176a02c5e2c09d8025641097870a59ef39e3d": "4859055c21ff5483afbe2f34815788b7b3f998433c63e2cc7f3bfe77e9394cb4",
+    "8d68c7d631c292522b960b896418fb2bfaa8b6cf636417f254b62c1af02eebed": "9beb026b9898025a92055a5a0fc556c434457742c122a7119ad117d2e66a9a69",
+    "332fa74e704d8324745058c5d3cd553d9105e166d13044bd953dfa8c184a87eb": "217162cbeec388c83994dff85dc65a3b600afa6faab09916beb36ab54e311242",
+    "8721fe15e2ce79ce603249b87a1d33ce272f6bc8d196d4124b213d039b2dddf1": "d29fe876da466dfda16bee0ee5b26dc866aaa2e8b99709b842d564c2aa55d34a",
+    "67a9ff9cedb21702558e278e7ea78527ea3b17f1c1bb57336e08fbf68334826d": "01f50a53295d22f8d86783aa0e0f894ad014ee0f35e50b6326e8a6bc927b9bf6",
+    "9a3fa338fc783f170c0debba7fe060fff7f95ad644c9a8c47a8e93865a378495": "911c4c1b7aabad1e4a7e34fd658d42252f6445dc0a6b8e197931a6b9e7578828",
+    "bedc710cee9a13b2e35d262890e301113891611f1d51d5d51530161c3b1a1ab1": "17ebcffc0bc8ff9216a0f93dcd856304fa856bd13e2f29c93801b7361b0d3d56",
+    "586b354c7707be80f95dc43a64d7a6882f567ba3dca87902feaba5556ad5c05b": "a53dd965ada572b5f382d92139b58de86c09b7e41776aa5ae9b9464e46ee3267",
+    "3c95a2116b2888d013852d7d13bf82a13ab2c95a2559333a2d99c33afd455e4b": "2d358071ff96c2965146babefe82c56b79aefec2014b684808a4a91eaff50f82",
+    "a3a64fcfaa8e4c1783201ccb1eb21733c1fabf5e761d1ed31ddb0239764e1636": "88b756ae1f0ff83bc9118840e0d17ad9bf73bbac8a10ac98f10fd2ae327ac7a9",
+    "e6b1119691f36b1aa8733db4d2fe24d9a12ac1ebc93cd974f91b97f8680e7c9a": "523006b1d9b577e27c6dacbc1d507797dc449d0d90046083ca023f662c55a6d9",
+    "5b69dd10d8465f3ab7735d2097f8d952a7a31ad2ea81ee339a1e6fda244f7f3f": "5cb9cf0629c005d20184d7f6f66b07828cf1b97d6e261c9e7c43243c2cac3bbf",
+    "b9b2c19dfafcdc97597790cf50d0924e9b3926fbca17a29be98be14fc99e4368": "463eb870cabd911e348585e24d1c8e649678bfd90ff86ad2b57919725523a368",
+    "1e07465750c56f1106afd8813bce131ff9856975b6449be959ff57a017ca8a52": "400031ad8b4d37254b95579d780f9989a7fa744d3d83e9e090f7b3d27d038832",
+    "cdb840959cadbf04bcc8e9c9ec9ec7ad95bff3c94b5f342b9b4ca81798a014bf": "0fd5a45980f5a420cf427a7b5b1dae562cff5c6c9c6632619a1ea3c04979df80",
+    "3f43fff68d61ffcea3f098e912fdb64300a3ca5d0d9428f8939c52bd77527a42": "8ddef004766ded07cd7303e9bd50761b0520fd6ad9bca3c04632564d60e4b9d4",
+    "bfc65bb271d997a286b6560b6c2c11c467062b82c4df077a84be3e26d52200c8": "eac60a77eb99e6af5e64f01b3f31d97eab553f5f74ea7cf1c7f6230af994a582",
+    "f224b6c351cab4c6d359a21971eeca73dcc2eca1770795d9b8ad09811f8ea385": "84af2af1ebe6f6737778a3f6b5ab1bb065aeba8e5763f0bd1151d64c9e4cb840",
+    "4a6e498bb0264eb59c40486cc57d9c403766e42b108ff58e09e742c52f28ab7c": "c7024051766204c37e543fbc5fd744d615f035357cfad75793910bf7c7c1d36f",
+    "f7b2a770cc2a9850cb5afe373099d6e017fe49d1a4a21b337815d77c9c4a6572": "f14ad38acab900c4cf45ac57d2fa7933211f63eca32219fc27a6ce56f2d169e2",
+    "70ed7553b2ba91ea8ce798211d0b7571a058f0c9db8a438f4069b8fec3056ad9": "9784f4639e460d9f495beb47b834338ef07184505200012b84d8bd1f92027783"
+  },
+  "noAccountRequestsByAudit": true,
+  "wholeAccountProfitEstablished": false,
+  "orders": {
+    "20875": {
+      "actualOrderId": "55231235",
+      "exchangeId": "993",
+      "side": "YES",
+      "action": "sell",
+      "shares": 1472,
+      "fillReceipts": 1,
+      "notional": "1111.360000",
+      "cashDelta": "1111.360000",
+      "ownedCostDelta": "-1045.120000",
+      "realizedGross": "66.240000",
+      "fees": "0.000000",
+      "firstExecutedAt": "2026-10-22T04:39:40.851Z",
+      "lastExecutedAt": "2026-10-22T04:39:40.851Z",
+      "realizedNet": "66.240000"
+    }
+  },
+  "window": "R83 post-Delaware first fifteen minutes; first-filled physical orders only",
+  "cadence": {
+    "observedUtc": "2026-10-22T04:50:25.862859+00:00",
+    "targetFilledOrdersPerMinute": 1,
+    "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+    "windowsMinutes": {
+      "1": {
+        "distinctFirstFilledOrders": 0,
+        "filledOrdersPerMinute": 0.0,
+        "targetFilledOrders": 1,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 60.0,
+        "completedUtcMinutesObserved": 1,
+        "completedUtcMinutesWithNoNewFilledOrder": 1,
+        "rollingMinuteCadenceMet": false
+      },
+      "5": {
+        "distinctFirstFilledOrders": 0,
+        "filledOrdersPerMinute": 0.0,
+        "targetFilledOrders": 5,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 300.0,
+        "completedUtcMinutesObserved": 5,
+        "completedUtcMinutesWithNoNewFilledOrder": 5,
+        "rollingMinuteCadenceMet": false
+      },
+      "15": {
+        "distinctFirstFilledOrders": 1,
+        "filledOrdersPerMinute": 0.06666666666666667,
+        "targetFilledOrders": 15,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 645.011859,
+        "completedUtcMinutesObserved": 15,
+        "completedUtcMinutesWithNoNewFilledOrder": 14,
+        "rollingMinuteCadenceMet": false
+      },
+      "60": {
+        "distinctFirstFilledOrders": 3,
+        "filledOrdersPerMinute": 0.05,
+        "targetFilledOrders": 60,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 1904.152141,
+        "completedUtcMinutesObserved": 60,
+        "completedUtcMinutesWithNoNewFilledOrder": 57,
+        "rollingMinuteCadenceMet": false
+      }
+    },
+    "latestNewFilledOrderUtc": "2026-10-22T04:39:40.851000+00:00",
+    "secondsSinceNewFilledOrder": 645.011859,
+    "accountRequests": 0,
+    "executionAuthority": false
+  }
+}

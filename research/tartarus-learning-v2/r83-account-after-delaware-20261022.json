@@ -1,0 +1,37 @@
+{
+  "observedUtc": "2026-10-22T04:41:49.308746+00:00",
+  "workerPid": 1063142,
+  "nativeViewWrittenAt": "2026-10-22T04:39:45.492Z",
+  "cash": "13036.295",
+  "markedPositionValue": "81257.27",
+  "markedEquity": "94293.565",
+  "changeFrom100000": "-5706.435",
+  "percentageChange": "-5.706435",
+  "sourceReceipts": [
+    {
+      "endpoint": "/account?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "receiptSha256": "833353ae161afad21ae62679605a264b5a5ea6c54c179971fcdf4e1afb502537",
+      "receivedAt": "2026-10-22T04:39:31.996Z",
+      "requestStartedAt": "2026-10-22T04:39:31.642Z",
+      "rawFileSha256": "c52e84d8c0bf949df80b9ca8b50401c3ade70b44c67d0a5e0c043393c5f02558"
+    },
+    {
+      "endpoint": "/tournaments/midterm-elections/portfolio/positions",
+      "receiptSha256": "7ca39a4c90b9225446f275e05b7d5a829ac978eba237230eac19a9d21a82c00c",
+      "receivedAt": "2026-10-22T04:39:30.173Z",
+      "requestStartedAt": "2026-10-22T04:39:29.663Z",
+      "rawFileSha256": "85a0c4b4df370e17d92b4d0743c96ea8c5719447dbd1ab83c86b8673a5d6d185"
+    },
+    {
+      "endpoint": "/orders?status=open&limit=200&tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "receiptSha256": "5cd82706496c585bb1ed95f01fd43a7f49dc6fc18d7fb0df05c21325f65ba30c",
+      "receivedAt": "2026-10-22T04:39:31.019Z",
+      "requestStartedAt": "2026-10-22T04:39:30.795Z",
+      "rawFileSha256": "678b3390071caac038203f369a6ed568d689920974ed3713ad0d92d31fed1664"
+    }
+  ],
+  "originalTypedReceiptHashesVerified": true,
+  "atomicAccountSnapshot": false,
+  "executableLiquidationClaimed": false,
+  "accountRequests": 0
+}

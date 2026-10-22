@@ -875,6 +875,9 @@ fn reconcile(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,
  Ok(result)
 }
 fn source(c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64,reads:&mut impl OrdinaryPreflightReads)->Result<u64>{
+ bank.with_deferred_report(|bank|source_with_projection_scope(c,bank,s,ex,market,from,reads))
+}
+fn source_with_projection_scope(c:&Control,bank:&mut Session,s:&mut RestSource,ex:&str,market:&str,from:u64,reads:&mut impl OrdinaryPreflightReads)->Result<u64>{
  // The public tape keeps its existing blocking GET and immediate application.
  // Only the already-allowlisted book GET uses the existing exclusive I/O task.
  reads.service_before_read(bank,s)?;
@@ -2242,7 +2245,10 @@ fn preflight_read(bank:&mut Session,source:&mut RestSource,reads:&mut impl Ordin
  reads.read_serviced(bank,source,endpoint)
 }
 fn preflight_snapshots(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut impl OrdinaryPreflightReads)->Result<SnapshotSet>{
- snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep))
+ // Keep each admitted source event/head durable while collecting the exact
+ // seven paced receipts. Build the full historical report once before return.
+ // No order submission occurs inside this scope; receipt clocks are unchanged.
+ bank.with_deferred_report(|bank|snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep)))
 }
 // Collateral has the account's20s clock. Obtain it after the four account
 // facts, before the three10s market facts, so it cannot expire first merely

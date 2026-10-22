@@ -1,0 +1,29 @@
+{
+  "observedUtc": "2026-10-22T04:56:45.054919+00:00",
+  "changedSourcePaths": [
+    "moloch/native/src/session.rs",
+    "moloch/live-runtime/src/worker.rs"
+  ],
+  "sourceHashes": {
+    "moloch/live-runtime/src/worker.rs": {
+      "before": "3ca06ae22c6c715f3534e5b6de43888c9e412ff1fa5f1adb44cb68bc2ad5bb29",
+      "after": "6a83d703f3187305a4ca83fa645aaafec16e48df50eccd9c5cfa3eaeb8bb841e"
+    },
+    "moloch/native/src/session.rs": {
+      "before": "fd13be8def0d23bc343ca773649f48a112e04896eccdf623572cc5022dbbcc7d",
+      "after": "6afa1a05fa8f6c53c2958aeff2ae41380604c3aad50c47faac2fdecac7c5b921"
+    }
+  },
+  "checks": {
+    "native-tests-build": "test result: ok. 136 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 29.69s",
+    "worker-test": "test result: ok. 244 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 51.65s"
+  },
+  "binarySha256": "a0ec22267f1a10ed56f4a97ebd5f949d1b127f8ecaf0a3910b12362ebc49aa9d",
+  "nativeLibrarySha256": "fe5d80b746b1acfa3817cedacc8216675053c692acf48272b7b2ab4da1173330",
+  "runtimeLibrarySha256": "ea9b186e36f77bdfe8d8aba2d5637eae81a76b4fae333cb646eb8ceb95e05c9d",
+  "runtimeFixtureSha256": "b439a752c2c6223c313d34b8b40cc1a8305bcf2955413167949fb8da6e2e1a19",
+  "cliLoads": true,
+  "accountClientsCreated": 0,
+  "productionChanged": false,
+  "endToEndSpeedupEstablished": false
+}
