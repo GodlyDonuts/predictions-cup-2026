@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,18:22UTC
+## Latest state: October22,18:29UTC
+
+The agent-selected Idaho Democratic NO buy is fully reconciled:8788 shares at0.88,7733.44 cost, zero fees. Cash is88.13; nearly all available cash is deployed. This acquisition is not profit. All original fills/FIFO are retained; the three reviewed orders comprise two West Virginia exits and this new position. The exits realized -1182.205 against original basis. [Actual buy and accounting](research/tartarus-learning-v2/agent-idaho-redeployment-20261022.json). A retained-book screen also identifies31 conditional NO-pair opportunities; resolution exceptions and official collateral eligibility are unverified, so none is claimed as guaranteed arbitrage. [Conditional pair evidence](research/tartarus-learning-v2/conditional-no-pair-screen-20261022.json). Positive ROI and one filled order/minute remain unproved.
+
+### Earlier18:22UTC exit and research screen
 
 Both agent-selected West Virginia NO sales are independently reconciled:16438 total shares,708.165 proceeds and **-1182.205 realized net** versus original FIFO basis. Cash is7821.57 at the matched post-sale capture. The research-only observation window now retains60-second original books, recovering124 raw research books where the earlier capture had zero. Exact clocks remain; physical execution checks and the sole worker are unchanged. Twelve focused checks pass. Fresh redeployment research is running; no positive ROI or one-fill/minute claim. [Sale and provenance evidence](research/tartarus-learning-v2/agent-wv-exit-and-research-window-20261022.json).
 

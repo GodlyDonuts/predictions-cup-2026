@@ -1,0 +1,1041 @@
+{
+  "observedUtc": "2026-10-22T18:28:17.863180+00:00",
+  "sourceResearchCapture": "/tmp/moloch-upgrade-bound-r100-20261022/agent-discretionary-20261022/funded-182439/inputs",
+  "sourceViewWrittenAt": "2026-10-22T18:24:40.260Z",
+  "books": 138,
+  "eventGroups": 85,
+  "candidates": [
+    {
+      "eventIds": [
+        "64672",
+        "99980",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1038",
+        "1039"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 10000,
+      "noBuyLimitsMicros": [
+        540000,
+        445000
+      ],
+      "totalCostMicros": 9850000000,
+      "conditionalOrdinarySurplusMicros": 150000000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:33.0771606+00:00",
+        "2026-10-22T18:24:34.0747481+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "88f79cb50e4bcd543f89795db0e9b97f435f17544ee9d143db3ea07c3c6c1419",
+        "ccd416c60cfe99cd2fcd1d64f2b7cf7d5114fde6e1553448d3cd6aefe8206489"
+      ]
+    },
+    {
+      "eventIds": [
+        "64660",
+        "99968",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1037",
+        "1036"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 3192,
+      "noBuyLimitsMicros": [
+        875000,
+        105000
+      ],
+      "totalCostMicros": 3128160000,
+      "conditionalOrdinarySurplusMicros": 63840000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:29.7728818+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "d3296551f6ada5d5ebd5885fe96370f25a3266724a2438fd4f0defdc36fa9173",
+        "8865e7e8ae28f1e122ccbb894a83b350145294d79abe4fa7f4de7cb49fff2be3"
+      ]
+    },
+    {
+      "eventIds": [
+        "64674",
+        "99982",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1040",
+        "1041"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 3064,
+      "noBuyLimitsMicros": [
+        235000,
+        745000
+      ],
+      "totalCostMicros": 3002720000,
+      "conditionalOrdinarySurplusMicros": 61280000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:08.1498164+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "91733dea01ad1f3c5971df4f8956b9f04ace0f37a4b3e7ae061ad9bd560f7baf",
+        "7e14fda405cca2196a10e561acaa6d65c8d7025ffebe8b9ac7b34f82046c4bdc"
+      ]
+    },
+    {
+      "eventIds": [
+        "64449",
+        "99758",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1021",
+        "1022"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 3977,
+      "noBuyLimitsMicros": [
+        295000,
+        690000
+      ],
+      "totalCostMicros": 3917345000,
+      "conditionalOrdinarySurplusMicros": 59655000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:24.778391+00:00",
+        "2026-10-22T18:24:24.778391+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "c63aa4e912fe71f6161dfb089c817277159dceedca2de946e438b1e31e8c7c54",
+        "f5f3bdf7b24b05fc4184a8e05b20280e894b87c494c4372740b3ad8a1360ef31"
+      ]
+    },
+    {
+      "eventIds": [
+        "62967",
+        "98097",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1048",
+        "1047"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 5759,
+      "noBuyLimitsMicros": [
+        690000,
+        300000
+      ],
+      "totalCostMicros": 5701410000,
+      "conditionalOrdinarySurplusMicros": 57590000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "e214c94271cbe6e8c4db9b6721bbd87e3f92b201aff8985acbd861a57d19d808",
+        "28f26408a636f92ac2ef54abca043631fe5b6bfe2e72dc57e1ff64afe220b27c"
+      ]
+    },
+    {
+      "eventIds": [
+        "62975",
+        "98105",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "967",
+        "966"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 4491,
+      "noBuyLimitsMicros": [
+        920000,
+        70000
+      ],
+      "totalCostMicros": 4446090000,
+      "conditionalOrdinarySurplusMicros": 44910000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:25.7798374+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "078b6294d685ec259d5f76a91265827166cd1cfdd96a7a13446df99b578bd4a5",
+        "fccb37e25d58cdb60a18b8c96158d98bd287dff2f8f0ac959e63edb0cf474113"
+      ]
+    },
+    {
+      "eventIds": [
+        "62954",
+        "98084",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1067",
+        "1066"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 2161,
+      "noBuyLimitsMicros": [
+        700000,
+        280000
+      ],
+      "totalCostMicros": 2117780000,
+      "conditionalOrdinarySurplusMicros": 43220000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "62f74d08e605b5fedfbfe24b30bae2fc7b5a0578cbc90799d86f1da8d8687b51",
+        "ee13931754a838c5eb75c602c6eef7d8b7ee818c3a2133515c6519c9c5836014"
+      ]
+    },
+    {
+      "eventIds": [
+        "62979",
+        "98109",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "978",
+        "979"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 8562,
+      "noBuyLimitsMicros": [
+        790000,
+        205000
+      ],
+      "totalCostMicros": 8519190000,
+      "conditionalOrdinarySurplusMicros": 42810000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:24.778391+00:00",
+        "2026-10-22T18:24:34.0747481+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "0df280f1b581a6480ef6b053fcca2b409d45ee06b7437cf720e853dc2fe7091d",
+        "a9b7caef77fad1d61416c2a2746cbf6301a139a597e2e720d8bb66553494c851"
+      ]
+    },
+    {
+      "eventIds": [
+        "201483",
+        "299058",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1043",
+        "1044"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 3059,
+      "noBuyLimitsMicros": [
+        845000,
+        145000
+      ],
+      "totalCostMicros": 3028410000,
+      "conditionalOrdinarySurplusMicros": 30590000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "ec73c60f7848c7bb3f83e47935f9d3a3615a4f63cd5006e2f7f2f2a70fd7a8a9",
+        "2815b3888b47fca3372fce9693bb368239e5540e5933a94373cb391176a46b77"
+      ]
+    },
+    {
+      "eventIds": [
+        "76621",
+        "118824",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "847",
+        "846"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 2666,
+      "noBuyLimitsMicros": [
+        70000,
+        920000
+      ],
+      "totalCostMicros": 2639340000,
+      "conditionalOrdinarySurplusMicros": 26660000,
+      "originalBookClocks": [
+        "2026-10-22T18:23:57.1348501+00:00",
+        "2026-10-22T18:24:07.1471041+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "176aa5c44c250956eef89f5c7c2579764e3e7f5bb1b89e0d3ad27c5d3016a5ff",
+        "c7b4db4910cecf508adec8d268db9ec17b5b77088ac582bae4ddd89908cb6535"
+      ]
+    },
+    {
+      "eventIds": [
+        "64349",
+        "99658",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1017",
+        "1018"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 5300,
+      "noBuyLimitsMicros": [
+        395000,
+        600000
+      ],
+      "totalCostMicros": 5273500000,
+      "conditionalOrdinarySurplusMicros": 26500000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:28.7708355+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "916dd9ff982d9600d9d6ecd9436d7a93060ea5031816773066a69fc2cb588c78",
+        "b56d5de6b43a0be1911edd01333404b4eb613554303ca25caf71c98e12f17413"
+      ]
+    },
+    {
+      "eventIds": [
+        "64343",
+        "99652",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1013",
+        "1014"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 1488,
+      "noBuyLimitsMicros": [
+        790000,
+        195000
+      ],
+      "totalCostMicros": 1465680000,
+      "conditionalOrdinarySurplusMicros": 22320000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:19.7714867+00:00",
+        "2026-10-22T18:24:12.7632181+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "fe3791015808dbde7ce33a3eb6df3ef16906622e3e5415a90ced66bd39ac8996",
+        "110029e877ea1cc703cca3ac62d082fd07ce8c3acaa503c75fc283a6cf3c6fe3"
+      ]
+    },
+    {
+      "eventIds": [
+        "76612",
+        "118815",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1058",
+        "1057"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 975,
+      "noBuyLimitsMicros": [
+        800000,
+        180000
+      ],
+      "totalCostMicros": 955500000,
+      "conditionalOrdinarySurplusMicros": 19500000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:14.7551992+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "725771f02d80d27de38446652d4650fe66ff95f1013309589f019f6c6ac15fdc",
+        "d0e43d18de1fd7febda455a1a07c75be7396255ad2e3b3d77e0d0871c913bc5d"
+      ]
+    },
+    {
+      "eventIds": [
+        "76628",
+        "118831",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "851",
+        "850"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 967,
+      "noBuyLimitsMicros": [
+        925000,
+        55000
+      ],
+      "totalCostMicros": 947660000,
+      "conditionalOrdinarySurplusMicros": 19340000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "5fc2b185805225bcaa63e221bc1ca00465b7e96946807292eb1543581d417cf4",
+        "b2a48eccdc35e326274d80ab5abe97f0886c9dcd56b1a38b02802f362eca23f7"
+      ]
+    },
+    {
+      "eventIds": [
+        "76844",
+        "119047",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1000",
+        "999"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 950,
+      "noBuyLimitsMicros": [
+        105000,
+        875000
+      ],
+      "totalCostMicros": 931000000,
+      "conditionalOrdinarySurplusMicros": 19000000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:33.0771606+00:00",
+        "2026-10-22T18:24:11.1468052+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "7eb0ac5cc56fcdc9f9af7a8de8193e7aecc0f23a461832036a6b328ef7f5b4ce",
+        "d3191d07ce508dbbc346fe8f8e445d9962706b2209ada9491a88673e6dd4ed38"
+      ]
+    },
+    {
+      "eventIds": [
+        "76790",
+        "118993",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "874",
+        "873"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 1091,
+      "noBuyLimitsMicros": [
+        925000,
+        60000
+      ],
+      "totalCostMicros": 1074635000,
+      "conditionalOrdinarySurplusMicros": 16365000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:26.7754277+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "57ab91e8944418b9e940d919cc301c9f113a4b3b869b9603a2da10eafe1034e8",
+        "60e1115b1ebd347962a8ec2e20a2bcf75c5f3c2a4d792ed4ca050b2a8367e0c0"
+      ]
+    },
+    {
+      "eventIds": [
+        "64318",
+        "99627",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "896",
+        "897"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 1000,
+      "noBuyLimitsMicros": [
+        705000,
+        280000
+      ],
+      "totalCostMicros": 985000000,
+      "conditionalOrdinarySurplusMicros": 15000000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "de5dae59e9db29ec3c9086dad0cd816e24c8babb0e6ac37c2c15e0a11382e230",
+        "d46dd85ce75405288c1f3248de4df6d1a134e768434d03e8ba5733cf62c89e03"
+      ]
+    },
+    {
+      "eventIds": [
+        "62960",
+        "98090",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "953",
+        "954"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 600,
+      "noBuyLimitsMicros": [
+        35000,
+        940000
+      ],
+      "totalCostMicros": 585000000,
+      "conditionalOrdinarySurplusMicros": 15000000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:08.1498164+00:00",
+        "2026-10-22T18:23:58.156399+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "c42b91faa85d82ea6a87a0c3b872c2821d23b84d02d0930c0198e71e4cda0039",
+        "4562f16149ad51179062c977c42bb77a16f7cacd628deed36d6754cc206a3c0e"
+      ]
+    },
+    {
+      "eventIds": [
+        "64647",
+        "99955",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1031",
+        "938"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 1382,
+      "noBuyLimitsMicros": [
+        415000,
+        575000
+      ],
+      "totalCostMicros": 1368180000,
+      "conditionalOrdinarySurplusMicros": 13820000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:29.7728818+00:00",
+        "2026-10-22T18:24:33.0771606+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "e91f1796df8282bfb45ff495ac5219d2f02a2e2812c49cbbfe11c3fd1be912d9",
+        "d8c25214b1e92160a6ed2020ec0f1f4c3b6ba96afae365aa284fe4fd974c491a"
+      ]
+    },
+    {
+      "eventIds": [
+        "62978",
+        "98108",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1077",
+        "1076"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 2103,
+      "noBuyLimitsMicros": [
+        865000,
+        130000
+      ],
+      "totalCostMicros": 2092485000,
+      "conditionalOrdinarySurplusMicros": 10515000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "6c10b5c6c5fe3dc0974c66bb22f1d15f15367badc03368f222a2bb64a1dbe2ec",
+        "bf4f7262031b29a0c3966ef0ccecf4ad6c2d5ab493f10661ddd2132f2758d00f"
+      ]
+    },
+    {
+      "eventIds": [
+        "62962",
+        "98092",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1045",
+        "1046"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 534,
+      "noBuyLimitsMicros": [
+        600000,
+        385000
+      ],
+      "totalCostMicros": 525990000,
+      "conditionalOrdinarySurplusMicros": 8010000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:36.0742395+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "de80e0108aa1f8e98c0cd460c824612bffd859bb3001b847975bf82fbc133869",
+        "92cf0594706557e8aba141fe07a1719b8fc3cddc4137e148e84141f525ee5f08"
+      ]
+    },
+    {
+      "eventIds": [
+        "62953",
+        "98083",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "942",
+        "941"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 352,
+      "noBuyLimitsMicros": [
+        30000,
+        950000
+      ],
+      "totalCostMicros": 344960000,
+      "conditionalOrdinarySurplusMicros": 7040000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:24.778391+00:00",
+        "2026-10-22T18:23:55.1344088+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "2e0cb90cc5bf71b8cf7a31c800fe1dd2ae2b61487e86c72a39df795da374986c",
+        "851c8fa42bcbfb1b3ec181cf70e351ffeebc115808c39dcdc9b1b8fdbb324412"
+      ]
+    },
+    {
+      "eventIds": [
+        "64568",
+        "99876",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "922",
+        "923"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 609,
+      "noBuyLimitsMicros": [
+        590000,
+        400000
+      ],
+      "totalCostMicros": 602910000,
+      "conditionalOrdinarySurplusMicros": 6090000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:14.7551992+00:00",
+        "2026-10-22T18:24:35.0792098+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "9d1398018bcf4892062a6bbdbfe4e631d2b1b13d324d173aa5adb2ce9122848c",
+        "65e0e8a19006a1baf889b377245bc6933b46b28b6eca48c777953e8e530b379e"
+      ]
+    },
+    {
+      "eventIds": [
+        "64250",
+        "99559",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "886",
+        "887"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 836,
+      "noBuyLimitsMicros": [
+        165000,
+        830000
+      ],
+      "totalCostMicros": 831820000,
+      "conditionalOrdinarySurplusMicros": 4180000,
+      "originalBookClocks": [
+        "2026-10-22T18:23:58.156399+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "224523d95ce03f27e7690efff23fc50adace5efa7bca368af03972173becfec4",
+        "4b72614360e460c36a3981286d29f97d4cfbd2df5066e312094b4d2a9a49a718"
+      ]
+    },
+    {
+      "eventIds": [
+        "76614",
+        "118817",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "849",
+        "848"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 200,
+      "noBuyLimitsMicros": [
+        875000,
+        105000
+      ],
+      "totalCostMicros": 196000000,
+      "conditionalOrdinarySurplusMicros": 4000000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:27.7720749+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "ce78b2fcf29dced256abc08a2cd31801e3adb81d372a5776faaf73450ae15857",
+        "65a3b5d02403aaaffae1585ea7965a8cf3ffb570812d90648e49aa1d903cf626"
+      ]
+    },
+    {
+      "eventIds": [
+        "64340",
+        "99649",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1012",
+        "901"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 600,
+      "noBuyLimitsMicros": [
+        740000,
+        255000
+      ],
+      "totalCostMicros": 597000000,
+      "conditionalOrdinarySurplusMicros": 3000000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:17.7742051+00:00",
+        "2026-10-22T18:24:33.0771606+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "3dad07099902838c7b2fda95691ae7aa2f906ac320af284871700e4c1dd09f59",
+        "8280cc938fc2e76dbd679c089ec275fbe91f015d946e96f002a7fa4521706949"
+      ]
+    },
+    {
+      "eventIds": [
+        "62957",
+        "98087",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1075",
+        "1042"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 100,
+      "noBuyLimitsMicros": [
+        905000,
+        75000
+      ],
+      "totalCostMicros": 98000000,
+      "conditionalOrdinarySurplusMicros": 2000000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:15.7714278+00:00",
+        "2026-10-22T18:24:15.7714278+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "1e1fdd91b4fcb3f1e77470b4c5f7b1a05f379afe89f42e53c9b42526b84729f0",
+        "7f681cd59a599cccea125783f1ca74fc69173da0314912e23426dfef62bf9eec"
+      ]
+    },
+    {
+      "eventIds": [
+        "62961",
+        "98091",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "950",
+        "949"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 299,
+      "noBuyLimitsMicros": [
+        435000,
+        560000
+      ],
+      "totalCostMicros": 297505000,
+      "conditionalOrdinarySurplusMicros": 1495000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:37.0774106+00:00",
+        "2026-10-22T18:24:25.7798374+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "51a61e292bbd98b4b6c4a2f76151127a5f488d2a1161fd8f74124991290d7f36",
+        "c2db4e91ece47e26d739bcb57754e5fc62b7f72261bb8aefc56957ac1b431dd2"
+      ]
+    },
+    {
+      "eventIds": [
+        "64651",
+        "99959",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1034",
+        "1033"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 60,
+      "noBuyLimitsMicros": [
+        395000,
+        595000
+      ],
+      "totalCostMicros": 59400000,
+      "conditionalOrdinarySurplusMicros": 600000,
+      "originalBookClocks": [
+        "2026-10-22T18:23:56.1389925+00:00",
+        "2026-10-22T18:24:37.0774106+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "0468c02f835fecbd74ee694b45267a247dc9e287e031eee08e5f068abf5541bd",
+        "f963fa550e648d00358478e4346bf77421b9567faaa9f38b42bc475f85d25c72"
+      ]
+    },
+    {
+      "eventIds": [
+        "62984",
+        "98114",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "986",
+        "985"
+      ],
+      "parties": [
+        "Republican Party",
+        "Democratic Party"
+      ],
+      "quantity": 118,
+      "noBuyLimitsMicros": [
+        45000,
+        950000
+      ],
+      "totalCostMicros": 117410000,
+      "conditionalOrdinarySurplusMicros": 590000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:12.7632181+00:00",
+        "2026-10-22T18:24:08.1498164+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "6ec9f06f906831254496c959b252bfb1772790c729735de7e3f6b8e2f2469104",
+        "fe3f403b795bda2b104f58f0d128e7265d57dbd6144fc9ac7cf407796639cab9"
+      ]
+    },
+    {
+      "eventIds": [
+        "76823",
+        "119026",
+        "2026-11-03"
+      ],
+      "exchanges": [
+        "1073",
+        "1074"
+      ],
+      "parties": [
+        "Democratic Party",
+        "Republican Party"
+      ],
+      "quantity": 5,
+      "noBuyLimitsMicros": [
+        95000,
+        900000
+      ],
+      "totalCostMicros": 4975000,
+      "conditionalOrdinarySurplusMicros": 25000,
+      "originalBookClocks": [
+        "2026-10-22T18:24:29.7728818+00:00",
+        "2026-10-22T18:24:17.7742051+00:00"
+      ],
+      "exceptionalSettlementCoverageVerified": false,
+      "officialRelationshipEligibilityVerified": false,
+      "executionAuthority": false,
+      "nominationBookSha256": [
+        "063ae4df20895f4d46060a52b85aa5823b32e500c87df4dd9bf31eebcd575666",
+        "73afa22f026c260becd249e6d884902b02836a2b1a04aa649020416a3a0d32b6"
+      ]
+    }
+  ],
+  "scope": "Retained research books only. At most one named party wins the same official race/stage. Mixed refunds, rule exceptions, relationship collateral eligibility and current executable depth are unverified.",
+  "newAccountClients": 0,
+  "executionAuthority": false,
+  "exactDecimalRechecked": true,
+  "classification": "conditional_ordinary_payout_research",
+  "sourceReportSha256": "5ae88b321f867c839c7e0a997f4c5b54c7439fc582f8a1e32fc00e5fe1210724",
+  "sourceViewSha256": "4bd27486fedca6f4fab6b2f2dec83bf5c4dbb092bfcc83719fc282ebc2698d89",
+  "formula": "For two distinct parties in one race/stage, assuming at most one winner and ordinary binary settlement, payout of NO+NO is at least1; surplus is quantity*(1-combined purchase price). Mixed void/refund cases and current execution are unverified.",
+  "sourceClocksRenewed": false
+}
