@@ -1,0 +1,151 @@
+{
+  "observedUtc": "2026-10-22T01:34:49.902702+00:00",
+  "pid": 1056637,
+  "elapsedSeconds": 900.3593736329349,
+  "completionReason": "duration_complete",
+  "completedWindow": true,
+  "samples": [
+    {
+      "at": "2026-10-22T01:18:42.191Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 0,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:20:02.161Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:22:27.206Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 5,
+      "passes": 5,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:23:03.063Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:24:36.945Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 4,
+      "passes": 4,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:25:35.502Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:26:41.351Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:27:43.504Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:28:59.199Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:29:59.186Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:30:56.595Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": false,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:31:44.930Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:33:13.381Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T01:34:10.567Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1056637,
+      "sameAccountWorker": true
+    }
+  ],
+  "accountRequests": 0,
+  "fillsNotInferredFromSweeps": true
+}

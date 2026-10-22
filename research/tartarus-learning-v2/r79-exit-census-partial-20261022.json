@@ -1,0 +1,29 @@
+{
+  "observedUtc": "2026-10-22T01:39:02.265831+00:00",
+  "workerPid": 1056637,
+  "completedRequested60MinuteWindow": false,
+  "reason": "planned_worker_replacement",
+  "originalObservationsSha256": "8fd9365e0a5c1b5e32f75d8d0e204c6c6df3245f3ef5f88669736cd6d0faed3b",
+  "acceptedSamples": 53,
+  "observationFailures": 7,
+  "currentNominationCounts": {
+    "1044": {
+      "samples": 17,
+      "firstObservedUtc": "2026-10-22T01:20:07.763000+00:00",
+      "lastObservedUtc": "2026-10-22T01:34:27.426000+00:00"
+    },
+    "993": {
+      "samples": 11,
+      "firstObservedUtc": "2026-10-22T01:20:24.256000+00:00",
+      "lastObservedUtc": "2026-10-22T01:31:11.773000+00:00"
+    },
+    "1051": {
+      "samples": 10,
+      "firstObservedUtc": "2026-10-22T01:20:24.256000+00:00",
+      "lastObservedUtc": "2026-10-22T01:33:38.603000+00:00"
+    }
+  },
+  "repeatedDepthNotAdditiveTurnover": true,
+  "nominationNotFillOrExecutionAuthority": true,
+  "accountRequests": 0
+}
