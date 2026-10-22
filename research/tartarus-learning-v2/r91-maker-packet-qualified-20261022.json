@@ -1,0 +1,23 @@
+{
+  "observedUtc": "2026-10-22T11:31:03.210164+00:00",
+  "sourceHashes": {
+    "moloch/live-runtime/src/worker.rs": "b64d551952e0d3e6604c1e435208630a429d768ebcba29be8628bd86a4744d58"
+  },
+  "checks": {
+    "worker-tests": "test result: ok. 258 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s"
+  },
+  "binarySha256": "f99b400ad979c925d4ca4e70bb3c9aade54f8f06d77c397338ef6690eab3feab",
+  "nativeLibrarySha256": "ae941f303004fd5988996f076d18b7b118d847849023076a4986388737599b62",
+  "runtimeLibrarySha256": "522ecfb41f3cb5d909528e8756ac09b81e7feb138a1f63825b1d1036aa08e9d6",
+  "runtimeFixtureSha256": "5075bde248a5a4ae1ee190e2006b833d43a47424ef334a288620161ccede6bd7",
+  "cliLoads": true,
+  "productionChanged": false,
+  "nativeEngineUnchanged": true,
+  "accountClientsCreated": 0,
+  "runtimeLibraryUnchanged": true,
+  "oneFilledTradePerMinuteEstablished": false,
+  "inheritedUnchangedRuntimeChecks": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 179.00s",
+  "testFilesystem": "memory-backed temporary fixtures; original fsync calls unchanged",
+  "reusedTestBinarySha256": "05dcfbfd13047ee37634bcf33d446103075ed3b270cdb14b231debf6f562855a",
+  "originalDiskRunSummary": "test result: FAILED. 257 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 135.73s"
+}

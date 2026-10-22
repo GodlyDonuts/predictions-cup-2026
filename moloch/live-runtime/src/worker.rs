@@ -2302,10 +2302,15 @@ fn preflight_read(bank:&mut Session,source:&mut RestSource,reads:&mut impl Ordin
 /// built; original intent/attempt durability and SDK authorization stay inside
 /// the callback. On every return the Session publishes its committed prefix.
 fn final_packet_then<T,R:OrdinaryPreflightReads>(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut R,finish:impl FnOnce(&mut Session,&mut RestSource,SnapshotSet,&mut R)->Result<T>)->Result<T>{
- bank.with_deferred_report(|bank|{
-  let facts=snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep))?;
-  finish(bank,source,facts,reads)
- })
+ bank.with_deferred_report(|bank|final_packet_inside_report_scope(c,bank,source,market,expected,reads,finish))
+}
+/// Private inner packet for callers already inside the sole report scope.
+/// All seven original reads/hooks and physical checks remain identical. This
+/// avoids nested deferral while keeping a fresh planning packet, reservation
+/// and final physical packet ahead of one replaceable historical projection.
+fn final_packet_inside_report_scope<T,R:OrdinaryPreflightReads>(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut R,finish:impl FnOnce(&mut Session,&mut RestSource,SnapshotSet,&mut R)->Result<T>)->Result<T>{
+ let facts=snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,expected,ep))?;
+ finish(bank,source,facts,reads)
 }
 fn preflight_snapshots(c:&Control,bank:&mut Session,source:&mut RestSource,market:&str,expected:Option<&Value>,reads:&mut impl OrdinaryPreflightReads)->Result<SnapshotSet>{
  // Keep each admitted source event/head durable while collecting the exact
@@ -2523,6 +2528,13 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
   let wrapped=json!({"source":"official_sig_api_v1","kind":"trades","tournamentId":c.scope.tournament_id,"marketId":market,"exchangeId":ex,"endpoint":tape.endpoint,"status":tape.status,"requestStartedAt":tape.request_started_at,"receivedAt":tape.received_at,"data":tape.data});accept_source_events(bank,&source.accept(&wrapped)?)?;
   let scopes=source.scopes();if !scopes.as_array().ok_or("LIVE_SOURCE_SCOPES")?.iter().find(|s|s["marketId"]==market).ok_or("LIVE_SOURCE_SCOPE")?["tapeReady"].as_bool().ok_or("LIVE_SOURCE_TAPE_STATE")?{return fundamental_entry_deferred(c,ex,"coverage","COMPLETE_TARGET_TAPE_REQUIRED")}
  }
+ // Catch-up recovery above owns its separate source boundary. Below, original
+ // event/head fsyncs stay synchronous, but a fifty-megabyte historical report
+ // must not consume book/receipt freshness between planning and dispatch.
+ bank.with_deferred_report(|bank|reviewed_fundamental_entry_packet(t,c,bank,log,authority,source,stream,f,hint,breadth,universe))
+}
+fn reviewed_fundamental_entry_packet(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
+ let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();
  let target=json!({"marketId":market,"exchangeId":ex});
  let quarantine=c.maker_policy.is_none()&&!queue_has_unknown(t)?;let managed=f.cohorts.managed_exchanges();
  let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{last_stream_service:None,frames_per_service:MAX_REALTIME_FRAMES_PER_DRAIN,t,c,authority,stream,breadth,universe},|bank,at|{
@@ -2532,7 +2544,7 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
   Ok(f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,at)?.is_none_or(|comparison|!comparison.candidates.is_empty()))
  })?;
  if !eligible{return fundamental_entry_deferred(c,ex,"book_prefilter","NO_CURRENT_REVIEWED_VALUE_OR_DEPTH")}
- let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
+ let facts={let mut reads=LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe};snapshots_for_market(c,market,|ep|preflight_read(bank,source,&mut reads,None,ep))?};let Some(facts_until)=existing_facts_until(&facts,now())?else{return fundamental_entry_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
  let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;if existing_target_busy(bank,log,ex)?{return fundamental_entry_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
  retire_existing_drafts(bank,log,ex)?;
  // Serviced reads can regenerate ordinary drafts. Release their ACTUAL local
@@ -2586,7 +2598,7 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // Activation and native write pacing intentionally consume time. Obtain a
  // FINAL genuine seven-receipt packet after that wait instead of dispatching
  // against the earlier planning packet. Keep the exact funded qid and price.
- let result=final_packet_then(c,bank,source,market,Some(q),&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe},|bank,source,final_facts,reads|{
+ let result=final_packet_inside_report_scope(c,bank,source,market,Some(q),&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe},|bank,source,final_facts,reads|{
  accept_fresh_book(bank,c,&target,&final_facts.book,source)?;
  let current=quote(bank,id)?;
  if current!=*q||current["retired"]!=false{return fundamental_entry_deferred(c,ex,"final_facts","RESERVED_QUOTE_CHANGED_OR_RETIRED")}
@@ -3700,6 +3712,25 @@ pub fn main()->Result<()>{
   let(root,c,mut bank,log,mut source,q,book)=fixture();let mut reads=Reads::new(book);let mut reached=false;
   let result:Result<()>=final_packet_then(&c,&mut bank,&mut source,"201",Some(&q),&mut reads,|_,_,facts,reads|{reached=true;assert_eq!(original_read_order(&facts),json!(reads.returned));Err("SYNTHETIC_CALLBACK_FAILURE".into())});assert_eq!(result.unwrap_err().to_string(),"SYNTHETIC_CALLBACK_FAILURE");assert!(reached);assert_eq!(load(&root.0.join("bank/report.json")).unwrap()["sequence"],bank.durable_head()["sequence"]);assert!(log.intents.is_empty()&&log.attempted.is_empty());
  }
+ #[test]fn maker_planning_and_final_packets_share_one_projection_with_original_reads(){
+  let(root,c,mut bank,log,mut source,q,book)=fixture();let path=root.0.join("bank/report.json");let old=fs::read(&path).unwrap();let before=bank.engine().report().unwrap();let mut reads=Reads::new(book);
+  bank.with_deferred_report(|bank|{
+   let planning=snapshots_for_market(&c,"201",|ep|preflight_read(bank,&mut source,&mut reads,None,ep))?;
+   assert_eq!(original_read_order(&planning),json!(reads.returned));assert_eq!(fs::read(&path)?,old);let planning_head=bank.durable_head();
+   final_packet_inside_report_scope(&c,bank,&mut source,"201",Some(&q),&mut reads,|bank,_,facts,reads|{
+    assert_eq!(reads.calls,14);assert_eq!(original_read_order(&facts),json!(reads.returned[7..]));assert_ne!(bank.durable_head(),planning_head);assert_eq!(load(&root.0.join("bank/head.json"))?,bank.durable_head());assert_eq!(fs::read(&path)?,old);Ok(())
+   })
+  }).unwrap();
+  assert_eq!(reads.trace,["service","get"].repeat(14));assert_eq!(load(&path).unwrap()["sequence"],bank.durable_head()["sequence"]);for k in ["cash","ownedCost","realized","fills"]{assert_eq!(bank.engine().report().unwrap()[k],before[k]);}assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
+ #[test]fn maker_final_invalidation_still_publishes_the_committed_planning_prefix(){
+  let(root,c,mut bank,log,mut source,_q,book)=fixture();let q=bank.engine().order_records().into_iter().find(|q|q["exchangeId"]=="101"&&q["retired"]==false&&q["side"]=="NO").unwrap();let mut reads=Reads::new(book);reads.invalidate_at=Some(8);let mut reached=false;
+  let result:Result<()>=bank.with_deferred_report(|bank|{
+   snapshots_for_market(&c,"201",|ep|preflight_read(bank,&mut source,&mut reads,None,ep))?;
+   final_packet_inside_report_scope(&c,bank,&mut source,"201",Some(&q),&mut reads,|_,_,_,_|{reached=true;Ok(())})
+  });
+  assert!(result.unwrap_err().is::<PreflightQuoteInvalidated>());assert!(!reached);assert_eq!(reads.endpoints.len(),7);assert_eq!(load(&root.0.join("bank/report.json")).unwrap()["sequence"],bank.durable_head()["sequence"]);assert!(log.intents.is_empty()&&log.attempted.is_empty());
+ }
  #[test]fn cohort_index_reuses_original_offsets_and_only_scans_new_tail(){
   let(root,_c,mut bank,mut log,_source,_q,_book)=fixture();let qs:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).collect();assert!(qs.len()>=2);let path=root.0.join("bank/events.jsonl");
   for q in &qs[..2]{retire_never_sent(&mut bank,&mut log,q).unwrap();}
@@ -4458,7 +4489,10 @@ pub fn main()->Result<()>{
   setup_tournament(path,n,"cup")
  }
  fn setup_tournament(path:&Path,n:usize,tournament:&str)->(Session,DispatchLog,Value,Value){
-  private_dir(path).unwrap();let at=now().saturating_sub(7500);let policy=json!({"initialCash":"1000.000000","maximumCommitted":"100.000000","maximumMarketCost":"50.000000","quantity":12,"maximumMarkets":3,"entryStopAt":iso(at+60_000)});let seed=json!({"runId":"package-hook-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at)});
+  setup_tournament_at(path,n,tournament,now().saturating_sub(7500))
+ }
+ fn setup_tournament_at(path:&Path,n:usize,tournament:&str,at:u64)->(Session,DispatchLog,Value,Value){
+  private_dir(path).unwrap();let policy=json!({"initialCash":"1000.000000","maximumCommitted":"100.000000","maximumMarketCost":"50.000000","quantity":12,"maximumMarkets":3,"entryStopAt":iso(at+60_000)});let seed=json!({"runId":"package-hook-fixture","availableCash":"1000.000000","accountSnapshotHash":"a".repeat(64),"observedAt":iso(at)});
   let mut bank=Session::open_live(&path.join("bank"),&policy,&seed).unwrap();
   for i in 0..n{let ex=(101+i).to_string();let stamp=iso(at+i as u64*2500);bank.accept("official-book",i as u64+1,&json!({"type":"book","receivedAt":stamp,"book":{"tournamentId":tournament,"marketId":ex,"exchangeId":ex,"sequence":"1","sourceAt":stamp,"requestStartedAt":stamp,"receivedAt":stamp,"bids":[{"price":"0.400000","quantity":100}],"asks":[{"price":"0.450000","quantity":100}]}})).unwrap();}
   (bank,DispatchLog::open(&path.join("dispatch.ndjson")).unwrap(),policy,seed)
@@ -4619,8 +4653,15 @@ pub fn main()->Result<()>{
   log.append(json!({"kind":"intent","qid":id,"quote":q})).unwrap();log.append(json!({"kind":"attempt","qid":id,"at":iso(now())})).unwrap();assert!(defer_account_preintent(&c,&bank,&log,&authority,id,false,error.as_ref()).is_err());
  }
  fn genuine_reviewed_entry_event(temp:&Temp)->(Session,DispatchLog,Value,Value,Value){
-  let(mut bank,mut log,policy,seed)=setup(&temp.0,1);for q in bank.engine().order_records(){retire_for_package(&mut bank,&mut log,&q).unwrap();}
-  let at=now();let book=bank.engine().live_package_books().into_iter().find(|b|b["exchangeId"]=="101").unwrap();
+  // A fixed local replay clock preserves the intended7.5s planning-book age
+  // even when host fsync/CPU work delays this test fixture. Production readers
+  // and physical clocks are untouched. All fixture events remain causal.
+  let source_at=now().saturating_sub(7500);let at=source_at+7500;
+  let(mut bank,mut log,policy,seed)=setup_tournament_at(&temp.0,1,"cup",source_at);for q in bank.engine().order_records(){
+   let id=q["id"].as_u64().unwrap();let proof=log.proof(id);log.append(json!({"kind":"not_sent","qid":id,"proof":proof})).unwrap();
+   let seq=bank.last_source_sequence("fixed-review-fixture")+1;bank.accept("fixed-review-fixture",seq,&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":hash(&proof),"deferPlanningForPackage":true,"receivedAt":iso(at),"processedAt":iso(at)})).unwrap();
+  }
+  let book=bank.engine().live_package_books().into_iter().find(|b|b["exchangeId"]=="101").unwrap();
   // Keep this fixture inside its original setup-relative entry deadline even
   // when shared-host work delays construction; production windows are unchanged.
   let expires=(at+50_000).min(moloch_live_runtime::daily_windows::clock(policy["entryStopAt"].as_str().unwrap()).unwrap()-1);
@@ -4628,7 +4669,7 @@ pub fn main()->Result<()>{
   (bank,log,event,policy,seed)
  }
  fn genuine_reviewed_entry_reservation(temp:&Temp)->(Session,DispatchLog,Value,Value,Value){
-  let(mut bank,log,event,policy,seed)=genuine_reviewed_entry_event(temp);accept(&mut bank,&event).unwrap();let q=bank.engine().order_records().into_iter().find(|q|q["reviewedFundamentalEntry"].is_object()).unwrap();(bank,log,q,policy,seed)
+  let(mut bank,log,event,policy,seed)=genuine_reviewed_entry_event(temp);let seq=bank.last_source_sequence("fixed-review-fixture")+1;bank.accept("fixed-review-fixture",seq,&event).unwrap();let q=bank.engine().order_records().into_iter().find(|q|q["reviewedFundamentalEntry"].is_object()).unwrap();(bank,log,q,policy,seed)
  }
  #[test]fn reviewed_entry_immediate_native_preview_succeeds_without_artificial_gap_wait(){
   let temp=Temp::new();let(bank,log,event,_,_)=genuine_reviewed_entry_event(&temp);let head=bank.durable_head();let report=bank.engine().report().unwrap();let rows=fs::read(temp.0.join("bank/events.jsonl")).unwrap();
@@ -4636,15 +4677,18 @@ pub fn main()->Result<()>{
   assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert_eq!(fs::read(temp.0.join("bank/events.jsonl")).unwrap(),rows);assert!(log.intents.is_empty()&&log.attempted.is_empty());
  }
  #[test]fn reviewed_entry_actual_budget_denial_allows_one_wait_then_fresh_preview(){
-  let temp=Temp::new();let(mut bank,mut log,mut event,_,_)=genuine_reviewed_entry_event(&temp);let at=now();let mut book=bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(at));}
-  accept(&mut bank,&json!({"type":"book","receivedAt":iso(at),"book":book})).unwrap();
-  // Genuine fresh source created ordinary drafts and consumed a native write.
-  let drafts:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["retired"]==false).collect();assert!(!drafts.is_empty());for q in drafts{retire_for_package(&mut bank,&mut log,&q).unwrap();}
-  let current=now();event["receivedAt"]=json!(iso(current));event["processedAt"]=json!(iso(current));event["bankHead"]=bank.durable_head();event["expectedReportSha256"]=json!(hash(&bank.engine().report().unwrap()));event["bookSha256"]=json!(hash(&bank.engine().live_package_books()[0]));
-  let report=bank.engine().report().unwrap();let head=bank.durable_head();let mut denied=bank.engine().clone();assert_eq!(denied.advance(&event),Err("REVIEWED_ENTRY_WRITE_BUDGET"));
+  let temp=Temp::new();let(bank,log,mut event,_,_)=genuine_reviewed_entry_event(&temp);let at=now();let mut book=bank.engine().live_package_books()[0].clone();book["sequence"]=json!("100");for key in ["sourceAt","requestStartedAt","receivedAt"]{book[key]=json!(iso(at));}
+  let report=bank.engine().report().unwrap();let head=bank.durable_head();let mut prefix=bank.engine().clone();
+  // A local virtual-time native prefix makes the write-gap assertion independent
+  // of host fsync/CPU delays. No Session, physical clock or original fact changes.
+  prefix.advance(&json!({"type":"book","receivedAt":iso(at),"book":book})).unwrap();
+  let drafts:Vec<_>=prefix.order_records().into_iter().filter(|q|q["retired"]==false).collect();assert!(!drafts.is_empty());for q in drafts{
+   prefix.advance(&json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":q["id"],"confirmedNetworkAttempts":0,"receiptHash":"a".repeat(64),"deferPlanningForPackage":true,"receivedAt":iso(at)})).unwrap();
+  }
+  let current=at;event["receivedAt"]=json!(iso(current));event["processedAt"]=json!(iso(current));event["bankHead"]=head.clone();event["expectedReportSha256"]=json!(hash(&prefix.report().unwrap()));event["bookSha256"]=json!(hash(&prefix.live_package_books()[0]));
+  let mut denied=prefix.clone();assert_eq!(denied.advance(&event),Err("REVIEWED_ENTRY_WRITE_BUDGET"));
   let ready=reviewed_entry_budget_wait("REVIEWED_ENTRY_WRITE_BUDGET",false,current,2500,3000,current+10_000).unwrap().unwrap();assert_eq!(ready,current+2500);
-  // Same original source bytes, genuinely later processing; no native accept.
-  let mut retry=event.clone();retry["receivedAt"]=json!(iso(ready));retry["processedAt"]=json!(iso(ready));let mut allowed=bank.engine().clone();allowed.advance(&retry).unwrap();
+  let mut retry=event.clone();retry["receivedAt"]=json!(iso(ready));retry["processedAt"]=json!(iso(ready));let mut allowed=prefix.clone();allowed.advance(&retry).unwrap();
   assert_eq!(reviewed_entry_budget_wait("REVIEWED_ENTRY_WRITE_BUDGET",true,ready,2500,3000,current+10_000).unwrap(),None);assert_eq!(bank.durable_head(),head);assert_eq!(bank.engine().report().unwrap(),report);assert!(log.intents.is_empty()&&log.attempted.is_empty());
  }
  #[test]fn reviewed_entry_budget_retry_does_not_wait_on_other_errors_or_expired_original_facts(){
