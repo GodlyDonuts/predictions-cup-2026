@@ -2,6 +2,16 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
+## Current state: October22,13:46UTC
+
+**R93 is installed and recovering the preserved ledger. One filled order/minute remains unmet.** Sole worker1103623/sourceba546737/binary2ee65797fbab. All625 original fills, the complete2,829,310,904-byte financial prefix and prior native approvals remain. No physical orders were open at replacement.270 worker checks pass; native/runtime libraries are unchanged. The focused fix suppresses loss-making timer sales of remaining actual rank-origin inventory while retaining cash-safe timer exits and fresh model SELLs. New trading behavior is not yet verified. [Installation](research/tartarus-learning-v2/r93-installed-restoring-20261022.json), [change and limits](research/tartarus-learning-v2/rank-inventory-r93-20261022.md).
+
+Latest official receipt marks,13:43:58/13:44:01UTC: cash2,392.095 plus marked holdings91,586.06 = **93,978.155 SUSQies (-6.021845% versus assumed100,000)**. These are separate receipt clocks, not executable liquidation. [Official aggregate](research/tartarus-learning-v2/r93-latest-official-mark-20261022.json).
+
+R92's first15-minute audit was8 filled orders/-32.76 realized; its later13:38 audit was15 orders/-313.30. The later loss includes an explicitly model-directed inherited1058 SELL (-276.40), separate from the timer mismatch. R93 does not prohibit those economic/model exits or promise positive returns. Its file-only monetary supervisor and finite15-minute fill audit are waiting for healthy recovery; only the official worker trades.
+
+### Earlier dated observations
+
 ## Current state: October22,13:22UTC
 
 **R92 is verified live; one filled order/minute remains unmet.** Its first15-minute original-receipt/FIFO audit found8 distinct filled orders (0.533/minute),7 empty completed UTC minutes and **-32.76 SUSQies realized net**. Six of the eight orders were sales. The two buys acquired7,194 NO948 and886 NO1071. Cash3,240.905 and remaining original cost93,259.635 are dated ledger values. This is increased activity, not profitable turnover. [Full audit](research/tartarus-learning-v2/r92-first-15-minute-turnover-20261022.json).

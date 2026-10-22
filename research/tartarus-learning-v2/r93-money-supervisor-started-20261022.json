@@ -1,0 +1,11 @@
+{
+  "pid": 1103635,
+  "workerPid": 1103623,
+  "sourceCommit": "ba54673736d765752ca33c094e18fc9c6f049870",
+  "phase": "waiting_for_healthy_worker",
+  "officialAccountClientsCreated": 0,
+  "ordersSubmittedBySupervisor": 0,
+  "finiteMinutes": 120,
+  "maximumFreshAnalyses": 200,
+  "oneFilledTradePerMinuteEstablished": false
+}

@@ -17,3 +17,7 @@ The worker/native API and engine identity are unchanged. The focused module incl
 R92 continues trading during qualification. A replacement preserves the entire original financial prefix, fills, actual order bindings, native approval chain, current entry-margin reviews, caps, limiter and daily windows. The current monetary supervisor must be pinned to the replacement PID/binary after recovery. Native replay previously cost about23minutes; no additional runtime replacement is planned for diagnostics alone.
 
 This change fixes an exit-policy mismatch. It cannot prove an informational edge, positive ROI or one filled order/minute. Those require original receipt/FIFO and cadence measurements after the new worker is healthy.
+
+## Installed boundary
+
+R93 installed13:43:53UTC as worker1103623 after all270 worker checks passed. All625 previous fills, the entire2,829,310,904-byte financial prefix, native identity and earlier approvals remain. There were no known physical orders at replacement. The new worker is recovering original history; no fresh behavior, fill-rate improvement or profit is claimed. [Installation](r93-installed-restoring-20261022.json), [qualification](r93-rank-inventory-qualified-20261022.json).

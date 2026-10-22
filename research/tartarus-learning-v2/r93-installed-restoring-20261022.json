@@ -1,0 +1,35 @@
+{
+  "observedUtc": "2026-10-22T13:43:53.417536+00:00",
+  "sourceCommit": "ba54673736d765752ca33c094e18fc9c6f049870",
+  "binarySha256": "2ee65797fbab9cbfea34e8b2554e258a4349fcbd6ad61a5e92f857857fda0bb6",
+  "controlSha256": "f96091bcc9950fa69e8408f5a267aead3162819ea01424cd0738efec07c549c8",
+  "originalFills": 625,
+  "originalReportHash": "29eccf4d555ed8d7a18d259aa3a59d3a62a752851cbd1cabd13e19a59f6799f0",
+  "originalFinancialPrefix": {
+    "bytes": 2829310904,
+    "sha256": "64eddb3a50efef4100ec79a8674ff75545437d976b7f00df8a6c308b3837b85a"
+  },
+  "originalNativeHead": {
+    "hash": "082117b36e0f267ab1a0c3346db445c6269f2114662538bff3158d1e756fd6f2",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "462a98753c35acd2bb5141f82acb70e5c04bb35f57199b7d342f55dd771fb337",
+    "sequence": 863868
+  },
+  "bridgeSha256": "81fc2135d2dd4da39a2b7b60f6b4ac644df8fee3c084b3b75abff150eb01927b",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r93-rank-inventory-20261022T134330Z",
+  "nativeEngineUnchanged": true,
+  "originalFinancialStatePreserved": true,
+  "knownOpenOrders": [],
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "engineIdentity": "468ac8fb382a51bfb001e1496199569a9cb02fc710bf90523c9c10cdd107bd22",
+  "allPriorEngineBridgesPreserved": true,
+  "newBridgeSha256": "81fc2135d2dd4da39a2b7b60f6b4ac644df8fee3c084b3b75abff150eb01927b",
+  "pid": 1103623,
+  "startTicks": 64628741,
+  "referenceUpdaterPid": 1103626,
+  "actualExecutableAndArgumentsVerified": true
+}

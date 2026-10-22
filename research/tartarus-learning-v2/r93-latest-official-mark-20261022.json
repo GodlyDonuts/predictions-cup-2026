@@ -1,0 +1,15 @@
+{
+  "observedUtc": "2026-10-22T13:46:17.186852+00:00",
+  "cashReceiptAt": "2026-10-22T13:44:01.079Z",
+  "positionReceiptAt": "2026-10-22T13:43:58.680Z",
+  "originalPreflightSha256": "7cbc48b58e985918d710944ba945b310cf2e1a0487524cc5dedba816c96a8aa8",
+  "cash": "2392.095",
+  "markedHoldings": "91586.06",
+  "markedAccountValue": "93978.155",
+  "returnVersusAssumed100000": "-0.06021845",
+  "positionCount": 16,
+  "simultaneousSnapshot": false,
+  "executableLiquidationValueClaimed": false,
+  "attributionToR93Claimed": false,
+  "officialAccountRequestsByObserver": 0
+}
