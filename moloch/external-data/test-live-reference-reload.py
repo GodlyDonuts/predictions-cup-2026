@@ -108,6 +108,20 @@ class RefreshTests(unittest.TestCase):
             r['executionPolicy']={'version':1,'allowedModes':modes['1067']};p.write_text(json.dumps(r))
             self.assertEqual(refresh.changed_scopes(capture,control,set(),1000,execution_modes=modes),[])
 
+    def test_reserved_quote_is_protected_before_http_acknowledgment(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'review.json';p.write_text(json.dumps(self.review()))
+            control={'fundamentalPolicy':{'reviews':[{'path':str(p)}]}}
+            capture={'rows':[{'exchangeId':'1067','yesMidpoint':'.6000'}]}
+            view={'knownUnclosedAcknowledgments':[],
+                  'activeNativeOrders':[{'id':7,'exchangeId':'1067','retired':False}]}
+            self.assertEqual(refresh.changed_scopes(capture,control,set(),1000),['1067'])
+            protected=refresh.protected_order_exchanges(view)
+            self.assertEqual(protected,{'1067'})
+            self.assertEqual(refresh.changed_scopes(capture,control,protected,1000),[])
+            view['activeNativeOrders'][0]['retired']=True
+            self.assertEqual(refresh.protected_order_exchanges(view),set())
+
     def test_mode_policy_requires_exact_hash_scope_and_supported_choices(self):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'modes.json';p.write_text(json.dumps({'version':1,'exchanges':{'1067':['joinBid']}}))

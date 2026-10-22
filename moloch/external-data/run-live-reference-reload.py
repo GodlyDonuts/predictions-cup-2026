@@ -109,6 +109,13 @@ def execution_margins_policy(config):
     return margins
 
 
+def protected_order_exchanges(view):
+    # A reserved quote already pins its review before any HTTP acknowledgment.
+    # Repricing it during physical preparation can repeatedly invalidate the
+    # packet. The existing owner retires/reconciles it; the updater does not.
+    return {q['exchangeId'] for q in view['activeNativeOrders'] if not q.get('retired', False)}
+
+
 def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False, execution_modes=None, entry_margins=None):
     inputs = {r['exchangeId']: r for r in capture['rows']}
     selected = []
@@ -305,8 +312,7 @@ def main():
             # order-price ticks were identical. That consumed account reads and
             # displaced pending plans without new economic information.
             view = json.loads((root / 'tartarus-current-native-state.json').read_bytes())
-            unclosed = set(view['knownUnclosedAcknowledgments'])
-            open_exchanges = {q['exchangeId'] for q in view['activeNativeOrders'] if q['id'] in unclosed}
+            open_exchanges = protected_order_exchanges(view)
             current_control = json.loads(Path(state['controlPath']).read_bytes())
             selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000,
                 refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c), entry_margins=execution_margins_policy(c))

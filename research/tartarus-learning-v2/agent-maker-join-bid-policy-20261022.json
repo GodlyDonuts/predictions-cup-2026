@@ -1,8 +1,12 @@
 {
   "version": 1,
   "exchanges": {
-    "1077": ["joinBid"],
-    "983": ["joinBid"]
+    "1077": [
+      "joinBid"
+    ],
+    "983": [
+      "joinBid"
+    ]
   },
   "entryMargins": {}
 }
