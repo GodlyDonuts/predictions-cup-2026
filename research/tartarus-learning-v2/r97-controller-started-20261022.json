@@ -1,0 +1,9 @@
+{
+  "observedUtc": "2026-10-22T16:23:30.641483+00:00",
+  "pid": 1111147,
+  "accountWorkerPid": 1111134,
+  "decisionProfilePolicy": "current-prices",
+  "accountClientsCreated": 0,
+  "ordersSubmittedBySupervisor": 0,
+  "phase": "waiting_for_original_ledger_restoration"
+}
