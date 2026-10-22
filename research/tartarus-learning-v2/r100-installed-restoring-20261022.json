@@ -1,0 +1,36 @@
+{
+  "observedUtc": "2026-10-22T17:50:41.604574+00:00",
+  "sourceCommit": "2a48710b44b4aa0c767caa1172f089627ead3fdf",
+  "binarySha256": "88b64707a45b89150303137a0e998ba0a216242e1719d8a4f893d525aab291a7",
+  "controlSha256": "5e27e1098f3a64d16ebf9f0799b93e966ca86b0f6ea4daf3057ab6c46c1c4f43",
+  "originalFills": 660,
+  "originalReportHash": "8253240e81923a4ab8815c28496cbecd732078d8bb80cf73d4a4f69838c70aff",
+  "originalFinancialPrefix": {
+    "bytes": 2870159229,
+    "sha256": "910309b30ab2b8e77c7fa1c6eb1398144b4ca462faf869afb6506c9542a86235"
+  },
+  "originalNativeHead": {
+    "hash": "b2535fc93b2587bec75b05e66c53b93cb7b5b393832c7f3393188de990b780bc",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "c573e34dd70521754e8c475e68110e357fbda956417d30b568b55cac72fa9cf0",
+    "sequence": 877635
+  },
+  "bridgeSha256": "81fc2135d2dd4da39a2b7b60f6b4ac644df8fee3c084b3b75abff150eb01927b",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r100-owner-handoff-20261022T175015Z",
+  "nativeEngineUnchanged": false,
+  "originalFinancialStatePreserved": true,
+  "knownOpenOrders": [],
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "engineIdentity": "613e5b5acc399b6f72d1f93a438181310ae6fcafa698fd93bbb7d99c72592f55",
+  "allPriorEngineBridgesPreserved": true,
+  "newBridgeSha256": "8c5460e09298ac1963d6304710be00010122ae59748d5aeab8bf89ca37a02e8a",
+  "upgradeBytes": 405508999,
+  "pid": 1124953,
+  "startTicks": 66109560,
+  "referenceUpdaterPid": 1124956,
+  "actualExecutableAndArgumentsVerified": true
+}

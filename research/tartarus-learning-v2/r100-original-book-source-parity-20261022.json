@@ -1,0 +1,13 @@
+{
+  "exchangeId": "1051",
+  "exactOriginalRecorderRowRetained": true,
+  "originalReceiptClockPreserved": true,
+  "normalizedResearchBookHashMatchesNomination": true,
+  "observationModuleSha256": "d234a180dc6f6762e0e721f6edf5407259535247537e9ca088670705236d0bf1",
+  "sourceCommit": "2a48710b44b4aa0c767caa1172f089627ead3fdf",
+  "historicalEngineeringOnly": true,
+  "approvalPublished": false,
+  "physicalOrderSubmitted": false,
+  "nativeAdmissionClaimed": false,
+  "completeTradeHistoryClaimed": false
+}

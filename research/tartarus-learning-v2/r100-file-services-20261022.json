@@ -1,0 +1,13 @@
+{
+  "workerPid": 1124953,
+  "sourceCommit": "2a48710b44b4aa0c767caa1172f089627ead3fdf",
+  "controllerSourceCommit": "bc3fc871b15ff8b623ccd9df2fb17b3fa82524e5",
+  "reviewHorizonMs": 60000,
+  "controllerPid": 1124963,
+  "observerPid": 1124964,
+  "controllerCommandSha256": "2872867c21fae8f2a74530bef118722f1faf9d4982afa148b7bade11cdc32dc7",
+  "fileOnly": true,
+  "newAccountClients": 0,
+  "freshTradingVerified": false,
+  "oneFilledTradePerMinuteEstablished": false
+}

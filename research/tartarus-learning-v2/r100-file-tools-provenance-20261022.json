@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "bc3fc871b15ff8b623ccd9df2fb17b3fa82524e5",
+  "fileSha256": {
+    "capture-current-rank-inputs.py": "7a2464759f101517c36f8dedce246380d4cdfa1e33d65c64da123ac1e8d65e7a",
+    "money_profile_policy.py": "30b9ff89b41c269eb8161e718e3847e05890ccb19d8e675da47b637aefd2f0dc",
+    "money-reservation-projection.py": "9e3105dc68145949166eaa51f8a7fce530c6b9d656399cf97db1d50e78f6e73a",
+    "prepare-current-money-nomination.py": "8c344221f6eecc29acb6e4d132517d92ec7d4460771b26109559128c36804fb3",
+    "prepare-current-money-rotation.py": "42832e51bf6df87e641e7510dde5d192539199d6170a0f576d4193ab630d6546",
+    "prepare-live-money-research.py": "d10fa765d4861f3010632e86ce8a2d58b3827b485535cbdf8070a7b870858602",
+    "publish-current-money-review.py": "7efe241966106943b71c47dc65d97fe0ad5933c0deca9f195324869df8ba74da",
+    "research_book_observations.py": "d234a180dc6f6762e0e721f6edf5407259535247537e9ca088670705236d0bf1",
+    "run-current-money-campaign.py": "8dd861a89deb6cc0e0dd2709ce2de1bbec2ff0a7d6e3c5be179558847f1634a9",
+    "scan-current-money-opportunities.py": "678673cd907066c60bda3d72d2bf2b57a415d8fdea9bb11b0ca9242a9a634493",
+    "test_capture_current_pair.py": "389eb1da2f72f3ed70103a4106de2a62619a522187b1b8751a36daa5742eef31",
+    "test_money_profile_policy.py": "6b1ea77a1de0e23af66a84783ce65a631b50e7692d2fdeac1de831520c9285c9",
+    "test_research_book_observations.py": "0be1fbaa5df1d144bfe387fac416b66d1d04615fee0961e2c6b40836e9830c34"
+  },
+  "verifiedAgainstPublishedGitBlobs": true
+}

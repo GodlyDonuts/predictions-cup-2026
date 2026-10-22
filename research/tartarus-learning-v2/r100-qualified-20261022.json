@@ -1,0 +1,38 @@
+{
+  "observedUtc": "2026-10-22T17:47:18.403000+00:00",
+  "sourceHashes": {
+    "moloch/tartarus/current_portfolio.py": "002fa8eab13d17c560e331c3f2d9d75001d9fd5a0ce7c800c8f5cf7bc6c797f5",
+    "moloch/tartarus/test_current_portfolio.py": "85b9392a64fc517b21966cb07efe7bbc9d116ac0f0a8bfd44e703871ac4f7f0d",
+    "moloch/native/src/session.rs": "9585f356848f0159f62658bd4da2b1af4c6c34cdc7a95769332028065e4f98f2",
+    "moloch/native/src/reviewed_rank_campaign.rs": "f84d78924408ad344a1a9edd91878570412dada398a9a59ff50bfcb9638ef67d",
+    "moloch/live-runtime/src/worker.rs": "827d3b8cf34d8cf9c10726ab831704e6e3e2fae19c1fa108df03505145cb19fd",
+    "moloch/live-runtime/src/fundamental_rank_ownership.rs": "8051a5424a5ce28c89eb629086a92d1969ab8e19db9114341b16b32dc3792103",
+    "moloch/live-runtime/src/rank_campaign.rs": "b62987daa04e9ed16920227636e113acc715232f21871d4339bca6d99c43527c",
+    "moloch/live-runtime/tests/rank_cohort_ownership.rs": "f04544a179d5c13e4032f3892efe043c5db726b342af7fc85b609e09b7f5155b",
+    "research/tartarus-learning-v2/tools/build-upgrade-bound-r100-20261022.py": "1f01dcb700b20ff53016cd1a61be914c6cd534471b6e738dde248f05c9cfbcba",
+    "research/tartarus-learning-v2/tools/build-same-side-handoff-r99-20261022.py": "717aa6f40d69b83552b1be689c52da1d17f51c3b4c1e9d2c7d61cc95be8b2c23"
+  },
+  "checks": {
+    "native-tests-build": "test result: ok. 143 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 1.74s",
+    "rank-tests": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 280 filtered out; finished in 0.00s",
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.35s",
+    "rank-cohort-tests": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+    "worker-tests": "test result: ok. 270 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.67s"
+  },
+  "binarySha256": "88b64707a45b89150303137a0e998ba0a216242e1719d8a4f893d525aab291a7",
+  "nativeLibrarySha256": "0362f151b37b9eec0ea375412039682a432a43541dc24eea8f25e263bd1cbba5",
+  "runtimeLibrarySha256": "9805824b13d7724995bc73cb7ae9bbea916b4fcd1fa5c219576771e4a38bcf4d",
+  "runtimeFixtureSha256": "e5c2bcd07ee58cdc088e772be3a900dac4b0961542df454e3ede2912719fffe4",
+  "cliLoads": true,
+  "testFilesystem": "memory-backed temporary fixtures; original fsync calls unchanged",
+  "productionChanged": false,
+  "accountClientsCreated": 0,
+  "monetaryCapsChanged": false,
+  "conditionalFutureProceedsCredited": false,
+  "futureLiquidityCertified": false,
+  "conditionalMonetaryRotationObjectiveQualified": true,
+  "sameSideBuyHandoffQualified": true,
+  "oneFilledTradePerMinuteEstablished": false,
+  "retainedCompiledStages": [],
+  "originalHarnessFailureRetained": null
+}
