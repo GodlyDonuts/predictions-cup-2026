@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,18:29UTC
+## Latest state: October22,19:02UTC
+
+The Florida-to-Rhode-Island reallocation is fully reconciled:10000 Florida Senate Republican YES sold for8500 (-33.50 realized versus original FIFO), followed by9489 Rhode Island governor Republican NO bought for8576.385, zero fees. Cash11.745; all691 fill rows/FIFO match originals. Same R100 worker remains live. The partial-funding allocation screen and original future-book attribution are corrected; no cap or worker changes. Profitability and one-fill/minute remain unproved. [Actual audit](research/tartarus-learning-v2/agent-florida-ri-rotation-complete-20261022.json), [research-agent report and winning gap](research/tartarus-learning-v2/agent-allocation-and-win-gap-20261022.md).
+
+### Earlier18:29UTC redeployment
 
 The agent-selected Idaho Democratic NO buy is fully reconciled:8788 shares at0.88,7733.44 cost, zero fees. Cash is88.13; nearly all available cash is deployed. This acquisition is not profit. All original fills/FIFO are retained; the three reviewed orders comprise two West Virginia exits and this new position. The exits realized -1182.205 against original basis. [Actual buy and accounting](research/tartarus-learning-v2/agent-idaho-redeployment-20261022.json). A retained-book screen also identifies31 conditional NO-pair opportunities; resolution exceptions and official collateral eligibility are unverified, so none is claimed as guaranteed arbitrage. [Conditional pair evidence](research/tartarus-learning-v2/conditional-no-pair-screen-20261022.json). Positive ROI and one filled order/minute remain unproved.
 

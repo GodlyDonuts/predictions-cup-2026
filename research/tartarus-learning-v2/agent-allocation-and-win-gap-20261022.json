@@ -1,0 +1,1120 @@
+{
+  "observedUtc": "2026-10-22T18:59:37.798268+00:00",
+  "latestRetainedBuyingPower": {
+    "observations": {
+      "account": {
+        "file": "ea9575415935e1a6662c0fc6cc6b71f6a22de1bdf1777ca28a764bc8e1d747c3.json",
+        "receivedAt": "2026-10-22T18:30:38.965Z",
+        "status": 200,
+        "balance": 88.13,
+        "buyingPower": 88.13,
+        "availableAdvance": 0
+      },
+      "collateral": {
+        "file": "413fda23dcaecf68e7ef8cb40d600f7a3ca7131e5966bbe5026eaa102b613433.json",
+        "receivedAt": "2026-10-22T18:27:39.999Z",
+        "status": 200,
+        "availableAdvance": 0,
+        "componentCount": 0,
+        "components": []
+      }
+    },
+    "newAccountClients": 0,
+    "sourceClocksRenewed": false,
+    "relationshipCensus": {
+      "account": {
+        "availability": "available",
+        "errorCode": null,
+        "httpStatus": 200,
+        "retryAfterMs": null,
+        "rowCount": 1,
+        "source": {
+          "privateFile": "relationship-census-1792630630642-1055406-3-account.json",
+          "receiptSha256": "d5882dec135a5487521f6a22cb40dd8ade905061f73ad1fc3ed67ff68c6175c3",
+          "receivedAt": "2026-10-22T00:57:10.642Z",
+          "requestStartedAt": "2026-10-22T00:57:10.231Z",
+          "status": 200
+        }
+      },
+      "activeRelationshipCount": 0,
+      "collateral": {
+        "availability": "empty",
+        "errorCode": null,
+        "httpStatus": 200,
+        "retryAfterMs": null,
+        "rowCount": 0,
+        "source": {
+          "privateFile": "relationship-census-1792630629565-1055406-2-collateral.json",
+          "receiptSha256": "67ba6f9affd7dc221610c2540fb148b26f0b005df234a72babd4832bad90182b",
+          "receivedAt": "2026-10-22T00:57:09.565Z",
+          "requestStartedAt": "2026-10-22T00:57:09.289Z",
+          "status": 200
+        }
+      },
+      "completedAtMs": 1792630633426,
+      "constraints": {
+        "availability": "empty",
+        "errorCode": null,
+        "httpStatus": 200,
+        "retryAfterMs": null,
+        "rowCount": 0,
+        "source": {
+          "privateFile": "relationship-census-1792630628663-1055406-1-constraints.json",
+          "receiptSha256": "fc63bd59debbe8e7dad68ea05b8b581cb600930a54cbf2c0895777b2114f8df4",
+          "receivedAt": "2026-10-22T00:57:08.663Z",
+          "requestStartedAt": "2026-10-22T00:57:08.392Z",
+          "status": 200
+        }
+      },
+      "executionAuthority": false,
+      "exhaustiveRelationshipCount": 0,
+      "feedComplete": true,
+      "graphDiscovery": {
+        "allGraphsComplete": false,
+        "executionAuthority": false,
+        "maximumRootsPerCensus": 3,
+        "observedRoots": [
+          "373",
+          "374",
+          "375"
+        ],
+        "requestedRoots": [
+          "373",
+          "374",
+          "375"
+        ],
+        "rotationStateError": null
+      },
+      "graphs": {
+        "373": {
+          "availability": "empty",
+          "errorCode": null,
+          "httpStatus": 200,
+          "retryAfterMs": null,
+          "rowCount": 0,
+          "source": {
+            "privateFile": "relationship-census-1792630631542-1055406-4-graph-373.json",
+            "receiptSha256": "3245544f1cb02792340a515392e43d4553b881629e1fc2acfa72221b51da9632",
+            "receivedAt": "2026-10-22T00:57:11.542Z",
+            "requestStartedAt": "2026-10-22T00:57:11.263Z",
+            "status": 200
+          }
+        },
+        "374": {
+          "availability": "empty",
+          "errorCode": null,
+          "httpStatus": 200,
+          "retryAfterMs": null,
+          "rowCount": 0,
+          "source": {
+            "privateFile": "relationship-census-1792630632489-1055406-5-graph-374.json",
+            "receiptSha256": "ee043e6d1958dce85516a0dc417546405fdf1fe3417bd214eb22a4153ee35bd1",
+            "receivedAt": "2026-10-22T00:57:12.489Z",
+            "requestStartedAt": "2026-10-22T00:57:12.193Z",
+            "status": 200
+          }
+        },
+        "375": {
+          "availability": "empty",
+          "errorCode": null,
+          "httpStatus": 200,
+          "retryAfterMs": null,
+          "rowCount": 0,
+          "source": {
+            "privateFile": "relationship-census-1792630633421-1055406-6-graph-375.json",
+            "receiptSha256": "24bad9440b28bc9cc0f9eebfecad3328e89f2c651082e860fca3c2453ee3d17b",
+            "receivedAt": "2026-10-22T00:57:13.421Z",
+            "requestStartedAt": "2026-10-22T00:57:13.130Z",
+            "status": 200
+          }
+        }
+      },
+      "knownFloorComponentCount": 0,
+      "relationships": {
+        "availability": "empty",
+        "errorCode": null,
+        "httpStatus": 200,
+        "retryAfterMs": null,
+        "rowCount": 0,
+        "source": {
+          "privateFile": "relationship-census-1792630627766-1055406-0-relationships.json",
+          "receiptSha256": "e6c429110964b86b44fc5a33f9c91b1bd31639bc90656a9a0e4c7c292f194337",
+          "receivedAt": "2026-10-22T00:57:07.766Z",
+          "requestStartedAt": "2026-10-22T00:57:07.448Z",
+          "status": 200
+        }
+      },
+      "scopeSha256": "eb720801f2031dbcf232b2af58d331d8b6399c1a2d095d7962111263822e328b",
+      "startedAtMs": 1792630627403,
+      "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "transportGuardObserved": false,
+      "unknownFloorComponentCount": 0,
+      "version": 1
+    }
+  },
+  "positiveRotations": {
+    "sourcePortfolioSha256": "aba7d68920d253118f8329b4663c8238112ebd2832524733fb9ce0e243976f36",
+    "sourceViewSha256": "63c11474bb76dd3beb3bf338e371256e712e8bdac10a3653411193143123e7d0",
+    "originalViewWrittenAt": "2026-10-22T18:50:23.373Z",
+    "issuedReferenceSha256": "1e7d9d7b6c3243907bbadb829b5432cd67d301d4e40520deb91df9c9fc9f4df2",
+    "firstSaleTranches": 21,
+    "firstAcquisitionTranches": 241,
+    "positiveSampledProposals": 646,
+    "independentlyAudited": 10,
+    "researchAuditLimit": 256,
+    "researchMaximumOutputCandidates": 10,
+    "candidates": [
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "1044",
+            "side": "YES",
+            "n": 10000,
+            "price": 850000,
+            "basis": 8533500000,
+            "previous": null,
+            "quantity": 10000
+          },
+          {
+            "action": "BUY",
+            "ex": "1074",
+            "side": "NO",
+            "n": 10000,
+            "price": 905000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 9489
+          }
+        ],
+        "weakestDeclaredExpectedChange": 296.234935,
+        "ordinaryMinimumExpectedChange": "296.565000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "1044",
+            "race": "U.S. Senate Florida",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1074",
+            "race": "Governor of Rhode Island",
+            "party": "Republican Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 10087545000,
+        "minimumPrefixWealthMicros": 24924585000,
+        "hypotheticalGrossSaleProceedsMicros": 8500000000,
+        "hypotheticalAcquisitionCostMicros": 8587545000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "885",
+            "side": "YES",
+            "n": 4166,
+            "price": 645000,
+            "basis": 2949820000,
+            "previous": null,
+            "quantity": 4166
+          },
+          {
+            "action": "BUY",
+            "ex": "1076",
+            "side": "YES",
+            "n": 10000,
+            "price": 880000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 3153
+          }
+        ],
+        "weakestDeclaredExpectedChange": 292.900793,
+        "ordinaryMinimumExpectedChange": "293.457000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "885",
+            "race": "Governor of Texas",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1076",
+            "race": "U.S. Senate Rhode Island",
+            "party": "Democratic Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 4253570000,
+        "minimumPrefixWealthMicros": 30758560000,
+        "hypotheticalGrossSaleProceedsMicros": 2687070000,
+        "hypotheticalAcquisitionCostMicros": 2774640000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "977",
+            "side": "NO",
+            "n": 9519,
+            "price": 930000,
+            "basis": 8922705000,
+            "previous": null,
+            "quantity": 9519
+          },
+          {
+            "action": "BUY",
+            "ex": "1074",
+            "side": "NO",
+            "n": 10000,
+            "price": 905000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 9879
+          }
+        ],
+        "weakestDeclaredExpectedChange": 266.203671,
+        "ordinaryMinimumExpectedChange": "287.613000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "977",
+            "race": "U.S. Senate Oregon",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1074",
+            "race": "Governor of Rhode Island",
+            "party": "Republican Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 9606825000,
+        "minimumPrefixWealthMicros": 34924305000,
+        "hypotheticalGrossSaleProceedsMicros": 8852670000,
+        "hypotheticalAcquisitionCostMicros": 8940495000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "977",
+            "side": "NO",
+            "n": 9519,
+            "price": 930000,
+            "basis": 4417050000,
+            "previous": null,
+            "quantity": 4696
+          },
+          {
+            "action": "BUY",
+            "ex": "1076",
+            "side": "YES",
+            "n": 10000,
+            "price": 880000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 5062
+          }
+        ],
+        "weakestDeclaredExpectedChange": 257.370552,
+        "ordinaryMinimumExpectedChange": "238.894000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "977",
+            "race": "U.S. Senate Oregon",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1076",
+            "race": "U.S. Senate Rhode Island",
+            "party": "Democratic Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 4783280000,
+        "minimumPrefixWealthMicros": 34924850000,
+        "hypotheticalGrossSaleProceedsMicros": 4367280000,
+        "hypotheticalAcquisitionCostMicros": 4454560000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "1044",
+            "side": "YES",
+            "n": 10000,
+            "price": 850000,
+            "basis": 4392135000,
+            "previous": null,
+            "quantity": 5137
+          },
+          {
+            "action": "BUY",
+            "ex": "1076",
+            "side": "YES",
+            "n": 10000,
+            "price": 880000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 5062
+          }
+        ],
+        "weakestDeclaredExpectedChange": 249.00004,
+        "ordinaryMinimumExpectedChange": "249.275000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "1044",
+            "race": "U.S. Senate Florida",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1076",
+            "race": "U.S. Senate Rhode Island",
+            "party": "Democratic Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 5225110000,
+        "minimumPrefixWealthMicros": 29787020000,
+        "hypotheticalGrossSaleProceedsMicros": 4366450000,
+        "hypotheticalAcquisitionCostMicros": 4454560000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "885",
+            "side": "YES",
+            "n": 4166,
+            "price": 645000,
+            "basis": 2949820000,
+            "previous": null,
+            "quantity": 4166
+          },
+          {
+            "action": "BUY",
+            "ex": "1074",
+            "side": "NO",
+            "n": 10000,
+            "price": 905000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 3066
+          }
+        ],
+        "weakestDeclaredExpectedChange": 235.115636,
+        "ordinaryMinimumExpectedChange": "235.614000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "885",
+            "race": "Governor of Texas",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1074",
+            "race": "Governor of Rhode Island",
+            "party": "Republican Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 4253660000,
+        "minimumPrefixWealthMicros": 30758470000,
+        "hypotheticalGrossSaleProceedsMicros": 2687070000,
+        "hypotheticalAcquisitionCostMicros": 2774730000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "885",
+            "side": "YES",
+            "n": 4166,
+            "price": 645000,
+            "basis": 2394865000,
+            "previous": null,
+            "quantity": 3377
+          },
+          {
+            "action": "BUY",
+            "ex": "859",
+            "side": "NO",
+            "n": 10000,
+            "price": 880000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 2575
+          }
+        ],
+        "weakestDeclaredExpectedChange": 231.639212,
+        "ordinaryMinimumExpectedChange": "193.463000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "885",
+            "race": "Governor of Texas",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "859",
+            "race": "Governor of Idaho",
+            "party": "Democratic Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 3464835000,
+        "minimumPrefixWealthMicros": 33813295000,
+        "hypotheticalGrossSaleProceedsMicros": 2178165000,
+        "hypotheticalAcquisitionCostMicros": 2266000000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "885",
+            "side": "YES",
+            "n": 4166,
+            "price": 645000,
+            "basis": 2949820000,
+            "previous": null,
+            "quantity": 4166
+          },
+          {
+            "action": "BUY",
+            "ex": "859",
+            "side": "NO",
+            "n": 10000,
+            "price": 880000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 2575
+          }
+        ],
+        "weakestDeclaredExpectedChange": 226.863896,
+        "ordinaryMinimumExpectedChange": "188.729000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "885",
+            "race": "Governor of Texas",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "859",
+            "race": "Governor of Idaho",
+            "party": "Democratic Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 3744930000,
+        "minimumPrefixWealthMicros": 33533200000,
+        "hypotheticalGrossSaleProceedsMicros": 2687070000,
+        "hypotheticalAcquisitionCostMicros": 2266000000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "885",
+            "side": "YES",
+            "n": 4166,
+            "price": 645000,
+            "basis": 2949820000,
+            "previous": null,
+            "quantity": 4166
+          },
+          {
+            "action": "BUY",
+            "ex": "1051",
+            "side": "NO",
+            "n": 10000,
+            "price": 890000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 3118
+          }
+        ],
+        "weakestDeclaredExpectedChange": 202.152632,
+        "ordinaryMinimumExpectedChange": "190.146000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "885",
+            "race": "Governor of Texas",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1051",
+            "race": "U.S. Senate Tennessee",
+            "party": "Democratic Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 4253950000,
+        "minimumPrefixWealthMicros": 33533200000,
+        "hypotheticalGrossSaleProceedsMicros": 2687070000,
+        "hypotheticalAcquisitionCostMicros": 2775020000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      },
+      {
+        "legs": [
+          {
+            "action": "SELL",
+            "ex": "1044",
+            "side": "YES",
+            "n": 10000,
+            "price": 850000,
+            "basis": 8533500000,
+            "previous": null,
+            "quantity": 10000
+          },
+          {
+            "action": "BUY",
+            "ex": "1051",
+            "side": "NO",
+            "n": 10000,
+            "price": 890000,
+            "previous": null,
+            "opposite_sale": null,
+            "quantity": 9649
+          }
+        ],
+        "weakestDeclaredExpectedChange": 194.149123,
+        "ordinaryMinimumExpectedChange": "155.781000",
+        "eventDescriptions": [
+          {
+            "exchangeId": "1044",
+            "race": "U.S. Senate Florida",
+            "party": "Republican Party"
+          },
+          {
+            "exchangeId": "1051",
+            "race": "U.S. Senate Tennessee",
+            "party": "Democratic Party"
+          }
+        ],
+        "maximumPrefixLossVersusHoldMicros": 10087610000,
+        "minimumPrefixWealthMicros": 33512130000,
+        "hypotheticalGrossSaleProceedsMicros": 8500000000,
+        "hypotheticalAcquisitionCostMicros": 8587610000,
+        "actualFutureProceedsCredited": false,
+        "futureLiquidityCertified": false,
+        "independentExpectedPayoffArithmeticVerified": true,
+        "executionAuthority": false
+      }
+    ],
+    "rejections": {},
+    "globalOptimalityClaimed": false,
+    "calibratedProbabilitiesClaimed": false,
+    "newAccountClients": 0,
+    "executionAuthority": false
+  },
+  "deployment": {
+    "sourceCommit": "63b4dc92359fc799a0f27a87b672676111ca9635",
+    "files": {
+      "scan-current-money-rotations.py": "d8fc7f9cb22d60d5db3921a6e368047886909bb163f240bdaf1443cb0cb2c8d3",
+      "test_current_money_rotation_funding.py": "04695d49906656667aef55beb64082ec2da0d319b712de77b69c1712dcebb161"
+    },
+    "fundingTestsPassed": true,
+    "newAccountClients": 0,
+    "workerRestarted": false
+  },
+  "rankSearches": [
+    {
+      "objective": "rank",
+      "status": "exact_sequence_checked",
+      "solverStatus": 1,
+      "seconds": 20.1,
+      "legs": 120,
+      "targetObjectiveImproved": false,
+      "averageStrictMassPpm": 0.0,
+      "minimumStrictMassPpm": 0,
+      "modelExpectedChanges": [
+        {
+          "id": "price_lower_common",
+          "expectedChangeMicrosNumerator": -23634041591000000,
+          "denominator": 1000000
+        },
+        {
+          "id": "price_upper_common",
+          "expectedChangeMicrosNumerator": -19261788221000000,
+          "denominator": 1000000
+        },
+        {
+          "id": "price_midpoint_independent",
+          "expectedChangeMicrosNumerator": -20408794354000000,
+          "denominator": 1000000
+        }
+      ],
+      "maximumTerminalWealthMicros": 346981550000,
+      "globalOptimalityClaimed": false
+    },
+    {
+      "objective": "robust_rank",
+      "status": "exact_sequence_checked",
+      "solverStatus": 1,
+      "seconds": 20.186,
+      "legs": 118,
+      "targetObjectiveImproved": false,
+      "averageStrictMassPpm": 0.0,
+      "minimumStrictMassPpm": 0,
+      "modelExpectedChanges": [
+        {
+          "id": "price_lower_common",
+          "expectedChangeMicrosNumerator": -36184664405000000,
+          "denominator": 1000000
+        },
+        {
+          "id": "price_upper_common",
+          "expectedChangeMicrosNumerator": -36071976206000000,
+          "denominator": 1000000
+        },
+        {
+          "id": "price_midpoint_independent",
+          "expectedChangeMicrosNumerator": -36972394687000000,
+          "denominator": 1000000
+        }
+      ],
+      "maximumTerminalWealthMicros": 696188990000,
+      "globalOptimalityClaimed": false
+    }
+  ],
+  "forcedRankSearches": [
+    {
+      "objective": "rank",
+      "status": "no_incumbent",
+      "solverStatus": 1,
+      "seconds": 20.459,
+      "legs": 0,
+      "targetObjectiveImproved": null,
+      "averageStrictMassPpm": null,
+      "minimumStrictMassPpm": null,
+      "modelExpectedChanges": [],
+      "maximumTerminalWealthMicros": null,
+      "globalOptimalityClaimed": false,
+      "requiredWorld": "price_upper_common:3",
+      "requiredWorldSumOfSelectedModelWeightsPpm": 999
+    },
+    {
+      "objective": "rank",
+      "status": "exact_sequence_checked",
+      "solverStatus": 1,
+      "seconds": 20.038,
+      "legs": 129,
+      "targetObjectiveImproved": false,
+      "averageStrictMassPpm": 0.0,
+      "minimumStrictMassPpm": 0,
+      "modelExpectedChanges": [
+        {
+          "id": "price_lower_common",
+          "expectedChangeMicrosNumerator": -50228198036000000,
+          "denominator": 1000000
+        },
+        {
+          "id": "price_upper_common",
+          "expectedChangeMicrosNumerator": -41984351135000000,
+          "denominator": 1000000
+        },
+        {
+          "id": "price_midpoint_independent",
+          "expectedChangeMicrosNumerator": -47599802089000000,
+          "denominator": 1000000
+        }
+      ],
+      "maximumTerminalWealthMicros": 1088508005000,
+      "globalOptimalityClaimed": false,
+      "requiredWorld": "historical_review_envelope_upper_common:5",
+      "requiredWorldSumOfSelectedModelWeightsPpm": 0
+    },
+    {
+      "objective": "rank",
+      "status": "no_incumbent",
+      "solverStatus": 1,
+      "seconds": 20.233,
+      "legs": 0,
+      "targetObjectiveImproved": null,
+      "averageStrictMassPpm": null,
+      "minimumStrictMassPpm": null,
+      "modelExpectedChanges": [],
+      "maximumTerminalWealthMicros": null,
+      "globalOptimalityClaimed": false,
+      "requiredWorld": "historical_review_envelope_lower_common:0",
+      "requiredWorldSumOfSelectedModelWeightsPpm": 0
+    }
+  ],
+  "optimisticUpperBound": {
+    "observedUtc": "2026-10-22T18:43:54.818478+00:00",
+    "sourcePortfolioSha256": "db7a9e0834b15c29342102acaffec36a65ecd829cafd5b3a42f916b4422f19d2",
+    "sourceViewSha256": "34e7a6423ad0cf47f7742c8a4953123da8f5d63d10aec8cd735bcf50a3e812a8",
+    "bookCount": 139,
+    "scenarios": 397,
+    "publicField": {
+      "schema": "tartarus_public_leader_observation_v1",
+      "url": "https://sig.thesuper.market/leaderboards",
+      "requestStartedAt": "2026-10-22T18:38:02.499626+00:00",
+      "receivedAt": "2026-10-22T18:38:02.976894+00:00",
+      "status": 200,
+      "rawBytes": 216583,
+      "rawSha256": "c60b2f352db09b6d04bdb1d1f862a5848cba1919ee1cbcfaa24f17f932d25e5f",
+      "unauthenticatedPublicPage": true,
+      "accountApiRequests": 0,
+      "tournamentSlug": "midterm-elections",
+      "originalQueryKey": [
+        "tournament-leaderboard-tab",
+        "tournament",
+        "midterm-elections",
+        "all",
+        null,
+        "",
+        "pnl"
+      ],
+      "limitedPublicCacheHeaders": {
+        "Date": "Thu, 22 Oct 2026 18:38:02 GMT",
+        "Age": "0",
+        "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate"
+      },
+      "sourcePublicationTime": null,
+      "publicRank": 1,
+      "publicUsername": "kind-brook-6861",
+      "publicPnl": "988507.31",
+      "publicTradesCount": 4781,
+      "publicVolume": "17135126.35",
+      "publicRoiField": "5.77",
+      "publicRoiDefinitionNotInferred": true,
+      "initialAllotmentAssumption": "100000.000000",
+      "derivedFlatMarkedWealthAnchor": "1088507.310000",
+      "anchorIsCash": false,
+      "anchorIsTerminalWealth": false,
+      "unknownOpposingPositions": true,
+      "projectionAssumption": "Assumed initial allotment plus dated public marked PnL. Holding this level flat is an incomplete-field hypothesis, not a rival forecast.",
+      "executionAuthority": false
+    },
+    "originalHoldingsPayoutUpperBound": "11021013/100",
+    "maximumOptimisticScenario": {
+      "id": "price_upper_common:3",
+      "optimisticTerminalUpperBoundMicrosCeiling": 1378805644048
+    },
+    "scenariosWithOptimisticBoundAboveFlatAnchor": 86,
+    "perMarketCostCap": "10000.000000",
+    "relaxations": [
+      "Original holdings payoffs retained AND full best-price sale cash credited: deliberate double counting only for an upper bound.",
+      "Ignore sale depth, trade count, ownership exclusions, original per-market invested basis, scope count and marketability across clocks.",
+      "Fractional purchases allowed; buying uses retained ask depth and per-market gross acquisition cost cap."
+    ],
+    "scope": "Bound applies only to supplied scenarios and retained research books, not missing markets or unseen future prices. Public rival marks are not final opposing wealth. This relaxation covers cash-funded static terminal reallocation, without future new advances or interim trading profits.",
+    "calibratedProbabilitiesClaimed": false,
+    "executionAuthority": false
+  },
+  "fundingReview": {
+    "rawSha256": "7d3de993548f2f947999e9d66cb65bca34a4e212c5794fedf07d6e0c69471949",
+    "objective": "declared_positive_expected_money_rotation",
+    "exchangeId": "1044",
+    "side": "YES",
+    "action": "SELL",
+    "quantity": 10000,
+    "limitPrice": "0.850000",
+    "validUntilMs": 1792695632556,
+    "weakestDeclaredExpectedChange": 296.234935,
+    "firstLegExpectedChanges": {
+      "price_lower_common": -389.6435,
+      "price_upper_common": -509.5235,
+      "price_midpoint_independent": -405.8535
+    },
+    "ordinaryMinimumExpectedChange": "296.565000",
+    "monetaryFloorAppliesTo": "full_conditional_rotation",
+    "conditionalFuturePhysicalLegs": 1,
+    "minimumConditionalCompletionMs": 2500,
+    "originalPlanSha256": "84b4e1a1a5129be3297d7443aae4449ebf81bc0cf332971780d6fadec6ebbe6c",
+    "decisionProfilePolicy": "current-prices",
+    "decisionProfileIds": [
+      "price_lower_common",
+      "price_upper_common",
+      "price_midpoint_independent"
+    ],
+    "probabilityModels": 3,
+    "scenarios": 99,
+    "completeHeldMarkets": 21,
+    "actualFillPriceClaimed": false,
+    "futureLiquidityCertified": false,
+    "actualFutureProceedsCredited": false,
+    "sourceClocksRenewed": false,
+    "approvalPublished": false,
+    "submitted": false,
+    "executionAuthority": false
+  },
+  "fundingPublication": {
+    "state": "exact_execution_owner_review_published",
+    "rawSha256": "7d3de993548f2f947999e9d66cb65bca34a4e212c5794fedf07d6e0c69471949",
+    "approvalSha256": "bf1baef43d423376b32accbca407c6eaca943f4a5d181916a74b4666baf96460",
+    "approvedAtMs": 1792695247904,
+    "validUntilMs": 1792695632556,
+    "expectedWorkerPid": 1124953,
+    "sourceCommit": "9e049bfd2c2a31687ff09b624ddf0339258b463f",
+    "knownPhysicalOrdersStillRequireReconciliation": [],
+    "completedPriorReview": {
+      "qid": 22169,
+      "priorRawSha256": "e6e3e52740f11d6f5520484f51974c00d128f55d2fc427443de6a49c77b61738",
+      "originalClosedLineSha256": "1dca290089b4260d272d405d55361264e0323d5e0e87c091707d1d2e542fac11"
+    },
+    "expiredUnusedPriorReview": null,
+    "currentReservationProjection": {
+      "capturedReservedCash": "0.000000",
+      "expectedReservedCash": "0.000000",
+      "quoteIds": [
+        22259,
+        22261,
+        22262
+      ],
+      "actualCashCredited": "0.000000",
+      "executionAuthority": false
+    },
+    "sourceClocksRenewed": false,
+    "historicalOwnerFilesArchived": true,
+    "accountClientsCreated": 0,
+    "ordersSubmittedByPublisher": 0,
+    "officialWorkerMayActAfterIndependentChecks": true
+  },
+  "fundingAudit": {
+    "observedUtc": "2026-10-22T18:56:49.743547+00:00",
+    "baselineIncident": "r100-owner-handoff-20261022T175015Z",
+    "baselineReportSha256": "4d8e41ca0e59bc2b601ad7a3aa5e5c4b3cd3b1f8a8274b622203ecfc35a21660",
+    "originalFillCount": 660,
+    "currentFillCount": 684,
+    "originalFillsUnchanged": true,
+    "remainingFifoExactlyMatches": true,
+    "allNewFillsMatchOriginalOfficialReceipts": true,
+    "reportSha256": "bd4f3ad29ebd7042aec4ca532826d7304d0146c9f955c4b30b8d959cc79149db",
+    "reportAt": "2026-10-22T18:56:41.629Z",
+    "orders": {
+      "22111": {
+        "actualOrderId": "56548427",
+        "exchangeId": "986",
+        "side": "NO",
+        "action": "sell",
+        "shares": 10000,
+        "fillReceipts": 11,
+        "notional": "457.730000",
+        "cashDelta": "457.730000",
+        "ownedCostDelta": "-1150.000000",
+        "realizedGross": "-692.270000",
+        "fees": "0.000000",
+        "firstExecutedAt": "2026-10-22T18:15:57.467Z",
+        "lastExecutedAt": "2026-10-22T18:15:57.467Z",
+        "realizedNet": "-692.270000"
+      },
+      "22125": {
+        "actualOrderId": "56555165",
+        "exchangeId": "986",
+        "side": "NO",
+        "action": "sell",
+        "shares": 6438,
+        "fillReceipts": 7,
+        "notional": "250.435000",
+        "cashDelta": "250.435000",
+        "ownedCostDelta": "-740.370000",
+        "realizedGross": "-489.935000",
+        "fees": "0.000000",
+        "firstExecutedAt": "2026-10-22T18:20:08.101Z",
+        "lastExecutedAt": "2026-10-22T18:20:08.101Z",
+        "realizedNet": "-489.935000"
+      },
+      "22169": {
+        "actualOrderId": "56569320",
+        "exchangeId": "859",
+        "side": "NO",
+        "action": "buy",
+        "shares": 8788,
+        "fillReceipts": 1,
+        "notional": "7733.440000",
+        "cashDelta": "-7733.440000",
+        "ownedCostDelta": "7733.440000",
+        "realizedGross": "0",
+        "fees": "0.000000",
+        "firstExecutedAt": "2026-10-22T18:27:46.708Z",
+        "lastExecutedAt": "2026-10-22T18:27:46.708Z",
+        "realizedNet": "0.000000"
+      },
+      "22266": {
+        "actualOrderId": "56618457",
+        "exchangeId": "1044",
+        "side": "YES",
+        "action": "sell",
+        "shares": 10000,
+        "fillReceipts": 5,
+        "notional": "8500.000000",
+        "cashDelta": "8500.000000",
+        "ownedCostDelta": "-8533.500000",
+        "realizedGross": "-33.500000",
+        "fees": "0.000000",
+        "firstExecutedAt": "2026-10-22T18:55:07.075Z",
+        "lastExecutedAt": "2026-10-22T18:55:07.075Z",
+        "realizedNet": "-33.500000"
+      }
+    },
+    "financial": {
+      "cash": "8588.130000",
+      "ownedCost": "85838.835000",
+      "realized": "-1152.950000",
+      "newTradingRealized": "275.195000",
+      "inheritedRealizedGross": "-1428.145000"
+    },
+    "incrementalRealizedNet": "-1215.705000",
+    "incrementalTurnover": "16941.605000",
+    "incrementalShares": "35226",
+    "incrementalDistinctFilledOrders": 4,
+    "officialReceiptFileHashes": {
+      "a7278546f2cd70d606935aaa540e915e3ef9d407c060e323a6af9235e2bb61ff": "7c73318a1cb536439a18338632363a80937ad418adaca0b568c120b9204471ff",
+      "9da540ad01bcb5f7b105f737bb88b5a7cf65e323382cb869fd730d402d89a7b0": "7d5eae22957881a12320212a1542ecaeb40bda124f71f7d3080a7aeb41caba5b",
+      "c528b7bbbcd98a1cba3b2fc1db03fe524c4d2fdd48315846333f90dec9d6ce54": "b4fb689b03911779507f5100a0675001466e818dcfa105c53f54a5c4625ef1ea",
+      "d4346552c0c83e4557fdfed50b050c2055f57789f4d7c9d08fa00341e1cd6527": "80b0f09aede9816674f19533d99bb6a8aeafe28f4a0c722db9858b1608f572d7"
+    },
+    "utcDay": "2026-10-22",
+    "dayFillReceipts": 192,
+    "dayDistinctFilledOrders": 57,
+    "cadence": {
+      "observedUtc": "2026-10-22T18:56:49.743547+00:00",
+      "targetFilledOrdersPerMinute": 1,
+      "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+      "windowsMinutes": {
+        "1": {
+          "distinctFirstFilledOrders": 0,
+          "filledOrdersPerMinute": 0.0,
+          "targetFilledOrders": 1,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 60.0,
+          "completedUtcMinutesObserved": 1,
+          "completedUtcMinutesWithNoNewFilledOrder": 0,
+          "rollingMinuteCadenceMet": false
+        },
+        "5": {
+          "distinctFirstFilledOrders": 1,
+          "filledOrdersPerMinute": 0.2,
+          "targetFilledOrders": 5,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 197.331453,
+          "completedUtcMinutesObserved": 5,
+          "completedUtcMinutesWithNoNewFilledOrder": 4,
+          "rollingMinuteCadenceMet": false
+        },
+        "15": {
+          "distinctFirstFilledOrders": 1,
+          "filledOrdersPerMinute": 0.06666666666666667,
+          "targetFilledOrders": 15,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 797.331453,
+          "completedUtcMinutesObserved": 15,
+          "completedUtcMinutesWithNoNewFilledOrder": 14,
+          "rollingMinuteCadenceMet": false
+        },
+        "60": {
+          "distinctFirstFilledOrders": 4,
+          "filledOrdersPerMinute": 0.06666666666666667,
+          "targetFilledOrders": 60,
+          "averageTargetMet": false,
+          "maximumGapWithinWindowSeconds": 1640.367,
+          "completedUtcMinutesObserved": 60,
+          "completedUtcMinutesWithNoNewFilledOrder": 56,
+          "rollingMinuteCadenceMet": false
+        }
+      },
+      "latestNewFilledOrderUtc": "2026-10-22T18:55:07.075000+00:00",
+      "secondsSinceNewFilledOrder": 102.668547,
+      "accountRequests": 0,
+      "executionAuthority": false
+    },
+    "noAccountRequestsByAudit": true,
+    "wholeAccountProfitEstablished": false
+  },
+  "acquisitionReview": {
+    "rawSha256": "9f2f9148a439b9d46b270141def58001887800b2a40d2e9eecad318de2f535c9",
+    "objective": "declared_positive_expected_money",
+    "exchangeId": "1074",
+    "side": "NO",
+    "action": "BUY",
+    "quantity": 9489,
+    "limitPrice": "0.905000",
+    "validUntilMs": 1792696015323,
+    "weakestDeclaredExpectedChange": 752.430255,
+    "ordinaryMinimumExpectedChange": "806.565000",
+    "scenarios": 99,
+    "originalHypothesisQuantity": 9489,
+    "originalHypothesisPrice": "0.905000",
+    "requestedPriceTolerance": "0.000000",
+    "limitIsConservativeFundingAndValuationPrice": true,
+    "actualFillPriceClaimed": false,
+    "probabilityModels": 3,
+    "decisionProfilePolicy": "current-prices",
+    "decisionProfileIds": [
+      "price_lower_common",
+      "price_upper_common",
+      "price_midpoint_independent"
+    ],
+    "completeHeldMarkets": 21,
+    "sourceClocksRenewed": false,
+    "approvalPublished": false,
+    "submitted": false,
+    "executionAuthority": false
+  },
+  "acquisitionPublication": {
+    "state": "exact_execution_owner_review_published",
+    "rawSha256": "9f2f9148a439b9d46b270141def58001887800b2a40d2e9eecad318de2f535c9",
+    "approvalSha256": "0ff66c3f1b0487502155c036e53c99ca1f81b004e4160d0aba14c33c3ab21b50",
+    "approvedAtMs": 1792695534096,
+    "validUntilMs": 1792696015323,
+    "expectedWorkerPid": 1124953,
+    "sourceCommit": "9e049bfd2c2a31687ff09b624ddf0339258b463f",
+    "knownPhysicalOrdersStillRequireReconciliation": [],
+    "completedPriorReview": {
+      "qid": 22266,
+      "priorRawSha256": "7d3de993548f2f947999e9d66cb65bca34a4e212c5794fedf07d6e0c69471949",
+      "originalClosedLineSha256": "235539b7bd9583a2dcd6429ac9f47c80a5d46748cd58e5d550d3775df297e626"
+    },
+    "expiredUnusedPriorReview": null,
+    "currentReservationProjection": {
+      "capturedReservedCash": "0.000000",
+      "expectedReservedCash": "0.000000",
+      "quoteIds": [
+        22267,
+        22278
+      ],
+      "actualCashCredited": "0.000000",
+      "executionAuthority": false
+    },
+    "sourceClocksRenewed": false,
+    "historicalOwnerFilesArchived": true,
+    "accountClientsCreated": 0,
+    "ordersSubmittedByPublisher": 0,
+    "officialWorkerMayActAfterIndependentChecks": true
+  },
+  "sourceFilesSha256": {
+    "win-portfolio-search-001.private.json": "2ef31fb6c85b0fd12df164690bcfdc1d9e235827b148f5b2f5f0d3c26e64c24a",
+    "forced-win-portfolio-search-001.private.json": "48b7ac77e5ad6c9c98b02eb214c2395315100eca03f0e332fe25044579e50921",
+    "win-portfolio-upper-bound-001.public.json": "4c237ee0a6151124d2e6374e590582a9f40ee154ad18c400905668605e75d414"
+  },
+  "calibratedProbabilitiesClaimed": false,
+  "profitabilityEstablished": false,
+  "newAccountClients": 0,
+  "workerRestarted": false
+}
