@@ -1,0 +1,192 @@
+{
+  "observedUtc": "2026-10-22T13:54:12.664649+00:00",
+  "auditObservedUtc": "2026-10-22T13:38:07.763278+00:00",
+  "auditSha256": "dcf169a934bab31ca131f30cfac43500d62e02f105a8228220a641f570c37a91",
+  "auditOriginalReportSha256": "618625550d44b9216d5ab1f00d9ef3ba5b3b9e06cb4e60b3b9501be51bcd5d3b",
+  "quoteMetadataReportSha256": "c422132ba46f96882684339f1b3426dd97b30276c015d4fd8fbcca5424abccc7",
+  "quoteMetadataReportAt": "2026-10-22T13:43:09.647Z",
+  "sameFinancialIntervalAsAudit": true,
+  "accountRequests": 0,
+  "currentAccountValueClaimed": false,
+  "groups": {
+    "reviewed_monetary": {
+      "filledOrders": 4,
+      "realizedNet": "-276.400000",
+      "buys": 3,
+      "sells": 1
+    },
+    "automatic_maximum_age": {
+      "filledOrders": 11,
+      "realizedNet": "-36.900000",
+      "buys": 0,
+      "sells": 11
+    }
+  },
+  "orders": [
+    {
+      "qid": "21678",
+      "origin": "reviewed_monetary",
+      "actualOrderId": "56057960",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "buy",
+      "shares": 7194,
+      "firstExecutedAt": "2026-10-22T13:11:07.116Z",
+      "realizedNet": "0.000000"
+    },
+    {
+      "qid": "21688",
+      "origin": "reviewed_monetary",
+      "actualOrderId": "56062114",
+      "exchangeId": "1071",
+      "side": "NO",
+      "action": "buy",
+      "shares": 886,
+      "firstExecutedAt": "2026-10-22T13:13:17.071Z",
+      "realizedNet": "0.000000"
+    },
+    {
+      "qid": "21694",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56063528",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "sell",
+      "shares": 1050,
+      "firstExecutedAt": "2026-10-22T13:14:09.976Z",
+      "realizedNet": "-15.750000"
+    },
+    {
+      "qid": "21699",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56065559",
+      "exchangeId": "1071",
+      "side": "NO",
+      "action": "sell",
+      "shares": 198,
+      "firstExecutedAt": "2026-10-22T13:15:16.875Z",
+      "realizedNet": "0.240000"
+    },
+    {
+      "qid": "21706",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56068043",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "sell",
+      "shares": 525,
+      "firstExecutedAt": "2026-10-22T13:16:33.426Z",
+      "realizedNet": "-7.875000"
+    },
+    {
+      "qid": "21711",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56070704",
+      "exchangeId": "1071",
+      "side": "NO",
+      "action": "sell",
+      "shares": 150,
+      "firstExecutedAt": "2026-10-22T13:17:45.334Z",
+      "realizedNet": "-0.750000"
+    },
+    {
+      "qid": "21720",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56073730",
+      "exchangeId": "1071",
+      "side": "NO",
+      "action": "sell",
+      "shares": 150,
+      "firstExecutedAt": "2026-10-22T13:19:23.570Z",
+      "realizedNet": "-0.750000"
+    },
+    {
+      "qid": "21723",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56075614",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "sell",
+      "shares": 525,
+      "firstExecutedAt": "2026-10-22T13:20:36.015Z",
+      "realizedNet": "-7.875000"
+    },
+    {
+      "qid": "21738",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56080106",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "sell",
+      "shares": 50,
+      "firstExecutedAt": "2026-10-22T13:23:39.293Z",
+      "realizedNet": "-0.750000"
+    },
+    {
+      "qid": "21746",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56083885",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "sell",
+      "shares": 25,
+      "firstExecutedAt": "2026-10-22T13:25:53.156Z",
+      "realizedNet": "-0.375000"
+    },
+    {
+      "qid": "21763",
+      "origin": "reviewed_monetary",
+      "actualOrderId": "56091709",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "buy",
+      "shares": 2250,
+      "firstExecutedAt": "2026-10-22T13:30:24.715Z",
+      "realizedNet": "0.000000"
+    },
+    {
+      "qid": "21773",
+      "origin": "reviewed_monetary",
+      "actualOrderId": "56095362",
+      "exchangeId": "1058",
+      "side": "YES",
+      "action": "sell",
+      "shares": 3455,
+      "firstExecutedAt": "2026-10-22T13:32:21.817Z",
+      "realizedNet": "-276.400000"
+    },
+    {
+      "qid": "21775",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56096522",
+      "exchangeId": "1071",
+      "side": "NO",
+      "action": "sell",
+      "shares": 429,
+      "firstExecutedAt": "2026-10-22T13:33:06.483Z",
+      "realizedNet": "-2.145000"
+    },
+    {
+      "qid": "21785",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56100178",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "sell",
+      "shares": 1,
+      "firstExecutedAt": "2026-10-22T13:35:20.611Z",
+      "realizedNet": "-0.015000"
+    },
+    {
+      "qid": "21786",
+      "origin": "automatic_maximum_age",
+      "actualOrderId": "56102931",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "sell",
+      "shares": 57,
+      "firstExecutedAt": "2026-10-22T13:36:54.422Z",
+      "realizedNet": "-0.855000"
+    }
+  ]
+}
