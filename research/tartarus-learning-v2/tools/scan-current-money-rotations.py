@@ -13,6 +13,35 @@ from pathlib import Path
 import sys
 
 
+def fifo_basis(lots, quantity, amount):
+    left, basis = quantity, 0
+    for lot in lots:
+        take = min(left, lot['quantity'])
+        left -= take
+        basis += take*amount(lot['price'])
+        if not left:
+            break
+    assert not left, 'SALE_EXCEEDS_FIFO'
+    return basis
+
+
+def minimum_funding_sale(lots, maximum, price, cash, reserved, owned,
+                         maximum_committed, acquisition_cost, amount):
+    def funded(n):
+        return (cash-reserved+n*price >= acquisition_cost
+                and maximum_committed-owned-reserved+fifo_basis(lots, n, amount) >= acquisition_cost)
+    if not funded(maximum):
+        return None
+    lo, hi = 0, maximum
+    while lo < hi:
+        mid = (lo+hi)//2
+        if funded(mid):
+            hi = mid
+        else:
+            lo = mid+1
+    return lo
+
+
 def run(a):
     sys.path.insert(0, str(a.source))
     from moloch.tartarus.sequence_audit import amount, audit, UNIT
@@ -47,8 +76,6 @@ def run(a):
     floor = amount(a.minimum_expected_money)*UNIT
     for sale in sales:
         sn, sp, basis = sale['n'], sale['price'], sale['basis']
-        sale_scores = [sn*sp*UNIT-sn*win*UNIT-basis*refund
-                       for win, refund in masses[sale['ex'], sale['side']]]
         for buy in buys:
             if buy['ex'] == sale['ex']:
                 continue
@@ -58,12 +85,19 @@ def run(a):
                     (amount(fin['maximumMarketCost'])-market.get(buy['ex'], 0))//bp)
             if n <= 0:
                 continue
-            scores = [s+n*(win*UNIT-(UNIT-refund)*bp)
-                      for s, (win, refund) in zip(sale_scores, masses[buy['ex'], buy['side']])]
-            if min(scores) < floor:
-                continue
-            legs = [dict(sale, quantity=sn), dict(buy, quantity=n)]
-            proposals.append((min(scores), scores, legs))
+            lots = fin['positions'][sale['ex']][sale['side']]
+            minimal = minimum_funding_sale(lots, sn, sp, cash, reserved, owned,
+                amount(fin['maximumCommitted']), n*bp, amount)
+            for sold in sorted({sn, minimal} - {None, 0}):
+                sold_basis = fifo_basis(lots, sold, amount)
+                sale_scores = [sold*sp*UNIT-sold*win*UNIT-sold_basis*refund
+                               for win, refund in masses[sale['ex'], sale['side']]]
+                scores = [s+n*(win*UNIT-(UNIT-refund)*bp)
+                          for s, (win, refund) in zip(sale_scores, masses[buy['ex'], buy['side']])]
+                if min(scores) < floor:
+                    continue
+                legs = [dict(sale, quantity=sold, basis=sold_basis), dict(buy, quantity=n)]
+                proposals.append((min(scores), scores, legs))
     proposals.sort(key=lambda p: p[0], reverse=True)
     candidates, rejected, audited = [], {}, 0
     for _, scores, legs in proposals[:a.audit_limit]:
