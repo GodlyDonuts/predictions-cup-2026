@@ -12,6 +12,7 @@ OLD = R.parent / 'moloch-live-tartarus-r88-money-opportunity-20261022.json'
 OLD_SHA = '2d66a40f65764c040d35010f7497d4eb6e8cb9dd763ac7770c6d6aa985d1714e'
 OLD_PID = 1074713
 OLD_TICKS = 62461683
+RESUME_INCIDENT = None
 
 
 def sha(path):
@@ -21,6 +22,9 @@ def sha(path):
 
 def fresh(path, value):
     raw = value if isinstance(value, bytes) else (json.dumps(value, indent=2) + '\n').encode()
+    if RESUME_INCIDENT is not None and path.exists():
+        assert path.read_bytes() == raw, 'RESUME_EXISTING_FILE_CHANGED'
+        return
     with path.open('xb') as f:
         f.write(raw); f.flush(); os.fsync(f.fileno())
 
@@ -126,16 +130,30 @@ def install():
     prefix = dict(bytes=(B / 'events.jsonl').stat().st_size, sha256=sha(B / 'events.jsonl'))
     engine_identity=json.loads((J/'deployment.public.json').read_bytes())['engineIdentity']
 
-    incident = R.parent / 'incidents' / ('r89-money-priority-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')); incident.mkdir(mode=0o700)
-    shutil.copyfile(B/'engine-upgrade-v1.json',incident/'engine-upgrade-v1.json')
+    incident = RESUME_INCIDENT or R.parent / 'incidents' / ('r89-money-priority-' + datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'))
+    if RESUME_INCIDENT is None:
+        incident.mkdir(mode=0o700)
+        shutil.copyfile(B/'engine-upgrade-v1.json',incident/'engine-upgrade-v1.json')
+    else:
+        assert incident.is_absolute() and incident.resolve().parent == (R.parent/'incidents').resolve()
+        assert incident.name.startswith('r89-money-priority-') and not incident.is_symlink()
+        assert not (L/'installed.public.json').exists() and not (L/'deployment.public.json').exists()
+        for name, raw in [('active-control.json',active_raw),('reference-state.json',state_raw),('reference-pending.json',pending_raw),('report.json',report_raw),('head.json',head_raw),('dispatch.ndjson',dispatch)]:
+            assert (incident/name).read_bytes()==raw, 'RESUME_ORIGINAL_BOUNDARY_CHANGED'
     assert sha(incident/'engine-upgrade-v1.json')==bridge_sha
     for name, raw in [('active-control.json', active_raw), ('reference-state.json', state_raw), ('reference-pending.json', pending_raw), ('report.json', report_raw), ('head.json', head_raw), ('dispatch.ndjson', dispatch)]: fresh(incident / name, raw)
-    release = R.parent.parent / 'releases' / ('tartarus-r89-money-priority-' + new_sha[:12]); release.mkdir()
-    binary = release / 'moloch-live-runtime'; shutil.copy2(L / 'moloch-live-runtime', binary); binary.chmod(0o700); assert sha(binary) == new_sha
+    release = R.parent.parent / 'releases' / ('tartarus-r89-money-priority-' + new_sha[:12]); release.mkdir(exist_ok=RESUME_INCIDENT is not None)
+    binary = release / 'moloch-live-runtime'
+    if binary.exists(): assert RESUME_INCIDENT is not None and sha(binary)==new_sha
+    else: shutil.copy2(L/'moloch-live-runtime',binary)
+    binary.chmod(0o700); assert sha(binary) == new_sha
     control = R.parent / 'moloch-live-tartarus-r89-money-priority-20261022.json'
     active['activation']['binarySha256'] = new_sha; fresh(control, active)
-    with (L / 'preflight.log').open('x') as log:
-        subprocess.run([str(binary), 'preflight', str(control)], check=True, stdout=log, stderr=subprocess.STDOUT)
+    if RESUME_INCIDENT is not None:
+        assert 'Read-only preflight complete' in (L/'preflight.log').read_text(), 'RESUME_REQUIRES_COMPLETED_PREFLIGHT'
+    else:
+        with (L / 'preflight.log').open('x') as log:
+            subprocess.run([str(binary), 'preflight', str(control)], check=True, stdout=log, stderr=subprocess.STDOUT)
     assert 'Read-only preflight complete' in (L / 'preflight.log').read_text()
     queue_root = R / 'account-queue'; manifest = json.loads((queue_root / 'account-queue-manifest.json').read_bytes())
     with (queue_root / manifest['journal']).open('rb') as f:
@@ -178,5 +196,6 @@ def install():
 
 
 if __name__ == '__main__':
-    os.umask(0o077); parser=argparse.ArgumentParser(); parser.add_argument('phase',choices=['stop','install']); args=parser.parse_args()
+    os.umask(0o077); parser=argparse.ArgumentParser(); parser.add_argument('phase',choices=['stop','install']); parser.add_argument('--resume-incident',type=Path); args=parser.parse_args(); RESUME_INCIDENT=args.resume_incident
+    assert RESUME_INCIDENT is None or args.phase=='install'
     stop() if args.phase=='stop' else install()
