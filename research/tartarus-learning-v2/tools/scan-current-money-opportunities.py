@@ -20,7 +20,8 @@ def run(args):
     assert financial is not None and not compiled['unavailableReasons']
     model = load(args.inputs / 'issued-reference-model.private.json')
     registry = load(args.source / 'originals/full-universe-expanded/census.private.json')['rows']
-    books = {book['exchangeId']: book for book in compiled['originalBooks']}
+    from research_book_observations import load as research_books
+    books, _ = research_books(args.inputs, compiled, registry)
     columns, _, _ = _columns(financial, registry, books)
     minimum = amount(args.minimum_expected_money)
     assert minimum > 0

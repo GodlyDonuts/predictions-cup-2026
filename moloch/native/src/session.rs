@@ -141,9 +141,10 @@ pub fn engine_identity() -> String {
 struct UpgradeChain { entries: Vec<Value>, checked: usize }
 // Keep every original approval and prefix check as the live lineage grows.
 const MAX_UPGRADE_ENTRIES:usize=32;
-// The retained approval chain is already252.6MB; the next exact50.5MB report
-// would exceed256MiB. Preserve every original approval in this bounded envelope.
-const MAX_UPGRADE_BYTES:u64=384*1024*1024;
+// October22: the retained353,996,855-byte chain plus the next exact51,511,090-byte
+// report produces405,508,999 bytes, exceeding384MiB. Retain every original
+// approval, prefix and report within this explicit512MiB parser envelope.
+const MAX_UPGRADE_BYTES:u64=512*1024*1024;
 fn digest_text(value:&Value)->bool{value.as_str().is_some_and(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_hexdigit()))}
 fn verify_value_ref(value:&Value)->Result<()>{
     let object=value.as_object().ok_or("UPGRADE_OBJECT")?;

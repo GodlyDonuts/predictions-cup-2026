@@ -1,0 +1,15 @@
+# R100: retain the actual approval history and expand research book coverage
+
+The R99 installation did not complete. The sole R97 worker drained under the recorded planned STOP at approximately17:30UTC. The original353,996,855-byte approval chain plus the exact51,511,090-byte final report produced a405,508,999-byte proposal, exceeding the native384MiB parser limit (402,653,184 bytes). The installer rejected it before installing a new bridge, unit, binary or control. R97 is stopped while the corrected replacement builds; do not describe it as trading. The proposal-size estimate before draining was wrong.
+
+R100 raises only this bounded approval-file parser envelope to512MiB. It preserves the32-entry limit, every original approval, report, prefix and financial check. It changes no cash, inventory, accounting, funded cap, source clock, API limiter, STOP or unknown-acceptance rule. The installer now checks conservative envelope headroom before any future planned drain. The current recorded R99 drain is retained under its actual identity, rather than fabricated as a new shutdown. R100 includes the previously qualified R99 ownership and monetary rotation changes; its native/runtime/worker are rebuilt together because the native source identity changes.
+
+## Research-only book discovery
+
+The old direct-money screen sees only books already admitted to the native planner. The separate R97 diagnostic found median146 raw fresh books versus zero native books fresh within the same10-second window. This alone does not prove complete tape or a missed profitable opportunity.
+
+The new file-only observation module captures exact original SIG recorder rows from the existing worker, verifies their row seals, scopes, source/receipt clocks, level ordering, quantities and prices, and retains the source bytes. A newer complete snapshot can supersede an earlier dirty notice; a later dirty notice, settlement, reset, empty book or expired/future observation is unavailable. Source sequence/body conflicts are rejected. Original native financial inputs remain unchanged and independently bound by report/view hashes. The research price book is explicitly separate from native admission and complete trade coverage.
+
+Both the screen and nomination preparer reconstruct the research books from the retained rows. A selected original book row becomes an explicit nomination source with its original receipt clock. Its finite research horizon does not renew a physical book or give trading permission. The existing single worker must still recover the target source and obtain fresh physical facts before dispatch. The model remains an uncalibrated price-based hypothesis; broader coverage is not proven alpha. No new account reader or writer is introduced.
+
+Ten focused Python tests cover source corruption, changed normalized prices/bytes, changed financial binding, stale/future source clocks, crossed/off-tick books, reset/dirty invalidation, a complete snapshot after a dirty notice, and removal of empty-book liquidity. Native/runtime qualification, deployment, restored processing, filled-order cadence and profitability require their own fresh evidence.

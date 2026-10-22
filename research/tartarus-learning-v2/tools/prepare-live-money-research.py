@@ -41,6 +41,16 @@ def run(a):
     inputs = a.output / 'inputs'
     capture.run(SimpleNamespace(source=a.source, runtime=a.runtime, reference=a.reference, output=inputs,
         pid=deployment['pid'], binary_sha256=deployment['binarySha256'], wait_seconds=180))
+    observations = module('research_book_observations', a.tools / 'research_book_observations.py')
+    compiled = json.loads((inputs / 'compiled-current.private.json').read_bytes())
+    view = json.loads((inputs / 'native-view.original.json').read_bytes())
+    registry = json.loads((a.source / 'originals/full-universe-expanded/census.private.json').read_bytes())['rows']
+    observed = observations.capture(a.runtime, deployment['pid'], compiled, view, registry,
+        time.time_ns() // 1000000, inputs / 'research-book-observations.original.json')
+    (inputs / 'research-book-coverage.public.json').write_text(json.dumps(dict(
+        originalNativeBooks=len(compiled['originalBooks']), observedFreshBooks=len(observed['observations']),
+        workerPid=deployment['pid'], nativeAdmissionClaimed=False,
+        completeTradeHistoryClaimed=False, accountRequests=0)) + '\n')
     # This is an existing local cache relay through the existing SSH tunnel.
     with urllib.request.urlopen('http://127.0.0.1:18964/rank-cache', timeout=15) as response:
         assert response.status == 200 and response.headers.get('Content-Encoding') == 'gzip'

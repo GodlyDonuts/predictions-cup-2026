@@ -57,8 +57,9 @@ def run(a):
     chosen = next(c for c in candidates if all(c['leg'][k] == v for k, v in
         [('ex', a.exchange), ('side', a.side), ('action', a.action)]))
     leg = dict(chosen['leg'])
-    books = {b['exchangeId']: b for b in compiled['originalBooks']}
-    assert a.exchange in books, 'ORIGINAL_CURRENT_NATIVE_TARGET_BOOK_REQUIRED'
+    from research_book_observations import load as research_books
+    books, book_sources = research_books(a.inputs, compiled, rows)
+    assert a.exchange in books, 'ORIGINAL_RESEARCH_TARGET_BOOK_REQUIRED'
     assert amount(a.minimum_expected_money) > 0
     tolerance = amount(getattr(a, 'price_tolerance', '0.000000'))
     assert 0 <= tolerance < 1000000, 'EXPLICIT_BINARY_PRICE_TOLERANCE'
@@ -108,6 +109,9 @@ def run(a):
 
     retain(model_raw, model['inputCutoffMs'], a.horizon_ms,
         'Explicit finite-horizon uncalibrated price/stress hypothesis. Individual source clocks and expired opinions remain in the original. This horizon does not claim a fresh underlying quote or a renewed original trading review.')
+    if a.exchange in book_sources:
+        retain(book_sources[a.exchange], _ns(books[a.exchange]['receivedAt']) // 1000000, a.horizon_ms,
+            'Exact original SIG recorder row used only to nominate a research price. Complete trade history, native book admission and an atomic account/book snapshot are not asserted. The sole worker must recover source and obtain fresh physical facts before dispatch.')
     contracts = []
     for row in rows:
         if row['contractId'] not in retained:
