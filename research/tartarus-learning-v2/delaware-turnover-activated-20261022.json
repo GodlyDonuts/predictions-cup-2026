@@ -1,0 +1,122 @@
+{
+  "workerPid": 1063142,
+  "oldUpdaterPid": 1063145,
+  "oldUpdaterStartTicks": 61099969,
+  "stagedOnly": false,
+  "reloadSent": true,
+  "committed": true,
+  "tradingWorkerRestarted": false,
+  "accountClientsCreated": 0,
+  "requestSha256": "ffde48004c29bda2c330795d8c0b11df59f48ba9d9d74f0525842a77bf953cee",
+  "controlPath": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/delaware-turnover-1792643616068260372/generation/control.owner-reviewed.json",
+  "response": {
+    "baseFinancialControlUnchanged": true,
+    "generationSha256": "ffde48004c29bda2c330795d8c0b11df59f48ba9d9d74f0525842a77bf953cee",
+    "nativeHead": {
+      "hash": "dd6558b18796572bdae0f9c31cac3bf0c7a8e048ab011c92e1b51180c0a0d396",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "d3525cf4e9923937b5235c575397abe53e84505e6918efbeb30ad156cf7ff0be",
+      "sequence": 817404
+    },
+    "state": "committed"
+  },
+  "newUpdaterPid": 1066414,
+  "observedAtMs": 1792643695686,
+  "verifiedAtUtc": "2026-10-22T04:35:23.542310+00:00",
+  "originalCohortCommitSequence": 364,
+  "originalCohortCommitSha256": "368aece3e7a54063f9b009902d5a4f26a615f53028cfdc54ef9fdca50ce69deb",
+  "workerStartTicks": 61099963,
+  "workerBinaryUnchanged": true,
+  "continuousReferenceTargets": [
+    "1067",
+    "872",
+    "993",
+    "885",
+    "1051",
+    "851",
+    "865",
+    "977",
+    "1043",
+    "1044",
+    "1077",
+    "966",
+    "1075"
+  ],
+  "exactNewReview": {
+    "version": 2,
+    "reviewerId": "Viserion-Delaware-turnover-20261022",
+    "assumptionLabel": "Owner-selected conditional Kalshi Republican-party NO midpoint model for Delaware Senate. SIG party winner and Kalshi swearing-in are related but not identical settlement events. The 1% exceptional allowance and 1cent margin are operator assumptions, not calibrated bounds. Actual ballot includes Coons Democrat, Katz Republican and write-in; resolver, replacement, cancellation and delay uncertainty remain. New flat cohort only, within the original shared bank; 10000 maximum principal and existing physical quantity limit. Recurring acquisition and FIFO profit turnover minimum0.005/share follow the existing strategy. The scheduled settlement date is not promised liquidity; intraday convergence and one filled trade/minute are not established. No existing holdings or cost basis are adopted or reset. Current official contract, account and depth remain required before dispatch.",
+    "runId": "moloch-live-20261015-v1",
+    "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "marketId": "386",
+    "exchangeId": "1075",
+    "contractId": "387",
+    "officialContractRootSha256": "a475d827bbc2d20bd3c0c439dbd0f14835c2a23b38a4bdf479c75f2534cc0f93",
+    "side": "NO",
+    "ordinaryProbability": "0.978000",
+    "exceptionalProbabilityAllowance": "0.010000",
+    "minimumExceptionalPayout": "0.000000",
+    "marginPerShare": "0.010000",
+    "maximumPrincipal": "10000.000000",
+    "maximumQuantity": 1000000,
+    "reviewedAtMs": 1792643616244,
+    "expiresAtMs": 1792644507894,
+    "holdUntilMs": 1793811600000,
+    "payoutMappingIsOperatorAssumption": true,
+    "revokeExisting": false,
+    "sources": [
+      {
+        "kind": "forecast",
+        "url": "https://api.elections.kalshi.com/trade-api/v2/markets/SENATEDE-26-R/orderbook?depth=20",
+        "sha256": "bd1a61d6439107a6e4df3f989f5f6ac06f96541f7e657f3f7a74435f72440b43",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792643607894,
+        "maximumAgeMs": 900000
+      },
+      {
+        "kind": "official_ballot",
+        "url": "https://elections.delaware.gov/elections/general/sampleballots/GE2026/02-27.html",
+        "sha256": "c661a3b1f70781f5943caf3d2227d2b581993d4a06d31735e70e480dba8f02ba",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792642195429,
+        "maximumAgeMs": 1209600000
+      },
+      {
+        "kind": "official_contract_node",
+        "url": "https://sig.thesuper.market/api/v1/markets/386/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "sha256": "11c97b255dbd0645c8bd7b8eed8c4b22da3b17f3528976a0c66a7e66afee3444",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792235676860,
+        "maximumAgeMs": 1209600000
+      }
+    ],
+    "executionPolicy": {
+      "version": 1,
+      "allowedModes": [
+        "boundedLimitMayRest",
+        "improveOneTick",
+        "joinBid"
+      ]
+    },
+    "valuationObjective": {
+      "kind": "terminalSettlement",
+      "timingSourceSha256": "11c97b255dbd0645c8bd7b8eed8c4b22da3b17f3528976a0c66a7e66afee3444",
+      "timingJsonPointer": "/data/root/settlement_date",
+      "scheduledSettlementAtMs": 1793811600000,
+      "delayPolicy": "holdForActualSettlement"
+    },
+    "sameSideTopUps": {
+      "version": 3,
+      "maximumEntries": 16
+    },
+    "passiveValueExit": {
+      "version": 1,
+      "maximumQuantity": 10000,
+      "pricingObjective": {
+        "kind": "fifoProfitTurnover",
+        "minimumNetGain": "0.005000"
+      }
+    }
+  }
+}

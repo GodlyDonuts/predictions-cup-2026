@@ -1,0 +1,9 @@
+# R83 live processing bottleneck
+
+Four bounded stack samples of worker1063142 at04:27:26–39UTC found it in physical authorization, rebuilding the order snapshot, constructing the full native report during source admission, and disposing of source-admission JSON. Total debugger attachment time was1.772seconds; the worker resumed after every sample. These are observations, not measured percentages of total runtime. [Original samples](r83-live-stack-samples-20261022.json).
+
+The retained derived report is approximately50.5MB. `Session::accept_batch` constructs, hashes, serializes and publishes the full report for each admitted source batch. The worker already batches and coalesces eligible queued books. Consequently a further change must measure remaining repeated projection work rather than claim batching is absent. The uncommitted earlier report-deferral prototype still constructs and validates each full projection; merely suppressing its file write does not remove that CPU cost.
+
+At04:30–31UTC the original SDK queue showed10–13 admissions in its rolling read window, no admitted writes in that window, no unknown acceptance and no manual review. This snapshot does not establish historical maximum utilization, but the100-read/minute ceiling was not binding at that moment. R83's completed scope intervals then ranged98–210seconds. Multiple candidate passes per scope mean scope count alone is not a throughput comparison; distinct first-filled orders remain the objective.
+
+No trading control, ledger, source clock or executable was changed by this diagnostic. The next performance experiment should separate durable event/accounting work from replaceable historical projections, demonstrate identical original events and financial state, and measure end-to-end filled-order cadence. A shorter synthetic report benchmark alone is insufficient.

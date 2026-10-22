@@ -1,6 +1,6 @@
 # Delaware Republican NO: prepared recurring reference strategy
 
-Prepared October22 at04:11UTC, not activated. The current R83 worker remains running through its original-ledger recovery and live measurement. This preparation creates no SIG client, order, reload request or binary replacement.
+Prepared October22 at04:11UTC; activated04:34:55UTC (see verified update below). The current R83 worker remains running through its original-ledger recovery and live measurement. This preparation creates no SIG client, order, reload request or binary replacement.
 
 The earlier whole-venue comparison identified exchange1075/market386/contract387 outside the twelve active reference targets. Its original SIG root is a November3,2026 Delaware Senate Republican party-winner contract, scheduled to settle November4 at17:00UTC. The retained current Kalshi ticker `SENATEDE-26-R` instead resolves on a Republican being sworn in. These related events are an explicit modeling assumption, not identical settlement terms or cross-venue arbitrage.
 
@@ -13,3 +13,10 @@ The prepared review retains the same10000 principal ceiling inside the existing 
 The installed typed helper accepts the new source bindings, objective and current review. Expired-capture and changed-market inputs are rejected before output. Python syntax validation passes. [Exact qualification](delaware-turnover-qualified-20261022.json), [reproducible staging script](tools/stage-delaware-turnover-20261022.py). Qualification expires with its original forecast; actual activation requires a newly captured, freshly staged generation and a confirmed same-worker commit. Continuous forecast refresh must include1075 after activation.
 
 The expansion has no established fill frequency, intraday convergence or positive realized return. R83's existing strategy is being measured first, so a scope change does not contaminate its initial throughput comparison.
+
+
+## Same-worker activation verified04:35UTC
+
+The existing worker1063142 accepted generation`ffde48004c29bda2c330795d8c0b11df59f48ba9d9d74f0525842a77bf953cee`; the original cohort journal records sequence364/hash`368aece3e7a54063f9b009902d5a4f26a615f53028cfdc54ef9fdca50ce69deb`. The worker PID/start ticks/executable are unchanged. Reference helper1066414 now requests13targets, including1075. Subsequent ordinary forecast generations committed successfully. The original902.679-second R83 measurement completed before activation.
+
+The actual review was rebuilt from a new capture, not the expired preparation. All14existing reviews were preserved in the activation generation. A new finite first-fill measurement is running. No Delaware fill or profitable Delaware round trip is claimed by activation alone. [Verified activation](delaware-turnover-activated-20261022.json), [file-only observer](r83-post-delaware-observer-20261022.json).

@@ -1,0 +1,23 @@
+{
+  "pid": 1066434,
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "python3",
+    "/tmp/moloch-exit-audit-r81-20261022/observe-cadence.py",
+    "--runtime",
+    "/home/archon/apps/moloch/shared/live-production-v1",
+    "--pid",
+    "1063142",
+    "--start-ticks",
+    "61099963",
+    "--auditor",
+    "/tmp/moloch-exit-priority-r78-20261021/audit-current-turnover.py",
+    "--output",
+    "/tmp/moloch-local-retirement-sweep-r83-20261022/post-delaware-cadence",
+    "--seconds",
+    "900"
+  ],
+  "accountRequests": 0
+}

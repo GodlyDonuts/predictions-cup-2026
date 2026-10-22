@@ -1,0 +1,81 @@
+{
+  "observedUtc": "2026-10-22T04:34:19.676971+00:00",
+  "pid": 1063142,
+  "elapsedSeconds": 900.3090309730032,
+  "completionReason": "duration_complete",
+  "completedWindow": true,
+  "samples": [
+    {
+      "at": "2026-10-22T04:18:28.950Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 3,
+      "passes": 4,
+      "physicalPermissionsReused": false,
+      "pid": 1063142,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T04:20:07.299Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1063142,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T04:22:12.832Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 2,
+      "passes": 2,
+      "physicalPermissionsReused": false,
+      "pid": 1063142,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T04:23:59.033Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1063142,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T04:27:28.810Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 3,
+      "passes": 3,
+      "physicalPermissionsReused": false,
+      "pid": 1063142,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T04:29:41.467Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1063142,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T04:33:41.865Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 2,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1063142,
+      "sameAccountWorker": true
+    }
+  ],
+  "accountRequests": 0,
+  "fillsNotInferredFromSweeps": true
+}
