@@ -2,9 +2,13 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state: October22,12:01UTC
+## Current state: October22,12:32UTC
 
-**R91 is live and executed its first independently audited buy:**10,000 NO1075 shares for9,126.90 SUSQies at11:57:55UTC. One physical order produced six original fill rows. Its FIFO profit-taking offer is open; no exit profit is claimed. Worker1096712/sourceffefefbc preserves all576 previous fills and the full original financial prefix. **One newly filled order/minute remains unmet.** Ten new maker scopes have a mode revision staged using existing bounded/improve/join choices, with unchanged value ceiling,1,250-principal caps and original source clocks; it is not yet published. [Live proof](research/tartarus-learning-v2/r91-fresh-live-20261022.json), [receipt/FIFO audit](research/tartarus-learning-v2/r91-first-turnover-20261022.json), [current details](docs/CURRENT_STATE.md).
+**R91 is live, but one distinct filled order/minute is not achieved.** Four physical BUY orders since installation spent18,259.60 SUSQies across NO1075 and YES865. Fourteen original fill receipts represent those four orders; incremental realized profit is0. At12:32UTC, cash8,125.48 and original remaining cost88,407.82 are ledger amounts, not current liquidation value. The last completed hour had four first-filled orders and56 empty UTC minutes.
+
+**Bounded-limit, improve-one-tick and join-bid modes are now accepted on all eleven additional maker scopes**, through the existing live updater without restarting the worker. Original1,250-principal review caps, quantity limits, valuation rules and FIFO exits remain; fresh reference receipts update forecasts normally. The old ten-scope manual request was rejected because a target became busy; the normal updater subsequently committed all eleven free targets. [Accepted review proof](research/tartarus-learning-v2/r91-rolling-modes-accepted-20261022.json), [original-receipt/FIFO audit and cadence](research/tartarus-learning-v2/r91-turnover-1232-20261022.json), [current details](docs/CURRENT_STATE.md).
+
+R92 is being qualified offline to publish the full historical report once per bounded public-stream drain while preserving each original event/head commit. R91 continues trading during compilation. R92 is not deployed and no speedup is claimed.
 
 ### Earlier dated observations
 
