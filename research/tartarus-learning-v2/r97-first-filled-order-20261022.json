@@ -1,0 +1,100 @@
+{
+  "observedUtc": "2026-10-22T16:46:25.382234+00:00",
+  "baselineIncident": "r97-rank-service-20261022T162234Z",
+  "baselineReportSha256": "364b0d52ad6e76cc2ae159b5aaa9b611700ff9e0a6c3d56493f668f218f279c0",
+  "originalFillCount": 646,
+  "currentFillCount": 650,
+  "originalFillsUnchanged": true,
+  "remainingFifoExactlyMatches": true,
+  "allNewFillsMatchOriginalOfficialReceipts": true,
+  "reportSha256": "2ece2db86cbaa00111bc3bc464ee4ec674496afa9ce643be406a8800918b8df4",
+  "reportAt": "2026-10-22T16:46:16.522Z",
+  "orders": {
+    "21995": {
+      "actualOrderId": "56404307",
+      "exchangeId": "1002",
+      "side": "NO",
+      "action": "buy",
+      "shares": 2395,
+      "fillReceipts": 4,
+      "notional": "610.725000",
+      "cashDelta": "-610.725000",
+      "ownedCostDelta": "610.725000",
+      "realizedGross": "0",
+      "fees": "0.000000",
+      "firstExecutedAt": "2026-10-22T16:45:25.853Z",
+      "lastExecutedAt": "2026-10-22T16:45:25.853Z",
+      "realizedNet": "0.000000"
+    }
+  },
+  "financial": {
+    "cash": "645.345000",
+    "ownedCost": "95579.795000",
+    "realized": "645.225000",
+    "newTradingRealized": "891.165000",
+    "inheritedRealizedGross": "-245.940000"
+  },
+  "incrementalRealizedNet": "0.000000",
+  "incrementalTurnover": "610.725000",
+  "incrementalShares": "2395",
+  "incrementalDistinctFilledOrders": 1,
+  "officialReceiptFileHashes": {
+    "a5699f5f4b9a925968e144cdde751e5aa6e71986cd0213b3fccce8e6e5566afe": "7dd8c2555757639d3b1408ea543891a51003e3571938ceb5b20227537085fb20"
+  },
+  "utcDay": "2026-10-22",
+  "dayFillReceipts": 158,
+  "dayDistinctFilledOrders": 48,
+  "cadence": {
+    "observedUtc": "2026-10-22T16:46:25.382234+00:00",
+    "targetFilledOrdersPerMinute": 1,
+    "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+    "windowsMinutes": {
+      "1": {
+        "distinctFirstFilledOrders": 1,
+        "filledOrdersPerMinute": 1.0,
+        "targetFilledOrders": 1,
+        "averageTargetMet": true,
+        "maximumGapWithinWindowSeconds": 59.529234,
+        "completedUtcMinutesObserved": 1,
+        "completedUtcMinutesWithNoNewFilledOrder": 0,
+        "rollingMinuteCadenceMet": true
+      },
+      "5": {
+        "distinctFirstFilledOrders": 1,
+        "filledOrdersPerMinute": 0.2,
+        "targetFilledOrders": 5,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 240.470766,
+        "completedUtcMinutesObserved": 5,
+        "completedUtcMinutesWithNoNewFilledOrder": 4,
+        "rollingMinuteCadenceMet": false
+      },
+      "15": {
+        "distinctFirstFilledOrders": 1,
+        "filledOrdersPerMinute": 0.06666666666666667,
+        "targetFilledOrders": 15,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 840.470766,
+        "completedUtcMinutesObserved": 15,
+        "completedUtcMinutesWithNoNewFilledOrder": 14,
+        "rollingMinuteCadenceMet": false
+      },
+      "60": {
+        "distinctFirstFilledOrders": 4,
+        "filledOrdersPerMinute": 0.06666666666666667,
+        "targetFilledOrders": 60,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 1709.46,
+        "completedUtcMinutesObserved": 60,
+        "completedUtcMinutesWithNoNewFilledOrder": 56,
+        "rollingMinuteCadenceMet": false
+      }
+    },
+    "latestNewFilledOrderUtc": "2026-10-22T16:45:25.853000+00:00",
+    "secondsSinceNewFilledOrder": 59.529234,
+    "accountRequests": 0,
+    "executionAuthority": false
+  },
+  "noAccountRequestsByAudit": true,
+  "wholeAccountProfitEstablished": false
+}
