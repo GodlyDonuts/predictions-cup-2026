@@ -131,8 +131,13 @@ def run(a):
         ('positionsSha256', 'cash', 'actualFillsSha256')), 'CURRENT_NATIVE_FINANCIAL_CHANGED'
     if 'unsubmittedDraftYield' in campaign['account']:
         projection = reservation_projection(view, campaign['action']['exchangeId'])
-        assert campaign['account']['unsubmittedDraftYield'] == projection, 'EXACT_UNSUBMITTED_DRAFT_PROJECTION_CHANGED'
-        assert campaign['account']['reservedCash'] == projection['expectedReservedCash'], 'POST_YIELD_RESERVATION_MISMATCH'
+        # The nomination retains its ORIGINAL capture IDs/clocks. Ordinary
+        # never-sent drafts can change without changing cash/holdings/fills.
+        # Recompute the exact CURRENT yield independently; only an identical
+        # post-yield reservation can support the unchanged financial model.
+        original_projection = campaign['account']['unsubmittedDraftYield']
+        assert original_projection['actualCashCredited'] == '0.000000' and original_projection['executionAuthority'] is False
+        assert campaign['account']['reservedCash'] == original_projection['expectedReservedCash'] == projection['expectedReservedCash'], 'POST_YIELD_RESERVATION_MISMATCH'
     else:
         assert campaign['account']['reservedCash'] == view['account']['reservedCash'], 'CURRENT_NATIVE_RESERVATION_CHANGED'
     # A known resting order is retained and disclosed. It is not a permission
@@ -174,6 +179,7 @@ def run(a):
         expectedWorkerPid=a.expected_pid, sourceCommit=a.source_commit,
         knownPhysicalOrdersStillRequireReconciliation=view['knownUnclosedAcknowledgments'],
         completedPriorReview=superseded,
+        currentReservationProjection=projection if 'unsubmittedDraftYield' in campaign['account'] else None,
         sourceClocksRenewed=False, historicalOwnerFilesArchived=True, accountClientsCreated=0,
         ordersSubmittedByPublisher=0, officialWorkerMayActAfterIndependentChecks=True)
     create(a.prepared / 'owner-publication.public.json', (json.dumps(result, indent=2) + '\n').encode())

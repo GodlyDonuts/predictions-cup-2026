@@ -46,7 +46,7 @@ def main():
         engineIdentity=deployment['engineIdentity'], allPriorEngineBridgesPreserved=True,
         unchangedBridgeSha256=deployment['bridgeSha256'],
         reportSha256=digest(bank/'report.json'),
-        financial={k: current[k] for k in ['cash', 'reservedCash', 'ownedCost', 'realized']},
+        financial={k: current['report'][k] for k in ['cash', 'reservedCash', 'ownedCost', 'realized']},
         knownPhysicalOrders=view['knownUnclosedAcknowledgments'],
         accountRequestsByObserver=0, filledMinuteTargetVerified=False,
         wholeAccountProfitEstablished=False)
