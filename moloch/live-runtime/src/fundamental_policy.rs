@@ -43,7 +43,9 @@ const MAX_ROW:usize=3*1024*1024;
 // by worker adoption/cohort recovery, including unrelated rank records.
 // This is a parser bound, not permission to abandon an attempted order.
 const MAX_DISPATCH_ROW:usize=8*1024*1024;
-const MAX_LOG:u64=16*1024*1024;
+// Append-only history spans the full contest; the old 16 MiB ceiling was hit
+// by valid live generations. Preserve every row and retain a finite file bound.
+const MAX_LOG:u64=256*1024*1024;
 // One original source may use the entire unchanged per-review source budget.
 const MAX_SOURCE_BYTES:usize=16*1024*1024;
 fn need(ok:bool, why:&'static str)->Result<()> {if ok {Ok(())} else {Err(why.into())}}
