@@ -29,7 +29,7 @@ fn rank_private_bytes(path:&Path)->Result<Vec<u8>>{
  let mut f=fs::File::open(path)?;let m=f.metadata()?;if !m.is_file()||m.nlink()!=1||m.uid()!=unsafe{libc::geteuid()}||m.mode()&0o077!=0||m.len()>8*1024*1024{return Err("RANK_PRIVATE_SOURCE_REQUIRED".into())}
  let mut raw=Vec::new();Read::by_ref(&mut f).take(8*1024*1024+1).read_to_end(&mut raw)?;if raw.len()as u64!=m.len(){return Err("RANK_PRIVATE_SOURCE_CHANGED".into())}Ok(raw)
 }
-fn load_rank_campaign(c:&Control,settings:&RankCampaignSettings)->Result<(moloch_live_runtime::rank_campaign::Reviewed,Arc<moloch_live_runtime::authority::RankOwnerPins>)>{
+fn load_rank_campaign(c:&Control,settings:&RankCampaignSettings)->Result<(moloch_live_runtime::rank_campaign::Reviewed,Arc<moloch_live_runtime::authority::RankOwnerPins>,Option<Value>)>{
  let private=c.root.join("rank-campaign-owner");
  for path in [&settings.nomination_path,&settings.owner_approval_path,&settings.originals_directory]{if !path.is_absolute()||!path.starts_with(&private){return Err("RANK_CONFIGURED_OWNER_ROOT_REQUIRED".into())}}
  let raw=rank_private_bytes(&settings.nomination_path)?;let approval_raw=rank_private_bytes(&settings.owner_approval_path)?;let sha=format!("{:x}",Sha256::digest(&raw));let approval_sha=format!("{:x}",Sha256::digest(&approval_raw));let approval:Value=serde_json::from_slice(&approval_raw)?;let at=now();
@@ -41,7 +41,7 @@ fn load_rank_campaign(c:&Control,settings:&RankCampaignSettings)->Result<(moloch
  for source in sources{let h=source["sha256"].as_str().filter(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))).ok_or("RANK_SOURCE_SHA")?;let b=rank_private_bytes(&settings.originals_directory.join(format!("{h}.bin")))?;total=total.checked_add(b.len()).ok_or("RANK_SOURCE_BOUND")?;if total>16*1024*1024{return Err("RANK_SOURCE_BOUND".into())}originals.push((h.to_owned(),b));}
  let inputs:Vec<_>=originals.iter().map(|(sha,bytes)|moloch_live_runtime::rank_campaign::Original{sha256:sha,bytes}).collect();let review=moloch_live_runtime::rank_campaign::Reviewed::load(&raw,&sha,&approved,&inputs,at)?;
  let deadline=rows.iter().filter(|r|r["rawSha256"]==sha&&r["approvedAtMs"].as_u64().is_some_and(|v|v<=at)&&r["validUntilMs"].as_u64().is_some_and(|v|at<v)).filter_map(|r|r["validUntilMs"].as_u64()).min().ok_or("RANK_OWNER_APPROVAL_CLOCK")?;
- let pins=moloch_live_runtime::authority::RankOwnerPins::capture(&[(settings.nomination_path.clone(),sha),(settings.owner_approval_path.clone(),approval_sha)],deadline)?;Ok((review,Arc::new(pins)))
+ let pins=moloch_live_runtime::authority::RankOwnerPins::capture(&[(settings.nomination_path.clone(),sha),(settings.owner_approval_path.clone(),approval_sha)],deadline)?;let money_account=(nomination["objective"]=="declared_positive_expected_money").then(||nomination["account"].clone());Ok((review,Arc::new(pins),money_account))
 }
 fn rank_deferred(c:&Control,stage:&str,why:&str)->Result<()>{atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"stage":stage,"state":"deferred","reason":why,"physicalAttempted":false,"profitabilityEstablished":false}))}
 /// Exact top-level delta from the original evaluation already retained in quote.
@@ -111,7 +111,7 @@ fn rank_recover_target_source(c:&Control,bank:&mut Session,rest:&mut RestSource,
 fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&Arc<ProductionAuthority>,stream:&Realtime,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
  let Some(settings)=&c.rank_campaign else{return Ok(())};
  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
- let(review,pins)=match load_rank_campaign(c,settings){Ok(v)=>v,Err(e)=>return rank_deferred(c,"owner_review",&e.to_string())};let ex=review.exchange_id().to_owned();
+ let(review,pins,money_account)=match load_rank_campaign(c,settings){Ok(v)=>v,Err(e)=>return rank_deferred(c,"owner_review",&e.to_string())};let ex=review.exchange_id().to_owned();
  if managed.contains(&ex){
   let f=fundamental.as_ref().ok_or("RANK_COHORT_RUNTIME_REQUIRED")?;
   match f.cohorts.check_rank_review(bank,log,&review){Ok(())=>{},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"ownership",&e.to_string()),Err(e)=>return Err(e)}
@@ -124,6 +124,23 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  refresh_controls(c,authority,stream)?;t.package_queue_quiet()?;
  // A known resting order is a temporary allocation conflict, not a fatal
  // collateral error. Unknown acceptance still propagates before deferral.
+ if rank_waits_for_known_orders(log)?&&!packages.unresolved()&&!bank.engine().package_blocks_new_submissions(){
+  if money_account.as_ref().is_some_and(|account|money_priority_account_current(bank,account))&&review.valid_until_ms().saturating_sub(now())>30_000{
+   // Yield one exact owned ordinary SELL through the existing DELETE path.
+   // Neither cancellation attempt nor ACK releases funds or marks it closed.
+   // A changed fill/cash/position snapshot invalidates priority immediately.
+   for qid in log.acknowledgments.keys().copied().collect::<Vec<_>>(){
+    if !cancel_may_start(log,qid){continue}
+    let old=quote(bank,qid)?;
+    if !money_priority_sell(&old,bank.engine().is_package_order(qid),bank.engine().live_order_bindings().contains_key(&qid),cancel_may_start(log,qid)){continue}
+    pins.validate()?;refresh_controls(c,authority,stream)?;
+    let facts=cancel_snapshots(t,c)?;
+    if now()>=review.valid_until_ms(){return rank_deferred(c,"priority","MONEY_REVIEW_EXPIRED_BEFORE_CANCEL")}
+    pins.validate()?;cancel_owned(t,c,bank,log,authority,&old,facts,None)?;
+    return rank_deferred(c,"priority","OWNED_SELL_YIELD_REQUIRES_TERMINAL_RECONCILIATION")
+   }
+  }
+ }
  if rank_waits_for_known_orders(log)?||packages.unresolved()||bank.engine().package_blocks_new_submissions(){return rank_deferred(c,"liability","EXISTING_PHYSICAL_ORDERS_REQUIRE_RECONCILIATION")}
  rank_recover_target_source(c,bank,source,&ex,&market,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
  if source.recovery_start_ms(&market).is_some(){return rank_deferred(c,"source_recovery","ORIGINAL_TARGET_TAPE_AND_BOOK_STILL_BLOCKED")}
@@ -176,6 +193,23 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  submit_order_with_rank(t,c,bank,log,authority,&current,facts,None,if managed.contains(&ex){fundamental.as_deref_mut()}else{None},Some(rank))?;
  atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"qid":qid,"campaignSha256":review.campaign_sha256(),"state":if log.acknowledgments.contains_key(&qid){"official_ack_requires_fill_reconciliation"}else if rank_can_resume(bank,log,&current)&&!log.intents.contains_key(&qid){"awaiting_fresh_facts"}else{"no_official_ack"},"physicalAttempted":!log.never_attempted(qid)&&!log.proved_no_network(qid),"evaluation":evaluation.evaluation(),"diagnosticPreparationTimings":{"postReadNativeBookMs":post_book.saturating_sub(post_reads_start),"postReadDraftRetirementMs":post_retirement.saturating_sub(post_book),"cohortOwnershipMs":ownership_end.saturating_sub(ownership_start),"nativeRankMintMs":mint_end.saturating_sub(ownership_end),"finalBookReceiptToSubmitStartMs":mint_end.saturating_sub(final_book_receipt)},"profitabilityEstablished":false}))?;Ok(())
  })
+}
+// Only execution scheduling: this never establishes positive expected value,
+// grants order authority, releases a reservation, or bypasses a physical guard.
+fn money_priority_account_matches(expected:&Value,current:&Value)->bool{
+ ["positionsSha256","cash","actualFillsSha256"].iter().all(|key|expected.get(*key).is_some_and(|v|!v.is_null()&&Some(v)==current.get(*key)))
+}
+fn money_priority_account_current(bank:&Session,expected:&Value)->bool{
+ money_priority_account_matches(expected,&json!({"positionsSha256":hash(&bank.engine().wallet.positions()),"cash":money(bank.engine().wallet.cash),"actualFillsSha256":hash(&json!(bank.engine().fills()))}))
+}
+fn money_priority_sell(q:&Value,package:bool,bound:bool,cancel_ready:bool)->bool{
+ q["action"]=="sell"&&q["retired"]==false&&!rank_quote(q)&&!package&&bound&&cancel_ready
+}
+fn money_priority_waiting(c:&Control,bank:&Session,log:&DispatchLog)->bool{
+ let Some(settings)=&c.rank_campaign else{return false};
+ let Ok((review,_pins,Some(account)))=load_rank_campaign(c,settings)else{return false};
+ c.scope.exchanges.contains_key(review.exchange_id())&&money_priority_account_current(bank,&account)
+ &&!bank.engine().order_records().iter().any(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()&&!rank_can_resume(bank,log,q))
 }
 fn rank_waits_for_known_orders(log:&DispatchLog)->Result<bool>{
  log.require_resolved_attempts()?;Ok(log.acknowledgments.keys().any(|qid|!log.closed.contains(qid)))
@@ -2674,6 +2708,9 @@ fn early_native_side_filter(mode:moloch_live_runtime::ordinary_side_edge::Mode,b
  });diagnostics
 }
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+ // Reconciliation and mandatory cancellations still run; do not immediately
+ // replace a quote being yielded to an exact owner-reviewed monetary trade.
+ let allow_new_submissions=allow_new_submissions&&!money_priority_waiting(c,bank,log);
  if allow_new_submissions&&!bank.engine().package_blocks_submissions(){
   let managed=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;f.cohorts.managed_exchanges()}else{Default::default()};
   if maker_review.is_none(){if !queue_has_unknown(t)?{retire_unqualified_entry_drafts(c,bank,log,&managed)?;}}
@@ -3096,8 +3133,10 @@ pub fn main()->Result<()>{
   install_managed_entry_exclusions(&c,&path,&mut bank,&mut log,fundamental.as_ref())?;
   install_human_market_breadth(&c,&path,&mut bank)?;
   // A durable official acknowledgment can be replayed after a crash before ledger commit.
-  let mut startup_quotes=moloch_live_runtime::startup_ack::Index::new(&bank)?;
-  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=startup_quotes.quote(&bank,qid)?.clone();let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};if let Some(f)=fundamental.as_ref(){if !startup_quotes.closed_legacy(&bank,&log,qid,&e)?{f.cohorts.validate_restored_acknowledgment(&bank,&log,qid,&e)?;}}authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());if !startup_quotes.validate_closed_duplicate(&bank,&log,qid,&e)?&&restore_ack(&mut bank,&e)?{startup_quotes=moloch_live_runtime::startup_ack::Index::new(&bank)?;}}
+  let mut startup_quotes=moloch_live_runtime::startup_ack::Index::new(&bank)?;let mut startup_events=Vec::new();
+  for (qid,v) in log.acknowledgments.clone(){let r:Receipt=serde_json::from_value(v)?;let q=startup_quotes.quote(&bank,qid)?.clone();let e=if let Some(recovery)=log.recovered.get(&qid){feedback::recovered_acknowledgment(&q,recovery["actualOrderId"].as_str().ok_or("LIVE_RECOVERY_ACTUAL_ID")?,&c.scope.tournament_id,&r,&serde_json::from_value(recovery["fills"].clone())?,&iso(now()))?}else{feedback::acknowledgment(&q,&r,&iso(now()))?};startup_events.push((qid,e));}
+  if let Some(f)=fundamental.as_ref(){let mut checked=Vec::new();for(qid,e)in &startup_events{if !startup_quotes.closed_legacy(&bank,&log,*qid,e)?{checked.push((*qid,e.clone()));}}f.cohorts.validate_restored_acknowledgments_batch(&bank,&log,&checked)?;}
+  for(qid,e)in startup_events{authority.bind_owned(e["actualOrderId"].as_str().ok_or("LIVE_ACTUAL_ID")?.into());if !startup_quotes.validate_closed_duplicate(&bank,&log,qid,&e)?&&restore_ack(&mut bank,&e)?{startup_quotes=moloch_live_runtime::startup_ack::Index::new(&bank)?;}}
   // Always recover original liabilities even when new package scanning is off.
   // Recovery never recreates a Staged capability or retries a physical send.
   let mut packages=moloch_live_runtime::package_dispatch::PackageDispatchLog::open(&c.root.join("package-dispatch"))?;
@@ -4703,6 +4742,18 @@ mod local_final_guard_recovery_tests{
 }
 #[cfg(test)]mod rank_worker_tests{
  use super::*;
+ #[test]fn monetary_priority_requires_original_financial_identity(){
+  let a=json!({"positionsSha256":"p","cash":"1.000000","actualFillsSha256":"f","reservedCash":"0.000000"});
+  assert!(money_priority_account_matches(&a,&a));
+  for key in ["positionsSha256","cash","actualFillsSha256"]{let mut changed=a.clone();changed[key]=json!("changed");assert!(!money_priority_account_matches(&a,&changed));let mut missing=a.clone();missing.as_object_mut().unwrap().remove(key);assert!(!money_priority_account_matches(&missing,&a));}
+  let mut draft=a.clone();draft["reservedCash"]=json!("0.500000");assert!(money_priority_account_matches(&a,&draft)); // No reservation released by priority.
+ }
+ #[test]fn monetary_priority_only_yields_bound_cancelable_ordinary_sells(){
+  let q=json!({"id":1,"action":"sell","retired":false});assert!(money_priority_sell(&q,false,true,true));
+  assert!(!money_priority_sell(&q,true,true,true));assert!(!money_priority_sell(&q,false,false,true));assert!(!money_priority_sell(&q,false,true,false));
+  for(key,value)in[("action",json!("buy")),("retired",json!(true)),("reviewedRankCampaign",json!({"campaignSha256":"other"}))]{let mut changed=q.clone();changed[key]=value;assert!(!money_priority_sell(&changed,false,true,true));}
+ }
+
  #[test]fn rank_packet_defers_public_commits_through_original_fact_window_without_changing_ordinary_service(){
   for ms in [0,1000,9999,19999]{assert!(!preflight_stream_service_due(RANK_REALTIME_FRAMES_PER_SERVICE,Duration::from_millis(ms)));assert!(preflight_stream_service_due(MAX_REALTIME_FRAMES_PER_DRAIN,Duration::from_millis(ms)));}
   assert!(preflight_stream_service_due(RANK_REALTIME_FRAMES_PER_SERVICE,Duration::from_millis(20000)));assert_eq!(RANK_REALTIME_FRAMES_PER_SERVICE,1);

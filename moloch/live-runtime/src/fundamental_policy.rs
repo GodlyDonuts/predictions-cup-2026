@@ -1666,7 +1666,18 @@ impl Cohorts{
     /// This accepts no new actual ID, economics, receipt or physical attempt.
     /// Normal live ACK admission MUST continue using validate_acknowledgment.
     pub fn validate_restored_acknowledgment(&self,bank:&Session,log:&DispatchLog,qid:u64,event:&Value)->Result<()>{
-        self.check(bank,log)?;let Some(archive)=self.abandoned.get(&qid)else{return self.validate_acknowledgment(qid,event)};
+        self.check(bank,log)?;self.validate_restored_acknowledgment_checked(bank,log,qid,event)
+    }
+    /// One immutable startup boundary, with every original per-ACK proof still
+    /// checked. Rust borrows prevent bank/log/cohort changes inside the batch.
+    /// This is not live ACK admission and grants no new physical capability.
+    pub fn validate_restored_acknowledgments_batch(&self,bank:&Session,log:&DispatchLog,events:&[(u64,Value)])->Result<()>{
+        self.check(bank,log)?;
+        for(qid,event)in events{self.validate_restored_acknowledgment_checked(bank,log,*qid,event)?;}
+        self.check(bank,log)
+    }
+    fn validate_restored_acknowledgment_checked(&self,bank:&Session,log:&DispatchLog,qid:u64,event:&Value)->Result<()>{
+        let Some(archive)=self.abandoned.get(&qid)else{return self.validate_acknowledgment(qid,event)};
         let proof=archive.closed_zero.as_ref().ok_or("FUNDAMENTAL_NEVER_SENT_ARCHIVE_HAS_NO_ACK")?;let binding=archive.cohort.entry.as_ref().ok_or("FUNDAMENTAL_REARM_ORIGIN")?;
         let(records,_)=self.original_closed_records(log,&[qid].into())?;
         need(records.get(&qid).map(serde_json::to_value).transpose()?.as_ref()==Some(&proof["rows"]),"FUNDAMENTAL_RESTORED_ORIGINAL_CHANGED")?;

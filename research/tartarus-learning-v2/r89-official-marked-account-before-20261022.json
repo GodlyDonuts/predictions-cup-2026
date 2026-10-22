@@ -1,0 +1,15 @@
+{
+  "observedUtc": "2026-10-22T09:01:26.082658+00:00",
+  "accountRequestsByObserver": 0,
+  "nonAtomicOfficialMarks": true,
+  "executableLiquidationClaimed": false,
+  "cash": "25721.99",
+  "accountReceivedAt": "2026-10-22T08:57:24.112Z",
+  "accountReceiptSha256": "e5ae6f38661b260bd48439f8c2fea64104bf5792443b22891419141a6ab672b5",
+  "markedPositions": "68219.41",
+  "positionsReceivedAt": "2026-10-22T08:57:22.171Z",
+  "positionsReceiptSha256": "d5be6e1d48eb6a197095d2ff87aa2a7bb644edf9494a78221f822d31bd67fca3",
+  "officialMarkedEquity": "93941.40",
+  "changeFromAssumed100000": "-6058.60",
+  "returnFromAssumed100000": "-0.060586"
+}
