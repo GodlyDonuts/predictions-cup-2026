@@ -97,9 +97,10 @@ def run(a):
         'Finite uncalibrated conditional price hypothesis; all underlying clocks retained. Not a renewed trading review or certified future quote.')
     book_source = retain(view_raw, view_clock, a.horizon_ms,
         'Original matched native book/account boundary. Later liquidity at these observed prices is conditional; each next physical action requires new original facts and approval.')
+    book_source_by_exchange = {}
     for ex in {leg['ex'] for leg in legs}:
         if ex in book_sources:
-            retain(book_sources[ex], _ns(books[ex]['receivedAt'])//1000000, a.horizon_ms,
+            book_source_by_exchange[ex] = retain(book_sources[ex], _ns(books[ex]['receivedAt'])//1000000, a.horizon_ms,
                 'Exact original SIG recorder row used for this conditional research leg. Original clocks remain; native admission, current execution and future liquidity are not asserted.')
     retain(plan_raw, view_clock, a.horizon_ms,
         'Retained proposed sequence; independent exact audit recomputed from original inputs. Not a fill, account fact or execution authority.')
@@ -125,7 +126,9 @@ def run(a):
         row = byex[leg['ex']]
         item = dict(contractId=row['contractId'], exchangeId=leg['ex'], marketId=row['marketId'],
             side=leg['side'], action=leg['action'], quantity=leg['quantity'], limitPrice=money(leg['price']),
-            sourceSha256=book_source, availableAtMs=view_clock, validUntilMs=until)
+            sourceSha256=book_source_by_exchange.get(leg['ex'], book_source),
+            availableAtMs=_ns(books[leg['ex']]['receivedAt'])//1000000,
+            validUntilMs=min(until, _ns(books[leg['ex']]['receivedAt'])//1000000+a.horizon_ms))
         if leg['ex'] in ownership:
             item['managedInventory'] = ownership[leg['ex']]
         future.append(item)
