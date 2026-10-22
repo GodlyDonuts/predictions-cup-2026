@@ -1,0 +1,26 @@
+{
+  "observedUtc": "2026-10-22T00:41:06.595234+00:00",
+  "pid": 1055406,
+  "phase": "measuring",
+  "elapsedMeasurementSeconds": 901.635,
+  "completedProgressSamples": 14,
+  "completionIntervalsSeconds": [
+    84.26,
+    49.014,
+    43.576,
+    57.016,
+    56.507,
+    46.541,
+    224.096,
+    41.149,
+    57.276,
+    55.926,
+    33.056,
+    39.178,
+    71.843
+  ],
+  "medianCompletionIntervalSeconds": 55.926,
+  "accountRequests": 0,
+  "filledMinuteTargetVerified": false,
+  "interpretation": "Scope completion gaps only; counters include ACKs and partial fill receipts, not distinct filled orders"
+}

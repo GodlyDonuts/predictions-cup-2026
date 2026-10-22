@@ -1,0 +1,138 @@
+{
+  "observedUtc": "2026-10-22T00:40:43.493571+00:00",
+  "pid": 1055406,
+  "nativeViewWrittenAt": "2026-10-22T00:40:23.719Z",
+  "separateSnapshotsNotAtomic": true,
+  "hintSelection": {
+    "at": "2026-10-22T00:40:04.347Z",
+    "diagnosticOnly": true,
+    "elapsedMs": 605,
+    "hints": 10,
+    "managedScopes": 14,
+    "pid": 1055406
+  },
+  "selectedRetainedNativeBooks": [
+    {
+      "exchangeId": "1044",
+      "originalClocks": {
+        "receivedAt": "2026-10-22T00:40:12.476Z",
+        "sourceAt": "2026-10-22T00:40:12.178084700Z",
+        "requestStartedAt": "2026-10-22T00:40:12.476Z"
+      },
+      "agesMsAtObservation": {
+        "receivedAt": 31013,
+        "sourceAt": 31311,
+        "requestStartedAt": 31013
+      },
+      "bestBid": [
+        {
+          "price": "0.850000",
+          "quantity": 7143
+        }
+      ],
+      "bestAsk": [
+        {
+          "price": "0.855000",
+          "quantity": 2838
+        }
+      ]
+    }
+  ],
+  "missingSelectedNativeBooks": [
+    "993"
+  ],
+  "bookExecutionMaximumAgeMs": 10000,
+  "referenceGenerationSha256": "2f3aba4d5c198d9c67fa97b084c75f07ec43fbc831ce93f12916825bf5a301ee",
+  "referenceCurrent": [
+    {
+      "exchangeId": "1042",
+      "reviewAndOriginalSourcesCurrent": false
+    },
+    {
+      "exchangeId": "1068",
+      "reviewAndOriginalSourcesCurrent": false
+    },
+    {
+      "exchangeId": "966",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "977",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "1067",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "865",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "872",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "993",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "885",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "1051",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "851",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "1043",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "1044",
+      "reviewAndOriginalSourcesCurrent": true
+    },
+    {
+      "exchangeId": "1077",
+      "reviewAndOriginalSourcesCurrent": true
+    }
+  ],
+  "streamRecovery": {
+    "at": "2026-10-22T00:34:07.616Z",
+    "attempts": [
+      1792628711631,
+      1792629152005,
+      1792629229251
+    ],
+    "coverageResetToHealthy": false,
+    "joinedAt": "2026-10-22T00:34:07.598Z",
+    "orderRetried": false,
+    "reason": "STREAM_READ_FAILED",
+    "stage": "joined_requires_scope_recovery"
+  },
+  "exitCensus": {
+    "observedUtc": "2026-10-22T00:40:42.043142+00:00",
+    "pid": 1055406,
+    "phase": "observing",
+    "elapsedObservationSeconds": 866.771,
+    "targetSeconds": 3600,
+    "samples": 53,
+    "observationFailures": 1,
+    "marketsWithCurrentProfitableBids": [
+      "1044",
+      "993"
+    ],
+    "marketsWithAskRelativeMiss": [],
+    "accountRequests": 0,
+    "executionAuthority": false,
+    "repeatedDepthIsNotSummedAsTurnover": true,
+    "filledOrdersClaimed": 0
+  },
+  "accountRequests": 0,
+  "executionAuthority": false,
+  "interpretation": "Scheduling/source-age diagnostic only; retained quotes are not current execution authority or fills"
+}
