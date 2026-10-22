@@ -1,0 +1,16 @@
+{
+  "observedUtc": "2026-10-22T11:34:34.680Z",
+  "cashReceiptAt": "2026-10-22T11:34:23.163Z",
+  "positionsReceiptAt": "2026-10-22T11:34:21.129Z",
+  "cash": "26385.08",
+  "officialMarkedPositions": "67669.02",
+  "nonAtomicMarkedAccountValue": "94054.10",
+  "assumedStartingPoints": "100000",
+  "returnVsAssumedStartPct": "-5.9459",
+  "originalPreflightSha256": "95228de36cf1bdc6aafa75170095b24c0db9fee7fb7690a5ba9571e1c495f7da",
+  "positions": 17,
+  "executableLiquidationClaimed": false,
+  "wholeAccountProfitEstablished": false,
+  "attributedToR91": false,
+  "accountRequestsByObserver": 0
+}
