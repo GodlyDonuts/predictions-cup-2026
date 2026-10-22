@@ -1,0 +1,161 @@
+{
+  "observedUtc": "2026-10-22T03:06:44.654220+00:00",
+  "pid": 1061072,
+  "elapsedSeconds": 900.3778389340732,
+  "completionReason": "duration_complete",
+  "completedWindow": true,
+  "samples": [
+    {
+      "at": "2026-10-22T02:51:09.834Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 0,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:52:11.384Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:53:19.704Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:54:35.323Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:55:29.975Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:56:08.668Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:57:00.123Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:57:46.281Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:58:27.122Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T02:59:18.933Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T03:00:09.793Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T03:01:22.745Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T03:02:56.706Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T03:04:32.689Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    },
+    {
+      "at": "2026-10-22T03:05:46.105Z",
+      "diagnosticOnly": true,
+      "dispatchJournalChanged": true,
+      "distinctCursors": 1,
+      "passes": 1,
+      "physicalPermissionsReused": false,
+      "pid": 1061072,
+      "sameAccountWorker": true
+    }
+  ],
+  "accountRequests": 0,
+  "fillsNotInferredFromSweeps": true
+}

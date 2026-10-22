@@ -2023,41 +2023,43 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
   let Some((facts,until))=reviewed_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_REVIEWED_RESERVATION_OR_PACKET_INELIGIBLE")};
   return submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,facts,until)
  }
- if hint.reason=="reviewed_inventory_book_refresh"{
+ // Planning needs a current official book and the owned native ledger. Fetch
+ // the complete physical packet AFTER reservation/activation, as on entries,
+ // so native planning cannot consume its account/contract/book freshness.
+ {
   let target=json!({"marketId":market,"exchangeId":ex});
   let eligible=reviewed_book_prefilter(c,bank,source,&target,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe},|bank,at|{
    Ok(f.cohorts.existing_exit_hint(bank,log,&c.scope,ex,f.authority.trusted(),at)?.is_some())
   })?;
   if !eligible{return existing_exit_deferred(c,ex,"book_prefilter","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")}
  }
- let facts=preflight_snapshots(c,bank,source,market,None,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
- let Some(facts_until)=existing_facts_until(&facts,now())?else{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")};
- let target=json!({"marketId":market,"exchangeId":ex});accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if existing_target_busy(bank,log,ex)?{return existing_exit_deferred(c,ex,"liability","EXISTING_TARGET_PENDING")}
  // This positive not-sent retirement suppresses planning for this event only;
  // no tick/source event may run between it and the covered native reservation.
  retire_existing_drafts(bank,log,ex)?;
- // Do not charge a blanket second write gap after the seven serialized GETs.
+ // Do not charge a blanket second write gap after the planning read.
  // The original native preview below rejects an actually exhausted write
  // budget, and the sole SDK independently enforces physical completion pacing.
  // Activation and every original receipt expiry still apply unchanged.
- let activation=bank.engine().policy()["latencyMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_ACTIVATION")?;
- if !existing_exit_activation_fits(now(),activation,facts_until){return existing_exit_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
  refresh_controls(c,authority,stream)?;f.authority.validate()?;
- if now()>=facts_until{return existing_exit_deferred(c,ex,"facts","ORIGINAL_PACKET_STALE")}
  let Some(plan)=f.cohorts.prepare_existing_exit(bank,log,t,&c.scope,ex,f.authority.trusted(),now())?else{return existing_exit_deferred(c,ex,"value","NO_CURRENT_EXECUTABLE_REVIEWED_EXIT")};
  // Preview exactly the financial transition, without creating a qid or
  // weakening a native denial. A full minute write cap is ordinary deferral.
  let Some(original)=commit_existing_reservation(bank,plan.event())?else{return existing_exit_deferred(c,ex,"native","ORIGINAL_NATIVE_BUDGET_OR_WINDOW_DENIED")};
- // Reservation creation can outlive the original packet. Re-read facts for
- // this EXACT untouched qid; never mint a replacement or extend its expiry.
- // Both reads use the same account limiter. All physical eligibility remains.
+ // Wait on the exact native reservation before acquiring expiring execution
+ // facts. No physical capability/intent exists yet. The original quote,
+ // activation, expiry, FIFO and review remain unchanged throughout the wait.
+ let expires=original["expiresAt"].as_u64().ok_or("LIVE_QUOTE_EXPIRATION")?;
  let remaining_activation=original["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?.saturating_sub(now());
- if !existing_exit_activation_fits(now(),remaining_activation,facts_until){
-  let Some((fresh,until))=reviewed_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_REVIEWED_RESERVATION_OR_PACKET_INELIGIBLE")};
-  return submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,fresh,until)
+ if !existing_exit_activation_fits(now(),remaining_activation,expires){return existing_exit_deferred(c,ex,"activation","ORIGINAL_RESERVATION_EXPIRED")}
+ loop{refresh_controls(c,authority,stream)?;f.authority.validate()?;
+  match existing_reservation_stage(&quote(bank,original["id"].as_u64().ok_or("LIVE_QUOTE_ID")?)?,&original,now(),expires){
+   Ok(Some(at))=>std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100))),Ok(None)=>break,
+   Err(e)if e.to_string()=="LIVE_EXISTING_RESERVATION_OR_FACTS_EXPIRED"=>return existing_exit_deferred(c,ex,"activation","ORIGINAL_RESERVATION_EXPIRED"),Err(e)=>return Err(e),
+  }
  }
- submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,facts,facts_until)
+ let Some((fresh,until))=reviewed_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_REVIEWED_RESERVATION_OR_PACKET_INELIGIBLE")};
+ submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,fresh,until)
 }
 fn submit_existing_reservation(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,stream:&Realtime,f:&mut FundamentalRuntime,original:&Value,facts:SnapshotSet,facts_until:u64)->Result<()>{
  let ex=original["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;let qid=original["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
@@ -3887,6 +3889,22 @@ pub fn main()->Result<()>{
   assert_eq!(existing_reservation_stage(&quote(&f.bank,id).unwrap(),&q,now(),until).unwrap(),None);assert!(runtime.eligible(&f.bank,&f.log,&c.scope,id,now()).unwrap());let request=f.spec(&q);runtime.cohorts.bind(&f.bank,&f.log,&c.scope,id,&request,runtime.authority.trusted(),now()).unwrap();
   let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:id.to_string(),owner:"Codex".into(),expires_at_ms:now()+1000,maximum_quantity:2,maximum_cost:"1.970000".into()};let token=runtime.cohorts.physical_decision(&f.bank,&f.log,&c.scope,id,&request,&permit,&runtime.authority,now()).unwrap();token.authorize(&c.scope,&request,&permit,now()).unwrap();
   assert_eq!(quote(&f.bank,id).unwrap(),q);assert_eq!(f.bank.engine().order_records(),orders);for key in ["cash","ownedCost","realized","fees","positions"]{assert_eq!(before[key],f.bank.engine().report().unwrap()[key],"{key}");}assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty()&&f.bank.engine().live_order_bindings().is_empty()&&f.bank.engine().fills().is_empty());
+ }
+ #[test]fn post_activation_sell_packet_replaces_stale_planning_book_without_changing_reservation_or_fifo(){
+  for passive in [false,true]{
+   let(mut f,mut runtime,c,mut source,q)=setup_kind_at(now()-16000,passive);let id=q["id"].as_u64().unwrap();let at=now();
+   assert_eq!(existing_reservation_stage(&q,&q,at,q["expiresAt"].as_u64().unwrap()).unwrap(),None);
+   assert!(!runtime.eligible(&f.bank,&f.log,&c.scope,id,at).unwrap(),"the expired planning book cannot authorize the sell");
+   let cash=f.bank.engine().wallet.cash;let lots=f.bank.engine().wallet.positions();let orders=f.bank.engine().order_records();let dispatch=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();
+   let mut reads=Reads::new();let(facts,until)=reviewed_reserved_preflight(&c,&mut f.bank,&f.log,&mut source,&runtime,&q,&mut reads).unwrap().unwrap();
+   assert_eq!(reads.endpoints.len(),7);assert!(moloch_live_runtime::daily_windows::clock(&facts.book.request_started_at).unwrap()>=at);assert!(until>at);
+   assert_eq!(quote(&f.bank,id).unwrap(),q);assert_eq!(f.bank.engine().order_records(),orders);assert_eq!(f.bank.engine().wallet.cash,cash);assert_eq!(f.bank.engine().wallet.positions(),lots);
+   let request=f.spec(&q);let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:id.to_string(),owner:"Codex".into(),expires_at_ms:now()+1000,maximum_quantity:q["quantity"].as_u64().unwrap() as u32,maximum_cost:"3.000000".into()};
+   let n=q["quantity"].as_u64().unwrap();let token=match fundamental_preintent(&mut runtime,&f.bank,&f.log,&c.scope,&q,n,&request,&permit,now,||Ok(())).unwrap(){FundamentalPreintent::Ready(token)=>token,_=>panic!("new current packet must support the same covered sell")};
+   token.authorize(&c.scope,&request,&permit,now()).unwrap();
+   assert!(token.authorize(&c.scope,&request,&permit,until).is_err(),"original expiry still applies; no source clock is extended");
+   assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty()&&f.bank.engine().fills().is_empty());
+  }
  }
  #[test]fn passive_reserved_retry_priority_never_promotes_revoked_expired_or_dispatched_quotes(){
   for case in ["revoked","expired","attempt","ack"]{let(mut f,mut runtime,c,_source,q)=setup_at(now()-16000);let id=q["id"].as_u64().unwrap();let mut at=now();
