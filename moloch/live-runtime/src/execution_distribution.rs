@@ -273,7 +273,7 @@ impl AcquisitionShadow {
   self.bind(bank)?;self.log(log)?;need(at>=self.last&&at>=self.started,"ACQ_ATTEMPT_CLOCK")?;
   if self.pre_cohort.contains(&qid)||self.exposures.contains_key(&qid){return Ok(false)}
   let i=log.intents.get(&qid).ok_or("ACQ_ORIGINAL_INTENT")?;if i["fundamental"].is_null(){self.excluded_ordinary+=1;return Ok(false)}
-  need(log.attempted.contains(&qid)&&!log.acknowledgments.contains_key(&qid)&&!log.closed.contains(&qid)&&!log.aborted_records().contains_key(&qid),"ACQ_ORIGINAL_ATTEMPT")?;
+  need(log.attempted.contains(&qid)&&!log.acknowledgments.contains_key(&qid)&&!log.closed.contains(&qid)&&!log.aborted_records().contains_key(&qid)&&!log.local_final_guard_records().contains_key(&qid)&&!log.pre_network_records().contains_key(&qid),"ACQ_ORIGINAL_ATTEMPT")?;
   let attempt=log.original_attempt(qid).ok_or("ACQ_ORIGINAL_ATTEMPT")?;need(clock(&attempt["at"])?==at&&attempt.get("captureAtMs").is_none_or(|n|n.as_u64()==Some(at)),"ACQ_ORIGINAL_ATTEMPT_CLOCK")?;
   let q=bank.engine().order_records().into_iter().find(|q|q["id"]==qid).ok_or("ACQ_NATIVE_QUOTE")?;
   if q["action"]!="buy"||bank.engine().is_package_order(qid){return Ok(false)}
@@ -361,7 +361,7 @@ impl AcquisitionShadow {
  pub fn refresh_aborts(&mut self,bank:&Session,log:&DispatchLog,at:u64)->Result<()> {
   self.bind(bank)?;self.log(log)?;need(at>=self.last,"ACQ_OBSERVATION_CLOCK")?;
   let ids=self.exposures.iter().filter(|(id,p)|!p.aborted&&log.proved_no_network(**id)).map(|(id,_)|*id).collect::<Vec<_>>();
-  for id in ids {let p=&self.exposures[&id];need(p.fills.is_empty()&&p.admitted.is_none()&&!log.acknowledgments.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&log.aborted_records().contains_key(&id),"ACQ_ABORT_CONTRADICTION")?;self.reservation(bank,id,at)?;self.exposures.get_mut(&id).unwrap().aborted=true;self.retained.push_back(id);}
+  for id in ids {let p=&self.exposures[&id];need(p.fills.is_empty()&&p.admitted.is_none()&&!log.acknowledgments.contains_key(&id)&&!bank.engine().live_order_bindings().contains_key(&id)&&(log.aborted_records().contains_key(&id)||log.local_final_guard_records().contains_key(&id)||log.pre_network_records().contains_key(&id)),"ACQ_ABORT_CONTRADICTION")?;self.reservation(bank,id,at)?;self.exposures.get_mut(&id).unwrap().aborted=true;self.retained.push_back(id);}
   self.last=at;self.prune();Ok(())
  }
  fn prune(&mut self) {while self.retained.len()>self.config.retained_completed{let id=self.retained.pop_front().unwrap();if self.exposures.get(&id).is_some_and(|p|p.owned_remaining==0&&p.reserved==0){self.exposures.remove(&id);}}

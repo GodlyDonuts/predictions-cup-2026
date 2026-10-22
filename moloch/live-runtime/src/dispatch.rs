@@ -7,7 +7,7 @@ use std::{fs::{self,File,OpenOptions},io::{BufRead,BufReader,Write},path::Path,c
 fn hash(v:&Value)->String{format!("{:x}",Sha256::digest(serde_json::to_vec(v).unwrap()))}
 fn clock(v:&Value)->Result<u64>{Ok(chrono::DateTime::parse_from_rfc3339(v.as_str().ok_or("DISPATCH_ABORT_CLOCK")?)?.timestamp_millis().try_into().map_err(|_|"DISPATCH_ABORT_CLOCK")?)}
 fn stored_error(v:&Value)->Result<TransportError>{let e=TransportError{code:v["code"].as_str().ok_or("DISPATCH_ABORT_ERROR")?.into(),status:serde_json::from_value(v["status"].clone())?,may_have_executed:v["mayHaveExecuted"].as_bool().ok_or("DISPATCH_ABORT_ERROR")?,retry_after_ms:v["retryAfterMs"].as_u64().ok_or("DISPATCH_ABORT_ERROR")?,order_id:serde_json::from_value(v["orderId"].clone())?,api_code:serde_json::from_value(v["apiCode"].clone())?};if serde_json::to_value(&e)?!=*v{return Err("DISPATCH_ABORT_ERROR".into())}Ok(e)}
-pub struct DispatchLog {file:File,sequence:u64,previous:String,pub intents:BTreeMap<u64,Value>,pub acknowledgments:BTreeMap<u64,Value>,pub recovered:BTreeMap<u64,Value>,pub attempted:BTreeSet<u64>,pub closed:BTreeSet<u64>,pub cancel_acknowledged:BTreeSet<u64>,cancel_attempts:BTreeSet<u64>,attempts:BTreeMap<u64,Value>,errors:BTreeMap<u64,Value>,aborted_records:BTreeMap<u64,Value>,local_final_guard_records:BTreeMap<u64,Value>,proved_no_network:BTreeSet<u64>,exposure_records:BTreeMap<u64,Value>,resolved_exposure:BTreeSet<u64>}
+pub struct DispatchLog {file:File,sequence:u64,previous:String,pub intents:BTreeMap<u64,Value>,pub acknowledgments:BTreeMap<u64,Value>,pub recovered:BTreeMap<u64,Value>,pub attempted:BTreeSet<u64>,pub closed:BTreeSet<u64>,pub cancel_acknowledged:BTreeSet<u64>,cancel_attempts:BTreeSet<u64>,attempts:BTreeMap<u64,Value>,errors:BTreeMap<u64,Value>,aborted_records:BTreeMap<u64,Value>,local_final_guard_records:BTreeMap<u64,Value>,pre_network_records:BTreeMap<u64,Value>,proved_no_network:BTreeSet<u64>,exposure_records:BTreeMap<u64,Value>,resolved_exposure:BTreeSet<u64>}
 impl DispatchLog {
  pub fn descriptor_identity(&self)->Result<Value>{
   #[cfg(unix)]{use std::os::unix::fs::MetadataExt;let m=self.file.metadata()?;Ok(json!({"schemaVersion":1,"device":m.dev(),"inode":m.ino(),"bytes":m.len(),"sequence":self.sequence,"previous":self.previous}))}
@@ -18,7 +18,7 @@ impl DispatchLog {
   #[cfg(unix)]{use std::os::unix::fs::OpenOptionsExt;options.mode(0o600);}
   let file=options.open(path)?;file.sync_all()?;File::open(path.parent().ok_or("DISPATCH_PARENT")?)?.sync_all()?;
   let bytes=fs::read(path)?;if !bytes.is_empty()&&bytes.last()!=Some(&b'\n'){return Err("DISPATCH_TORN_TAIL".into())}
-  let mut log=Self{file,sequence:0,previous:"0".repeat(64),intents:Default::default(),acknowledgments:Default::default(),recovered:Default::default(),attempted:Default::default(),closed:Default::default(),cancel_acknowledged:Default::default(),cancel_attempts:Default::default(),attempts:Default::default(),errors:Default::default(),aborted_records:Default::default(),local_final_guard_records:Default::default(),proved_no_network:Default::default(),exposure_records:Default::default(),resolved_exposure:Default::default()};
+  let mut log=Self{file,sequence:0,previous:"0".repeat(64),intents:Default::default(),acknowledgments:Default::default(),recovered:Default::default(),attempted:Default::default(),closed:Default::default(),cancel_acknowledged:Default::default(),cancel_attempts:Default::default(),attempts:Default::default(),errors:Default::default(),aborted_records:Default::default(),local_final_guard_records:Default::default(),pre_network_records:Default::default(),proved_no_network:Default::default(),exposure_records:Default::default(),resolved_exposure:Default::default()};
   for line in BufReader::new(File::open(path)?).lines(){let mut row:Value=serde_json::from_str(&line?)?;let claimed=row.as_object_mut().ok_or("DISPATCH_ROW")?.remove("hash").ok_or("DISPATCH_HASH")?;if row["sequence"]!=log.sequence+1||row["previous"]!=log.previous||claimed!=hash(&row){return Err("DISPATCH_CHAIN".into())}log.apply(&row["event"])?;log.sequence+=1;log.previous=claimed.as_str().ok_or("DISPATCH_HASH")?.into();}
   Ok(log)
  }
@@ -27,21 +27,22 @@ impl DispatchLog {
   match e["kind"].as_str(){
    Some("intent")=>{if self.intents.contains_key(&id){return Err("DISPATCH_DUPLICATE_INTENT".into())}self.intents.insert(id,e.clone());},
    Some("attempt")=>{if !self.intents.contains_key(&id)||!self.attempted.insert(id){return Err("DISPATCH_REPEAT_ATTEMPT".into())}self.attempts.insert(id,e.clone());},
-   Some("ack")=>{if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.exposure_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["receipt"].clone()).is_some(){return Err("DISPATCH_ACK_WITHOUT_ATTEMPT".into())}},
-   Some("recovered_ack")=>{if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.exposure_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["order"].clone()).is_some()||self.recovered.insert(id,e.clone()).is_some(){return Err("DISPATCH_RECOVERY_WITHOUT_ATTEMPT".into())}},
+   Some("ack")=>{if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.pre_network_records.contains_key(&id)||self.exposure_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["receipt"].clone()).is_some(){return Err("DISPATCH_ACK_WITHOUT_ATTEMPT".into())}},
+   Some("recovered_ack")=>{if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.pre_network_records.contains_key(&id)||self.exposure_records.contains_key(&id)||!self.attempted.contains(&id)||self.acknowledgments.insert(id,e["order"].clone()).is_some()||self.recovered.insert(id,e.clone()).is_some(){return Err("DISPATCH_RECOVERY_WITHOUT_ATTEMPT".into())}},
+   Some("admitted_pre_network_not_sent")=>{self.validate_pre_network_record(e)?;self.pre_network_records.insert(id,e.clone());},
    Some("local_final_guard_no_http")=>{self.validate_local_final_guard_record(e)?;self.local_final_guard_records.insert(id,e.clone());},
    Some("expired_exposure_reconciled")=>{if !self.attempted.contains(&id)||self.acknowledgments.contains_key(&id)||self.exposure_records.contains_key(&id)||e["proofFileSha256"].as_str().is_none_or(|s|s.len()!=64)||e["nativeSourceSequence"].as_u64().is_none_or(|n|n==0){return Err("DISPATCH_EXPOSURE_BINDING".into())}self.exposure_records.insert(id,e.clone());},
    Some("aborted_before_admission")=>{self.validate_abort_record(e)?;self.aborted_records.insert(id,e.clone());},
    Some("closed")=>{if !self.acknowledgments.contains_key(&id)||!self.closed.insert(id){return Err("DISPATCH_TERMINAL_WITHOUT_ACK".into())}},
    Some("cancel_ack")=>{if !self.acknowledgments.contains_key(&id)||!self.cancel_acknowledged.insert(id){return Err("DISPATCH_CANCEL_ACK_WITHOUT_ORDER_OR_DUPLICATE".into())}},
-   Some("error")=>{if e["operation"].is_null()&&self.attempted.contains(&id)&&!self.acknowledgments.contains_key(&id){if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id){return Err("DISPATCH_ERROR_AFTER_ABORT".into())}self.errors.insert(id,e.clone());}},
+   Some("error")=>{if e["operation"].is_null()&&self.attempted.contains(&id)&&!self.acknowledgments.contains_key(&id){if self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.pre_network_records.contains_key(&id){return Err("DISPATCH_ERROR_AFTER_ABORT".into())}self.errors.insert(id,e.clone());}},
    Some("cancel_attempt")=>{self.cancel_attempts.insert(id);},
    Some("source")|Some("not_sent")=>{},
    _=>return Err("DISPATCH_EVENT".into())
   }Ok(())
  }
  pub fn append(&mut self,event:Value)->Result<()>{
-  if event["kind"]=="aborted_before_admission"||event["kind"]=="local_final_guard_no_http"||event["kind"]=="expired_exposure_reconciled"{return Err("DISPATCH_TYPED_ABORT_REQUIRED".into())}self.append_inner(event)
+  if event["kind"]=="admitted_pre_network_not_sent"||event["kind"]=="aborted_before_admission"||event["kind"]=="local_final_guard_no_http"||event["kind"]=="expired_exposure_reconciled"{return Err("DISPATCH_TYPED_ABORT_REQUIRED".into())}self.append_inner(event)
  }
  fn append_inner(&mut self,event:Value)->Result<()>{
   let mut next=json!({"sequence":self.sequence+1,"previous":self.previous,"event":event});let digest=hash(&next);next["hash"]=json!(digest);
@@ -83,7 +84,7 @@ impl DispatchLog {
   let id=e["qid"].as_u64().ok_or("DISPATCH_QID")?;
   let intent=self.intents.get(&id).ok_or("DISPATCH_ABORT_INTENT")?;let attempt=self.attempts.get(&id).ok_or("DISPATCH_ABORT_ATTEMPT")?;
   let error=self.errors.get(&id).ok_or("DISPATCH_ABORT_ORIGINAL_ERROR")?;self.abort_context(id)?;
-  if e["kind"]!="aborted_before_admission"||self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.acknowledgments.contains_key(&id)||self.closed.contains(&id)||e["originalIntentSha256"]!=hash(intent)||e["originalAttemptSha256"]!=hash(attempt)||e["originalErrorSha256"]!=hash(error)||!e["proof"].is_object()||clock(&e["at"])?<clock(&error["at"])?{return Err("DISPATCH_ABORT_BINDING".into())}Ok(())
+  if e["kind"]!="aborted_before_admission"||self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.pre_network_records.contains_key(&id)||self.acknowledgments.contains_key(&id)||self.closed.contains(&id)||e["originalIntentSha256"]!=hash(intent)||e["originalAttemptSha256"]!=hash(attempt)||e["originalErrorSha256"]!=hash(error)||!e["proof"].is_object()||clock(&e["at"])?<clock(&error["at"])?{return Err("DISPATCH_ABORT_BINDING".into())}Ok(())
  }
  /// Separate from pre-admission aborts: original errors may honestly retain
  /// mayHaveExecuted=true. Only the SDK's opaque local-final-guard proof can
@@ -113,12 +114,20 @@ impl DispatchLog {
  fn validate_local_final_guard_record(&self,e:&Value)->Result<()>{
   let id=e["qid"].as_u64().ok_or("DISPATCH_QID")?;
   self.local_final_guard_originals(id)?;
-  if e["kind"]!="local_final_guard_no_http"||self.local_final_guard_records.contains_key(&id)||self.aborted_records.contains_key(&id)||self.acknowledgments.contains_key(&id)||self.closed.contains(&id)||e["originalIntentSha256"]!=hash(&self.intents[&id])||e["originalAttemptSha256"]!=hash(&self.attempts[&id])||e["originalErrorSha256"]!=hash(&self.errors[&id])||e["proof"]["kind"]!="sdk_ordinary_final_guard_no_http_v1"||clock(&e["at"])?<clock(&self.errors[&id]["at"])?{return Err("DISPATCH_LOCAL_GUARD_BINDING".into())}Ok(())
+  if e["kind"]!="local_final_guard_no_http"||self.local_final_guard_records.contains_key(&id)||self.pre_network_records.contains_key(&id)||self.aborted_records.contains_key(&id)||self.acknowledgments.contains_key(&id)||self.closed.contains(&id)||e["originalIntentSha256"]!=hash(&self.intents[&id])||e["originalAttemptSha256"]!=hash(&self.attempts[&id])||e["originalErrorSha256"]!=hash(&self.errors[&id])||e["proof"]["kind"]!="sdk_ordinary_final_guard_no_http_v1"||clock(&e["at"])?<clock(&self.errors[&id]["at"])?{return Err("DISPATCH_LOCAL_GUARD_BINDING".into())}Ok(())
  }
  pub fn exposure_records(&self)->&BTreeMap<u64,Value>{&self.exposure_records}
  pub fn exposure_resolved(&self,qid:u64)->bool{self.resolved_exposure.contains(&qid)}
  pub fn verify_exposure(&mut self,proof:&crate::expired_exposure::Proof)->Result<()>{let qid=proof.qid();let e=self.exposure_records.get(&qid).ok_or("DISPATCH_EXPOSURE_RECORD_REQUIRED")?;if e["proofSha256"]!=hash(proof.evidence()){return Err("DISPATCH_EXPOSURE_PROOF_CHANGED".into())}self.resolved_exposure.insert(qid);Ok(())}
  pub fn append_exposure(&mut self,proof:&crate::expired_exposure::Proof,file_sha:&str,native_sequence:u64)->Result<()>{let qid=proof.qid();self.append_inner(json!({"kind":"expired_exposure_reconciled","qid":qid,"proofSha256":hash(proof.evidence()),"proofFileSha256":file_sha,"nativeSourceSequence":native_sequence,"networkAttemptRetained":true,"sameIntentRetryAuthorized":false}))?;self.verify_exposure(proof)}
+ pub fn pre_network_records(&self)->&BTreeMap<u64,Value>{&self.pre_network_records}
+ fn validate_pre_network_record(&self,e:&Value)->Result<()>{let id=e["qid"].as_u64().ok_or("DISPATCH_QID")?;self.abort_context(id)?;
+  if self.acknowledgments.contains_key(&id)||self.aborted_records.contains_key(&id)||self.local_final_guard_records.contains_key(&id)||self.pre_network_records.contains_key(&id)||self.exposure_records.contains_key(&id)||e["originalIntentSha256"]!=hash(&self.intents[&id])||e["originalAttemptSha256"]!=hash(&self.attempts[&id])||e["originalErrorSha256"]!=hash(&self.errors[&id])||e["proof"]["kind"]!="ordinary_admitted_pre_network_not_sent_v1"||clock(&e["at"])?<clock(&self.errors[&id]["at"])?{return Err("DISPATCH_PRE_NETWORK_BINDING".into())}Ok(())
+ }
+ pub fn append_pre_network_not_sent(&mut self,id:u64,proof:&crate::ordinary_pre_network::Proof,at:&str)->Result<()>{let(s,p,t,e)=self.abort_context(id)?;proof.validate_binding(&s,&p,t,&e)?;
+  let event=json!({"kind":"admitted_pre_network_not_sent","qid":id,"at":at,"originalIntentSha256":hash(&self.intents[&id]),"originalAttemptSha256":hash(&self.attempts[&id]),"originalErrorSha256":hash(&self.errors[&id]),"proof":proof.evidence()});self.validate_pre_network_record(&event)?;self.append_inner(event)?;self.proved_no_network.insert(id);Ok(())
+ }
+ pub fn verify_pre_network_not_sent(&mut self,id:u64,proof:&crate::ordinary_pre_network::Proof)->Result<()>{let(s,p,t,e)=self.abort_context(id)?;proof.validate_binding(&s,&p,t,&e)?;if self.pre_network_records.get(&id).ok_or("DISPATCH_PRE_NETWORK_RECORD")?["proof"]!=*proof.evidence(){return Err("DISPATCH_PRE_NETWORK_CHANGED".into())}self.proved_no_network.insert(id);Ok(())}
  pub fn require_resolved_attempts(&self)->Result<()>{if self.attempted.iter().any(|q|!self.acknowledgments.contains_key(q)&&!self.proved_no_network.contains(q)&&!self.resolved_exposure.contains(q)){return Err("DISPATCH_UNKNOWN_ACCEPTANCE_MANUAL_RECONCILIATION".into())}Ok(())}
  pub fn never_attempted(&self,qid:u64)->bool{!self.attempted.contains(&qid)&&!self.acknowledgments.contains_key(&qid)}
  pub fn proof(&self,qid:u64)->Value{json!({"qid":qid,"chain":self.previous,"sequence":self.sequence,"networkAttempts":if self.never_attempted(qid){0}else{1}})}
