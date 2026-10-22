@@ -67,7 +67,8 @@ def run(a):
     assert 2 <= len(legs) <= 129 and legs[0]['action'] == 'SELL', 'OWNED_SELL_ROTATION_REQUIRED'
     assert any(leg['action'] == 'BUY' for leg in legs[1:]), 'REPLACEMENT_BUY_REQUIRED'
     fin = compiled['financial']
-    books = {b['exchangeId']: b for b in compiled['originalBooks']}
+    from research_book_observations import load as research_books
+    books, book_sources = research_books(a.inputs, compiled, rows)
     checked = audit(fin, rows, books, model['model'], model['fields'], legs, assumptions=ASSUMPTIONS)
     interval = ordinary_money_bounds(rows, model['marginals'], model['profiles'], model['model']['diagnostics'], legs)
     floor = amount(a.minimum_expected_money)
@@ -96,6 +97,10 @@ def run(a):
         'Finite uncalibrated conditional price hypothesis; all underlying clocks retained. Not a renewed trading review or certified future quote.')
     book_source = retain(view_raw, view_clock, a.horizon_ms,
         'Original matched native book/account boundary. Later liquidity at these observed prices is conditional; each next physical action requires new original facts and approval.')
+    for ex in {leg['ex'] for leg in legs}:
+        if ex in book_sources:
+            retain(book_sources[ex], _ns(books[ex]['receivedAt'])//1000000, a.horizon_ms,
+                'Exact original SIG recorder row used for this conditional research leg. Original clocks remain; native admission, current execution and future liquidity are not asserted.')
     retain(plan_raw, view_clock, a.horizon_ms,
         'Retained proposed sequence; independent exact audit recomputed from original inputs. Not a fill, account fact or execution authority.')
     contracts = []
