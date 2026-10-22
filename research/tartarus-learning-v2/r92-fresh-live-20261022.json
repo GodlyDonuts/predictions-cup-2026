@@ -1,0 +1,42 @@
+{
+  "observedUtc": "2026-10-22T13:07:21.537504+00:00",
+  "pid": 1098673,
+  "binarySha256": "e6bab31d10303bca11cca7bbaffcbffd5eeb5f5326ee425fc108cfad42abe82e",
+  "sourceCommit": "ce81c227668d4d7c1180a6073d4dccc09632484a",
+  "progress": {
+    "actualFills": 590,
+    "actualOrders": 1788,
+    "at": "2026-10-22T13:07:16.049Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1098673,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 36,
+    "terminalOrders": 1788
+  },
+  "fullOriginalPrefixVerified": true,
+  "originalFinancialPrefix": {
+    "bytes": 2813544894,
+    "sha256": "3a9b7b22f9a290fd2f81e687a9bb2ec9e3fc6774197a69730f48b46a2c82eb5b"
+  },
+  "originalFillCount": 590,
+  "originalFillsUnchanged": true,
+  "currentFillCount": 590,
+  "nativeEngineUnchanged": true,
+  "engineIdentity": "468ac8fb382a51bfb001e1496199569a9cb02fc710bf90523c9c10cdd107bd22",
+  "allPriorEngineBridgesPreserved": true,
+  "unchangedBridgeSha256": "81fc2135d2dd4da39a2b7b60f6b4ac644df8fee3c084b3b75abff150eb01927b",
+  "reportSha256": "9e9c3c481558a9cf77390dc75d616e0782856fe2274cfce3d77414c9a4512310",
+  "financial": {
+    "cash": "8125.480000",
+    "reservedCash": "0.000000",
+    "ownedCost": "88407.820000",
+    "realized": "953.385000"
+  },
+  "knownPhysicalOrders": [],
+  "accountRequestsByObserver": 0,
+  "filledMinuteTargetVerified": false,
+  "wholeAccountProfitEstablished": false
+}

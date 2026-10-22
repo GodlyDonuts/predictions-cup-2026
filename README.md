@@ -2,13 +2,15 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state: October22,12:46UTC
+## Current state: October22,13:22UTC
 
-**R92 installed12:43:50UTC and is recovering the original ledger. One filled order/minute remains unmet.** Sole worker1098673, updater1098676, sourcece81c227/binarye6bab31d1030. All590 previous fill records, the full2,813,544,894-byte financial prefix and prior native approval chain remain. The focused change publishes the historical report once per bounded public-stream drain;260 worker checks pass, native/runtime libraries are unchanged. Fresh trading and speedup are not yet verified. [Installation](research/tartarus-learning-v2/r92-installed-restoring-20261022.json), [qualification/change](research/tartarus-learning-v2/stream-report-r92-20261022.md).
+**R92 is verified live; one filled order/minute remains unmet.** Its first15-minute original-receipt/FIFO audit found8 distinct filled orders (0.533/minute),7 empty completed UTC minutes and **-32.76 SUSQies realized net**. Six of the eight orders were sales. The two buys acquired7,194 NO948 and886 NO1071. Cash3,240.905 and remaining original cost93,259.635 are dated ledger values. This is increased activity, not profitable turnover. [Full audit](research/tartarus-learning-v2/r92-first-15-minute-turnover-20261022.json).
 
-The monetary campaign supervisor was absent and that route was deferred on an expired approval. The existing checked file-only review loop is now pinned to the new worker, waiting for healthy recovery before issuing fresh positive-declared-model reviews. It creates no account client and does not submit orders itself. No new approval or profitability is claimed yet.
+Sole worker1098673/sourcece81c227 is independently verified against all590 original fills, the full original financial prefix and unchanged native approvals. The monetary review loop is active. All eleven added scopes accepted the smaller0.001 future-entry margin through updater1101690/sourcef2c6dd87 without a worker restart. [Live proof](research/tartarus-learning-v2/r92-fresh-live-20261022.json), [accepted margins](research/tartarus-learning-v2/r92-entry-margin-accepted-20261022.json).
 
-Verified cold archival preserved17.2GB of superseded account-queue originals in303.6MB of compressed archives, leaving21.84GB free. Every original was decompressed/hash-verified before duplicate raw storage was removed; active and previous source generations and open files were excluded. Historical audits must explicitly extract originals. [Archive evidence](research/tartarus-learning-v2/r91-cold-queue-archive-20261022.json).
+**Urgent R93 candidate:** the monetary buys were subsequently exposed to the unrelated ordinary60-second age liquidation, causing loss churn. The candidate protects remaining actual rank-purchased lots from loss-making timer exits, preserving cash-safe timer exits, ordinary profit targets and fresh model-directed sells. It retains original FIFO/inherited attribution and all account caps. R92 continues trading while the candidate is built; R93 is not deployed yet.
+
+Verified cold archival preserved17.2GB of superseded account-queue originals in303.6MB of compressed archives. At12:43UTC it left21.84GB free. Every original was decompressed/hash-verified before duplicate raw storage was removed; historical audits require explicit extraction. [Archive evidence](research/tartarus-learning-v2/r91-cold-queue-archive-20261022.json).
 
 ### Earlier dated observations
 

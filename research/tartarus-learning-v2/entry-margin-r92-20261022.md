@@ -13,3 +13,7 @@ A future review records the exact owner-policy hash and margin in forecast evide
 ## Checks and rollout
 
 Thirteen reload checks pass locally and on the VPS, including policy pin/scope/positive-decimal validation, skipping busy targets, executable-tick arithmetic and no repeated refresh after a successful revision. A real fresh public capture for891 passed the existing typed review inspector in a staged generation. This qualification creates no account client or order. The same existing updater will publish free-target revisions through the single worker after healthy recovery; no runtime replacement is required. Acceptance, fills and economic results require separate live evidence.
+
+## Observed publication
+
+All eleven margins were verified accepted13:10UTC through updater1101690, with original1,250-principal caps and0.005 FIFO exit policies. The first updater attempt failed a misnamed script-hash configuration field before sending a reload; its original log/config remain retained and the corrected startup is identified in the accepted proof. No worker restart occurred. This acceptance does not prove profitable fills. [Evidence](r92-entry-margin-accepted-20261022.json).

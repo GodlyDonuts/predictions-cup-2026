@@ -1,0 +1,102 @@
+{
+  "observedUtc": "2026-10-22T13:11:29.839762+00:00",
+  "updaterPid": 1101690,
+  "workerPid": 1098673,
+  "workerRestarted": false,
+  "sourceCommit": "f2c6dd871b06f16514d713cb6a04b8522d1395f4",
+  "updaterSha256": "8f435d52d999d9cd5c886e15fcb5b4bb569f7578a5e70b98c9c81ecc91aae3ef",
+  "stageSha256": "d8aad989fa1c4641ec1e35c000ec97074bbab027fdc1062afaf82f4544e977c5",
+  "policySha256": "6e30ab33cda6d22834623e01b2ff759dc50d115a7d2082a8a5de1d94ce33e16a",
+  "entryMargin": "0.001000",
+  "scopeCount": 11,
+  "financialCapsChanged": false,
+  "originalExceptionAllowanceAndFifoExitPolicyPreserved": true,
+  "accountClientsCreated": 0,
+  "typedStagingPassed": true,
+  "reloadChecksPassed": 13,
+  "acceptedGenerationVerified": true,
+  "oneFilledTradePerMinuteEstablished": false,
+  "supersedesRejectedStartupPid": 1101679,
+  "startupCorrection": "stageScriptSha256 exact configured key; prior hash assertion rejected before reload",
+  "generationSha256": "91af9f437193f7581ebb7ace2bc2f77c82c4ba2714e6cb4c7c0c526e240dcb51",
+  "commits": 182,
+  "reviews": [
+    {
+      "exchangeId": "1010",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "bd547f4f70063ded45f8f6b2fd8ff3551c4e183d23ef1fc51c3a721ffadb3cc9"
+    },
+    {
+      "exchangeId": "1017",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "a649f25cf1f8e887058a9872fc9aa02a8d9a10318d44948fbbcd53ed6e5de90d"
+    },
+    {
+      "exchangeId": "1057",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "123a075aadfe196683f7a4f668d4c7f423e798ede2a4418960789f9ef3631366"
+    },
+    {
+      "exchangeId": "850",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "d7cc2a21091bfcb04c073c8e1c7adc61aaabef7613b5f0f0e1afd21dd2970263"
+    },
+    {
+      "exchangeId": "1069",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "99f90b8f4ad38a372adf84f747f1568fddcf7a47d33d570966825e00e9c93dd3"
+    },
+    {
+      "exchangeId": "1011",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "485ee4432dca475b68a355ae18efc4786e6f71cdd7936777f068bd5168663890"
+    },
+    {
+      "exchangeId": "983",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "85093f2f83dbf6edfe5ebc2ba7eb0abd1f04a95b2f121b53013702ac68c3be3e"
+    },
+    {
+      "exchangeId": "1016",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "f04469c6932cb42528a87fd45b5d93b171df78210b3b3fb5828165b7542efc31"
+    },
+    {
+      "exchangeId": "891",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "5f2540b0cc7bc125569cc9844463e464001ce55bc663d4bf3fda0b26662783c2"
+    },
+    {
+      "exchangeId": "1012",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "a117a07021b3a291a60d98d00159bd8e15072f01bd4d2add7898dc256d548397"
+    },
+    {
+      "exchangeId": "1013",
+      "marginPerShare": "0.001000",
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000,
+      "reviewSha256": "778401d6dca7196aebb77af3394813476d492c9f328a8c580c802b10d21045f4"
+    }
+  ]
+}
