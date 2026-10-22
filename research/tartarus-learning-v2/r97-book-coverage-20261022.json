@@ -1,0 +1,17 @@
+{
+  "sourceSha256": "2df8cafbe3496ba4b5cc39a51c58ad97af7fa6c28f8cd206e38761c343a2cb38",
+  "sampleCount": 15,
+  "firstView": "2026-10-22T16:44:05.506Z",
+  "lastView": "2026-10-22T16:58:00.665Z",
+  "medianRawFresh": 146,
+  "medianNativeFresh": 0,
+  "maximumNativeFresh": 5,
+  "lastRawFresh": 147,
+  "lastNativeFresh": 0,
+  "lastNativeBooks": 13,
+  "lastFreshRawAbsentNative": 141,
+  "workerPid": 1111134,
+  "accountRequests": 0,
+  "eligibleMissedOpportunitiesClaimed": 0,
+  "completeTapeClaimed": false
+}

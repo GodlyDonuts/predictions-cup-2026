@@ -30,7 +30,7 @@ fn setup()->(F,rank_campaign::Reviewed,Value){
  let review=rank_campaign::Reviewed::load(&raw,&h,&allowed,&sources,NOW+8000).unwrap();(f,review,c)
 }
 fn reserve(f:&mut F,c:&Value)->Value{
- let at=c["reviewedAtMs"].as_u64().unwrap();let score=f.bank.engine().evaluate_rank_campaign(c,at as i64).unwrap();assert_eq!(score["classification"],"negative_monetary_expectation");
+ let at=c["reviewedAtMs"].as_u64().unwrap();let score=f.bank.engine().evaluate_rank_campaign(c,at as i64).unwrap();assert_eq!(score["classification"],if c["objective"]=="declared_positive_expected_money"{"positive_declared_monetary_expectation"}else{"negative_monetary_expectation"});
  f.event(json!({"type":"reviewed_rank_campaign_reserved_v1","source":"moloch_live_dispatcher","receivedAt":iso(at),
   "bankScope":{"runId":f.seed["runId"],"bankManifestHash":f.bank.manifest_hash(),"tournamentId":T},"bankHead":f.bank.durable_head(),"expectedReportSha256":digest(&f.bank.engine().report().unwrap()),"campaign":c,"campaignSha256":digest(c),"originSha256":"e".repeat(64),"evaluation":score,"currentBookSha256":score["currentBookSha256"],"expiresAt":iso(at+22000)}));
  f.book(at+3500);f.bank.engine().order_records().into_iter().find(|q|q["reviewedRankCampaign"]["campaignSha256"]==digest(c)).unwrap()
@@ -89,7 +89,7 @@ fn permit(q:&Value)->Permit{Permit{run_id:"passive-inherited-fixture".into(),int
 
 fn refreshed(f:&F,mut c:Value,at:u64,action:&str,side:&str,n:u64,price:&str)->(rank_campaign::Reviewed,Value){
  let state=f.store.as_ref().unwrap().rank_inventory_state(&f.bank,&f.log,"101").unwrap();let body=state["sourceBodyText"].as_str().unwrap().as_bytes().to_vec();let body_sha=sha(&body);let node=&f.originals[2];let node_sha=sha(node);
- c["managedInventory"]=["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256","positionsSha256","handoffEstablished","emptyOriginalInventory","sourceSha256"].into_iter().map(|k|(k.to_owned(),state[k].clone())).collect::<serde_json::Map<String,Value>>().into();
+ c["managedInventory"]=["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256","positionsSha256","handoffEstablished","emptyOriginalInventory","sourceSha256","sameSideBuyHandoffAllowed","sameSideBuyHandoffSide"].into_iter().map(|k|(k.to_owned(),state[k].clone())).collect::<serde_json::Map<String,Value>>().into();
  c["reviewedAtMs"]=json!(at);c["sources"][1]["sha256"]=json!(body_sha);c["sources"][1]["observedAtMs"]=json!(at);c["account"]["positionsSha256"]=json!(digest(&f.bank.engine().wallet.positions()));c["account"]["cash"]=json!(moloch_replay::money(f.bank.engine().wallet.cash));c["account"]["reservedCash"]=json!(moloch_replay::money(f.bank.engine().wallet.reserved().unwrap()));c["account"]["actualFillsSha256"]=json!(digest(&json!(f.bank.engine().fills())));
  c["fieldModels"][0]["thresholds"][1]=json!(moloch_replay::money(f.bank.engine().wallet.cash+500000));c["action"]["action"]=json!(action);c["action"]["side"]=json!(side);c["action"]["quantity"]=json!(n);c["action"]["limitPrice"]=json!(price);c["risk"]["maximumQuantity"]=json!(n);c["action"]["nominationBookSha256"]=json!(digest(&f.bank.engine().live_package_books()[0]));
  let raw=serde_json::to_vec(&c).unwrap();let h=sha(&raw);let allowed=BTreeSet::from([h.clone()]);let sources=[rank_campaign::Original{sha256:&node_sha,bytes:node},rank_campaign::Original{sha256:&body_sha,bytes:&body}];let r=rank_campaign::Reviewed::load(&raw,&h,&allowed,&sources,at).unwrap();(r,c)
@@ -109,6 +109,13 @@ fn fill_and_close(f:&mut F,q:&Value,spec:&baal_transport_service::RequestSpec,ac
  f.book(NOW+16000);let(r,c)=refreshed(&f,c,NOW+16000,"BUY","YES",3,"0.320000");assert_eq!(c["managedInventory"]["handoffEstablished"],true);let(q,s)=register(&mut f,&r,&c,NOW+20000);fill_and_close(&mut f,&q,&s,902,NOW+20100);
  assert_eq!(f.bank.engine().wallet.cash,starting_cash+2040000-960000);let f=f.reopen();let state=f.store.as_ref().unwrap().rank_inventory_state(&f.bank,&f.log,"101").unwrap();assert_eq!(state["side"],"YES");assert_eq!(state["heldQuantity"],3);assert_eq!(f.bank.engine().wallet.quantity("101",moloch_replay::Side::No),0);assert_eq!(f.bank.engine().wallet.realized,140000);
  assert_eq!(f.bank.engine().wallet.positions()["101"]["YES"],json!([{"price":"0.320000","quantity":3,"executedAt":iso(NOW+20102)}]));assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+21000).unwrap().is_empty());
+}
+
+#[test]fn explicit_same_side_buy_handoff_preserves_old_fifo_without_a_funding_sale(){
+ let(mut f,_,mut c)=setup();c["objective"]=json!("declared_positive_expected_money");c["risk"]["minimumTargetGainPpm"]=json!(0);c["risk"]["minimumExpectedMoney"]=json!("0.001000");let(r,c)=refreshed(&f,c,NOW+8000,"BUY","NO",1,"0.700000");
+ assert_eq!(c["managedInventory"]["sameSideBuyHandoffAllowed"],true);assert_eq!(c["managedInventory"]["sameSideBuyHandoffSide"],"NO");assert_eq!(c["managedInventory"]["emptyOriginalInventory"],false);f.store.as_ref().unwrap().check_rank_review(&f.bank,&f.log,&r).unwrap();
+ let original=f.bank.engine().wallet.positions()["101"]["NO"].as_array().unwrap().clone();let prior=f.bank.engine().fills().to_vec();let cash=f.bank.engine().wallet.cash;let realized=f.bank.engine().wallet.realized;let(q,s)=register(&mut f,&r,&c,NOW+12000);assert_eq!(f.bank.engine().wallet.cash,cash);assert_eq!(f.bank.engine().wallet.positions()["101"]["NO"],json!(original));assert_eq!(f.bank.engine().fills(),prior.as_slice());
+ fill_and_close(&mut f,&q,&s,909,NOW+12100);let f=f.reopen();assert_eq!(f.bank.engine().wallet.cash,cash-700000);assert_eq!(f.bank.engine().wallet.realized,realized);let lots=f.bank.engine().wallet.positions()["101"]["NO"].as_array().unwrap().clone();assert_eq!(&lots[..original.len()],original.as_slice());assert_eq!(lots.last().unwrap(),&json!({"price":"0.700000","quantity":1,"executedAt":iso(NOW+12102)}));assert_eq!(&f.bank.engine().fills()[..prior.len()],prior.as_slice());assert!(f.bank.engine().fills()[prior.len()..].iter().all(|v|v["action"]=="buy"));assert!(f.store.as_ref().unwrap().rank_paused("101"));assert!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+21000).unwrap().is_empty());
 }
 
 #[test]fn already_flat_original_cohort_hands_over_without_fabricating_a_sale_or_resetting_history(){

@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state: October22,16:44UTC
+## Latest state: October22,17:30UTC
+
+R97 is live, but one actual filled order/minute remains unmet. Its latest verified audit shows six distinct new orders and -582.47 incremental realized net; turnover alone is not profit. R99 is qualified offline for an explicit ownership handoff, conditional monetary rotations and less repeated rendering. Deployment and actual improvement are pending. [Current evidence](docs/CURRENT_STATE.md), [change and limits](research/tartarus-learning-v2/owner-handoff-r99-20261022.md).
+
+### Earlier16:44UTC observation
 
 **R97 is verified live with healthy realtime; one filled trade/minute is not yet established.** The sole worker1111134 serves fresh monetary decisions between ordinary packets and can yield stale owned BUY or SELL quotes through confirmed cancellation. All646 prior fill records and the financial prefix are retained. Native engine, caps and limiter remain unchanged. [Installed runtime](research/tartarus-learning-v2/r97-installed-restoring-20261022.json), [change and limits](research/tartarus-learning-v2/rank-service-r97-20261022.md), [current evidence](docs/CURRENT_STATE.md).
 

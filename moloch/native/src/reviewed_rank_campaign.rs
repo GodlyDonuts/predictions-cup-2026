@@ -27,9 +27,9 @@ fn projected_take(lots:&mut BTreeMap<(String,Side),VecDeque<Lot>>,ex:&str,side:S
 }
 fn projected_quantity(lots:&BTreeMap<(String,Side),VecDeque<Lot>>,ex:&str,side:Side)->u64{lots.get(&(ex.to_owned(),side)).map_or(0,|xs|xs.iter().map(|x|x.quantity).sum())}
 impl Engine {
- fn rank_declared_managed_inventory(&self,ex:&str,buy:bool,proof:&Value,sources:&BTreeSet<String>,conditional_handoff:bool)->Result<bool>{
+ fn rank_declared_managed_inventory(&self,ex:&str,buy:bool,side:Side,proof:&Value,sources:&BTreeSet<String>,conditional_handoff:bool)->Result<bool>{
   if !self.ordinary_entry_excluded(ex){need(proof.is_null(),"RANK_UNMANAGED_EXIT_PROOF")?;return Ok(false)}
-  need((!buy||proof["handoffEstablished"]==true||conditional_handoff||proof["emptyOriginalInventory"]==true&&self.wallet.quantity(ex,Side::Yes)+self.wallet.quantity(ex,Side::No)==0)&&proof["handoffEstablished"].as_bool().is_some()&&proof["emptyOriginalInventory"].as_bool().is_some()&&proof["schemaVersion"]==1&&proof["exchangeId"]==ex
+  need((!buy||proof["handoffEstablished"]==true||conditional_handoff||proof["emptyOriginalInventory"]==true&&self.wallet.quantity(ex,Side::Yes)+self.wallet.quantity(ex,Side::No)==0||proof["sameSideBuyHandoffAllowed"]==true&&proof["sameSideBuyHandoffSide"]==if side==Side::Yes{"YES"}else{"NO"}&&self.wallet.quantity(ex,side)>0&&self.wallet.quantity(ex,side.other())==0)&&proof["handoffEstablished"].as_bool().is_some()&&proof["emptyOriginalInventory"].as_bool().is_some()&&proof["schemaVersion"]==1&&proof["exchangeId"]==ex
    &&["cohortSha256","originSha256","generationSha256","reviewSha256","exclusionSha256","positionsSha256","sourceSha256"].iter().all(|k|hex(&proof[*k]))
    &&sources.contains(proof["sourceSha256"].as_str().ok_or("RANK_MANAGED_EXIT_PROOF")?)
    &&proof["positionsSha256"]==hash(&self.wallet.positions()[ex])&&proof["exclusionSha256"]==self.ordinary_entry_exclusion_record().ok_or("RANK_MANAGED_EXIT_PROOF")?["sha256"],"RANK_MANAGED_EXIT_PROOF")?;Ok(true)
@@ -44,7 +44,8 @@ impl Engine {
  // are borrowed from the unchanged original engine. A BUY releases only its
  // own reservation in a small private wallet copy; a SELL needs no wallet copy.
  fn evaluate_rank_campaign_view(&self,c:&Value,at:i64,wallet:&Wallet,ignored_order:Option<u64>)->Result<Value>{
-  let monetary=c["objective"]=="declared_positive_expected_money";
+  let monetary_rotation=c["objective"]=="declared_positive_expected_money_rotation";
+  let monetary=monetary_rotation||c["objective"]=="declared_positive_expected_money";
   need(self.live_mode&&c["schemaVersion"]==1&&(monetary||c["objective"]=="declared_first_place_rank_risk"),"RANK_SCHEMA")?;
   need(at>=0&&self.last.is_none_or(|t|t/1_000_000<=at),"RANK_CLOCK_ROLLBACK")?;
   let reviewed=c["reviewedAtMs"].as_i64().ok_or("RANK_CLOCK")?;let until=c["validUntilMs"].as_i64().ok_or("RANK_CLOCK")?;
@@ -62,7 +63,7 @@ impl Engine {
   // The inherited-inventory flag only disables the ordinary planner. A rank
   // review may manage that holding. The separate fundamental-cohort exclusion
   // remains binding until its execution owner explicitly hands the scope over.
-  let managed_inventory=self.rank_declared_managed_inventory(&ex,buy,&c["managedInventory"],&source_hashes,false)?;
+  let managed_inventory=self.rank_declared_managed_inventory(&ex,buy,side,&c["managedInventory"],&source_hashes,false)?;
   // The native preview only checks the pinned ownership declaration. Dispatch
   // additionally requires an opaque original-cohort registration capability.
   need((!self.ordinary_entry_excluded(&ex)||managed_inventory)&&!self.package_protects_exchange(&ex)&&!self.package_blocks_submissions()&&wallet.quantity(&ex,side.other())==0&&self.orders.iter().all(|q|Some(q.id)==ignored_order||q.exchange!=ex||q.retired),"RANK_TARGET_LIABILITY_OR_MANAGED")?;
@@ -116,7 +117,7 @@ impl Engine {
      let proceeds=mul(p-lf,n as i128)?;contingent_cash=add(contingent_cash,proceeds)?;contingent_remaining=add(contingent_remaining,released)?;contingent_costs.insert(exchange.clone(),add(previous,-released)?);
      if projected_quantity(&contingent_lots,&exchange,ls)==0&&self.orders.iter().all(|q|Some(q.id)==ignored_order||q.exchange!=exchange||q.retired){contingent_markets.remove(&exchange);}pieces
     };
-    if self.rank_declared_managed_inventory(&exchange,leg_buy,&leg["managedInventory"],&source_hashes,contingent_handoffs.contains(&exchange))?{contingent_handoffs.insert(exchange.clone());}
+    if self.rank_declared_managed_inventory(&exchange,leg_buy,ls,&leg["managedInventory"],&source_hashes,contingent_handoffs.contains(&exchange))?{contingent_handoffs.insert(exchange.clone());}
     need(self.policy.entry(&exchange,finish)&&!self.package_protects_exchange(&exchange),"RANK_CONTINGENT_ENTRY_POLICY")?;
     need(contingent_markets.len()<=self.policy.markets,"RANK_CONTINGENT_MARKET_CAP")?;
     if let Some(i)=&self.inherited{need(contingent_markets.iter().filter(|x|!i.remaining.iter().any(|((y,_),lots)|y==*x&&!lots.is_empty())).count()<=i.fresh_market_limit,"RANK_CONTINGENT_FRESH_MARKET_CAP")?;}
@@ -134,7 +135,8 @@ impl Engine {
   let mut probabilities=BTreeMap::new();for p in rows(&c["probabilityModels"],8)?{let weights=rows(&p["weightsPpm"],256)?;text(&p["assumptionLabel"])?;need(weights.len()==scenarios.len(),"RANK_WEIGHTS")?;let weights=weights.iter().map(|w|w.as_u64().filter(|x|*x<=1000000).ok_or("RANK_WEIGHTS")).collect::<Result<Vec<_>>>()?;need(weights.iter().sum::<u64>()==1000000&&probabilities.insert(string(&p["id"] )?,weights).is_none(),"RANK_WEIGHTS")?;}
   let mut fields=BTreeMap::new();for f in rows(&c["fieldModels"],8)?{text(&f["assumptionLabel"])?;need(f["completeField"]==false,"RANK_FALSE_FIELD_COMPLETENESS")?;let thresholds=rows(&f["thresholds"],256)?.iter().map(dec).collect::<Result<Vec<_>>>()?;need(thresholds.iter().all(|t|t.unsigned_abs()<=1_000_000_000_000_000)&&thresholds.len()==scenarios.len()&&fields.insert(string(&f["id"] )?,thresholds).is_none(),"RANK_FIELD")?;}
   let pairs=rows(&c["modelPairs"],16)?;let mut scores=vec![];let mut signs=BTreeSet::new();let mut contingent_signs=BTreeSet::new();let mut seen=BTreeSet::new();let mut branch_budget=100000usize;let required=risk["minimumTargetGainPpm"].as_u64().filter(|n|*n<=1000000).ok_or("RANK_TARGET_GAIN")?;
-  need(if monetary{!prerequisite&&required==0}else{(prerequisite&&required==0)||(!prerequisite&&required>0)},"RANK_TARGET_GAIN")?;
+  need(!monetary_rotation||rotation&&c["contingentPlan"]["minimumTargetGainPpm"]==0,"RANK_MONETARY_ROTATION_STAGE")?;
+  need(if monetary{(monetary_rotation||!prerequisite)&&required==0}else{(prerequisite&&required==0)||(!prerequisite&&required>0)},"RANK_TARGET_GAIN")?;
   let minimum_money=if monetary{let n=dec(&risk["minimumExpectedMoney"])?;need(n>0&&n<=1_000_000_000_000_000,"RANK_EXPECTED_MONEY_FLOOR")?;Some(mul(n,1_000_000)?)}else{None};
   let pareto=match risk.get("targetGainAggregation").and_then(Value::as_str){None|Some("all_pairs")=>false,Some("pareto")=>true,_=>return Err("RANK_TARGET_AGGREGATION")};need(risk.get("targetGainAggregation").is_none_or(Value::is_string),"RANK_TARGET_AGGREGATION")?;let mut any_direct_gain=false;let mut any_contingent_gain=false;
 
@@ -143,9 +145,9 @@ impl Engine {
    let baseline=hit(0)?;let full=hit(quantity)?;let target=baseline.checked_add(required).ok_or("RANK_RANGE")?;if !monetary{if pareto{need(full>=baseline,"RANK_PARETO_TARGET_DETERIORATION")?;any_direct_gain|=full>=target&&full>baseline;}else{need(full>=target,"RANK_NO_TARGET_IMPROVEMENT")?;}}
    let mut branches=BTreeSet::from([0,quantity]);let mut start=0u64;for(j,n)in sizes.iter().enumerate(){let wealth=wealth_at(&before,&delta,&sizes,start)?;branches.insert(start+*n);for i in 0..before.len(){if delta[i][j]!=0{let crossing=(thresholds[i]-wealth[i]).div_euclid(delta[i][j]);for rel in [crossing-1,crossing,crossing+1]{if rel>=0&&rel<=*n as i128{branches.insert(start+rel as u64);}}}}start+=*n;}
    let mut partial=vec![];for q in branches{branch_budget=branch_budget.checked_sub(1).ok_or("RANK_PARTIAL_MODEL_BOUND")?;partial.push(json!({"filledQuantity":q,"strictHitPpm":hit(q)?}));}
-   let mut mean=0;for i in 0..before.len(){mean=add(mean,mul(after[i]-before[i],weights[i]as i128)?)?;}if let Some(floor)=minimum_money{need(mean>=floor,"RANK_EXPECTED_MONEY_BELOW_FLOOR")?;}signs.insert(if mean<0{-1}else if mean>0{1}else{0});
-   let mut contingent_mean=0;for i in 0..before.len(){contingent_mean=add(contingent_mean,mul(contingent[i]-before[i],weights[i]as i128)?)?;}contingent_signs.insert(if contingent_mean<0{-1}else if contingent_mean>0{1}else{0});
-   let contingent_hit:u64=contingent.iter().zip(thresholds).zip(weights).filter(|((w,t),_)|*w>*t).map(|(_,w)|*w).sum();if prerequisite{let gain=c["contingentPlan"]["minimumTargetGainPpm"].as_u64().filter(|g|*g>0&&*g<=1000000).ok_or("RANK_CONTINGENT_TARGET")?;let target=baseline.checked_add(gain).ok_or("RANK_RANGE")?;if pareto{need(contingent_hit>=baseline,"RANK_PARETO_CONTINGENT_DETERIORATION")?;any_contingent_gain|=contingent_hit>=target;}else{need(contingent_hit>=target,"RANK_CONTINGENT_TARGET")?;}}
+   let mut mean=0;for i in 0..before.len(){mean=add(mean,mul(after[i]-before[i],weights[i]as i128)?)?;}if let Some(floor)=minimum_money.filter(|_|!monetary_rotation){need(mean>=floor,"RANK_EXPECTED_MONEY_BELOW_FLOOR")?;}signs.insert(if mean<0{-1}else if mean>0{1}else{0});
+   let mut contingent_mean=0;for i in 0..before.len(){contingent_mean=add(contingent_mean,mul(contingent[i]-before[i],weights[i]as i128)?)?;}contingent_signs.insert(if contingent_mean<0{-1}else if contingent_mean>0{1}else{0});if monetary_rotation{need(contingent_mean>=minimum_money.ok_or("RANK_EXPECTED_MONEY_FLOOR")?,"RANK_EXPECTED_ROTATION_MONEY_BELOW_FLOOR")?;}
+   let contingent_hit:u64=contingent.iter().zip(thresholds).zip(weights).filter(|((w,t),_)|*w>*t).map(|(_,w)|*w).sum();if prerequisite&&!monetary_rotation{let gain=c["contingentPlan"]["minimumTargetGainPpm"].as_u64().filter(|g|*g>0&&*g<=1000000).ok_or("RANK_CONTINGENT_TARGET")?;let target=baseline.checked_add(gain).ok_or("RANK_RANGE")?;if pareto{need(contingent_hit>=baseline,"RANK_PARETO_CONTINGENT_DETERIORATION")?;any_contingent_gain|=contingent_hit>=target;}else{need(contingent_hit>=target,"RANK_CONTINGENT_TARGET")?;}}
    let mut replacement_partial=vec![];for(j,(prior,per_share,n,physical,offset))in contingent_paths.iter().enumerate(){let mut points=BTreeSet::from([0,*n]);for i in 0..prior.len(){if per_share[i]!=0{let crossing=(thresholds[i]-prior[i]).div_euclid(per_share[i]);for q in [crossing-1,crossing,crossing+1]{if q>=0&&q<=*n as i128{points.insert(q as u64);}}}}let mut outcomes=vec![];for q in points{branch_budget=branch_budget.checked_sub(1).ok_or("RANK_PARTIAL_MODEL_BOUND")?;let wealth=prior.iter().zip(per_share).map(|(w,d)|add(*w,mul(*d,q as i128)?)).collect::<Result<Vec<_>>>()?;let hit:u64=wealth.iter().zip(thresholds).zip(weights).filter(|((w,t),_)|*w>*t).map(|(_,w)|*w).sum();outcomes.push(json!({"filledQuantity":offset+q,"strictHitPpm":hit}));}replacement_partial.push(json!({"trancheIndex":physical,"previousTranchesAssumedFullyFilled":physical,"fifoSegmentIndex":j,"priorFilledQuantityWithinTranche":offset,"partialFillTargetBreakpoints":outcomes}));}
    scores.push(json!({"conditionalFullCampaignStrictHitPpm":contingent_hit,"conditionalCampaignExpectedMoneyNumerator":contingent_mean.to_string(),"probabilityId":pi,"fieldId":fi,"baselineStrictHitPpm":baseline,"fullStrictHitPpm":full,"incrementalExpectedMoneyNumerator":mean.to_string(),"denominator":1000000,"partialFillTargetBreakpoints":partial,"conditionalReplacementPartialFillBranches":replacement_partial,"tiesOrExpectedPrize":null}));
   }
@@ -212,6 +214,23 @@ impl Engine {
   let sell=json!({"contractId":"301","exchangeId":"101","marketId":"201","side":"YES","action":"SELL","quantity":4,"limitPrice":"0.400000","sourceSha256":"a".repeat(64),"availableAtMs":BASE,"validUntilMs":BASE+60000});
   let buy=json!({"contractId":"302","exchangeId":"102","marketId":"202","side":"YES","action":"BUY","quantity":5,"limitPrice":if expensive{"0.990000"}else{"0.005000"},"sourceSha256":"a".repeat(64),"availableAtMs":BASE,"validUntilMs":BASE+60000});let mut legs=vec![sell];legs.extend(vec![buy;if expensive{20}else{1}]);
   c["contingentPlan"]=json!({"assumptionLabel":"Synthetic multi-sale campaign, with no actual future proceeds or completion promise","executionAuthority":false,"actualFillAndFreshReapprovalRequired":true,"minimumTargetGainPpm":1,"executionAssumption":{"minimumCompletionMs":if expensive{55000}else{5000},"availableAtMs":BASE,"validUntilMs":BASE+60000,"conditionalFutureLiquidityAssumption":"Synthetic future orders may fail; fresh physical approval and real cash required"},"tradeLegs":legs});c
+ }
+ fn money_rotation(f:&F)->Value{
+  let mut c=mixed_campaign(f,false);c["objective"]=json!("declared_positive_expected_money_rotation");c["risk"]["minimumExpectedMoney"]=json!("0.001000");c["contingentPlan"]["minimumTargetGainPpm"]=json!(0);
+  for s in c["scenarios"].as_array_mut().unwrap(){s["payouts"]["302"]=s["payouts"]["301"].clone();}c
+ }
+ #[test]fn money_rotation_can_fund_a_negative_first_leg_without_crediting_future_proceeds(){
+  let mut f=F::new(true);let c=money_rotation(&f);let cash=f.b().engine().wallet.cash;let positions=f.b().engine().wallet.positions();let score=f.b().engine().evaluate_rank_campaign(&c,BASE+3000).unwrap();
+  assert_eq!(score["firstLegMonetaryClassification"],"negative_monetary_expectation");assert_eq!(score["conditionalCampaignMonetaryClassification"],"positive_declared_monetary_expectation");assert_eq!(score["conditionalReplacementExecutionAuthority"],false);assert_eq!(score["futureLiquidityCertified"],false);assert!(score["modelScores"][0]["incrementalExpectedMoneyNumerator"].as_str().unwrap().parse::<i128>().unwrap()<0);
+  assert_eq!(f.b().engine().wallet.cash,cash);assert_eq!(f.b().engine().wallet.positions(),positions);let e=f.event(&c,3000);f.put(&e).unwrap();assert_eq!(f.b().engine().wallet.cash,cash);assert_eq!(f.b().engine().wallet.positions(),positions);assert!(f.b().engine().fills().is_empty());assert_eq!(f.b().engine().wallet.quantity("102",Side::Yes),0);
+  let orders=f.b().engine().order_records();let q=orders.iter().find(|q|q["reviewedRankCampaign"]["objective"]==c["objective"]).unwrap();assert_eq!(q["action"],"sell");assert_eq!(q["quantity"],1);let head=f.b().durable_head();let report=f.b().engine().report().unwrap();f.bank.take();f.bank=Some(Session::open_live(&f.root.join("bank"),&f.policy,&f.seed).unwrap());assert_eq!(f.b().durable_head(),head);assert_eq!(f.b().engine().report().unwrap(),report);assert_eq!(f.b().engine().order_records(),orders);
+ }
+ #[test]fn money_rotation_rejects_losing_replacement_and_requires_complete_probability_coverage(){
+  let f=F::new(true);let c=money_rotation(&f);let mut worse=c.clone();worse["contingentPlan"]["tradeLegs"][1]["limitPrice"]=json!("0.990000");assert_eq!(f.b().engine().evaluate_rank_campaign(&worse,BASE+3000).unwrap_err(),"RANK_EXPECTED_ROTATION_MONEY_BELOW_FLOOR");
+  let mut missing=c.clone();let mut adverse=missing["probabilityModels"][0].clone();adverse["id"]=json!("refund_only");adverse["weightsPpm"]=json!([0,0,1000000]);missing["probabilityModels"].as_array_mut().unwrap().push(adverse);assert_eq!(f.b().engine().evaluate_rank_campaign(&missing,BASE+3000).unwrap_err(),"RANK_COMPLETE_MONEY_MODEL_COVERAGE");missing["modelPairs"].as_array_mut().unwrap().push(json!({"probabilityId":"refund_only","fieldId":"incomplete"}));assert_eq!(f.b().engine().evaluate_rank_campaign(&missing,BASE+3000).unwrap_err(),"RANK_EXPECTED_ROTATION_MONEY_BELOW_FLOOR");
+ }
+ #[test]fn money_rotation_does_not_reclassify_direct_money_or_rank_risk(){
+  let f=F::new(true);let c=money_rotation(&f);let mut legacy=c.clone();legacy["objective"]=json!("declared_positive_expected_money");assert_eq!(f.b().engine().evaluate_rank_campaign(&legacy,BASE+3000).unwrap_err(),"RANK_TARGET_GAIN");let mut direct=c.clone();direct["campaignStage"]=json!("direct");direct.as_object_mut().unwrap().remove("contingentPlan");assert_eq!(f.b().engine().evaluate_rank_campaign(&direct,BASE+3000).unwrap_err(),"RANK_MONETARY_ROTATION_STAGE");let mut rank=c.clone();rank["objective"]=json!("declared_first_place_rank_risk");assert!(f.b().engine().evaluate_rank_campaign(&rank,BASE+3000).is_err());assert_eq!(f.b().engine().evaluate_rank_campaign(&c,BASE+60000).unwrap_err(),"RANK_EXPIRED");
  }
  #[test]fn multi_sale_campaign_preserves_piecewise_fifo_and_never_credits_projected_proceeds(){
   let mut f=F::new(true);let c=mixed_campaign(&f,false);let head=f.b().durable_head();let positions=f.b().engine().wallet.positions();let cash=f.b().engine().wallet.cash;

@@ -64,6 +64,24 @@ def compile_fixture(report, view, registry):
 
 
 class CurrentPortfolioTests(unittest.TestCase):
+    def test_owner_produced_same_side_handoff_removes_sale_prerequisite_without_changing_money(self):
+        report, view, registry = fixture()
+        owner = view['managedOwnership'][0]
+        source = json.loads(owner['sourceBodyText'])
+        source.update(sameSideBuyHandoffAllowed=True, sameSideBuyHandoffSide='YES')
+        raw = json.dumps(source, separators=(',', ':'))
+        owner.update(source, sourceBodyText=raw, sourceSha256=sha256(raw.encode()).hexdigest())
+        out = compile_fixture(report, view, registry)
+        self.assertEqual(out['financial']['buyRequiresPriorCoveredSellExchanges'], [])
+        self.assertEqual(out['financial']['cash'], '7.000000')
+        self.assertEqual(out['financial']['ownedCost'], '0.400000')
+        self.assertEqual(out['inheritedAttribution']['basisClassifications']['x'], 'unknown')
+        source['sameSideBuyHandoffSide'] = 'NO'
+        raw = json.dumps(source, separators=(',', ':'))
+        owner.update(source, sourceBodyText=raw, sourceSha256=sha256(raw.encode()).hexdigest())
+        with self.assertRaisesRegex(ValueError, 'CURRENT_OWNERSHIP_HANDOFF_SIDE'):
+            compile_fixture(report, view, registry)
+
     def test_actual_sell_and_opposite_buy_preserve_remaining_inherited_fifo(self):
         report, view, registry = fixture()
         before = deepcopy((report, view))

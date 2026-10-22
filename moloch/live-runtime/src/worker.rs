@@ -42,7 +42,7 @@ fn load_rank_campaign(c:&Control,settings:&RankCampaignSettings)->Result<(moloch
  for source in sources{let h=source["sha256"].as_str().filter(|s|s.len()==64&&s.bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))).ok_or("RANK_SOURCE_SHA")?;let b=rank_private_bytes(&settings.originals_directory.join(format!("{h}.bin")))?;total=total.checked_add(b.len()).ok_or("RANK_SOURCE_BOUND")?;if total>16*1024*1024{return Err("RANK_SOURCE_BOUND".into())}originals.push((h.to_owned(),b));}
  let inputs:Vec<_>=originals.iter().map(|(sha,bytes)|moloch_live_runtime::rank_campaign::Original{sha256:sha,bytes}).collect();let review=moloch_live_runtime::rank_campaign::Reviewed::load(&raw,&sha,&approved,&inputs,at)?;
  let deadline=rows.iter().filter(|r|r["rawSha256"]==sha&&r["approvedAtMs"].as_u64().is_some_and(|v|v<=at)&&r["validUntilMs"].as_u64().is_some_and(|v|at<v)).filter_map(|r|r["validUntilMs"].as_u64()).min().ok_or("RANK_OWNER_APPROVAL_CLOCK")?;
- let pins=moloch_live_runtime::authority::RankOwnerPins::capture(&[(settings.nomination_path.clone(),sha),(settings.owner_approval_path.clone(),approval_sha)],deadline)?;let money_account=(nomination["objective"]=="declared_positive_expected_money").then(||nomination["account"].clone());Ok((review,Arc::new(pins),money_account))
+ let pins=moloch_live_runtime::authority::RankOwnerPins::capture(&[(settings.nomination_path.clone(),sha),(settings.owner_approval_path.clone(),approval_sha)],deadline)?;let money_account=matches!(nomination["objective"].as_str(),Some("declared_positive_expected_money"|"declared_positive_expected_money_rotation")).then(||nomination["account"].clone());Ok((review,Arc::new(pins),money_account))
 }
 fn rank_deferred(c:&Control,stage:&str,why:&str)->Result<()>{atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"stage":stage,"state":"deferred","reason":why,"physicalAttempted":false,"profitabilityEstablished":false}))}
 /// Exact top-level delta from the original evaluation already retained in quote.
@@ -126,7 +126,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
   match f.cohorts.check_rank_review(bank,log,&review){Ok(())=>{},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"ownership",&e.to_string()),Err(e)=>return Err(e)}
  }else if review.managed_inventory().is_some(){return rank_deferred(c,"ownership","RANK_UNMANAGED_EXIT_PROOF")}
 
- let existing:Vec<_>=bank.engine().order_records().into_iter().filter(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).collect();
+ let existing:Vec<_>=moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).cloned().collect();
  if existing.len()>1{return Err("RANK_CAMPAIGN_RESERVATION_NOT_UNIQUE".into())}
  if existing.first().is_some_and(|q|!rank_can_resume(bank,log,q)){return Ok(())}
  let Some(market)=c.scope.exchanges.get(&ex).cloned()else{return rank_deferred(c,"scope","RANK_TARGET_OUTSIDE_CONTROL")};let target=json!({"exchangeId":ex,"marketId":market});
@@ -225,7 +225,7 @@ fn money_priority_waiting(c:&Control,bank:&Session,log:&DispatchLog)->bool{
  let Some(settings)=&c.rank_campaign else{return false};
  let Ok((review,_pins,Some(account)))=load_rank_campaign(c,settings)else{return false};
  c.scope.exchanges.contains_key(review.exchange_id())&&money_priority_account_current(bank,&account)
- &&!bank.engine().order_records().iter().any(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()&&!rank_can_resume(bank,log,q))
+ &&!moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().any(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()&&!rank_can_resume(bank,log,q))
 }
 fn rank_waits_for_known_orders(log:&DispatchLog)->Result<bool>{
  log.require_resolved_attempts()?;Ok(log.acknowledgments.keys().any(|qid|!log.closed.contains(qid)))

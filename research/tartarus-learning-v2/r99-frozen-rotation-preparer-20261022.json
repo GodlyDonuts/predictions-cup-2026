@@ -1,0 +1,37 @@
+{
+  "rawSha256": "0275db529eeb76c3ec2be2452c5d75c9aeb9f2dd33d3cef99a2829dae3f9dba2",
+  "objective": "declared_positive_expected_money_rotation",
+  "exchangeId": "1010",
+  "side": "YES",
+  "action": "SELL",
+  "quantity": 731,
+  "limitPrice": "0.685000",
+  "validUntilMs": 1792688124525,
+  "weakestDeclaredExpectedChange": 33.148501,
+  "firstLegExpectedChanges": {
+    "price_lower_common": -32.139146,
+    "price_upper_common": -33.599684,
+    "price_midpoint_independent": -36.066809
+  },
+  "ordinaryMinimumExpectedChange": "33.177000",
+  "monetaryFloorAppliesTo": "full_conditional_rotation",
+  "conditionalFuturePhysicalLegs": 2,
+  "minimumConditionalCompletionMs": 5000,
+  "originalPlanSha256": "c13c311bff9b182c40e6f3f1ab79af4c35f111b7040537f26a1b32c7ca8f34d8",
+  "decisionProfilePolicy": "current-prices",
+  "decisionProfileIds": [
+    "price_lower_common",
+    "price_upper_common",
+    "price_midpoint_independent"
+  ],
+  "probabilityModels": 3,
+  "scenarios": 93,
+  "completeHeldMarkets": 20,
+  "actualFillPriceClaimed": false,
+  "futureLiquidityCertified": false,
+  "actualFutureProceedsCredited": false,
+  "sourceClocksRenewed": false,
+  "approvalPublished": false,
+  "submitted": false,
+  "executionAuthority": false
+}

@@ -1,0 +1,93 @@
+{
+  "status": "exact_sequence_checked",
+  "solverStatus": 0,
+  "seconds": 0.135,
+  "targetObjectiveImproved": false,
+  "nativeProjectionUnavailable": null,
+  "rejectionReason": null,
+  "inputDirectory": "/tmp/moloch-rank-service-r97-20261022/current-money-campaign-live/attempt-0007/inputs",
+  "capturedBookCount": 8,
+  "physicalOrderCount": 3,
+  "orders": [
+    {
+      "action": "SELL",
+      "ex": "1010",
+      "side": "YES",
+      "n": 731,
+      "price": 685000,
+      "basis": 508045000,
+      "previous": null,
+      "quantity": 731
+    },
+    {
+      "action": "BUY",
+      "ex": "1002",
+      "side": "NO",
+      "n": 10000,
+      "price": 255000,
+      "previous": null,
+      "opposite_sale": null,
+      "quantity": 1
+    },
+    {
+      "action": "BUY",
+      "ex": "1010",
+      "side": "YES",
+      "n": 10000,
+      "price": 700000,
+      "previous": null,
+      "opposite_sale": null,
+      "quantity": 2253
+    }
+  ],
+  "executionAuthority": false,
+  "sourceClocksRenewed": false,
+  "weakestDeclaredExpectedChange": 33.148501,
+  "ordinaryIntervalSensitivity": {
+    "ordinaryMinimumExpectedChangeMicros": 33177000,
+    "ordinaryMaximumExpectedChangeMicros": 36233000,
+    "ordinaryMinimumExpectedChange": "33.177000",
+    "ordinaryMaximumExpectedChange": "36.233000",
+    "eventWitnesses": [
+      {
+        "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"64334\",\"raceName\":\"U.S. House Florida District 7\",\"stageId\":\"99643\",\"usState\":\"FL\"}",
+        "partyCoefficients": {
+          "Democratic Party": 0,
+          "Republican Party": 1522
+        },
+        "minimumMassesPpm": {
+          "Democratic Party": 269000,
+          "Republican Party": 729000
+        },
+        "maximumMassesPpm": {
+          "Democratic Party": 269000,
+          "Republican Party": 731000
+        },
+        "minimumOtherWinnerMassPpm": 2000
+      },
+      {
+        "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"State\",\"raceId\":\"76866\",\"raceName\":\"Governor of Vermont\",\"stageId\":\"119069\",\"usState\":\"VT\"}",
+        "partyCoefficients": {
+          "Republican Party": -1,
+          "Democratic Party": 0
+        },
+        "minimumMassesPpm": {
+          "Republican Party": 741000,
+          "Democratic Party": 249000
+        },
+        "maximumMassesPpm": {
+          "Republican Party": 729000,
+          "Democratic Party": 249000
+        },
+        "minimumOtherWinnerMassPpm": 10000
+      }
+    ],
+    "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+    "crossEventDependenceRequiredForMoneyExpectation": false,
+    "calibratedProbabilities": false,
+    "exceptionalOutcomesCovered": false,
+    "fundingOrExecutionCertified": false,
+    "originalClocksRenewed": false,
+    "executionAuthority": false
+  }
+}

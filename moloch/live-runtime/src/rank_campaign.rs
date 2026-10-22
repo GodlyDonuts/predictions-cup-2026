@@ -4,7 +4,12 @@
 //! declared_first_place_rank_risk or declared_positive_expected_money;
 //! the latter requires direct stage, zero minimumTargetGainPpm and positive
 //! risk.minimumExpectedMoney under EVERY supplied probability model. It does
-//! not assert a leaderboard improvement. Other funding/physical checks remain.
+//! not assert a leaderboard improvement. A distinct
+//! declared_positive_expected_money_rotation objective permits only a funding
+//! SELL prerequisite with positive full conditional money under every model;
+//! its first leg may lose expected value. Future fills/proceeds remain hypothetical,
+//! and each later physical leg requires actual fills and fresh reapproval.
+//! Other funding/physical checks remain.
 //! campaignStage=direct|rotation_prerequisite|acquisition_prerequisite;
 //! reviewedAtMs/validUntilMs; sources[{sha256,observedAtMs,maximumAgeMs,
 //! assumptionLabel}]; account{positionsSha256,cash,reservedCash,
@@ -52,7 +57,7 @@ pub struct Original<'a>{pub sha256:&'a str,pub bytes:&'a [u8]}
 impl Reviewed{
  pub fn load(bytes:&[u8],expected_raw_sha:&str,approved:&BTreeSet<String>,originals:&[Original<'_>],at:u64)->Result<Self>{
   need(bytes.len()<=MAX_CAMPAIGN&&rawhash(bytes)==expected_raw_sha&&approved.contains(expected_raw_sha),"RANK_REVIEW_NOT_APPROVED")?;
-  let c:Value=serde_json::from_slice(bytes)?;need(c["schemaVersion"]==1&&matches!(c["objective"].as_str(),Some("declared_first_place_rank_risk"|"declared_positive_expected_money")),"RANK_REVIEW_SCHEMA")?;
+  let c:Value=serde_json::from_slice(bytes)?;need(c["schemaVersion"]==1&&matches!(c["objective"].as_str(),Some("declared_first_place_rank_risk"|"declared_positive_expected_money"|"declared_positive_expected_money_rotation")),"RANK_REVIEW_SCHEMA")?;
   let sources=c["sources"].as_array().filter(|v|!v.is_empty()&&v.len()<=64).ok_or("RANK_SOURCES")?;
   need(originals.len()==sources.len()&&originals.iter().map(|v|v.bytes.len()).sum::<usize>()<=16*1024*1024,"RANK_ORIGINAL_SOURCE_BOUND")?;
   let mut until=c["validUntilMs"].as_u64().ok_or("RANK_REVIEW_CLOCK")?;let mut seen=BTreeSet::new();
@@ -215,6 +220,10 @@ fn mint_inner(bank:&Session,b:&Boundary<'_>,review:&Reviewed,qid:u64,f:&Snapshot
   assert!(Reviewed::load(&raw,&sha,&approved,&[],1000).is_err());
   let changed=[Original{sha256:&source_sha,bytes:b"changed source"}];assert!(Reviewed::load(&raw,&sha,&approved,&changed,1000).is_err());
   let mut changed=raw.clone();changed.push(b' ');assert!(Reviewed::load(&changed,&sha,&approved,&originals,1000).is_err());
+ }
+ #[test]fn monetary_rotation_requires_its_own_exact_raw_approval_and_original_sources(){
+  let(raw,old_sha,old_approved,original)=fixture();let mut c:Value=serde_json::from_slice(&raw).unwrap();c["objective"]=json!("declared_positive_expected_money_rotation");let bytes=serde_json::to_vec(&c).unwrap();let sha=rawhash(&bytes);let source_sha=rawhash(&original);let originals=[Original{sha256:&source_sha,bytes:&original}];
+  assert!(Reviewed::load(&bytes,&old_sha,&old_approved,&originals,1000).is_err());let approved=BTreeSet::from([sha.clone()]);let r=Reviewed::load(&bytes,&sha,&approved,&originals,1000).unwrap();assert_eq!(r.valid_until_ms(),2500);assert!(Reviewed::load(&bytes,&sha,&approved,&[],1000).is_err());assert!(Reviewed::load(&bytes,&sha,&approved,&originals,2500).is_err());
  }
  #[test]fn original_source_expiry_is_not_reset_to_review_or_capture_clock(){
   let(raw,sha,approved,original)=fixture();let source_sha=rawhash(&original);let originals=[Original{sha256:&source_sha,bytes:&original}];

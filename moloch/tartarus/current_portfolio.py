@@ -128,6 +128,14 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
              and record["rankPaused"] == original["handoffEstablished"]
              and original["positionsSha256"] == digest(report["positions"].get(ex))
              and record["positions"] == report["positions"].get(ex), "CURRENT_OWNERSHIP_BINDING")
+        topup = original.get("sameSideBuyHandoffAllowed", False)
+        need(type(topup) is bool, "CURRENT_OWNERSHIP_HANDOFF_KIND")
+        if topup:
+            side = original.get("sameSideBuyHandoffSide")
+            need(side in ("YES", "NO") and ex in positions
+                 and sum(lot["quantity"] for lot in positions[ex].get(side, [])) > 0
+                 and not any(lot["quantity"] for lot in positions[ex].get("NO" if side == "YES" else "YES", [])),
+                 "CURRENT_OWNERSHIP_HANDOFF_SIDE")
         ownership[ex] = deepcopy(record)
     active = [q for q in sealed["orders"] if q["retired"] is False]
     need(view["activeNativeOrders"] == active, "CURRENT_ACTIVE_QUOTES_CHANGED")
@@ -151,7 +159,7 @@ def compile_current(report_bytes, view_bytes, *, expected_report_sha256,
         "sourceModelGeneration": view["generationSha256"], "retainedMarketExchanges": retained,
         "excludedBuyExchanges": sorted(set(view["managedTargetAdmissionProjections"]) - set(ownership)),
         "buyRequiresPriorCoveredSellExchanges": sorted(ex for ex, record in ownership.items()
-            if ex in positions and not record["rankPaused"])}
+            if ex in positions and not record["rankPaused"] and not record.get("sameSideBuyHandoffAllowed", False))}
     need(amount(policy["feePerShare"]) == 0 and policy["feeBps"] == 0,
          "ZERO_FEE_SOLVER_REQUIRES_ORIGINAL_ZERO_FEE_POLICY")
     reasons = []

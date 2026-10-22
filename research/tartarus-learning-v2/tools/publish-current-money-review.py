@@ -103,7 +103,22 @@ def run(a):
     campaign = json.loads(raw)
     now = time.time_ns() // 1000000
     until = campaign['validUntilMs']
-    assert campaign['objective'] == 'declared_positive_expected_money' and campaign['campaignStage'] == 'direct'
+    if campaign['objective'] == 'declared_positive_expected_money_rotation':
+        assert getattr(a, 'allow_conditional_rotation', False), 'EXPLICIT_CONDITIONAL_ROTATION_SELECTION_REQUIRED'
+        support = getattr(a, 'conditional_support_proof', None)
+        assert support is not None, 'QUALIFIED_CONDITIONAL_ROTATION_BINARY_REQUIRED'
+        capability = json.loads(support.read_bytes())
+        assert capability['binarySha256'] == a.expected_binary_sha256 and capability['conditionalMonetaryRotationObjectiveQualified'] is True, 'QUALIFIED_CONDITIONAL_ROTATION_BINARY_REQUIRED'
+        assert campaign['campaignStage'] == 'rotation_prerequisite' and campaign['action']['action'] == 'SELL'
+        plan = campaign['contingentPlan']
+        assert plan['executionAuthority'] is False and plan['actualFillAndFreshReapprovalRequired'] is True
+        assert plan['minimumTargetGainPpm'] == campaign['risk']['minimumTargetGainPpm'] == 0
+        assert summary['objective'] == campaign['objective'] and summary['monetaryFloorAppliesTo'] == 'full_conditional_rotation'
+        assert summary['conditionalFuturePhysicalLegs'] == len(plan['tradeLegs']) > 0
+        assert summary['futureLiquidityCertified'] is False and summary['actualFutureProceedsCredited'] is False
+        assert summary['weakestDeclaredExpectedChange'] > 0 and float(summary['ordinaryMinimumExpectedChange']) > 0
+    else:
+        assert campaign['objective'] == 'declared_positive_expected_money' and campaign['campaignStage'] == 'direct'
     assert campaign['reviewedAtMs'] <= now < until, 'NO_EXPIRED_REVIEW_RENEWAL'
     for source in campaign['sources']:
         assert source['observedAtMs'] <= now < source['observedAtMs'] + source['maximumAgeMs'], 'ORIGINAL_SOURCE_EXPIRED'
@@ -166,7 +181,8 @@ def run(a):
     create(archive / 'owner-approval.previous.json', old_approval)
     reviewed = dict(old, approvedCampaigns=[dict(rawSha256=a.expected_raw_sha256,
         approvedAtMs=now, validUntilMs=until)], reviewerId='Viserion-Moloch-execution-owner',
-        sourceCommit=a.source_commit, basis='Existing direct human Moloch production authority; exact new monetary review, not an agent handoff or renewal.')
+        sourceCommit=a.source_commit, monetaryReviewObjective=campaign['objective'],
+        basis='Existing direct human Moloch production authority; exact new monetary review, not an agent handoff or renewal.')
     next_approval = archive / 'owner-approval.next.json'
     next_nomination = archive / 'nomination.next.json'
     create(next_approval, (json.dumps(reviewed, indent=2) + '\n').encode())
@@ -202,4 +218,8 @@ if __name__ == '__main__':
     p.add_argument('--expected-raw-sha256', required=True)
     p.add_argument('--source-commit', required=True)
     p.add_argument('--completed-qid', type=int)
+    p.add_argument('--allow-conditional-rotation', action='store_true',
+        help='Explicitly select a conditional positive-money funding SELL; later orders require actual fills and fresh reviews.')
+    p.add_argument('--conditional-support-proof', type=Path,
+        help='Checked qualification of this exact worker binary for conditional monetary rotations.')
     run(p.parse_args())

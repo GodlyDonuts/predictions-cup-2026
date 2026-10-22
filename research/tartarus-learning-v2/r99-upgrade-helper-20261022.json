@@ -1,0 +1,13 @@
+{
+  "engineIdentity": "ff7a21564355c711a08b2fa0615abba929afda4661f6582facb442b992fca0e7",
+  "helperSha256": "92c1117e757775c2eda36d6ef6f37fff851c47227651c2bebbe7d914243dc655",
+  "helperSourceSha256": "6b984b587b4f122a9fe99d4a9bca9dcc3c05d96120e2c04fdcc2b733b317be2f",
+  "nativeLibrarySha256": "ba07c3f9427dbc2868d0ba392834b865e111171b3e001f4287d9f70e2efe724c",
+  "checkedNativeSessionSourceSha256": "6afa1a05fa8f6c53c2958aeff2ae41380604c3aad50c47faac2fdecac7c5b921",
+  "proposalConstructionChange": "move original entries into final Value::Array; no serde clone",
+  "smallOriginalProposerByteParity": true,
+  "malformedPriorReportRejectedByBoth": true,
+  "fixtureFinancialFilesUnchanged": true,
+  "productionBankOpened": false,
+  "accountRequests": 0
+}

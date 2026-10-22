@@ -1,0 +1,45 @@
+{
+  "observedUtc": "2026-10-22T17:21:02.960357+00:00",
+  "sourceHashes": {
+    "moloch/native/src/reviewed_rank_campaign.rs": "f84d78924408ad344a1a9edd91878570412dada398a9a59ff50bfcb9638ef67d",
+    "moloch/live-runtime/src/rank_campaign.rs": "b62987daa04e9ed16920227636e113acc715232f21871d4339bca6d99c43527c",
+    "moloch/live-runtime/src/worker.rs": "827d3b8cf34d8cf9c10726ab831704e6e3e2fae19c1fa108df03505145cb19fd",
+    "moloch/live-runtime/src/fundamental_rank_ownership.rs": "8051a5424a5ce28c89eb629086a92d1969ab8e19db9114341b16b32dc3792103",
+    "moloch/live-runtime/tests/rank_cohort_ownership.rs": "f04544a179d5c13e4032f3892efe043c5db726b342af7fc85b609e09b7f5155b",
+    "moloch/tartarus/current_portfolio.py": "002fa8eab13d17c560e331c3f2d9d75001d9fd5a0ce7c800c8f5cf7bc6c797f5",
+    "moloch/tartarus/test_current_portfolio.py": "85b9392a64fc517b21966cb07efe7bbc9d116ac0f0a8bfd44e703871ac4f7f0d",
+    "research/tartarus-learning-v2/tools/build-same-side-handoff-r99-20261022.py": "717aa6f40d69b83552b1be689c52da1d17f51c3b4c1e9d2c7d61cc95be8b2c23"
+  },
+  "checks": {
+    "native-tests-build": "test result: ok. 143 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 1.77s",
+    "rank-tests": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 280 filtered out; finished in 0.00s",
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s",
+    "rank-cohort-tests": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s",
+    "worker-tests": "test result: ok. 270 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.13s"
+  },
+  "binarySha256": "437d87c5afa798d406b389c7d0255eaa31bc8ba3366f2c952ff238ffa9747209",
+  "nativeLibrarySha256": "ba07c3f9427dbc2868d0ba392834b865e111171b3e001f4287d9f70e2efe724c",
+  "runtimeLibrarySha256": "72a31ae9351c82041ae7b1a03fcbc40e256a6193f5ee04d96c413de6a59b50b0",
+  "runtimeFixtureSha256": "a25f702ea07a4d62e2ec0a85ed9968a233e98e9713b6b18bcd802c9a6144a466",
+  "cliLoads": true,
+  "testFilesystem": "memory-backed temporary fixtures; original fsync calls unchanged",
+  "productionChanged": false,
+  "accountClientsCreated": 0,
+  "monetaryCapsChanged": false,
+  "conditionalFutureProceedsCredited": false,
+  "futureLiquidityCertified": false,
+  "conditionalMonetaryRotationObjectiveQualified": true,
+  "sameSideBuyHandoffQualified": true,
+  "oneFilledTradePerMinuteEstablished": false,
+  "retainedCompiledStages": [
+    "native-tests-build",
+    "native-release",
+    "runtime-fixture",
+    "runtime-release",
+    "rank-tests",
+    "fundamental-tests",
+    "rank-cohort-tests",
+    "worker-tests"
+  ],
+  "originalHarnessFailureRetained": "fundamental-tests-results.log"
+}

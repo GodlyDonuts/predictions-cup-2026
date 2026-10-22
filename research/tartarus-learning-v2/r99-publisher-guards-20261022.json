@@ -1,0 +1,24 @@
+{
+  "publisherSha256": "7efe241966106943b71c47dc65d97fe0ad5933c0deca9f195324869df8ba74da",
+  "actualWorkerPid": 1111134,
+  "actualBinarySha256": "856b7cba35d1e1c8ce5f4fdae34d2b1b44a296ad458564ec9d88009e1aecb113",
+  "candidateQualificationBinarySha256": "437d87c5afa798d406b389c7d0255eaa31bc8ba3366f2c952ff238ffa9747209",
+  "checks": [
+    {
+      "case": "unselected",
+      "expectedRejection": "EXPLICIT_CONDITIONAL_ROTATION_SELECTION_REQUIRED",
+      "exitCode": 1
+    },
+    {
+      "case": "unsupported",
+      "expectedRejection": "QUALIFIED_CONDITIONAL_ROTATION_BINARY_REQUIRED",
+      "exitCode": 1
+    }
+  ],
+  "ownerFilesUnchanged": true,
+  "approvalPublished": false,
+  "ordersSubmitted": 0,
+  "accountClientsCreated": 0,
+  "expirationGuardExercised": false,
+  "historicalEngineeringNominationOnly": true
+}
