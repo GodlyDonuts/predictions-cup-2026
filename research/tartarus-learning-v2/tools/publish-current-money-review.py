@@ -58,23 +58,6 @@ def completed_prior_review(root, view, old_sha, qid):
     return dict(qid=qid, priorRawSha256=old_sha, originalClosedLineSha256=closed)
 
 
-def supersede_after_new_fills(root, view, old_nomination, old_sha):
-    assert old_nomination['objective'] == 'declared_positive_expected_money'
-    assert old_nomination['account']['actualFillsSha256'] != view['account']['actualFillsSha256'], 'ORIGINAL_FILL_IDENTITY_NOT_ADVANCED'
-    assert not any(q.get('reviewedRankCampaign') for q in view['activeNativeOrders']), 'NATIVE_RANK_RESERVATION_STILL_ACTIVE'
-    private(root/'dispatch.ndjson')
-    with (root/'dispatch.ndjson').open('rb') as stream:
-        for line in stream:
-            assert line.endswith(b'\n') and len(line) <= 16*1024*1024, 'ORIGINAL_DISPATCH_COMPLETE_ROWS_REQUIRED'
-            event = json.loads(line)['event']
-            assert not (event['kind'] == 'intent' and (event.get('rankCampaign') or {}).get('rawSha256') == old_sha), 'PRIOR_REVIEW_HAS_ORIGINAL_DISPATCH_INTENT'
-    return dict(priorRawSha256=old_sha, reason='new_original_fills_invalidate_unused_review',
-        previousActualFillsSha256=old_nomination['account']['actualFillsSha256'],
-        currentActualFillsSha256=view['account']['actualFillsSha256'],
-        originalIntentAbsent=True, activeNativeRankReservationAbsent=True,
-        originalSourceClocksRenewed=False)
-
-
 def run(a):
     os.umask(0o077)
     assert len(a.source_commit) == 40 and all(c in '0123456789abcdef' for c in a.source_commit), 'CHECKED_SOURCE_COMMIT'
@@ -121,12 +104,8 @@ def run(a):
     if active:
         qid = a.completed_qid
         old_sha = digest(old_nomination)
-        assert all(row['rawSha256'] == old_sha for row in active), 'MULTIPLE_ACTIVE_OWNER_REVIEWS'
-        if qid is not None:
-            superseded = completed_prior_review(root, view, old_sha, qid)
-        else:
-            assert getattr(a, 'supersede_filled_account', False), 'DIFFERENT_UNEXPIRED_REVIEW_REQUIRES_EXACT_COMPLETION_REVIEW'
-            superseded = supersede_after_new_fills(root, view, json.loads(old_nomination), old_sha)
+        assert qid is not None and all(row['rawSha256'] == old_sha for row in active), 'DIFFERENT_UNEXPIRED_REVIEW_REQUIRES_EXACT_COMPLETION_REVIEW'
+        superseded = completed_prior_review(root, view, old_sha, qid)
     assert all(campaign['account'][key] == view['account'][key] for key in
         ('positionsSha256', 'cash', 'actualFillsSha256')), 'CURRENT_NATIVE_FINANCIAL_CHANGED'
     if 'unsubmittedDraftYield' in campaign['account']:
@@ -195,5 +174,4 @@ if __name__ == '__main__':
     p.add_argument('--expected-raw-sha256', required=True)
     p.add_argument('--source-commit', required=True)
     p.add_argument('--completed-qid', type=int)
-    p.add_argument('--supersede-filled-account', action='store_true')
     run(p.parse_args())

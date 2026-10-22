@@ -63,8 +63,7 @@ def run(a):
         raw = (owner/'nomination.json').read_bytes()
         old = json.loads(raw)
         qid = completion(a.runtime, view, hashlib.sha256(raw).hexdigest())
-        stale_unused = old['account']['actualFillsSha256'] != view['account']['actualFillsSha256'] and not any(q.get('reviewedRankCampaign') for q in view['activeNativeOrders'])
-        if int(time.time()*1000) < old['validUntilMs'] and qid is None and not stale_unused:
+        if int(time.time()*1000) < old['validUntilMs'] and qid is None:
             time.sleep(5)
             continue
         output = a.output/f'cycle-{completed+1:04d}'
@@ -73,7 +72,7 @@ def run(a):
                                reference=a.reference, deployment=a.deployment,
                                field=a.field, output=output).items():
             args += ['--'+key, str(value)]
-        args += ['--horizon-ms', '900000', '--wait-seconds', '60']
+        args += ['--horizon-ms', '180000', '--wait-seconds', '60']
         with (a.output/f'cycle-{completed+1:04d}.log').open('x') as log:
             subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=True)
             prepared = output/'prepared'
@@ -90,8 +89,7 @@ def run(a):
                     '--source-commit', a.source_commit]
             if qid is not None:
                 args += ['--completed-qid', str(qid)]
-            elif stale_unused:
-                args += ['--supersede-filled-account']
+
             subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=True)
         completed += 1
         print(json.dumps(dict(at=datetime.now(timezone.utc).isoformat(),

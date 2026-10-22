@@ -1,0 +1,20 @@
+{
+  "observedUtc": "2026-10-22T10:00:07.121985+00:00",
+  "sourceHashes": {
+    "moloch/live-runtime/src/worker.rs": "c86b5d628b535b89c003a383e07ca5815956c55064b6f1639b8b30d289aeef87"
+  },
+  "checks": {
+    "worker-tests": "test result: ok. 256 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 59.96s"
+  },
+  "binarySha256": "2ff854534e6be2f48aea54737c039a32fbf20c6f15593d7511bcfaf6b4bc7f14",
+  "nativeLibrarySha256": "ae941f303004fd5988996f076d18b7b118d847849023076a4986388737599b62",
+  "runtimeLibrarySha256": "522ecfb41f3cb5d909528e8756ac09b81e7feb138a1f63825b1d1036aa08e9d6",
+  "runtimeFixtureSha256": "5075bde248a5a4ae1ee190e2006b833d43a47424ef334a288620161ccede6bd7",
+  "cliLoads": true,
+  "productionChanged": false,
+  "nativeEngineUnchanged": true,
+  "accountClientsCreated": 0,
+  "runtimeLibraryUnchanged": true,
+  "oneFilledTradePerMinuteEstablished": false,
+  "inheritedUnchangedRuntimeChecks": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 179.00s"
+}

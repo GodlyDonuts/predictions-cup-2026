@@ -108,7 +108,15 @@ fn rank_recover_target_source(c:&Control,bank:&mut Session,rest:&mut RestSource,
  let Some(from)=rest.recovery_start_ms(market)else{return Ok(false)};
  self::source(c,bank,rest,ex,market,from,reads)?;Ok(true)
 }
+// Expiry before a physical attempt is ordinary scheduling, not process STOP.
+// File changes and clock regression retain their original fatal semantics.
+fn rank_owner_ready(until:u64,mut clock:impl FnMut()->u64,validate:impl FnOnce()->Result<()>)->Result<bool>{
+ let start=clock();if start>=until{return Ok(false)}let checked=validate();let end=clock();
+ if end<start{return Err("RANK_OWNER_CLOCK_REGRESSED".into())}
+ match checked{Ok(())=>Ok(end<until),Err(e)if e.to_string()=="RANK_OWNER_APPROVAL_EXPIRED"&&end>=until=>Ok(false),Err(e)=>Err(e)}
+}
 fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,packages:&moloch_live_runtime::package_dispatch::PackageDispatchLog,lease:&ExclusiveLock,authority:&Arc<ProductionAuthority>,stream:&Realtime,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+
  let Some(settings)=&c.rank_campaign else{return Ok(())};
  let managed=fundamental.as_ref().map(|f|f.cohorts.managed_exchanges()).unwrap_or_default();
  let(review,pins,money_account)=match load_rank_campaign(c,settings){Ok(v)=>v,Err(e)=>return rank_deferred(c,"owner_review",&e.to_string())};let ex=review.exchange_id().to_owned();
@@ -133,10 +141,10 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
     if !cancel_may_start(log,qid){continue}
     let old=quote(bank,qid)?;
     if !money_priority_sell(&old,bank.engine().is_package_order(qid),bank.engine().live_order_bindings().contains_key(&qid),cancel_may_start(log,qid)){continue}
-    pins.validate()?;refresh_controls(c,authority,stream)?;
+    if !rank_owner_ready(review.valid_until_ms(),now,||pins.validate())?{return rank_deferred(c,"owner_review","ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT")};refresh_controls(c,authority,stream)?;
     let facts=cancel_snapshots(t,c)?;
     if now()>=review.valid_until_ms(){return rank_deferred(c,"priority","MONEY_REVIEW_EXPIRED_BEFORE_CANCEL")}
-    pins.validate()?;cancel_owned(t,c,bank,log,authority,&old,facts,None)?;
+    if !rank_owner_ready(review.valid_until_ms(),now,||pins.validate())?{return rank_deferred(c,"owner_review","ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT")};cancel_owned(t,c,bank,log,authority,&old,facts,None)?;
     return rank_deferred(c,"priority","OWNED_SELL_YIELD_REQUIRES_TERMINAL_RECONCILIATION")
    }
   }
@@ -145,6 +153,10 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  rank_recover_target_source(c,bank,source,&ex,&market,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?;
  if source.recovery_start_ms(&market).is_some(){return rank_deferred(c,"source_recovery","ORIGINAL_TARGET_TAPE_AND_BOOK_STILL_BLOCKED")}
  rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;
+ // Recovery owns its separate report scope above. From first reservation
+ // packet through physical dispatch, keep one derived-report scope: original
+ // events/head stay fsynced and every physical fact clock stays unchanged.
+ bank.with_deferred_report(|bank|{
  let(qid,original)=if let Some(q)=existing.into_iter().next(){(q["id"].as_u64().ok_or("RANK_QUOTE_ID")?,q)}else{
  if managed.contains(&ex){rank_yield_managed_drafts(bank,log,&ex)?;}
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_ALREADY_HAS_PHYSICAL_LIABILITY")}
@@ -153,7 +165,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  accept_fresh_book(bank,c,&target,&facts.book,source)?;
  if managed.contains(&ex){rank_yield_managed_drafts(bank,log,&ex)?;}
  if existing_target_busy(bank,log,&ex)?{return rank_deferred(c,"liability","TARGET_CHANGED_DURING_READS")}
- retire_existing_drafts(bank,log,&ex)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;pins.validate()?;
+ retire_existing_drafts(bank,log,&ex)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;if !rank_owner_ready(review.valid_until_ms(),now,||pins.validate())?{return rank_deferred(c,"owner_review","ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT")};
  let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
  let plan={let b=moloch_live_runtime::collateral_feedback::Boundary{root:&c.root,owner_lock_path:&c.owner_lock,owner_lease:lease,transport:t,ordinary:log,packages};
   match moloch_live_runtime::rank_campaign::prepare(bank,&b,&review,&facts,&retained,now()){Ok(p)=>{if !rank_commit_ready(p.valid_until_ms(),now,|at|p.validate_current(bank,&b,at))?{return rank_deferred(c,"reservation_age","ORIGINAL_FACT_WINDOW_EXPIRED_BEFORE_NATIVE_COMMIT")}p},Err(e)if e.to_string().starts_with("RANK_")=>return rank_deferred(c,"evaluation",&e.to_string()),Err(e)=>return Err(e)}
@@ -169,7 +181,7 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  if matches.next().is_some(){return Err("RANK_COMMITTED_QUOTE_NOT_UNIQUE".into())}let qid=original["id"].as_u64().ok_or("RANK_COMMITTED_QUOTE_ID")?;(qid,original)};
  if !rank_quote(&original)||original["reviewedRankCampaign"]["campaignSha256"]!=review.campaign_sha256(){return Err("RANK_REAL_RESERVATION_MISMATCH".into())}
  atomic_json(&c.root.join("rank-campaign-status.json"),&json!({"at":iso(now()),"state":"native_reserved_not_submitted","qid":qid,"campaignSha256":review.campaign_sha256(),"physicalAttempted":false,"profitabilityEstablished":false}))?;
- loop{refresh_controls(c,authority,stream)?;pins.validate()?;let q=quote(bank,qid)?;match rank_activation(&q,&original,now()){
+ loop{refresh_controls(c,authority,stream)?;if !rank_owner_ready(review.valid_until_ms(),now,||pins.validate())?{return rank_deferred(c,"owner_review","ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT")};let q=quote(bank,qid)?;match rank_activation(&q,&original,now()){
   Ok(None)=>break,Ok(Some(at))=>std::thread::sleep(Duration::from_millis(at.saturating_sub(now()).clamp(1,100))),
   Err(e)=>{if log.never_attempted(qid)&&q["retired"]==false{retire_never_sent(bank,log,&q)?;}return rank_deferred(c,"activation",&e.to_string())}
  }}
@@ -178,10 +190,9 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  // Commit/retire it before expiring account facts, rather than afterward.
  final_reads.service_before_read(bank,source)?;rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;
  let(facts,collateral)=match rank_snapshots(c,bank,source,&market,Some(&original),&mut final_reads){Ok(f)=>f,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_INVALIDATED"),Err(e)=>return Err(e)};
- bank.with_deferred_report(|bank|{
  let final_book_receipt=moloch_live_runtime::daily_windows::clock(&facts.book.received_at)?;let post_reads_start=now();accept_fresh_book(bank,c,&target,&facts.book,source)?;let post_book=now();rank_yield_unsubmitted_drafts(c,bank,log,&managed)?;let post_retirement=now();let current=quote(bank,qid)?;
  if current!=original||!log.never_attempted(qid){return rank_deferred(c,"final_facts","EXACT_RESERVED_QUOTE_CHANGED")}
- pins.validate()?;let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
+ if !rank_owner_ready(review.valid_until_ms(),now,||pins.validate())?{return rank_deferred(c,"owner_review","ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT")};let retained=moloch_live_runtime::collateral_feedback::RetainedReceipt::open(&c.root,&collateral,moloch_live_runtime::collateral_feedback::ReceiptStore::Ordinary)?;
  let(order,spec,permit)=physical_order(c,&current)?;
  let ownership_start=now();let ownership=if managed.contains(&ex){let f=fundamental.as_deref_mut().ok_or("RANK_COHORT_RUNTIME_REQUIRED")?;
   Some(f.cohorts.bind_rank_trade(bank,log,&c.scope,&review,qid,&spec,&permit,now(),review.valid_until_ms().min(permit.expires_at_ms))?)
@@ -4742,6 +4753,11 @@ mod local_final_guard_recovery_tests{
 }
 #[cfg(test)]mod rank_worker_tests{
  use super::*;
+ #[test]fn owner_expiry_before_preintent_validation_is_a_deferral(){assert!(!rank_owner_ready(10,||10,||panic!("expired review cannot authorize")).unwrap());}
+ #[test]fn owner_expiry_during_validation_is_a_deferral(){let mut t=[9,10].into_iter();assert!(!rank_owner_ready(10,||t.next().unwrap(),||Err("RANK_OWNER_APPROVAL_EXPIRED".into())).unwrap());}
+ #[test]fn owner_expiry_does_not_hide_file_changes(){let mut t=[9,10].into_iter();assert_eq!(rank_owner_ready(10,||t.next().unwrap(),||Err("RANK_OWNER_FILES_CHANGED".into())).unwrap_err().to_string(),"RANK_OWNER_FILES_CHANGED");}
+ #[test]fn owner_clock_regression_remains_fatal(){let mut t=[9,8].into_iter();assert_eq!(rank_owner_ready(10,||t.next().unwrap(),||Ok(())).unwrap_err().to_string(),"RANK_OWNER_CLOCK_REGRESSED");}
+
  #[test]fn monetary_priority_requires_original_financial_identity(){
   let a=json!({"positionsSha256":"p","cash":"1.000000","actualFillsSha256":"f","reservedCash":"0.000000"});
   assert!(money_priority_account_matches(&a,&a));

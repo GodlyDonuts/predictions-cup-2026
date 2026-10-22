@@ -1,0 +1,16 @@
+{
+  "stop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-22T09:49:52.265Z",
+    "reason": "RANK_OWNER_APPROVAL_EXPIRED"
+  },
+  "priorNominationRawSha256": "a1856c3a8da94a04ce317da072e8df1d7a9857711dc92c936c257a2617966675",
+  "reviewUntilMs": 1792662584145,
+  "matchingRankIntents": [],
+  "unresolvedOrdinaryAttempts": [],
+  "knownPhysicalOrders": [],
+  "sdkActive": null,
+  "sdkUnknownCount": 0,
+  "sdkManualReview": false,
+  "previousWorkerGone": true
+}
