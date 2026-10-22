@@ -1,0 +1,176 @@
+{
+  "prepared": {
+    "rawSha256": "3a4f4cf8f34789d747cb8cf815470ac80fa3a3785c9dcef69fa8c469048e187a",
+    "objective": "declared_positive_expected_money",
+    "exchangeId": "1051",
+    "side": "NO",
+    "action": "BUY",
+    "quantity": 3509,
+    "limitPrice": "0.905000",
+    "validUntilMs": 1792708032123,
+    "weakestDeclaredExpectedChange": 192.802005,
+    "ordinaryMinimumExpectedChange": "192.995000",
+    "scenarios": 87,
+    "originalHypothesisQuantity": 3549,
+    "originalHypothesisPrice": "0.895000",
+    "requestedPriceTolerance": "0.010000",
+    "limitIsConservativeFundingAndValuationPrice": true,
+    "actualFillPriceClaimed": false,
+    "probabilityModels": 3,
+    "decisionProfilePolicy": "current-prices",
+    "decisionProfileIds": [
+      "price_lower_common",
+      "price_upper_common",
+      "price_midpoint_independent"
+    ],
+    "completeHeldMarkets": 21,
+    "sourceClocksRenewed": false,
+    "approvalPublished": false,
+    "submitted": false,
+    "executionAuthority": false
+  },
+  "publication": {
+    "state": "exact_execution_owner_review_published",
+    "rawSha256": "3a4f4cf8f34789d747cb8cf815470ac80fa3a3785c9dcef69fa8c469048e187a",
+    "approvalSha256": "c6de979c4af87a0b041cc7dee51aaddb19859942eae6e9260229c50a42610a49",
+    "approvedAtMs": 1792707794176,
+    "validUntilMs": 1792708032123,
+    "expectedWorkerPid": 1131806,
+    "sourceCommit": "8570d4bd8387e60382f1507e950c9350a576ba38",
+    "knownPhysicalOrdersStillRequireReconciliation": [
+      23135
+    ],
+    "completedPriorReview": null,
+    "expiredUnusedPriorReview": {
+      "priorRawSha256": "17b0598d1885c2c84a4925c0d19e15a4eff25cb0114812b68165e92534ef67bc",
+      "expiryObservedByWorkerAt": "2026-10-22T22:22:20.034Z",
+      "originalStatusSha256": "816a4538cce4108ec1c3e2f461b2174f6f6d591364c89f782df534668bc84415",
+      "originalDispatchSha256": "a29a1349c79019e2f34dcf9dda180b40b03cbbb416fce566ec3001de9f43f31f",
+      "originalIntentAbsent": true,
+      "sourceClocksRenewed": false
+    },
+    "currentReservationProjection": {
+      "capturedReservedCash": "0.000000",
+      "expectedReservedCash": "0.000000",
+      "quoteIds": [],
+      "actualCashCredited": "0.000000",
+      "executionAuthority": false
+    },
+    "sourceClocksRenewed": false,
+    "historicalOwnerFilesArchived": true,
+    "accountClientsCreated": 0,
+    "ordersSubmittedByPublisher": 0,
+    "officialWorkerMayActAfterIndependentChecks": true
+  },
+  "sourcePause": {
+    "pid": 1133683,
+    "command": [
+      "python3",
+      "-u",
+      "/home/archon/apps/moloch/releases/ri-position-quantity-007/run-live-reference-reload.py",
+      "--config",
+      "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/config-agent-maker-r101-ri-tn-008.json"
+    ],
+    "cwd": "/home/archon",
+    "pausedAt": "2026-10-22T22:21:39.662298+00:00",
+    "reason": "Finite exact owner generation capture/review; worker stays live",
+    "maximumPauseSeconds": 420,
+    "resumeWatchdogPid": 1134226,
+    "resumedAt": "2026-10-22T22:27:33.215700+00:00",
+    "resumedPid": 1134309,
+    "watchdogCancelledAfterVerifiedExpiry": true
+  },
+  "fillClaimed": false,
+  "subsequentOriginalDispatchEvidence": {
+    "observedAt": "2026-10-22T22:27:18.562103+00:00",
+    "qid": 23142,
+    "originalDispatchEvents": [
+      {
+        "kind": "intent",
+        "at": "2026-10-22T22:24:58.764Z",
+        "originalLineSha256": "d18df47b0ef2ac7b6b4bec03d166dcc915b148554c0fcb014145bcc9440e6e80",
+        "action": {
+          "exchangeId": "1051",
+          "marketId": "362",
+          "side": "NO",
+          "action": "buy",
+          "quantity": 3509,
+          "price": "0.905000"
+        },
+        "rankReviewRawSha256": "3a4f4cf8f34789d747cb8cf815470ac80fa3a3785c9dcef69fa8c469048e187a"
+      },
+      {
+        "kind": "attempt",
+        "at": "2026-10-22T22:24:58.770Z",
+        "originalLineSha256": "5c2f029e873582d01b2d78dbc4a9cbbc885e73cb3a6c544f5fa6789b0ddca5ee"
+      },
+      {
+        "kind": "error",
+        "at": "2026-10-22T22:24:59.490Z",
+        "originalLineSha256": "d7490d9c4db693b918d91a749108e9782dbcd7d6b90f837cf488c4c02f7e4371",
+        "error": {
+          "apiCode": null,
+          "code": "RANK_PHYSICAL_FACTS_EXPIRED",
+          "mayHaveExecuted": false,
+          "orderId": null,
+          "retryAfterMs": 0,
+          "status": null
+        }
+      },
+      {
+        "kind": "admitted_pre_network_not_sent",
+        "at": "2026-10-22T22:25:02.354Z",
+        "originalLineSha256": "cd76dfe5cec93da9bf471b218a8aeeda54aa0129c344e33f768d97819cfaef36",
+        "proof": {
+          "contextSha256": "7848b783ed95ab305a94fcb47f9aa51b871f9ccd21f2076e7687b4ac4c73e904",
+          "kind": "ordinary_admitted_pre_network_not_sent_v1",
+          "sdkSha256": "70400749f84b18740b0c1b72f37eadc86d4622797fbeff9b291cb05e8a684df7",
+          "snapshot": "/home/archon/apps/moloch/shared/live-production-v1/account-queue/ordinary-pre-network-7848b783ed95ab305a94fcb47f9aa51b871f9ccd21f2076e7687b4ac4c73e904",
+          "sourceJournalSha256": "4a66385328aa587d8ea7d554be873843a222749c6ab2b7008f4f5332df89db5f"
+        }
+      }
+    ],
+    "rankStatus": {
+      "at": "2026-10-22T22:25:02.432Z",
+      "campaignSha256": "a879e67d895f6b742a3797de3cf38cd46c97086949f7bf8a9c45f8adb5f73d81",
+      "diagnosticPreparationTimings": {
+        "cohortOwnershipMs": 4543,
+        "finalBookReceiptToSubmitStartMs": 6683,
+        "nativeRankMintMs": 996,
+        "postReadDraftRetirementMs": 1045,
+        "postReadNativeBookMs": 85
+      },
+      "physicalAttempted": false,
+      "profitabilityEstablished": false,
+      "qid": 23142,
+      "state": "no_official_ack"
+    },
+    "nativeViewWrittenAt": "2026-10-22T22:25:56.409Z",
+    "fillCount": 715,
+    "cash": "3176.505000",
+    "tennesseePosition": {
+      "NO": [],
+      "YES": []
+    },
+    "unresolvedOrdinaryAttempt": false,
+    "workerPid": 1131806,
+    "workerAlive": true,
+    "stopPresent": false,
+    "noNewFillClaimed": true,
+    "workerBinaryChanged": false
+  },
+  "sourceResumeConfirmation": {
+    "atMs": 1792708096486,
+    "pid": 1134309,
+    "phase": "committed",
+    "commits": 235,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "generationSha256": "4659dfc0635ef051a8988be5618083fdadf5e34f71d73ec7b037215aa138a083",
+    "exchanges": [
+      "983"
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "prepared": {
+    "rawSha256": "17b0598d1885c2c84a4925c0d19e15a4eff25cb0114812b68165e92534ef67bc",
+    "objective": "declared_positive_expected_money",
+    "exchangeId": "1051",
+    "side": "NO",
+    "action": "BUY",
+    "quantity": 3509,
+    "limitPrice": "0.905000",
+    "validUntilMs": 1792707722430,
+    "weakestDeclaredExpectedChange": 192.802005,
+    "ordinaryMinimumExpectedChange": "192.995000",
+    "scenarios": 86,
+    "originalHypothesisQuantity": 3549,
+    "originalHypothesisPrice": "0.895000",
+    "requestedPriceTolerance": "0.010000",
+    "limitIsConservativeFundingAndValuationPrice": true,
+    "actualFillPriceClaimed": false,
+    "probabilityModels": 3,
+    "decisionProfilePolicy": "current-prices",
+    "decisionProfileIds": [
+      "price_lower_common",
+      "price_upper_common",
+      "price_midpoint_independent"
+    ],
+    "completeHeldMarkets": 21,
+    "sourceClocksRenewed": false,
+    "approvalPublished": false,
+    "submitted": false,
+    "executionAuthority": false
+  },
+  "publication": {
+    "state": "exact_execution_owner_review_published",
+    "rawSha256": "17b0598d1885c2c84a4925c0d19e15a4eff25cb0114812b68165e92534ef67bc",
+    "approvalSha256": "dc3938006fd05da007c48950fa5a9381ed62125ddc814765d3b3580d5844a0fb",
+    "approvedAtMs": 1792707608044,
+    "validUntilMs": 1792707722430,
+    "expectedWorkerPid": 1131806,
+    "sourceCommit": "8570d4bd8387e60382f1507e950c9350a576ba38",
+    "knownPhysicalOrdersStillRequireReconciliation": [],
+    "completedPriorReview": {
+      "qid": 22287,
+      "priorRawSha256": "9f2f9148a439b9d46b270141def58001887800b2a40d2e9eecad318de2f535c9",
+      "originalClosedLineSha256": "9d0e1c294554c7fa97d3044403652d96fe766c6f930a4e3358d75a5c37b3cd5f"
+    },
+    "expiredUnusedPriorReview": null,
+    "currentReservationProjection": {
+      "capturedReservedCash": "0.000000",
+      "expectedReservedCash": "0.000000",
+      "quoteIds": [
+        23119,
+        23120,
+        23121,
+        23122,
+        23123,
+        23124
+      ],
+      "actualCashCredited": "0.000000",
+      "executionAuthority": false
+    },
+    "sourceClocksRenewed": false,
+    "historicalOwnerFilesArchived": true,
+    "accountClientsCreated": 0,
+    "ordersSubmittedByPublisher": 0,
+    "officialWorkerMayActAfterIndependentChecks": true
+  },
+  "subsequentWorkerResult": {
+    "at": "2026-10-22T22:21:11.374Z",
+    "stage": "ownership",
+    "reason": "RANK_COHORT_HANDOFF_CHANGED",
+    "physicalAttempted": false
+  },
+  "fillClaimed": false
+}
