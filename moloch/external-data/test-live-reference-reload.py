@@ -120,6 +120,28 @@ class RefreshTests(unittest.TestCase):
             p.write_text('{}')
             with self.assertRaisesRegex(ValueError,'PIN'):refresh.execution_modes_policy(c)
 
+    def test_entry_margin_policy_is_pinned_scoped_and_positive(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'policy.json'
+            def config(margins):
+                p.write_text(json.dumps({'version':1,'exchanges':{'1067':['boundedLimitMayRest']},'entryMargins':margins}))
+                return {'executionModesPolicy':str(p),'executionModesPolicySha256':refresh.sha(p),'exchanges':['1067']}
+            self.assertEqual(refresh.execution_margins_policy(config({'1067':'0.001000'})),{'1067':'0.001000'})
+            with self.assertRaisesRegex(ValueError,'SCOPE'):refresh.execution_margins_policy(config({'foreign':'0.001000'}))
+            for value in ['0.000000','-0.001000','NaN','garbage','0.0000001','0.001',1]:
+                with self.assertRaises(ValueError):refresh.execution_margins_policy(config({'1067':value}))
+
+    def test_margin_revision_waits_for_free_target_and_changes_actual_acquisition_tick(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'review.json';r=self.review();r['marginPerShare']='0.005000';p.write_text(json.dumps(r))
+            control={'fundamentalPolicy':{'reviews':[{'path':str(p)}]}};capture={'rows':[{'exchangeId':'1067','yesMidpoint':'.5001'}]};margins={'1067':'0.001000'}
+            self.assertEqual(refresh.changed_scopes(capture,control,set(),1000,entry_margins=margins),['1067'])
+            self.assertEqual(refresh.changed_scopes(capture,control,{'1067'},1000,entry_margins=margins),[])
+            self.assertEqual(refresh.executable_ticks(r,D('.9055'))[0],178)
+            r['marginPerShare']='0.001000';p.write_text(json.dumps(r))
+            self.assertEqual(refresh.executable_ticks(r,D('.9055'))[0],179)
+            self.assertEqual(refresh.changed_scopes(capture,control,set(),1000,entry_margins=margins),[])
+
     def test_expiry_and_open_order_filter(self):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / 'review.json'; p.write_text(json.dumps(self.review()))

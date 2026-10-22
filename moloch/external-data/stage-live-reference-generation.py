@@ -30,6 +30,7 @@ def main():
         raise ValueError('PINNED_BASE_AND_NEW_DIRECTORY_REQUIRED')
     control = json.loads(original)
     modes = {}
+    margins = {}
     mode_raw = b''
     if a.execution_modes_policy or a.execution_modes_sha256:
         if not a.execution_modes_policy or not a.execution_modes_sha256:
@@ -41,6 +42,13 @@ def main():
         if mode_policy['version'] != 1 or not isinstance(mode_policy['exchanges'], dict):
             raise ValueError('EXECUTION_MODES_POLICY_FORMAT')
         modes = mode_policy['exchanges']
+        margins = mode_policy.get('entryMargins', {})
+        if not isinstance(margins, dict) or not set(margins) <= set(modes):
+            raise ValueError('EXECUTION_MARGIN_POLICY_SCOPE')
+        for value in margins.values():
+            if (not isinstance(value, str) or len(value) != 8 or not value.startswith('0.')
+                    or any(c not in '0123456789' for c in value[2:]) or Decimal(value) <= 0):
+                raise ValueError('EXECUTION_MARGIN_POLICY_VALUE')
         for choices in modes.values():
             if (not isinstance(choices, list) or not choices or len(set(choices)) != len(choices)
                     or not set(choices) <= {'joinBid','improveOneTick','boundedLimitMayRest'}):
@@ -87,7 +95,7 @@ def main():
         if not 0 < midpoint < 1:
             raise ValueError('BINARY_MODEL_RANGE')
         point = midpoint if r['side'] == 'YES' else 1 - midpoint
-        before = {k: r.get(k) for k in ('ordinaryProbability', 'passiveValueExit', 'expiresAtMs', 'executionPolicy')}
+        before = {k: r.get(k) for k in ('ordinaryProbability', 'passiveValueExit', 'expiresAtMs', 'executionPolicy', 'marginPerShare')}
         forecast = {'version': 1, 'kind': 'execution_owner_conditional_live_reference_model',
             'captureSha256': sha(capture_raw), 'capturedAtMs': capture['capturedAtMs'],
             'model': capture['model'], 'side': r['side'], 'ordinaryProbability': format(point, '.6f'),
@@ -96,6 +104,10 @@ def main():
         if r['exchangeId'] in modes:
             forecast['executionModesPolicySha256'] = a.execution_modes_sha256
             r['executionPolicy'] = {'version': 1, 'allowedModes': modes[r['exchangeId']]}
+        if r['exchangeId'] in margins:
+            forecast['entryMarginOwnerPolicySha256'] = a.execution_modes_sha256
+            forecast['entryMarginPerShare'] = margins[r['exchangeId']]
+            r['marginPerShare'] = margins[r['exchangeId']]
         fraw = json.dumps(forecast, separators=(',', ':')).encode()
         fp = a.output / (r['exchangeId'] + '-forecast.json')
         fp.write_bytes(fraw)
@@ -116,7 +128,7 @@ def main():
             r['sources'][len(sources) - 1] = s
         r.update(reviewerId='Viserion-live-reference-20261021', ordinaryProbability=format(point, '.6f'),
             reviewedAtMs=now, expiresAtMs=entry['quoteObservedAtMs'] + 900_000,
-            assumptionLabel='Execution-owner conditional Kalshi party midpoint model, observed from retained original public receipts. Prices are uncalibrated forecasts, not settlement equivalence or guaranteed profits. Original exceptional allowance and entry margin remain. Polymarket exact-party observations are retained as context only. Original ballot/contract identity clocks and bytes remain; their declared lifetime is 14 days, with exact current SIG-root verification before dispatch. Forecast lifetime is 15 minutes. FIFO profit turnover remains except Nevada governor and Alaska Senate: those two use current modeled value for capital recycling and may realize a loss. Original holdings, basis, cohort objectives and horizons remain unchanged.')
+            assumptionLabel='Execution-owner conditional Kalshi party midpoint model, observed from retained original public receipts. Prices are uncalibrated forecasts, not settlement equivalence or guaranteed profits. Original exceptional allowance remains; entry margin changes only under a pinned execution-owner policy recorded in the forecast evidence. Polymarket exact-party observations are retained as context only. Original ballot/contract identity clocks and bytes remain; their declared lifetime is 14 days, with exact current SIG-root verification before dispatch. Forecast lifetime is 15 minutes. FIFO profit turnover remains except Nevada governor and Alaska Senate: those two use current modeled value for capital recycling and may realize a loss. Original holdings, basis, cohort objectives and horizons remain unchanged.')
         if r['exchangeId'] in ('872', '1067'):
             r['passiveValueExit'].pop('pricingObjective', None)
         path = a.output / (r['exchangeId'] + '-review.json')

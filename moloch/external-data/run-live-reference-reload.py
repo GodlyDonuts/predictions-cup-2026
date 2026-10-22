@@ -95,7 +95,21 @@ def execution_modes_policy(config):
     return modes
 
 
-def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False, execution_modes=None):
+def execution_margins_policy(config):
+    modes = execution_modes_policy(config)
+    if not config.get('executionModesPolicy'):
+        return {}
+    margins = json.loads(Path(config['executionModesPolicy']).read_bytes()).get('entryMargins', {})
+    if not isinstance(margins, dict) or not set(margins) <= set(modes):
+        raise ValueError('EXECUTION_MARGIN_POLICY_SCOPE')
+    for value in margins.values():
+        if (not isinstance(value, str) or len(value) != 8 or not value.startswith('0.')
+                or any(c not in '0123456789' for c in value[2:]) or Decimal(value) <= 0):
+            raise ValueError('EXECUTION_MARGIN_POLICY_VALUE')
+    return margins
+
+
+def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False, execution_modes=None, entry_margins=None):
     inputs = {r['exchangeId']: r for r in capture['rows']}
     selected = []
     for file in current_control['fundamentalPolicy']['reviews']:
@@ -108,6 +122,10 @@ def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_ope
             continue
         wanted = (execution_modes or {}).get(ex)
         if wanted and review.get('executionPolicy') != {'version': 1, 'allowedModes': wanted}:
+            selected.append(ex)
+            continue
+        margin = (entry_margins or {}).get(ex)
+        if margin and Decimal(review['marginPerShare']) != Decimal(margin):
             selected.append(ex)
             continue
         old = Decimal(review['ordinaryProbability'])
@@ -217,6 +235,7 @@ def main():
     refresh_open_once = a.refresh_open_targets_once
     c = json.loads(a.config.read_bytes())
     modes = execution_modes_policy(c)
+    margins = execution_margins_policy(c)
     os.umask(0o077)
     out = Path(c['outputRoot'])
     out.mkdir(parents=True, exist_ok=True)
@@ -290,7 +309,7 @@ def main():
             open_exchanges = {q['exchangeId'] for q in view['activeNativeOrders'] if q['id'] in unclosed}
             current_control = json.loads(Path(state['controlPath']).read_bytes())
             selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000,
-                refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c))
+                refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c), entry_margins=execution_margins_policy(c))
             if not selected:
                 report('fresh_reference_no_price_tick_change', capturedAtMs=capture['capturedAtMs'], openTargets=len(open_exchanges))
                 time.sleep(max(1, c['intervalSeconds'] - (time.monotonic() - started)))
