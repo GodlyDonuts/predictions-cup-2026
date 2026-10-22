@@ -2974,11 +2974,19 @@ fn connect_stream(t:&mut Transport,c:&Control,bank:&mut Session,source:&mut Rest
 }
 fn account_reconciliation_due(stream:&Realtime)->bool{stream.account_signal().is_some_and(|s|s.requires_reconciliation())}
 fn drain_stream(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
- drain_stream_limited(stream,bank,source,breadth,universe,MAX_REALTIME_FRAMES_PER_DRAIN)
+ require_stream(stream)?;
+ let Ok(first)=stream.incoming.try_recv()else{return Ok(())};
+ // Each admitted batch still commits its original events and head before the
+ // next batch. Publish the historical projection once for this bounded drain.
+ // Limited drains inside source/preflight scopes use their caller's scope.
+ bank.with_deferred_report(|bank|drain_stream_with_first(stream,bank,source,breadth,universe,MAX_REALTIME_FRAMES_PER_DRAIN,Some(first)))
 }
 // Private account invalidation is independent of this public-frame budget.
 // Unconsumed frames remain queued for the next normal drain.
 fn drain_stream_limited(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,maximum:usize)->Result<()>{
+ drain_stream_with_first(stream,bank,source,breadth,universe,maximum,None)
+}
+fn drain_stream_with_first(stream:&Realtime,bank:&mut Session,source:&mut RestSource,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,maximum:usize,mut first:Option<Incoming>)->Result<()>{
  require_stream(stream)?;
  let mut pending=QueuedSourceBatch::default();
  let account=stream.account_signal();let generation=||account.as_ref().map(|s|s.generation());
@@ -2986,7 +2994,7 @@ fn drain_stream_limited(stream:&Realtime,bank:&mut Session,source:&mut RestSourc
  let emit=|pending:&mut QueuedSourceBatch,bank:&mut Session,rows:Vec<realtime_book_catchup::Stamped>|->Result<()>{for(event,_normalized_at)in rows{pending.push_at(bank,std::slice::from_ref(&event),now())?;}Ok(())};
  for _ in 0..maximum{
   catchup.observe_generation(generation());
-  if let Err(error)=require_stream(stream){emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}let Ok(input)=stream.incoming.try_recv()else{break};match input{
+  if let Err(error)=require_stream(stream){emit(&mut pending,bank,catchup.finish(&generation,false))?;return pending.finish(bank,Err(error))}let Some(input)=first.take().or_else(||stream.incoming.try_recv().ok())else{break};match input{
   Incoming::Broadcast{event,payload,received_at}=>{
    let events=(||->Result<Vec<Value>>{if let Some(recorder)=breadth{recorder.observe(&event,&payload,&received_at)}if let Some(u)=universe{u.observe(&event,&payload,&received_at)?}Ok(source.broadcast(&event,&payload,&received_at)?)})();
    let at=now();catchup.observe_generation(generation());
@@ -3853,6 +3861,22 @@ pub fn main()->Result<()>{
   for reason in ["source_failed","stream_failed","unexpected_rejoin"]{let temp=BankTemp::new();let policy=json!({});let mut bank=Session::open(&temp.0,None,&policy).unwrap();let mut pending=QueuedSourceBatch::default();for(i,event)in source_ticks(5).iter().enumerate(){pending.push_at(&mut bank,&[event.clone()],1_760_000_001_000+i as u64).unwrap();}assert_eq!(bank.last_source_sequence("moloch-live"),0);
    assert_eq!(pending.finish(&mut bank,Err(reason.into())).unwrap_err().to_string(),reason);assert_eq!(bank.last_source_sequence("moloch-live"),5);drop(bank);assert_eq!(Session::open(&temp.0,None,&policy).unwrap().last_source_sequence("moloch-live"),5);
   }
+ }
+ #[test]fn deferred_stream_chunks_keep_original_bytes_heads_and_restart_state(){
+  let a=BankTemp::new();let b=BankTemp::new();let policy=json!({});let mut serial=Session::open(&a.0,None,&policy).unwrap();let mut batched=Session::open(&b.0,None,&policy).unwrap();let old=fs::read(b.0.join("report.json")).unwrap();
+  let rows=source_ticks(65);let mut pending=QueuedSourceBatch::default();
+  batched.with_deferred_report(|bank|{
+   for(i,event)in rows.iter().enumerate(){let at=1_760_000_001_000+i as u64;let mut prepared=event.clone();prepared["processedAt"]=json!(iso(at));accept_prepared_source_events(&mut serial,&[prepared])?;pending.push_at(bank,&[event.clone()],at)?;
+    assert_eq!(fs::read(b.0.join("report.json"))?,old);if i==31||i==63{assert_eq!(bank.last_source_sequence("moloch-live"),i as u64+1);assert_eq!(load(&b.0.join("head.json"))?,bank.durable_head());}
+   }pending.finish(bank,Ok(()))
+  }).unwrap();
+  for name in ["events.jsonl","head.json","report.json"]{assert_eq!(fs::read(a.0.join(name)).unwrap(),fs::read(b.0.join(name)).unwrap(),"{name}");}
+  let report=batched.engine().report().unwrap();drop(batched);assert_eq!(Session::open(&b.0,None,&policy).unwrap().engine().report().unwrap(),report);
+ }
+ #[test]fn deferred_stream_error_publishes_committed_prefix_and_original_error(){
+  let temp=BankTemp::new();let policy=json!({});let mut bank=Session::open(&temp.0,None,&policy).unwrap();let old=fs::read(temp.0.join("report.json")).unwrap();let mut pending=QueuedSourceBatch::default();
+  let result:Result<()>=bank.with_deferred_report(|bank|{for(i,event)in source_ticks(65).iter().enumerate(){pending.push_at(bank,&[event.clone()],1_760_000_001_000+i as u64)?;}assert_eq!(bank.last_source_sequence("moloch-live"),64);assert_eq!(fs::read(temp.0.join("report.json"))?,old);pending.finish(bank,Err("SYNTHETIC_STREAM_FAILED".into()))});
+  assert_eq!(result.unwrap_err().to_string(),"SYNTHETIC_STREAM_FAILED");assert_eq!(bank.last_source_sequence("moloch-live"),65);assert_eq!(load(&temp.0.join("report.json")).unwrap()["sequence"],bank.durable_head()["sequence"]);drop(bank);assert_eq!(Session::open(&temp.0,None,&policy).unwrap().last_source_sequence("moloch-live"),65);
  }
  #[test]fn queued_native_failure_propagates_without_replaying_or_appending_invalid_batch(){
   let temp=BankTemp::new();let mut bank=Session::open(&temp.0,None,&json!({})).unwrap();let mut pending=QueuedSourceBatch::default();let mut events=source_ticks(32);events[17]["type"]=json!("unsupported");let result=pending.push_at(&mut bank,&events,1_760_000_001_000);assert!(result.is_err());assert_eq!(bank.last_source_sequence("moloch-live"),0);assert_eq!(fs::metadata(temp.0.join("events.jsonl")).unwrap().len(),0);
