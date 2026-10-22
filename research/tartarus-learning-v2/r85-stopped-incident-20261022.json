@@ -1,0 +1,83 @@
+{
+  "observedUtc": "2026-10-22T05:08:36.026041+00:00",
+  "previousPid": 1063142,
+  "previousStartTicks": 61099963,
+  "previousUpdaterPid": 1066414,
+  "stop": {
+    "action": "no automatic write retry or activation renewal",
+    "at": "2026-10-22T04:59:15.075Z",
+    "reason": "FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED"
+  },
+  "stopSha256": "f00254062377a9a9f804d3e442adbe9aa028a63674968e0934a38075c8845ea1",
+  "originalDispatchSha256": "a8159c44a3a4dcae8396e1e3472afa78043687c804924ef97f2db033f5a2342e",
+  "originalReportSha256": "0927bdb02b53b269053f14212b1286d7470c3449f16344949f1f4eb54ad18cb5",
+  "originalHeadSha256": "15a6d9c88674b39d457ea050ebcee70215d8100dbf4bf7bca7bdb17b76230869",
+  "originalNoHttp": {
+    "accountRequests": 0,
+    "actualAcknowledgment": false,
+    "historicalExposureQidsRequiringNativeStartupVerification": [
+      18533
+    ],
+    "opaqueSdkProofVerified": true,
+    "originalKind": "local_final_guard_no_http",
+    "qid": 20937,
+    "retryAuthorized": false,
+    "unclassifiedAttemptIds": []
+  },
+  "retiredOriginalQuote": {
+    "action": "buy",
+    "activationAt": 1792644979884,
+    "barrier": null,
+    "createdAt": 1792644976884,
+    "exchangeId": "1075",
+    "expiresAt": 1792645223468,
+    "filled": 0,
+    "id": 20937,
+    "marketId": "386",
+    "participationCredit": 0,
+    "price": "0.905000",
+    "quantity": 10000,
+    "retired": true,
+    "reviewedFundamentalEntry": {
+      "acquisitionCeiling": "0.955000",
+      "actionSpec": {
+        "action": "buy",
+        "exchangeId": "1075",
+        "limitPrice": "0.905000",
+        "marketId": "386",
+        "quantity": 10000,
+        "side": "NO",
+        "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+      },
+      "bookSha256": "b6e7dc435d6de830ca997fc43f0978e70fb425f744db039e258954672ba6e459",
+      "executionMode": "boundedLimitMayRest",
+      "expectedPayout": "0.968220",
+      "grossLimitPrincipal": "9050.000000",
+      "marginPerShare": "0.010000",
+      "modelSha256": "fa798984976dd02b5481d36625cd1bb96f36cabf83e6cf28aa6cddd7d5b5bd29",
+      "originSha256": "5cf8a3a176c25311f94100402ac8de10daa4231b05e89a61af6884c40c74543d",
+      "reservedQuantity": 10000,
+      "reviewCurrentUntilMs": 1792645223468,
+      "reviewMaximumPrincipal": "10000.000000",
+      "reviewMaximumQuantity": 10000,
+      "reviewSha256": "af39d9f41b67d1cdf7a161fcbedbb957a0aae6c339229cb7586d2f7ee6eb8716",
+      "sourceSha256": "24df295872b81cd1aac3ab60cdc6184b8592feda9ca7fc6e8ffce6dc9d3607ce"
+    },
+    "side": "NO"
+  },
+  "financial": {
+    "cash": "14787.975000",
+    "ownedCost": "81399.705000",
+    "realized": "607.765000",
+    "newTradingRealized": "531.245000",
+    "inheritedRealizedGross": "76.520000"
+  },
+  "queueActive": false,
+  "queueUnknownCount": 0,
+  "queueManualReview": false,
+  "originalFillCount": 535,
+  "helperSha256": "cce119b39df22df16f41d40bccb6ffbd308d85bbb93b435f096a60534ea4e651",
+  "helperSourceSha256": "b5ab11b22600e56cce02e244fd62a68fcc23bdc77d7d3bf6aa66297b6edc23d4",
+  "stopCleared": false,
+  "financialStateChanged": false
+}

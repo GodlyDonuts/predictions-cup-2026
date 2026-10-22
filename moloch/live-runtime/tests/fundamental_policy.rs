@@ -608,9 +608,64 @@ fn verify_originals(r:ReviewInput,originals:&[Vec<u8>])->moloch_live_runtime::fe
         assert!(!f.log.never_attempted(id)&&!f.log.closed.contains(&id)&&!f.log.acknowledgments.contains_key(&id));assert!(f.bank.engine().fills().is_empty());
     }
     #[cfg(target_os="linux")]
-    fn proved_abort_abandon_fixture()->(F,baal_transport_service::Transport,baal_transport_service::Config,Value,moloch_live_runtime::authority::CancelSnapshotSet,Value,Value){
+    fn prove_local_guard_abort(f:&mut F)->(Value,baal_transport_service::Config,Value){
+        use baal_transport_service::{Authority,Clock,Order,TransportError,Transport,Config};
+        use std::{os::unix::fs::PermissionsExt,sync::atomic::{AtomicU64,Ordering}};
+        struct FixedClock(Arc<AtomicU64>);
+        impl Clock for FixedClock{fn now_ms(&self)->u64{self.0.load(Ordering::SeqCst)}fn sleep_ms(&mut self,n:u64)->baal_transport_service::Result<()>{self.0.fetch_add(n,Ordering::SeqCst);Ok(())}}
+        struct LastGuard(AtomicU64);
+        impl Authority for LastGuard{
+            fn can_read(&self,_:&Scope)->bool{true}fn owns_order(&self,_:&str)->bool{false}
+            fn authorize(&self,_:&Scope,_:&RequestSpec,_:&Permit,network:bool,_:u64)->baal_transport_service::Result<()>{
+                if network&&self.0.fetch_add(1,Ordering::SeqCst)>0{Err(TransportError{code:"FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED".into(),status:None,may_have_executed:false,retry_after_ms:0,order_id:None,api_code:None})}else{Ok(())}
+            }
+        }
+        let q=f.entry();let id=q["id"].as_u64().unwrap();let mut spec=f.spec(&q);
+        spec.body.as_mut().unwrap()["price"]=Value::Number(serde_json::Number::from_string_unchecked(q["price"].as_str().unwrap().into()));spec.body_json=Some(spec.body.as_ref().unwrap().to_string());
+        assert!(matches!(f.store.as_mut().unwrap().bind(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW).unwrap(),Decision::Entry{..}));
+        let permit=f.permit(&q,NOW);let tag=f.store.as_ref().unwrap().durable_tag(id);
+        f.log.append(json!({"kind":"intent","qid":id,"quote":q,"spec":spec,"permit":permit,"fundamental":tag})).unwrap();f.log.append(json!({"kind":"attempt","qid":id,"at":iso(NOW),"captureAtMs":NOW})).unwrap();
+        let dir=f.root.join("synthetic-credentials");std::fs::create_dir(&dir).unwrap();std::fs::set_permissions(&dir,std::fs::Permissions::from_mode(0o700)).unwrap();let file=dir.join("synthetic");std::fs::write(&file,b"ace_synthetic_fixture_only_00000000").unwrap();std::fs::set_permissions(&file,std::fs::Permissions::from_mode(0o600)).unwrap();
+        let config=Config{queue_dir:f.root.join("local-guard-sdk"),account_scope:"synthetic-local-guard-account".into(),scope:f.scope.clone(),maximum_pages:2,writes_enabled:true};
+        let listener=std::net::TcpListener::bind("127.0.0.1:0").unwrap();listener.set_nonblocking(true).unwrap();
+        let mut t=Transport::new_for_mock(config.clone(),Box::new(baal_transport_service::credentials::UnixFileCredentials::approved_file(file).unwrap()),Box::new(FixedClock(Arc::new(AtomicU64::new(NOW)))),Box::new(LastGuard(AtomicU64::new(0))),format!("http://{}/api/v1",listener.local_addr().unwrap())).unwrap();
+        let body=spec.body.as_ref().unwrap();let order=Order{idempotency_key:body["idempotencyKey"].as_str().unwrap().into(),exchange_id:body["exchangeId"].as_str().unwrap().into(),side:body["side"].as_str().unwrap().into(),action:body["action"].as_str().unwrap().into(),quantity:body["quantity"].as_u64().unwrap() as u32,price:q["price"].as_str().unwrap().into(),expiration_date:body["expirationDate"].as_str().unwrap().into(),tournament_id:f.scope.tournament_id.clone()};
+        let error=t.place(order,permit.clone()).err().expect("local guard must reject before HTTP");assert_eq!(error.code,"FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED");assert!(!error.may_have_executed);assert_eq!(listener.accept().unwrap_err().kind(),std::io::ErrorKind::WouldBlock);
+        f.log.append(json!({"kind":"error","qid":id,"at":iso(NOW+1),"error":error})).unwrap();let proof=t.take_current_ordinary_local_guard_no_http_proof(&spec,&permit,NOW,&error).unwrap();let evidence=proof.evidence().unwrap();f.log.append_local_final_guard_no_http(id,&proof,&iso(NOW+2)).unwrap();
+        f.event(json!({"type":"unsubmitted_intent_retired","source":"moloch_live_dispatcher","orderId":id,"confirmedNetworkAttempts":0,"receiptHash":sha(&serde_json::to_vec(&evidence).unwrap()),"receivedAt":iso(NOW+3),"processedAt":iso(NOW+3),"deferPlanningForPackage":true}));
+        let mut config=config;config.writes_enabled=false;(q,config,evidence)
+    }
+    #[cfg(target_os="linux")]
+    #[test]fn local_guard_cohort_abandons_without_http_financial_mutation_or_retry_and_rehydrates(){
+        let(mut f,t,config,evidence,facts,retirement,q)=abandon_fixture(true);let id=q["id"].as_u64().unwrap();let before=f.bank.engine().report().unwrap();let head=f.bank.durable_head();
+        let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let reference=&retirement["sourceRef"];
+        let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,reference["id"].as_str().unwrap(),reference["sequence"].as_u64().unwrap(),&retirement,NOW+40).unwrap();f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+40).unwrap();
+        assert_eq!(f.bank.durable_head(),head);assert_eq!(f.bank.engine().report().unwrap(),before);f.reopen();assert_eq!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+41).unwrap().len(),1);
+        f.store.take();f.log=dispatch::DispatchLog::open(&f.root.join("dispatch.ndjson")).unwrap();assert!(!f.log.proved_no_network(id));assert!(Cohorts::open(&f.root,&f.bank,&f.log,f.owner.clone()).is_err());
+        let(spec,permit,at,error)=f.log.local_final_guard_originals(id).unwrap();let proof=baal_transport_service::verify_retained_ordinary_local_guard_no_http(&config,&spec,&permit,at,&error,&evidence).unwrap();f.log.verify_local_final_guard_no_http(id,&proof).unwrap();f.reopen();
+        assert_eq!(f.store.as_ref().unwrap().entry_hints(&f.bank,&f.log,&f.scope,&f.trust,NOW+41).unwrap().len(),1);assert!(f.log.attempted.contains(&id)&&!f.log.never_attempted(id)&&!f.log.closed.contains(&id));assert!(f.store.as_ref().unwrap().check_bound(&f.bank,&f.log,&f.scope,id,&spec,&f.trust,NOW+41).is_err());assert!(f.log.acknowledgments.is_empty()&&f.bank.engine().fills().is_empty());assert_eq!(f.bank.engine().report().unwrap(),before);
+    }
+    #[cfg(target_os="linux")]
+    #[test]fn local_guard_abandon_requires_original_archive_retirement_flat_account_and_typed_proof(){
+        for case in 0..5{
+            let(mut f,t,_config,evidence,mut facts,mut retirement,q)=abandon_fixture(true);let id=q["id"].as_u64().unwrap();let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let reference=retirement["sourceRef"].clone();
+            match case{0=>{f.log=dispatch::DispatchLog::open(&f.root.join("dispatch.ndjson")).unwrap();},1=>retirement["receiptHash"]=json!("a".repeat(64)),2=>facts.positions.data["positions"]=json!([{"exchangeId":"101","quantity":1}]),3=>facts.open_orders.data["data"]=json!([{"id":"999","exchangeId":"101"}]),_=>std::fs::write(evidence["sdkSourcePath"].as_str().unwrap(),b"{}").unwrap()}
+            assert!(f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,reference["id"].as_str().unwrap(),reference["sequence"].as_u64().unwrap(),&retirement,NOW+40).is_err(),"case {case}");
+        }
+    }
+    #[cfg(target_os="linux")]
+    #[test]fn local_guard_archive_change_after_mint_cannot_retire_cohort(){
+        let(mut f,t,_config,evidence,facts,retirement,q)=abandon_fixture(true);let id=q["id"].as_u64().unwrap();let hint=f.store.as_ref().unwrap().abandonment_hints(&f.bank,&f.log,&f.scope,NOW+40).unwrap().remove(0);let reference=&retirement["sourceRef"];
+        let plan=f.store.as_ref().unwrap().prepare_abandon(&f.bank,&f.log,&t,&f.scope,&hint,&facts,reference["id"].as_str().unwrap(),reference["sequence"].as_u64().unwrap(),&retirement,NOW+40).unwrap();let before=f.bank.engine().report().unwrap();std::fs::write(evidence["sdkSourcePath"].as_str().unwrap(),b"{}").unwrap();assert!(f.store.as_mut().unwrap().apply_abandon(plan,&f.bank,&f.log,&t,NOW+40).is_err());assert_eq!(f.bank.engine().report().unwrap(),before);
+    }
+
+    #[cfg(target_os="linux")]
+    fn proved_abort_abandon_fixture()->(F,baal_transport_service::Transport,baal_transport_service::Config,Value,moloch_live_runtime::authority::CancelSnapshotSet,Value,Value){abandon_fixture(false)}
+    #[cfg(target_os="linux")]
+    fn abandon_fixture(local:bool)->(F,baal_transport_service::Transport,baal_transport_service::Config,Value,moloch_live_runtime::authority::CancelSnapshotSet,Value,Value){
         use baal_transport_service::{Transport,DisabledCredentials,SystemClock,ReadOnlyAuthority};
-        let mut f=F::setup(true,"11111111-1111-4111-8111-111111111111");let(q,_)=f.bind_entry();let(config,evidence)=prove_pre_admission_abort(&mut f,&q,true);let id=q["id"].as_u64().unwrap();
+        let mut f=F::setup(true,"11111111-1111-4111-8111-111111111111");
+        let(q,config,evidence)=if local{prove_local_guard_abort(&mut f)}else{let(q,_)=f.bind_entry();let(config,evidence)=prove_pre_admission_abort(&mut f,&q,true);(q,config,evidence)};let id=q["id"].as_u64().unwrap();
         // This synthetic ordinary pair still has its untouched opposite draft;
         // production manager setup retires such never-attempted drafts. Keep
         // the real liability guard: retire only that genuine unsent sibling.
