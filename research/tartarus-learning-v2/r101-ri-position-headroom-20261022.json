@@ -248,5 +248,22 @@
     "originalCohortPrefixSha256": "18e7af3329ea16cf942a4f6eb79c4e5639758512ac1232e94099f8eb5a291ed4",
     "ownerCommitVerified": true,
     "nativeViewStillPriorGeneration": true
+  },
+  "subsequentNativeObservation": {
+    "observedUtc": "2026-10-22T21:34:44.429209+00:00",
+    "nativeWrittenAt": "2026-10-22T21:33:48.091Z",
+    "nativeViewSha256": "bc0a343cc12895b0a77ea83fefef15553130e6813de2ffe3ee92dacd5a2f8a84",
+    "generationSha256": "f781ce15fd65ecb3a9956457a656f5b4851ec25d8d5eb984e696718b5a74258b",
+    "ownerAndNativeGenerationAgree": true,
+    "workerAlive": true,
+    "workerPid": 1131806,
+    "stopPresent": false,
+    "sourceUpdaterPid": 1132791,
+    "sourceUpdaterAlive": true,
+    "holdingQuantity": 10000,
+    "fillRows": 712,
+    "cash": "4280.635000",
+    "newRevisionFillEstablished": false,
+    "profitabilityEstablished": false
   }
 }
