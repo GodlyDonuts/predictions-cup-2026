@@ -1,0 +1,110 @@
+{
+  "observedUtc": "2026-10-22T11:01:38.716800+00:00",
+  "reload": {
+    "state": "committed",
+    "generationSha256": "252d6e3df4058912a8cea0889460d8867c25c101421cccfc1f89af73b552c18d",
+    "selected": [
+      "1010",
+      "1017",
+      "1057",
+      "850",
+      "1069",
+      "1011",
+      "983",
+      "1016",
+      "891",
+      "1012",
+      "1013"
+    ],
+    "workerPid": 1085639,
+    "workerRestarted": false,
+    "accountClientCreated": false
+  },
+  "updaterPid": 1093758,
+  "updaterConfig": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/config-r90-maker.json",
+  "referenceIntervalSeconds": 120,
+  "newScopes": [
+    "1010",
+    "1017",
+    "1057",
+    "850",
+    "1069",
+    "1011",
+    "983",
+    "1016",
+    "891",
+    "1012",
+    "1013"
+  ],
+  "maximumPrincipalPerNewScope": "1250.000000",
+  "maximumAggregateNewAllocation": "13750.000000",
+  "entryMode": "joinBid",
+  "minimumFifoNetGainPerShare": "0.005000",
+  "workerRestarted": false,
+  "filledMinuteTargetVerified": false,
+  "approvedReviewCount": 26,
+  "observedApprovedGenerationSha256": "61fb1f71238239f297be656947bef159e1d213e8797fe22196b8b264a3d3b08f",
+  "currentFillCount": 576,
+  "newFillsAfterR90Install": [
+    {
+      "action": "sell",
+      "actualOrderId": "55798735",
+      "at": "2026-10-22T10:36:48.189Z",
+      "counterfactual": false,
+      "exchangeId": "966",
+      "executedAt": "2026-10-22T10:35:50.084Z",
+      "fee": "0.000000",
+      "marketId": "277",
+      "orderId": 21499,
+      "price": "0.930000",
+      "quantity": 713,
+      "receiptHash": "e8be58564619fbe34633d8777a7213fc9200a6e2153107f8e6e1011daa9fcec4",
+      "side": "YES",
+      "sourceId": "232143500"
+    }
+  ],
+  "financial": {
+    "at": "2026-10-22T11:01:30.014Z",
+    "cash": "26385.080000",
+    "reservedCash": "0.000000",
+    "ownedCost": "70148.220000",
+    "realized": "953.385000"
+  },
+  "updaterStatus": {
+    "atMs": 1792666876371,
+    "pid": 1093758,
+    "phase": "committed",
+    "commits": 166,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "generationSha256": "61fb1f71238239f297be656947bef159e1d213e8797fe22196b8b264a3d3b08f",
+    "exchanges": [
+      "966",
+      "977",
+      "1067",
+      "872",
+      "993",
+      "1051",
+      "851",
+      "1044",
+      "1075",
+      "1016"
+    ]
+  },
+  "progress": {
+    "actualFills": 576,
+    "actualOrders": 1772,
+    "at": "2026-10-22T10:57:56.707Z",
+    "completedReadScopes": 2,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1085639,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 25,
+    "terminalOrders": 1771
+  },
+  "noExecutionStop": true
+}

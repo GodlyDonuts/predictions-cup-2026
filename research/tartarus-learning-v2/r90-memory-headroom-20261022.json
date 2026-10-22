@@ -1,0 +1,10 @@
+{
+  "observedUtc": "2026-10-22T10:59:33.599044+00:00",
+  "pid": 1085639,
+  "before": "MemoryCurrent=4831277056\nMemoryHigh=4831838208\nMemoryMax=5368709120\n",
+  "after": "MemoryCurrent=4831277056\nMemoryHigh=5767168000\nMemoryMax=6442450944\n",
+  "memoryEventsBefore": "low 0\nhigh 11429\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+  "workerRestarted": false,
+  "financialLimitsChanged": false,
+  "hostMemAvailableBeforeMiB": 2413
+}

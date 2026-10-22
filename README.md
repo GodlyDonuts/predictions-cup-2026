@@ -2,6 +2,12 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
+## Current state — October 22, 11:01 UTC
+
+**R90 is the sole production worker. Eleven new flat-inventory maker review scopes were accepted at10:59UTC without restarting it.** The expanded control has26 approved reviews,24 refreshed from public references. The new scopes have up to1,250 SUSQies principal each; join-bid entries and FIFO profit-taking replace the ordinary60-second inventory exit. One new actual fill since installation sold713 YES966 at0.93, realizing7.13 against original FIFO. **One filled order/minute remains unmet; no new-scope fill or whole-account ROI is established.** Full historical report processing remains a live bottleneck; an R91 entry-packet candidate is qualifying while R90 trades. [Current evidence](research/tartarus-learning-v2/r90-maker-scopes-20261022.json), [implementation and limits](research/tartarus-learning-v2/maker-scope-extension-20261022.md), [detailed state](docs/CURRENT_STATE.md).
+
+### Earlier dated observations
+
 ## Current state â€” October 22, 07:42 UTC
 
 **R88 installed, restoring the original ledger.** Replacement worker1074713/binary`2d66a40f6576` started07:42:42UTC; source786eca847d4dcfc353de7000df3c7856c93e9dee. Native140/0 and worker250/0 checks passed. All573 prior fill records, the2,735,273,856-byte financial prefix and every earlier engine approval remain preserved. The initial upgrade helper hit a confirmed memory limit; its move-only replacement passed original-byte parity and malformed-record checks. Current evidence shows recovery progressing with no active STOP. A finite read-only job will prepare a fresh monetary review after healthy trading. **Fresh R88 trading, fills, ROI and one-trade/minute cadence are not yet verified.** [Installation and recovery evidence](research/tartarus-learning-v2/r88-money-installed-restoring-20261022.json).
