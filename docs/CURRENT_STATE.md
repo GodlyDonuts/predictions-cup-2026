@@ -1,5 +1,7 @@
 # Current Moloch and Tartarus state
 
+**October22 execution funnel:** final R94 history contains15 new acknowledged orders and4 filled orders. Median HTTP response577ms versus median4m34s between POST starts; no reviewed monetary/rank order reached submission. This points to decision service and execution selection as the immediate cadence gap, rather than HTTP time alone. R97 is restoring; comparison is pending. [Exact immutable-prefix audit and limits](../research/tartarus-learning-v2/execution-funnel-20261022.md).
+
 **Final R94 original-receipt audit:** four distinct filled orders,6,134.655 turnover,+18.73 realized since14:48 installation;646 final fill rows preserved. This is not whole-account ROI, and one filled order/minute remains unmet. [Final audit](../research/tartarus-learning-v2/r94-final-turnover-20261022.json).
 
 **October22,16:23 UTC: R97 installed and restoring the original ledger.** Sole worker1111134/start65584062, source025467044afb9f9f3f5bff4fc4bda2d9697647d4, binary856b7cba35d1e1c8ce5f4fdae34d2b1b44a296ad458564ec9d88009e1aecb113. All646 prior fill rows and2,858,964,893 original financial bytes retained, native engine unchanged, zero open orders at handoff. Fresh official preflight passed. File-only current-price controller1111147 waits for this exact worker to recover. **Fresh live execution and the one-filled-order-per-minute target are not yet verified.** [Installation evidence](../research/tartarus-learning-v2/r97-installed-restoring-20261022.json), [execution fix](../research/tartarus-learning-v2/rank-service-r97-20261022.md).

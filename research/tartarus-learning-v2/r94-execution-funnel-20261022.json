@@ -1,0 +1,77 @@
+{
+  "observedUtc": "2026-10-22T16:32:47.721096+00:00",
+  "beforeDispatchSha256": "e7f9c46902336bd7bb7dd0ad4da804e56dcc31630d767d2745615df5b4dbe262",
+  "afterDispatchSha256": "6ce992748ccbd3a079ee5d36f8fc01b61de71c32061958722f0a4e148b9330be",
+  "beforeReportSha256": "a15ff88b8ccaeb8470476bc6869e48a47326aac56d01f8ac94ca1c9847cf15c9",
+  "afterReportSha256": "364b0d52ad6e76cc2ae159b5aaa9b611700ff9e0a6c3d56493f668f218f279c0",
+  "originalDispatchPrefixPreserved": true,
+  "originalFillRowsPreserved": true,
+  "newEventCounts": {
+    "not_sent": 139,
+    "intent": 15,
+    "attempt": 15,
+    "ack": 15,
+    "closed": 15,
+    "cancel_attempt": 1,
+    "cancel_ack": 1
+  },
+  "distinctNativeIdsByEventKind": {
+    "not_sent": 139,
+    "intent": 15,
+    "attempt": 15,
+    "ack": 15,
+    "closed": 15,
+    "cancel_attempt": 1,
+    "cancel_ack": 1
+  },
+  "distinctNewIntents": 15,
+  "distinctNewAcknowledgments": 15,
+  "distinctOrdersWithIncrementalOfficialFills": 4,
+  "filledIds": [
+    21839,
+    21932,
+    21963,
+    21978
+  ],
+  "newIntentOrigins": {
+    "fundamental": 15
+  },
+  "newAcknowledgmentsWithIncrementalFills": 4,
+  "incrementalFillIdsWithoutNewAck": [],
+  "intentToOfficialRequestStart": {
+    "count": 15,
+    "minimumMs": 370,
+    "medianMs": 397,
+    "maximumMs": 845
+  },
+  "officialPostRequestToReceipt": {
+    "count": 15,
+    "minimumMs": 463,
+    "medianMs": 577,
+    "maximumMs": 764
+  },
+  "interAcknowledgedPostRequestStart": {
+    "count": 14,
+    "minimumMs": 91083,
+    "medianMs": 274306.5,
+    "maximumMs": 484633
+  },
+  "firstAcknowledgedPostRequestStartUtc": "2026-10-22T15:12:12.018000+00:00",
+  "lastAcknowledgedPostRequestStartUtc": "2026-10-22T16:16:56.100000+00:00",
+  "officialRequestStartToFirstExecution": {
+    "count": 4,
+    "minimumMs": 284,
+    "medianMs": 320.5,
+    "maximumMs": 340346
+  },
+  "actualFillReceipts": 13,
+  "countsPartialFillsAsSeparateOrders": false,
+  "admissionOrAttemptProvesHttpSent": false,
+  "acknowledgmentsProveFills": false,
+  "accountRequestsByAudit": 0,
+  "limitations": [
+    "Intent-to-request excludes all selection and pre-intent read preparation.",
+    "Retired never-attempted drafts do not prove an eligible lost opportunity.",
+    "HTTP receipt duration excludes queue admission and does not measure full cycle latency."
+  ]
+}
