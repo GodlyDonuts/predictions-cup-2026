@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,22:28UTC
+## Latest state: October22,22:44UTC
+
+R103 is qualified and not yet deployed: source validation on the actual retained production files fell from~360ms to151ms per call, and one duplicate cohort-history check is removed. All430 functional checks/release CLI pass. The candidate includes R102's diagnostic relocation. R101 remains live; the latest original receipt audit has716fills/14distinct filled orders since restoration, incremental realized-114.840, cash3175.630. [Measured change, limits and qualification](research/tartarus-learning-v2/r103-generation-pins-20261022.md).
+
+### Earlier22:28UTC mechanics and admission
 
 The capital-mechanics audit verifies all21 retained holdings against original SIG book rows: direct sale and complementary-buy netting return identical gross proceeds from the same liquidity. Neither supplies leverage or extra depth. The Tennessee1051NO review passed ownership checks and reached native reservation23142, but original dispatch evidence proves `RANK_PHYSICAL_FACTS_EXPIRED` before any network send. No fill. R101 stays running, original715fills/cash3176.505 retained; source maintenance resumed as1134309 after the finite review window. [Mechanics, original attempt and latency evidence](research/tartarus-learning-v2/netting-capital-audit-20261022.md).
 

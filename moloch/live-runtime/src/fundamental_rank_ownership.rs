@@ -86,7 +86,9 @@ impl Cohorts{
   if !self.rank_paused(ex){need(if buy{same_side_buy||bank.engine().wallet.quantity(ex,Side::Yes)+bank.engine().wallet.quantity(ex,Side::No)==0}else{a["side"]==r.side},"RANK_COHORT_FIRST_HANDOFF_REQUIRES_COVERED_OR_FLAT_ORIGIN")?;}
   let registered=crate::order_snapshot::snapshot(bank).records().iter().find(|q|q["reviewedRankCampaign"]["campaignSha256"]==review.campaign_sha256()).and_then(|q|q["id"].as_u64()).and_then(|id|self.rank_bindings.get(&id));
   if let Some(old)=registered{need(old["managedInventory"]==*proof,"RANK_COHORT_ORIGINAL_HANDOFF_CHANGED")?;}else{
-   let current=self.rank_inventory_state(bank,log,ex)?;
+   // check_rank_review already checked this same immutable bank/log/cohort
+   // boundary above; do not scan the full cohort history a second time.
+   let current=self.rank_inventory_state_inner(bank,ex)?;
    for k in ["schemaVersion","exchangeId","generationSha256","reviewSha256","cohortSha256","originSha256","exclusionSha256","positionsSha256","handoffEstablished","emptyOriginalInventory","sourceSha256"]{need(proof[k]==current[k],"RANK_COHORT_HANDOFF_CHANGED")?;}
    for k in ["sameSideBuyHandoffAllowed","sameSideBuyHandoffSide"]{if proof.get(k).is_some(){need(proof[k]==current[k],"RANK_COHORT_HANDOFF_CHANGED")?;}}
   }

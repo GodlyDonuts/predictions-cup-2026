@@ -800,9 +800,25 @@ struct FilePin{file:File,path:PathBuf,identity:Value,bytes:u64,sha:String,maximu
 pub(crate) struct GenerationFiles{pins:Vec<FilePin>}
 impl GenerationFiles{
     pub(crate) fn validate(&self)->Result<()>{for p in &self.pins{p.validate_metadata()?;}Ok(())}
-    pub(crate) fn validate_full(&self)->Result<()>{for p in &self.pins{p.validate()?;}Ok(())}
+    pub(crate) fn validate_full(&self)->Result<()>{
+        // Several independent reviews can retain the same immutable source.
+        // Hash identical held content once in THIS call, while checking every
+        // pathname/descriptor/version. No verification survives into a later
+        // call. Different expected bytes, identity, version or bounds never hit.
+        let mut verified=BTreeSet::new();
+        for p in &self.pins{
+            p.validate_metadata()?;
+            if verified.insert(p.content_key()?){p.validate()?;}else{p.validate_cached_rows()?;}
+        }
+        // Also catch a source changing after its earlier content read while
+        // the other independent sources were being verified.
+        self.validate()
+    }
 }
 impl FilePin{
+    fn content_key(&self)->Result<(PathBuf,String)>{
+        Ok((self.path.clone(),digest(&(&self.identity,self.bytes,&self.sha,self.maximum,&self.version))?))
+    }
     fn from_held(file:File,path:PathBuf,maximum:u64,expected:Option<&str>)->Result<Self>{
         let identity=identity(&file)?;path_pin(&path,&identity)?;let bytes=read_file(&file,maximum)?;let sha=bytes_sha(&bytes);
         need(expected.is_none_or(|e|hex(e)&&e==sha),"FUNDAMENTAL_PINNED_FILE_HASH")?;
@@ -829,6 +845,53 @@ impl FilePin{
         need(self.file.metadata()?.len()==self.bytes&&bytes_sha(&read_file(&self.file,self.maximum)?)==self.sha,"FUNDAMENTAL_PINNED_FILE_CHANGED")?;self.validate_metadata()
     }
     fn duplicate(&self)->Result<Self>{Self::from_held(self.file.try_clone()?,self.path.clone(),self.maximum,Some(&self.sha))}
+}
+
+#[cfg(test)]mod generation_content_tests{
+    use super::*;
+    fn source(name:&str)->PathBuf{
+        let root=std::env::temp_dir().join(format!("generation-content-{}-{}",std::process::id(),name));
+        std::fs::create_dir_all(&root).unwrap();root.join("source")
+    }
+    fn pin(path:&Path)->FilePin{FilePin::from_held(File::open(path).unwrap(),path.into(),1024,None).unwrap()}
+    #[test]fn repeated_source_is_verified_again_on_a_later_call(){
+        let path=source("changed");std::fs::write(&path,b"original").unwrap();
+        let files=GenerationFiles{pins:vec![pin(&path),pin(&path)]};files.validate_full().unwrap();
+        std::fs::write(&path,b"modified").unwrap();assert!(files.validate_full().is_err());
+        std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+    #[test]fn different_expected_content_is_not_deduplicated(){
+        let path=source("expectation");std::fs::write(&path,b"original").unwrap();
+        let first=pin(&path);let mut second=pin(&path);second.sha="0".repeat(64);
+        assert!(GenerationFiles{pins:vec![first,second]}.validate_full().is_err());
+        std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+    #[test]fn replaced_duplicate_path_cannot_reuse_held_content(){
+        let path=source("replacement");std::fs::write(&path,b"original").unwrap();
+        let files=GenerationFiles{pins:vec![pin(&path),pin(&path)]};
+        std::fs::rename(&path,path.with_extension("old")).unwrap();std::fs::write(&path,b"original").unwrap();
+        assert!(files.validate_full().is_err());std::fs::remove_dir_all(path.parent().unwrap()).unwrap();
+    }
+    #[test]#[ignore="Explicit local source-file benchmark; never opens an account client"]
+    fn retained_production_sources_benchmark(){
+        let path=std::env::var("MOLOCH_GENERATION_BENCH_CONTROL").unwrap();
+        let control:Value=serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+        let settings:Settings=serde_json::from_value(control["fundamentalPolicy"].clone()).unwrap();
+        let mut pins=Vec::new();
+        for review in settings.reviews{
+            for source in review.source_files{pins.push(FilePin::open(&source.path,&source.sha256,MAX_SOURCE_BYTES as u64).unwrap());}
+            pins.push(FilePin::open(&review.path,&review.file_sha256,64*1024).unwrap());
+        }
+        pins.push(FilePin::open(&settings.authority_path,&settings.authority_sha256,64*1024).unwrap());
+        let files=GenerationFiles{pins};let mut unique=BTreeSet::new();let mut unique_bytes=0u64;
+        for pin in &files.pins{if unique.insert(pin.content_key().unwrap()){unique_bytes+=pin.bytes;}}
+        let start=std::time::Instant::now();for _ in 0..3{for pin in &files.pins{pin.validate().unwrap();}}
+        let baseline=start.elapsed().as_micros();let start=std::time::Instant::now();
+        for _ in 0..3{files.validate_full().unwrap();}let improved=start.elapsed().as_micros();
+        println!("GENERATION_BENCH {}",json!({"cycles":3,"pins":files.pins.len(),"uniquePins":unique.len(),
+            "bytesPerBaselineCall":files.pins.iter().map(|p|p.bytes).sum::<u64>(),"uniqueBytesPerCall":unique_bytes,
+            "baselineMicros":baseline,"deduplicatedMicros":improved,"accountClients":0,"productionChanged":false}));
+    }
 }
 #[derive(Serialize,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]

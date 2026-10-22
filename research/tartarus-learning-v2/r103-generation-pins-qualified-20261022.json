@@ -1,0 +1,42 @@
+{
+  "changedSources": {
+    "moloch/live-runtime/src/fundamental_rank_ownership.rs": "08dbd8d4fb4498bcd9007eadcb80b9ff83e11a7e0d072217d041b08c98731390",
+    "moloch/live-runtime/src/fundamental_policy.rs": "e5b9e8b28547a90c9243f3643ecdb3b3042c6f40206cc7cd1856dd476e9417b1"
+  },
+  "inheritedWorkerSourceSha256": "d76736c77b3aa6434fa6d73359e8b701f1f5e55389dd46e1b096ad838f43574f",
+  "checks": {
+    "order-tests": "test result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 286 filtered out; finished in 0.00s",
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.37s",
+    "rank-cohort-tests": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+    "worker-tests": "test result: ok. 271 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.76s"
+  },
+  "benchmark": {
+    "benchmark": {
+      "accountClients": 0,
+      "baselineMicros": 1080589,
+      "bytesPerBaselineCall": 68672867,
+      "cycles": 3,
+      "deduplicatedMicros": 453024,
+      "pins": 110,
+      "productionChanged": false,
+      "uniqueBytesPerCall": 28197137,
+      "uniquePins": 98
+    },
+    "sourceControlSha256": "07177d51e72ce257d2e493858d956373b6e9f65c0db53794be8dbf57e4ddc978",
+    "originalSourceClocksChanged": false
+  },
+  "binarySha256": "c2492607666f1be9435bfc710839e7a15cd9ce9d00f59f708e4f0ae1c8240d59",
+  "runtimeLibrarySha256": "b9291a5855b0289a5854df1abc678827b0b165eda3e525cb92ccb3364d1e6d1e",
+  "nativeLibrarySha256": "0362f151b37b9eec0ea375412039682a432a43541dc24eea8f25e263bd1cbba5",
+  "deployed": false,
+  "workerReplaced": false,
+  "newAccountClients": 0,
+  "originalFactClocksChanged": false,
+  "originalDurabilityChanged": false,
+  "riskCapsChanged": false,
+  "crossCallContentCache": false,
+  "cliLoads": true,
+  "profitabilityEstablished": false,
+  "originalBuildLog": "runtime-fixture completed 56.153\ntest result: ok. 3 passed; 0 failed; 1 ignored; 0 measured; 286 filtered out; finished in 0.00s\norder-tests completed 109.517\nBENCHMARK {\"accountClients\": 0, \"baselineMicros\": 1080589, \"bytesPerBaselineCall\": 68672867, \"cycles\": 3, \"deduplicatedMicros\": 453024, \"pins\": 110, \"productionChanged\": false, \"uniqueBytesPerCall\": 28197137, \"uniquePins\": 98}\ntest result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.37s\nfundamental-tests completed 55.36\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\nrank-cohort-tests completed 28.902\nruntime-release completed 148.991\ntest result: ok. 271 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.76s\nworker-tests completed 114.08\nworker-release completed 138.181\nQUALIFIED_UNDEPLOYED\n",
+  "qualifiedObservedUtc": "2026-10-22T22:44:41.117449+00:00"
+}
