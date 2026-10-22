@@ -2,6 +2,16 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
+## Current state: October22,12:46UTC
+
+**R92 installed12:43:50UTC and is recovering the original ledger. One filled order/minute remains unmet.** Sole worker1098673, updater1098676, sourcece81c227/binarye6bab31d1030. All590 previous fill records, the full2,813,544,894-byte financial prefix and prior native approval chain remain. The focused change publishes the historical report once per bounded public-stream drain;260 worker checks pass, native/runtime libraries are unchanged. Fresh trading and speedup are not yet verified. [Installation](research/tartarus-learning-v2/r92-installed-restoring-20261022.json), [qualification/change](research/tartarus-learning-v2/stream-report-r92-20261022.md).
+
+The monetary campaign supervisor was absent and that route was deferred on an expired approval. The existing checked file-only review loop is now pinned to the new worker, waiting for healthy recovery before issuing fresh positive-declared-model reviews. It creates no account client and does not submit orders itself. No new approval or profitability is claimed yet.
+
+Verified cold archival preserved17.2GB of superseded account-queue originals in303.6MB of compressed archives, leaving21.84GB free. Every original was decompressed/hash-verified before duplicate raw storage was removed; active and previous source generations and open files were excluded. Historical audits must explicitly extract originals. [Archive evidence](research/tartarus-learning-v2/r91-cold-queue-archive-20261022.json).
+
+### Earlier dated observations
+
 ## Current state: October22,12:32UTC
 
 **R91 is live, but one distinct filled order/minute is not achieved.** Four physical BUY orders since installation spent18,259.60 SUSQies across NO1075 and YES865. Fourteen original fill receipts represent those four orders; incremental realized profit is0. At12:32UTC, cash8,125.48 and original remaining cost88,407.82 are ledger amounts, not current liquidation value. The last completed hour had four first-filled orders and56 empty UTC minutes.

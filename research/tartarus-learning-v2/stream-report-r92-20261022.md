@@ -1,6 +1,6 @@
 # R92: one historical report per bounded public-stream drain
 
-The human targets at least one distinct filled physical order per minute. At12:32UTC the completed hour contained four such orders and56 empty UTC minutes. R91 is active while this candidate is qualified. This change is not yet deployed and cannot establish either fill cadence or profitability.
+The human targets at least one distinct filled physical order per minute. At12:32UTC the completed hour contained four such orders and56 empty UTC minutes. R92 was installed12:43:50UTC as sole worker1098673 after passing260 worker checks. It is recovering the original ledger; fresh trading, fill cadence and profitability are not yet verified. [Installation](r92-installed-restoring-20261022.json), [qualification](r92-stream-report-qualified-20261022.json).
 
 ## Change
 
