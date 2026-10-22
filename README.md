@@ -2,9 +2,15 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
+## Current state: October22,11:34UTC
+
+**R91 is installed and restoring the existing ledger.** Sole worker1096712, sourceffefefbc, binaryf99b400ad979. All576 prior fills and the full2,796,683,105-byte financial prefix remain unchanged. The focused maker-entry change puts planning and final physical packets ahead of one historical derived report. All258 worker checks passed; native/runtime libraries retain their existing149 runtime checks. The26 approved reviews carry over, including eleven new flat maker scopes. **Fresh R91 trading, speed, ROI and one-filled-order/minute cadence are not yet verified.** [Installation](research/tartarus-learning-v2/r91-installed-restoring-20261022.json), [change and qualification limits](research/tartarus-learning-v2/maker-packet-r91-20261022.md), [detailed state](docs/CURRENT_STATE.md).
+
+### Earlier dated observations
+
 ## Current state — October 22, 11:01 UTC
 
-**R90 is the sole production worker. Eleven new flat-inventory maker review scopes were accepted at10:59UTC without restarting it.** The expanded control has26 approved reviews,24 refreshed from public references. The new scopes have up to1,250 SUSQies principal each; join-bid entries and FIFO profit-taking replace the ordinary60-second inventory exit. One new actual fill since installation sold713 YES966 at0.93, realizing7.13 against original FIFO. **One filled order/minute remains unmet; no new-scope fill or whole-account ROI is established.** Full historical report processing remains a live bottleneck; an R91 entry-packet candidate is qualifying while R90 trades. [Current evidence](research/tartarus-learning-v2/r90-maker-scopes-20261022.json), [implementation and limits](research/tartarus-learning-v2/maker-scope-extension-20261022.md), [detailed state](docs/CURRENT_STATE.md).
+**R90 is the sole production worker. Eleven new flat-inventory maker review scopes were accepted at10:59UTC without restarting it.** The expanded control has26 approved reviews,24 refreshed from public references. The new scopes have up to1,250 SUSQies principal each; join-bid entries and FIFO profit-taking replace the ordinary60-second inventory exit. One new actual fill since installation sold713 YES966 at0.93, realizing7.13 against original FIFO. **One filled order/minute remains unmet; no new-scope fill or whole-account ROI is established.** Full historical report processing remains a live bottleneck; R91 passed258 worker checks and its planned one-owner replacement has started; fresh R91 trading is not yet verified. [Current evidence](research/tartarus-learning-v2/r90-maker-scopes-20261022.json), [implementation and limits](research/tartarus-learning-v2/maker-scope-extension-20261022.md), [detailed state](docs/CURRENT_STATE.md).
 
 ### Earlier dated observations
 
