@@ -1,0 +1,22 @@
+{
+  "observedUtc": "2026-10-22T13:40:08.113740+00:00",
+  "sourceHashes": {
+    "moloch/live-runtime/src/worker.rs": "12a487fcbff3cd2d4d25596200418205e6577879f6ad288ad5f1a9825df97dd6",
+    "moloch/live-runtime/src/rank_inventory.rs": "e9dfb4aa6f4b3cbe8510339ae3e76a9677fc1adeb7dc50e591e4bc8f7067c6f7"
+  },
+  "checks": {
+    "worker-tests": "test result: ok. 270 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.68s"
+  },
+  "testFilesystem": "memory-backed temporary fixtures; original event/head fsync calls unchanged",
+  "binarySha256": "2ee65797fbab9cbfea34e8b2554e258a4349fcbd6ad61a5e92f857857fda0bb6",
+  "nativeLibrarySha256": "ae941f303004fd5988996f076d18b7b118d847849023076a4986388737599b62",
+  "runtimeLibrarySha256": "522ecfb41f3cb5d909528e8756ac09b81e7feb138a1f63825b1d1036aa08e9d6",
+  "runtimeFixtureSha256": "5075bde248a5a4ae1ee190e2006b833d43a47424ef334a288620161ccede6bd7",
+  "cliLoads": true,
+  "productionChanged": false,
+  "nativeEngineUnchanged": true,
+  "accountClientsCreated": 0,
+  "runtimeLibraryUnchanged": true,
+  "oneFilledTradePerMinuteEstablished": false,
+  "inheritedUnchangedRuntimeChecks": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 179.00s"
+}

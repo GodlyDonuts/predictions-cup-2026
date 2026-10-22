@@ -10,6 +10,7 @@ use moloch_live_runtime::stream_recovery::{StreamFailure,RecoveryBudget,RECOVERY
 #[path="realtime_book_catchup.rs"] mod realtime_book_catchup;
 #[path="seed_identity.rs"] mod seed_identity;
 #[path="stream_join.rs"] mod stream_join;
+#[path="rank_inventory.rs"] mod rank_inventory;
 use serde::{Serialize,Deserialize};
 use serde_json::{Value,json};
 use sha2::{Digest,Sha256};
@@ -215,6 +216,10 @@ fn money_priority_account_current(bank:&Session,expected:&Value)->bool{
 }
 fn money_priority_sell(q:&Value,package:bool,bound:bool,cancel_ready:bool)->bool{
  q["action"]=="sell"&&q["retired"]==false&&!rank_quote(q)&&!package&&bound&&cancel_ready
+}
+fn rank_current_inventory(bank:&Session)->rank_inventory::Held{
+ let records=moloch_live_runtime::order_snapshot::snapshot(bank);
+ rank_inventory::held(&bank.engine().wallet.positions(),bank.engine().fills(),|id|records.quote(id).is_some_and(|q|rank_quote(q)&&q["action"]=="buy"))
 }
 fn money_priority_waiting(c:&Control,bank:&Session,log:&DispatchLog)->bool{
  let Some(settings)=&c.rank_campaign else{return false};
@@ -2731,6 +2736,8 @@ fn early_native_side_filter(mode:moloch_live_runtime::ordinary_side_edge::Mode,b
  });diagnostics
 }
 fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,allow_new_submissions:bool,preflight_cursor:&mut Option<String>,stream:&Realtime,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>,windows:&std::collections::BTreeMap<String,u64>,maker_review:Option<&moloch_live_runtime::maker_policy::Reviewed>,mut fundamental:Option<&mut FundamentalRuntime>)->Result<()>{
+ let rank_inventory_protected=if c.rank_campaign.is_some(){rank_current_inventory(bank)}else{Default::default()};
+ let rank_inventory_positions=bank.engine().wallet.positions();
  // Reconciliation and mandatory cancellations still run; do not immediately
  // replace a quote being yielded to an exact owner-reviewed monetary trade.
  let allow_new_submissions=allow_new_submissions&&!money_priority_waiting(c,bank,log);
@@ -2746,7 +2753,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  let mut refresh_eligible=std::collections::BTreeSet::new();
  for q in &orders{
   let Some(id)=q["id"].as_u64()else{continue};
-  if !log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().is_package_order(id)||!profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh){continue}
+  if !log.never_attempted(id)||log.intents.contains_key(&id)||bank.engine().is_package_order(id)||rank_inventory::loss_forced_age_sale(q,&rank_inventory_protected,&rank_inventory_positions,bank.engine().policy())||!profit_hint_scope_allowed(q,&managed_refresh,&protected_refresh){continue}
   if q["expiresAt"].as_u64().is_some_and(|end|end>flow_started)&&moloch_live_runtime::exit_refresh::ReadKind::from_quote(q)==Some(moloch_live_runtime::exit_refresh::ReadKind::Profit)&&!unused_inherited_profit_draft(bank,log,&c.scope,q)?{continue}
   refresh_eligible.insert(id);
  }
@@ -2767,7 +2774,8 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
   ||queue_has_unknown(t),|old,unknown|refresh_safety(c,bank,log,authority,stream,old,unknown))?
  }else{(std::collections::BTreeMap::new(),false)};
  // Cancellations and reconciliation take priority over new purchases.
- let fundamental_cancels=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;let mut ids=f.cohorts.entry_cancellations(bank,log,f.authority.trusted(),now())?;ids.extend(f.cohorts.existing_exit_cancellations(bank,log,f.authority.trusted(),now())?);ids}else{Vec::new()};
+ let mut fundamental_cancels=if let Some(f)=fundamental.as_ref(){f.authority.validate()?;let mut ids=f.cohorts.entry_cancellations(bank,log,f.authority.trusted(),now())?;ids.extend(f.cohorts.existing_exit_cancellations(bank,log,f.authority.trusted(),now())?);ids}else{Vec::new()};
+ fundamental_cancels.extend(orders.iter().filter(|q|rank_inventory::loss_forced_age_sale(q,&rank_inventory_protected,&rank_inventory_positions,bank.engine().policy())).filter_map(|q|q["id"].as_u64()));
  for old in &orders {
   let qid=old["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;if bank.engine().is_package_order(qid)||old["retired"]==true{continue}
   let expired=old["expiresAt"].as_u64().is_none_or(|t|t<=now());let canceled=old["cancelEffectiveAt"].as_u64().is_some_and(|t|t<=now());
@@ -2807,7 +2815,7 @@ fn dispatch(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,a
  // At most one new physical order per pass; subsequent fills change funding.
  // Retired history and already-physical orders have separate reconciliation
  // paths above; they cannot become a new submission or consume its ranking.
- let quotes:Vec<_>=moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false&&!rank_quote(q)&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!bank.engine().is_package_order(id))).cloned().collect();
+ let quotes:Vec<_>=moloch_live_runtime::order_snapshot::snapshot(bank).records().iter().filter(|q|q["retired"]==false&&!rank_quote(q)&&!rank_inventory::loss_forced_age_sale(q,&rank_inventory_protected,&rank_inventory_positions,bank.engine().policy())&&q["id"].as_u64().is_some_and(|id|log.never_attempted(id)&&!bank.engine().is_package_order(id))).cloned().collect();
  let keys:Vec<String>=quotes.iter().map(|q|format!("{}:{}:{}",q["exchangeId"].as_str().unwrap_or(""),q["side"].as_str().unwrap_or(""),q["action"].as_str().unwrap_or(""))).collect();
  let selection=moloch_live_runtime::quote_priority::from_native(bank,&c.scope,&quotes,now(),preflight_cursor.as_deref())?;
  let _=atomic_json(&c.root.join("quote-priority.json"),&json!({"at":iso(now()),"selection":selection,"pricesChanged":false,"profitabilityEstablished":false}));

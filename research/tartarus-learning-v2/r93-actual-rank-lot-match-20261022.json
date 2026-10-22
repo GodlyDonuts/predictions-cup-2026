@@ -1,0 +1,12 @@
+{
+  "observedUtc": "2026-10-22T13:38:08.979946+00:00",
+  "recognized": [
+    {
+      "exchangeId": "948",
+      "side": "NO",
+      "remainingRankClockMatchedShares": 9444
+    }
+  ],
+  "financialStateChanged": false,
+  "officialAccountRequests": 0
+}
