@@ -4,6 +4,8 @@ Moloch is the sole official-account execution worker. Tartarus is the offline po
 
 ## Latest state: October22,18:15UTC
 
+Subsequent18:16 original-receipt audit verifies the full10000-share NO986 sale:457.73 proceeds, zero fees and **-692.27 realized net** against1150 original FIFO basis. Eleven fill receipts represent one order. [Fill/FIFO evidence](research/tartarus-learning-v2/agent-first-sale-audit-20261022.json). The earlier unfilled observation below is superseded.
+
 R100 is independently verified live with healthy realtime and all660 original fills and the original financial prefix retained. The human now directs agent discretion: both automatic review and reference publishers are stopped; legacy worker strategies remain enabled. One exact agent-selected sale of10000 held NO986 shares at a minimum0.04 is published for the sole worker to reconcile and execute. No new fill or profit is established, and one filled order/minute remains unmet. [Review and live evidence](research/tartarus-learning-v2/agent-discretionary-first-review-20261022.json), [current state](docs/CURRENT_STATE.md).
 
 ### Earlier17:51UTC installation

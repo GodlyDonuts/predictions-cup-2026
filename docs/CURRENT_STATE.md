@@ -1,5 +1,7 @@
 # Current Moloch and Tartarus state
 
+**October22,18:16UTC: the first agent-selected sale is independently reconciled.** Order56548427/q22111 sold10000 NO986 across11 original fill receipts, proceeds457.730000, zero fees, FIFO basis1150.000000 and realized net **-692.270000**. This is one filled order, not11 trades. Every original660 fill remains;671 total fill rows and remaining FIFO match the official originals. It releases capital and reduces the reviewed exposure, not a claim of profitable turnover. [Original-receipt and FIFO audit](../research/tartarus-learning-v2/agent-first-sale-audit-20261022.json).
+
 **October22,18:15UTC: R100 is verified live; the human has selected agent discretion.** Independent18:11:33 proof verifies sole worker1124953, healthy realtime, original660 fills, full original financial prefix and all previous engine bridges. Fresh18:15 progress still has1830 orders/660 fill rows: no additional fill or positive ROI is established. One filled order/minute remains unmet.
 
 Automatic review publisher1124982 and reference updater1124956 were stopped without restarting the worker or changing holdings. Legacy worker automation remains enabled; this is not a completed mechanical-only handover. Original reviews were retained rather than renewed. Observer1124964 remains file-only. The earlier controller1124963 observation below is superseded.
