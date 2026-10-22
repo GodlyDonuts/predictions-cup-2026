@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-22T14:47:44.691Z",
+  "dispatchHead": {
+    "bytes": 35035811,
+    "device": 66305,
+    "inode": 12353650,
+    "previous": "5b9e0d11cc7f6bfcb9ea0451ab6efce5b2f03cfa4f382974bb35c8225bcfe789",
+    "schemaVersion": 1,
+    "sequence": 28935
+  },
+  "networkRequests": 0,
+  "qid": 21832,
+  "sameIntentRetryAuthorized": false,
+  "sdkTransitionVerified": true,
+  "stopPreserved": true
+}

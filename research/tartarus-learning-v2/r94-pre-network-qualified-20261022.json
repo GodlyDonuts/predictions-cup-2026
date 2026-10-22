@@ -1,0 +1,28 @@
+{
+  "observedUtc": "2026-10-22T14:47:02.700668+00:00",
+  "sourceHashes": {
+    "moloch/live-runtime/src/ordinary_pre_network.rs": "e167fa6f6a8d7988b6da1413cf4da27a3a77b300bf30bdf1564877d78aef8e22",
+    "moloch/live-runtime/src/dispatch.rs": "c99565e69096c8d5a9625004b72dfb3f43525c97843ba74900126a4fda7d03a5",
+    "moloch/live-runtime/src/lib.rs": "5b985bfbc466211729f53fea4c7b278cd35608b1aed826efd0b50814a38b92a9",
+    "moloch/live-runtime/src/worker.rs": "41384e986fc00a840871fa9fc6c941d768fe23bac980e424aeb6d51f75ace5fd",
+    "moloch/live-runtime/tests/ordinary_pre_network.rs": "1987031ebbf41f135be793fa53eaf5de3fe90859590b4eaf0b1480532f1ec459",
+    "research/tartarus-learning-v2/tools/build-pre-network-r94-20261022.py": "7b883a3033d440b14eb44d6af9c2b6cc99d109d39050712308e40ac49790ec9c",
+    "moloch/live-runtime/src/fundamental_policy.rs": "92f3d5fca699a1eeeb88830d04eee09ce872e5b16ba95f28d1b32b3d8ee26e90",
+    "moloch/live-runtime/src/collateral_feedback.rs": "3eca4ab7fb918ff199586fae29d3c61384f9923a66972883e47aa29f611994d0",
+    "moloch/live-runtime/src/execution_distribution.rs": "82accba00d5e19486fd1f6c6ecc8d41212dc362d79018af56f985bb6765a9102"
+  },
+  "checks": {
+    "worker-tests": "test result: ok. 270 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.65s",
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.33s",
+    "pre-network-tests": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+  },
+  "binarySha256": "77bad67cb78ae3779959cd4a6b816479c924d440d10d7dc0b381ba3d01071e45",
+  "nativeLibrarySha256": "ae941f303004fd5988996f076d18b7b118d847849023076a4986388737599b62",
+  "runtimeLibrarySha256": "597127cce81766d1daa267e5e3d32da3d9d1235571ddda611647f8062671b3f9",
+  "runtimeFixtureSha256": "8396f2d8abc7d56deb4a1924f4d30c89c995c504f7b0386736ee18dbe4bd61ed",
+  "cliLoads": true,
+  "productionChanged": false,
+  "nativeEngineUnchanged": true,
+  "accountClientsCreated": 0,
+  "oneFilledTradePerMinuteEstablished": false
+}

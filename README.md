@@ -2,7 +2,13 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state: October22,14:12UTC
+## Current state: October22,14:48UTC
+
+**R94 is installed and restoring the original ledger. One actual filled order/minute remains unmet.** Sole worker1107420, checked source6b7d96c8, binary77bad67cb78a. The original quote21832 admission was proved completed before HTTP and its key remains permanently retired; recovery sent zero account requests. Fresh official preflight passed before the single worker restarted. All633 prior fill rows and the complete original financial prefix remain; the native engine is unchanged.421 checks pass. [Installed runtime](research/tartarus-learning-v2/r94-installed-restoring-20261022.json), [exact no-send recovery](research/tartarus-learning-v2/r94-no-send-recovery-20261022.json), [fix and limitations](research/tartarus-learning-v2/pre-network-r94-20261022.md).
+
+Official receipt marks at14:48:37/39UTC: cash1,134.905 plus marked holdings92,890.56 = **94,025.465 SUSQies (-5.974535% versus assumed100,000)**. These are separate receipt clocks and valuation marks. [Official aggregate](research/tartarus-learning-v2/r94-latest-official-mark-20261022.json). A file-only fill-rate audit and monetary review loop wait for this exact worker's healthy live state; restored processing and new fills are not yet verified.
+
+### Earlier14:12UTC incident
 
 **October22,14:12UTC incident:** R93 stopped on local token expiry for SELL NO983, quote21832. The SDK records admission followed by canonical `not_sent` completion before its network marker; this was not an exchange rejection. The original order key and queue generation are preserved. R94 is being qualified to verify that exact source transition, retire the unused key without retry, and handle future pre-network expiry without stopping the whole worker. Production is currently stopped; the one-filled-order/minute target remains unmet. R93 had two distinct new filled BUY orders and no incremental realized profit before this stop; partial fills are not additional trades. [Original-receipt audit](research/tartarus-learning-v2/r93-stopped-turnover-20261022.json).
 
