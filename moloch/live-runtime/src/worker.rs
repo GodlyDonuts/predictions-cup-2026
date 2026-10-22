@@ -135,18 +135,18 @@ fn rank_opportunity(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut Dispa
  // collateral error. Unknown acceptance still propagates before deferral.
  if rank_waits_for_known_orders(log)?&&!packages.unresolved()&&!bank.engine().package_blocks_new_submissions(){
   if money_account.as_ref().is_some_and(|account|money_priority_account_current(bank,account))&&review.valid_until_ms().saturating_sub(now())>30_000{
-   // Yield one exact owned ordinary SELL through the existing DELETE path.
+   // Yield one exact owned non-package quote through the existing DELETE path.
    // Neither cancellation attempt nor ACK releases funds or marks it closed.
    // A changed fill/cash/position snapshot invalidates priority immediately.
    for qid in log.acknowledgments.keys().copied().collect::<Vec<_>>(){
     if !cancel_may_start(log,qid){continue}
     let old=quote(bank,qid)?;
-    if !money_priority_sell(&old,bank.engine().is_package_order(qid),bank.engine().live_order_bindings().contains_key(&qid),cancel_may_start(log,qid)){continue}
+    if !money_priority_order(&old,bank.engine().is_package_order(qid),bank.engine().live_order_bindings().contains_key(&qid),cancel_may_start(log,qid)){continue}
     if !rank_owner_ready(review.valid_until_ms(),now,||pins.validate())?{return rank_deferred(c,"owner_review","ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT")};refresh_controls(c,authority,stream)?;
     let facts=cancel_snapshots(t,c)?;
     if now()>=review.valid_until_ms(){return rank_deferred(c,"priority","MONEY_REVIEW_EXPIRED_BEFORE_CANCEL")}
     if !rank_owner_ready(review.valid_until_ms(),now,||pins.validate())?{return rank_deferred(c,"owner_review","ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT")};cancel_owned(t,c,bank,log,authority,&old,facts,None)?;
-    return rank_deferred(c,"priority","OWNED_SELL_YIELD_REQUIRES_TERMINAL_RECONCILIATION")
+    return rank_deferred(c,"priority","OWNED_ORDER_YIELD_REQUIRES_TERMINAL_RECONCILIATION")
    }
   }
  }
@@ -214,8 +214,8 @@ fn money_priority_account_matches(expected:&Value,current:&Value)->bool{
 fn money_priority_account_current(bank:&Session,expected:&Value)->bool{
  money_priority_account_matches(expected,&json!({"positionsSha256":hash(&bank.engine().wallet.positions()),"cash":money(bank.engine().wallet.cash),"actualFillsSha256":hash(&json!(bank.engine().fills()))}))
 }
-fn money_priority_sell(q:&Value,package:bool,bound:bool,cancel_ready:bool)->bool{
- q["action"]=="sell"&&q["retired"]==false&&!rank_quote(q)&&!package&&bound&&cancel_ready
+fn money_priority_order(q:&Value,package:bool,bound:bool,cancel_ready:bool)->bool{
+ matches!(q["action"].as_str(),Some("buy"|"sell"))&&q["retired"]==false&&!rank_quote(q)&&!package&&bound&&cancel_ready
 }
 fn rank_current_inventory(bank:&Session)->rank_inventory::Held{
  let records=moloch_live_runtime::order_snapshot::snapshot(bank);
@@ -3328,9 +3328,21 @@ pub fn main()->Result<()>{
      reconciliation_schedule.completed(now(),pending_version(&log),reconciled.blocks_new_submissions)?;
     }
     if candidate_sweep.passes>0&&!local_retirement_sweep_continuation(&c.root,&log,&sweep_dispatch)?{break}
+    // Serve the reviewed owner after CURRENT ordinary reconciliation. A
+    // dispatch mutation ends this sweep; no earlier physical permit survives.
+    if candidate_sweep.passes>0&&owner_capital_ready(&c,&bank)?&&!package_blocked&&!collateral_blocked
+        &&reconciliation_schedule.permits_submission(now(),pending_version(&log))?&&money_priority_waiting(&c,&bank,&log){
+     let before_priority=log.descriptor_identity()?;
+     rank_opportunity(&mut t,&c,&mut bank,&mut log,&packages,lease.as_ref(),&authority,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut source_state,&mut breadth,&mut universe,fundamental.as_mut())?;
+     if log.descriptor_identity()?!=before_priority{break}
+    }
     let permit_new=!package_blocked&&!collateral_blocked&&reconciliation_schedule.permits_submission(now(),pending_version(&log))?;
     let _=atomic_json(&c.root.join("dispatch-admission.json"),&json!({"at":iso(now()),"pid":std::process::id(),"allowed":permit_new,"packageBlocked":package_blocked,"collateralBlocked":collateral_blocked,"reconciliationBlocked":reconciled.blocks_new_submissions}));
     dispatch(&mut t,&c,&mut bank,&mut log,&authority,&mut source_state,permit_new,&mut preflight_cursor,stream.as_ref().ok_or("LIVE_STREAM_REQUIRED")?,&mut breadth,&mut universe,&windows,maker_review.as_ref(),fundamental.as_mut())?;
+    // Export after each completed packet, rather than after a whole sweep.
+    // The bank's normal report flush has completed; research can capture its
+    // exact paired head while this worker continues paced account processing.
+    if c.rank_campaign.is_some(){write_tartarus_native_view(&c,&bank,&log,fundamental.as_ref())?;}
     let selection_only=local_retirement_sweep_continuation(&c.root,&log,&sweep_dispatch)?;
     if !candidate_sweep.after(preflight_cursor.as_deref(),permit_new,selection_only){break}
     sweep_dispatch=log.descriptor_identity()?;
@@ -4866,9 +4878,11 @@ mod local_final_guard_recovery_tests{
   let mut draft=a.clone();draft["reservedCash"]=json!("0.500000");assert!(money_priority_account_matches(&a,&draft)); // No reservation released by priority.
  }
  #[test]fn monetary_priority_only_yields_bound_cancelable_ordinary_sells(){
-  let q=json!({"id":1,"action":"sell","retired":false});assert!(money_priority_sell(&q,false,true,true));
-  assert!(!money_priority_sell(&q,true,true,true));assert!(!money_priority_sell(&q,false,false,true));assert!(!money_priority_sell(&q,false,true,false));
-  for(key,value)in[("action",json!("buy")),("retired",json!(true)),("reviewedRankCampaign",json!({"campaignSha256":"other"}))]{let mut changed=q.clone();changed[key]=value;assert!(!money_priority_sell(&changed,false,true,true));}
+  let q=json!({"id":1,"action":"sell","retired":false});assert!(money_priority_order(&q,false,true,true));
+  let buy=json!({"id":2,"action":"buy","retired":false,"filled":3,"quantity":10});assert!(money_priority_order(&buy,false,true,true));
+  assert!(!money_priority_order(&buy,true,true,true));assert!(!money_priority_order(&buy,false,false,true));assert!(!money_priority_order(&buy,false,true,false));
+  assert!(!money_priority_order(&q,true,true,true));assert!(!money_priority_order(&q,false,false,true));assert!(!money_priority_order(&q,false,true,false));
+  for(key,value)in[("action",json!("unknown")),("retired",json!(true)),("reviewedRankCampaign",json!({"campaignSha256":"other"}))]{let mut changed=q.clone();changed[key]=value;assert!(!money_priority_order(&changed,false,true,true));}
  }
 
  #[test]fn rank_packet_defers_public_commits_through_original_fact_window_without_changing_ordinary_service(){
