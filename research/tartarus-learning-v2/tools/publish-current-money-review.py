@@ -13,6 +13,14 @@ from pathlib import Path
 import time
 
 
+# Load the checked sibling without changing the public research module path.
+import importlib.util
+_projection_spec = importlib.util.spec_from_file_location('money_reservation_projection', Path(__file__).with_name('money-reservation-projection.py'))
+_projection_module = importlib.util.module_from_spec(_projection_spec)
+_projection_spec.loader.exec_module(_projection_module)
+reservation_projection = _projection_module.project
+
+
 def digest(raw):
     return sha256(raw).hexdigest()
 
@@ -99,7 +107,13 @@ def run(a):
         assert qid is not None and all(row['rawSha256'] == old_sha for row in active), 'DIFFERENT_UNEXPIRED_REVIEW_REQUIRES_EXACT_COMPLETION_REVIEW'
         superseded = completed_prior_review(root, view, old_sha, qid)
     assert all(campaign['account'][key] == view['account'][key] for key in
-        ('positionsSha256', 'cash', 'reservedCash', 'actualFillsSha256')), 'CURRENT_NATIVE_FINANCIAL_CHANGED'
+        ('positionsSha256', 'cash', 'actualFillsSha256')), 'CURRENT_NATIVE_FINANCIAL_CHANGED'
+    if 'unsubmittedDraftYield' in campaign['account']:
+        projection = reservation_projection(view, campaign['action']['exchangeId'])
+        assert campaign['account']['unsubmittedDraftYield'] == projection, 'EXACT_UNSUBMITTED_DRAFT_PROJECTION_CHANGED'
+        assert campaign['account']['reservedCash'] == projection['expectedReservedCash'], 'POST_YIELD_RESERVATION_MISMATCH'
+    else:
+        assert campaign['account']['reservedCash'] == view['account']['reservedCash'], 'CURRENT_NATIVE_RESERVATION_CHANGED'
     # A known resting order is retained and disclosed. It is not a permission
     # to dispatch: the worker still requires its actual terminal reconciliation.
     original_directory = owner / 'originals'

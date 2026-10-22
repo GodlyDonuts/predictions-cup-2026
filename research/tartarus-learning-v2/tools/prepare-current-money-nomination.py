@@ -12,6 +12,14 @@ from pathlib import Path
 import sys
 
 
+# Load the checked sibling without changing the public research module path.
+import importlib.util
+_projection_spec = importlib.util.spec_from_file_location('money_reservation_projection', Path(__file__).with_name('money-reservation-projection.py'))
+_projection_module = importlib.util.module_from_spec(_projection_spec)
+_projection_spec.loader.exec_module(_projection_module)
+reservation_projection = _projection_module.project
+
+
 def run(a):
     os.umask(0o077)
     sys.path.insert(0, str(a.source))
@@ -112,9 +120,11 @@ def run(a):
     n, p = leg['quantity'], leg['price']
     money = lambda micros: f'{micros // 1000000}.{micros % 1000000:06d}'
     row = byex[a.exchange]
+    projection_after_yield = reservation_projection(view, a.exchange)
     campaign = dict(schemaVersion=1, objective='declared_positive_expected_money', campaignStage='direct',
         reviewedAtMs=a.decision_ms, validUntilMs=until, sources=None,
-        account=dict(positionsSha256=view['account']['positionsSha256'], cash=fin['cash'], reservedCash=fin['reservedCash'],
+        account=dict(positionsSha256=view['account']['positionsSha256'], cash=fin['cash'], reservedCash=projection_after_yield['expectedReservedCash'],
+                     unsubmittedDraftYield=projection_after_yield,
                      actualFillsSha256=view['account']['actualFillsSha256'], modeledTerminalDebt='0.000000',
                      liabilityAssumption='Conditional zero outstanding debt, no future borrowing; actual collateral must independently confirm coverage before dispatch.'),
         contracts=contracts, scenarios=projection['scenarios'], probabilityModels=projection['probabilityModels'],
