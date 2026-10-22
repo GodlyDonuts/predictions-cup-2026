@@ -16,6 +16,20 @@ spec.loader.exec_module(audit)
 
 
 class Cadence(unittest.TestCase):
+    def test_completed_minute_report_does_not_recount_an_older_orders_partial(self):
+        spec = importlib.util.spec_from_file_location('minute_report', Path(__file__).with_name('report-trade-cadence.py'))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        rows = [dict(self.fill('1', '2026-10-21T21:03:00Z'), sourceId='a'),
+                dict(self.fill('1', '2026-10-21T21:09:59Z'), sourceId='b'),
+                dict(self.fill('2', '2026-10-21T21:09:59Z'), sourceId='c')]
+        now = int(datetime(2026, 10, 21, 21, 10, tzinfo=timezone.utc).timestamp()*1000)
+        result = module.report(json.dumps(dict(fills=rows)).encode(), now, 5)
+        self.assertEqual(result['actualFillReceiptsInWindow'], 2)
+        self.assertEqual(result['distinctFilledOrdersInWindow'], 1)
+        self.assertEqual(result['emptyMinutes'], 4)
+        self.assertFalse(result['oneFilledTradeEveryCompletedMinute'])
+
     def fill(self, order, at):
         return dict(counterfactual=False, actualOrderId=order, executedAt=at)
 

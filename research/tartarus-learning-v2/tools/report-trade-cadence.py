@@ -17,6 +17,7 @@ def report(raw, now, minutes):
     start = end - minutes * 60000
     buckets = {t: set() for t in range(start, end, 60000)}
     ids = set()
+    first_by_order = {}
     last = None
     receipt_count = 0
     for fill in source['fills']:
@@ -29,10 +30,15 @@ def report(raw, now, minutes):
         at = milliseconds(fill['executedAt'])
         assert at <= now, 'Future actual fill clock'
         last = max(last or at, at)
+        order = str(fill['actualOrderId'])
+        first_by_order[order] = min(first_by_order.get(order, at), at)
         bucket = at // 60000 * 60000
         if bucket in buckets:
-            buckets[bucket].add(str(fill['actualOrderId']))
             receipt_count += 1
+    for order, at in first_by_order.items():
+        bucket = at // 60000 * 60000
+        if bucket in buckets:
+            buckets[bucket].add(order)
     active = sum(bool(v) for v in buckets.values())
     return dict(observedUtc=datetime.fromtimestamp(now / 1000, timezone.utc).isoformat(),
         originalReportSha256=hashlib.sha256(raw).hexdigest(),
@@ -43,6 +49,7 @@ def report(raw, now, minutes):
         lastActualExecutionUtc=None if last is None else datetime.fromtimestamp(last/1000, timezone.utc).isoformat(),
         secondsSinceLastActualExecution=None if last is None else (now-last)/1000,
         oneFilledTradeEveryCompletedMinute=active == minutes,
+        countsOnlyFirstFillOfEachPhysicalOrder=True,
         countsOrderAcknowledgmentsAsTrades=False, accountClientsCreated=0,
         minuteCounts=[dict(startUtc=datetime.fromtimestamp(k/1000, timezone.utc).isoformat(),
                            distinctOrdersWithActualFills=len(v)) for k, v in buckets.items()])
