@@ -1,0 +1,117 @@
+{
+  "observedUtc": "2026-10-22T14:33:33.993323+00:00",
+  "baselineIncident": "r93-rank-inventory-20261022T134330Z",
+  "baselineReportSha256": "c422132ba46f96882684339f1b3426dd97b30276c015d4fd8fbcca5424abccc7",
+  "originalFillCount": 625,
+  "currentFillCount": 633,
+  "originalFillsUnchanged": true,
+  "remainingFifoExactlyMatches": true,
+  "allNewFillsMatchOriginalOfficialReceipts": true,
+  "reportSha256": "a15ff88b8ccaeb8470476bc6869e48a47326aac56d01f8ac94ca1c9847cf15c9",
+  "reportAt": "2026-10-22T14:12:48.138Z",
+  "orders": {
+    "21818": {
+      "actualOrderId": "56148510",
+      "exchangeId": "948",
+      "side": "NO",
+      "action": "buy",
+      "shares": 17,
+      "fillReceipts": 1,
+      "notional": "15.045000",
+      "cashDelta": "-15.045000",
+      "ownedCostDelta": "15.045000",
+      "realizedGross": "0",
+      "fees": "0.000000",
+      "firstExecutedAt": "2026-10-22T14:07:10.393Z",
+      "lastExecutedAt": "2026-10-22T14:07:10.393Z",
+      "realizedNet": "0.000000"
+    },
+    "21827": {
+      "actualOrderId": "56153242",
+      "exchangeId": "983",
+      "side": "NO",
+      "action": "buy",
+      "shares": 1937,
+      "fillReceipts": 7,
+      "notional": "1242.145000",
+      "cashDelta": "-1242.145000",
+      "ownedCostDelta": "1242.145000",
+      "realizedGross": "0",
+      "fees": "0.000000",
+      "firstExecutedAt": "2026-10-22T14:10:49.410Z",
+      "lastExecutedAt": "2026-10-22T14:10:49.410Z",
+      "realizedNet": "0.000000"
+    }
+  },
+  "financial": {
+    "cash": "1134.905000",
+    "ownedCost": "95071.505000",
+    "realized": "626.495000",
+    "newTradingRealized": "872.435000",
+    "inheritedRealizedGross": "-245.940000"
+  },
+  "incrementalRealizedNet": "0.000000",
+  "incrementalTurnover": "1257.190000",
+  "incrementalShares": "1954",
+  "incrementalDistinctFilledOrders": 2,
+  "officialReceiptFileHashes": {
+    "62b498461fb5033224f90e653088b4609d9c546b33013cafedf68f3acef41676": "d0602b13a5ebb10ba281533771d84eeb864c941a44eaaf2177c9464553309ca0",
+    "3b4e85312c1753a355ab32e66b50b9aec93d5a5dd9999d8e634c16fee70fb8d2": "35a11df3bc200b3789546338fe15d11568f569426ffa6e21f44d9d790c71c167"
+  },
+  "utcDay": "2026-10-22",
+  "dayFillReceipts": 141,
+  "dayDistinctFilledOrders": 43,
+  "cadence": {
+    "observedUtc": "2026-10-22T14:33:33.993323+00:00",
+    "targetFilledOrdersPerMinute": 1,
+    "counting": "Each actual order once at first official execution; partial fills do not reset the clock",
+    "windowsMinutes": {
+      "1": {
+        "distinctFirstFilledOrders": 0,
+        "filledOrdersPerMinute": 0.0,
+        "targetFilledOrders": 1,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 60.0,
+        "completedUtcMinutesObserved": 1,
+        "completedUtcMinutesWithNoNewFilledOrder": 1,
+        "rollingMinuteCadenceMet": false
+      },
+      "5": {
+        "distinctFirstFilledOrders": 0,
+        "filledOrdersPerMinute": 0.0,
+        "targetFilledOrders": 5,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 300.0,
+        "completedUtcMinutesObserved": 5,
+        "completedUtcMinutesWithNoNewFilledOrder": 5,
+        "rollingMinuteCadenceMet": false
+      },
+      "15": {
+        "distinctFirstFilledOrders": 0,
+        "filledOrdersPerMinute": 0.0,
+        "targetFilledOrders": 15,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 900.0,
+        "completedUtcMinutesObserved": 15,
+        "completedUtcMinutesWithNoNewFilledOrder": 15,
+        "rollingMinuteCadenceMet": false
+      },
+      "60": {
+        "distinctFirstFilledOrders": 6,
+        "filledOrdersPerMinute": 0.1,
+        "targetFilledOrders": 60,
+        "averageTargetMet": false,
+        "maximumGapWithinWindowSeconds": 1538.667,
+        "completedUtcMinutesObserved": 60,
+        "completedUtcMinutesWithNoNewFilledOrder": 53,
+        "rollingMinuteCadenceMet": false
+      }
+    },
+    "latestNewFilledOrderUtc": "2026-10-22T14:10:49.410000+00:00",
+    "secondsSinceNewFilledOrder": 1364.583323,
+    "accountRequests": 0,
+    "executionAuthority": false
+  },
+  "noAccountRequestsByAudit": true,
+  "wholeAccountProfitEstablished": false
+}
