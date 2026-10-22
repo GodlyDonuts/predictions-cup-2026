@@ -2,7 +2,13 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,21:16UTC
+## Latest state: October22,21:23UTC
+
+The1076YES managed top-up **filled3839 shares for3349.710**, zero fees, as one official order56851843/four receipts at21:15:23UTC. Original lots, new receipts and remaining FIFO reconcile; total1076YES holding10000. Cash4280.635; current712fillrows/12distinct filled orders after restoration. Incremental realized remains **-114.840**; this buy is not profit. [Original-receipt audit](research/tartarus-learning-v2/r101-ri-topup-original-audit-20261022.json).
+
+Source helper1132691 now captures1076/1077/983 using the existing public-cache export and pinned original identity/metadata. Sole worker1131806 and original relay remain running.21 focused checks and actual VPS three-scope capture pass. The first renewed1076 review is not yet observed; protected open orders are intentionally not repriced. Original30s quote/24h metadata clocks remain enforced. [Deployment and limits](research/tartarus-learning-v2/r101-ri-source-maintenance-20261022.json).
+
+### Earlier21:16UTC existing-position integration
 
 Rhode Island1076YES is now managed through its **original existing-position origin**. Exact owner reply, durable generationf457d6cd and subsequent native ownership agree on6161 inherited shares; original FIFO and32.970 reported-basis discrepancy remain. The review enables source-backed top-ups/value exits within the existing10000 per-market principal budget, with an owner-selected10000-share review ceiling. The physical10000/order limit is separate from cumulative position size. Worker1131806 continues without restart. No new1076 fill or profit is established. Its forecast expires after15minutes; existing automatic source maintenance still covers1077/983, so1076 needs a fresh capture/review for further source-dependent actions. [Live generation and original holdings](research/tartarus-learning-v2/r101-ri-existing-live-20261022.json).
 

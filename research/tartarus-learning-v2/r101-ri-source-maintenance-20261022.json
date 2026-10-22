@@ -1,0 +1,101 @@
+{
+  "observedAtMs": 1792704270440,
+  "oldSourceUpdaterPid": 1132670,
+  "sourceUpdaterPid": 1132691,
+  "sourceUpdaterConfig": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/config-agent-maker-r101-ri-006.json",
+  "configSha256": "5c7d6699e32388821119b53e054c613aa5b1de45b3ea943e6791d535e7b2726b",
+  "updaterSha256": "3b8661fcc44471ead8d6da2f31cf5d3c39efd8530a1724dc7a0532998e6fbcc7",
+  "supplementalReference": {
+    "exchangeIds": [
+      "1076"
+    ],
+    "seedPath": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/seed.json",
+    "seedSha256": "28a08c429267fc259f92275d314e3a1233f6f68d6cda80f20008a2e84a383c13",
+    "partyReferencePath": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/party_reference.py",
+    "partyReferenceSha256": "42704587ef69682e229524b9acdd39e1f2bd3fbbfdb834c3dfd0458a1532226a",
+    "modulePath": "/home/archon/apps/moloch/releases/ri-reference-supplement-006/supplemental_live_reference.py",
+    "moduleSha256": "e9223ccedab0f0d308d5bf8cb0a4fb555cf649d2d5ac835639fbc82dfa314b41",
+    "rankCacheUrl": "http://127.0.0.1:18964/rank-cache"
+  },
+  "workerPid": 1131806,
+  "workerRestarted": false,
+  "newAccountClients": 0,
+  "relayReplaced": false,
+  "monetaryCapsChanged": false,
+  "sourceClocksRenewed": false,
+  "actualFreshCaptureProbe": "/home/archon/apps/moloch/releases/ri-reference-supplement-006/capture-probe.original.json",
+  "observedUtc": "2026-10-22T21:24:57.701061+00:00",
+  "sourceCommit": "b1e2ebd2b6cb877785e14b971f5b6ab8a05680e3",
+  "initialDeployment": {
+    "observedAtMs": 1792704149079,
+    "oldSourceUpdaterPid": 1132574,
+    "sourceUpdaterPid": 1132670,
+    "sourceUpdaterConfig": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/config-agent-maker-r101-ri-005.json",
+    "configSha256": "a1678e8f3ab6d1e226a3d53ec6a268d9ec667be900953894cfb843251d01088d",
+    "updaterSha256": "3b8661fcc44471ead8d6da2f31cf5d3c39efd8530a1724dc7a0532998e6fbcc7",
+    "supplementalReference": {
+      "exchangeIds": [
+        "1076"
+      ],
+      "seedPath": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/seed.json",
+      "seedSha256": "28a08c429267fc259f92275d314e3a1233f6f68d6cda80f20008a2e84a383c13",
+      "partyReferencePath": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/party_reference.py",
+      "partyReferenceSha256": "42704587ef69682e229524b9acdd39e1f2bd3fbbfdb834c3dfd0458a1532226a",
+      "modulePath": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/supplemental_live_reference.py",
+      "moduleSha256": "2d62ebf41edda1d57471ea108aa87a9c9f1d74026b568b09394ef729ce182600",
+      "rankCacheUrl": "http://127.0.0.1:18964/rank-cache"
+    },
+    "workerPid": 1131806,
+    "workerRestarted": false,
+    "newAccountClients": 0,
+    "relayReplaced": false,
+    "monetaryCapsChanged": false,
+    "sourceClocksRenewed": false,
+    "actualFreshCaptureProbe": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/capture-probe.original.json"
+  },
+  "sourceUpdaterAlive": true,
+  "workerAlive": true,
+  "stopPresent": false,
+  "actualThreeScopeProbe": [
+    {
+      "exchangeId": "1077",
+      "quoteObservedAtMs": 1792704262818,
+      "yesMidpoint": "0.0170"
+    },
+    {
+      "exchangeId": "983",
+      "quoteObservedAtMs": 1792704261003,
+      "yesMidpoint": "0.3350"
+    },
+    {
+      "exchangeId": "1076",
+      "quoteObservedAtMs": 1792704266535,
+      "yesMidpoint": "0.9855"
+    }
+  ],
+  "captureIssuedAtMs": 1792704268253,
+  "allProbeQuoteReceiptsAtOrBeforeCapture": true,
+  "latestSourceStatus": {
+    "atMs": 1792704271230,
+    "pid": 1132691,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 224,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "capturedAtMs": 1792704270710,
+    "openTargets": 4,
+    "supplementalUnavailable": []
+  },
+  "nativeViewAt": "2026-10-22T21:23:06.586Z",
+  "nativeFills": 712,
+  "new1076SourceReviewCommitted": false,
+  "reviewRefreshNote": "First new1076 reload not yet observed; protected open targets are intentionally not repriced. Metadata retains original24h expiry; quotes require original request-start freshness30s.",
+  "checks": {
+    "supplemental": 7,
+    "existingReferenceReload": 14,
+    "actualVpsThreeScopeCapture": true
+  },
+  "profitabilityEstablished": false
+}
