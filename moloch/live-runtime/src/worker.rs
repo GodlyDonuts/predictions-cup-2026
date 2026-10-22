@@ -2571,7 +2571,18 @@ fn reviewed_fundamental_entry(t:&mut Transport,c:&Control,bank:&mut Session,log:
  // Catch-up recovery above owns its separate source boundary. Below, original
  // event/head fsyncs stay synchronous, but a fifty-megabyte historical report
  // must not consume book/receipt freshness between planning and dispatch.
- bank.with_deferred_report(|bank|reviewed_fundamental_entry_packet(t,c,bank,log,authority,source,stream,f,hint,breadth,universe))
+ let outcome=bank.with_deferred_report(|bank|reviewed_fundamental_entry_packet(t,c,bank,log,authority,source,stream,f,hint,breadth,universe));
+ // This derived comparison is not the comparison that authorizes reservation.
+ // prepare_entry independently selects and binds its actual reviewed action.
+ // Publishing a second diagnostic here keeps its computation and file I/O out
+ // of the original planning/physical receipt windows, without extending them.
+ if outcome.is_ok(){
+  let comparison=match f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,now()){
+   Ok(v)=>json!({"comparison":v,"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
+   Err(e)=>json!({"state":"unavailable","reason":e.to_string(),"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
+  };let _=atomic_json(&c.root.join("fundamental-actions.json"),&json!({"at":iso(now()),"exchangeId":ex,"result":comparison,"observationPhase":"after_entry_packet","usedForPhysicalApproval":false}));
+ }
+ outcome
 }
 fn reviewed_fundamental_entry_packet(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,source:&mut RestSource,stream:&Realtime,f:&mut FundamentalRuntime,hint:&fundamental::EntryHint,breadth:&mut Option<Recorder>,universe:&mut Option<Universe>)->Result<()>{
  let ex=hint.exchange_id.as_str();let market=hint.market_id.as_str();
@@ -2595,12 +2606,8 @@ fn reviewed_fundamental_entry_packet(t:&mut Transport,c:&Control,bank:&mut Sessi
  let gap=bank.engine().policy()["writeGapMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_WRITE_GAP")?;let latency=bank.engine().policy()["latencyMs"].as_u64().filter(|v|*v<=3000).ok_or("LIVE_EXISTING_NATIVE_ACTIVATION")?;
  if now().checked_add(latency).is_none_or(|end|end>=facts_until){return fundamental_entry_deferred(c,ex,"facts","INSUFFICIENT_ORIGINAL_PACKET_WINDOW")}
  refresh_controls(c,authority,stream)?;
- // Compare review-bound actions at this genuine fresh prefix. This diagnostic
- // cannot change the currently join-only reservation or physical capability.
- let comparison=match f.cohorts.compare_entry_actions_with_authority(bank,&c.scope,hint,&f.authority,now()){
-  Ok(v)=>json!({"comparison":v,"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
-  Err(e)=>json!({"state":"unavailable","reason":e.to_string(),"executionAuthority":false,"activeExecutionMode":"explicit_review_policy_or_legacy_join"}),
- };let _=atomic_json(&c.root.join("fundamental-actions.json"),&json!({"at":iso(now()),"exchangeId":ex,"result":comparison}));
+ // prepare_entry performs the actual review-bound action comparison below.
+ // The independent derived action export is published after this packet.
  let mut yielded=Vec::new();let mut budget_waited=false;let event=loop{
   let plan=match f.cohorts.prepare_entry(bank,log,t,&c.scope,hint,&facts,&f.authority,now()){Ok(Some(v))=>v,Ok(None)=>return fundamental_entry_deferred(c,ex,"value","NO_CURRENT_REVIEWED_ENTRY"),Err(e)if expected_fundamental_entry_denial(&e.to_string())=>return fundamental_entry_deferred(c,ex,"preflight",&e.to_string()),Err(e)=>return Err(e)};
   let validation_at=now();
