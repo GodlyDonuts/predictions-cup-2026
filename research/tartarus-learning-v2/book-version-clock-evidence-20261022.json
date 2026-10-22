@@ -1,0 +1,30 @@
+{
+  "observedUtc": "2026-10-22T03:22:24.673999+00:00",
+  "sourceUrl": "https://sig.thesuper.market/api/v1/docs",
+  "htmlSha256": "9009ea15d43ff1da01490d88996e342e58ae4e81ca4520c07dd7bc871d2e7c55",
+  "bookVersionSchema": {
+    "type": [
+      "object",
+      "null"
+    ],
+    "properties": {
+      "sequence": {
+        "type": "integer",
+        "example": 4817,
+        "description": "The last engine event applied to the book."
+      },
+      "at": {
+        "type": "string",
+        "example": "2026-09-28T09:15:02.125+00:00",
+        "description": "The engine clock when the book was read."
+      }
+    },
+    "required": [
+      "sequence",
+      "at"
+    ],
+    "description": "The engine version an exchange's book was captured at, the same `asOf` the realtime book push carries. Versions compare by `sequence`, then `at`. Null when the book was read from the database, which has no version."
+  },
+  "conclusion": "BookVersion.at is engine read time; this investigation does not justify removing source-age checks.",
+  "runtimeChanged": false
+}
