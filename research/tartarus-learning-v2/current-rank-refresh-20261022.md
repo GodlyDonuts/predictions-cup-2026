@@ -1,0 +1,13 @@
+# Rebuild the current rank strategy inputs
+
+R85 is trading. Its two newly filled orders by06:15 realized305.75 net, while the later06:22 official cash-plus-position mark was94,089.425 (−5.910575% from100,000). The one-execution-per-minute objective remains unmet; bursts of partial fills do not provide continuous minute coverage. [Execution audit](r85-later-turnover-20261022.json), [dated official mark](r85-latest-account-20261022.json).
+
+The configured rank nomination was reviewed October19 at07:06:21UTC and expired09:44:32UTC. It models cash158.36 and obsolete positions. Its owner-approval entry has the same expired deadline. The current worker therefore defers this strategy. Its old clock, positions hash and approval have not been renewed. [Exact stale-artifact evidence](r85-stale-rank-nomination-20261022.json).
+
+The earlier refresh script also points to an inactive localhost quote service at17841. The active public reference relay at18964 serves the13 reviewed production targets from the laptop's existing Kalshi/Polymarket files. The earlier copied portfolio compiler still matches checked main, but its reference builder and sequence auditor differ. Reusing that script with new timestamps would not constitute a current reviewed strategy. [Repair findings](rank-input-refresh-blockers-20261022.json).
+
+The next work is a new, file-only input package: matched original bank report/native view; exact current holdings, costs, pending orders and reservations; current cached public quotes with their original receipt/body hashes and source clocks; the exact contract registry/originals; and explicit field/probability assumptions. Use current checked compiler/reference/audit modules in a fresh task directory, preserving old experiments and source artifacts.
+
+Existing account execution continues through the one official worker and shared limiter. Research input transfer creates no SIG client. Current local cache files can be copied through the existing SSH connection; changing the active13-market relay is unnecessary for a finite capture. A newly selected nomination requires a current whole-portfolio audit and exact execution-owner review under the human's existing authority before publication. Source evidence and prices must actually be refreshed; old approval/source clocks cannot be extended to imply new observations.
+
+R87's worker-only latency/lookup candidate is separately qualified, with249 checks. It remains offline. Prefer one combined justified production change when the current rank package exposes the actual execution requirements, rather than restarting the healthy worker for each isolated experiment. [Candidate](cohort-index-r87-20261022.md).

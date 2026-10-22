@@ -1,0 +1,14 @@
+{
+  "observedUtc": "2026-10-22T06:29:06.769538+00:00",
+  "legacyLocalQuotesUrl": "http://127.0.0.1:17841/v1/quotes",
+  "legacyLocalQuotesStatus": "URLError:<urlopen error [Errno 111] Connection refused>",
+  "currentRelayUrl": "http://127.0.0.1:18964/capture",
+  "currentRelayReviewedTargetCount": 13,
+  "sourceNominationExpiredUtc": "2026-10-19T09:44:32.081Z",
+  "currentPortfolioModuleMatchesCheckedMain": true,
+  "currentReferenceBuilderMatchesCheckedMain": false,
+  "sequenceAuditModuleMatchesCheckedMain": false,
+  "refreshPerformed": false,
+  "newAccountClients": 0,
+  "newVenueRequests": 0
+}
