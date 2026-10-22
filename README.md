@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,21:23UTC
+## Latest state: October22,21:33UTC
+
+The worker accepted a fresh1076 source review and removed its artificial10000-share cumulative ceiling. Generationf781ce15 agrees across current owner status, source state and original cohort journal. The review allows up to1000000 shares **subject to the unchanged10000-SUSQie principal budget and10000-share physical order limit**; it does not authorize a million-share unfunded order. The last verified10000 shares cost8894.610, leaving1105.390 within that principal budget. Helper1132791/sourcee8873fab is live. The exported native view still predates this generation; another fill/profit is not yet verified. [Actual owner commit, limits and latency trace](research/tartarus-learning-v2/r101-ri-position-headroom-20261022.json).
+
+### Earlier21:23UTC top-up and source maintenance
 
 The1076YES managed top-up **filled3839 shares for3349.710**, zero fees, as one official order56851843/four receipts at21:15:23UTC. Original lots, new receipts and remaining FIFO reconcile; total1076YES holding10000. Cash4280.635; current712fillrows/12distinct filled orders after restoration. Incremental realized remains **-114.840**; this buy is not profit. [Original-receipt audit](research/tartarus-learning-v2/r101-ri-topup-original-audit-20261022.json).
 

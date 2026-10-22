@@ -1,0 +1,252 @@
+{
+  "observedAtMs": 1792704536017,
+  "oldSourceUpdaterPid": 1132691,
+  "sourceUpdaterPid": 1132791,
+  "sourceUpdaterConfig": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/config-agent-maker-r101-ri-007.json",
+  "configSha256": "f138b9aea58aa30f38a9e79fe8102720bf7e4f1f56b2c47d72aef51667f2efb3",
+  "updaterSha256": "b6849dfb2a33e209dbc3f68d314dfa43025f1fa0a8571946c504371f9f0ee6dd",
+  "supplementalReference": {
+    "exchangeIds": [
+      "1076"
+    ],
+    "seedPath": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/seed.json",
+    "seedSha256": "28a08c429267fc259f92275d314e3a1233f6f68d6cda80f20008a2e84a383c13",
+    "partyReferencePath": "/home/archon/apps/moloch/releases/ri-reference-supplement-005/party_reference.py",
+    "partyReferenceSha256": "42704587ef69682e229524b9acdd39e1f2bd3fbbfdb834c3dfd0458a1532226a",
+    "modulePath": "/home/archon/apps/moloch/releases/ri-reference-supplement-006/supplemental_live_reference.py",
+    "moduleSha256": "e9223ccedab0f0d308d5bf8cb0a4fb555cf649d2d5ac835639fbc82dfa314b41",
+    "rankCacheUrl": "http://127.0.0.1:18964/rank-cache"
+  },
+  "workerPid": 1131806,
+  "workerRestarted": false,
+  "newAccountClients": 0,
+  "relayReplaced": false,
+  "monetaryCapsChanged": false,
+  "sourceClocksRenewed": false,
+  "actualFreshCaptureProbe": "/home/archon/apps/moloch/releases/ri-position-quantity-007/capture-probe.original.json",
+  "observedUtc": "2026-10-22T21:33:05.985385+00:00",
+  "sourceCommit": "e8873fab01c3701e33474e1c177f37ef548e146b",
+  "sourceUpdaterAlive": true,
+  "workerAlive": true,
+  "stopPresent": false,
+  "desiredMaximumPositionQuantity": 1000000,
+  "activeReviewMaximumQuantity": 1000000,
+  "activeReviewMaximumPrincipal": "10000.000000",
+  "physicalMaximumOrderQuantity": 10000,
+  "reviewRevisionVerifiedInNativeView": false,
+  "currentReview": {
+    "version": 2,
+    "reviewerId": "Viserion-live-reference-20261021",
+    "assumptionLabel": "Execution-owner conditional Kalshi party midpoint model, observed from retained original public receipts. Prices are uncalibrated forecasts, not settlement equivalence or guaranteed profits. Original exceptional allowance remains; entry margin changes only under a pinned execution-owner policy recorded in the forecast evidence. Polymarket exact-party observations are retained as context only. Original ballot/contract identity clocks and bytes remain; their declared lifetime is 14 days, with exact current SIG-root verification before dispatch. Forecast lifetime is 15 minutes. FIFO profit turnover remains except Nevada governor and Alaska Senate: those two use current modeled value for capital recycling and may realize a loss. Original holdings, basis, cohort objectives and horizons remain unchanged.",
+    "runId": "moloch-live-20261015-v1",
+    "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "marketId": "387",
+    "exchangeId": "1076",
+    "contractId": "388",
+    "officialContractRootSha256": "9c047b15ffad55e85deee3b991a07b2be597a974708eaede5fec38937e4f958e",
+    "side": "YES",
+    "ordinaryProbability": "0.985500",
+    "exceptionalProbabilityAllowance": "0.010000",
+    "minimumExceptionalPayout": "0.000000",
+    "marginPerShare": "0.085645",
+    "maximumPrincipal": "10000.000000",
+    "maximumQuantity": 1000000,
+    "reviewedAtMs": 1792704658199,
+    "expiresAtMs": 1792705548200,
+    "holdUntilMs": 1793811600000,
+    "payoutMappingIsOperatorAssumption": true,
+    "revokeExisting": false,
+    "sources": [
+      {
+        "kind": "forecast",
+        "url": "https://api.elections.kalshi.com/trade-api/v2/markets/SENATERI-26-D/orderbook?depth=20",
+        "sha256": "a7c2c3b03e315cede3f10a6af43f487ea05b50c160cb30de5d0f0262b6377c0b",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792704648200,
+        "maximumAgeMs": 900000
+      },
+      {
+        "kind": "official_ballot",
+        "url": "https://vote.sos.ri.gov/Candidates/CandidateSearchSummary?Election=18144&OfficeType=620",
+        "sha256": "a49e75e4f7cb3dcc8160708210a31a6cdae25a3c236109f2fb4fc7d465b165bb",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792317649000,
+        "maximumAgeMs": 1209600000
+      },
+      {
+        "kind": "official_contract_node",
+        "url": "https://sig.thesuper.market/api/v1/markets/387/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "sha256": "fd34fe01bfdfd9f74e3327d83ab0643543ec886150e04fde29f3b6cc2ce47760",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792126431503,
+        "maximumAgeMs": 1209600000
+      }
+    ],
+    "executionPolicy": {
+      "version": 1,
+      "allowedModes": [
+        "boundedLimitMayRest"
+      ]
+    },
+    "valuationObjective": {
+      "kind": "terminalSettlement",
+      "timingSourceSha256": "fd34fe01bfdfd9f74e3327d83ab0643543ec886150e04fde29f3b6cc2ce47760",
+      "timingJsonPointer": "/data/root/settlement_date",
+      "scheduledSettlementAtMs": 1793811600000,
+      "delayPolicy": "holdForActualSettlement"
+    },
+    "sameSideTopUps": {
+      "version": 2,
+      "maximumEntries": 16
+    },
+    "passiveValueExit": {
+      "version": 1,
+      "maximumQuantity": 10000
+    },
+    "existingOrigin": {
+      "adoptionReceiptSha256": "552b6222f6c4e7fe62f1cd22d4d5a0b4d07535cdc0b4bd70d5e193de54f097a7",
+      "adoptedPositionSha256": "5152016fb059f2227a27ec354c705a8ff22d2728d1d41fc771284fcab7c7889c"
+    }
+  },
+  "currentGeneration": "f781ce15fd65ecb3a9956457a656f5b4851ec25d8d5eb984e696718b5a74258b",
+  "nativeGeneration": "f937a5f6b7574d33086cb40066ebe7a5fdd634ef985acf007c389123523440ea",
+  "nativeViewAt": "2026-10-22T21:31:43.707Z",
+  "latestSourceStatus": {
+    "atMs": 1792704778293,
+    "pid": 1132791,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 226,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "capturedAtMs": 1792704776284,
+    "openTargets": 1,
+    "supplementalUnavailable": []
+  },
+  "pendingRequest": {
+    "resolved": true
+  },
+  "original1076PositionCost": "5544.900000",
+  "verifiedFirstTopUpCost": "3349.710000",
+  "verifiedCostAfterFirstTopUp": "8894.610000",
+  "unusedExistingPrincipalAfterFirstTopUp": "1105.390000",
+  "latestObserved1076Quantity": 10000,
+  "latestObservedFillRows": 712,
+  "latestActualDispatchTrace": {
+    "diagnosticOnly": true,
+    "outcome": "owned_ack_applied",
+    "summary": {
+      "bookAgeAtAckMs": 4296,
+      "earliestRecordedMs": 1792704685222,
+      "fillObservationDelayMs": null,
+      "latestRecordedMs": 1792704696038,
+      "outsideRecordedSpansMs": 6001,
+      "recordedSpanUnionMs": 4815
+    },
+    "trace": {
+      "ackReceivedAtMs": 1792704695979,
+      "bookReceivedAtMs": 1792704691683,
+      "candidateCreatedAtMs": 1792704680274,
+      "diagnosticOnly": true,
+      "fillAppliedAtMs": null,
+      "fillExecutedAtMs": null,
+      "fillObservedAtMs": null,
+      "finishedAtMs": 1792704696038,
+      "nativeQid": 22890,
+      "permitExpiresAtMs": 1792704708470,
+      "permitIssuedAtMs": 1792704693470,
+      "runId": "moloch-live-20261015-v1",
+      "spans": [
+        {
+          "endMs": 1792704685547,
+          "stage": "preflightRead",
+          "startMs": 1792704685222
+        },
+        {
+          "endMs": 1792704688928,
+          "stage": "preflightRead",
+          "startMs": 1792704688564
+        },
+        {
+          "endMs": 1792704686657,
+          "stage": "preflightRead",
+          "startMs": 1792704686177
+        },
+        {
+          "endMs": 1792704687925,
+          "stage": "preflightRead",
+          "startMs": 1792704687713
+        },
+        {
+          "endMs": 1792704689808,
+          "stage": "preflightRead",
+          "startMs": 1792704689569
+        },
+        {
+          "endMs": 1792704690681,
+          "stage": "preflightRead",
+          "startMs": 1792704690421
+        },
+        {
+          "endMs": 1792704691683,
+          "stage": "preflightRead",
+          "startMs": 1792704691316
+        },
+        {
+          "endMs": 1792704695010,
+          "stage": "policyAndRisk",
+          "startMs": 1792704693470
+        },
+        {
+          "endMs": 1792704695023,
+          "stage": "originalAttemptRecord",
+          "startMs": 1792704695018
+        },
+        {
+          "endMs": 1792704695024,
+          "stage": "postIntentOwnership",
+          "startMs": 1792704695023
+        },
+        {
+          "endMs": 1792704695024,
+          "stage": "intentDurability",
+          "startMs": 1792704695010
+        },
+        {
+          "endMs": 1792704695979,
+          "stage": "transportCall",
+          "startMs": 1792704695024
+        },
+        {
+          "endMs": 1792704695979,
+          "stage": "recordedRequestService",
+          "startMs": 1792704695446
+        },
+        {
+          "endMs": 1792704696038,
+          "stage": "nativeAckApply",
+          "startMs": 1792704695979
+        }
+      ],
+      "startedAtMs": 1792704693470,
+      "version": 1
+    }
+  },
+  "checks": {
+    "sourceRefresh": 16,
+    "supplementalReference": 7,
+    "actualInstalledTypedReviewValidation": true
+  },
+  "newFillOrProfitFromRevisionEstablished": false,
+  "profitabilityEstablished": false,
+  "ownerCommitProof": {
+    "ownerGenerationSha256": "f781ce15fd65ecb3a9956457a656f5b4851ec25d8d5eb984e696718b5a74258b",
+    "lastOriginalCohortGenerationSha256": "f781ce15fd65ecb3a9956457a656f5b4851ec25d8d5eb984e696718b5a74258b",
+    "originalCohortPrefixBytes": 14839098,
+    "originalCohortPrefixSha256": "18e7af3329ea16cf942a4f6eb79c4e5639758512ac1232e94099f8eb5a291ed4",
+    "ownerCommitVerified": true,
+    "nativeViewStillPriorGeneration": true
+  }
+}
