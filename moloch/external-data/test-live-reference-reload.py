@@ -97,6 +97,29 @@ class RefreshTests(unittest.TestCase):
         r['passiveValueExit'].pop('pricingObjective')
         self.assertEqual(refresh.executable_ticks(r, D('.5'))[1], 99)
 
+    def test_explicit_modes_roll_out_only_after_target_is_free(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d)/'review.json'; r=self.review(); p.write_text(json.dumps(r))
+            control={'fundamentalPolicy':{'reviews':[{'path':str(p)}]}}
+            capture={'rows':[{'exchangeId':'1067','yesMidpoint':'.5001'}]}
+            modes={'1067':['boundedLimitMayRest','improveOneTick','joinBid']}
+            self.assertEqual(refresh.changed_scopes(capture,control,set(),1000,execution_modes=modes),['1067'])
+            self.assertEqual(refresh.changed_scopes(capture,control,{'1067'},1000,execution_modes=modes),[])
+            r['executionPolicy']={'version':1,'allowedModes':modes['1067']};p.write_text(json.dumps(r))
+            self.assertEqual(refresh.changed_scopes(capture,control,set(),1000,execution_modes=modes),[])
+
+    def test_mode_policy_requires_exact_hash_scope_and_supported_choices(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'modes.json';p.write_text(json.dumps({'version':1,'exchanges':{'1067':['joinBid']}}))
+            c={'executionModesPolicy':str(p),'executionModesPolicySha256':refresh.sha(p),'exchanges':['1067']}
+            self.assertEqual(refresh.execution_modes_policy(c),{'1067':['joinBid']})
+            c['exchanges']=[]
+            with self.assertRaisesRegex(ValueError,'SCOPE'):refresh.execution_modes_policy(c)
+            c['exchanges']=['1067'];p.write_text(json.dumps({'version':1,'exchanges':{'1067':['joinBid','joinBid']}}));c['executionModesPolicySha256']=refresh.sha(p)
+            with self.assertRaisesRegex(ValueError,'CHOICES'):refresh.execution_modes_policy(c)
+            p.write_text('{}')
+            with self.assertRaisesRegex(ValueError,'PIN'):refresh.execution_modes_policy(c)
+
     def test_expiry_and_open_order_filter(self):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / 'review.json'; p.write_text(json.dumps(self.review()))

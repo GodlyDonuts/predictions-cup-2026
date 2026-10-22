@@ -22,11 +22,32 @@ def main():
     for name in ('base-control', 'capture', 'output', 'review-helper'):
         p.add_argument('--' + name, type=Path, required=True)
     p.add_argument('--base-sha256', required=True)
+    p.add_argument('--execution-modes-policy', type=Path)
+    p.add_argument('--execution-modes-sha256')
     a = p.parse_args()
     original = a.base_control.read_bytes()
     if sha(original) != a.base_sha256 or a.output.exists():
         raise ValueError('PINNED_BASE_AND_NEW_DIRECTORY_REQUIRED')
     control = json.loads(original)
+    modes = {}
+    mode_raw = b''
+    if a.execution_modes_policy or a.execution_modes_sha256:
+        if not a.execution_modes_policy or not a.execution_modes_sha256:
+            raise ValueError('EXECUTION_MODES_POLICY_PIN')
+        mode_raw = a.execution_modes_policy.read_bytes()
+        if sha(mode_raw) != a.execution_modes_sha256:
+            raise ValueError('EXECUTION_MODES_POLICY_PIN')
+        mode_policy = json.loads(mode_raw)
+        if mode_policy['version'] != 1 or not isinstance(mode_policy['exchanges'], dict):
+            raise ValueError('EXECUTION_MODES_POLICY_FORMAT')
+        modes = mode_policy['exchanges']
+        for choices in modes.values():
+            if (not isinstance(choices, list) or not choices or len(set(choices)) != len(choices)
+                    or not set(choices) <= {'joinBid','improveOneTick','boundedLimitMayRest'}):
+                raise ValueError('EXECUTION_MODES_POLICY_CHOICES')
+        known = {json.loads(Path(x['path']).read_bytes())['exchangeId'] for x in control['fundamentalPolicy']['reviews']}
+        if not set(modes) <= known:
+            raise ValueError('EXECUTION_MODES_POLICY_SCOPE')
     capture_raw = a.capture.read_bytes()
     capture = json.loads(capture_raw)
     now = time.time_ns() // 1_000_000
@@ -37,6 +58,8 @@ def main():
         raise ValueError('UNIQUE_CAPTURE_EXCHANGES')
     a.output.mkdir(parents=True)
     (a.output / 'capture.original.json').write_bytes(capture_raw)
+    if modes:
+        (a.output / 'execution-modes.original.json').write_bytes(mode_raw)
     reviews, trust, changes = [], [], []
     for old in control['fundamentalPolicy']['reviews']:
         raw = Path(old['path']).read_bytes()
@@ -64,12 +87,15 @@ def main():
         if not 0 < midpoint < 1:
             raise ValueError('BINARY_MODEL_RANGE')
         point = midpoint if r['side'] == 'YES' else 1 - midpoint
-        before = {k: r.get(k) for k in ('ordinaryProbability', 'passiveValueExit', 'expiresAtMs')}
+        before = {k: r.get(k) for k in ('ordinaryProbability', 'passiveValueExit', 'expiresAtMs', 'executionPolicy')}
         forecast = {'version': 1, 'kind': 'execution_owner_conditional_live_reference_model',
             'captureSha256': sha(capture_raw), 'capturedAtMs': capture['capturedAtMs'],
             'model': capture['model'], 'side': r['side'], 'ordinaryProbability': format(point, '.6f'),
             'calibratedProbabilityClaimed': False, 'settlementEquivalenceClaimed': False,
             'mlFitOrSelectionUse': False, 'sourceEvidence': entry}
+        if r['exchangeId'] in modes:
+            forecast['executionModesPolicySha256'] = a.execution_modes_sha256
+            r['executionPolicy'] = {'version': 1, 'allowedModes': modes[r['exchangeId']]}
         fraw = json.dumps(forecast, separators=(',', ':')).encode()
         fp = a.output / (r['exchangeId'] + '-forecast.json')
         fp.write_bytes(fraw)

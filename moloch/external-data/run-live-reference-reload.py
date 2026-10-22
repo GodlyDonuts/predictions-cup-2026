@@ -75,7 +75,27 @@ def review_current_until(review):
         s['observedAtMs'] + s['maximumAgeMs'] + 1 for s in review.get('sources', [])])
 
 
-def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False):
+def execution_modes_policy(config):
+    path, expected = config.get('executionModesPolicy'), config.get('executionModesPolicySha256')
+    if not path and not expected:
+        return {}
+    if not path or not expected:
+        raise ValueError('EXECUTION_MODES_POLICY_PIN')
+    raw = Path(path).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != expected:
+        raise ValueError('EXECUTION_MODES_POLICY_PIN')
+    value = json.loads(raw)
+    modes = value['exchanges']
+    if value['version'] != 1 or not isinstance(modes, dict) or not set(modes) <= set(config['exchanges']):
+        raise ValueError('EXECUTION_MODES_POLICY_SCOPE')
+    for choices in modes.values():
+        if (not isinstance(choices, list) or not choices or len(set(choices)) != len(choices)
+                or not set(choices) <= {'joinBid','improveOneTick','boundedLimitMayRest'}):
+            raise ValueError('EXECUTION_MODES_POLICY_CHOICES')
+    return modes
+
+
+def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False, execution_modes=None):
     inputs = {r['exchangeId']: r for r in capture['rows']}
     selected = []
     for file in current_control['fundamentalPolicy']['reviews']:
@@ -84,6 +104,10 @@ def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_ope
         if ex not in inputs or ex in open_exchanges and not refresh_open:
             continue
         if ex in open_exchanges and refresh_open:
+            selected.append(ex)
+            continue
+        wanted = (execution_modes or {}).get(ex)
+        if wanted and review.get('executionPolicy') != {'version': 1, 'allowedModes': wanted}:
             selected.append(ex)
             continue
         old = Decimal(review['ordinaryProbability'])
@@ -192,6 +216,7 @@ def main():
     a = parser.parse_args()
     refresh_open_once = a.refresh_open_targets_once
     c = json.loads(a.config.read_bytes())
+    modes = execution_modes_policy(c)
     os.umask(0o077)
     out = Path(c['outputRoot'])
     out.mkdir(parents=True, exist_ok=True)
@@ -265,7 +290,7 @@ def main():
             open_exchanges = {q['exchangeId'] for q in view['activeNativeOrders'] if q['id'] in unclosed}
             current_control = json.loads(Path(state['controlPath']).read_bytes())
             selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000,
-                refresh_open=refresh_open_once)
+                refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c))
             if not selected:
                 report('fresh_reference_no_price_tick_change', capturedAtMs=capture['capturedAtMs'], openTargets=len(open_exchanges))
                 time.sleep(max(1, c['intervalSeconds'] - (time.monotonic() - started)))
@@ -276,9 +301,13 @@ def main():
             capture_path = out / ('capture-' + stamp + '.json')
             capture_path.write_bytes(raw)
             generation = out / ('generation-' + stamp)
-            result = subprocess.run(['python3', c['stageScript'], '--base-control', state['controlPath'],
+            command = ['python3', c['stageScript'], '--base-control', state['controlPath'],
                 '--base-sha256', state['controlSha256'], '--capture', str(capture_path), '--output', str(generation),
-                '--review-helper', c['reviewHelper']], capture_output=True, text=True, timeout=40)
+                '--review-helper', c['reviewHelper']]
+            if modes:
+                command.extend(['--execution-modes-policy', c['executionModesPolicy'],
+                    '--execution-modes-sha256', c['executionModesPolicySha256']])
+            result = subprocess.run(command, capture_output=True, text=True, timeout=40)
             if result.returncode:
                 raise ValueError('STAGE_REJECTED:' + result.stderr[-500:])
             staged = json.loads((generation / 'staged.json').read_bytes())
