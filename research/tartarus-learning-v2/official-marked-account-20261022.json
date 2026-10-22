@@ -1,0 +1,31 @@
+{
+  "observedUtc": "2026-10-22T21:57:48.010530+00:00",
+  "accountReceiptAt": "2026-10-22T21:55:28.142Z",
+  "positionsReceiptAt": "2026-10-22T21:55:26.354Z",
+  "tournamentReceiptAt": "2026-10-22T21:55:25.179Z",
+  "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+  "officialInitialBalance": "100000",
+  "officialCash": "3176.505",
+  "officialPositionMarks": "90661.78",
+  "cashPlusOfficialMarks": "93838.285",
+  "cashPlusMarksMinusInitial": "-6161.715",
+  "markedRoiPercentVersusOfficialInitial": "-6.16171500",
+  "officialReportedBasis": "91133.93",
+  "officialReportedUnrealized": "-472.13",
+  "reportedUnrealizedMinusMarksLessBasis": "0.02",
+  "allOfficialQuantitiesMatchNative": true,
+  "allOfficialCashMatchesNative": true,
+  "matchedPositionCount": 21,
+  "nativeViewWrittenAt": "2026-10-22T21:57:07.561Z",
+  "nativeFillRows": 715,
+  "sourceRawSha256": {
+    "account": "f7e8c1526c1b2beefe3552b71348d332770ef0d3b3c85b9704bff84362250332",
+    "positions": "31e1a98d9932c28c63e029f061b4bea5c7b1356314263cdb902645de5d4f3e41",
+    "tournament": "c220d961f124fee5380d8257057c9a76fd2a2cf8f637f87ba86359e0fc2bb34f"
+  },
+  "rawAccountPersonalFieldsPublished": false,
+  "marksAreExecutableLiquidation": false,
+  "dailyPnlEstablished": false,
+  "simultaneousSnapshotClaimed": false,
+  "extraAccountRequests": 0
+}

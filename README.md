@@ -2,7 +2,13 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,21:35UTC
+## Latest state: October22,22:00UTC
+
+Official retained21:55UTC cash plus marks is **93838.285 SUSQies / -6.161715% versus the official100000 initial balance**; all21 quantities/cash match native. Marks are not executable liquidation or daily P&L. Another1256 RI1076YES shares actually filled for1104.130/zero fees, taking that holding to11256 shares/9998.740 lot cost within its10000 principal budget. R101 stays live;715rows/13 distinct post-restoration filled orders, incremental realized **-114.840**. [Valuation](research/tartarus-learning-v2/official-marked-account-20261022.json), [original fill audit](research/tartarus-learning-v2/r101-ri-second-topup-original-audit-20261022.json).
+
+Fresh source maintenance now includes existing Tennessee1051NO alongside1076/1077/983; its reviewed policy is unchanged and no1051 fill is verified. R102 diagnostic relocation is qualified on ARM64 and **undeployed**, preserving R101 uptime. The old37-leg high-upside hypothesis audits as140 legal-sized tranches, but retains~55.9k negative modeled expectation and is not activated. [Current report, exact limits and remaining gap](research/tartarus-learning-v2/agent-capital-and-entry-diagnostic-20261022.md).
+
+### Earlier21:35UTC native confirmation
 
 Subsequent native observation now matches the acceptedf781ce15 owner/source generation, confirming the renewed1076 review and revised position ceiling are installed. Same worker1131806, source helper1132791, STOP absent. Last verified position remains10000YES/712fillrows; no extra purchase or profit from this revision established. [Subsequent exact native observation](research/tartarus-learning-v2/r101-ri-position-headroom-20261022.json).
 

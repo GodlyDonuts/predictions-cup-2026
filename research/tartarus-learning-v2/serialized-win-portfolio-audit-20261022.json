@@ -1,0 +1,66 @@
+{
+  "originalSourcePortfolioSha256": "bd4f3ad29ebd7042aec4ca532826d7304d0146c9f955c4b30b8d959cc79149db",
+  "originalInputFiles": {
+    "compiled-current.private.json": "4eaba2547830b3293bed03792eeebe6e1aebf9f04b469e363a8f534d7e4293e1",
+    "issued-reference-model.private.json": "57a96b2c3db2e2e9dba65b0dc2ade27dff0813d6178a9229643096d9df321e7f",
+    "larger-order-win-search-001.private.json": "11ceb7a14c1b7a5037af3319a1e50ceaf2cba72c2c7047b35424f5e1797f3ba3"
+  },
+  "physicalOrderQuantity": 10000,
+  "originalLargeLegs": 37,
+  "serialLegs": 140,
+  "originalConditionalFutureLegs": 128,
+  "researchConditionalFutureLegs": 139,
+  "everySliceFitsPhysicalQuantity": true,
+  "exactFinalWealthAndCashAndModelScoresUnchanged": true,
+  "sharedDepthConsumedOnce": true,
+  "livePortfolioOrLiquidityClaimed": false,
+  "nativeCampaignApproved": false,
+  "executionAuthority": false,
+  "newAccountClients": 0,
+  "actualProceedsCredited": false,
+  "calibratedProbabilities": false,
+  "profitOrWinningEstablished": false,
+  "note": "Order size alone does not rule out a dated multi-tranche hypothesis. Every live leg would require new owner approval/funding/account/depth reconciliation; old model probabilities and opposing marked wealth are uncalibrated assumptions.",
+  "originalStudyPublicSha256": "d2306d96d7df1be95043f9d2ad8003e3f298c0dcbece5738e96dfa4a99b3abcc",
+  "models": [
+    {
+      "id": "price_lower_common",
+      "expectedChangeMicrosNumerator": -55863671240000000,
+      "denominator": 1000000
+    },
+    {
+      "id": "price_upper_common",
+      "expectedChangeMicrosNumerator": -55863523388000000,
+      "denominator": 1000000
+    },
+    {
+      "id": "price_midpoint_independent",
+      "expectedChangeMicrosNumerator": -55861960984000000,
+      "denominator": 1000000
+    }
+  ],
+  "fieldPairs": [
+    {
+      "modelId": "price_lower_common",
+      "fieldId": "public_flat_anchor_20261022T183802",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 7992
+    },
+    {
+      "modelId": "price_upper_common",
+      "fieldId": "public_flat_anchor_20261022T183802",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 24975
+    },
+    {
+      "modelId": "price_midpoint_independent",
+      "fieldId": "public_flat_anchor_20261022T183802",
+      "beforeStrictMassPpm": 0,
+      "afterStrictMassPpm": 0
+    }
+  ],
+  "cashMicros": 0,
+  "ownedCostMicros": 92737825000,
+  "minimumPrefixWealthMicros": 0,
+  "maximumPrefixLossVersusHoldMicros": 107077130000
+}

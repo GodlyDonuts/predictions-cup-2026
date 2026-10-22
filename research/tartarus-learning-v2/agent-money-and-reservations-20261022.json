@@ -1,0 +1,178 @@
+{
+  "observedUtc": "2026-10-22T21:50:39.913046+00:00",
+  "capture": {
+    "capturedAt": "2026-10-22T21:37:14.325669+00:00",
+    "status": "conditional_research_input_known_orders",
+    "nativeSequence": 904472,
+    "viewWrittenAt": "2026-10-22T21:37:11.175Z",
+    "cash": "4280.635000",
+    "ownedCost": "90031.490000",
+    "reservedCash": "4280.490000",
+    "heldMarkets": 21,
+    "fillCount": 712,
+    "knownPhysicalOrders": 3,
+    "reviewCount": 27,
+    "generationSha256": "f781ce15fd65ecb3a9956457a656f5b4851ec25d8d5eb984e696718b5a74258b",
+    "sourceCommit": "69e7b01e273133867dfd2d5f58efbd37a22a9986",
+    "originalFileSha256": {
+      "report.original.json": "36cf582e2c7b2bcd7560a8b130b8a6841e4fdf389fd39466c71df0193665edc2",
+      "native-view.original.json": "8e29b4745b697846b0ae9a30f19bd96daa5915e8afe9f368b9a505766b1e4a7d",
+      "active-fourteen-reviews.private.json": "d3f49305bc096806ed92f696771ab7f08450e6f51432a61624a508f8fd5afc11",
+      "compiled-current.private.json": "b56f47567ba8891f207d506fdd5ef373c9648154701cd5fb07a08597b200056a"
+    },
+    "newAccountClients": 0,
+    "networkRequests": 0,
+    "approvalPublished": false,
+    "sourceClocksRenewed": false,
+    "executionAuthority": false
+  },
+  "actualReservedFundingResult": {
+    "state": "fresh_unapproved_nomination_prepared",
+    "nomination": {
+      "rawSha256": "b6c831156ef5d737b9c4ff0cba9d399041caf1318a8a134a01ba2731c4103c22",
+      "objective": "declared_positive_expected_money",
+      "exchangeId": "1066",
+      "side": "NO",
+      "action": "SELL",
+      "quantity": 100,
+      "limitPrice": "0.260000",
+      "validUntilMs": 1792705339012,
+      "weakestDeclaredExpectedChange": 0.8942,
+      "ordinaryMinimumExpectedChange": "0.900000",
+      "scenarios": 83,
+      "originalHypothesisQuantity": 100,
+      "originalHypothesisPrice": "0.270000",
+      "requestedPriceTolerance": "0.010000",
+      "limitIsConservativeFundingAndValuationPrice": true,
+      "actualFillPriceClaimed": false,
+      "probabilityModels": 3,
+      "decisionProfilePolicy": "current-prices",
+      "decisionProfileIds": [
+        "price_lower_common",
+        "price_upper_common",
+        "price_midpoint_independent"
+      ],
+      "completeHeldMarkets": 21,
+      "sourceClocksRenewed": false,
+      "approvalPublished": false,
+      "submitted": false,
+      "executionAuthority": false
+    },
+    "originalKnownOrders": [
+      22890,
+      22909,
+      22925
+    ],
+    "submitted": false,
+    "approvalPublished": false,
+    "expectedWorkerPid": 1131806,
+    "expectedBinarySha256": "40404168cabb1d343bfe676ae54999a780058e5c1cee0e1f9cd23ddba71318fa",
+    "newAccountClients": 0,
+    "executionAuthority": false
+  },
+  "conditionalDraftRetirement": {
+    "capturedReservedCash": "4280.490000",
+    "expectedReservedCash": "0.000000",
+    "quoteIds": [
+      22923,
+      22924
+    ],
+    "actualCashCredited": "0.000000",
+    "executionAuthority": false
+  },
+  "conditionalProjectionCandidateCount": 148,
+  "conditionalProjectionBest": {
+    "leg": {
+      "action": "BUY",
+      "ex": "1051",
+      "side": "NO",
+      "n": 10000,
+      "price": 895000,
+      "previous": null,
+      "opposite_sale": null,
+      "quantity": 4782
+    },
+    "weakestDeclaredExpectedChange": 310.51917,
+    "expectedChangeMicrosNumerators": [
+      310519170000000,
+      324850824000000,
+      352323414000000
+    ],
+    "bookReceivedAt": "2026-10-22T21:37:11.688Z",
+    "exactOrdinaryIntervalSensitivity": {
+      "ordinaryMinimumExpectedChangeMicros": 310830000,
+      "ordinaryMaximumExpectedChangeMicros": 325176000,
+      "ordinaryMinimumExpectedChange": "310.830000",
+      "ordinaryMaximumExpectedChange": "325.176000",
+      "eventWitnesses": [
+        {
+          "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62981\",\"raceName\":\"U.S. Senate Tennessee\",\"stageId\":\"98111\",\"usState\":\"TN\"}",
+          "partyCoefficients": {
+            "Democratic Party": -4782
+          },
+          "minimumMassesPpm": {
+            "Democratic Party": 40000
+          },
+          "maximumMassesPpm": {
+            "Democratic Party": 37000
+          },
+          "minimumOtherWinnerMassPpm": 960000
+        }
+      ],
+      "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+      "crossEventDependenceRequiredForMoneyExpectation": false,
+      "calibratedProbabilities": false,
+      "exceptionalOutcomesCovered": false,
+      "fundingOrExecutionCertified": false,
+      "originalClocksRenewed": false,
+      "executionAuthority": false
+    },
+    "maximumPrefixLossVersusHoldMicros": 4279890000,
+    "minimumPrefixWealthMicros": 20416635000,
+    "executionAuthority": false
+  },
+  "actualReleaseOrExecutionClaimed": false,
+  "profitabilityEstablished": false,
+  "bestAllDeclaredProfileStress": {
+    "models": [
+      {
+        "id": "price_lower_common",
+        "expectedChangeMicrosNumerator": 310519170000000,
+        "denominator": 1000000
+      },
+      {
+        "id": "price_upper_common",
+        "expectedChangeMicrosNumerator": 324850824000000,
+        "denominator": 1000000
+      },
+      {
+        "id": "price_midpoint_independent",
+        "expectedChangeMicrosNumerator": 352323414000000,
+        "denominator": 1000000
+      },
+      {
+        "id": "historical_review_envelope_lower_common",
+        "expectedChangeMicrosNumerator": 310830000000000,
+        "denominator": 1000000
+      },
+      {
+        "id": "historical_review_envelope_upper_common",
+        "expectedChangeMicrosNumerator": 325176000000000,
+        "denominator": 1000000
+      }
+    ],
+    "conditionalReservationRelease": true,
+    "actualExecutionClaimed": false,
+    "modelsCalibrated": false,
+    "candidate": {
+      "action": "BUY",
+      "ex": "1051",
+      "side": "NO",
+      "n": 10000,
+      "price": 895000,
+      "previous": null,
+      "opposite_sale": null,
+      "quantity": 4782
+    }
+  }
+}

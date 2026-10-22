@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "f0a393005ef94afb8296f2ed83ddd32de5e5eda1",
+  "changedSources": {
+    "moloch/live-runtime/src/worker.rs": "d76736c77b3aa6434fa6d73359e8b701f1f5e55389dd46e1b096ad838f43574f"
+  },
+  "checks": {
+    "worker-tests": "test result: ok. 271 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.74s"
+  },
+  "reusedUnchangedLibraries": {
+    "/tmp/moloch-preintent-orders-r101-20261022/libmoloch_live_runtime_release.rlib": "ac5a3316da821fec84432ba661316cb666f774126fe88f286bc8b75d002dd07a",
+    "/tmp/moloch-preintent-orders-r101-20261022/libmoloch_live_runtime_fixture.rlib": "d6009e87b4c34a0fd8df353b33bc3828ad77b6b298285a3f4cc891111a17db09",
+    "/tmp/moloch-upgrade-bound-r100-20261022/libmoloch_replay_release.rlib": "0362f151b37b9eec0ea375412039682a432a43541dc24eea8f25e263bd1cbba5"
+  },
+  "binarySha256": "a5052297004801e4e8c4ce1eea24bf30a8f06202756e6584ee400ee19213a757",
+  "cliLoads": true,
+  "deployed": false,
+  "workerReplaced": false,
+  "newAccountClients": 0,
+  "originalFactClocksChanged": false,
+  "originalDurabilityChanged": false,
+  "entryApprovalChecksChanged": false,
+  "profitabilityEstablished": false,
+  "workerSourceChangesOnlyDerivedComparisonTiming": true,
+  "originalBuildLog": "worker-tests completed 115.634\nworker-release completed 147.87\nQUALIFIED_UNDEPLOYED\n",
+  "workerTestResultsSha256": "8900bc538438df07249c4435e299567b5d0ae5fc5f3e6c0b319f7803ab8e3b2f"
+}
