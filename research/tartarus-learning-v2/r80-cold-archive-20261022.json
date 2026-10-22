@@ -1,0 +1,15 @@
+{
+  "observedUtc": "2026-10-22T02:05:32Z",
+  "pid": 1057647,
+  "batches": 80,
+  "rawBytesRetainedLosslessly": 16196402582,
+  "compressedBytes": 287501815,
+  "availableBytes": 17017802752,
+  "originalOwnerUnchanged": true,
+  "workerPaused": false,
+  "accountRequests": 0,
+  "financialStateChanged": false,
+  "allOriginalBytesRecoverable": true,
+  "elapsedSeconds": 156.0188419960905,
+  "archiveDirectory": "/home/archon/apps/moloch/shared/account-queue-preserved-v1/r80-online-20261022"
+}

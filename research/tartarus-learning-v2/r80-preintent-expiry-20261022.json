@@ -1,0 +1,82 @@
+{
+  "observedUtc": "2026-10-22T02:08:32.960441+00:00",
+  "defer": {
+    "at": "2026-10-22T02:05:15.229Z",
+    "cohortBindingPreserved": true,
+    "dispatch": {
+      "bytes": 27491839,
+      "device": 66305,
+      "inode": 12353650,
+      "previous": "6cfd53e852e5b722ea9b7e976d2c1e36072ae3c669e1a7ac19264416fd11c07a",
+      "schemaVersion": 1,
+      "sequence": 27413
+    },
+    "nativeHead": {
+      "hash": "fbd8a92f3e8d3d5d5a95b1cdfe87430c0cb322493c29b9b880379d73fedf41ed",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "f33ca8dd6e8caf2ac4e2bbc3e7bea04c90bde75bf846131c6547206318561bdd",
+      "sequence": 804863
+    },
+    "physicalAttempted": false,
+    "qid": 20655,
+    "reason": "FUNDAMENTAL_NOT_ELIGIBLE",
+    "requiresAuthoritativeRefresh": true
+  },
+  "quote": {
+    "action": "sell",
+    "activationAt": 1792634712327,
+    "barrier": null,
+    "createdAt": 1792634709327,
+    "exchangeId": "1043",
+    "expiresAt": 1792635061851,
+    "filled": 0,
+    "id": 20655,
+    "marketId": "354",
+    "participationCredit": 0,
+    "price": "0.835000",
+    "quantity": 10000,
+    "retired": false,
+    "reviewedInventoryExit": {
+      "bookSha256": "c2642efd9ddf877ba1c36fd9943706fbdf43c4b5ac7ade02e2a5483b75fafbea",
+      "cohortOriginSha256": "2d530a04bec16e84a869c8f16eb5a808c8b4f119045a903d0b9ac7d358a675db",
+      "executionMode": "passiveValueLimit",
+      "forecastExpectedPayout": "0.876150",
+      "maximumPassiveQuantity": 10000,
+      "minimumNetSalePrice": "0.835000",
+      "modelSha256": "44dc6ab643ebf8464a5c7b1994cfa1b95a6c2fafc54682704349bfbe1a216174",
+      "originKind": "original_entry_cohort",
+      "originSha256": "743cb34259895274a681aebc1b7b851eff68f1019263029d27fe3805b163bcc6",
+      "pricingBasis": {
+        "bankHead": {
+          "hash": "d926326d065b3e64fb84952955aafee3be2451d00bff214b8ef09014c3408d2a",
+          "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+          "previous": "cb0226ef9c35066c5777bbcd1553a2bfe6af8dd786a93d342019dd5a5895e7ae",
+          "sequence": 804862
+        },
+        "bookSha256": "c2642efd9ddf877ba1c36fd9943706fbdf43c4b5ac7ade02e2a5483b75fafbea",
+        "fifoCostSha256": "1dc779d96c4727a6b05add0f97bd8b2e9dfe5c0ec50bb120c49f29965dba7171",
+        "forecastExpectedPayout": "0.876150",
+        "maximumFifoUnitCost": "0.830000",
+        "minimumNetSalePrice": "0.835000",
+        "positionsSha256": "2c9f690f935cf74e1e82cb9aa169368b0a0838023749e242b29e028e83317d59",
+        "pricingObjective": {
+          "kind": "fifoProfitTurnover",
+          "minimumNetGain": "0.005000"
+        },
+        "pricingPolicy": "improveAskOneTickFifoFloor",
+        "quantity": 10000
+      },
+      "pricingObjective": {
+        "kind": "fifoProfitTurnover",
+        "minimumNetGain": "0.005000"
+      },
+      "reason": "reviewed_fifo_profit_turnover",
+      "reviewSha256": "16ba08c20e8648ba915d7c05f949360299a4a8cdcfc937ff030b20fa07b6ba0f",
+      "sourceSha256": "44022eb83eb04cb6e881a2b2e62b261a78eb7c709670261a08f1690a20aa5602"
+    },
+    "side": "NO"
+  },
+  "bookAgeMs": 10000,
+  "accountRequests": 0,
+  "physicalAttempted": false
+}

@@ -1,0 +1,213 @@
+{
+  "observedUtc": "2026-10-22T01:53:33.400439+00:00",
+  "removedReproducibleTestBinaries": [
+    {
+      "path": "/tmp/moloch-contract-age-20261021/runtime-tests",
+      "bytes": 18928528,
+      "sha256": "cf28388e18d8d47c19a71e44b4d766aa1fec570d97c4bec425a458064f49e0c6"
+    },
+    {
+      "path": "/tmp/moloch-fundamental-token-expiry-20261021/worker-tests",
+      "bytes": 20786400,
+      "sha256": "00624f8058f16ef56fa66752b0a1203447d9293ab76113c85743ebff485c575e"
+    },
+    {
+      "path": "/tmp/moloch-exit-packet-20261021/worker-tests",
+      "bytes": 20519248,
+      "sha256": "f1596d7390833bfcdb48d11b472b93d734b2aa0a3af3fd75a0031f0ea9ca1440"
+    },
+    {
+      "path": "/tmp/moloch-upgrade-bound-r70-20261021/native-tests",
+      "bytes": 13139896,
+      "sha256": "56363d9e230fe256f4a87b68fc4d7460db4abc0662ed90c11caa269e864fea85"
+    },
+    {
+      "path": "/tmp/moloch-dispatch-metadata-20261021/runtime-tests",
+      "bytes": 18863464,
+      "sha256": "551838c9907b89439aa8b12800405af36d80f822b05ee68cef21da6107236cf9"
+    },
+    {
+      "path": "/tmp/moloch-r55-pre-admission-20261019/sdk-tests",
+      "bytes": 14811528,
+      "sha256": "d38c454c2fbe16dd57d02a786c5e4122a247094bbb65cbef8a580df11c8954db"
+    },
+    {
+      "path": "/tmp/moloch-exit-lifecycle-20261021/worker-tests",
+      "bytes": 20785216,
+      "sha256": "2717195f454f9da4ef45bd6c453162fbd37ebebc2bcd12abca9be232503dae11"
+    },
+    {
+      "path": "/tmp/moloch-exit-lifecycle-20261021/fundamental-tests",
+      "bytes": 17811736,
+      "sha256": "78a6e0a4f475b1b6c65f2a88a21deee511627194576e663b966a2b237b0e09bc"
+    },
+    {
+      "path": "/tmp/moloch-exit-lifecycle-20261021/runtime-tests",
+      "bytes": 19027544,
+      "sha256": "06d1ca9664e13fb795e14bef5a644ac1b7823188b78a2646b052547248c3e7cc"
+    },
+    {
+      "path": "/tmp/moloch-recurring-cohort-20261021/native-tests",
+      "bytes": 13140040,
+      "sha256": "b8d709ceee2038ac44796cb03eba28291d302687da2dac35afe0e28ccdf67109"
+    },
+    {
+      "path": "/tmp/moloch-recurring-cohort-20261021/fundamental_policy-tests",
+      "bytes": 17782224,
+      "sha256": "f8ded02e92dcb5e593ff87e46fdf1950a43956f3508dacbe246dd4abc20022cd"
+    },
+    {
+      "path": "/tmp/moloch-dispatch-proof-r74-20261021/worker-tests",
+      "bytes": 20129112,
+      "sha256": "ccac1f54f15e8bde8e123110eff5dc60d9bc13d6e92bed58a48a50a8d58cc73d"
+    },
+    {
+      "path": "/tmp/moloch-dispatch-proof-r74-20261021/fundamental_policy-tests",
+      "bytes": 17854376,
+      "sha256": "79d24c41fcf73e35e4959429205a8e8ea345073319992c30f700a6c415b28be6"
+    },
+    {
+      "path": "/tmp/moloch-native-checked-lookup-20261021/native-tests",
+      "bytes": 13134640,
+      "sha256": "f67c485a1b4f1349c583aa5568f675e606687191054f575555bcba8c3c55bf9f"
+    },
+    {
+      "path": "/tmp/moloch-native-checked-lookup-20261021/worker-tests",
+      "bytes": 20793840,
+      "sha256": "69ac8e81e3a93522c4578914727dcbb5187e11d5d619184036b10b59fa8667af"
+    },
+    {
+      "path": "/tmp/moloch-native-checked-lookup-20261021/sdk-tests",
+      "bytes": 14883136,
+      "sha256": "2cd497e1d27ba80080d552555d310fe4acaf5568ae20c644c4a957cc3dd9928c"
+    },
+    {
+      "path": "/tmp/moloch-shared-review-maps-20261021/native-tests",
+      "bytes": 13468824,
+      "sha256": "8a8b33e88e27363146909d3912c454393602fa5830cd7e167d4c5bf516be7e8c"
+    },
+    {
+      "path": "/tmp/moloch-exit-immediate-20261021/worker-tests",
+      "bytes": 20520080,
+      "sha256": "598f09a58ec9576aef8cf3bb9ff2475d533545bf548033c2e7de70841217e3ad"
+    },
+    {
+      "path": "/tmp/moloch-topup-abort-r75-20261021/worker-tests",
+      "bytes": 20129400,
+      "sha256": "d0ed7eea8b6f5565620ac73db4df1c3332a45271ba213fd15a8fcb8610bd4367"
+    },
+    {
+      "path": "/tmp/moloch-topup-abort-r75-20261021/fundamental_policy-tests",
+      "bytes": 17858368,
+      "sha256": "a00795c2c9f6137631767bcb91a0b7c3f57049e887eda28fb62a4c8031b22d77"
+    },
+    {
+      "path": "/tmp/moloch-closed-index-r77-20261021/worker-tests",
+      "bytes": 20140288,
+      "sha256": "7d32cc719e6af73b2a3e8e750c216d9aa02c0c671776c559e57131560f12ded7"
+    },
+    {
+      "path": "/tmp/moloch-closed-index-r77-20261021/fundamental_policy-tests",
+      "bytes": 17932504,
+      "sha256": "1116da8eae58ecc228ca3df8fac5c299a7ec0f790ab26e69b0317ccd284d8c4a"
+    },
+    {
+      "path": "/tmp/moloch-fundamental-ledger-20261021/fundamental-tests",
+      "bytes": 17812936,
+      "sha256": "a059fc977275bb63466784d7ae67f55e60a014af24b28a27386e36beb6b85685"
+    },
+    {
+      "path": "/tmp/moloch-fundamental-ledger-20261021/runtime-tests",
+      "bytes": 18928480,
+      "sha256": "e2971f81c59321b386ce521bbcffc26f47bc97e2fb8879af898f2381e4b6a13b"
+    },
+    {
+      "path": "/tmp/moloch-retired-prefix-20261021/native-tests",
+      "bytes": 13468928,
+      "sha256": "a51321dfcc32ee39947ff288ac9bfa1a51a73ccb0fd3ef147208c02050caa919"
+    },
+    {
+      "path": "/tmp/moloch-stream-startup-20261021/worker-tests",
+      "bytes": 20448160,
+      "sha256": "415601a2b0fd624fd4a9d04d317176fd433e3a7c6b859f85e411b0c9a19c59e4"
+    },
+    {
+      "path": "/tmp/moloch-exit-priority-r78-20261021/worker-tests",
+      "bytes": 20146328,
+      "sha256": "19ed0f1a972fe0294aac782d48f3a23dd70ab70f6645ea5b747319708bc5b446"
+    },
+    {
+      "path": "/tmp/moloch-exit-priority-r78-20261021/fundamental_fifo_profit_exits-tests",
+      "bytes": 15073312,
+      "sha256": "212ec47355cbc657f8986e3850b45c722e7ad606edc78154bd2b51f764685844"
+    },
+    {
+      "path": "/tmp/moloch-exit-priority-r78-20261021/fundamental_policy-tests",
+      "bytes": 17932456,
+      "sha256": "ce374a537466c29aef9186d62dc19bd01059c7fa14aea7a3b0a2225564a50212"
+    },
+    {
+      "path": "/tmp/moloch-single-order-lookup-20261021/native-tests",
+      "bytes": 13132768,
+      "sha256": "733aabed463af1120d8d3fe11c17ad9a42199b254c9033261328771c77c3945c"
+    },
+    {
+      "path": "/tmp/moloch-entry-report-cache-20261021/fundamental_policy-tests",
+      "bytes": 17777632,
+      "sha256": "f8ddeb48df4ec7ed258d3965b69b76f7108fe1b4718b51f6b26aaa4489e60a74"
+    },
+    {
+      "path": "/tmp/moloch-exit-hint-recovery-20261021/worker-tests",
+      "bytes": 20784912,
+      "sha256": "492899008fbce2004db505835310922434da7318a9a13d4aa6e1764516dfd617"
+    },
+    {
+      "path": "/tmp/moloch-exit-hint-recovery-20261021/fundamental-tests",
+      "bytes": 17880816,
+      "sha256": "9b440fc59494c06476e04230d4a46d9867a8748ff2685fd26dd09aa1b224cfd8"
+    },
+    {
+      "path": "/tmp/moloch-exit-hint-recovery-20261021/runtime-tests",
+      "bytes": 19027496,
+      "sha256": "cdc4370457566b7be90d5b41174799c7d076edd193b68733c82bf9f400f3a9f6"
+    },
+    {
+      "path": "/tmp/moloch-hint-batch-r76-20261021/worker-tests",
+      "bytes": 20134712,
+      "sha256": "8452e9768a78aa2e9bc424b80c667599368045773482e148568c8e04ab83a968"
+    },
+    {
+      "path": "/tmp/moloch-hint-batch-r76-20261021/fundamental_policy-tests",
+      "bytes": 17928152,
+      "sha256": "e38dc0f8c1494a4328af6be198b652f552a3e61286e8b385c83506b256115621"
+    },
+    {
+      "path": "/tmp/moloch-target-cache-r73-20261021/worker-tests",
+      "bytes": 20127776,
+      "sha256": "3ab08680cb909aeddc0f0cabe78ca1834b7d342600bd97b3706f6f1a3213dd17"
+    },
+    {
+      "path": "/tmp/moloch-stream-proof-recovery-20261021/worker-tests",
+      "bytes": 20786720,
+      "sha256": "45bb2bf8349f442812367729e188c5dd7d2fa1187cddf87826e677aa56e716b8"
+    },
+    {
+      "path": "/tmp/moloch-stream-proof-recovery-20261021/sdk-tests",
+      "bytes": 14814536,
+      "sha256": "52eca2c18bbcb42dd9b79c67c45f16b700648519292f052c316c77f266be314f"
+    },
+    {
+      "path": "/tmp/moloch-exit-refresh-20261021/worker-tests",
+      "bytes": 20522104,
+      "sha256": "9a93dbba14846960eecc0788ee3141494ee34b5c322cedec48c6fda0bd718c8e"
+    },
+    {
+      "path": "/tmp/moloch-stream-throughput-20261021/native-tests",
+      "bytes": 13064512,
+      "sha256": "f976db649f363ad071f8dcf78a799642ab2bce7ef438622dd1cac116edb121e8"
+    }
+  ],
+  "freedBytes": 732233128,
+  "remainingDiskBytes": 1584390144,
+  "sourceLogsTrainingDataReceiptsAndFinancialHistoryUnchanged": true
+}
