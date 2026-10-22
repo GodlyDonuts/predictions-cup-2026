@@ -1,0 +1,209 @@
+{
+  "baseSha256": "9945ff0e452cbf595eabb3860a89ab5fe4d66b4bd7f9bf12184b200ae5a7be5b",
+  "controlSha256": "a416666f8c71bf594f87aa78bacac21f16f81f285f1c80e4f85a894e10b92632",
+  "changes": [
+    {
+      "exchangeId": "1010",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671093959,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "1017",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671094770,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "1057",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671087447,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "1069",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671085940,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "1011",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671094213,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "983",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671090024,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "1016",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671094670,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "891",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671087103,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "1012",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671088170,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    },
+    {
+      "exchangeId": "1013",
+      "before": {
+        "version": 1,
+        "allowedModes": [
+          "joinBid"
+        ]
+      },
+      "after": {
+        "version": 1,
+        "allowedModes": [
+          "boundedLimitMayRest",
+          "improveOneTick",
+          "joinBid"
+        ]
+      },
+      "originalExpiresAtMs": 1792671452285,
+      "maximumPrincipal": "1250.000000",
+      "maximumQuantity": 10000
+    }
+  ],
+  "stagedOnly": true,
+  "officialSigRequests": 0,
+  "originalEconomicFieldsAndClocksPreserved": true
+}

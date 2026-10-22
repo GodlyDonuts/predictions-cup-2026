@@ -2,6 +2,12 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
+## Current state: October22,12:01UTC
+
+**R91 is live and executed its first independently audited buy:**10,000 NO1075 shares for9,126.90 SUSQies at11:57:55UTC. One physical order produced six original fill rows. Its FIFO profit-taking offer is open; no exit profit is claimed. Worker1096712/sourceffefefbc preserves all576 previous fills and the full original financial prefix. **One newly filled order/minute remains unmet.** Ten new maker scopes have a mode revision staged using existing bounded/improve/join choices, with unchanged value ceiling,1,250-principal caps and original source clocks; it is not yet published. [Live proof](research/tartarus-learning-v2/r91-fresh-live-20261022.json), [receipt/FIFO audit](research/tartarus-learning-v2/r91-first-turnover-20261022.json), [current details](docs/CURRENT_STATE.md).
+
+### Earlier dated observations
+
 ## Current state: October22,11:34UTC
 
 **R91 is installed and restoring the existing ledger.** Sole worker1096712, sourceffefefbc, binaryf99b400ad979. All576 prior fills and the full2,796,683,105-byte financial prefix remain unchanged. The focused maker-entry change puts planning and final physical packets ahead of one historical derived report. All258 worker checks passed; native/runtime libraries retain their existing149 runtime checks. The26 approved reviews carry over, including eleven new flat maker scopes. **Fresh R91 trading, speed, ROI and one-filled-order/minute cadence are not yet verified.** [Installation](research/tartarus-learning-v2/r91-installed-restoring-20261022.json), [change and qualification limits](research/tartarus-learning-v2/maker-packet-r91-20261022.md), [detailed state](docs/CURRENT_STATE.md).
