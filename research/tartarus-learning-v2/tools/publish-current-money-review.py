@@ -58,6 +58,29 @@ def completed_prior_review(root, view, old_sha, qid):
     return dict(qid=qid, priorRawSha256=old_sha, originalClosedLineSha256=closed)
 
 
+def expired_unused_review(root, view, old_sha, until):
+    # Observe the serialized worker's RETURNING expiry path, rather than
+    # replacing owner pins while an old callback might still be using them.
+    status_path = root/'rank-campaign-status.json'
+    private(status_path)
+    status_raw = status_path.read_bytes()
+    status = json.loads(status_raw)
+    at = int(datetime.fromisoformat(status['at'].replace('Z', '+00:00')).timestamp()*1000)
+    assert at >= until and status.get('state') == 'deferred' and status.get('stage') == 'owner_review' and status.get('physicalAttempted') is False and status.get('reason') in ('RANK_CAMPAIGN_NOT_OWNER_APPROVED', 'ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT'), 'EXPIRED_REVIEW_RUNTIME_BOUNDARY_REQUIRED'
+    assert not any(q.get('reviewedRankCampaign') for q in view['activeNativeOrders']), 'NATIVE_RANK_RESERVATION_STILL_ACTIVE'
+    private(root/'dispatch.ndjson')
+    chain = __import__('hashlib').sha256()
+    with (root/'dispatch.ndjson').open('rb') as stream:
+        for line in stream:
+            assert line.endswith(b'\n') and len(line) <= 16*1024*1024
+            chain.update(line)
+            event = json.loads(line)['event']
+            assert not (event['kind'] == 'intent' and (event.get('rankCampaign') or {}).get('rawSha256') == old_sha), 'EXPIRED_REVIEW_HAS_INTENT_REQUIRES_EXACT_COMPLETION'
+    return dict(priorRawSha256=old_sha, expiryObservedByWorkerAt=status['at'],
+                originalStatusSha256=digest(status_raw), originalDispatchSha256=chain.hexdigest(),
+                originalIntentAbsent=True, sourceClocksRenewed=False)
+
+
 def run(a):
     os.umask(0o077)
     assert len(a.source_commit) == 40 and all(c in '0123456789abcdef' for c in a.source_commit), 'CHECKED_SOURCE_COMMIT'
@@ -106,6 +129,10 @@ def run(a):
         old_sha = digest(old_nomination)
         assert qid is not None and all(row['rawSha256'] == old_sha for row in active), 'DIFFERENT_UNEXPIRED_REVIEW_REQUIRES_EXACT_COMPLETION_REVIEW'
         superseded = completed_prior_review(root, view, old_sha, qid)
+    elif a.completed_qid is not None:
+        superseded = completed_prior_review(root, view, digest(old_nomination), a.completed_qid)
+    else:
+        superseded = expired_unused_review(root, view, digest(old_nomination), json.loads(old_nomination)['validUntilMs'])
     assert all(campaign['account'][key] == view['account'][key] for key in
         ('positionsSha256', 'cash', 'actualFillsSha256')), 'CURRENT_NATIVE_FINANCIAL_CHANGED'
     if 'unsubmittedDraftYield' in campaign['account']:
@@ -157,7 +184,8 @@ def run(a):
         approvalSha256=digest(approval.read_bytes()), approvedAtMs=now, validUntilMs=until,
         expectedWorkerPid=a.expected_pid, sourceCommit=a.source_commit,
         knownPhysicalOrdersStillRequireReconciliation=view['knownUnclosedAcknowledgments'],
-        completedPriorReview=superseded,
+        completedPriorReview=superseded if superseded and 'qid' in superseded else None,
+        expiredUnusedPriorReview=superseded if superseded and 'qid' not in superseded else None,
         currentReservationProjection=projection if 'unsubmittedDraftYield' in campaign['account'] else None,
         sourceClocksRenewed=False, historicalOwnerFilesArchived=True, accountClientsCreated=0,
         ordersSubmittedByPublisher=0, officialWorkerMayActAfterIndependentChecks=True)

@@ -49,7 +49,8 @@ def run(a):
     deployed = json.loads(a.deployment.read_bytes())
     end = time.monotonic()+a.minutes*60
     completed = 0
-    while completed < a.cycles and time.monotonic() < end:
+    attempts = 0
+    while attempts < a.cycles and time.monotonic() < end:
         assert Path('/proc', str(deployed['pid'])).exists(), 'ORIGINAL_WORKER_EXITED'
         assert hashlib.sha256(Path('/proc', str(deployed['pid']), 'exe').read_bytes()).hexdigest() == deployed['binarySha256']
         assert not (a.runtime/'EXECUTION_STOP').exists() and not (a.runtime.parent/'EXECUTION_STOP').exists()
@@ -66,15 +67,35 @@ def run(a):
         if int(time.time()*1000) < old['validUntilMs'] and qid is None:
             time.sleep(5)
             continue
-        output = a.output/f'cycle-{completed+1:04d}'
+        if qid is None:
+            status=json.loads((a.runtime/'rank-campaign-status.json').read_bytes())
+            seen=int(datetime.fromisoformat(status['at'].replace('Z','+00:00')).timestamp()*1000)
+            if seen < old['validUntilMs'] or status.get('stage')!='owner_review' or status.get('reason') not in ('RANK_CAMPAIGN_NOT_OWNER_APPROVED','ORIGINAL_REVIEW_EXPIRED_BEFORE_PHYSICAL_ATTEMPT') or any(q.get('reviewedRankCampaign') for q in view['activeNativeOrders']):
+                time.sleep(5)
+                continue
+        attempts += 1
+        output = a.output/f'attempt-{attempts:04d}'
         args = ['python3', str(a.tools/'prepare-live-money-research.py')]
         for key, value in dict(source=a.source, tools=a.tools, runtime=a.runtime,
                                reference=a.reference, deployment=a.deployment,
                                field=a.field, output=output).items():
             args += ['--'+key, str(value)]
         args += ['--horizon-ms', '180000', '--wait-seconds', '60']
-        with (a.output/f'cycle-{completed+1:04d}.log').open('x') as log:
-            subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=True)
+        with (a.output/f'attempt-{attempts:04d}.log').open('x') as log:
+            outcome=subprocess.run(args, stdout=log, stderr=subprocess.STDOUT)
+            if outcome.returncode:
+                log.flush()
+                tail=(a.output/f'attempt-{attempts:04d}.log').read_text()[-10000:]
+                recoverable=next((code for code in ('MATCHED_PORTFOLIO_TIMEOUT','GENERATION_CHANGED','CURRENT_NATIVE_FINANCIAL_CHANGED','CURRENT_NATIVE_RESERVATION_CHANGED','POST_YIELD_RESERVATION_MISMATCH','NATIVE_VIEW_CHANGED_BEFORE_PUBLICATION','ORIGINAL_SOURCE_EXPIRED','NO_EXPIRED_REVIEW_RENEWAL','DECLARED_MODEL_HORIZON_EXPIRED','EXPIRED_REVIEW_RUNTIME_BOUNDARY_REQUIRED','NATIVE_RANK_RESERVATION_STILL_ACTIVE') if code in tail),None)
+                assert recoverable, 'REVIEW_FAILED_REQUIRES_INSPECTION'
+                print(json.dumps(dict(state='fresh_analysis_required',reason=recoverable,attempt=attempts,ordersSubmittedBySupervisor=0)),flush=True)
+                time.sleep(5)
+                continue
+            result=json.loads((output/'result.public.json').read_bytes())
+            if result['state']=='no_positive_declared_first_order':
+                print(json.dumps(dict(state=result['state'],attempt=attempts,ordersSubmittedBySupervisor=0)),flush=True)
+                time.sleep(20)
+                continue
             prepared = output/'prepared'
             summary = json.loads((prepared/'prepared.public.json').read_bytes())
             assert summary['objective'] == 'declared_positive_expected_money'
@@ -90,7 +111,15 @@ def run(a):
             if qid is not None:
                 args += ['--completed-qid', str(qid)]
 
-            subprocess.run(args, stdout=log, stderr=subprocess.STDOUT, check=True)
+            outcome=subprocess.run(args, stdout=log, stderr=subprocess.STDOUT)
+            if outcome.returncode:
+                log.flush()
+                tail=(a.output/f'attempt-{attempts:04d}.log').read_text()[-10000:]
+                recoverable=next((code for code in ('MATCHED_PORTFOLIO_TIMEOUT','GENERATION_CHANGED','CURRENT_NATIVE_FINANCIAL_CHANGED','CURRENT_NATIVE_RESERVATION_CHANGED','POST_YIELD_RESERVATION_MISMATCH','NATIVE_VIEW_CHANGED_BEFORE_PUBLICATION','ORIGINAL_SOURCE_EXPIRED','NO_EXPIRED_REVIEW_RENEWAL','DECLARED_MODEL_HORIZON_EXPIRED','EXPIRED_REVIEW_RUNTIME_BOUNDARY_REQUIRED','NATIVE_RANK_RESERVATION_STILL_ACTIVE') if code in tail),None)
+                assert recoverable, 'REVIEW_FAILED_REQUIRES_INSPECTION'
+                print(json.dumps(dict(state='fresh_analysis_required',reason=recoverable,attempt=attempts,ordersSubmittedBySupervisor=0)),flush=True)
+                time.sleep(5)
+                continue
         completed += 1
         print(json.dumps(dict(at=datetime.now(timezone.utc).isoformat(),
             state='fresh_review_published', cycle=completed, nomination=summary,
