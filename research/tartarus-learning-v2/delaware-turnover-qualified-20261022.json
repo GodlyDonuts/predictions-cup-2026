@@ -1,0 +1,48 @@
+{
+  "baseSha256": "d050ef1f2352a21314495fcc4ba1118cf86a6867239c02d932e70ae5b55d0cff",
+  "controlSha256": "66bb659c5500ddacf95b4e911cffe63b9beb894980b2657329f2cc7d434d54eb",
+  "reviewSha256": "85f98037dd7ee2d99c0a52862cc81e8487c6e041374962dc847241d27a746d11",
+  "preservedOriginalReviews": 14,
+  "newExchange": "1075",
+  "side": "NO",
+  "conditionalOrdinaryProbability": "0.9780",
+  "stagedOnly": true,
+  "accountRequests": 0,
+  "reloadSent": false,
+  "tradingWorkerRestarted": false,
+  "observedUtc": "2026-10-22T04:11:20Z",
+  "sourceSha256": "e198802788cab131beb25c6385a9942eaf8b7f981cf05034768b5a8d5b79c9ae",
+  "typedCurrentReviewValidation": {
+    "current": true,
+    "exchangeId": "1075",
+    "expiresAtMs": 1792643088637,
+    "ordinaryProbability": "0.978000",
+    "passiveValueExit": {
+      "maximumQuantity": 10000,
+      "pricingObjective": {
+        "kind": "fifoProfitTurnover",
+        "minimumNetGain": "0.005000"
+      },
+      "version": 1
+    },
+    "reviewSha256": "85f98037dd7ee2d99c0a52862cc81e8487c6e041374962dc847241d27a746d11",
+    "side": "NO"
+  },
+  "negativeCases": [
+    {
+      "case": "expired-capture",
+      "rejectedBeforeOutput": true
+    },
+    {
+      "case": "changed-market",
+      "rejectedBeforeOutput": true
+    }
+  ],
+  "ballot": {
+    "url": "https://elections.delaware.gov/elections/general/sampleballots/GE2026/02-27.html",
+    "status": 200,
+    "requestStartedAt": "2026-10-22T04:09:55.273193+00:00",
+    "receivedAt": "2026-10-22T04:09:55.429548+00:00",
+    "bodySha256": "c661a3b1f70781f5943caf3d2227d2b581993d4a06d31735e70e480dba8f02ba"
+  }
+}
