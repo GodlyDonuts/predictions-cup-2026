@@ -32,9 +32,13 @@ def run(a):
     while time.monotonic() < deadline:
         if json.loads((out / 'pending.json').read_bytes()).get('resolved') is True:
             os.kill(a.previous_updater_pid, signal.SIGSTOP)
-            safe = json.loads((out / 'pending.json').read_bytes()).get('resolved') is True
-            children = subprocess.run(['pgrep', '-P', str(a.previous_updater_pid)], capture_output=True, text=True)
-            sockets = [p for p in (process / 'fd').iterdir() if str(p.readlink()).startswith('socket:')]
+            try:
+                safe = json.loads((out / 'pending.json').read_bytes()).get('resolved') is True
+                children = subprocess.run(['pgrep', '-P', str(a.previous_updater_pid)], capture_output=True, text=True)
+                sockets = [p for p in (process / 'fd').iterdir() if str(p.readlink()).startswith('socket:')]
+            except BaseException:
+                os.kill(a.previous_updater_pid, signal.SIGCONT)
+                raise
             if safe and children.returncode == 1 and not sockets:
                 break
             os.kill(a.previous_updater_pid, signal.SIGCONT)
