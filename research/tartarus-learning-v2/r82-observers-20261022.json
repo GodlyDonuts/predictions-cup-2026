@@ -1,0 +1,61 @@
+{
+  "observedUtc": "2026-10-22T03:11:46.451556+00:00",
+  "workerPid": 1062136,
+  "observers": [
+    {
+      "pid": 1062146,
+      "command": [
+        "python3",
+        "-u",
+        "-c",
+        "import importlib.util; from pathlib import Path; spec=importlib.util.spec_from_file_location('observer','/tmp/moloch-exit-audit-r81-20261022/observe.py'); m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m); m.L=Path('/tmp/moloch-exit-final-facts-r82-20261022'); m.main()"
+      ],
+      "outputLog": "/tmp/moloch-exit-final-facts-r82-20261022/startup-observer.log"
+    },
+    {
+      "pid": 1062147,
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "python3",
+        "/tmp/moloch-exit-audit-r81-20261022/observe-cadence.py",
+        "--runtime",
+        "/home/archon/apps/moloch/shared/live-production-v1",
+        "--pid",
+        "1062136",
+        "--start-ticks",
+        "60829776",
+        "--auditor",
+        "/tmp/moloch-exit-priority-r78-20261021/audit-current-turnover.py",
+        "--output",
+        "/tmp/moloch-exit-final-facts-r82-20261022/cadence",
+        "--seconds",
+        "900"
+      ],
+      "outputLog": "/tmp/moloch-exit-final-facts-r82-20261022/cadence-observer.log"
+    },
+    {
+      "pid": 1062148,
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "python3",
+        "/tmp/moloch-exit-census-20261021/observe.py",
+        "--runtime",
+        "/home/archon/apps/moloch/shared/live-production-v1",
+        "--reference",
+        "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021",
+        "--pid",
+        "1062136",
+        "--output",
+        "/tmp/moloch-exit-census-20261021/r82-window",
+        "--seconds",
+        "3600"
+      ],
+      "outputLog": "/tmp/moloch-exit-final-facts-r82-20261022/exit-census-observer.log"
+    }
+  ],
+  "accountRequests": 0
+}
