@@ -54,8 +54,17 @@ class ResearchBookTests(unittest.TestCase):
             obs.row_books(obs.canonical(x), MAPPING, 'cup', obs.clock(AT))
 
     def test_old_or_future_source_is_not_a_fresh_observation(self):
-        for stamp in ['2026-10-22T16:59:49Z', '2026-10-22T17:00:01Z']:
+        for stamp in ['2026-10-22T16:58:59Z', '2026-10-22T17:00:01Z']:
             self.assertEqual(obs.row_books(raw_row(source=stamp), MAPPING, 'cup', obs.clock(AT)), {})
+
+    def test_delayed_research_book_preserves_original_source_clock(self):
+        stamp = '2026-10-22T16:59:30Z'
+        root, compiled, result = self.fixture([raw_row(source=stamp)])
+        books, sources = obs.load(root, compiled, REGISTRY)
+        self.assertEqual(books['101']['sourceAt'], stamp)
+        self.assertEqual(sources['101'], raw_row(source=stamp))
+        self.assertFalse(result['executionAuthority'])
+        self.assertFalse(result['nativeAdmissionClaimed'])
 
     def test_crossed_or_off_tick_book_is_not_available(self):
         for price in ['0.46', '0.401']:
@@ -101,7 +110,7 @@ class ResearchBookTests(unittest.TestCase):
     def test_stale_or_invalid_native_fallback_does_not_trigger_repeated_research(self):
         root, compiled, _ = self.fixture([])
         fresh = obs.row_books(raw_row(), MAPPING, 'cup', obs.clock(AT))['101']
-        for bad in [dict(fresh, sourceAt='2026-10-22T16:59:49Z'), dict(fresh, invalid=True)]:
+        for bad in [dict(fresh, sourceAt='2026-10-22T16:58:59Z'), dict(fresh, invalid=True)]:
             compiled['originalBooks'] = [bad]
             self.assertEqual(obs.load(root, compiled, REGISTRY)[0], {})
         compiled['originalBooks'] = [fresh]

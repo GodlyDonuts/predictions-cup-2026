@@ -11,7 +11,10 @@ from hashlib import sha256
 import json
 from pathlib import Path
 
-MAX_AGE_MS = 10000
+# Research prices nominate a hypothesis, never a physical dispatch. Recorder
+# bursts can contain source observations 10-60 seconds old. Retain their exact
+# clocks and let the sole worker obtain its independently fresh execution facts.
+MAX_AGE_MS = 60000
 TAIL_BYTES = 8 * 1024 * 1024
 
 
