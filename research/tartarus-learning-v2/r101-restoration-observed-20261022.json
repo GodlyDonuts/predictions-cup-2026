@@ -1,0 +1,34 @@
+{
+  "observedUtc": "2026-10-22T20:17:52Z",
+  "observerPid": 1131816,
+  "observerAlive": true,
+  "lastObservation": {
+    "observedUtc": "2026-10-22T20:17:38.701665+00:00",
+    "pid": 1131806,
+    "processAlive": true,
+    "currentPidProgress": false,
+    "stopPresent": false,
+    "newAccountClients": 0,
+    "processIo": {
+      "rchar": "1095176675",
+      "wchar": "63468876",
+      "syscr": "52683",
+      "syscw": "189",
+      "read_bytes": "369442816",
+      "write_bytes": "63737856",
+      "cancelled_write_bytes": "0"
+    }
+  },
+  "helperPid": 1131809,
+  "helperAlive": true,
+  "helperStatus": {
+    "atMs": 1792700269991,
+    "pid": 1131809,
+    "phase": "waiting_for_current_worker",
+    "commits": 218,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false
+  }
+}

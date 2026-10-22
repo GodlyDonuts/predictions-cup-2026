@@ -1,5 +1,19 @@
 # R101: remove avoidable work before passive-order dispatch
 
+## Installed state,20:17UTC
+
+R101/source8f960c57 is installed as sole worker1131806/startTicks66982381 and
+is restoring its original ledger. The engine and original bridge file are
+unchanged. Reference helper1131809 waits for current-process trading; finite
+file-only observer1131816 is live. No fresh R101 trading, dispatch speedup or
+profit is established. [Installation](r101-installed-restoring-20261022.json),
+[observation](r101-restoration-observed-20261022.json).
+
+The stopped bank has692 original fill rows. Its extra pre-upgrade fill sold25
+NO859 at0.88 for22, zero fees and zero realized gain. Cash33.745; all original
+fill rows, official receipts and remaining FIFO are independently reconciled.
+[Audit](r101-pre-upgrade-turnover-audit-20261022.json).
+
 ## Observed problem
 
 The R100 worker remained live but the latest independently observed native state
