@@ -1,0 +1,13 @@
+{
+  "sequence": 380,
+  "hash": "54903e668392adea63639e20e92a9cf12a18058d100d6e02bd4f427fd8b7f084",
+  "previous": "41241e39ef5d970c1e27b40af8aa14562b3d7474c6344adff56eaf3055cfbc87",
+  "event": {
+    "kind": "abandon_proved_no_network",
+    "exchangeId": "1075",
+    "qid": 20937,
+    "originalBindingSha256": "bd46699bb8ee591d7c8e2c7bd01311891ccf7bab53e458bab9a5a2fdf2c04c45",
+    "originalSide": "NO",
+    "factsSha256": "e343283dcdcd99c08f8adc7267f792a1e462a019a3ec561c0ce7a55a0853e9af"
+  }
+}

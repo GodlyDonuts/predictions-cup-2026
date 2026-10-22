@@ -2,9 +2,9 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Current state â€” October 22, 05:21 UTC
+## Current state â€” October 22, 05:44 UTC
 
-**R85 installed at 05:19:45 UTC; original-ledger restoration is in progress.** Sole worker1069937, binary `5222f0f999fa`, checked execution source `7fb6fee064521c8e2f9f1bb2419bb7e6050b3efa`, updater1069940. The replacement fixes the proved-no-HTTP cohort failure that stopped R83 and includes R84 source/preflight report deferral. It preserves all535 fills, the full2,691,159,025-byte original financial prefix, all prior engine approvals and known order20904. **Fresh trading is not yet verified.** [Installation evidence](research/tartarus-learning-v2/r85-local-guard-cohort-installed-20261022.json), [repair and validation](research/tartarus-learning-v2/local-guard-cohort-r85-20261022.md).
+**R85 resumed healthy trading at05:41:28 UTC**, independently verified05:41:44. Sole worker1069937, binary `5222f0f999fa`, execution source `7fb6fee064521c8e2f9f1bb2419bb7e6050b3efa`, updater1069940. The entire2,691,159,025-byte financial prefix and all535 original fills are unchanged. The original1075 reservation20937 was archived without financial mutation or retry; known20904 was reconciled terminal. Reference generation104 committed for all13 targets. A fresh15-minute fill-rate window is running; the target remains unproven. [Fresh production proof](research/tartarus-learning-v2/r85-fresh-live-20261022.json), [original cohort recovery](research/tartarus-learning-v2/r85-original-cohort-recovered-20261022.json).
 
 R86 is a checked **offline candidate**, excluded from the current production binary. Its final-entry projection scope passed247 worker checks and preserves original receipts, durable head and error behavior. The retained20937 timing trace shows a5.532-second post-book gap before preparation; that gap is not attributed wholly to report work. R85 remains in place for fresh live measurements before another replacement. [Candidate and evidence](research/tartarus-learning-v2/final-packet-r86-20261022.md).
 

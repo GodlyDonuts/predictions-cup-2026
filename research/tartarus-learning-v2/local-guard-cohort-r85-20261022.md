@@ -1,3 +1,5 @@
+Production update05:41:44UTC: R85 is healthy and trading; complete original prefix and all535 original fills independently verified. Original20937 was successfully archived without financial mutation or retry. [Fresh proof](r85-fresh-live-20261022.json). The15-minute cadence measurement is pending.
+
 # R85: recover a cohort after a proved local rejection
 
 ## Production incident
