@@ -523,7 +523,7 @@ fn aborted_archive(log:&DispatchLog,qid:u64)->Result<FilePin>{
         let m:Value=serde_json::from_slice(&fs::read(root.join("account-queue-manifest.json"))?)?;
         let name=m["journal"].as_str().ok_or("FUNDAMENTAL_PRE_NETWORK_JOURNAL")?;
         need(root.is_absolute()&&Path::new(name).file_name().and_then(|n|n.to_str())==Some(name),"FUNDAMENTAL_PRE_NETWORK_PATH")?;
-        return FilePin::open(&root.join(name),proof["sdk"]["journalSha256"].as_str().filter(|s|hex(s)).ok_or("FUNDAMENTAL_PRE_NETWORK_HASH")?,768*1024*1024)
+        return FilePin::open(&root.join(name),proof.get("sourceJournalSha256").unwrap_or(&proof["sdk"]["journalSha256"]).as_str().filter(|s|hex(s)).ok_or("FUNDAMENTAL_PRE_NETWORK_HASH")?,768*1024*1024)
     }
     if row["kind"]=="local_final_guard_no_http"{
         need(proof["kind"]=="sdk_ordinary_final_guard_no_http_v1","FUNDAMENTAL_LOCAL_GUARD_KIND")?;

@@ -1,0 +1,11 @@
+{
+  "observedUtc": "2026-10-22T15:06:40.225637+00:00",
+  "qid": 21832,
+  "originalFullProofReverifiedUnchanged": true,
+  "sameKeyRetryAuthorized": false,
+  "accountTransportConstructed": false,
+  "productionChanged": false,
+  "helperSourceSha256": "a194036467d28ecf8cea6aa61200be515278a59bbebc12f048a09ae1f01525fa",
+  "verificationLogSha256": "41ee62d315381cb72ba8d3806b8f7bee084f4d94006b323b950fb3d6a3ea2045",
+  "currentProductionPid": 1107420
+}

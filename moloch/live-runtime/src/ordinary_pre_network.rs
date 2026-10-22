@@ -36,13 +36,15 @@ pub fn capture(queue:&Path,account:&str,scope:&Scope,spec:&RequestSpec,p:&Permit
  for name in selected(queue)?{let src=queue.join(&name);let before=fs::read(&src)?;let mut out=fs::OpenOptions::new().create_new(true).write(true).open(root.join(&name))?;out.write_all(&before)?;out.sync_all()?;if fs::read(&src)?!=before{return Err("ORDINARY_PRE_NETWORK_SOURCE_CHANGED".into())}}
  fs::File::open(&root)?.sync_all()?;
  let proof=restore(account,scope,spec,p,at,e,&json!({"snapshot":root}))?;
- if proof.evidence["sdk"]!=*original.evidence(){return Err("ORDINARY_PRE_NETWORK_SOURCE_CHANGED".into())}Ok(proof)
+ if proof.evidence.get("sdk").map(hash).unwrap_or_else(||proof.evidence["sdkSha256"].as_str().unwrap_or("").into())!=hash(original.evidence()){return Err("ORDINARY_PRE_NETWORK_SOURCE_CHANGED".into())}Ok(proof)
 }
 pub fn restore(account:&str,scope:&Scope,spec:&RequestSpec,p:&Permit,at:u64,e:&TransportError,expected:&Value)->Result<Proof>{
  let(ctx,b)=context(scope,spec,p,at,e)?;let root=PathBuf::from(expected["snapshot"].as_str().ok_or("ORDINARY_PRE_NETWORK_SNAPSHOT")?);
  if !root.is_absolute()||root.file_name().and_then(|n|n.to_str())!=Some(format!("ordinary-pre-network-{}",hash(&ctx)).as_str()){return Err("ORDINARY_PRE_NETWORK_SNAPSHOT_BINDING".into())}
  let req=request(&root,&b)?;let verified=admission::verify_local_not_sent_v1(&root,account,&b,&req,at)?;
- let evidence=json!({"kind":"ordinary_admitted_pre_network_not_sent_v1","snapshot":root,"contextSha256":hash(&ctx),"sdk":verified.evidence()});
- if expected.get("sdk").is_some()&&*expected!=evidence{return Err("ORDINARY_PRE_NETWORK_RETAINED_CHANGED".into())}
+ // Original canonical states stay in the retained SDK generation. Store a
+ // digest here, so repeated recoverable expiry cannot exhaust dispatch bounds.
+ let evidence=if expected.get("sdk").is_some(){json!({"kind":"ordinary_admitted_pre_network_not_sent_v1","snapshot":root,"contextSha256":hash(&ctx),"sdk":verified.evidence()})}else{json!({"kind":"ordinary_admitted_pre_network_not_sent_v1","snapshot":root,"contextSha256":hash(&ctx),"sdkSha256":hash(verified.evidence()),"sourceJournalSha256":verified.evidence()["journalSha256"]})};
+ if (expected.get("sdk").is_some()||expected.get("sdkSha256").is_some())&&*expected!=evidence{return Err("ORDINARY_PRE_NETWORK_RETAINED_CHANGED".into())}
  Ok(Proof{context:ctx,evidence,_verified:verified})
 }

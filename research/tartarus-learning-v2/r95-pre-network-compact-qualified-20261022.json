@@ -1,0 +1,23 @@
+{
+  "observedUtc": "2026-10-22T15:05:55.332739+00:00",
+  "sourceHashes": {
+    "moloch/live-runtime/src/ordinary_pre_network.rs": "dccc09bd44901fa820a1052a73d0ad1eda0942a0f0213c19bf599b4d64e4e347",
+    "moloch/live-runtime/src/fundamental_policy.rs": "92769e638d53d11feae427b56ccfef41d55d2d96bd28234e2babc9f019186b53",
+    "moloch/live-runtime/tests/ordinary_pre_network.rs": "1ecfdcc34dd9031f9564812da6ff0a4fd759fb36a6d31869760b8f932f6eae1e",
+    "research/tartarus-learning-v2/tools/build-pre-network-compact-r95-20261022.py": "24f9530e627d120098d1c01208d809aabc8ac797de390a97ddda3d9b0d0d0cd9"
+  },
+  "checks": {
+    "worker-tests": "test result: ok. 270 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.67s",
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.35s",
+    "pre-network-tests": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+  },
+  "binarySha256": "bda95858eca810667c6f2362df19678c25461cc8a3ebf57f0623adbbdf02c10d",
+  "nativeLibrarySha256": "ae941f303004fd5988996f076d18b7b118d847849023076a4986388737599b62",
+  "runtimeLibrarySha256": "daf190afe9e9b36d7b1da7cac12ed059f5664388c29b01c3f2de6d9e861ed150",
+  "runtimeFixtureSha256": "975d71a5e4426d5d258f807746918e8432c83806bb2676bea2c69fb1a0f476da",
+  "cliLoads": true,
+  "productionChanged": false,
+  "nativeEngineUnchanged": true,
+  "accountClientsCreated": 0,
+  "oneFilledTradePerMinuteEstablished": false
+}
