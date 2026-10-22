@@ -1,0 +1,30 @@
+{
+  "rawSha256": "d9e39603ed1a1bc82df31903f6ffc610f5f1ae73ff49778b8bc45787ab56bc96",
+  "objective": "declared_positive_expected_money",
+  "exchangeId": "1051",
+  "side": "NO",
+  "action": "BUY",
+  "quantity": 7877,
+  "limitPrice": "0.895000",
+  "validUntilMs": 1792690869633,
+  "weakestDeclaredExpectedChange": 457.401636,
+  "ordinaryMinimumExpectedChange": "504.128000",
+  "scenarios": 98,
+  "originalHypothesisQuantity": 7966,
+  "originalHypothesisPrice": "0.885000",
+  "requestedPriceTolerance": "0.010000",
+  "limitIsConservativeFundingAndValuationPrice": true,
+  "actualFillPriceClaimed": false,
+  "probabilityModels": 3,
+  "decisionProfilePolicy": "current-prices",
+  "decisionProfileIds": [
+    "price_lower_common",
+    "price_upper_common",
+    "price_midpoint_independent"
+  ],
+  "completeHeldMarkets": 21,
+  "sourceClocksRenewed": false,
+  "approvalPublished": false,
+  "submitted": false,
+  "executionAuthority": false
+}

@@ -16,6 +16,13 @@ import time
 from money_profile_policy import POLICIES, verify_summary
 
 
+def review_horizon(value):
+    value = int(value)
+    if not 30000 <= value <= 900000:
+        raise argparse.ArgumentTypeError('review horizon must be 30000..900000 ms')
+    return value
+
+
 def completion(root, view, raw_sha):
     """Bounded nomination hint; the publisher independently checks full history."""
     path = root / 'dispatch.ndjson'
@@ -81,7 +88,7 @@ def run(a):
                                reference=a.reference, deployment=a.deployment,
                                field=a.field, output=output).items():
             args += ['--'+key, str(value)]
-        args += ['--horizon-ms', '180000', '--wait-seconds', '60',
+        args += ['--horizon-ms', str(getattr(a, 'review_horizon_ms', 180000)), '--wait-seconds', '60',
                  '--decision-profile-policy', a.decision_profile_policy]
         with (a.output/f'attempt-{attempts:04d}.log').open('x') as log:
             outcome=subprocess.run(args, stdout=log, stderr=subprocess.STDOUT)
@@ -138,5 +145,7 @@ if __name__ == '__main__':
     p.add_argument('--source-commit', required=True)
     p.add_argument('--cycles', type=int, default=12)
     p.add_argument('--minutes', type=int, default=120)
+    p.add_argument('--review-horizon-ms', type=review_horizon, default=180000,
+        help='Original input/review horizon; use60000 for minute-scale repricing. Does not renew sources or guarantee a fill.')
     p.add_argument('--publish-reviewed-model-policy', action='store_true')
     run(p.parse_args())

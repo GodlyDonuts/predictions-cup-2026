@@ -1,0 +1,67 @@
+{
+  "frozenOriginalInput": "/tmp/moloch-rank-service-r97-20261022/current-money-campaign-live/attempt-0038/inputs",
+  "cutoffMs": 1792690213615,
+  "originalNativeBooks": 9,
+  "freshOriginalRawBooks": 83,
+  "mergedResearchBooks": 88,
+  "sourceSHA256": "d234a180dc6f6762e0e721f6edf5407259535247537e9ca088670705236d0bf1",
+  "approvalPublished": false,
+  "ordersSubmitted": 0,
+  "accountRequests": 0,
+  "currentEligibilityClaimed": false,
+  "candidateCount": 85,
+  "first": [
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "1051",
+        "side": "NO",
+        "n": 10000,
+        "price": 885000,
+        "previous": null,
+        "opposite_sale": null,
+        "quantity": 7966
+      },
+      "weakestDeclaredExpectedChange": 542.150028,
+      "expectedChangeMicrosNumerators": [
+        588894516000000,
+        612768618000000,
+        542150028000000
+      ],
+      "bookReceivedAt": "2026-10-22T17:30:12.767Z",
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 589484000,
+        "ordinaryMaximumExpectedChangeMicros": 613382000,
+        "ordinaryMinimumExpectedChange": "589.484000",
+        "ordinaryMaximumExpectedChange": "613.382000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62981\",\"raceName\":\"U.S. Senate Tennessee\",\"stageId\":\"98111\",\"usState\":\"TN\"}",
+            "partyCoefficients": {
+              "Democratic Party": -7966
+            },
+            "minimumMassesPpm": {
+              "Democratic Party": 41000
+            },
+            "maximumMassesPpm": {
+              "Democratic Party": 38000
+            },
+            "minimumOtherWinnerMassPpm": 959000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      },
+      "maximumPrefixLossVersusHoldMicros": 7049910000,
+      "minimumPrefixWealthMicros": 33249405000,
+      "executionAuthority": false
+    }
+  ],
+  "historicalEngineeringOnly": true,
+  "calibratedAlphaClaimed": false
+}
