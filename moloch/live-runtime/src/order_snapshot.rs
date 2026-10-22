@@ -19,7 +19,10 @@ impl Snapshot{
  pub fn validate_current(&self,bank:&Session)->bool{self.key==Key::current(bank)}
 }
 thread_local!{static CURRENT:RefCell<Option<Arc<Snapshot>>>=const{RefCell::new(None)};}
+struct Selected{key:Key,bytes:usize,records:BTreeMap<u64,Arc<Value>>}
+thread_local!{static SELECTED:RefCell<Option<Selected>>=const{RefCell::new(None)};}
 #[cfg(test)]thread_local!{static RENDERS:std::cell::Cell<usize>=const{std::cell::Cell::new(0)};}
+#[cfg(test)]thread_local!{static SHARED_RENDERS:std::cell::Cell<usize>=const{std::cell::Cell::new(0)};}
 // Count serde_json string escaping without allocating another encoded copy.
 // Multiplying every ordinary UTF-8 byte by six disabled the cache for valid
 // large rank evaluations, rebuilding all orders for each ownership lookup.
@@ -64,6 +67,29 @@ pub fn quote(bank:&Session,qid:u64)->Option<Value>{
  }
  bank.engine().order_record(qid)
 }
+/// Borrow one exact rendered row at this immutable Session head. Historical
+/// rank proofs can be large; auditing their scalar fields must not repeatedly
+/// clone/drop the entire proof. No row survives a head/session/manifest change.
+/// Bounds limit retention only: an oversized row is returned uncached.
+pub fn shared_quote(bank:&Session,qid:u64)->Option<Arc<Value>>{
+ let key=Key::current(bank);
+ if let Some(hit)=SELECTED.with(|slot|slot.borrow().as_ref().filter(|s|s.key==key).and_then(|s|s.records.get(&qid)).cloned()){return Some(hit)}
+ SELECTED.with(|slot|{
+  if slot.borrow().as_ref().is_none_or(|s|s.key!=key){
+   *slot.borrow_mut()=Some(Selected{key,bytes:0,records:BTreeMap::new()});
+  }
+ });
+ #[cfg(test)]SHARED_RENDERS.with(|n|n.set(n.get()+1));
+ let value=Arc::new(quote(bank,qid)?);
+ if let Some(bytes)=encoded_bound(&value){
+  SELECTED.with(|slot|{let mut slot=slot.borrow_mut();let state=slot.as_mut().unwrap();
+   if state.records.len()<MAXIMUM_RECORDS&&state.bytes.checked_add(bytes).is_some_and(|n|n<=MAXIMUM_ENCODED_BYTES){
+    state.bytes+=bytes;state.records.insert(qid,value.clone());
+   }
+  });
+ }
+ Some(value)
+}
 #[cfg(test)]mod tests{
  use super::*;use serde_json::json;
  #[test]fn string_bounds_match_original_json_escaping_in_keys_and_values(){
@@ -101,6 +127,11 @@ pub fn quote(bank:&Session,qid:u64)->Option<Value>{
   let before=bank.durable_head();let journal=std::fs::read(root.join("events.jsonl")).unwrap();
   for q in &original{assert_eq!(quote(&bank,q["id"].as_u64().unwrap()).as_ref(),Some(q));}
   assert!(quote(&bank,u64::MAX).is_none());assert_eq!(RENDERS.with(|n|n.get()),0);
+  SELECTED.with(|slot|*slot.borrow_mut()=None);SHARED_RENDERS.with(|n|n.set(0));
+  let id=original[0]["id"].as_u64().unwrap();let selected=shared_quote(&bank,id).unwrap();
+  for _ in 0..100{let same=shared_quote(&bank,id).unwrap();assert!(Arc::ptr_eq(&selected,&same));assert_eq!(same.as_ref(),&original[0]);}
+  assert_eq!(SHARED_RENDERS.with(|n|n.get()),1);assert_eq!(RENDERS.with(|n|n.get()),0);
+  assert!(shared_quote(&bank,u64::MAX).is_none());
   let first=snapshot(&bank);
   for q in &original{
    let current=snapshot(&bank);assert!(Arc::ptr_eq(&first,&current));
@@ -111,11 +142,17 @@ pub fn quote(bank:&Session,qid:u64)->Option<Value>{
   }
   assert_eq!(RENDERS.with(|n|n.get()),1);assert_eq!(bank.durable_head(),before);assert_eq!(std::fs::read(root.join("events.jsonl")).unwrap(),journal);
   let tick=json!({"type":"tick","receivedAt":iso(at+1)});bank.accept("ticks",1,&tick).unwrap();
+  let changed=shared_quote(&bank,id).unwrap();assert!(!Arc::ptr_eq(&selected,&changed));assert_eq!(changed.as_ref(),&bank.engine().order_record(id).unwrap());
   for q in bank.engine().order_records(){assert_eq!(quote(&bank,q["id"].as_u64().unwrap()),Some(q));}
   assert_eq!(RENDERS.with(|n|n.get()),1);
   let after=snapshot(&bank);assert!(!first.validate_current(&bank));assert!(!Arc::ptr_eq(&first,&after));assert_eq!(after.records(),bank.engine().order_records());assert_eq!(RENDERS.with(|n|n.get()),2);
   assert!(!bank.accept("ticks",1,&tick).unwrap());assert!(Arc::ptr_eq(&after,&snapshot(&bank)));
+  assert!(Arc::ptr_eq(&changed,&shared_quote(&bank,id).unwrap()));
   let mut conflict=tick.clone();conflict["receivedAt"]=json!(iso(at+2));assert!(bank.accept("ticks",1,&conflict).is_err());assert!(Arc::ptr_eq(&after,&snapshot(&bank)));assert_eq!(RENDERS.with(|n|n.get()),2);
-  drop(bank);CURRENT.with(|slot|*slot.borrow_mut()=None);std::fs::remove_dir_all(root).unwrap();
+  // A different held Session with the same order number must not hit this row.
+  let other_root=root.with_extension("other");let other=Session::open_live(&other_root,&policy,&seed).unwrap();
+  assert!(shared_quote(&other,id).is_none());assert_eq!(shared_quote(&bank,id).unwrap().as_ref(),changed.as_ref());
+  drop(other);std::fs::remove_dir_all(other_root).unwrap();
+  drop(bank);CURRENT.with(|slot|*slot.borrow_mut()=None);SELECTED.with(|slot|*slot.borrow_mut()=None);std::fs::remove_dir_all(root).unwrap();
  }
 }

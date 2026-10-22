@@ -2122,12 +2122,19 @@ fn existing_reservation_stage(q:&Value,original:&Value,at:u64,facts_until:u64)->
  if q["reviewedInventoryExit"].is_null()||q["action"]!="sell"||q["retired"]!=false||q["cancelEffectiveAt"].is_u64()||q["expiresAt"].as_u64().is_none_or(|end|end<=at)||at>=facts_until{return Err("LIVE_EXISTING_RESERVATION_OR_FACTS_EXPIRED".into())}
  let activation=q["activationAt"].as_u64().ok_or("LIVE_QUOTE_ACTIVATION")?;Ok((activation>at).then_some(activation))
 }
+#[cfg(test)]
 fn reviewed_reserved_preflight(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut RestSource,f:&FundamentalRuntime,original:&Value,reads:&mut impl OrdinaryPreflightReads)->Result<Option<(SnapshotSet,u64)>>{
+ bank.with_deferred_report(|bank|reviewed_reserved_preflight_inside_report_scope(c,bank,log,source,f,original,reads))
+}
+// Caller owns the report scope THROUGH submit_order. Original event/head and
+// intent writes stay synchronous; the large derived report must not consume
+// the final book's lifetime before physical authority is checked.
+fn reviewed_reserved_preflight_inside_report_scope(c:&Control,bank:&mut Session,log:&DispatchLog,source:&mut RestSource,f:&FundamentalRuntime,original:&Value,reads:&mut impl OrdinaryPreflightReads)->Result<Option<(SnapshotSet,u64)>>{
  let ex=original["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;
  if reviewed_reserved_exit(bank,log,&c.scope,ex,reads.now_ms())?.as_ref()!=Some(original){return Ok(None)}
  f.authority.validate()?;if !reads.guarded()?{return Ok(None)}
  let market=original["marketId"].as_str().ok_or("LIVE_MARKET_ID")?;
- let facts=match preflight_snapshots(c,bank,source,market,Some(original),reads){Ok(facts)=>facts,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return Ok(None),Err(e)=>return Err(e)};
+ let facts=match snapshots_for_market(c,market,|ep|preflight_read(bank,source,reads,Some(original),ep)){Ok(facts)=>facts,Err(e)if e.is::<PreflightQuoteInvalidated>()=>return Ok(None),Err(e)=>return Err(e)};
  let Some(until)=existing_facts_until(&facts,reads.now_ms())?else{return Ok(None)};
  accept_fresh_book(bank,c,original,&facts.book,source)?;
  if reviewed_reserved_exit(bank,log,&c.scope,ex,reads.now_ms())?.as_ref()!=Some(original){return Ok(None)}
@@ -2162,8 +2169,10 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
  }
  refresh_controls(c,authority,stream)?;
  if let Some(original)=retry{
-  let Some((facts,until))=reviewed_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_REVIEWED_RESERVATION_OR_PACKET_INELIGIBLE")};
-  return submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,facts,until)
+  return bank.with_deferred_report(|bank|{
+   let Some((facts,until))=reviewed_reserved_preflight_inside_report_scope(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_REVIEWED_RESERVATION_OR_PACKET_INELIGIBLE")};
+   submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,facts,until)
+  })
  }
  // Planning needs a current official book and the owned native ledger. Fetch
  // the complete physical packet AFTER reservation/activation, as on entries,
@@ -2200,8 +2209,10 @@ fn reviewed_existing_exit(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut
    Err(e)if e.to_string()=="LIVE_EXISTING_RESERVATION_OR_FACTS_EXPIRED"=>return existing_exit_deferred(c,ex,"activation","ORIGINAL_RESERVATION_EXPIRED"),Err(e)=>return Err(e),
   }
  }
- let Some((fresh,until))=reviewed_reserved_preflight(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_REVIEWED_RESERVATION_OR_PACKET_INELIGIBLE")};
- submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,fresh,until)
+ bank.with_deferred_report(|bank|{
+  let Some((fresh,until))=reviewed_reserved_preflight_inside_report_scope(c,bank,log,source,f,&original,&mut LivePreflightReads{last_stream_service:None,frames_per_service:RANK_REALTIME_FRAMES_PER_SERVICE,t,c,authority,stream,breadth,universe})?else{return existing_exit_deferred(c,ex,"reserved_preflight","CURRENT_REVIEWED_RESERVATION_OR_PACKET_INELIGIBLE")};
+  submit_existing_reservation(t,c,bank,log,authority,stream,f,&original,fresh,until)
+ })
 }
 fn submit_existing_reservation(t:&mut Transport,c:&Control,bank:&mut Session,log:&mut DispatchLog,authority:&Arc<ProductionAuthority>,stream:&Realtime,f:&mut FundamentalRuntime,original:&Value,facts:SnapshotSet,facts_until:u64)->Result<()>{
  let ex=original["exchangeId"].as_str().ok_or("LIVE_QUOTE_SCOPE")?;let qid=original["id"].as_u64().ok_or("LIVE_QUOTE_ID")?;
@@ -4173,6 +4184,25 @@ pub fn main()->Result<()>{
    token.authorize(&c.scope,&request,&permit,now()).unwrap();
    assert!(token.authorize(&c.scope,&request,&permit,until).is_err(),"original expiry still applies; no source clock is extended");
    assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty()&&f.bank.engine().fills().is_empty());
+  }
+ }
+ #[test]fn reserved_exit_packet_defers_only_projection_through_physical_preparation(){
+  for fail in [false,true]{
+   let(mut f,mut runtime,c,mut source,q)=setup_kind_at(now()-16000,true);let id=q["id"].as_u64().unwrap();
+   let path=f.root.0.join("bank/report.json");let prior=fs::read(&path).unwrap();let old_head=f.bank.durable_head();let cash=f.bank.engine().wallet.cash;let lots=f.bank.engine().wallet.positions();let dispatch=fs::read(f.root.0.join("dispatch.ndjson")).unwrap();let mut reads=Reads::new();let request=f.spec(&q);
+   let result:Result<()>=f.bank.with_deferred_report(|bank|{
+    let(facts,until)=reviewed_reserved_preflight_inside_report_scope(&c,bank,&f.log,&mut source,&runtime,&q,&mut reads)?.ok_or("EXPECTED_CURRENT_RESERVED_PACKET")?;
+    assert_eq!(reads.endpoints.len(),7);assert_eq!(reads.services,7);assert_eq!(serde_json::to_value([&facts.account,&facts.positions,&facts.open_orders,&facts.cash_balance,&facts.market,&facts.contract,&facts.book])?,json!(reads.returned));
+    assert_eq!(fs::read(&path)?,prior,"historical projection must stay outside final physical preparation");assert_ne!(bank.durable_head(),old_head);
+    assert_eq!(load(&f.root.0.join("bank/head.json"))?["sequence"],bank.durable_head()["sequence"],"original head remains durable");
+    let permit=Permit{run_id:c.activation.run_id.clone(),intent_id:id.to_string(),owner:"Codex".into(),expires_at_ms:now()+15000,maximum_quantity:q["quantity"].as_u64().unwrap() as u32,maximum_cost:"3.000000".into()};
+    let token=match fundamental_preintent(&mut runtime,bank,&f.log,&c.scope,&q,q["quantity"].as_u64().unwrap(),&request,&permit,now,||Ok(()))?{FundamentalPreintent::Ready(v)=>v,_=>return Err("EXPECTED_CURRENT_PHYSICAL_TOKEN".into())};
+    token.authorize(&c.scope,&request,&permit,now())?;assert!(token.authorize(&c.scope,&request,&permit,token.expires_at_ms()).is_err());assert!(existing_reservation_stage(&q,&q,until,until).is_err());
+    assert_eq!(fs::read(&path)?,prior);
+    if fail{Err("SYNTHETIC_POST_PREPARATION_FAILURE".into())}else{Ok(())}
+   });
+   if fail{assert_eq!(result.unwrap_err().to_string(),"SYNTHETIC_POST_PREPARATION_FAILURE")}else{result.unwrap()}
+   assert_eq!(load(&path).unwrap()["sequence"],f.bank.durable_head()["sequence"]);assert_eq!(f.bank.engine().wallet.cash,cash);assert_eq!(f.bank.engine().wallet.positions(),lots);assert_eq!(fs::read(f.root.0.join("dispatch.ndjson")).unwrap(),dispatch);assert!(f.log.intents.is_empty()&&f.log.attempted.is_empty()&&f.bank.engine().fills().is_empty());
   }
  }
  #[test]fn passive_reserved_retry_priority_never_promotes_revoked_expired_or_dispatched_quotes(){

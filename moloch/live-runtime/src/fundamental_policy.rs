@@ -1609,7 +1609,7 @@ impl Cohorts{
                 &&!bank.engine().fills().iter().any(|f|f["orderId"]==*id),"FUNDAMENTAL_ABANDONED_LATE_PHYSICAL_EVENT")?;
             need(a.cohort.first_fill_index<=bank.engine().fills().len()&&digest(&bank.engine().fills()[..a.cohort.first_fill_index])?==a.cohort.prior_fills_sha256
                 &&digest(&b.spec)?==b.spec_sha256,"FUNDAMENTAL_ABANDONED_PREFIX_CHANGED")?;
-            let q=crate::order_snapshot::quote(bank,*id).ok_or("FUNDAMENTAL_ABANDONED_QUOTE")?;
+            let q=crate::order_snapshot::shared_quote(bank,*id).ok_or("FUNDAMENTAL_ABANDONED_QUOTE")?;
             need(q["retired"]==true&&q["filled"]==0&&q["exchangeId"]==a.exchange&&q["side"]==b.quote["side"]&&q["action"]==b.quote["action"]
                 &&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(if a.closed_zero.is_some(){request_quantity(&b.spec)?}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?}),"FUNDAMENTAL_ABANDONED_NATIVE_CHANGED")?;
             if let Some(original)=log.intents.get(id){let spec:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&spec)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(*id).as_ref(),"FUNDAMENTAL_ABANDONED_ORIGINAL_CHANGED")?;}
@@ -1642,7 +1642,7 @@ impl Cohorts{
                 let n=request_quantity(&b.spec)?;request_matches(&b.spec,&b.quote,&self.run,&self.policies[ex].tournament_id,n)?;
                 if let Some(original)=log.intents.get(&b.qid){let s:RequestSpec=serde_json::from_value(original["spec"].clone())?;need(digest(&s)?==b.spec_sha256&&original.get("fundamental")==self.durable_tag(b.qid).as_ref(),"FUNDAMENTAL_DISPATCH_REQUEST_OR_TAG_CHANGED")?;}
                 else{need(log.never_attempted(b.qid),"FUNDAMENTAL_MISSING_ORIGINAL_INTENT")?;}
-                let q=crate::order_snapshot::quote(bank,b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
+                let q=crate::order_snapshot::shared_quote(bank,b.qid).ok_or("FUNDAMENTAL_NATIVE_QUOTE_MISSING")?;
                 let expected=if bank.engine().live_order_bindings().contains_key(&b.qid){n}else{b.quote["quantity"].as_u64().ok_or("FUNDAMENTAL_QUANTITY")?};
                 need(q["exchangeId"]==*ex&&q["side"]==b.quote["side"]&&q["marketId"]==b.quote["marketId"]&&q["action"]==b.quote["action"]&&q["price"]==b.quote["price"]&&q["quantity"].as_u64()==Some(expected),"FUNDAMENTAL_NATIVE_BINDING_CHANGED")?;
             }

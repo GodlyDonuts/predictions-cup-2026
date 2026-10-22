@@ -1,0 +1,29 @@
+{
+  "sourceHashes": {
+    "moloch/live-runtime/src/order_snapshot.rs": "2e57964834c6d616257a99616ef729efe5dcf9410a7edfcb08b12f8e987dc07b",
+    "moloch/live-runtime/src/fundamental_policy.rs": "931d86e6c26364697a7338c7cba814f6d1802c9a8a87149105eb8cfffd76e076",
+    "research/tartarus-learning-v2/tools/build-preintent-orders-r101-20261022.py": "1e83d636197e31ce82c1155bba7c0cc995c1d6d214eac555eb68555d34626689",
+    "moloch/live-runtime/src/worker.rs": "709931a985defcdc24e2e8e26cd77766e731cce0f82e0b17a517624d0cb0c33f"
+  },
+  "checks": {
+    "order-tests": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 281 filtered out; finished in 0.08s",
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.41s",
+    "rank-cohort-tests": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s",
+    "worker-tests": "test result: ok. 271 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.77s"
+  },
+  "binarySha256": "40404168cabb1d343bfe676ae54999a780058e5c1cee0e1f9cd23ddba71318fa",
+  "runtimeLibrarySha256": "ac5a3316da821fec84432ba661316cb666f774126fe88f286bc8b75d002dd07a",
+  "nativeLibrarySha256": "0362f151b37b9eec0ea375412039682a432a43541dc24eea8f25e263bd1cbba5",
+  "nativeLibraryChanged": false,
+  "productionChanged": false,
+  "accountClientsCreated": 0,
+  "monetaryCapsChanged": false,
+  "cliLoads": true,
+  "runtimeFixtureSha256": "d6009e87b4c34a0fd8df353b33bc3828ad77b6b298285a3f4cc891111a17db09",
+  "workerTestsResultsFile": "worker-tests-results-retry-001.log",
+  "originalFailedWorkerTestRetained": "worker-tests-results.log",
+  "workerReportPublishedAfterPhysicalPreparation": true,
+  "originalEventHeadAndIntentDurabilityUnchanged": true,
+  "originalFactClocksUnchanged": true,
+  "workerSourceStagedBeforeReleaseCompilation": true
+}

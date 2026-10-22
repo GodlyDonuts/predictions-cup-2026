@@ -1,0 +1,35 @@
+{
+  "accountClientsCreated": 0,
+  "encodedRankRowBytes": 21728236,
+  "endToEndDispatchBenchmark": false,
+  "exactInspectedFieldsMatch": true,
+  "fullOriginalUnchanged": true,
+  "productionChanged": false,
+  "rankRows": 26,
+  "runs": [
+    {
+      "passes": 8,
+      "seconds": 1.8620025789999999,
+      "shared": false
+    },
+    {
+      "passes": 8,
+      "seconds": 0.19140175,
+      "shared": true
+    },
+    {
+      "passes": 8,
+      "seconds": 0.179897455,
+      "shared": true
+    },
+    {
+      "passes": 8,
+      "seconds": 1.367673889,
+      "shared": false
+    }
+  ],
+  "sourceBytes": 51787330,
+  "sourcePath": "/tmp/moloch-preintent-orders-r101-20261022/original-report-for-allocation-benchmark.json",
+  "sourceSha256": "2197089562af31c1e61896d7016e5268f8805cab513a818d5e86bbfc577759e0",
+  "benchmarkSourceSha256": "14a8b0957e1abd2f5c90a7fdfb7615dc7f2d1c5ef130e02e4ca5969c7ac14923"
+}

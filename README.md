@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,19:49UTC
+## Latest state: October22,20:14UTC
+
+R101 is qualified for a controlled replacement:432 checks pass. It shares selected historical order rows during cohort checks and moves large derived-report publication after reserved-exit submission. Original durability, account reconciliation, evidence deadlines, risk settings and the native engine remain unchanged. The existing R100 worker stays live until the planned handoff. New fills, speed and ROI remain unproved. [Change, benchmark and exact qualification](research/tartarus-learning-v2/preintent-orders-r101-20261022.md).
+
+### Earlier19:49UTC scoped reference maintenance
 
 The two selected standing maker policies (NO1077 and NO983) now have scoped reference maintenance. Deployed helper `1e34028f`, PID1129150, protects native reservations before acknowledgment; 14 checks pass on the VPS. Original worker1124953 continues without restart. Broad nomination/review controllers remain stopped. Current native reservations are not proof of exchange acceptance: some passive submissions still defer because their physical evidence window is nearly exhausted. Last worker progress reports691 fill rows, with no new filled order or profit established. [Deployment and live observations](research/tartarus-learning-v2/agent-maker-refresh-live-20261022.json).
 
