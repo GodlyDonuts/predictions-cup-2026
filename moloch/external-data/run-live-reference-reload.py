@@ -8,6 +8,7 @@ import argparse
 import fcntl
 import gzip
 import hashlib
+import importlib.util
 import json
 import os
 import socket
@@ -22,6 +23,36 @@ from datetime import datetime
 
 def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def capture_values(config):
+    supplemental = config.get('supplementalReference')
+    extras = set(supplemental['exchangeIds']) if supplemental else set()
+    base_scope = set(config['exchanges']) - extras
+    if not base_scope or not extras <= set(config['exchanges']):
+        raise ValueError('CAPTURE_CONFIG_SCOPE')
+    url = config['captureUrl'] + '?exchanges=' + ','.join(sorted(base_scope))
+    with urllib.request.urlopen(url, timeout=20) as response:
+        raw = response.read(2_000_001)
+        if len(raw) > 2_000_000:
+            raise ValueError('PUBLIC_CAPTURE_BOUND')
+        if response.headers.get('Content-Encoding') == 'gzip':
+            raw = gzip.decompress(raw)
+    if len(raw) > 4_000_000:
+        raise ValueError('PUBLIC_CAPTURE_DECOMPRESSED_BOUND')
+    capture = json.loads(raw)
+    if {x['exchangeId'] for x in capture['rows']} != base_scope or len(capture['rows']) != len(base_scope):
+        raise ValueError('EXACT_CAPTURE_RESPONSE_SCOPE')
+    if supplemental:
+        path = Path(supplemental['modulePath'])
+        source = path.read_bytes()
+        if hashlib.sha256(source).hexdigest() != supplemental['moduleSha256']:
+            raise ValueError('SUPPLEMENT_MODULE_CHANGED')
+        spec = importlib.util.spec_from_file_location('supplemental_reference', path)
+        module = importlib.util.module_from_spec(spec)
+        exec(compile(source, str(path), 'exec'), module.__dict__)
+        capture = module.append(config, capture, time.time_ns() // 1_000_000)
+    return capture
 
 
 def put(path, value):
@@ -296,18 +327,7 @@ def main():
                 report('external_generation_changed'); return
             if sha(state['controlPath']) != state['controlSha256']:
                 report('active_review_file_changed'); return
-            url = c['captureUrl'] + '?exchanges=' + ','.join(c['exchanges'])
-            with urllib.request.urlopen(url, timeout=20) as response:
-                raw = response.read(2_000_001)
-                if len(raw) > 2_000_000:
-                    raise ValueError('PUBLIC_CAPTURE_BOUND')
-                if response.headers.get('Content-Encoding') == 'gzip':
-                    raw = gzip.decompress(raw)
-            if len(raw) > 4_000_000:
-                raise ValueError('PUBLIC_CAPTURE_DECOMPRESSED_BOUND')
-            capture = json.loads(raw)
-            if {x['exchangeId'] for x in capture['rows']} != set(c['exchanges']):
-                raise ValueError('EXACT_CAPTURE_RESPONSE_SCOPE')
+            capture = capture_values(c)
             # The original refresh changed review hashes even when all actual
             # order-price ticks were identical. That consumed account reads and
             # displaced pending plans without new economic information.
@@ -317,7 +337,8 @@ def main():
             selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000,
                 refresh_open=refresh_open_once, execution_modes=execution_modes_policy(c), entry_margins=execution_margins_policy(c))
             if not selected:
-                report('fresh_reference_no_price_tick_change', capturedAtMs=capture['capturedAtMs'], openTargets=len(open_exchanges))
+                report('fresh_reference_no_price_tick_change', capturedAtMs=capture['capturedAtMs'], openTargets=len(open_exchanges),
+                       supplementalUnavailable=capture.get('supplementalUnavailable', []))
                 time.sleep(max(1, c['intervalSeconds'] - (time.monotonic() - started)))
                 continue
             capture['rows'] = [x for x in capture['rows'] if x['exchangeId'] in selected]
