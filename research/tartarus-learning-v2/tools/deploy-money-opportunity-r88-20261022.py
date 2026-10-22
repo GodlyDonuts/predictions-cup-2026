@@ -125,7 +125,7 @@ def install():
     assert not attempted - ack - resolved, 'Original unknown acceptance must be resolved first'
     bridge_sha = sha(B / 'engine-upgrade-v1.json')
     prefix = dict(bytes=(B / 'events.jsonl').stat().st_size, sha256=sha(B / 'events.jsonl'))
-    proposal_path=L/'upgrade.proposed.json'
+    proposal_path=L/'upgrade.bounded.proposed.json'
     subprocess.run([str(L/'propose-upgrade'),str(B),OLD_SHA,datetime.now(timezone.utc).isoformat(),str(proposal_path)],check=True)
     assert proposal_path.stat().st_size<=384*1024*1024
     proposed=json.loads(proposal_path.read_bytes());prior=json.loads((B/'engine-upgrade-v1.json').read_bytes())
@@ -163,6 +163,11 @@ def install():
         os.rename(R/'EXECUTION_STOP', incident/'EXECUTION_STOP.original'); result.update(engineIdentity=last['toEngineIdentity'],allPriorEngineBridgesPreserved=True,upgradeBytes=proposal_path.stat().st_size,newBridgeSha256=sha(B/'engine-upgrade-v1.json')); fresh(L/'installed.public.json', result)
         for directory in [incident,B,R,release,R.parent,unit_path.parent]:
             fd=os.open(directory,os.O_RDONLY);os.fsync(fd);os.close(fd)
+    # The preserved decoded chain is several GiB. Release installer-only copies
+    # before the worker restores that same chain; retain the exact on-disk pins.
+    del proposed, prior, report, dispatch, report_raw, last
+    import gc
+    gc.collect()
     for args in [('daemon-reload',), ('reset-failed','moloch-live.service'), ('start','moloch-live.service')]: system(*args)
     pid = int(system('show','moloch-live.service','-p','MainPID','--value')); proc = Path('/proc')/str(pid)
     assert pid > 0 and sha(proc/'exe') == new_sha

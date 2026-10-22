@@ -1,6 +1,7 @@
 """Localhost-only public observation relay for an authenticated SSH tunnel."""
 import argparse
 import gzip
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import importlib.util
 import json
@@ -8,6 +9,33 @@ import os
 from pathlib import Path
 import time
 from urllib.parse import parse_qs, urlparse
+
+
+def rank_cache(config):
+    """Read public quote originals only; issue time does not renew source clocks."""
+    markets, total, unavailable = [], 0, []
+    for path in sorted((Path(config['kalshiRoot']) / 'latest').glob('*.json')):
+        if path.stat().st_size > 4 * 1024 * 1024:
+            raise ValueError('RANK_CACHE_MEMBER_BOUND')
+        raw = path.read_bytes()
+        total += len(raw)
+        if total > 32 * 1024 * 1024:
+            raise ValueError('RANK_CACHE_TOTAL_BOUND')
+        row = json.loads(raw)
+        if row.get('status') != 200:
+            unavailable.append(path.stem)
+            continue
+        if (path.stem != row['ticker']
+                or hashlib.sha256(row['bodyText'].encode()).hexdigest() != row['bodySha256']
+                or json.loads(row['bodyText']) != row['body']):
+            raise ValueError('RANK_CACHE_ORIGINAL_BODY')
+        markets.append(row)
+    if not markets:
+        raise ValueError('RANK_CACHE_EMPTY')
+    from datetime import datetime, timezone
+    return dict(at=datetime.now(timezone.utc).isoformat(), markets=markets,
+        unavailableTickers=unavailable, officialSigRequests=0, newVenueRequests=0,
+        sourceClocksRenewed=False, executionAuthority=False)
 
 spec = importlib.util.spec_from_file_location('reference_capture', Path(__file__).with_name('prepare-live-reference-review.py'))
 module = importlib.util.module_from_spec(spec)
@@ -33,6 +61,9 @@ def main():
             try:
                 if url.path == '/status':
                     value = dict(status)
+                elif url.path == '/rank-cache' and not url.query:
+                    value = rank_cache(c)
+                    zipped = True
                 elif url.path == '/capture':
                     query = parse_qs(url.query, strict_parsing=True)
                     if set(query) != {'exchanges'} or len(query['exchanges']) != 1:
