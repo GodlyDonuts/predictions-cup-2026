@@ -1,0 +1,80 @@
+{
+  "observedUtc": "2026-10-22T04:20:21.571007+00:00",
+  "workerPid": 1063142,
+  "referenceUpdaterPid": 1063145,
+  "generationSha256": "58325853ff3bd83a4e8027deb2bec61620565bdef3dca24812992ac7609f657b",
+  "controlSha256": "6bb13aadc50f692ec036aae6cadb4264d66600c0d9348596041f9dd2b798163e",
+  "reviews": [
+    {
+      "exchangeId": "1042",
+      "current": false,
+      "expiresAtMs": 1792357242718
+    },
+    {
+      "exchangeId": "1068",
+      "current": false,
+      "expiresAtMs": 1792358159119
+    },
+    {
+      "exchangeId": "966",
+      "current": true,
+      "expiresAtMs": 1792643603393
+    },
+    {
+      "exchangeId": "977",
+      "current": true,
+      "expiresAtMs": 1792643604865
+    },
+    {
+      "exchangeId": "1067",
+      "current": true,
+      "expiresAtMs": 1792643610906
+    },
+    {
+      "exchangeId": "865",
+      "current": true,
+      "expiresAtMs": 1792643603549
+    },
+    {
+      "exchangeId": "872",
+      "current": true,
+      "expiresAtMs": 1792643604713
+    },
+    {
+      "exchangeId": "993",
+      "current": true,
+      "expiresAtMs": 1792643605562
+    },
+    {
+      "exchangeId": "885",
+      "current": true,
+      "expiresAtMs": 1792643606178
+    },
+    {
+      "exchangeId": "1051",
+      "current": true,
+      "expiresAtMs": 1792643605562
+    },
+    {
+      "exchangeId": "851",
+      "current": true,
+      "expiresAtMs": 1792643602251
+    },
+    {
+      "exchangeId": "1043",
+      "current": true,
+      "expiresAtMs": 1792643601599
+    },
+    {
+      "exchangeId": "1044",
+      "current": true,
+      "expiresAtMs": 1792643607128
+    },
+    {
+      "exchangeId": "1077",
+      "current": true,
+      "expiresAtMs": 1792643605124
+    }
+  ],
+  "accountRequests": 0
+}
