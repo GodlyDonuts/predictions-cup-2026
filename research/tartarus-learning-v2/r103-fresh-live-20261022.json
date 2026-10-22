@@ -1,0 +1,38 @@
+{
+  "observedUtc": "2026-10-22T23:09:42.576245+00:00",
+  "pid": 1136150,
+  "processAlive": true,
+  "currentPidProgress": true,
+  "stopPresent": false,
+  "newAccountClients": 0,
+  "processIo": {
+    "rchar": "7789207433",
+    "wchar": "2179442962",
+    "syscr": "401276",
+    "syscw": "31076",
+    "read_bytes": "4329361408",
+    "write_bytes": "2181246976",
+    "cancelled_write_bytes": "0"
+  },
+  "progress": {
+    "actualFills": 716,
+    "actualOrders": 1880,
+    "at": "2026-10-22T23:09:31.333Z",
+    "completedReadScopes": 1,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1136150,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 34,
+    "terminalOrders": 1879
+  },
+  "unchangedFillFinancialFieldsPreserved": true,
+  "fullOriginalFinancialPrefixPreserved": true,
+  "originalFillRows": 716,
+  "currentFillRows": 716,
+  "originalFillPrefixPreserved": true,
+  "freshTradingVerified": true,
+  "nativeEngineUnchanged": true,
+  "profitabilityEstablished": false
+}

@@ -10,6 +10,7 @@ from hashlib import sha256
 import json
 import os
 from pathlib import Path
+import subprocess
 import time
 from review_generation_window import publication_boundary, require_current_generation
 
@@ -41,9 +42,9 @@ def create(path, raw):
         os.fsync(stream.fileno())
 
 
-def completed_prior_review(root, view, old_sha, qid):
+def completed_prior_review(root, view, old_sha, qid, completion=None):
     assert qid not in view['knownUnclosedAcknowledgments'] and not any(q['id'] == qid for q in view['activeNativeOrders']), 'OLD_REVIEW_STILL_HAS_NATIVE_OR_PHYSICAL_LIABILITY'
-    intent, closed = False, None
+    intent, closed, not_sent = False, None, None
     private(root / 'dispatch.ndjson')
     with (root / 'dispatch.ndjson').open('rb') as stream:
         for line in stream:
@@ -55,8 +56,44 @@ def completed_prior_review(root, view, old_sha, qid):
                 intent = (event.get('rankCampaign') or {}).get('rawSha256') == old_sha
             if event['kind'] == 'closed':
                 closed = digest(line)
-    assert intent and closed is not None, 'ORIGINAL_MATCHING_RANK_INTENT_AND_TERMINAL_REQUIRED'
-    return dict(qid=qid, priorRawSha256=old_sha, originalClosedLineSha256=closed)
+            if event['kind'] == 'admitted_pre_network_not_sent':
+                not_sent = digest(line)
+    assert intent, 'ORIGINAL_MATCHING_RANK_INTENT_REQUIRED'
+    if closed is not None:
+        return dict(qid=qid, priorRawSha256=old_sha, originalClosedLineSha256=closed)
+    assert not_sent is not None and completion is not None, 'ORIGINAL_MATCHING_RANK_INTENT_AND_TERMINAL_REQUIRED'
+    assert view.get('sdkQueueBoundaryChecked') is True and view['unresolvedOrdinaryAttempt'] is False
+    verifier, expected = completion['verifier'], completion['verifierSha256']
+    assert verifier is not None and expected is not None, 'PRIOR_TYPED_NOT_SENT_VERIFIER_REQUIRED'
+    verifier = Path(verifier)
+    assert verifier.is_absolute() and verifier.resolve(strict=True) == verifier and not verifier.is_symlink()
+    info = verifier.stat()
+    assert info.st_uid == os.getuid() and info.st_nlink == 1 and info.st_mode & 0o022 == 0
+    assert digest(verifier.read_bytes()) == expected, 'PRIOR_NOT_SENT_VERIFIER_CHANGED'
+    report_raw = (root/'bank-all-markets-v1/report.json').read_bytes()
+    report = json.loads(report_raw)
+    quote = next(q for q in report['orders'] if q['id'] == qid)
+    assert quote['retired'] is True and quote['filled'] == 0
+    assert not any(row['orderId'] == qid for row in report['fills']), 'PRIOR_NOT_SENT_HAS_FILL'
+    raw = (root/'dispatch.ndjson').read_bytes()
+    assert raw.endswith(b'\n'), 'PRIOR_DISPATCH_SNAPSHOT_TORN'
+    snapshot = completion['prepared']/('prior-completion-' + str(qid) + '-' + digest(raw)[:16] + '.ndjson')
+    if not snapshot.exists():
+        create(snapshot, raw)
+    private(snapshot)
+    assert snapshot.read_bytes() == raw
+    checked = subprocess.run([str(verifier),str(completion['control']),str(snapshot),str(qid),old_sha],
+        capture_output=True,text=True,timeout=90)
+    assert checked.returncode == 0, 'PRIOR_TYPED_NOT_SENT_VERIFICATION_REJECTED'
+    proof = json.loads(checked.stdout)
+    assert proof['qid'] == qid and proof['priorRawSha256'] == old_sha
+    assert proof['kind'] == 'positively_proved_pre_network_not_sent' and proof['opaqueSdkProofVerified'] is True
+    assert proof['dispatchSnapshotSha256'] == digest(raw) and proof['retryAuthorized'] is False
+    assert proof['exchangeClosedClaimed'] is False and proof['accountRequests'] == 0 and proof['dispatchSnapshotModified'] is False
+    assert digest(verifier.read_bytes()) == expected and snapshot.read_bytes() == raw
+    return dict(qid=qid,priorRawSha256=old_sha,completionKind=proof['kind'],originalNotSentLineSha256=not_sent,
+        originalReportSha256=digest(report_raw),verifierSha256=expected,typedVerification=proof,
+        exchangeClosedClaimed=False,retryAuthorized=False)
 
 
 def expired_unused_review(root, view, old_sha, until):
@@ -151,13 +188,15 @@ def _run(a):
     view = json.loads(view_raw)
     assert not view['unresolvedOrdinaryAttempt'], 'UNRESOLVED_ORIGINAL_ATTEMPT'
     superseded = None
+    completion = dict(prepared=a.prepared,control=Path(os.fsdecode(command[2])),
+        verifier=getattr(a,'prior_not_sent_verifier',None),verifierSha256=getattr(a,'prior_not_sent_verifier_sha256',None))
     if active:
         qid = a.completed_qid
         old_sha = digest(old_nomination)
         assert qid is not None and all(row['rawSha256'] == old_sha for row in active), 'DIFFERENT_UNEXPIRED_REVIEW_REQUIRES_EXACT_COMPLETION_REVIEW'
-        superseded = completed_prior_review(root, view, old_sha, qid)
+        superseded = completed_prior_review(root, view, old_sha, qid, completion)
     elif a.completed_qid is not None:
-        superseded = completed_prior_review(root, view, digest(old_nomination), a.completed_qid)
+        superseded = completed_prior_review(root, view, digest(old_nomination), a.completed_qid, completion)
     else:
         superseded = expired_unused_review(root, view, digest(old_nomination), json.loads(old_nomination)['validUntilMs'])
     assert all(campaign['account'][key] == view['account'][key] for key in
@@ -191,6 +230,10 @@ def _run(a):
     archive.mkdir(mode=0o700)
     create(archive / 'nomination.previous.json', old_nomination)
     create(archive / 'owner-approval.previous.json', old_approval)
+    now = time.time_ns() // 1000000
+    assert campaign['reviewedAtMs'] <= now < until, 'ORIGINAL_REVIEW_EXPIRED_DURING_PUBLICATION'
+    assert all(source['observedAtMs'] <= now < source['observedAtMs'] + source['maximumAgeMs']
+        for source in campaign['sources']), 'ORIGINAL_SOURCE_EXPIRED_DURING_PUBLICATION'
     reviewed = dict(old, approvedCampaigns=[dict(rawSha256=a.expected_raw_sha256,
         approvedAtMs=now, validUntilMs=until)], reviewerId='Viserion-Moloch-execution-owner',
         sourceCommit=a.source_commit, monetaryReviewObjective=campaign['objective'],
@@ -230,6 +273,9 @@ if __name__ == '__main__':
     p.add_argument('--expected-raw-sha256', required=True)
     p.add_argument('--source-commit', required=True)
     p.add_argument('--completed-qid', type=int)
+    p.add_argument('--prior-not-sent-verifier',type=Path)
+    p.add_argument('--prior-not-sent-verifier-sha256',
+        help='Exact checked file-only SDK verifier hash; required when the completed predecessor never reached the network.')
     p.add_argument('--source-reference-root', type=Path,
         help='Existing source updater root; required for a managed review so unresolved reloads and changed generations are rejected before publication.')
     p.add_argument('--allow-conditional-rotation', action='store_true',

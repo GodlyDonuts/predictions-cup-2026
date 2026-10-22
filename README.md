@@ -2,7 +2,13 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,22:50UTC
+## Latest state: October22,23:32UTC
+
+R103 is verified in its trading loop with healthy realtime. The full original journal prefix, all716 original fills and unchanged financial fields passed independent restoration checks. Source helper1136220 committed fresh references for all four scopes with the new publication coordination enabled. A separate original-receipt audit verifies two1074NO sales/879shares/795.495turnover and **zero new realized gain**. [Restoration proof](research/tartarus-learning-v2/r103-fresh-live-20261022.json), [receipt audit](research/tartarus-learning-v2/r103-post-restore-turnover-20261022.json).
+
+The source-generation race now has a checked coordination window; the publisher also has a qualified, SDK-verified path to replace the old positively never-sent review. No worker restart or unknown-outcome clearing is needed for these publisher changes. A fresh one-shot Tennessee review is in progress; no new Tennessee fill or profitable rank execution is claimed. [Publication coordination](research/tartarus-learning-v2/review-generation-window-20261022.md), [typed completion proof and workflow](research/tartarus-learning-v2/review-completion-20261022.md).
+
+### Earlier22:50UTC installation
 
 R103 is installed as sole worker1136150 and is restoring the original ledger. All716 original fills, the2,985,911,186-byte financial prefix and native engine were retained; read-only preflight passed. Source helper1136153 keeps the original four-scope configuration and waits for current-worker progress. A finite file-only observer confirms the exact process is alive with advancing reads; fresh trading, end-to-end latency and profit are not yet verified. [Installation and observation](research/tartarus-learning-v2/r103-installed-restoring-20261022.json), [measured component improvement](research/tartarus-learning-v2/r103-generation-pins-20261022.md).
 

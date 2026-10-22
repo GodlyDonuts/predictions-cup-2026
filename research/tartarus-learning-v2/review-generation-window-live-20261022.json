@@ -1,0 +1,46 @@
+{
+  "deployment": {
+    "observedUtc": "2026-10-22T23:07:01.092867+00:00",
+    "sourceCommit": "8e2a0b512a08861650c6fbe384a8711ae440f8c2",
+    "workerPid": 1136150,
+    "workerStartTicks": 67885059,
+    "workerBinarySha256": "c2492607666f1be9435bfc710839e7a15cd9ce9d00f59f708e4f0ae1c8240d59",
+    "previousHelperPid": 1136153,
+    "helperPid": 1136220,
+    "configPath": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021/config-agent-maker-r103-window-009.json",
+    "configSha256": "deebd41570137545820685b7f3130c9a81056e3b262461d6e2881b7041dac326",
+    "modifiedConfigFields": [
+      "reviewGenerationWindow",
+      "sourceCommit",
+      "updaterScript",
+      "updaterSha256"
+    ],
+    "exchanges": [
+      "1051",
+      "1076",
+      "1077",
+      "983"
+    ],
+    "publisherPath": "/home/archon/apps/moloch/releases/review-generation-window-009/publish-current-money-review.py",
+    "sourceReferenceRoot": "/home/archon/apps/moloch/shared/fundamental-live-reference-20261021",
+    "workerReplaced": false,
+    "stopChanged": false,
+    "financialControlsChanged": false,
+    "sourceClocksRenewed": false,
+    "newAccountClients": 0
+  },
+  "actualSourceStatus": {
+    "atMs": 1792711658561,
+    "pid": 1136220,
+    "phase": "fresh_reference_no_price_tick_change",
+    "commits": 242,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "ownerReviewPublicationCoordinated": true,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "capturedAtMs": 1792711656408,
+    "openTargets": 5,
+    "supplementalUnavailable": []
+  }
+}
