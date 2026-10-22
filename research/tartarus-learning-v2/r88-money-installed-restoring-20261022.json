@@ -1,0 +1,38 @@
+{
+  "observedUtc": "2026-10-22T07:42:42.830594+00:00",
+  "sourceCommit": "786eca847d4dcfc353de7000df3c7856c93e9dee",
+  "binarySha256": "2d66a40f65764c040d35010f7497d4eb6e8cb9dd763ac7770c6d6aa985d1714e",
+  "controlSha256": "34e6717c3fb1f4df6cdb4546d53c6cf7302e54d56cb2591308d04a681584326b",
+  "originalFills": 573,
+  "originalReportHash": "8b4d99d7abfe914444b617919b4eb9f470b4a2cdf470b2df99d538944f718cf0",
+  "originalFinancialPrefix": {
+    "bytes": 2735273856,
+    "sha256": "d114249187056a7ce9f43b3b2c8716e405f14d717dbb86245e7bbbeec5f5f13a"
+  },
+  "originalNativeHead": {
+    "hash": "6db45aa02f92828211fc472bf08613b90b6a47221539b2f24eb06964770d467e",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "4883a55cdf2715c25a679497c7a8263f36f91be4d561925d30bb1c6b0da02528",
+    "sequence": 833862
+  },
+  "bridgeSha256": "442a7248336e18e18449d6157c4c3484789bf56634aa63781d60b9800c7fae97",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r88-money-opportunity-20261022T074222Z",
+  "nativeEngineUnchanged": false,
+  "originalFinancialStatePreserved": true,
+  "knownOpenOrders": [
+    21199
+  ],
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "engineIdentity": "468ac8fb382a51bfb001e1496199569a9cb02fc710bf90523c9c10cdd107bd22",
+  "allPriorEngineBridgesPreserved": true,
+  "upgradeBytes": 353996855,
+  "newBridgeSha256": "81fc2135d2dd4da39a2b7b60f6b4ac644df8fee3c084b3b75abff150eb01927b",
+  "pid": 1074713,
+  "startTicks": 62461683,
+  "referenceUpdaterPid": 1074716,
+  "actualExecutableAndArgumentsVerified": true
+}
