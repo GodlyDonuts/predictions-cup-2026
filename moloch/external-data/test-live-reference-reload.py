@@ -122,6 +122,16 @@ class RefreshTests(unittest.TestCase):
             self.assertEqual(refresh.changed_scopes(capture, control, {'1067'}, 150_001), [])
             self.assertEqual(p.read_text(), original)
 
+    def test_explicit_one_shot_open_refresh_requires_captured_scope_and_keeps_original_bytes(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'review.json'; original = json.dumps(self.review()); p.write_text(original)
+            control = {'fundamentalPolicy': {'reviews': [{'path': str(p)}]}}
+            capture = {'rows': [{'exchangeId': '1067', 'yesMidpoint': '.5000'}]}
+            self.assertEqual(refresh.changed_scopes(capture, control, {'1067'}, 1000), [])
+            self.assertEqual(refresh.changed_scopes(capture, control, {'1067'}, 1000, refresh_open=True), ['1067'])
+            self.assertEqual(refresh.changed_scopes({'rows': []}, control, {'1067'}, 1000, refresh_open=True), [])
+            self.assertEqual(p.read_text(), original)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -68,7 +68,7 @@ def run(a):
         target = a.output / 'prepared'
         preparer.run(SimpleNamespace(source=a.source, inputs=inputs, candidates=candidates_path, output=target,
             exchange=selected['ex'], side=selected['side'], action=selected['action'], decision_ms=time.time_ns() // 1000000,
-            horizon_ms=300000, minimum_expected_money=a.minimum_expected_money, price_tolerance=a.price_tolerance))
+            horizon_ms=a.horizon_ms, minimum_expected_money=a.minimum_expected_money, price_tolerance=a.price_tolerance))
         result = dict(state='fresh_unapproved_nomination_prepared',
             nomination=json.loads((target / 'prepared.public.json').read_bytes()),
             originalKnownOrders=json.loads((inputs / 'compiled-current.private.json').read_bytes())['knownUnclosedAcknowledgments'],
@@ -86,4 +86,5 @@ if __name__ == '__main__':
     p.add_argument('--wait-seconds', type=int, default=2700)
     p.add_argument('--minimum-expected-money', default='0.010000')
     p.add_argument('--price-tolerance', default='0.010000')
+    p.add_argument('--horizon-ms', type=int, default=300000)
     run(p.parse_args())

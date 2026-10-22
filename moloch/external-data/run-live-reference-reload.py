@@ -75,13 +75,16 @@ def review_current_until(review):
         s['observedAtMs'] + s['maximumAgeMs'] + 1 for s in review.get('sources', [])])
 
 
-def changed_scopes(capture, current_control, open_exchanges, now):
+def changed_scopes(capture, current_control, open_exchanges, now, *, refresh_open=False):
     inputs = {r['exchangeId']: r for r in capture['rows']}
     selected = []
     for file in current_control['fundamentalPolicy']['reviews']:
         review = json.loads(Path(file['path']).read_bytes())
         ex = review['exchangeId']
-        if ex not in inputs or ex in open_exchanges:
+        if ex not in inputs or ex in open_exchanges and not refresh_open:
+            continue
+        if ex in open_exchanges and refresh_open:
+            selected.append(ex)
             continue
         old = Decimal(review['ordinaryProbability'])
         old_midpoint = old if review['side'] == 'YES' else 1 - old
@@ -184,7 +187,10 @@ def record_resolution(out, state, pending, resolution):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, required=True)
+    parser.add_argument('--refresh-open-targets-once', action='store_true',
+        help='Capture genuine new evidence for open targets once; the official worker owns any resulting cancellations/reconciliation.')
     a = parser.parse_args()
+    refresh_open_once = a.refresh_open_targets_once
     c = json.loads(a.config.read_bytes())
     os.umask(0o077)
     out = Path(c['outputRoot'])
@@ -230,6 +236,8 @@ def main():
                 if resolution is None:
                     report('waiting_for_reload_reconciliation'); time.sleep(5); continue
                 record_resolution(out, state, pending, resolution)
+                if resolution['outcome'] == 'committed' and pending.get('refreshOpenTargetsOnce'):
+                    refresh_open_once = False
                 report('reload_reconciled', outcome=resolution['outcome'], requestSha256=resolution['requestSha256'])
                 pending = None
                 continue  # Capture new values on a new pass; never resend the old request.
@@ -256,7 +264,8 @@ def main():
             unclosed = set(view['knownUnclosedAcknowledgments'])
             open_exchanges = {q['exchangeId'] for q in view['activeNativeOrders'] if q['id'] in unclosed}
             current_control = json.loads(Path(state['controlPath']).read_bytes())
-            selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000)
+            selected = changed_scopes(capture, current_control, open_exchanges, time.time_ns() // 1_000_000,
+                refresh_open=refresh_open_once)
             if not selected:
                 report('fresh_reference_no_price_tick_change', capturedAtMs=capture['capturedAtMs'], openTargets=len(open_exchanges))
                 time.sleep(max(1, c['intervalSeconds'] - (time.monotonic() - started)))
@@ -292,7 +301,8 @@ def main():
                 request_path.write_bytes(raw_request)
                 wanted = sha(request_path)
                 pending = {'expectedGenerationSha256': wanted, 'previousGenerationSha256': state['generationSha256'],
-                    'expiresAtMs': request['expiresAtMs'], 'staged': staged, 'selected': selected}
+                    'expiresAtMs': request['expiresAtMs'], 'staged': staged, 'selected': selected,
+                    'refreshOpenTargetsOnce': refresh_open_once}
                 put(out / 'pending.json', pending)
                 response, reply_code = {}, 1
                 try:
@@ -318,6 +328,8 @@ def main():
                     controlSha256=staged['controlSha256'], commits=state['commits'] + 1)
                 put(state_path, state)
                 report('committed', generationSha256=wanted, exchanges=selected)
+                if pending.get('refreshOpenTargetsOnce'):
+                    refresh_open_once = False
                 pending = None
             else:
                 phase = response.get('state', '')
