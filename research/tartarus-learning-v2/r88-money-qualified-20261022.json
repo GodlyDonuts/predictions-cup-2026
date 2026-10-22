@@ -1,0 +1,40 @@
+{
+  "observedUtc": "2026-10-22T07:30:17.596762+00:00",
+  "sourceHashes": {
+    "moloch/native/src/reviewed_rank_campaign.rs": "713d98d95c1d20aeecadbf299dfce2b4524b6873b7f5b4b27288d7a0ac78423a",
+    "moloch/live-runtime/src/rank_campaign.rs": "83e60e4fb618380926e803493638ad70e39b429339222b83e3194baf0dd0560f",
+    "moloch/live-runtime/src/collateral_feedback.rs": "c12dfc8b6c6c61c4e7fb6939b2d4b10883ba8c925d594ac8bcca613fa1533013",
+    "moloch/live-runtime/src/lib.rs": "6e0416815e6c2534bb62c3c0444463ef5ed4cfdaed73a1c8d4fb47e1625131de",
+    "moloch/live-runtime/src/worker.rs": "4674f7e3b53232b46dab4149e547b1547eae3d41fe0a67162ec1668864fde37e",
+    "moloch/live-runtime/src/authority.rs": "ccedb4879345dc9152d524f50daf88867ef4b04e1db2b19cea1ae946167007b1",
+    "moloch/live-runtime/src/breadth.rs": "e94a97f8964de72f6ebd5e2c5865303233fb81e6a952b488f8d524f430c1587e",
+    "moloch/live-runtime/src/fundamental_rank_ownership.rs": "d098ce318ae93ae205c35a3adb26ca6ea31537cab5c6bd410bb3a594d5dff72d",
+    "moloch/live-runtime/src/bin/moloch-fundamental-review.rs": "f8938daa6d556d58d14e322571c98bc3d56adfa03c7682d3b7949c376ec63bf0",
+    "research/tartarus-learning-v2/tools/build-money-criterion-r88-20261022.py": "475d268380bc5c05dde8a7d3c4421e76162bab3a2511402cebfe177816d4f347"
+  },
+  "changedSourcePaths": [
+    "moloch/native/src/reviewed_rank_campaign.rs",
+    "moloch/live-runtime/src/breadth.rs",
+    "moloch/live-runtime/src/worker.rs",
+    "moloch/live-runtime/src/fundamental_rank_ownership.rs",
+    "moloch/live-runtime/src/rank_campaign.rs",
+    "moloch/live-runtime/src/authority.rs",
+    "moloch/live-runtime/src/lib.rs",
+    "moloch/live-runtime/src/collateral_feedback.rs",
+    "moloch/live-runtime/src/bin/moloch-fundamental-review.rs",
+    "research/tartarus-learning-v2/tools/build-money-criterion-r88-20261022.py"
+  ],
+  "checks": {
+    "native-tests-build": "test result: ok. 140 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 24.68s",
+    "worker-tests": "test result: ok. 250 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 66.36s"
+  },
+  "binarySha256": "2d66a40f65764c040d35010f7497d4eb6e8cb9dd763ac7770c6d6aa985d1714e",
+  "nativeLibrarySha256": "ae941f303004fd5988996f076d18b7b118d847849023076a4986388737599b62",
+  "runtimeLibrarySha256": "daf5baa19f652408d8a8418e202217f7594c78300a769511e7815a28bcb6793e",
+  "runtimeFixtureSha256": "4e49a138288b9762310fbb88a4d6644022db34d2d3c50f83f981ddc8e7d472cb",
+  "productionChanged": false,
+  "accountClientsCreated": 0,
+  "cliLoads": true,
+  "endToEndSpeedupEstablished": false,
+  "oneFilledTradePerMinuteEstablished": false
+}

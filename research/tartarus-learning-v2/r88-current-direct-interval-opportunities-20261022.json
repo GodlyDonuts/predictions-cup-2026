@@ -1,0 +1,663 @@
+{
+  "sourcePortfolioSha256": "6f99bda4f7ea27f5ad356a20466564559336e55b2a7bb718b687b05b20dfda10",
+  "candidateCount": 12,
+  "candidates": [
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "948",
+        "side": "NO",
+        "n": 10000,
+        "price": 880000,
+        "previous": null,
+        "opposite_sale": null,
+        "quantity": 7358
+      },
+      "weakestDeclaredExpectedChange": 499.843656,
+      "allModelExpectedChanges": [
+        565.999434,
+        499.843656,
+        537.516616,
+        566.566,
+        500.344
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:47.179Z",
+      "maximumPrefixLossVersusHoldMicros": 6475040000,
+      "minimumPrefixWealthMicros": 59473175000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 500344000,
+        "ordinaryMaximumExpectedChangeMicros": 566566000,
+        "ordinaryMinimumExpectedChange": "500.344000",
+        "ordinaryMaximumExpectedChange": "566.566000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62958\",\"raceName\":\"U.S. Senate Georgia\",\"stageId\":\"98088\",\"usState\":\"GA\"}",
+            "partyCoefficients": {
+              "Republican Party": -7358
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 52000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 43000
+            },
+            "minimumOtherWinnerMassPpm": 948000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "1071",
+        "side": "NO",
+        "n": 10000,
+        "price": 845000,
+        "previous": null,
+        "opposite_sale": null,
+        "quantity": 10000
+      },
+      "weakestDeclaredExpectedChange": 439.56,
+      "allModelExpectedChanges": [
+        559.44,
+        439.56,
+        455.8,
+        560.0,
+        440.0
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:38.287Z",
+      "maximumPrefixLossVersusHoldMicros": 8450000000,
+      "minimumPrefixWealthMicros": 57498215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 440000000,
+        "ordinaryMaximumExpectedChangeMicros": 560000000,
+        "ordinaryMinimumExpectedChange": "440.000000",
+        "ordinaryMaximumExpectedChange": "560.000000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62972\",\"raceName\":\"U.S. Senate New Hampshire\",\"stageId\":\"98102\",\"usState\":\"NH\"}",
+            "partyCoefficients": {
+              "Republican Party": -10000,
+              "Democratic Party": 0
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 111000,
+              "Democratic Party": 889000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 99000,
+              "Democratic Party": 889000
+            },
+            "minimumOtherWinnerMassPpm": 0
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "851",
+        "side": "NO",
+        "n": 10000,
+        "price": 920000,
+        "previous": null,
+        "opposite_sale": null,
+        "quantity": 10000
+      },
+      "weakestDeclaredExpectedChange": 419.58,
+      "allModelExpectedChanges": [
+        509.49,
+        419.58,
+        487.01,
+        510.0,
+        420.0
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:43.543Z",
+      "maximumPrefixLossVersusHoldMicros": 9200000000,
+      "minimumPrefixWealthMicros": 56748215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 420000000,
+        "ordinaryMaximumExpectedChangeMicros": 510000000,
+        "ordinaryMinimumExpectedChange": "420.000000",
+        "ordinaryMaximumExpectedChange": "510.000000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"State\",\"raceId\":\"76628\",\"raceName\":\"Governor of California\",\"stageId\":\"118831\",\"usState\":\"CA\"}",
+            "partyCoefficients": {
+              "Republican Party": -10000,
+              "Democratic Party": 0
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 38000,
+              "Democratic Party": 0
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 29000,
+              "Democratic Party": 0
+            },
+            "minimumOtherWinnerMassPpm": 962000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "1042",
+        "side": "YES",
+        "n": 10000,
+        "price": 940000,
+        "previous": null,
+        "opposite_sale": null,
+        "quantity": 10000
+      },
+      "weakestDeclaredExpectedChange": 100.0,
+      "allModelExpectedChanges": [
+        439.56,
+        349.65,
+        443.3,
+        440.0,
+        100.0
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:43.543Z",
+      "maximumPrefixLossVersusHoldMicros": 9400000000,
+      "minimumPrefixWealthMicros": 56548215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 100000000,
+        "ordinaryMaximumExpectedChangeMicros": 440000000,
+        "ordinaryMinimumExpectedChange": "100.000000",
+        "ordinaryMaximumExpectedChange": "440.000000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62957\",\"raceName\":\"U.S. Senate Delaware\",\"stageId\":\"98087\",\"usState\":\"DE\"}",
+            "partyCoefficients": {
+              "Republican Party": 0,
+              "Democratic Party": 10000
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 16000,
+              "Democratic Party": 950000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 16000,
+              "Democratic Party": 984000
+            },
+            "minimumOtherWinnerMassPpm": 34000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "948",
+        "side": "NO",
+        "n": 1363,
+        "price": 880000,
+        "previous": 45,
+        "opposite_sale": null,
+        "quantity": 1363
+      },
+      "weakestDeclaredExpectedChange": 92.591316,
+      "allModelExpectedChanges": [
+        104.846049,
+        92.591316,
+        99.569876,
+        104.951,
+        92.684
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:47.179Z",
+      "maximumPrefixLossVersusHoldMicros": 1199440000,
+      "minimumPrefixWealthMicros": 62239215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 92684000,
+        "ordinaryMaximumExpectedChangeMicros": 104951000,
+        "ordinaryMinimumExpectedChange": "92.684000",
+        "ordinaryMaximumExpectedChange": "104.951000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62958\",\"raceName\":\"U.S. Senate Georgia\",\"stageId\":\"98088\",\"usState\":\"GA\"}",
+            "partyCoefficients": {
+              "Republican Party": -1363
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 52000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 43000
+            },
+            "minimumOtherWinnerMassPpm": 948000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "1002",
+        "side": "NO",
+        "n": 10000,
+        "price": 260000,
+        "previous": null,
+        "opposite_sale": null,
+        "quantity": 10000
+      },
+      "weakestDeclaredExpectedChange": 89.91,
+      "allModelExpectedChanges": [
+        209.79,
+        89.91,
+        212.3,
+        210.0,
+        90.0
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:46.480Z",
+      "maximumPrefixLossVersusHoldMicros": 2600000000,
+      "minimumPrefixWealthMicros": 62239215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 90000000,
+        "ordinaryMaximumExpectedChangeMicros": 210000000,
+        "ordinaryMinimumExpectedChange": "90.000000",
+        "ordinaryMaximumExpectedChange": "210.000000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"State\",\"raceId\":\"76866\",\"raceName\":\"Governor of Vermont\",\"stageId\":\"119069\",\"usState\":\"VT\"}",
+            "partyCoefficients": {
+              "Republican Party": -10000,
+              "Democratic Party": 0
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 731000,
+              "Democratic Party": 269000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 719000,
+              "Democratic Party": 269000
+            },
+            "minimumOtherWinnerMassPpm": 0
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "1071",
+        "side": "NO",
+        "n": 1823,
+        "price": 850000,
+        "previous": 269,
+        "opposite_sale": null,
+        "quantity": 1823
+      },
+      "weakestDeclaredExpectedChange": 71.025903,
+      "allModelExpectedChanges": [
+        92.880027,
+        71.025903,
+        73.986455,
+        92.973,
+        71.097
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:38.287Z",
+      "maximumPrefixLossVersusHoldMicros": 1549550000,
+      "minimumPrefixWealthMicros": 62239215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 71097000,
+        "ordinaryMaximumExpectedChangeMicros": 92973000,
+        "ordinaryMinimumExpectedChange": "71.097000",
+        "ordinaryMaximumExpectedChange": "92.973000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62972\",\"raceName\":\"U.S. Senate New Hampshire\",\"stageId\":\"98102\",\"usState\":\"NH\"}",
+            "partyCoefficients": {
+              "Republican Party": -1823,
+              "Democratic Party": 0
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 111000,
+              "Democratic Party": 889000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 99000,
+              "Democratic Party": 889000
+            },
+            "minimumOtherWinnerMassPpm": 0
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "1002",
+        "side": "NO",
+        "n": 10000,
+        "price": 265000,
+        "previous": 34,
+        "opposite_sale": null,
+        "quantity": 10000
+      },
+      "weakestDeclaredExpectedChange": 39.96,
+      "allModelExpectedChanges": [
+        159.84,
+        39.96,
+        162.35,
+        160.0,
+        40.0
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:46.480Z",
+      "maximumPrefixLossVersusHoldMicros": 2650000000,
+      "minimumPrefixWealthMicros": 62239215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 40000000,
+        "ordinaryMaximumExpectedChangeMicros": 160000000,
+        "ordinaryMinimumExpectedChange": "40.000000",
+        "ordinaryMaximumExpectedChange": "160.000000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"State\",\"raceId\":\"76866\",\"raceName\":\"Governor of Vermont\",\"stageId\":\"119069\",\"usState\":\"VT\"}",
+            "partyCoefficients": {
+              "Republican Party": -10000,
+              "Democratic Party": 0
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 731000,
+              "Democratic Party": 269000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 719000,
+              "Democratic Party": 269000
+            },
+            "minimumOtherWinnerMassPpm": 0
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "924",
+        "side": "YES",
+        "n": 10000,
+        "price": 855000,
+        "previous": null,
+        "opposite_sale": null,
+        "quantity": 10000
+      },
+      "weakestDeclaredExpectedChange": 39.96,
+      "allModelExpectedChanges": [
+        159.84,
+        39.96,
+        43.72,
+        160.0,
+        40.0
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:33.238Z",
+      "maximumPrefixLossVersusHoldMicros": 8550000000,
+      "minimumPrefixWealthMicros": 57398215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 40000000,
+        "ordinaryMaximumExpectedChangeMicros": 160000000,
+        "ordinaryMinimumExpectedChange": "40.000000",
+        "ordinaryMaximumExpectedChange": "160.000000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"64574\",\"raceName\":\"U.S. House Pennsylvania District 7\",\"stageId\":\"99882\",\"usState\":\"PA\"}",
+            "partyCoefficients": {
+              "Democratic Party": 10000
+            },
+            "minimumMassesPpm": {
+              "Democratic Party": 859000
+            },
+            "maximumMassesPpm": {
+              "Democratic Party": 871000
+            },
+            "minimumOtherWinnerMassPpm": 141000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "851",
+        "side": "NO",
+        "n": 869,
+        "price": 920000,
+        "previous": 288,
+        "opposite_sale": null,
+        "quantity": 869
+      },
+      "weakestDeclaredExpectedChange": 36.461502,
+      "allModelExpectedChanges": [
+        44.274681,
+        36.461502,
+        42.321169,
+        44.319,
+        36.498
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:43.543Z",
+      "maximumPrefixLossVersusHoldMicros": 799480000,
+      "minimumPrefixWealthMicros": 62239215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 36498000,
+        "ordinaryMaximumExpectedChangeMicros": 44319000,
+        "ordinaryMinimumExpectedChange": "36.498000",
+        "ordinaryMaximumExpectedChange": "44.319000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"State\",\"raceId\":\"76628\",\"raceName\":\"Governor of California\",\"stageId\":\"118831\",\"usState\":\"CA\"}",
+            "partyCoefficients": {
+              "Republican Party": -869,
+              "Democratic Party": 0
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 38000,
+              "Democratic Party": 0
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 29000,
+              "Democratic Party": 0
+            },
+            "minimumOtherWinnerMassPpm": 962000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "924",
+        "side": "YES",
+        "n": 1695,
+        "price": 855000,
+        "previous": 271,
+        "opposite_sale": null,
+        "quantity": 1695
+      },
+      "weakestDeclaredExpectedChange": 6.77322,
+      "allModelExpectedChanges": [
+        27.09288,
+        6.77322,
+        7.41054,
+        27.12,
+        6.78
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:33.238Z",
+      "maximumPrefixLossVersusHoldMicros": 1449225000,
+      "minimumPrefixWealthMicros": 62239215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 6780000,
+        "ordinaryMaximumExpectedChangeMicros": 27120000,
+        "ordinaryMinimumExpectedChange": "6.780000",
+        "ordinaryMaximumExpectedChange": "27.120000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"64574\",\"raceName\":\"U.S. House Pennsylvania District 7\",\"stageId\":\"99882\",\"usState\":\"PA\"}",
+            "partyCoefficients": {
+              "Democratic Party": 1695
+            },
+            "minimumMassesPpm": {
+              "Democratic Party": 859000
+            },
+            "maximumMassesPpm": {
+              "Democratic Party": 871000
+            },
+            "minimumOtherWinnerMassPpm": 141000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    },
+    {
+      "leg": {
+        "action": "BUY",
+        "ex": "1042",
+        "side": "YES",
+        "n": 638,
+        "price": 940000,
+        "previous": 339,
+        "opposite_sale": null,
+        "quantity": 638
+      },
+      "weakestDeclaredExpectedChange": 6.38,
+      "allModelExpectedChanges": [
+        28.043928,
+        22.30767,
+        28.28254,
+        28.072,
+        6.38
+      ],
+      "bookReceivedAt": "2026-10-22T07:07:43.543Z",
+      "maximumPrefixLossVersusHoldMicros": 599720000,
+      "minimumPrefixWealthMicros": 62239215000,
+      "executionAuthority": false,
+      "exactOrdinaryIntervalSensitivity": {
+        "ordinaryMinimumExpectedChangeMicros": 6380000,
+        "ordinaryMaximumExpectedChangeMicros": 28072000,
+        "ordinaryMinimumExpectedChange": "6.380000",
+        "ordinaryMaximumExpectedChange": "28.072000",
+        "eventWitnesses": [
+          {
+            "eventIdentity": "{\"electionDate\":\"2026-11-03\",\"officeLevel\":\"Federal\",\"raceId\":\"62957\",\"raceName\":\"U.S. Senate Delaware\",\"stageId\":\"98087\",\"usState\":\"DE\"}",
+            "partyCoefficients": {
+              "Republican Party": 0,
+              "Democratic Party": 638
+            },
+            "minimumMassesPpm": {
+              "Republican Party": 16000,
+              "Democratic Party": 950000
+            },
+            "maximumMassesPpm": {
+              "Republican Party": 16000,
+              "Democratic Party": 984000
+            },
+            "minimumOtherWinnerMassPpm": 34000
+          }
+        ],
+        "classification": "conditional_ordinary_interval_sensitivity_vs_holding",
+        "crossEventDependenceRequiredForMoneyExpectation": false,
+        "calibratedProbabilities": false,
+        "exceptionalOutcomesCovered": false,
+        "fundingOrExecutionCertified": false,
+        "originalClocksRenewed": false,
+        "executionAuthority": false
+      }
+    }
+  ],
+  "rejections": {
+    "BUY_REQUIRES_PRIOR_COVERED_SELL_HANDOFF": 5
+  },
+  "currentExecutableLiquidityClaimed": false,
+  "calibratedProbabilityClaimed": false,
+  "newAccountClients": 0,
+  "executionAuthority": false,
+  "broaderCandidateCount": 46,
+  "publishedScope": "matched current native held-market books only, with original clocks"
+}

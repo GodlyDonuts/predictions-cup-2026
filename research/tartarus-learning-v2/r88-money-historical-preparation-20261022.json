@@ -1,0 +1,19 @@
+{
+  "rawSha256": "d58be9119f2a1240909037ca8801ba73586d01959b2c9b389d14daf6177c46d9",
+  "objective": "declared_positive_expected_money",
+  "exchangeId": "948",
+  "side": "NO",
+  "action": "BUY",
+  "quantity": 7358,
+  "limitPrice": "0.880000",
+  "validUntilMs": 1792653317049,
+  "weakestDeclaredExpectedChange": 499.843656,
+  "ordinaryMinimumExpectedChange": "500.344000",
+  "scenarios": 79,
+  "probabilityModels": 5,
+  "completeHeldMarkets": 18,
+  "sourceClocksRenewed": false,
+  "approvalPublished": false,
+  "submitted": false,
+  "executionAuthority": false
+}
