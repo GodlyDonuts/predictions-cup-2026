@@ -1,0 +1,60 @@
+{
+  "observedUtc": "2026-10-22T05:20:52.888988+00:00",
+  "workerPid": 1069937,
+  "observers": [
+    {
+      "pid": 1069948,
+      "command": [
+        "python3",
+        "-u",
+        "/tmp/moloch-local-guard-cohort-r85-20261022/observe.py"
+      ],
+      "log": "/tmp/moloch-local-guard-cohort-r85-20261022/observer-0.log"
+    },
+    {
+      "pid": 1069949,
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "python3",
+        "/tmp/moloch-exit-audit-r81-20261022/observe-cadence.py",
+        "--runtime",
+        "/home/archon/apps/moloch/shared/live-production-v1",
+        "--pid",
+        "1069937",
+        "--start-ticks",
+        "61603988",
+        "--auditor",
+        "/tmp/moloch-exit-priority-r78-20261021/audit-current-turnover.py",
+        "--output",
+        "/tmp/moloch-local-guard-cohort-r85-20261022/cadence",
+        "--seconds",
+        "900"
+      ],
+      "log": "/tmp/moloch-local-guard-cohort-r85-20261022/observer-1.log"
+    },
+    {
+      "pid": 1069950,
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "python3",
+        "/tmp/moloch-closed-index-r77-20261021/measure.py",
+        "--runtime",
+        "/home/archon/apps/moloch/shared/live-production-v1",
+        "--pid",
+        "1069937",
+        "--start-ticks",
+        "61603988",
+        "--output",
+        "/tmp/moloch-local-guard-cohort-r85-20261022/scope",
+        "--seconds",
+        "900"
+      ],
+      "log": "/tmp/moloch-local-guard-cohort-r85-20261022/observer-2.log"
+    }
+  ],
+  "accountRequests": 0
+}

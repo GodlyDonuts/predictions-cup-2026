@@ -1,8 +1,8 @@
 # Current Moloch and Tartarus state
 
-Observed October 22, 05:12 UTC. Earlier dated observations below remain historical.
+Observed October 22, 05:21 UTC. Earlier dated observations below remain historical.
 
-**Production stopped at 04:59:15 UTC.** R83 worker1063142 exited on `FUNDAMENTAL_ABANDON_POSITIVE_NOT_SENT_REQUIRED`; its updater also exited. Original Delaware1075 intent20937 has verified SDK proof of no HTTP, zero fills and a retired native reservation. Cohort cleanup failed to recognize the newer proof format. R85 fixes that lifecycle and includes qualified R84 source-report deferral. The original STOP is retained while the combined candidate is checked. [Incident and repair](../research/tartarus-learning-v2/local-guard-cohort-r85-20261022.md), [original SDK evidence](../research/tartarus-learning-v2/r85-stopped-incident-20261022.json).
+**R85 installed at 05:19:45 UTC; original-ledger restoration is in progress.** Sole worker1069937, binary `5222f0f999fa`, checked execution source `7fb6fee064521c8e2f9f1bb2419bb7e6050b3efa`, updater1069940. The replacement fixes the proved-no-HTTP cohort failure that stopped R83 and includes R84 source/preflight report deferral. It preserves all535 fills, the full2,691,159,025-byte original financial prefix, all prior engine approvals and known order20904. **Fresh trading is not yet verified.** [Installation evidence](../research/tartarus-learning-v2/r85-local-guard-cohort-installed-20261022.json), [repair and validation](../research/tartarus-learning-v2/local-guard-cohort-r85-20261022.md).
 
 **One distinct filled order/minute remains unmet.** The completed 04:35–04:50 UTC window had **one first-filled order in 15 minutes (0.0667/minute)** and 14 empty UTC minutes. SELL 1,472 YES993 shares realized **66.24 SUSQies net** against original FIFO. The preceding window had two first-filled orders and +50.115 realized net. Partial receipts do not create additional trades. [Latest completed measurement](../research/tartarus-learning-v2/r83-post-delaware-cadence-20261022.json), [official-receipt/FIFO audit](../research/tartarus-learning-v2/r83-post-delaware-turnover-20261022.json).
 

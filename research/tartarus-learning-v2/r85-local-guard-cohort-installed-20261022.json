@@ -1,0 +1,38 @@
+{
+  "observedUtc": "2026-10-22T05:19:45.880473+00:00",
+  "sourceCommit": "7fb6fee064521c8e2f9f1bb2419bb7e6050b3efa",
+  "binarySha256": "5222f0f999faa0e354178a9cdd7d8dc5b0201626875f40f0e5174a11b264e4e6",
+  "controlSha256": "d2fb7feaa1b75fc63fc2770ef6341e2e9ac59e4ca588d4edc867acdd379f3638",
+  "originalFills": 535,
+  "originalReportHash": "14a93c334536878ca6ead48c30fe2acaf98483b3acdb5773e9c00c0dff8852c0",
+  "originalFinancialPrefix": {
+    "bytes": 2691159025,
+    "sha256": "d251222b98f0d8d5b5fca4f33bca3c1d0fd75829899c0a3b3d50bc0eb80592b4"
+  },
+  "originalNativeHead": {
+    "hash": "526e6a8f6ea31b84f0a84fe0990eab01fce3719f6447c8dfbc44ef8825940326",
+    "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "previous": "7b4e5875d09c4539a99e2d2c2d5dcad0947c6352a61e7e4d7302241c5cab2ad3",
+    "sequence": 819983
+  },
+  "bridgeSha256": "93d1c5194b9e85c92cc43fec761ae85d59aea8419a01435795e74f05eda435d3",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r85-local-guard-cohort-20261022T051928Z",
+  "nativeEngineUnchanged": false,
+  "originalFinancialStatePreserved": true,
+  "knownOpenOrders": [
+    20904
+  ],
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "phase": "restoring_original_ledger",
+  "engineIdentity": "86b2cbc5f76d2be2939483f4611d8a17adae68278ea0b012c61aed51394ed0e1",
+  "allPriorEngineBridgesPreserved": true,
+  "upgradeBytes": 303216750,
+  "newBridgeSha256": "442a7248336e18e18449d6157c4c3484789bf56634aa63781d60b9800c7fae97",
+  "pid": 1069937,
+  "startTicks": 61603988,
+  "referenceUpdaterPid": 1069940,
+  "actualExecutableAndArgumentsVerified": true
+}
