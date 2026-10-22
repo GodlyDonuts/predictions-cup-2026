@@ -1,0 +1,257 @@
+{
+  "observedUtc": "2026-10-22T08:55:39.038000+00:00",
+  "originalReportSha256": "3223c0d6a3f140aa01854a9fd76986b3b014c4376d958727b955e9aef5b29612",
+  "completedMinutes": 60,
+  "minutesWithActualFills": 1,
+  "emptyMinutes": 59,
+  "coverage": 0.016666666666666666,
+  "actualFillReceiptsInWindow": 1,
+  "distinctFilledOrdersInWindow": 1,
+  "lastActualExecutionUtc": "2026-10-22T08:21:27.529000+00:00",
+  "secondsSinceLastActualExecution": 2051.509,
+  "oneFilledTradeEveryCompletedMinute": false,
+  "countsOrderAcknowledgmentsAsTrades": false,
+  "accountClientsCreated": 0,
+  "minuteCounts": [
+    {
+      "startUtc": "2026-10-22T07:55:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T07:56:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T07:57:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T07:58:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T07:59:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:00:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:01:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:02:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:03:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:04:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:05:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:06:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:07:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:08:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:09:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:10:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:11:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:12:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:13:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:14:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:15:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:16:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:17:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:18:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:19:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:20:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:21:00+00:00",
+      "distinctOrdersWithActualFills": 1
+    },
+    {
+      "startUtc": "2026-10-22T08:22:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:23:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:24:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:25:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:26:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:27:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:28:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:29:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:30:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:31:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:32:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:33:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:34:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:35:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:36:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:37:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:38:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:39:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:40:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:41:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:42:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:43:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:44:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:45:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:46:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:47:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:48:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:49:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:50:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:51:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:52:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:53:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    },
+    {
+      "startUtc": "2026-10-22T08:54:00+00:00",
+      "distinctOrdersWithActualFills": 0
+    }
+  ]
+}

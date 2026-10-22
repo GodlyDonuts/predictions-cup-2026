@@ -1,0 +1,28 @@
+{
+  "observedUtc": "2026-10-22T08:06:30.648331+00:00",
+  "before": {
+    "MainPID": "1074713",
+    "MemoryCurrent": "4392378368",
+    "MemoryHigh": "4294967296",
+    "MemoryMax": "5368709120"
+  },
+  "after": {
+    "MainPID": "1074713",
+    "MemoryCurrent": "4392378368",
+    "MemoryHigh": "4831838208",
+    "MemoryMax": "5368709120"
+  },
+  "memoryEventsBefore": {
+    "low": 0,
+    "high": 46527,
+    "max": 0,
+    "oom": 0,
+    "oom_kill": 0,
+    "oom_group_kill": 0
+  },
+  "pidUnchanged": true,
+  "workerRestarted": false,
+  "hardMemoryLimitChanged": false,
+  "financialPolicyOrRateLimitsChanged": false,
+  "reason": "Observed44400-plus service memory.high throttle events while healthy process restores original ledger; soft4GiB increased to4.5GiB beneath unchanged5GiB hard limit"
+}
