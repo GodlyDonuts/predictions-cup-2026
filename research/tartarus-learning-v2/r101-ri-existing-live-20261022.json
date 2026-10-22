@@ -1,0 +1,279 @@
+{
+  "observedUtc": "2026-10-22T21:16:13.790268+00:00",
+  "sourceCommit": "0df3f07eae3659fd5e0c55146d0851ada106166a",
+  "workerPid": 1131806,
+  "workerAlive": true,
+  "workerRestarted": false,
+  "stopPresent": false,
+  "newAccountClients": 0,
+  "capsChanged": false,
+  "originalReply": {
+    "baseFinancialControlUnchanged": true,
+    "generationSha256": "f457d6cdcd4b8fdb628424655a150a6ab41c9689b6abeb311f49d57b59592163",
+    "nativeHead": {
+      "hash": "0a493162779e77fc11cb6927ed165562484563058915a7054803fb21244ac728",
+      "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+      "previous": "851fc602ba7600fd5e8abb511001b744f383b7ace579fdc5246631fbed584143",
+      "sequence": 901528
+    },
+    "state": "committed"
+  },
+  "resolution": {
+    "outcome": "committed",
+    "requestSha256": "f457d6cdcd4b8fdb628424655a150a6ab41c9689b6abeb311f49d57b59592163",
+    "previousGenerationSha256": "bbb8d47a3d08ed1f7ddffd2b064f2a7d22632a14a44684cd78b81cdd9b574c87",
+    "committedGenerationSha256": "f457d6cdcd4b8fdb628424655a150a6ab41c9689b6abeb311f49d57b59592163",
+    "observedAtMs": 1792703731195,
+    "requestExpiresAtMs": 1792703676382,
+    "nativeViewWrittenAt": "2026-10-22T21:15:30.811Z",
+    "originalCohortPrefixBytes": 14571054,
+    "originalCohortPrefixSha256": "6c3c39fb6b1a8f3110b1ddae2d52330db7578780b75239cdd308b6f79a49cd1b",
+    "requestResent": false,
+    "accountRequests": 0,
+    "financialStateChanged": false
+  },
+  "referenceUpdaterPid": 1132574,
+  "referenceUpdaterAlive": true,
+  "review": {
+    "version": 2,
+    "reviewerId": "Viserion-live-reference-20261021",
+    "assumptionLabel": "Execution-owner conditional Kalshi party midpoint model, observed from retained original public receipts. Prices are uncalibrated forecasts, not settlement equivalence or guaranteed profits. Original exceptional allowance remains; entry margin changes only under a pinned execution-owner policy recorded in the forecast evidence. Polymarket exact-party observations are retained as context only. Original ballot/contract identity clocks and bytes remain; their declared lifetime is 14 days, with exact current SIG-root verification before dispatch. Forecast lifetime is 15 minutes. FIFO profit turnover remains except Nevada governor and Alaska Senate: those two use current modeled value for capital recycling and may realize a loss. Original holdings, basis, cohort objectives and horizons remain unchanged.",
+    "runId": "moloch-live-20261015-v1",
+    "bankManifestSha256": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55",
+    "marketId": "387",
+    "exchangeId": "1076",
+    "contractId": "388",
+    "officialContractRootSha256": "9c047b15ffad55e85deee3b991a07b2be597a974708eaede5fec38937e4f958e",
+    "side": "YES",
+    "ordinaryProbability": "0.985500",
+    "exceptionalProbabilityAllowance": "0.010000",
+    "minimumExceptionalPayout": "0.000000",
+    "marginPerShare": "0.085645",
+    "maximumPrincipal": "10000.000000",
+    "maximumQuantity": 10000,
+    "reviewedAtMs": 1792703595287,
+    "expiresAtMs": 1792704474966,
+    "holdUntilMs": 1793811600000,
+    "payoutMappingIsOperatorAssumption": true,
+    "revokeExisting": false,
+    "sources": [
+      {
+        "kind": "forecast",
+        "url": "https://api.elections.kalshi.com/trade-api/v2/markets/SENATERI-26-D/orderbook?depth=20",
+        "sha256": "e23785c33f1ee26d801cbb1de24cbf7e094f8a247fa2182edfb72d57e37c05b1",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792703574966,
+        "maximumAgeMs": 900000
+      },
+      {
+        "kind": "official_ballot",
+        "url": "https://vote.sos.ri.gov/Candidates/CandidateSearchSummary?Election=18144&OfficeType=620",
+        "sha256": "a49e75e4f7cb3dcc8160708210a31a6cdae25a3c236109f2fb4fc7d465b165bb",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792317649000,
+        "maximumAgeMs": 1209600000
+      },
+      {
+        "kind": "official_contract_node",
+        "url": "https://sig.thesuper.market/api/v1/markets/387/nodes?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+        "sha256": "fd34fe01bfdfd9f74e3327d83ab0643543ec886150e04fde29f3b6cc2ce47760",
+        "publishedAtMs": 0,
+        "observedAtMs": 1792126431503,
+        "maximumAgeMs": 1209600000
+      }
+    ],
+    "executionPolicy": {
+      "version": 1,
+      "allowedModes": [
+        "boundedLimitMayRest"
+      ]
+    },
+    "valuationObjective": {
+      "kind": "terminalSettlement",
+      "timingSourceSha256": "fd34fe01bfdfd9f74e3327d83ab0643543ec886150e04fde29f3b6cc2ce47760",
+      "timingJsonPointer": "/data/root/settlement_date",
+      "scheduledSettlementAtMs": 1793811600000,
+      "delayPolicy": "holdForActualSettlement"
+    },
+    "sameSideTopUps": {
+      "version": 2,
+      "maximumEntries": 16
+    },
+    "passiveValueExit": {
+      "version": 1,
+      "maximumQuantity": 10000
+    },
+    "existingOrigin": {
+      "adoptionReceiptSha256": "552b6222f6c4e7fe62f1cd22d4d5a0b4d07535cdc0b4bd70d5e193de54f097a7",
+      "adoptedPositionSha256": "5152016fb059f2227a27ec354c705a8ff22d2728d1d41fc771284fcab7c7889c"
+    }
+  },
+  "reviewFileSha256": "68ed17cf20762df17060aa1d1470db0f11470812876af4ca98a547c7c5a9e8e7",
+  "sourceFiles": [
+    {
+      "path": "/tmp/moloch-preintent-orders-r101-20261022/ri-existing-1076-004/generation/1076-forecast.json",
+      "sha256": "e23785c33f1ee26d801cbb1de24cbf7e094f8a247fa2182edfb72d57e37c05b1"
+    },
+    {
+      "path": "/home/archon/apps/moloch/shared/fundamental-ri-g12-terminal-20261018/1077/sources/a49e75e4f7cb3dcc8160708210a31a6cdae25a3c236109f2fb4fc7d465b165bb.primary-extract.txt",
+      "sha256": "a49e75e4f7cb3dcc8160708210a31a6cdae25a3c236109f2fb4fc7d465b165bb"
+    },
+    {
+      "path": "/tmp/moloch-rank-current-r99-20261022/originals/roots/fd34fe01bfdfd9f74e3327d83ab0643543ec886150e04fde29f3b6cc2ce47760.json",
+      "sha256": "fd34fe01bfdfd9f74e3327d83ab0643543ec886150e04fde29f3b6cc2ce47760"
+    }
+  ],
+  "originalPosition": {
+    "basisClassification": "reported_discrepancy",
+    "exchangeId": "1076",
+    "lotPrincipal": "5544.900000",
+    "lots": [
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496374",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 6091,
+        "side": "YES"
+      },
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496379",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 10,
+        "side": "YES"
+      },
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496384",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 10,
+        "side": "YES"
+      },
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496389",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 10,
+        "side": "YES"
+      },
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496394",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 10,
+        "side": "YES"
+      },
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496399",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 10,
+        "side": "YES"
+      },
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496404",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 10,
+        "side": "YES"
+      },
+      {
+        "entryPrice": "0.900000",
+        "lotId": "18496409",
+        "openedAt": "2026-10-03T07:29:27.2603033+00:00",
+        "quantity": 10,
+        "side": "YES"
+      }
+    ],
+    "marketId": "387",
+    "metadata": {
+      "reportedAverageCost": 0.905351,
+      "reportedMarketValue": 5270.17,
+      "settled": false,
+      "title": null
+    },
+    "quantity": 6161,
+    "reportedCostBasis": "5577.870000",
+    "reportedMinusLotPrincipal": "32.970000"
+  },
+  "currentManagedOwnership": {
+    "bankManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+    "cohortSha256": "a24be9997e065ab4aceea6615de80018c1aee73b15a40617ba3db0af8170fcc5",
+    "emptyOriginalInventory": false,
+    "exchangeId": "1076",
+    "exclusionSha256": "3213de20a30c0ff5707a0a1ce9b6157b823838207114f0787c4485c93c238d00",
+    "executionAuthority": false,
+    "generationSha256": "f457d6cdcd4b8fdb628424655a150a6ab41c9689b6abeb311f49d57b59592163",
+    "handoffEstablished": false,
+    "heldQuantity": 6161,
+    "originSha256": "59e3c48992d5577bb3a378adb301ac1e6213f8727f3532f2946a32ac4fa9366f",
+    "ownershipOnly": true,
+    "positions": {
+      "NO": [],
+      "YES": [
+        {
+          "price": "0.900000",
+          "quantity": 6091
+        },
+        {
+          "price": "0.900000",
+          "quantity": 10
+        },
+        {
+          "price": "0.900000",
+          "quantity": 10
+        },
+        {
+          "price": "0.900000",
+          "quantity": 10
+        },
+        {
+          "price": "0.900000",
+          "quantity": 10
+        },
+        {
+          "price": "0.900000",
+          "quantity": 10
+        },
+        {
+          "price": "0.900000",
+          "quantity": 10
+        },
+        {
+          "price": "0.900000",
+          "quantity": 10
+        }
+      ]
+    },
+    "positionsSha256": "f3958767d011f6dade1ee50e82914d9bdf718f1e93f883f37b01d2bfc2c0e264",
+    "producer": "moloch_original_cohort_owner",
+    "rankPaused": false,
+    "reviewSha256": "1ede39f9df3f4530554c01fcc5a08bddd04b2603953d95f08ee06c6f967f5b4b",
+    "runId": "moloch-live-20261015-v1",
+    "sameSideBuyHandoffAllowed": true,
+    "sameSideBuyHandoffSide": "YES",
+    "schemaVersion": 1,
+    "side": "YES",
+    "sourceBodyText": "{\"bankManifestHash\":\"78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325\",\"cohortSha256\":\"a24be9997e065ab4aceea6615de80018c1aee73b15a40617ba3db0af8170fcc5\",\"emptyOriginalInventory\":false,\"exchangeId\":\"1076\",\"exclusionSha256\":\"3213de20a30c0ff5707a0a1ce9b6157b823838207114f0787c4485c93c238d00\",\"executionAuthority\":false,\"generationSha256\":\"f457d6cdcd4b8fdb628424655a150a6ab41c9689b6abeb311f49d57b59592163\",\"handoffEstablished\":false,\"originSha256\":\"59e3c48992d5577bb3a378adb301ac1e6213f8727f3532f2946a32ac4fa9366f\",\"ownershipOnly\":true,\"positionsSha256\":\"f3958767d011f6dade1ee50e82914d9bdf718f1e93f883f37b01d2bfc2c0e264\",\"producer\":\"moloch_original_cohort_owner\",\"reviewSha256\":\"1ede39f9df3f4530554c01fcc5a08bddd04b2603953d95f08ee06c6f967f5b4b\",\"runId\":\"moloch-live-20261015-v1\",\"sameSideBuyHandoffAllowed\":true,\"sameSideBuyHandoffSide\":\"YES\",\"schemaVersion\":1}",
+    "sourceSha256": "f0290f639677920e2c1ca84715fd384687353cb19bb7b2eb0e16bc335e86a699"
+  },
+  "nativeViewAt": "2026-10-22T21:15:31.523Z",
+  "progress": {
+    "actualFills": 708,
+    "actualOrders": 1861,
+    "at": "2026-10-22T21:15:30.852Z",
+    "completedReadScopes": 4,
+    "maximumRealtimeFramesPerDrain": 64,
+    "phase": "trading",
+    "pid": 1131806,
+    "profitabilityEstablished": false,
+    "realtimeHealthy": true,
+    "selectedReadScopes": 70,
+    "terminalOrders": 1859
+  },
+  "sourceMaintenanceIncludes1076": false,
+  "sourceMaintenanceNote": "Existing updater retains1077/983 only.1076 requires a new genuine source capture/review before its15minute forecast expires; no clock renewal is inferred.",
+  "new1076FillEstablished": false,
+  "profitabilityEstablished": false
+}

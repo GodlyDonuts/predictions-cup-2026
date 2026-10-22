@@ -2,7 +2,11 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-## Latest state: October22,21:09UTC
+## Latest state: October22,21:16UTC
+
+Rhode Island1076YES is now managed through its **original existing-position origin**. Exact owner reply, durable generationf457d6cd and subsequent native ownership agree on6161 inherited shares; original FIFO and32.970 reported-basis discrepancy remain. The review enables source-backed top-ups/value exits within the existing10000 per-market principal budget, with an owner-selected10000-share review ceiling. The physical10000/order limit is separate from cumulative position size. Worker1131806 continues without restart. No new1076 fill or profit is established. Its forecast expires after15minutes; existing automatic source maintenance still covers1077/983, so1076 needs a fresh capture/review for further source-dependent actions. [Live generation and original holdings](research/tartarus-learning-v2/r101-ri-existing-live-20261022.json).
+
+### Earlier21:09UTC original-fill audit
 
 R101 restored and is trading as sole worker1131806. The original692 fill rows remain intact. A subsequent original-receipt/FIFO audit verifies708 rows and11 distinct filled orders since restoration,7596.600 turnover and **-114.840 realized net**. Cash7630.345 and inventory cost86681.780 are accounting fields, not current wealth or positive ROI. [Restored operation](research/tartarus-learning-v2/r101-fresh-live-20261022.json), [actual subsequent fills](research/tartarus-learning-v2/r101-post-restore-turnover-20261022.json).
 
