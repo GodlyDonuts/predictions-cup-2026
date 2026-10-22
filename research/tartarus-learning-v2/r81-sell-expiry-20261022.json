@@ -1,0 +1,197 @@
+{
+  "nativeQid": 20707,
+  "events": [
+    {
+      "at": "2026-10-22T02:54:32.564Z",
+      "fundamental": {
+        "bankManifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "bindingSha256": "2b47e48722ff07d42a036f24a0d6f6c6174955c03cc413b8ba6c41843b8cf0d8",
+        "entryQid": 19215,
+        "qid": 20707,
+        "runId": "moloch-live-20261015-v1",
+        "version": 1
+      },
+      "fundamentalOwnershipOnly": false,
+      "kind": "intent",
+      "maker": null,
+      "permit": {
+        "expiresAtMs": 1792637685353,
+        "intentId": "20707",
+        "maximumCost": "8800.000000",
+        "maximumQuantity": 10000,
+        "owner": "Codex",
+        "runId": "moloch-live-20261015-v1"
+      },
+      "qid": 20707,
+      "quote": {
+        "action": "sell",
+        "activationAt": 1792637670317,
+        "barrier": null,
+        "createdAt": 1792637667317,
+        "exchangeId": "1077",
+        "expiresAt": 1792638266109,
+        "filled": 0,
+        "id": 20707,
+        "marketId": "388",
+        "participationCredit": 0,
+        "price": "0.880000",
+        "quantity": 10000,
+        "retired": false,
+        "reviewedInventoryExit": {
+          "bookSha256": "063990ba131847d6a38f5894ba723564d69b6ed2ce331892d2f8dd0381f3f658",
+          "cohortOriginSha256": "bd9c09c718e547e78e245d26253fbc559a07f5fb3ec472601fb775bee2ab3de2",
+          "executionMode": "passiveValueLimit",
+          "forecastExpectedPayout": "0.973665",
+          "maximumPassiveQuantity": 10000,
+          "minimumNetSalePrice": "0.880000",
+          "modelSha256": "d0c39fde2ef0326c6a89bc304cef7d66974779b5fa2775eff0b0e787f17b467f",
+          "originKind": "original_entry_cohort",
+          "originSha256": "2b4f11467d9ad5700ba5af9ee45d636d3dec085806d89b9462171e90e13a0e2b",
+          "pricingBasis": {
+            "bankHead": {
+              "hash": "6148095aa9f972cfd1a7fce641738a390d59feada94a4816680c56354a47a03e",
+              "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+              "previous": "b7890d8733b3879f8166630765924dae73b726e30804349adb77367643a7ff55",
+              "sequence": 809454
+            },
+            "bookSha256": "063990ba131847d6a38f5894ba723564d69b6ed2ce331892d2f8dd0381f3f658",
+            "fifoCostSha256": "1457f1437cfe1193ecdd5a839955b2448173624b6532323f77c2d24b2749dd0e",
+            "forecastExpectedPayout": "0.973665",
+            "maximumFifoUnitCost": "0.875000",
+            "minimumNetSalePrice": "0.880000",
+            "positionsSha256": "aff52f711edc62ac56f484ecf7c6a15925b4342f164a4af9b93c116be19afaf7",
+            "pricingObjective": {
+              "kind": "fifoProfitTurnover",
+              "minimumNetGain": "0.005000"
+            },
+            "pricingPolicy": "improveAskOneTickFifoFloor",
+            "quantity": 10000
+          },
+          "pricingObjective": {
+            "kind": "fifoProfitTurnover",
+            "minimumNetGain": "0.005000"
+          },
+          "reason": "reviewed_fifo_profit_turnover",
+          "reviewSha256": "4dd560ab2e77cd13d647248f242706a5460e3537ca00cbd06ec511ea8ea772f6",
+          "sourceSha256": "5f68755030a2111fe7bd383dcea752c8679f44fded88143d17581545baf6daf2"
+        },
+        "side": "NO"
+      },
+      "rankCampaign": null,
+      "spec": {
+        "body": {
+          "action": "sell",
+          "exchangeId": "1077",
+          "expirationDate": "2026-10-22T03:04:26.109Z",
+          "idempotencyKey": "moloch-live-20261015-v1:20707",
+          "price": 0.88,
+          "quantity": 10000,
+          "side": "no",
+          "tournamentId": "bda92870-621e-47b0-bc3c-3602c5c26f55"
+        },
+        "bodyJson": "{\"action\":\"sell\",\"exchangeId\":\"1077\",\"expirationDate\":\"2026-10-22T03:04:26.109Z\",\"idempotencyKey\":\"moloch-live-20261015-v1:20707\",\"price\":0.880000,\"quantity\":10000,\"side\":\"no\",\"tournamentId\":\"bda92870-621e-47b0-bc3c-3602c5c26f55\"}",
+        "endpoint": "/orders",
+        "method": "POST"
+      }
+    },
+    {
+      "at": "2026-10-22T02:54:32.574Z",
+      "captureAtMs": 1792637672574,
+      "dispatchBefore": {
+        "chain": "db756d44b87a2a8f07adfd9927853b6bfde9c1e24b33420cccc60260e4e0d153",
+        "networkAttempts": 0,
+        "qid": 20707,
+        "sequence": 27493
+      },
+      "evidenceVersion": 1,
+      "kind": "attempt",
+      "modelAlgorithmSha256": "d979b47cc2840a4e5c499fecdc7481df929cca4fa9e9c4503038fcbee1df3d47",
+      "modelConfigSha256": null,
+      "nativeHead": {
+        "hash": "773a2929f1a981cf2f87e48cbdf2c6af17ed6340eec9634535b00be9ce138fd2",
+        "manifestHash": "78acaef952ed95b9bff24a3349ece669ccbe88ef7294b27dd9c2aa7d09cae325",
+        "previous": "c829abe3a9b935ebf88bb9f609906a204f964345b79c5e46a950db4cc681f436",
+        "sequence": 809455
+      },
+      "originalQuoteSha256": "b42fb7800c14f4002bb0f787f545348bfef3b2b2d9f33df1f51dbe7283ae334f",
+      "qid": 20707,
+      "sourceFrontier": {
+        "moloch-live": {
+          "originalPreparedEventSha256": "8ba6a55f236e3c1d89288032d029c34cadb41471953b4f5cfb7133ffd9a46c51",
+          "sequence": 809445
+        },
+        "moloch-package": {
+          "originalPreparedEventSha256": null,
+          "sequence": 0
+        }
+      }
+    },
+    {
+      "at": "2026-10-22T02:54:32.624Z",
+      "error": {
+        "apiCode": null,
+        "code": "FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED",
+        "mayHaveExecuted": false,
+        "orderId": null,
+        "retryAfterMs": 0,
+        "status": null
+      },
+      "kind": "error",
+      "qid": 20707
+    },
+    {
+      "at": "2026-10-22T02:54:33.012Z",
+      "kind": "aborted_before_admission",
+      "originalAttemptSha256": "52428a462e2bf109c07a71d185fd4d016b1d82c546931a185cfd6cd9898fafdf",
+      "originalErrorSha256": "b9f8b53a6cc57193a9d3b2fc19452643ab680e45cdaa8a57290b21697cfcd815",
+      "originalIntentSha256": "dbd21a769ce1a8e485daab8599ddc6ec03d4a2377a658207f92a42c92d29ad64",
+      "proof": {
+        "attemptAtMs": 1792637672574,
+        "binding": {
+          "intent": "moloch-live-20261015-v1:20707",
+          "key": "moloch-live-20261015-v1:20707",
+          "payload_hash": "f9a2934e8e3cee83edf2efa3eab0ee10cbf048412fed440103ab9b88a47b40d7"
+        },
+        "kind": "sdk_stopped_v1_before_admit_no_http",
+        "originalError": {
+          "apiCode": null,
+          "code": "FUNDAMENTAL_PHYSICAL_TOKEN_EXPIRED_OR_REGRESSED",
+          "mayHaveExecuted": false,
+          "orderId": null,
+          "retryAfterMs": 0,
+          "status": null
+        },
+        "originalHead": {
+          "active": null,
+          "binding": {
+            "intent": "moloch-live-20261015-v1:20707",
+            "key": "moloch-live-20261015-v1:20707",
+            "payload_hash": "f9a2934e8e3cee83edf2efa3eab0ee10cbf048412fed440103ab9b88a47b40d7"
+          },
+          "globalUnknownCount": 0,
+          "lastClock": 1792637670319,
+          "manualReview": false,
+          "previous": "ca7ea2bd87dea96bf3393467c883384c6595593d114b5a0b005bec859e7124fc",
+          "queueScope": "sig-midterm-shared-account",
+          "sequence": 437955
+        },
+        "originalRequestSha256": "ba49a2d0762e0f23ba5f88fb515556948d66578f98e6614fdaa9cc0b8b013caf",
+        "permitSha256": "3d32a7d521860e7a6d8ae2dc637e1c4ee47169fe4de5dbdb6d53004ea2492b93",
+        "queueDirectory": "/home/archon/apps/moloch/shared/live-production-v1/account-queue",
+        "queueDirectoryIdentity": {
+          "device": 66305,
+          "inode": 12355018
+        },
+        "queueScope": "sig-midterm-shared-account",
+        "schemaVersion": 1,
+        "scopeSha256": "eb720801f2031dbcf232b2af58d331d8b6399c1a2d095d7962111263822e328b",
+        "sdkRequestSha256": "ba49a2d0762e0f23ba5f88fb515556948d66578f98e6614fdaa9cc0b8b013caf",
+        "sourceArchive": "ordinary-unadmitted-e6915f4d02409b747ae05eddd8c0da38fa39b7a5bed7cf490e4bf205d4d93a4e.json",
+        "sourceArchiveSha256": "2872e3747764b19573ec24d6a63ec267cbb5020c6186db3dce1a866a62169a4f"
+      },
+      "qid": 20707
+    }
+  ],
+  "actualNetworkAttempts": 0,
+  "source": "original dispatch and SDK no-admission proof; no order replacement"
+}

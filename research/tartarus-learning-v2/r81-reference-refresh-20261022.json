@@ -1,0 +1,94 @@
+{
+  "observedUtc": "2026-10-22T02:54:41.066923+00:00",
+  "workerPid": 1061072,
+  "updaterPid": 1061075,
+  "commits": 84,
+  "generationSha256": "1db6d08d79668e71f5979c5cdc85ff0b79e90b7272d34943ba8eaa11c1453df7",
+  "reviews": [
+    {
+      "exchangeId": "1042",
+      "reviewedAtMs": 1792276251063,
+      "expiresAtMs": 1792357242718,
+      "reviewCurrentUntilMs": 1792357242718
+    },
+    {
+      "exchangeId": "1068",
+      "reviewedAtMs": 1792276251063,
+      "expiresAtMs": 1792358159119,
+      "reviewCurrentUntilMs": 1792358159119
+    },
+    {
+      "exchangeId": "966",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638370146,
+      "reviewCurrentUntilMs": 1792638370146
+    },
+    {
+      "exchangeId": "977",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638371560,
+      "reviewCurrentUntilMs": 1792638371560
+    },
+    {
+      "exchangeId": "1067",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638365656,
+      "reviewCurrentUntilMs": 1792638365656
+    },
+    {
+      "exchangeId": "865",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638370260,
+      "reviewCurrentUntilMs": 1792638370260
+    },
+    {
+      "exchangeId": "872",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638371383,
+      "reviewCurrentUntilMs": 1792638371383
+    },
+    {
+      "exchangeId": "993",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638360316,
+      "reviewCurrentUntilMs": 1792638360316
+    },
+    {
+      "exchangeId": "885",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638360920,
+      "reviewCurrentUntilMs": 1792638360920
+    },
+    {
+      "exchangeId": "1051",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638360303,
+      "reviewCurrentUntilMs": 1792638360303
+    },
+    {
+      "exchangeId": "851",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638368952,
+      "reviewCurrentUntilMs": 1792638368952
+    },
+    {
+      "exchangeId": "1043",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638368265,
+      "reviewCurrentUntilMs": 1792638368265
+    },
+    {
+      "exchangeId": "1044",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638361906,
+      "reviewCurrentUntilMs": 1792638361906
+    },
+    {
+      "exchangeId": "1077",
+      "reviewedAtMs": 1792637472379,
+      "expiresAtMs": 1792638371822,
+      "reviewCurrentUntilMs": 1792638371822
+    }
+  ],
+  "accountRequestsByObserver": 0
+}

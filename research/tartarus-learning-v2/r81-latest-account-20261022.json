@@ -1,0 +1,30 @@
+{
+  "observedUtc": "2026-10-22T02:53:54.276061+00:00",
+  "nativeViewWrittenAt": "2026-10-22T02:53:22.158Z",
+  "separateReceiptsNotAtomic": true,
+  "marksNotExecutableLiquidation": true,
+  "accountRequests": 0,
+  "originalReceiptClocks": [
+    {
+      "endpoint": "/account?tournamentId=bda92870-621e-47b0-bc3c-3602c5c26f55",
+      "receiptSha256": "70072e4f22d9e7eb6d20bdcf1052c6d8f439e875b2cb28782884a75126490ddb",
+      "receivedAt": "2026-10-22T02:53:06.087Z",
+      "requestStartedAt": "2026-10-22T02:53:05.755Z",
+      "fileSha256": "1c0b7638f93147334f2d1c3f3a83e170906581c8498982010cc0ede89b2b637b",
+      "typedReceiptDigestVerified": true
+    },
+    {
+      "endpoint": "/tournaments/midterm-elections/portfolio/positions",
+      "receiptSha256": "80abed519a0106b0ff2667ca5c7bf885f3c77f31bd314c41d4a7269d357c4377",
+      "receivedAt": "2026-10-22T02:53:04.281Z",
+      "requestStartedAt": "2026-10-22T02:53:03.924Z",
+      "fileSha256": "00be6af7e2e9dc2358d40d4df9951f4e002553188fdb59953f137adbd2cd90fe",
+      "typedReceiptDigestVerified": true
+    }
+  ],
+  "cash": "9761.315",
+  "positionsMarketValue": "84397.42",
+  "markedEquity": "94158.735",
+  "changeFrom100000": "-5841.265",
+  "returnFrom100000Percent": "-5.84126500"
+}

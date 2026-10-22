@@ -1,0 +1,26 @@
+{
+  "observedUtc": "2026-10-22T02:52:16.549144+00:00",
+  "nativeQid": 20696,
+  "events": [
+    {
+      "kind": "intent",
+      "qid": 20696,
+      "at": "2026-10-22T02:28:41.503Z"
+    },
+    {
+      "kind": "attempt",
+      "qid": 20696,
+      "at": "2026-10-22T02:28:41.517Z"
+    },
+    {
+      "kind": "ack",
+      "qid": 20696
+    },
+    {
+      "kind": "closed",
+      "qid": 20696,
+      "orderReceiptHash": "4261424ed9046b48c8be0ac81b15b8311e34ff99cd37bb72625fd7184883b9d5",
+      "fillReceiptHash": "62d1b8fb071f3cb54081fc7f1cd62f95dc5f3da1416d1ecfa342c0b2792f3427"
+    }
+  ]
+}

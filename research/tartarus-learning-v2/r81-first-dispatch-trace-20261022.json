@@ -1,0 +1,90 @@
+{
+  "diagnosticOnly": true,
+  "outcome": "transport_error",
+  "summary": {
+    "bookAgeAtAckMs": null,
+    "earliestRecordedMs": 1792637656847,
+    "fillObservationDelayMs": null,
+    "latestRecordedMs": 1792637672615,
+    "outsideRecordedSpansMs": 11465,
+    "recordedSpanUnionMs": 4303
+  },
+  "trace": {
+    "ackReceivedAtMs": null,
+    "bookReceivedAtMs": 1792637663004,
+    "candidateCreatedAtMs": 1792637667317,
+    "diagnosticOnly": true,
+    "fillAppliedAtMs": null,
+    "fillExecutedAtMs": null,
+    "fillObservedAtMs": null,
+    "finishedAtMs": 1792637672615,
+    "nativeQid": 20707,
+    "permitExpiresAtMs": 1792637685353,
+    "permitIssuedAtMs": 1792637670353,
+    "runId": "moloch-live-20261015-v1",
+    "spans": [
+      {
+        "endMs": 1792637657108,
+        "stage": "preflightRead",
+        "startMs": 1792637656847
+      },
+      {
+        "endMs": 1792637659909,
+        "stage": "preflightRead",
+        "startMs": 1792637659553
+      },
+      {
+        "endMs": 1792637658114,
+        "stage": "preflightRead",
+        "startMs": 1792637657730
+      },
+      {
+        "endMs": 1792637658930,
+        "stage": "preflightRead",
+        "startMs": 1792637658736
+      },
+      {
+        "endMs": 1792637660710,
+        "stage": "preflightRead",
+        "startMs": 1792637660531
+      },
+      {
+        "endMs": 1792637661976,
+        "stage": "preflightRead",
+        "startMs": 1792637661715
+      },
+      {
+        "endMs": 1792637663004,
+        "stage": "preflightRead",
+        "startMs": 1792637662598
+      },
+      {
+        "endMs": 1792637672564,
+        "stage": "policyAndRisk",
+        "startMs": 1792637670353
+      },
+      {
+        "endMs": 1792637672579,
+        "stage": "originalAttemptRecord",
+        "startMs": 1792637672574
+      },
+      {
+        "endMs": 1792637672580,
+        "stage": "postIntentOwnership",
+        "startMs": 1792637672579
+      },
+      {
+        "endMs": 1792637672580,
+        "stage": "intentDurability",
+        "startMs": 1792637672564
+      },
+      {
+        "endMs": 1792637672615,
+        "stage": "transportCall",
+        "startMs": 1792637672580
+      }
+    ],
+    "startedAtMs": 1792637670353,
+    "version": 1
+  }
+}
