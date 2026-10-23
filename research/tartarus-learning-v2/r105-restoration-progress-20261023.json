@@ -1,0 +1,36 @@
+{
+  "observedUtc": "2026-10-23T01:24:50.075565+00:00",
+  "workerPid": 1140527,
+  "workerAlive": true,
+  "observerPid": 1140531,
+  "observerAlive": true,
+  "lastRestorationObservation": {
+    "observedUtc": "2026-10-23T01:24:45.318278+00:00",
+    "pid": 1140527,
+    "processAlive": true,
+    "currentPidProgress": false,
+    "stopPresent": false,
+    "newAccountClients": 0,
+    "processIo": {
+      "rchar": "1697884088",
+      "wchar": "70685507",
+      "syscr": "125875",
+      "syscw": "214",
+      "read_bytes": "1001283584",
+      "write_bytes": "70971392",
+      "cancelled_write_bytes": "0"
+    }
+  },
+  "freshTradingVerified": false,
+  "postRestorationReview": {
+    "pid": 1142644,
+    "sourceCommit": "0a160e0918dfa325edc6317c62c2c4e26ce8c90b",
+    "state": "waiting_for_exact_r105_restoration",
+    "controllerSha256": "7c5ae181f0f49f72928a93056eb657edc10c3181b9231d8d3e494e6679cce472",
+    "priorQid": 23567,
+    "retryOfPriorIntentAuthorized": false,
+    "accountClientsCreated": 0
+  },
+  "reviewControllerAlive": true,
+  "accountClientsCreated": 0
+}
