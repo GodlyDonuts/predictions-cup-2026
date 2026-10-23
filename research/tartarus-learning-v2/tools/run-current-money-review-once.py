@@ -49,6 +49,15 @@ def select_candidate(candidates, ownership):
     return None,deferred
 
 
+def prior_completion_arguments(qid):
+    if qid is None:
+        return []
+    assert type(qid) is int and qid > 0, 'EXACT_POSITIVE_PRIOR_QID_REQUIRED'
+    # The existing publisher independently verifies the matching original
+    # intent and exchange-closed record. This flag grants no retry authority.
+    return ['--completed-qid',str(qid)]
+
+
 def run(a):
     os.umask(0o077); os.nice(15); Path('/proc/self/oom_score_adj').write_text('1000')
     assert len(a.source_commit) == 40 and all(c in '0123456789abcdef' for c in a.source_commit)
@@ -138,7 +147,8 @@ def run(a):
             '--prepared',str(prepared),'--expected-pid',str(deployment['pid']),
             '--expected-binary-sha256',deployment['binarySha256'],'--expected-raw-sha256',summary['rawSha256'],
             '--source-commit',a.source_commit,'--source-reference-root',str(a.reference),
-            '--generation-publication-lock-fd',str(fd)])
+            '--generation-publication-lock-fd',str(fd),
+            *prior_completion_arguments(getattr(a,'completed_qid',None))])
         record(state='owner_review_published' if result.returncode==0 else 'publication_declined',
                nomination=summary,publisherExitCode=result.returncode,
                diagnosticTail=result.stderr[-1000:] if result.returncode else None,
@@ -152,4 +162,6 @@ if __name__=='__main__':
     p.add_argument('--publisher-sha256',required=True)
     p.add_argument('--source-commit',required=True)
     p.add_argument('--wait-seconds',type=int,default=2700)
+    p.add_argument('--completed-qid',type=int,
+        help='Exact prior review order whose original intent/terminal proof the publisher must verify; never a retry.')
     run(p.parse_args())

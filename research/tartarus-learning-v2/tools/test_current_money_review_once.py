@@ -66,5 +66,12 @@ class RecoveryAndSelectionTests(unittest.TestCase):
                                                 {'1051':{'side':'NO'}})
         self.assertIsNone(selected); self.assertEqual(len(deferred),1)
 
+    def test_only_an_explicit_positive_prior_order_is_forwarded_for_independent_completion(self):
+        self.assertEqual(owner.prior_completion_arguments(None),[])
+        self.assertEqual(owner.prior_completion_arguments(23417),['--completed-qid','23417'])
+        for qid in [0,-1,True,'23417']:
+            with self.subTest(qid=qid),self.assertRaises(AssertionError):
+                owner.prior_completion_arguments(qid)
+
 
 if __name__=='__main__': unittest.main()
