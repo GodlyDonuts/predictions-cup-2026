@@ -1,0 +1,14 @@
+{
+  "observedUtc": "2026-10-23T00:17:42.607837+00:00",
+  "pid": 1138265,
+  "expectedWorkerPid": 1138184,
+  "sourceCommit": "2a3c5accb96b0b8569d495dc83fd365e1c6b73c7",
+  "scriptSha256": "183b0ce5a65d9291639c3301a7db37b79f54f7e1052a10caa1b91fc53a1c6732",
+  "state": "waiting_for_exact_restoration_proof",
+  "focusedLinuxChecks": 10,
+  "legacyForcedExitConflictHandled": true,
+  "fullUniverseBuyManagementImplemented": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByController": 0,
+  "fillClaimed": false
+}

@@ -1,0 +1,29 @@
+{
+  "requestStartedAt": "2026-10-23T00:19:04.547837+00:00",
+  "receivedAt": "2026-10-23T00:19:05.506920+00:00",
+  "sourceUrl": "https://www.cassia.gov/media/Elections/SAMPLE%20BALLOTS/2026/Cassia%20County%20General%20Election%20Sample%20Ballot.pdf",
+  "status": 200,
+  "bytes": 946589,
+  "sha256": "aefe91742f0b9ac3938e558b292cae055bdabd46f3cee1bd5aaeea381f1d4327",
+  "seedSha256": "2a364763533273c1dd38e8f7fed2581f7859b443c849519cb0ae88efe907bdd3",
+  "checked": [
+    {
+      "exchangeId": "1076",
+      "yesBid": "0.9820",
+      "yesAsk": "0.9890",
+      "metadataRecordSha256": "2e5c5e953678f294e37c4dc9333f1209412e47659da58651ae401c31712f31c7",
+      "referenceRecordSha256": "a07c8883ff1864de08ce7fc3c1f75648b6062bc7386360f16234e9af0a4d7999"
+    },
+    {
+      "exchangeId": "859",
+      "yesBid": "0.0250",
+      "yesAsk": "0.0360",
+      "metadataRecordSha256": "418a6a15d6618fd12174c419e87afe891a3123af4ff569297e9939ecb05399a0",
+      "referenceRecordSha256": "f37baeb944caf39ec4858570ae3b2dac6220cf4cc8b6a8180f48e78f66e16d23"
+    }
+  ],
+  "officialSigRequests": 0,
+  "newVenueRequests": 0,
+  "cohortInstalled": false,
+  "executionAuthority": false
+}

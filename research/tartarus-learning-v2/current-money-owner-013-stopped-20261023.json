@@ -1,0 +1,10 @@
+{
+  "observedUtc": "2026-10-23T00:14:37.934317+00:00",
+  "pid": 1138220,
+  "state": "controller_stopped_before_research",
+  "reason": "unmanaged_rank_buy_would_inherit_legacy_60_second_liquidation",
+  "researchStarted": false,
+  "ownerApprovalWritten": false,
+  "ordersSubmitted": 0,
+  "accountWorkerStopped": false
+}
