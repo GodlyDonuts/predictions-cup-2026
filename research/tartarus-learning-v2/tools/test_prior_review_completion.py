@@ -90,6 +90,20 @@ class PriorCompletionTests(unittest.TestCase):
         self.write_events([dict(kind='intent',qid=42,rankCampaign=dict(rawSha256=self.raw_sha)),dict(kind='closed',qid=42)])
         self.assertIn('originalClosedLineSha256',self.complete(context=False))
 
+    def test_pre_admission_abort_requires_its_own_sdk_verified_kind(self):
+        self.write_events([dict(kind='intent',qid=42,rankCampaign=dict(rawSha256=self.raw_sha)),
+                           dict(kind='aborted_before_admission',qid=42)])
+        with patch.object(publisher.subprocess,'run',side_effect=self.verified_output):
+            with self.assertRaises(AssertionError): self.complete()
+        def verified_abort(args,**kwargs):
+            result=self.verified_output(args,**kwargs); body=json.loads(result.stdout)
+            body['kind']='positively_proved_aborted_before_admission'
+            return subprocess.CompletedProcess(args,0,json.dumps(body),'')
+        with patch.object(publisher.subprocess,'run',side_effect=verified_abort):
+            result=self.complete()
+        self.assertEqual(result['completionKind'],'positively_proved_aborted_before_admission')
+        self.assertFalse(result['exchangeClosedClaimed']); self.assertFalse(result['retryAuthorized'])
+
     def test_local_final_guard_requires_its_own_sdk_verified_kind(self):
         self.write_events([dict(kind='intent',qid=42,rankCampaign=dict(rawSha256=self.raw_sha)),
                            dict(kind='local_final_guard_no_http',qid=42)])

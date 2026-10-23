@@ -18,6 +18,13 @@ fn main()->Result<(),Box<dyn std::error::Error>>{
   let proof=moloch_live_runtime::ordinary_pre_network::restore(account,&scope,&spec,&permit,at,&error,&record["proof"])?;
   log.verify_pre_network_not_sent(qid,&proof)?;
   ("positively_proved_pre_network_not_sent",proof.evidence().clone())
+ }else if let Some(record)=log.aborted_records().get(&qid).cloned(){
+  let(spec,permit,at,error)=log.pre_admission_originals(qid)?;
+  let config=baal_transport_service::Config{queue_dir:Path::new(control["root"].as_str().ok_or("PRIOR_RUNTIME_ROOT")?).join("account-queue"),account_scope:account.into(),scope:scope.clone(),maximum_pages:20,writes_enabled:false};
+  let proof=baal_transport_service::verify_retained_ordinary_pre_admission(&config,&spec,&permit,at,&error,&record["proof"])?;
+  log.verify_aborted_before_admission(qid,&proof)?;
+  let original=proof.evidence();
+  ("positively_proved_aborted_before_admission",json!({"kind":original["kind"],"contextSha256":original["contextSha256"],"sdkSourceSha256":original["sdkSourceSha256"]}))
  }else{
   let record=log.local_final_guard_records().get(&qid).ok_or("PRIOR_TYPED_NOT_SENT_RECORD_REQUIRED")?.clone();
   if record["proof"]["proofMode"]!="durable_local_guard"{return Err("PRIOR_DURABLE_SDK_CERTIFICATE_REQUIRED".into())}

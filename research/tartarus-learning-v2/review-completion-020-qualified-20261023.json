@@ -1,0 +1,76 @@
+{
+  "observedUtc": "2026-10-23T01:22:35.410940+00:00",
+  "verifierBinarySha256": "6ec345340c7761e9ee2c691cc1a2400eb204a6e54dd6cf0197ba9f4855fb7208",
+  "verifierSourceSha256": "e432f5e8eb042edc310633663404381389f2464c6f7a06f37e354fca8102d95b",
+  "publisherSha256": "e80602a400a3c93796accd907f03e8dbf71f3a10e4657c7db089c231adb6085d",
+  "checks": 25,
+  "actualSdkCases": [
+    {
+      "qid": 23142,
+      "result": {
+        "accountRequests": 0,
+        "dispatchSnapshotModified": false,
+        "dispatchSnapshotSha256": "9aefac7772fc968441e512720b7da826f9395f98199b23c5ed6dfe6d2afd1a58",
+        "exchangeClosedClaimed": false,
+        "kind": "positively_proved_pre_network_not_sent",
+        "opaqueSdkProofVerified": true,
+        "originalProof": {
+          "contextSha256": "7848b783ed95ab305a94fcb47f9aa51b871f9ccd21f2076e7687b4ac4c73e904",
+          "kind": "ordinary_admitted_pre_network_not_sent_v1",
+          "sdkSha256": "70400749f84b18740b0c1b72f37eadc86d4622797fbeff9b291cb05e8a684df7",
+          "snapshot": "/home/archon/apps/moloch/shared/live-production-v1/account-queue/ordinary-pre-network-7848b783ed95ab305a94fcb47f9aa51b871f9ccd21f2076e7687b4ac4c73e904",
+          "sourceJournalSha256": "4a66385328aa587d8ea7d554be873843a222749c6ab2b7008f4f5332df89db5f"
+        },
+        "priorRawSha256": "3a4f4cf8f34789d747cb8cf815470ac80fa3a3785c9dcef69fa8c469048e187a",
+        "qid": 23142,
+        "retryAuthorized": false
+      },
+      "wrongReviewRejected": true
+    },
+    {
+      "qid": 23465,
+      "result": {
+        "accountRequests": 0,
+        "dispatchSnapshotModified": false,
+        "dispatchSnapshotSha256": "9aefac7772fc968441e512720b7da826f9395f98199b23c5ed6dfe6d2afd1a58",
+        "exchangeClosedClaimed": false,
+        "kind": "positively_proved_local_final_guard_no_http",
+        "opaqueSdkProofVerified": true,
+        "originalProof": {
+          "contextSha256": "b350fc70d7802083a999e8dffe24422c7701472cc82030014ca6fccd7277aec2",
+          "kind": "sdk_ordinary_final_guard_no_http_v1",
+          "proofMode": "durable_local_guard",
+          "sdkSourceSha256": "2421fca34051bf418d26cd9d562118c9b32e994c61b6dd341b7ae052e7adedce"
+        },
+        "priorRawSha256": "2a2633a20a257ab54b4e19498e80674dfd5097fdb8e7b6e1e3cb29ac4222658f",
+        "qid": 23465,
+        "retryAuthorized": false
+      },
+      "wrongReviewRejected": true
+    },
+    {
+      "qid": 23567,
+      "result": {
+        "accountRequests": 0,
+        "dispatchSnapshotModified": false,
+        "dispatchSnapshotSha256": "9aefac7772fc968441e512720b7da826f9395f98199b23c5ed6dfe6d2afd1a58",
+        "exchangeClosedClaimed": false,
+        "kind": "positively_proved_aborted_before_admission",
+        "opaqueSdkProofVerified": true,
+        "originalProof": {
+          "contextSha256": null,
+          "kind": "sdk_stopped_v1_before_admit_no_http",
+          "sdkSourceSha256": null
+        },
+        "priorRawSha256": "a662aa4e56796e810ad6fad2bac8abac4af4e1067790652f5530703aaa63a53b",
+        "qid": 23567,
+        "retryAuthorized": false
+      },
+      "wrongReviewRejected": true
+    }
+  ],
+  "originalDispatchModified": false,
+  "accountRequests": 0,
+  "ordersSubmitted": 0,
+  "retryAuthorized": false
+}

@@ -1,0 +1,32 @@
+{
+  "observedUtc": "2026-10-23T01:23:16.199224+00:00",
+  "result": {
+    "qid": 23567,
+    "priorRawSha256": "a662aa4e56796e810ad6fad2bac8abac4af4e1067790652f5530703aaa63a53b",
+    "completionKind": "positively_proved_aborted_before_admission",
+    "originalNotSentLineSha256": "bf6a301f9dd4f8e0152ea98ccae5f90e4091f2834718da21acbb6ab4333eff62",
+    "originalReportSha256": "da421ebcf70370cb0bbb132908bc31caec07bd95f60e179ad5bd6ca242472168",
+    "verifierSha256": "6ec345340c7761e9ee2c691cc1a2400eb204a6e54dd6cf0197ba9f4855fb7208",
+    "typedVerification": {
+      "accountRequests": 0,
+      "dispatchSnapshotModified": false,
+      "dispatchSnapshotSha256": "9aefac7772fc968441e512720b7da826f9395f98199b23c5ed6dfe6d2afd1a58",
+      "exchangeClosedClaimed": false,
+      "kind": "positively_proved_aborted_before_admission",
+      "opaqueSdkProofVerified": true,
+      "originalProof": {
+        "contextSha256": null,
+        "kind": "sdk_stopped_v1_before_admit_no_http",
+        "sdkSourceSha256": null
+      },
+      "priorRawSha256": "a662aa4e56796e810ad6fad2bac8abac4af4e1067790652f5530703aaa63a53b",
+      "qid": 23567,
+      "retryAuthorized": false
+    },
+    "exchangeClosedClaimed": false,
+    "retryAuthorized": false
+  },
+  "originalDispatchModified": false,
+  "accountRequests": 0,
+  "ownerFilesModified": false
+}

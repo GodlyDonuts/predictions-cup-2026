@@ -1,0 +1,42 @@
+{
+  "qid": 23567,
+  "reviewRawSha256": "a662aa4e56796e810ad6fad2bac8abac4af4e1067790652f5530703aaa63a53b",
+  "originalEvents": [
+    {
+      "sourceLineSha256": "3a1b5e256e43b42d12557259287b0d08cf8cf77733deeb9f04ff2b9a9e89ee79",
+      "kind": "intent",
+      "qid": 23567,
+      "at": "2026-10-23T01:17:16.856Z"
+    },
+    {
+      "sourceLineSha256": "9f640da206dd0afcc5473f83dba179491847d3bdc3160ad8d72a4a39c5aa8be5",
+      "kind": "attempt",
+      "qid": 23567,
+      "at": "2026-10-23T01:17:16.865Z"
+    },
+    {
+      "sourceLineSha256": "aa8aaf08f9a7aae016f77381320d02332ebf457839410cd3a2e24ab101d09cd2",
+      "kind": "error",
+      "qid": 23567,
+      "at": "2026-10-23T01:17:17.172Z",
+      "error": {
+        "apiCode": null,
+        "code": "RANK_PHYSICAL_FACTS_EXPIRED",
+        "mayHaveExecuted": false,
+        "orderId": null,
+        "retryAfterMs": 0,
+        "status": null
+      }
+    },
+    {
+      "sourceLineSha256": "bf6a301f9dd4f8e0152ea98ccae5f90e4091f2834718da21acbb6ab4333eff62",
+      "kind": "aborted_before_admission",
+      "qid": 23567,
+      "at": "2026-10-23T01:17:20.130Z"
+    }
+  ],
+  "originalDispatchSha256": "9aefac7772fc968441e512720b7da826f9395f98199b23c5ed6dfe6d2afd1a58",
+  "preparationTimings": null,
+  "fillClaimed": false,
+  "retryAuthorized": false
+}

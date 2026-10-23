@@ -56,7 +56,7 @@ def completed_prior_review(root, view, old_sha, qid, completion=None):
                 intent = (event.get('rankCampaign') or {}).get('rawSha256') == old_sha
             if event['kind'] == 'closed':
                 closed = digest(line)
-            if event['kind'] in ('admitted_pre_network_not_sent','local_final_guard_no_http'):
+            if event['kind'] in ('admitted_pre_network_not_sent','local_final_guard_no_http','aborted_before_admission'):
                 not_sent = digest(line)
                 not_sent_kind = event['kind']
     assert intent, 'ORIGINAL_MATCHING_RANK_INTENT_REQUIRED'
@@ -91,7 +91,8 @@ def completed_prior_review(root, view, old_sha, qid, completion=None):
     proof = json.loads(checked.stdout)
     assert proof['qid'] == qid and proof['priorRawSha256'] == old_sha
     expected_kind = {'admitted_pre_network_not_sent':'positively_proved_pre_network_not_sent',
-                     'local_final_guard_no_http':'positively_proved_local_final_guard_no_http'}[not_sent_kind]
+                     'local_final_guard_no_http':'positively_proved_local_final_guard_no_http',
+                     'aborted_before_admission':'positively_proved_aborted_before_admission'}[not_sent_kind]
     assert proof['kind'] == expected_kind and proof['opaqueSdkProofVerified'] is True
     assert proof['dispatchSnapshotSha256'] == digest(raw) and proof['retryAuthorized'] is False
     assert proof['exchangeClosedClaimed'] is False and proof['accountRequests'] == 0 and proof['dispatchSnapshotModified'] is False
