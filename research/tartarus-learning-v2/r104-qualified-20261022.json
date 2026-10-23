@@ -1,0 +1,17 @@
+{
+  "binarySha256": "a3382c6e38a91f932a38a54925b66a971c5cde28a8c1de7a7fc387265eb87c3a",
+  "runtimeLibrarySha256": "737d06e511e27e803efb671dc1db595e8ccb4d9b4aa8acce192a77715cf3cffd",
+  "changedSource": "moloch/live-runtime/src/fundamental_policy.rs",
+  "sourceSha256": "b236f0a5ed08d15a07e56d16511016df7e9606f70021eea298e2d6c18e660af5",
+  "checks": {
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.34s"
+  },
+  "cliLoads": true,
+  "priorLogBoundBytes": 16777216,
+  "logBoundBytes": 268435456,
+  "originalHistoryChanged": false,
+  "nativeEngineChanged": false,
+  "riskCapsChanged": false,
+  "accountClientsCreated": 0,
+  "deployed": false
+}

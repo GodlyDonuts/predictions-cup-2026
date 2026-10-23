@@ -1,0 +1,28 @@
+{
+  "observedUtc": "2026-10-23T00:03:13.391347+00:00",
+  "sourceCommit": "c6bd066930d21e37f3963a318abd7827bcb59b55",
+  "binarySha256": "a3382c6e38a91f932a38a54925b66a971c5cde28a8c1de7a7fc387265eb87c3a",
+  "controlSha256": "6d8b5549a6d44494b49f50337d676816d4def33a6711644b187e181c01941a63",
+  "incident": "/home/archon/apps/moloch/shared/incidents/r104-policy-log-20261023T000255Z",
+  "originalFills": 737,
+  "originalFinancialPrefix": {
+    "bytes": 3007469293,
+    "sha256": "70ba617d4842f978c195102ce857afbfd9ea16bf4c0352f5db8a8d3733fc04ea"
+  },
+  "originalFundamentalSha256": "d358e55e3133f1b5fb310a23e2bdbdbb92d22fd96ebee27ae8712b8bf94750ab",
+  "originalFundamentalBytes": 16776296,
+  "bridgeSha256": "8c5460e09298ac1963d6304710be00010122ae59748d5aeab8bf89ca37a02e8a",
+  "engineIdentity": "613e5b5acc399b6f72d1f93a438181310ae6fcafa698fd93bbb7d99c72592f55",
+  "nativeEngineUnchanged": true,
+  "knownOpenOrders": [],
+  "priorReservedQidNotDispatched": 23400,
+  "priorReviewRenewed": false,
+  "monetaryCapsLimiterAndWindowsChanged": false,
+  "ordersSubmittedByDeployment": 0,
+  "freshTradingVerified": false,
+  "pid": 1138184,
+  "startTicks": 68344926,
+  "referenceUpdaterPid": 1138187,
+  "phase": "restoring_original_ledger",
+  "actualExecutableAndArgumentsVerified": true
+}
