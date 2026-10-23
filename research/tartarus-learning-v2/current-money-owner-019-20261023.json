@@ -1,0 +1,60 @@
+{
+  "launch": {
+    "pid": 1140362,
+    "sourceCommit": "5f3b6466293992a94f5013d575ef3bc0f9bba0cc",
+    "controllerSha256": "7c5ae181f0f49f72928a93056eb657edc10c3181b9231d8d3e494e6679cce472",
+    "oldQid": 23465,
+    "retryOfOldIntent": false,
+    "accountClientsCreated": 0
+  },
+  "result": {
+    "state": "owner_review_published",
+    "nomination": {
+      "rawSha256": "a662aa4e56796e810ad6fad2bac8abac4af4e1067790652f5530703aaa63a53b",
+      "objective": "declared_positive_expected_money",
+      "exchangeId": "1043",
+      "side": "NO",
+      "action": "BUY",
+      "quantity": 3295,
+      "limitPrice": "0.850000",
+      "validUntilMs": 1792718285804,
+      "weakestDeclaredExpectedChange": 185.149345,
+      "ordinaryMinimumExpectedChange": "191.110000",
+      "scenarios": 85,
+      "originalHypothesisQuantity": 3334,
+      "originalHypothesisPrice": "0.840000",
+      "requestedPriceTolerance": "0.010000",
+      "limitIsConservativeFundingAndValuationPrice": true,
+      "actualFillPriceClaimed": false,
+      "probabilityModels": 3,
+      "decisionProfilePolicy": "current-prices",
+      "decisionProfileIds": [
+        "price_lower_common",
+        "price_upper_common",
+        "price_midpoint_independent"
+      ],
+      "completeHeldMarkets": 21,
+      "sourceClocksRenewed": false,
+      "approvalPublished": false,
+      "submitted": false,
+      "executionAuthority": false
+    },
+    "publisherExitCode": 0,
+    "diagnosticTail": null,
+    "workerIndependentlyReconcilesAndDecides": true,
+    "retryOfPriorIntentAuthorized": false,
+    "accountClientsCreated": 0,
+    "ordersSubmittedByController": 0,
+    "fillClaimed": false,
+    "sourceClocksRenewed": false,
+    "sourceCommit": "5f3b6466293992a94f5013d575ef3bc0f9bba0cc"
+  },
+  "workerStatus": {
+    "at": "2026-10-23T01:15:45.364Z",
+    "physicalAttempted": false,
+    "profitabilityEstablished": false,
+    "reason": "OWNED_ORDER_YIELD_REQUIRES_TERMINAL_RECONCILIATION",
+    "stage": "priority",
+    "state": "deferred"
+  }
+}

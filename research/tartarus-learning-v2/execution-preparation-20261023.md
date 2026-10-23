@@ -13,3 +13,7 @@ The [R105 candidate](r105-qualified-20261023.json) removes one redundant full-co
 The [official marked account audit](official-marked-account-20261023.json), with account and position receipts at01:03UTC, verifies cash2801.12 plus official position marks90708.40 =93509.52 SUSQies. Against100000 initial balance this is **-6490.48 / -6.49048%**. All21 signed holdings and cash match the native view. These are official marks, not executable liquidation or daily P&L. The official unrealized arithmetic discrepancy0.03 remains explicit. Positive whole-account ROI, profitable ML, winning and one filled order per minute remain unmet.
 
 Next: use fresh evidence for any new review and reduce measured preparation latency before claiming higher execution capacity. Production remains available during qualification; failed intents are not blindly resent.
+
+## Subsequent fresh review019
+
+The [finite controller019](current-money-owner-019-20261023.json) completed fresh research and published a new, independently identified review through018. It selected3295NO1043 at maximum0.85 using85 scenarios and three current-price profiles; the weakest declared model advantage185.149345 is uncalibrated, not a profit forecast. Original23465 was verified through its SDK certificate, not retried. At01:15:45UTC the worker was waiting for an existing owned order's terminal reconciliation before acting. No new physical submission or fill was verified at that observation. Controller019 is terminal; the sole account worker continues independently.
