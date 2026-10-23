@@ -2,7 +2,7 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
-**Latest recovery, October23,00:03UTC:** R104 worker1138184 is installed and replaying the original ledger after R103 reached its16MiB policy-history capacity. The finite bound is now256MiB;149 policy checks and recovery preflight passed. All737fills and original journals remain. Current-PID fresh trading and profitable operation remain unverified. See [recovery evidence](research/tartarus-learning-v2/r104-policy-log-20261022.md) and [current state](docs/CURRENT_STATE.md). Earlier live observations below are dated history.
+**Latest verification, October23,00:26UTC:** R104 worker1138184 reached current-PID trading with healthy realtime. All737 original fills and both full original journal prefixes are independently verified. The16MiB policy-history failure is fixed with a finite256MiB bound;149 policy checks passed. New fills and profitable returns from R104 remain unproven. A source-backed Idaho inventory-manager handoff is in progress without restarting the worker. See [restoration verification](research/tartarus-learning-v2/r104-fresh-live-20261023.json) and [current state](docs/CURRENT_STATE.md). Earlier observations below are dated history.
 
 ## Latest state: October22,23:32UTC
 

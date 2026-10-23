@@ -1,0 +1,12 @@
+{
+  "observedUtc": "2026-10-23T00:26:34.247836+00:00",
+  "pid": 1138367,
+  "expectedWorkerPid": 1138184,
+  "previousSourceUpdaterPid": 1138187,
+  "sourceCommit": "0a4354c2c0801e22b827c9ecd550d4aade9f354f",
+  "publisherSha256": "30de15bf6ed4a1371d42cebc973bbfe30e1165cd0ce57fa0a188670e07fc086e",
+  "state": "waiting_for_exact_restoration_proof",
+  "cohortInstalled": false,
+  "accountWorkerRestarted": false,
+  "ordersSubmittedByPublisher": 0
+}
