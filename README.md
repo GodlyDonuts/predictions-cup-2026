@@ -2,6 +2,8 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
+**Latest incident, October22,23:54UTC:** the R103 worker stopped because its append-only policy journal reached the16MiB capacity. The fresh source-coordinated1051 review reached native reservation23400 but no dispatch or fill. The account queue has no unknown request. R104 retains the full history and raises its finite capacity to256MiB; qualification/recovery is underway. See [current state](docs/CURRENT_STATE.md) and [original review/exit evidence](research/tartarus-learning-v2/tennessee-owner-review-010-20261022.json). Earlier live observations below are dated history.
+
 ## Latest state: October22,23:32UTC
 
 R103 is verified in its trading loop with healthy realtime. The full original journal prefix, all716 original fills and unchanged financial fields passed independent restoration checks. Source helper1136220 committed fresh references for all four scopes with the new publication coordination enabled. A separate original-receipt audit verifies two1074NO sales/879shares/795.495turnover and **zero new realized gain**. [Restoration proof](research/tartarus-learning-v2/r103-fresh-live-20261022.json), [receipt audit](research/tartarus-learning-v2/r103-post-restore-turnover-20261022.json).
