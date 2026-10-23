@@ -2,6 +2,8 @@
 
 Moloch is the sole official-account execution worker. Tartarus is the offline population-learning system under development. The contest uses nonredeemable SUSQie points. Source is published directly to `main`; no PR workflow is used.
 
+**October23,01:05UTC:** R104 remains trading with healthy realtime. The subsequent1043 review23465 failed before HTTP on physical-fact expiry and has no fill. Typed SDK completion is verified; R105 is qualified but undeployed. Official01:03 account marks total93509.52SUSQies (-6.49048% versus initial100000). [Current evidence and limitations](research/tartarus-learning-v2/execution-preparation-20261023.md).
+
 **Latest audit, October23,00:33UTC:** R104 fully filled10000Tennessee NO shares for8884.135SUSQies/zero fees, verified against17 original receipts and FIFO. Cash2801.120/owned cost91444.245 at that observation; the purchase creates no realized profit. The Idaho value manager and five-market reference maintenance are live, without restarting the sole worker1138184. Both original journal prefixes/all737 baseline fills remain verified. See [receipt audit](research/tartarus-learning-v2/r104-tennessee-filled-20261023.json), [Idaho integration](research/tartarus-learning-v2/cohort-859-integration-015-20261023.json) and [current state](docs/CURRENT_STATE.md). Earlier observations below are dated history.
 
 ## Latest state: October22,23:32UTC

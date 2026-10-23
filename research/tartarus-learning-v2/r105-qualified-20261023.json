@@ -1,0 +1,19 @@
+{
+  "binarySha256": "258a7051107a9cb4e4a3d696f9448d7ceec2a356decb78b76ee1ceee2847c353",
+  "runtimeLibrarySha256": "05e9d02531883a74f144745054b3c9fa960c190223a8624f41b017f0e4740439",
+  "changedSource": "moloch/live-runtime/src/fundamental_rank_ownership.rs",
+  "sourceSha256": "468ff06fe8c9c71bbcc9adfbe6f1f985da7d68da663c49ced3128277afdc9de7",
+  "checks": {
+    "fundamental-tests": "test result: ok. 149 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s",
+    "rank-cohort-tests": "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s"
+  },
+  "cliLoads": true,
+  "fullInitialCheckPreserved": true,
+  "publicCrossCallCheckPreserved": true,
+  "targetFifoRecheckedAfterAppend": true,
+  "originalHistoryChanged": false,
+  "nativeEngineChanged": false,
+  "riskCapsChanged": false,
+  "accountClientsCreated": 0,
+  "deployed": false
+}

@@ -144,12 +144,21 @@ impl Cohorts{
    let binding=Binding{qid,spec:spec.clone(),spec_sha256:digest(spec)?,quote:compact_quote(&q),review_sha256:digest(r)?,bound_at_ms:at};
    self.append(json!({"kind":"rank_trade","exchangeId":ex,"campaignSha256":review.campaign_sha256(),"managedInventory":review.managed_inventory(),"handoff":handoff,"originalNativeQuoteSha256":digest(&q)?,"binding":binding,"ownershipOnly":true,"positiveMonetaryAlphaClaimed":false}),at)?;
   }
-  self.check_rank_bound(bank,log,scope,qid,spec)?;
+  // check_rank_review verified every cohort against these same immutable
+  // bank/log borrows. append changes only the named cohort's ownership metadata;
+  // revalidate that changed FIFO and binding, without replaying all unrelated
+  // cohorts again inside the physical-fact window. Cross-call users retain the
+  // full check_rank_bound validation below.
+  self.owned(bank,ex,self.cohorts.get(ex).ok_or("RANK_COHORT_MISSING")?)?;
+  self.check_rank_binding(bank,scope,qid,spec)?;
   Ok(RankInventoryOwnership{qid,quote:Arc::new(q),scope_sha:digest(scope)?,spec_sha:digest(spec)?,permit_sha:digest(permit)?,ledger:crate::ledger_snapshot::snapshot(bank)?,head:bank.durable_head(),tag:self.durable_tag(qid).ok_or("RANK_COHORT_TAG")?,minted:at,until,
    sidecar:FilePin::from_held(self.file.try_clone()?,self.path.clone(),MAX_LOG,None)?,marker:self.marker.duplicate()?,ordinary:File::open(&self.ordinary_path)?,ordinary_path:self.ordinary_path.clone(),ordinary_identity:self.ordinary_identity.clone(),_owner:self._owner.clone()})
  }
  pub fn check_rank_bound(&self,bank:&Session,log:&DispatchLog,scope:&Scope,qid:u64,spec:&RequestSpec)->Result<()>{
-  self.check(bank,log)?;let event=self.rank_bindings.get(&qid).ok_or("RANK_COHORT_BINDING_REQUIRED")?;let b:Binding=serde_json::from_value(event["binding"].clone())?;
+  self.check(bank,log)?;self.check_rank_binding(bank,scope,qid,spec)
+ }
+ fn check_rank_binding(&self,bank:&Session,scope:&Scope,qid:u64,spec:&RequestSpec)->Result<()>{
+  let event=self.rank_bindings.get(&qid).ok_or("RANK_COHORT_BINDING_REQUIRED")?;let b:Binding=serde_json::from_value(event["binding"].clone())?;
   need(b.spec_sha256==digest(spec)?&&scope.exchanges.get(event["exchangeId"].as_str().ok_or("RANK_COHORT_EXCHANGE")?)==b.quote["marketId"].as_str().map(String::from).as_ref()
    &&crate::order_snapshot::quote(bank,qid).is_some_and(|q|compact_quote(&q)==b.quote),"RANK_COHORT_BOUND_STATE_CHANGED")
  }

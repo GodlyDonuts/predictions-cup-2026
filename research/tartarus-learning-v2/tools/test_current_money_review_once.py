@@ -73,5 +73,14 @@ class RecoveryAndSelectionTests(unittest.TestCase):
             with self.subTest(qid=qid),self.assertRaises(AssertionError):
                 owner.prior_completion_arguments(qid)
 
+    def test_no_http_completion_requires_complete_explicit_verifier_identity(self):
+        args=owner.prior_completion_arguments(23465,Path('/checked/verifier'),'a'*64)
+        self.assertEqual(args,['--completed-qid','23465','--prior-not-sent-verifier',str(Path('/checked/verifier')),
+                               '--prior-not-sent-verifier-sha256','a'*64])
+        for values in [(23465,Path('/checked/verifier'),None),(None,Path('/checked/verifier'),'a'*64),
+                       (23465,Path('/checked/verifier'),'bad')]:
+            with self.subTest(values=values),self.assertRaises(AssertionError):
+                owner.prior_completion_arguments(*values)
+
 
 if __name__=='__main__': unittest.main()

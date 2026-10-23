@@ -49,13 +49,19 @@ def select_candidate(candidates, ownership):
     return None,deferred
 
 
-def prior_completion_arguments(qid):
+def prior_completion_arguments(qid,verifier=None,verifier_sha256=None):
+    assert (verifier is None)==(verifier_sha256 is None), 'COMPLETE_VERIFIER_PIN_REQUIRED'
     if qid is None:
+        assert verifier is None, 'VERIFIER_REQUIRES_EXACT_PRIOR_QID'
         return []
     assert type(qid) is int and qid > 0, 'EXACT_POSITIVE_PRIOR_QID_REQUIRED'
     # The existing publisher independently verifies the matching original
     # intent and exchange-closed record. This flag grants no retry authority.
-    return ['--completed-qid',str(qid)]
+    result=['--completed-qid',str(qid)]
+    if verifier is not None:
+        assert len(verifier_sha256)==64 and all(c in '0123456789abcdef' for c in verifier_sha256), 'EXACT_VERIFIER_SHA256_REQUIRED'
+        result += ['--prior-not-sent-verifier',str(verifier),'--prior-not-sent-verifier-sha256',verifier_sha256]
+    return result
 
 
 def run(a):
@@ -148,7 +154,8 @@ def run(a):
             '--expected-binary-sha256',deployment['binarySha256'],'--expected-raw-sha256',summary['rawSha256'],
             '--source-commit',a.source_commit,'--source-reference-root',str(a.reference),
             '--generation-publication-lock-fd',str(fd),
-            *prior_completion_arguments(getattr(a,'completed_qid',None))])
+            *prior_completion_arguments(getattr(a,'completed_qid',None),
+                getattr(a,'prior_not_sent_verifier',None),getattr(a,'prior_not_sent_verifier_sha256',None))])
         record(state='owner_review_published' if result.returncode==0 else 'publication_declined',
                nomination=summary,publisherExitCode=result.returncode,
                diagnosticTail=result.stderr[-1000:] if result.returncode else None,
@@ -164,4 +171,6 @@ if __name__=='__main__':
     p.add_argument('--wait-seconds',type=int,default=2700)
     p.add_argument('--completed-qid',type=int,
         help='Exact prior review order whose original intent/terminal proof the publisher must verify; never a retry.')
+    p.add_argument('--prior-not-sent-verifier',type=Path)
+    p.add_argument('--prior-not-sent-verifier-sha256')
     run(p.parse_args())

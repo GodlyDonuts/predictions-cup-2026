@@ -1,0 +1,59 @@
+{
+  "observedUtc": "2026-10-23T00:59:23.674636+00:00",
+  "verifierBinarySha256": "4f247282afcd3e9877c5e95817fe57d6fcd724ec80cef06dc85d532431e0d635",
+  "verifierSourceSha256": "0df5c9562611b7f3ef0f5c4794786a03bc1e5ae62d6648c769876fcc2476b051",
+  "publisherSha256": "0cd675cd392c2b0f97d0782abf507ceb04c83dfceaf31e6c44ce548b5ca28ad7",
+  "pythonChecks": 12,
+  "actualSdkCases": [
+    {
+      "qid": 23142,
+      "result": {
+        "accountRequests": 0,
+        "dispatchSnapshotModified": false,
+        "dispatchSnapshotSha256": "75ccd81e683eaf8152dd1ddd84220d030264fdc884e20ac3c91cf3e2c49801f9",
+        "exchangeClosedClaimed": false,
+        "kind": "positively_proved_pre_network_not_sent",
+        "opaqueSdkProofVerified": true,
+        "originalProof": {
+          "contextSha256": "7848b783ed95ab305a94fcb47f9aa51b871f9ccd21f2076e7687b4ac4c73e904",
+          "kind": "ordinary_admitted_pre_network_not_sent_v1",
+          "sdkSha256": "70400749f84b18740b0c1b72f37eadc86d4622797fbeff9b291cb05e8a684df7",
+          "snapshot": "/home/archon/apps/moloch/shared/live-production-v1/account-queue/ordinary-pre-network-7848b783ed95ab305a94fcb47f9aa51b871f9ccd21f2076e7687b4ac4c73e904",
+          "sourceJournalSha256": "4a66385328aa587d8ea7d554be873843a222749c6ab2b7008f4f5332df89db5f"
+        },
+        "priorRawSha256": "3a4f4cf8f34789d747cb8cf815470ac80fa3a3785c9dcef69fa8c469048e187a",
+        "qid": 23142,
+        "retryAuthorized": false
+      },
+      "wrongReviewRejected": true
+    },
+    {
+      "qid": 23465,
+      "result": {
+        "accountRequests": 0,
+        "dispatchSnapshotModified": false,
+        "dispatchSnapshotSha256": "75ccd81e683eaf8152dd1ddd84220d030264fdc884e20ac3c91cf3e2c49801f9",
+        "exchangeClosedClaimed": false,
+        "kind": "positively_proved_local_final_guard_no_http",
+        "opaqueSdkProofVerified": true,
+        "originalProof": {
+          "contextSha256": "b350fc70d7802083a999e8dffe24422c7701472cc82030014ca6fccd7277aec2",
+          "kind": "sdk_ordinary_final_guard_no_http_v1",
+          "proofMode": "durable_local_guard",
+          "sdkSourceSha256": "2421fca34051bf418d26cd9d562118c9b32e994c61b6dd341b7ae052e7adedce"
+        },
+        "priorRawSha256": "2a2633a20a257ab54b4e19498e80674dfd5097fdb8e7b6e1e3cb29ac4222658f",
+        "qid": 23465,
+        "retryAuthorized": false
+      },
+      "wrongReviewRejected": true
+    }
+  ],
+  "originalDispatchModified": false,
+  "snapshotUnchanged": true,
+  "accountClientsCreated": 0,
+  "accountRequests": 0,
+  "ordersSubmitted": 0,
+  "exchangeClosureFabricated": false,
+  "retryAuthorized": false
+}

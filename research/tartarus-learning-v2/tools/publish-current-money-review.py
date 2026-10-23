@@ -44,7 +44,7 @@ def create(path, raw):
 
 def completed_prior_review(root, view, old_sha, qid, completion=None):
     assert qid not in view['knownUnclosedAcknowledgments'] and not any(q['id'] == qid for q in view['activeNativeOrders']), 'OLD_REVIEW_STILL_HAS_NATIVE_OR_PHYSICAL_LIABILITY'
-    intent, closed, not_sent = False, None, None
+    intent, closed, not_sent, not_sent_kind = False, None, None, None
     private(root / 'dispatch.ndjson')
     with (root / 'dispatch.ndjson').open('rb') as stream:
         for line in stream:
@@ -56,8 +56,9 @@ def completed_prior_review(root, view, old_sha, qid, completion=None):
                 intent = (event.get('rankCampaign') or {}).get('rawSha256') == old_sha
             if event['kind'] == 'closed':
                 closed = digest(line)
-            if event['kind'] == 'admitted_pre_network_not_sent':
+            if event['kind'] in ('admitted_pre_network_not_sent','local_final_guard_no_http'):
                 not_sent = digest(line)
+                not_sent_kind = event['kind']
     assert intent, 'ORIGINAL_MATCHING_RANK_INTENT_REQUIRED'
     if closed is not None:
         return dict(qid=qid, priorRawSha256=old_sha, originalClosedLineSha256=closed)
@@ -89,7 +90,9 @@ def completed_prior_review(root, view, old_sha, qid, completion=None):
     assert checked.returncode == 0, 'PRIOR_TYPED_NOT_SENT_VERIFICATION_REJECTED'
     proof = json.loads(checked.stdout)
     assert proof['qid'] == qid and proof['priorRawSha256'] == old_sha
-    assert proof['kind'] == 'positively_proved_pre_network_not_sent' and proof['opaqueSdkProofVerified'] is True
+    expected_kind = {'admitted_pre_network_not_sent':'positively_proved_pre_network_not_sent',
+                     'local_final_guard_no_http':'positively_proved_local_final_guard_no_http'}[not_sent_kind]
+    assert proof['kind'] == expected_kind and proof['opaqueSdkProofVerified'] is True
     assert proof['dispatchSnapshotSha256'] == digest(raw) and proof['retryAuthorized'] is False
     assert proof['exchangeClosedClaimed'] is False and proof['accountRequests'] == 0 and proof['dispatchSnapshotModified'] is False
     assert digest(verifier.read_bytes()) == expected and snapshot.read_bytes() == raw

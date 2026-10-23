@@ -1,0 +1,33 @@
+{
+  "observedUtc": "2026-10-23T01:01:10.918257+00:00",
+  "result": {
+    "qid": 23465,
+    "priorRawSha256": "2a2633a20a257ab54b4e19498e80674dfd5097fdb8e7b6e1e3cb29ac4222658f",
+    "completionKind": "positively_proved_local_final_guard_no_http",
+    "originalNotSentLineSha256": "b04a0f9b725cc93c3f171f05f28bf73c08d0e2ea79a90f9270aa45665cf7621c",
+    "originalReportSha256": "cf9dadfb5c82b93b39427764a174f473f3ee26b5056b7efa27ae6b7a329919e3",
+    "verifierSha256": "4f247282afcd3e9877c5e95817fe57d6fcd724ec80cef06dc85d532431e0d635",
+    "typedVerification": {
+      "accountRequests": 0,
+      "dispatchSnapshotModified": false,
+      "dispatchSnapshotSha256": "91912949b832e4682bdfc5c5e803a41ea4bc8b19dc244b57840eeed3f7f1f16a",
+      "exchangeClosedClaimed": false,
+      "kind": "positively_proved_local_final_guard_no_http",
+      "opaqueSdkProofVerified": true,
+      "originalProof": {
+        "contextSha256": "b350fc70d7802083a999e8dffe24422c7701472cc82030014ca6fccd7277aec2",
+        "kind": "sdk_ordinary_final_guard_no_http_v1",
+        "proofMode": "durable_local_guard",
+        "sdkSourceSha256": "2421fca34051bf418d26cd9d562118c9b32e994c61b6dd341b7ae052e7adedce"
+      },
+      "priorRawSha256": "2a2633a20a257ab54b4e19498e80674dfd5097fdb8e7b6e1e3cb29ac4222658f",
+      "qid": 23465,
+      "retryAuthorized": false
+    },
+    "exchangeClosedClaimed": false,
+    "retryAuthorized": false
+  },
+  "originalDispatchModified": false,
+  "ownerFilesModified": false,
+  "accountRequests": 0
+}
