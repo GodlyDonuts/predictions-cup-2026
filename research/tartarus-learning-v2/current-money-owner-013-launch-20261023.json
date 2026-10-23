@@ -1,0 +1,12 @@
+{
+  "observedUtc": "2026-10-23T00:09:18.007440+00:00",
+  "pid": 1138220,
+  "expectedWorkerPid": 1138184,
+  "sourceCommit": "94350df3dd4969f9c185231bc1dfa39ac53fa389",
+  "scriptSha256": "4282f399034d1ac9313fdaa77ed9169622dba68ac6d2b52eeb8823d8e9017ec5",
+  "publisherSha256": "9c81ce382d8a9e25dbfe145f3ce6b06a6e223dcc84c11828545313650987a677",
+  "state": "waiting_for_exact_restoration_proof",
+  "accountClientsCreated": 0,
+  "ordersSubmittedByController": 0,
+  "fillClaimed": false
+}
