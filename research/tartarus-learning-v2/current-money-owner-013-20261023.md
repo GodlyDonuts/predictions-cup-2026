@@ -1,0 +1,13 @@
+# Select a fresh opportunity across the checked universe
+
+The previous one-shot controller discarded the scanner's top prepared nomination and explicitly prepared1051NO. Retained23:50 data ranked859NO ahead of1051NO on the weakest declared expected change. Those observations are expired and are not authorization to execute either order.
+
+`tools/run-current-money-review-once.py` now consumes the existing whole-universe scanner's top **prepared** candidate. It does not restrict the exchange to Tennessee. The existing preparer still checks complete held inventory, cash, reserved cash, market principal, depth, conservative limit price, ordinary interval sensitivity and the same three current-price hypothesis profiles. This remains an uncalibrated price-based strategy, not a trained profitable ML policy or a proof of optimal selection.
+
+Before collecting decision data, the controller requires the exact R104 process and start identity, current-PID trading/healthy realtime, and the observer's verification of every original fill plus both full journal prefixes. A finite recovery wait neither renews a review nor creates an order. It obtains the actual source-publication lock only after recovery, waits for any earlier reload to reconcile, and uses the existing300-second research/publication deadline. The publisher borrows the real descriptor, independently checks current financial state and generation, and archives prior owner files. Prior expired/unused review completion uses the existing publisher checks; no old intent is retried.
+
+There is one invocation and at most one new owner publication. It does not call SIG, restart the worker, alter caps, loosen STOP or unknown-acceptance handling, repeat automatically after rejection, or turn hypothetical future fills into cash. Publisher timeouts require reconciliation. The worker independently decides physical admission and execution.
+
+Six focused checks pass both locally and on the actual Linux VPS: restored evidence acceptance, missing/stale process evidence rejection, actual dead-process handling, wrong/missing history proof rejection, updated deployment with unchanged hypothesis/horizon arguments, and refusal to silently change the profile policy. These checks qualify controller orchestration only; the existing source lock and publisher have their separately retained checks. No new order, fill or profitable return is established by them.
+
+Current runtime remains R1041138184, restoring its original ledger. The next invocation will wait for actual recovery proof and then perform one fresh universe-wide scan. It will not reuse the expired23:50 prices or review23400.
