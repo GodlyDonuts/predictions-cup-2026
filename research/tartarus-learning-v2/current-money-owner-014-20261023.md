@@ -13,3 +13,7 @@ Ten focused Linux checks pass, adding coverage for an unmanaged BUY's forced-exi
 R104 is still restoring its original ledger. No new review, fill or profitable return is established by this correction.
 
 Checked revision014 was launched as1138265 at00:17:42UTC, awaiting exact R104 recovery proof. [Launch](current-money-owner-014-launch-20261023.json). [013's verified stop before research](current-money-owner-013-stopped-20261023.json). A target-specific859 manager and five-scope source maintenance are now [staged separately](cohort-859-015-20261023.md); owner acceptance is still pending.
+
+## Subsequent executed decision
+
+Controller014 completed fresh research, preparation and one owner publication for10000NO1051 at a maximum0.905. [Actual controller result](current-money-owner-014-result-20261023.json). The worker independently dispatched native23417/official57133984, and all10000 shares filled for8884.135 with zero fees. The [original17-receipt/FIFO audit](r104-tennessee-filled-20261023.json) verifies the execution. This is one filled order, not17 independent opportunities; incremental realized gain remains0. The controller is terminal successful. Idaho's separate manager/source handoff has also [committed and read back](cohort-859-integration-015-20261023.json).

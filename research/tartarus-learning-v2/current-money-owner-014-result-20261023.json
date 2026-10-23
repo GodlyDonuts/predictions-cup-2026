@@ -1,0 +1,42 @@
+{
+  "state": "owner_review_published",
+  "nomination": {
+    "rawSha256": "271d47cee19f1c2c36473de072e9661a5310c7bdda5a29190c3f114e67525596",
+    "objective": "declared_positive_expected_money",
+    "exchangeId": "1051",
+    "side": "NO",
+    "action": "BUY",
+    "quantity": 10000,
+    "limitPrice": "0.905000",
+    "validUntilMs": 1792715603419,
+    "weakestDeclaredExpectedChange": 549.45,
+    "ordinaryMinimumExpectedChange": "550.000000",
+    "scenarios": 85,
+    "originalHypothesisQuantity": 10000,
+    "originalHypothesisPrice": "0.895000",
+    "requestedPriceTolerance": "0.010000",
+    "limitIsConservativeFundingAndValuationPrice": true,
+    "actualFillPriceClaimed": false,
+    "probabilityModels": 3,
+    "decisionProfilePolicy": "current-prices",
+    "decisionProfileIds": [
+      "price_lower_common",
+      "price_upper_common",
+      "price_midpoint_independent"
+    ],
+    "completeHeldMarkets": 20,
+    "sourceClocksRenewed": false,
+    "approvalPublished": false,
+    "submitted": false,
+    "executionAuthority": false
+  },
+  "publisherExitCode": 0,
+  "diagnosticTail": null,
+  "workerIndependentlyReconcilesAndDecides": true,
+  "retryOfPriorIntentAuthorized": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByController": 0,
+  "fillClaimed": false,
+  "sourceClocksRenewed": false,
+  "sourceCommit": "2a3c5accb96b0b8569d495dc83fd365e1c6b73c7"
+}

@@ -1,0 +1,73 @@
+{
+  "observedUtc": "2026-10-23T00:30:35.236210+00:00",
+  "workerPid": 1138184,
+  "workerAlive": true,
+  "sourceUpdaterPid": 1138453,
+  "sourceUpdaterAlive": true,
+  "sourceUpdaterConfigSha256": "a626fe7013618934adbea9fbe599e07a7c7299dc1778909b1f5dc21aab09c81a",
+  "resolution": {
+    "outcome": "committed",
+    "requestSha256": "620592dc5cda9dd9ae79a25cc657da794ade8d5ba247956366869ea7751228a3",
+    "previousGenerationSha256": "5a0e896da3184869be02d1769fcce10d648add2a1bd9ce267732960217e1d510",
+    "committedGenerationSha256": "620592dc5cda9dd9ae79a25cc657da794ade8d5ba247956366869ea7751228a3",
+    "observedAtMs": 1792715299231,
+    "requestExpiresAtMs": 1792715283075,
+    "nativeViewWrittenAt": "2026-10-23T00:28:19.064Z",
+    "originalCohortPrefixBytes": 16954667,
+    "originalCohortPrefixSha256": "abf5045e4974b0dde39f335c0ef9b2052362b9d1a3f40fbafc13ad551fef0916",
+    "requestResent": false,
+    "accountRequests": 0,
+    "financialStateChanged": false
+  },
+  "newReview": {
+    "exchangeId": "859",
+    "side": "NO",
+    "ordinaryProbability": "0.969500",
+    "maximumPrincipal": "10000.000000",
+    "maximumQuantity": 1000000,
+    "marginPerShare": "0.010000",
+    "passiveValueExit": {
+      "version": 1,
+      "maximumQuantity": 10000
+    },
+    "expiresAtMs": 1792716093008
+  },
+  "configuredScopes": [
+    "1051",
+    "1076",
+    "1077",
+    "859",
+    "983"
+  ],
+  "captureScopes": [
+    "1077",
+    "1051",
+    "983",
+    "1076",
+    "859"
+  ],
+  "supplementalUnavailable": [],
+  "sourceStatus": {
+    "atMs": 1792715434582,
+    "pid": 1138453,
+    "phase": "waiting_for_reviewed_order",
+    "commits": 249,
+    "officialSigClientCreated": false,
+    "stopChanged": false,
+    "ownerReviewPublicationCoordinated": true,
+    "financialControlChanged": false,
+    "mlFitOrSelectionUse": false,
+    "rawSha256": "271d47cee19f1c2c36473de072e9661a5310c7bdda5a29190c3f114e67525596",
+    "exchangeId": "1051",
+    "generationSha256": "620592dc5cda9dd9ae79a25cc657da794ade8d5ba247956366869ea7751228a3",
+    "holdUntilMs": 1792715592857,
+    "originalValidUntilMs": 1792715603419,
+    "sourceClocksRenewed": false
+  },
+  "workerRestarted": false,
+  "monetaryCapsChanged": false,
+  "accountClientsCreated": 0,
+  "ordersSubmittedByPublisher": 0,
+  "fillClaimed": false,
+  "calibratedModel": false
+}
