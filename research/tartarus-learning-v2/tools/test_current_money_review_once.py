@@ -44,5 +44,27 @@ class RecoveryAndSelectionTests(unittest.TestCase):
             owner.research_command(['--deployment','old','--output','old',
                 '--decision-profile-policy','all-declared'],Path('new'),Path('new'))
 
+    def test_unmanaged_value_buy_cannot_fall_into_the_legacy_forced_exit_policy(self):
+        candidates=[dict(leg=dict(ex='859',side='NO',action='BUY')),
+                    dict(leg=dict(ex='1051',side='NO',action='BUY'))]
+        selected,deferred=owner.select_candidate(candidates,{'1051':{'side':'NO'}})
+        self.assertEqual(selected['leg']['ex'],'1051')
+        self.assertEqual(deferred[0]['exchangeId'],'859')
+
+    def test_managed_selection_has_no_fixed_exchange_and_unmanaged_sells_are_allowed(self):
+        candidates=[dict(leg=dict(ex='other',side='YES',action='SELL')),
+                    dict(leg=dict(ex='1051',side='NO',action='BUY'))]
+        selected,deferred=owner.select_candidate(candidates,{'1051':{'side':'NO'}})
+        self.assertEqual(selected['leg']['ex'],'other'); self.assertEqual(deferred,[])
+
+    def test_no_eligible_managed_value_buy_does_not_authorize_a_forced_loss_cycle(self):
+        selected,deferred=owner.select_candidate([dict(leg=dict(ex='859',side='NO',action='BUY'))],{})
+        self.assertIsNone(selected); self.assertEqual(len(deferred),1)
+
+    def test_opposite_side_does_not_inherit_the_other_sides_exit_manager(self):
+        selected,deferred=owner.select_candidate([dict(leg=dict(ex='1051',side='YES',action='BUY'))],
+                                                {'1051':{'side':'NO'}})
+        self.assertIsNone(selected); self.assertEqual(len(deferred),1)
+
 
 if __name__=='__main__': unittest.main()

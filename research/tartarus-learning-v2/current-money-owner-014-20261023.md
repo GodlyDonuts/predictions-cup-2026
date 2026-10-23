@@ -1,0 +1,13 @@
+# Match value entries to their exit strategy
+
+Source inspection found an economic integration gap before controller013 performed research or publication. The ordinary policy has a60000ms maximum inventory age. `moloch/native/src/engine.rs` sends filled, unmanaged rank inventory through ordinary exit planning; `worker.rs::profit_hint_scope_allowed` permits unmanaged age exits. Only the reviewed manager's configured exchanges bypass that ordinary planner. A longer-horizon value purchase outside that manager could therefore be liquidated shortly after acquisition, potentially paying the spread twice. The positive terminal-value hypothesis did not model that forced round trip.
+
+Controller1138220 was stopped at2026-10-23T00:14:37Z while its output directory was still empty and it was waiting for recovery. No research, owner approval or order had occurred. Worker1138184, source updater1138187 and observer1138193 were not stopped.
+
+Revision014 still scans the full checked universe and ranks existing-position SELLs across it. A value BUY must currently match the side of an existing reviewed inventory manager. It prepares the highest-ranked such action from the same immutable inputs and original horizon, retaining the stronger unmanaged alternatives and their deferral reasons in `management-selection.public.json`. It does not silently claim all-market BUY management is complete. No fixed Tennessee ID is used, no worker restart is needed, and the existing publisher/physical checks remain.
+
+Ten focused Linux checks pass, adding coverage for an unmanaged BUY's forced-exit conflict, arbitrary managed targets, unmanaged SELL selection, missing management and opposite-side manager mismatch. These are orchestration checks, not an end-to-end fill or profit demonstration.
+
+**Remaining economic work:** expand source-backed inventory management to attractive unmanaged markets rather than repeatedly deferring them. One retained candidate was Idaho Governor Democratic NO859. The [Cassia County official November3 sample ballot](https://www.cassia.gov/media/Elections/SAMPLE%20BALLOTS/2026/Cassia%20County%20General%20Election%20Sample%20Ballot.pdf) identifies the governor candidates and their parties. That supplies primary ballot evidence for a future target-specific review; it does not establish a forecast, current executable price, venue settlement equivalence or a new cohort. Fresh cache/metadata, exact contract rules and a real hot-reload handoff remain necessary.
+
+R104 is still restoring its original ledger. No new review, fill or profitable return is established by this correction.

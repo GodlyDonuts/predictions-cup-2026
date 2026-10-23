@@ -1,5 +1,7 @@
 # Select a fresh opportunity across the checked universe
 
+**Superseded before decision:** controller1138220 was stopped while still waiting, before any research/publication/order, after identifying the ordinary60-second forced-exit conflict for unmanaged value BUYs. [Revision014 and remaining management integration](current-money-owner-014-20261023.md) governs the next invocation; the historical launch below is not an active process claim.
+
 The previous one-shot controller discarded the scanner's top prepared nomination and explicitly prepared1051NO. Retained23:50 data ranked859NO ahead of1051NO on the weakest declared expected change. Those observations are expired and are not authorization to execute either order.
 
 `tools/run-current-money-review-once.py` now consumes the existing whole-universe scanner's top **prepared** candidate. It does not restrict the exchange to Tennessee. The existing preparer still checks complete held inventory, cash, reserved cash, market principal, depth, conservative limit price, ordinary interval sensitivity and the same three current-price hypothesis profiles. This remains an uncalibrated price-based strategy, not a trained profitable ML policy or a proof of optimal selection.

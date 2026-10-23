@@ -35,6 +35,20 @@ def research_command(template, deployment_path, output):
     return command
 
 
+def select_candidate(candidates, ownership):
+    # A ranked value BUY needs the reviewed manager's ongoing exit objective.
+    # Ordinary unmanaged inventory has a 60-second forced-liquidation rule.
+    # Existing-position SELLs still compete across the entire checked universe.
+    deferred=[]
+    for candidate in candidates:
+        leg=candidate['leg']
+        if leg['action']=='SELL' or ownership.get(leg['ex'],{}).get('side')==leg['side']:
+            return candidate,deferred
+        deferred.append(dict(exchangeId=leg['ex'],side=leg['side'],action=leg['action'],
+            reason='VALUE_BUY_REQUIRES_ONGOING_REVIEWED_INVENTORY_MANAGEMENT'))
+    return None,deferred
+
+
 def run(a):
     os.umask(0o077); os.nice(15); Path('/proc/self/oom_score_adj').write_text('1000')
     assert len(a.source_commit) == 40 and all(c in '0123456789abcdef' for c in a.source_commit)
@@ -91,7 +105,30 @@ def run(a):
         research = json.loads((a.output/'research/result.public.json').read_bytes())
         if research['state'] != 'fresh_unapproved_nomination_prepared':
             record(state=research['state']); return
+        inputs=a.output/'research/inputs'
+        scanned=json.loads((inputs/'direct-opportunities.public.json').read_bytes())
+        compiled=json.loads((inputs/'compiled-current.private.json').read_bytes())
+        selected,deferred=select_candidate(scanned['candidates'],compiled['managedOwnership'])
+        (a.output/'management-selection.public.json').write_text(json.dumps(dict(
+            selected=selected['leg'] if selected else None,deferredBuys=deferred,
+            reason='Avoid forcing long-horizon value inventory through the unrelated 60-second ordinary liquidation policy.',
+            wholeUniverseScanned=True,unmanagedSellCandidatesAllowed=True,
+            fullUniverseBuyManagementImplemented=False),indent=2)+'\n')
+        if selected is None:
+            record(state='value_buy_management_integration_required',deferredBuys=deferred); return
         prepared = a.output/'research/prepared'
+        original=json.loads((prepared/'prepared.public.json').read_bytes())
+        leg=selected['leg']
+        if any(original[k]!=leg[v] for k,v in [('exchangeId','ex'),('side','side'),('action','action')]):
+            prepared=a.output/'prepared-managed'
+            source=command[command.index('--source')+1]; tools=Path(command[command.index('--tools')+1])
+            result=call('prepare-managed',['python3',str(tools/'prepare-current-money-nomination.py'),
+                '--source',source,'--inputs',str(inputs),'--candidates',str(inputs/'direct-opportunities.public.json'),
+                '--output',str(prepared),'--exchange',leg['ex'],'--side',leg['side'],'--action',leg['action'],
+                '--decision-ms',str(time.time_ns()//1000000),'--horizon-ms','300000',
+                '--minimum-expected-money','0.010000','--price-tolerance','0.010000'])
+            if result.returncode:
+                record(state='managed_value_preparation_declined',diagnosticTail=result.stderr[-700:]); return
         summary = json.loads((prepared/'prepared.public.json').read_bytes())
         assert summary['weakestDeclaredExpectedChange'] > 0
         assert summary['sourceClocksRenewed'] is False
